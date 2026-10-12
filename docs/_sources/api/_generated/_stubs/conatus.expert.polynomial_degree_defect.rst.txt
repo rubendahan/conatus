@@ -1,0 +1,6 @@
+﻿conatus.expert.polynomial\_degree\_defect
+=========================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: polynomial_degree_defect

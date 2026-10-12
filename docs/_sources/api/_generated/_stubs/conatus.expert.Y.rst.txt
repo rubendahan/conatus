@@ -1,0 +1,6 @@
+﻿conatus.expert.Y
+================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: Y

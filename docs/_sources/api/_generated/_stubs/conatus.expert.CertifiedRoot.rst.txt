@@ -1,0 +1,8 @@
+﻿conatus.expert.CertifiedRoot
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: CertifiedRoot
+   :members:
+   :show-inheritance:

@@ -1,0 +1,8 @@
+﻿conatus.expert.Ensemble
+=======================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Ensemble
+   :members:
+   :show-inheritance:

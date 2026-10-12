@@ -1,0 +1,6 @@
+﻿conatus.expert.operator\_floquet
+================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: operator_floquet

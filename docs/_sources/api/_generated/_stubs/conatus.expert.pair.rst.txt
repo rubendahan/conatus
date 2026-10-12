@@ -1,0 +1,6 @@
+﻿conatus.expert.pair
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: pair

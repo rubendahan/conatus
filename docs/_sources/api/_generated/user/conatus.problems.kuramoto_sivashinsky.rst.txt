@@ -1,0 +1,6 @@
+﻿conatus.problems.kuramoto\_sivashinsky
+======================================
+
+.. currentmodule:: conatus.problems
+
+.. autofunction:: kuramoto_sivashinsky

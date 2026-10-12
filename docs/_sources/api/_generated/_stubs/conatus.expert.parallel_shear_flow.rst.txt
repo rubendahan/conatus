@@ -1,0 +1,6 @@
+﻿conatus.expert.parallel\_shear\_flow
+====================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: parallel_shear_flow

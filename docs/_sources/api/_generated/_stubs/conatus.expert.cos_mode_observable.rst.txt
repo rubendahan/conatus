@@ -1,0 +1,6 @@
+﻿conatus.expert.cos\_mode\_observable
+====================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: cos_mode_observable

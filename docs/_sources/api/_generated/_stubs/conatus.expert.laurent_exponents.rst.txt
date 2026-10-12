@@ -1,0 +1,6 @@
+﻿conatus.expert.laurent\_exponents
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: laurent_exponents

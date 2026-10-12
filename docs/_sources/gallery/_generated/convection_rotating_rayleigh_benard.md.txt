@@ -1,0 +1,42 @@
+# Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)
+
+*Family:* `convection` · *Script:* `examples/convection/rotating_rayleigh_benard.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - one pencil for all Ta (√Ta declared); free walls: Ra_c(Ta) = closed form to ≤ 2e-15 (Ta = 0…1e5); rigid: 1756.347 / 2151.341 / 4712.042 (Ta = 1e2, 1e3, 1e4)
+* - Reference
+  - Chandrasekhar 1961, ch. III
+```
+
+```text
+A Boussinesq layer 0 < z < 1 heated from below rotates about the vertical with Taylor number
+Ta = (2 Omega d^2 / nu)^2. Units: depth d, thermal diffusion time d^2 / kappa. A normal mode
+exp(i k x + sigma t) independent of y (the horizontal plane is isotropic, so this loses no
+generality) has all three velocity components; with D = d/dz and Pr = nu / kappa:
+
+    sigma u = Pr (D^2 - k^2) u - i k p + Pr sqrt(Ta) v          (Coriolis: -2 Omega x u)
+    sigma v = Pr (D^2 - k^2) v         - Pr sqrt(Ta) u
+    sigma w = Pr (D^2 - k^2) w - D p   + Pr Ra T
+    sigma T =    (D^2 - k^2) T + w                              (linear conduction profile)
+    0       = i k u + D w
+
+Free (stress-free) walls: w = Du = Dv = T = 0. Onset is stationary for Pr > 0.6766 and then
+(Chandrasekhar 1961, §26, closed form)
+
+    Ra(k) = [(pi^2 + k^2)^3 + pi^2 Ta] / k^2,   Ra_c = min_k Ra(k).
+
+Rigid walls (u = v = w = T = 0) have no closed form (Chandrasekhar's Table, Ch. III); we report
+our values with their convergence in N.
+
+Run:  python examples/convection/rotating_rayleigh_benard.py
+```
+
+Run it: `python examples/convection/rotating_rayleigh_benard.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/convection/rotating_rayleigh_benard.py
+:language: python
+:linenos:
+```

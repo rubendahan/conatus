@@ -1,0 +1,6 @@
+﻿conatus.problems.taylor\_couette
+================================
+
+.. currentmodule:: conatus.problems
+
+.. autofunction:: taylor_couette

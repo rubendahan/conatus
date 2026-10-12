@@ -1,0 +1,8 @@
+﻿conatus.expert.ThresholdBisection
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: ThresholdBisection
+   :members:
+   :show-inheritance:

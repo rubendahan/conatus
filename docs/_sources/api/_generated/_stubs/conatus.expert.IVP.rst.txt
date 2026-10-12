@@ -1,0 +1,8 @@
+﻿conatus.expert.IVP
+==================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: IVP
+   :members:
+   :show-inheritance:

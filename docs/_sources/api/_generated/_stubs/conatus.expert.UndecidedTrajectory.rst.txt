@@ -1,0 +1,6 @@
+﻿conatus.expert.UndecidedTrajectory
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: UndecidedTrajectory

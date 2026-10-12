@@ -1,0 +1,8 @@
+﻿conatus.model.Simulation
+========================
+
+.. currentmodule:: conatus.model
+
+.. autoclass:: Simulation
+   :members:
+   :show-inheritance:

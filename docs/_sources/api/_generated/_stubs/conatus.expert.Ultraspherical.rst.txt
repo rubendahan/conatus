@@ -1,0 +1,8 @@
+﻿conatus.expert.Ultraspherical
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Ultraspherical
+   :members:
+   :show-inheritance:

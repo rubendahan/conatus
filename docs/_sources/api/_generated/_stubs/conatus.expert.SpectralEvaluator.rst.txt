@@ -1,0 +1,8 @@
+﻿conatus.expert.SpectralEvaluator
+================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: SpectralEvaluator
+   :members:
+   :show-inheritance:

@@ -1,0 +1,6 @@
+﻿conatus.problems.rotating\_shell\_convection
+============================================
+
+.. currentmodule:: conatus.problems
+
+.. autofunction:: rotating_shell_convection

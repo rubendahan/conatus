@@ -1,0 +1,6 @@
+﻿conatus.expert.grid
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: grid

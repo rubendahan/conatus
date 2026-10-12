@@ -1,0 +1,8 @@
+﻿conatus.expert.HillGPU
+======================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: HillGPU
+   :members:
+   :show-inheritance:

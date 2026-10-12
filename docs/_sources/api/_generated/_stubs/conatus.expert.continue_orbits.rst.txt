@@ -1,0 +1,6 @@
+﻿conatus.expert.continue\_orbits
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: continue_orbits

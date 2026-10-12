@@ -1,0 +1,6 @@
+﻿conatus.expert.outer
+====================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: outer

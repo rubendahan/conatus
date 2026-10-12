@@ -1,0 +1,8 @@
+﻿conatus.Ball
+============
+
+.. currentmodule:: conatus
+
+.. autoclass:: Ball
+   :members:
+   :show-inheritance:

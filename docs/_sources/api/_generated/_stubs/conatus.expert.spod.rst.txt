@@ -1,0 +1,6 @@
+﻿conatus.expert.spod
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: spod

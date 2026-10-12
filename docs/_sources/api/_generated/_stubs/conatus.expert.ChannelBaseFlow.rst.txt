@@ -1,0 +1,8 @@
+﻿conatus.expert.ChannelBaseFlow
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: ChannelBaseFlow
+   :members:
+   :show-inheritance:

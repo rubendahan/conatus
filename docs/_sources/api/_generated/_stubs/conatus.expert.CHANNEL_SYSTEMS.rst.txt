@@ -1,0 +1,6 @@
+﻿conatus.expert.CHANNEL\_SYSTEMS
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: CHANNEL_SYSTEMS

@@ -1,0 +1,8 @@
+﻿conatus.expert.ShiftReflect
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: ShiftReflect
+   :members:
+   :show-inheritance:

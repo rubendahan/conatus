@@ -1,0 +1,6 @@
+﻿conatus.expert.unstable\_left\_basis
+====================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: unstable_left_basis

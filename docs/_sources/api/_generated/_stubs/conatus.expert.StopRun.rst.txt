@@ -1,0 +1,6 @@
+﻿conatus.expert.StopRun
+======================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: StopRun

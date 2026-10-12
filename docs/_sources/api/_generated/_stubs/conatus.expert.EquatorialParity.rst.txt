@@ -1,0 +1,6 @@
+﻿conatus.expert.EquatorialParity
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: EquatorialParity

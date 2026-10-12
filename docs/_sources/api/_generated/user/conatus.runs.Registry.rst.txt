@@ -1,0 +1,8 @@
+﻿conatus.runs.Registry
+=====================
+
+.. currentmodule:: conatus.runs
+
+.. autoclass:: Registry
+   :members:
+   :show-inheritance:

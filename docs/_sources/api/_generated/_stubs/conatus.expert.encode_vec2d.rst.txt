@@ -1,0 +1,6 @@
+﻿conatus.expert.encode\_vec2d
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: encode_vec2d

@@ -1,0 +1,6 @@
+﻿conatus.expert.optimal\_gain
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: optimal_gain

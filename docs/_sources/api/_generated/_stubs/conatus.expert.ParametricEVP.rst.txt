@@ -1,0 +1,8 @@
+﻿conatus.expert.ParametricEVP
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: ParametricEVP
+   :members:
+   :show-inheritance:

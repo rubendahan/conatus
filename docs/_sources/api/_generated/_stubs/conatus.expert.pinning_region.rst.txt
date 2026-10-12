@@ -1,0 +1,6 @@
+﻿conatus.expert.pinning\_region
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: pinning_region

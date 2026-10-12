@@ -1,0 +1,6 @@
+﻿conatus.expert.FILM\_POLICY
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: FILM_POLICY

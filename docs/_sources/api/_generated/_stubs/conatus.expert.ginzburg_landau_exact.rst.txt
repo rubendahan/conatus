@@ -1,0 +1,6 @@
+﻿conatus.expert.ginzburg\_landau\_exact
+======================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: ginzburg_landau_exact

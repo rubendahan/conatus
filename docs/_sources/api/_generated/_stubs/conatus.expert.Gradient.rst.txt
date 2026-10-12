@@ -1,0 +1,8 @@
+﻿conatus.expert.Gradient
+=======================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Gradient
+   :members:
+   :show-inheritance:

@@ -1,0 +1,6 @@
+﻿conatus.expert.check\_set
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: check_set

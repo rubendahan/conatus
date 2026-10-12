@@ -1,0 +1,6 @@
+﻿conatus.expert.BaseStateWarning
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: BaseStateWarning

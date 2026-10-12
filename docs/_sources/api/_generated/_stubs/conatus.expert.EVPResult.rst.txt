@@ -1,0 +1,8 @@
+﻿conatus.expert.EVPResult
+========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: EVPResult
+   :members:
+   :show-inheritance:

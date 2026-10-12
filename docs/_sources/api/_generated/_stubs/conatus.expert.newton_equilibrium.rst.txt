@@ -1,0 +1,6 @@
+﻿conatus.expert.newton\_equilibrium
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: newton_equilibrium

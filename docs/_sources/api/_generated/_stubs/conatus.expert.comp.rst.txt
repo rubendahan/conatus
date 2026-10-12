@@ -1,0 +1,6 @@
+﻿conatus.expert.comp
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: comp

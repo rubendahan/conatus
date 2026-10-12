@@ -1,0 +1,8 @@
+﻿conatus.expert.BatchedRHS
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: BatchedRHS
+   :members:
+   :show-inheritance:

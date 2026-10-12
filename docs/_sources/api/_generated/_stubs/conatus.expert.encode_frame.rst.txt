@@ -1,0 +1,6 @@
+﻿conatus.expert.encode\_frame
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: encode_frame

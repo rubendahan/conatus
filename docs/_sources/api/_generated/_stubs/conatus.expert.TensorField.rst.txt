@@ -1,0 +1,6 @@
+﻿conatus.expert.TensorField
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: TensorField

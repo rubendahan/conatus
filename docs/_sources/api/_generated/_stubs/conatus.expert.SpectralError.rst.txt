@@ -1,0 +1,6 @@
+﻿conatus.expert.SpectralError
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: SpectralError

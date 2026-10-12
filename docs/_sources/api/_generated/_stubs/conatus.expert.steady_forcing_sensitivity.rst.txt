@@ -1,0 +1,6 @@
+﻿conatus.expert.steady\_forcing\_sensitivity
+===========================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: steady_forcing_sensitivity

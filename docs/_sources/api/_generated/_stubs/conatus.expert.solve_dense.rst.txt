@@ -1,0 +1,6 @@
+﻿conatus.expert.solve\_dense
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: solve_dense

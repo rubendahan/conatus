@@ -1,0 +1,6 @@
+﻿conatus.expert.gpu\_available
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: gpu_available

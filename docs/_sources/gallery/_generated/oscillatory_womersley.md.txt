@@ -1,0 +1,45 @@
+# Womersley flow in a plane channel: exact profile (LBVP and IVP) and Floquet stability (Hill)
+
+*Family:* `oscillatory` · *Script:* `examples/oscillatory/womersley.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - profile to 9e-16 (N = 24); RK443 order 2.85, SBDF2 1.95; Floquet ε = 0 = Orszag to 1e-9, O(ε²) deviation
+* - Reference
+  - Womersley 1955; Orszag 1971, JFM 50, Table 3
+```
+
+```text
+1. Oscillating pressure gradient. Lengths in half-widths h, time in 1/omega, velocity in P/omega
+   (P: amplitude of -dp/dx / rho), Womersley number Wo = h sqrt(omega / nu):
+
+       u_t - u_yy / Wo^2 = cos t,        u(-1) = u(1) = 0.
+
+   The periodic solution is u = Re[U(y) e^{it}] with U = -i (1 - cosh(k y) / cosh k), k = sqrt(i) Wo
+   (the plane-channel form of Womersley 1955, J. Physiol. 127, 553-563, eq. for the pipe with
+   replaced by cosh). The harmonic U is an LBVP (i U - U'' / Wo^2 = 1) solved to round-off; the IVP
+   started from the exact state is compared after one period (temporal order of the scheme).
+
+2. Pulsatile Poiseuille flow (Orr–Sommerfeld units: centreline velocity 1, Re = U_c h / nu):
+   U(y, t) = 1 - y^2 + eps Re[W(y) e^{i omega t}], W the same Womersley profile normalized to
+   W(0) = 1. Floquet modes v = e^{mu t} sum_n v_n(y) e^{i n omega t} of
+
+       (d/dt + i alpha U) (v'' - alpha^2 v) - i alpha U'' v - (v'''' - 2 alpha^2 v'' + alpha^4 v) / Re = 0
+
+   come from the general Hill operator (floquet.hill_from_plan) built on the same IR problem as the
+   steady Orr–Sommerfeld EVP. Checks: eps = 0 gives Orszag's eigenvalue (1971, J. Fluid Mech. 50,
+   689-703, Table 3: c = 0.23752649 + 0.00373967 i at Re = 1e4, alpha = 1), and the shift
+   mu(eps) - mu(0) is O(eps^2) (the harmonics +-1 only act at second order). A published Floquet
+   value for this flow (von Kerczek 1982; Pier & Schmid 2017) is not reproduced yet.
+
+Run:  python examples/oscillatory/womersley.py
+```
+
+Run it: `python examples/oscillatory/womersley.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/oscillatory/womersley.py
+:language: python
+:linenos:
+```

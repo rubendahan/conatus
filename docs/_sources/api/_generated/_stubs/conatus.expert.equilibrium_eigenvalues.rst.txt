@@ -1,0 +1,6 @@
+﻿conatus.expert.equilibrium\_eigenvalues
+=======================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: equilibrium_eigenvalues

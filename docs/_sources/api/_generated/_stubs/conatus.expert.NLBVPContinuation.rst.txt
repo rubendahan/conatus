@@ -1,0 +1,8 @@
+﻿conatus.expert.NLBVPContinuation
+================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: NLBVPContinuation
+   :members:
+   :show-inheritance:

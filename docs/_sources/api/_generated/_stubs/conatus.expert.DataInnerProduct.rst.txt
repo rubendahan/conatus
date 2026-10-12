@@ -1,0 +1,8 @@
+﻿conatus.expert.DataInnerProduct
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: DataInnerProduct
+   :members:
+   :show-inheritance:

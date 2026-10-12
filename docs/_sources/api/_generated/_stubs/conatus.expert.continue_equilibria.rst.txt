@@ -1,0 +1,6 @@
+﻿conatus.expert.continue\_equilibria
+===================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: continue_equilibria

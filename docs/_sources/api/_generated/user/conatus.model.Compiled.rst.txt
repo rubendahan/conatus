@@ -1,0 +1,8 @@
+﻿conatus.model.Compiled
+======================
+
+.. currentmodule:: conatus.model
+
+.. autoclass:: Compiled
+   :members:
+   :show-inheritance:

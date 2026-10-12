@@ -1,0 +1,6 @@
+﻿conatus.expert.floquet\_multipliers
+===================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: floquet_multipliers

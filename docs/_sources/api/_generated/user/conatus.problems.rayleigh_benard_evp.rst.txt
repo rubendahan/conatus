@@ -1,0 +1,6 @@
+﻿conatus.problems.rayleigh\_benard\_evp
+======================================
+
+.. currentmodule:: conatus.problems
+
+.. autofunction:: rayleigh_benard_evp

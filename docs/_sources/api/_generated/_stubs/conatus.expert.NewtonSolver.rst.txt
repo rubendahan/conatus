@@ -1,0 +1,8 @@
+﻿conatus.expert.NewtonSolver
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: NewtonSolver
+   :members:
+   :show-inheritance:

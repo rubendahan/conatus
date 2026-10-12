@@ -1,0 +1,8 @@
+﻿conatus.problems.Ready
+======================
+
+.. currentmodule:: conatus.problems
+
+.. autoclass:: Ready
+   :members:
+   :show-inheritance:

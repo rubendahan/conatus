@@ -1,0 +1,6 @@
+﻿conatus.expert.UnderResolvedWarning
+===================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: UnderResolvedWarning

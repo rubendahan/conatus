@@ -1,0 +1,8 @@
+﻿conatus.Pipe
+============
+
+.. currentmodule:: conatus
+
+.. autoclass:: Pipe
+   :members:
+   :show-inheritance:

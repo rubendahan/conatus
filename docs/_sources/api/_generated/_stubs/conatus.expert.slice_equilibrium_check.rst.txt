@@ -1,0 +1,6 @@
+﻿conatus.expert.slice\_equilibrium\_check
+========================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: slice_equilibrium_check

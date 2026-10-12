@@ -1,0 +1,23 @@
+# Wavemaker and base-flow sensitivity of Orszag's Tollmien-Schlichting mode (plane Poiseuille, Re = 1e4, alpha = 1), then the steady-forcing sensitivity
+
+*Family:* `shear` · *Script:* `examples/shear/sensitivity_wavemaker.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - wavemaker maximum S = 11.4856 at y = ±0.87387 (critical layer U = c_r); derivative of the pencil = Richardson finite difference to 5e-11; density (continuous adjoint) → pencil to 2e-12 (N = 80)
+* - Reference
+  - no exact published value in a channel; closed forms of Chomaz (2005) for Ginzburg–Landau (`tests/sensitivity`)
+```
+
+```text
+Run: python examples/shear/sensitivity_wavemaker.py   (about 10 s of CPU; figure in $CN_OUT or .)
+```
+
+Run it: `python examples/shear/sensitivity_wavemaker.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/shear/sensitivity_wavemaker.py
+:language: python
+:linenos:
+```

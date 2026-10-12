@@ -1,0 +1,8 @@
+﻿conatus.expert.ComplexFourier
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: ComplexFourier
+   :members:
+   :show-inheritance:

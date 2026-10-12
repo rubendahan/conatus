@@ -1,0 +1,6 @@
+﻿conatus.expert.curl
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: curl

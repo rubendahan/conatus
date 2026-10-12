@@ -1,0 +1,6 @@
+﻿conatus.expert.IllPosedWarning
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: IllPosedWarning

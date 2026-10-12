@@ -1,0 +1,6 @@
+﻿conatus.expert.arnoldi\_gmres
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: arnoldi_gmres

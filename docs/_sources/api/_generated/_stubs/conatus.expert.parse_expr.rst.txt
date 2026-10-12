@@ -1,0 +1,6 @@
+﻿conatus.expert.parse\_expr
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: parse_expr

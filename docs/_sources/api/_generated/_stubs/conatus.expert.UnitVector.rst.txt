@@ -1,0 +1,8 @@
+﻿conatus.expert.UnitVector
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: UnitVector
+   :members:
+   :show-inheritance:

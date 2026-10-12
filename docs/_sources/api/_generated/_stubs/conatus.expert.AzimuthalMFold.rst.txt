@@ -1,0 +1,8 @@
+﻿conatus.expert.AzimuthalMFold
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: AzimuthalMFold
+   :members:
+   :show-inheritance:

@@ -1,0 +1,8 @@
+﻿conatus.expert.S2Coordinates
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: S2Coordinates
+   :members:
+   :show-inheritance:

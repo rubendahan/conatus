@@ -1,0 +1,8 @@
+﻿conatus.model.Linearization
+===========================
+
+.. currentmodule:: conatus.model
+
+.. autoclass:: Linearization
+   :members:
+   :show-inheritance:

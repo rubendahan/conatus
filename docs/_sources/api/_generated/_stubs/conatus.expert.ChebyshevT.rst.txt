@@ -1,0 +1,8 @@
+﻿conatus.expert.ChebyshevT
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: ChebyshevT
+   :members:
+   :show-inheritance:

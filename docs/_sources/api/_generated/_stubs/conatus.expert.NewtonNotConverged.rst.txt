@@ -1,0 +1,6 @@
+﻿conatus.expert.NewtonNotConverged
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: NewtonNotConverged

@@ -1,0 +1,6 @@
+﻿conatus.runs.compare
+====================
+
+.. currentmodule:: conatus.runs
+
+.. autofunction:: compare

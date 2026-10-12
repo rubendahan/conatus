@@ -1,0 +1,8 @@
+﻿conatus.expert.SymmetrySubspace
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: SymmetrySubspace
+   :members:
+   :show-inheritance:

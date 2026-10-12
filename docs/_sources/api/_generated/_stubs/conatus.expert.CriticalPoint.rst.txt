@@ -1,0 +1,8 @@
+﻿conatus.expert.CriticalPoint
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: CriticalPoint
+   :members:
+   :show-inheritance:

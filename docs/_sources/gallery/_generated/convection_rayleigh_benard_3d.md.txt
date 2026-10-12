@@ -1,0 +1,35 @@
+# Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR
+
+*Family:* `convection` · *Script:* `examples/convection/rayleigh_benard_3d.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - Ra = 1707.76178 at
+* - Reference
+  - k
+```
+
+```text
+Layer -1/2 < z < 1/2 between rigid isothermal walls, periodic in x and y (Fourier x Fourier x
+Chebyshev), units of depth and thermal diffusion time:
+
+    div u = 0
+    dt T - lap T = -u . grad T
+    dt u - Pr lap u + grad p - Pr Ra T e_z = -u . grad u
+
+around the conduction state u = 0, T0 = -z. linearize() gives the eigenvalue problem; each
+Fourier group (kx, ky) is one pencil. Onset: Ra_c = 1707.762 at |k| = 3.1163 (Reid & Harris 1958;
+Chandrasekhar 1961, Ch. II, Table III). Isotropy: the growth rate depends on |k| only, so
+(kx, ky) = (K, 0), (0, K) and (K cos 30°, K sin 30°) are all marginal at Ra_c.
+
+Run:  python examples/convection/rayleigh_benard_3d.py
+```
+
+Run it: `python examples/convection/rayleigh_benard_3d.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/convection/rayleigh_benard_3d.py
+:language: python
+:linenos:
+```

@@ -1,0 +1,94 @@
+/* Conatus documentation — site rules on top of Furo, following the brand charter
+   (docs/brand/guidelines.html). Colours, fonts and sizes come from tokens.css (docs/brand/, loaded
+   first); nothing here introduces a new colour.
+   - One vivid colour per view: the rubric (light) — fluorescein is for data, not text.
+   - IM Fell only at 18 px and above; IBM Plex Sans for text; JetBrains Mono for code.
+   - Few radii (2 px), thin rules.
+   Furo marks the chosen theme on <body data-theme>, tokens.css on :root; the dark roles are
+   therefore repeated here for Furo's toggle. */
+body[data-theme="dark"] {
+  --cn-bg: var(--cn-lab); --cn-surface: #161615; --cn-text: var(--cn-silver);
+  --cn-muted: #A3A29D; --cn-rule: #2A2A28; --cn-accent: #D4574A; --cn-signal: var(--cn-dye);
+}
+body[data-theme="light"] {
+  --cn-bg: var(--cn-paper); --cn-surface: #E6E0D3; --cn-text: var(--cn-ink);
+  --cn-muted: #5E5A52; --cn-rule: #CFC7B7; --cn-accent: var(--cn-rubric); --cn-signal: var(--cn-rubric);
+}
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme="light"]) {
+    --cn-bg: var(--cn-lab); --cn-surface: #161615; --cn-text: var(--cn-silver);
+    --cn-muted: #A3A29D; --cn-rule: #2A2A28; --cn-accent: #D4574A; --cn-signal: var(--cn-dye);
+  }
+}
+
+/* Typography: IM Fell for h1–h3 only (all >= 20 px); smaller headings stay in Plex. */
+h1, h2, h3 { font-family: var(--cn-font-display); font-weight: 400; letter-spacing: 0; }
+h1 { font-size: var(--cn-size-h1); line-height: 1.1; }
+h2 { font-size: var(--cn-size-h2); color: var(--cn-accent); }
+h3 { font-size: var(--cn-size-h3); }
+h4, h5, h6 { font-family: var(--cn-font-text); font-weight: 600; }
+.sidebar-brand-text { font-family: var(--cn-font-display); font-size: 1.5rem; font-weight: 400; }
+table.docutils { font-variant-numeric: tabular-nums; }
+table.docutils td, table.docutils th { vertical-align: top; }
+
+/* Geometry: 2 px radii, thin rules */
+.admonition, div.highlight, pre, .sd-card, .sd-card-body, table.docutils, code.literal,
+.sidebar-search, input { border-radius: var(--cn-radius) !important; }
+.admonition { box-shadow: none; border: var(--cn-rule-w) solid var(--cn-rule); }
+.sd-card { background: transparent; border: var(--cn-rule-w) solid var(--cn-rule); box-shadow: none; }
+
+/* Links: text colour stays the rubric set in conf.py; a thin underline */
+article a:not(.headerlink):not(.sd-stretched-link) { text-underline-offset: 0.18em; }
+
+/* Goal / Result blocks (directives propositio / demonstratio in _ext/geometrico.py): a thin rule,
+   a small label, no ornament */
+.admonition.cn-goal, .admonition.cn-result {
+  border: none;
+  border-left: 2px solid var(--color-background-border);
+  background: transparent;
+  box-shadow: none;
+  padding: 0.1rem 0 0.1rem 1rem;
+  margin: 1.2rem 0;
+}
+.admonition.cn-goal > .admonition-title,
+.admonition.cn-result > .admonition-title {
+  background: transparent;
+  font-family: var(--cn-font-text);
+  font-size: var(--cn-size-ui);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-foreground-secondary);
+  padding: 0 0 0.2rem 0;
+  margin: 0;
+}
+.admonition.cn-goal > .admonition-title::before,
+.admonition.cn-result > .admonition-title::before { content: none; }
+.admonition.cn-result > p.cn-ref {
+  font-size: var(--cn-size-ui);
+  color: var(--color-foreground-secondary);
+  margin-top: 0.4rem;
+}
+
+/* Status of executed tutorials: ink for PASS, rubric for FAIL only (one vivid colour) */
+.cn-pass { font-weight: 600; }
+.cn-fail { color: var(--cn-accent); font-weight: 600; }
+.cn-skip { color: var(--cn-muted); font-weight: 600; }
+
+/* Home page */
+.cn-hero { padding: 0.4rem 0 0.8rem 0; border-bottom: var(--cn-rule-w) solid var(--cn-rule);
+           margin-bottom: 1.2rem; }
+.cn-hero .cn-tagline { font-family: var(--cn-font-display); font-style: italic; font-size: 1.25rem;
+                       color: var(--cn-muted); }
+.cn-epigraph { font-family: var(--cn-font-display); font-style: italic; font-size: 1.25rem;
+               margin: 1rem 0 0.2rem 0; }
+.cn-epigraph-source { font-size: var(--cn-size-caption); color: var(--cn-muted); margin-top: 0; }
+
+/* Code: no programming ligatures (critique W1: JetBrains Mono showed ">=" as one glyph, so a
+   reader retyping "python>=3.11" typed the wrong thing). */
+code, pre, kbd, samp, .highlight { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+
+/* Sidebar: the way back to the website and the status line (_templates/sidebar/site.html). */
+.cn-site-link { padding: 0 var(--sidebar-item-spacing-horizontal, 1rem) 0.5rem; font-size: var(--sidebar-item-font-size, 0.9rem); }
+.cn-site-link a { display: inline-block; margin-right: 0.9em; }
+.cn-site-link .cn-status { margin: 0.3rem 0 0; color: var(--color-foreground-secondary); font-size: 0.8rem; }

@@ -1,0 +1,31 @@
+# Phase-space geometry in three steps
+
+*Family:* `manifolds` · *Script:* `examples/manifolds/phase_space_geometry.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - two-mode model: RPO "1" in the slice, T = 3.6415119771, θ = 0.0809697054; Lorenz homoclinic orbit as a connection, r = 13.9265574075
+* - Reference
+  - Budanur, Borrero-Echeverry & Cvitanović (arXiv:1411.3303), Table I: 3.64151221; Sparrow 1982: 13.926
+```
+
+```text
+1. Symmetry reduction: the two-mode SO(2) model of Budanur, Borrero-Echeverry & Cvitanović
+   (arXiv:1411.3303) in the first Fourier mode slice; its relative periodic orbit "1" becomes a
+   periodic orbit of the reduced flow (Table I: T = 3.64151221, θ = 0.08096967, Λ = −1.48372354).
+2. Poincaré section of the slice through the relative equilibrium, located on the declared dense
+   output (DOP853 continuous extension, Brent).
+3. Lorenz: the homoclinic orbit of the origin found as a *connection* (unstable manifold by the
+   parametrization method, projection condition on a sphere around the origin), r ≈ 13.926.
+
+Run: source env/env.sh && python examples/manifolds/phase_space_geometry.py
+```
+
+Run it: `python examples/manifolds/phase_space_geometry.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/manifolds/phase_space_geometry.py
+:language: python
+:linenos:
+```

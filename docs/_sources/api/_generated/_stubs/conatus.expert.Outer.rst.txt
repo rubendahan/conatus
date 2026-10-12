@@ -1,0 +1,8 @@
+﻿conatus.expert.Outer
+====================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Outer
+   :members:
+   :show-inheritance:

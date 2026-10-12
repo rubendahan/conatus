@@ -1,0 +1,6 @@
+﻿conatus.expert.poincare\_crossings
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: poincare_crossings

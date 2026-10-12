@@ -1,0 +1,6 @@
+﻿conatus.expert.rbf
+==================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: rbf

@@ -1,0 +1,34 @@
+# Non-modal stability of plane Poiseuille flow: transient growth and the continuous adjoint
+
+*Family:* `shear` · *Script:* `examples/shear/nonmodal_poiseuille.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - G_max = 4896.948 at t = 379.075 (Re = 5000, kz = 2.044; N = 48–96 identical to 1e-10); continuous vs discrete adjoint
+* - Reference
+  - Butler & Farrell 1992; Reddy & Henningson 1993: 4897 at t = 379
+```
+
+```text
+Base flow U(y) = 1 − y² between no-slip walls y = ±1 (centreline Reynolds number Re). One Fourier
+mode e^{i(kx x + kz z)} of the linearized Navier–Stokes equations in primitive variables:
+
+    dt u = (Δ/Re − i kx U) u − U' v − i kx p,   dt v = ... − ∂y p,   dt w = ... − i kz p,
+    0 = i kx u + ∂y v + i kz w,                 Δ = ∂y² − kx² − kz².
+
+Every norm is the kinetic energy E = ½ ∫ (|u|² + |v|² + |w|²) dy with the exact Chebyshev Gram.
+Butler & Farrell (1992, Phys. Fluids A 4, 1637) and Reddy & Henningson (1993, JFM 252, 209):
+at Re = 5000, (kx, kz) = (0, 2.044), the energy can grow by G_max = 4897 at t = 379 although
+every eigenmode decays. The streaks come from the lift-up coupling −U' v (Squire): non-normality.
+
+Run:  python examples/shear/nonmodal_poiseuille.py
+```
+
+Run it: `python examples/shear/nonmodal_poiseuille.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/shear/nonmodal_poiseuille.py
+:language: python
+:linenos:
+```

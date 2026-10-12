@@ -1,0 +1,6 @@
+﻿conatus.expert.UndeclaredVariableError
+======================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: UndeclaredVariableError

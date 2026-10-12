@@ -1,0 +1,6 @@
+﻿conatus.expert.branch\_switch
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: branch_switch

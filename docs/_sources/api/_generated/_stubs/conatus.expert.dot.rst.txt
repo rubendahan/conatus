@@ -1,0 +1,6 @@
+﻿conatus.expert.dot
+==================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: dot

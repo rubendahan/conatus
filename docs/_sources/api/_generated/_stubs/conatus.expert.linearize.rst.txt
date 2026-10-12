@@ -1,0 +1,6 @@
+﻿conatus.expert.linearize
+========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: linearize

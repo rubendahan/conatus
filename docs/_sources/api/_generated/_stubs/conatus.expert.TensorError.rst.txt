@@ -1,0 +1,6 @@
+﻿conatus.expert.TensorError
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: TensorError

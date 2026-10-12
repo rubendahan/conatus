@@ -1,0 +1,6 @@
+﻿conatus.expert.cos
+==================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: cos

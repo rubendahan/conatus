@@ -1,0 +1,6 @@
+﻿conatus.expert.rk\_tableau
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: rk_tableau

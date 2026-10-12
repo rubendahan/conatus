@@ -1,0 +1,6 @@
+﻿conatus.expert.section\_projector
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: section_projector

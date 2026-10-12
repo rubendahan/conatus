@@ -1,0 +1,6 @@
+﻿conatus.expert.power
+====================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: power

@@ -1,0 +1,6 @@
+﻿conatus.expert.ProblemError
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: ProblemError

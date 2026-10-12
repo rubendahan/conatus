@@ -1,0 +1,26 @@
+# Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients
+
+*Family:* `bifurcation` · *Script:* `examples/bifurcation/weakly_nonlinear.py`
+
+```text
+(a) Swift–Hohenberg, du/dt = r u − (1 + ∂x²)² u − u³ (Swift & Hohenberg 1977). Rolls u = A cos x:
+    the pitchfork normal form on the even subspace gives dA/dt = r A − (3/4) A³, i.e. A² = 4r/3
+    (Cross & Hohenberg 1993, RMP 65, §IV); the envelope equation has τ0 = 1, ξ0² = 4, g0 = 3.
+(b) Rayleigh–Bénard between stress-free isothermal walls (ψ–θ form, thermal-diffusion units,
+    z ∈ (0, 1)), onset Ra_c = 27π⁴/4 at k_c = π/√2 (Rayleigh 1916). The Landau equation and the
+    second-order mean temperature give the heat flux of the rolls: Nu − 1 = 2 (Ra − Ra_c)/Ra_c + ...
+    for every Pr (Malkus & Veronis 1958; the same number follows from the Lorenz 1963 truncation,
+    exact at this order since the O(a²) correction is the sin 2πz mean mode only).
+
+Every coefficient comes from ``normal_form``: symbolic 2nd/3rd Fréchet derivatives of the IR
+right-hand side, bordered solves on the discrete Jacobian. Nothing is derived by hand here.
+
+Run:  python examples/bifurcation/weakly_nonlinear.py
+```
+
+Run it: `python examples/bifurcation/weakly_nonlinear.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/bifurcation/weakly_nonlinear.py
+:language: python
+:linenos:
+```

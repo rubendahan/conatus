@@ -1,0 +1,6 @@
+﻿conatus.expert.diff
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: diff

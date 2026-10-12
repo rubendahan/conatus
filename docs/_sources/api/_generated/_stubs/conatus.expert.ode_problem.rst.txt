@@ -1,0 +1,6 @@
+﻿conatus.expert.ode\_problem
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: ode_problem

@@ -1,0 +1,6 @@
+﻿conatus.expert.compare\_adjoints
+================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: compare_adjoints

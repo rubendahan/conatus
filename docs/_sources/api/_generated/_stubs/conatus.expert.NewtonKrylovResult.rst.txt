@@ -1,0 +1,8 @@
+﻿conatus.expert.NewtonKrylovResult
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: NewtonKrylovResult
+   :members:
+   :show-inheritance:

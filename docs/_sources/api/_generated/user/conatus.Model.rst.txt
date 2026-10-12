@@ -1,0 +1,8 @@
+﻿conatus.Model
+=============
+
+.. currentmodule:: conatus
+
+.. autoclass:: Model
+   :members:
+   :show-inheritance:

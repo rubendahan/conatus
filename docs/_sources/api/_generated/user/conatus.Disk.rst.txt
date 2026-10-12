@@ -1,0 +1,8 @@
+﻿conatus.Disk
+============
+
+.. currentmodule:: conatus
+
+.. autoclass:: Disk
+   :members:
+   :show-inheritance:

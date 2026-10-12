@@ -1,0 +1,6 @@
+﻿conatus.expert.find\_connection
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: find_connection

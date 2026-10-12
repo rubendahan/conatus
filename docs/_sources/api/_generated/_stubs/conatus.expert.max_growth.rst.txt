@@ -1,0 +1,6 @@
+﻿conatus.expert.max\_growth
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: max_growth

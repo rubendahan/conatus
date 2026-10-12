@@ -1,0 +1,8 @@
+﻿conatus.expert.BatchMaps
+========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: BatchMaps
+   :members:
+   :show-inheritance:

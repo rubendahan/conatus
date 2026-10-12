@@ -1,0 +1,6 @@
+﻿conatus.expert.UnsupportedError
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: UnsupportedError

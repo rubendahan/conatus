@@ -1,0 +1,6 @@
+﻿conatus.problems.channel\_evp
+=============================
+
+.. currentmodule:: conatus.problems
+
+.. autofunction:: channel_evp

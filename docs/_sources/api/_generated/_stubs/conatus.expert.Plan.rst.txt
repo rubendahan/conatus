@@ -1,0 +1,8 @@
+﻿conatus.expert.Plan
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Plan
+   :members:
+   :show-inheritance:

@@ -1,0 +1,6 @@
+﻿conatus.expert.verify
+=====================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: verify

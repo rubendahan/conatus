@@ -1,0 +1,6 @@
+﻿conatus.expert.MissingFileError
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: MissingFileError

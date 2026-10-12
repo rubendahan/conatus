@@ -1,0 +1,6 @@
+﻿conatus.expert.NonlinearLHSError
+================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: NonlinearLHSError

@@ -1,0 +1,6 @@
+﻿conatus.expert.discretize
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: discretize

@@ -1,0 +1,6 @@
+﻿conatus.expert.ADJOINT\_KINDS
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: ADJOINT_KINDS

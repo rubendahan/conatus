@@ -1,0 +1,6 @@
+﻿conatus.expert.STAT\_KINDS
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: STAT_KINDS

@@ -1,0 +1,6 @@
+﻿conatus.expert.numerical\_abscissa
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: numerical_abscissa

@@ -1,0 +1,6 @@
+﻿conatus.expert.check\_controls
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: check_controls

@@ -1,0 +1,8 @@
+﻿conatus.expert.BatchedSystem
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: BatchedSystem
+   :members:
+   :show-inheritance:

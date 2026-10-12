@@ -1,0 +1,36 @@
+# Kelvin–Helmholtz instability of the tanh mixing layer (Michalke 1964), inviscid and viscous
+
+*Family:* `shear` · *Script:* `examples/shear/kelvin_helmholtz.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - max ω_i = 0.189702 at α = 0.44492 (L = 20, N = 384); viscous → inviscid in O(1/Re)
+* - Reference
+  - Michalke 1964, JFM 19, Table 1: 0.1897 at α = 0.4446
+```
+
+```text
+Base flow U(y) = tanh(y) (lengths in units of the half-thickness, velocities in units of the
+half velocity difference). A normal mode v(y) exp(i alpha (x - c t)) of the cross-stream velocity
+obeys the Rayleigh equation (inviscid) or the Orr–Sommerfeld equation (viscous):
+
+    (U - c)(v'' - alpha^2 v) - U'' v = (1 / (i alpha Re)) (v'''' - 2 alpha^2 v'' + alpha^4 v)
+
+with the temporal growth rate omega_i = alpha Im(c). Michalke (1964, J. Fluid Mech. 19, 543-556,
+Table 1 / Fig. 3) finds the maximum omega_i = 0.1897 at alpha = 0.4446 (c_r = 0 by symmetry).
+
+The unbounded layer is truncated to y in [-L, L] with v = 0 (and v' = 0 when viscous) at y = +-L.
+The eigenfunction decays like exp(-alpha |y|), so the truncation error is ~exp(-2 alpha L); both
+L and N are explicit and their convergence is printed.
+
+Run:  python examples/shear/kelvin_helmholtz.py
+```
+
+Run it: `python examples/shear/kelvin_helmholtz.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/shear/kelvin_helmholtz.py
+:language: python
+:linenos:
+```

@@ -1,0 +1,6 @@
+﻿conatus.expert.AmbiguousNameError
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: AmbiguousNameError

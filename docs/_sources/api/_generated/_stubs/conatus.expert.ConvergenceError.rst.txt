@@ -1,0 +1,6 @@
+﻿conatus.expert.ConvergenceError
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: ConvergenceError

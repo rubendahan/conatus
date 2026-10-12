@@ -1,0 +1,6 @@
+﻿conatus.problems.swift\_hohenberg
+=================================
+
+.. currentmodule:: conatus.problems
+
+.. autofunction:: swift_hohenberg

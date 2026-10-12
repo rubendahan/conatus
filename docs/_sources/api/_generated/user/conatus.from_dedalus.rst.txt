@@ -1,0 +1,6 @@
+﻿conatus.from\_dedalus
+=====================
+
+.. currentmodule:: conatus
+
+.. autofunction:: from_dedalus

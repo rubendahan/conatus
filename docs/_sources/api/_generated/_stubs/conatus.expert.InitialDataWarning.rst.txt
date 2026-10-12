@@ -1,0 +1,6 @@
+﻿conatus.expert.InitialDataWarning
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: InitialDataWarning

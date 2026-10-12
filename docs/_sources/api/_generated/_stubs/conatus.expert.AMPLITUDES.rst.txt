@@ -1,0 +1,6 @@
+﻿conatus.expert.AMPLITUDES
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: AMPLITUDES

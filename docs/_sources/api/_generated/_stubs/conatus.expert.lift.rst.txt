@@ -1,0 +1,6 @@
+﻿conatus.expert.lift
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: lift

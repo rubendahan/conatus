@@ -1,0 +1,6 @@
+﻿conatus.expert.RankError
+========================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: RankError

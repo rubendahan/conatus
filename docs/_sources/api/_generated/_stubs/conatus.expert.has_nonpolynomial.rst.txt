@@ -1,0 +1,6 @@
+﻿conatus.expert.has\_nonpolynomial
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: has_nonpolynomial

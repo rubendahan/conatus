@@ -1,0 +1,6 @@
+﻿conatus.expert.energy\_growth
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: energy_growth

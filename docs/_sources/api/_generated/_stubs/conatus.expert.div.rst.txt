@@ -1,0 +1,6 @@
+﻿conatus.expert.div
+==================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: div

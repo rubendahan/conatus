@@ -1,0 +1,6 @@
+﻿conatus.expert.unit\_vector
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: unit_vector

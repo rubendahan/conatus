@@ -1,0 +1,6 @@
+﻿conatus.expert.sin
+==================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: sin

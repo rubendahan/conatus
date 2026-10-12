@@ -1,0 +1,6 @@
+﻿conatus.expert.gpu\_report
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: gpu_report

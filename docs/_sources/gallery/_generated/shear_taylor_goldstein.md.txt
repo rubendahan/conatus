@@ -1,0 +1,54 @@
+# Stratified Kelvin–Helmholtz: Taylor–Goldstein equation for the tanh/tanh layer (Hazel 1972)
+
+*Family:* `shear` · *Script:* `examples/shear/taylor_goldstein.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - whole line (tanh map, L = 2/α) + shifted complex path: **J_n(1/2) = 1/4 to 2.5e-12** (N = 192) and J_n(0.3) = 0.21 to 3.8e-9 by Newton on c_i(J) = 0, without extrapolation, independent of L and δ; J = 0.3: every mode damped
+* - Reference
+  - Hazel 1972, JFM 51 (R = 1); Miles 1961 / Howard 1961: J_c = 1/4
+```
+
+```text
+Base state (half-thickness and half velocity difference as units): U(y) = tanh(y) and buoyancy
+frequency N^2(y) = J sech^2(y) (density profile tanh(y), same thickness as the shear layer: Hazel's
+R = 1). The local Richardson number Ri(y) = N^2 / U'^2 = J cosh^2(y) is smallest at the centre, so J
+is the minimum Richardson number. Linearized inviscid Boussinesq equations for a normal mode
+exp(i alpha (x - c t)), written for the cross-stream velocity v and the buoyancy b:
+
+    (U - c)(v'' - alpha^2 v) - U'' v - i alpha b = 0        (vorticity)
+    i alpha (U - c) b + N^2 v                  = 0        (buoyancy: b_t + U b_x + N^2 v = 0)
+
+Eliminating b gives the Taylor–Goldstein equation (U - c)(v'' - a^2 v) - U'' v + N^2 v / (U - c) = 0;
+the pair above keeps the eigenvalue c linear. Miles (1961) and Howard (1961): no instability when
+Ri >= 1/4 everywhere. For R = 1 the neutral curve is J = alpha (1 - alpha) (Hazel 1972, J. Fluid
+Mech. 51, 39-61, R = 1 case; also Drazin & Reid 2004, section 44), whose maximum J = 1/4 at
+alpha = 1/2 makes the Miles–Howard bound sharp.
+
+Numerics (the whole line, no truncation, no extrapolation):
+- y in (-inf, inf) through the tanh map y = L artanh(xi) (MappedChebyshev, ir/maps.py): the metric
+  dxi/dy = (1 - xi^2)/L is a polynomial, so the operators stay banded. The far field e^{-alpha|y|}
+  becomes (1 -+ xi)^{alpha L / 2}; L = 2 / alpha makes it analytic (declared choice; convergence in
+  L is shown by the study).
+- Near neutrality c_i -> 0 and the critical layer U = c reaches the real axis: on the real line the
+  mode becomes singular and the discretized continuous spectrum (U(y) = c) mixes with it.
+  The path is therefore shifted into the complex plane, y(xi) - i delta (``contour``):
+  the unstable mode's critical point atanh(c) lies above the path, so its eigenvalue is unchanged
+  (Cauchy), while the continuous spectrum moves below the real axis. The mode is then followed
+  analytically *through* c_i = 0 and the neutral J is a root of c_i(J), found by Newton
+  (critical()), converged in N, in L and in delta: no extrapolation.
+- Admissible modes (declared select): Howard's semicircle |c| <= 1, and |c_r| < 1/2 to stay away from
+  the ends U = +-1 of the continuous spectrum.
+
+Run:  python examples/shear/taylor_goldstein.py            (quick, ~1 min)
+      python examples/shear/taylor_goldstein.py --study    (N up to 192, L and delta: via Slurm)
+```
+
+Run it: `python examples/shear/taylor_goldstein.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/shear/taylor_goldstein.py
+:language: python
+:linenos:
+```

@@ -1,0 +1,6 @@
+﻿conatus.expert.feedback\_system
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: feedback_system

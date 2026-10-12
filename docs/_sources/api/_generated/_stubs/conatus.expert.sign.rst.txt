@@ -1,0 +1,6 @@
+﻿conatus.expert.sign
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: sign

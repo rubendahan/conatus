@@ -1,0 +1,6 @@
+﻿conatus.expert.TWO\_MODE\_PARAMETERS
+====================================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: TWO_MODE_PARAMETERS

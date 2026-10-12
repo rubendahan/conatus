@@ -1,0 +1,36 @@
+# Turing instability of the Brusselator (Prigogine & Lefever 1968)
+
+*Family:* `patterns` · *Script:* `examples/patterns/brusselator.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - b_c to ≤ 9e-16 relative (3 sets)
+* - Reference
+  - Prigogine & Lefever 1968; Peña & Pérez-García 2001, PRE 64
+```
+
+```text
+dt u = Du dx^2 u + a - (b + 1) u + u^2 v
+    dt v = Dv dx^2 v + b u - u^2 v
+
+The uniform state (u, v) = (a, b/a) loses stability to a stationary pattern of wavenumber k_c at
+
+    b_c = (1 + a eta)^2,   k_c^2 = a / sqrt(Du Dv),   eta = sqrt(Du / Dv)
+
+(Peña & Pérez-García 2001, Phys. Rev. E 64, 056213, Sec. II), provided b_c < 1 + a^2 (the Hopf
+threshold of the k = 0 mode), i.e. Dv / Du large enough. The nonlinear IVP is written as in the
+article and linearized by the IR around the uniform state; a perturbation exp(i k x + sigma t)
+lives in one Fourier group (2x2 pencil). b enters linearly: the parametric pencil gives the neutral
+b(k) by Newton on Re(sigma), minimized over k (the domain length 2 pi / k is rebuilt per k).
+
+Run:  python examples/patterns/brusselator.py
+```
+
+Run it: `python examples/patterns/brusselator.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/patterns/brusselator.py
+:language: python
+:linenos:
+```

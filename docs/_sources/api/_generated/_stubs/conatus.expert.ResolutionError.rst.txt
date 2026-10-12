@@ -1,0 +1,6 @@
+﻿conatus.expert.ResolutionError
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: ResolutionError

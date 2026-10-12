@@ -1,0 +1,6 @@
+﻿conatus.expert.symmetry\_breaking\_check
+========================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: symmetry_breaking_check

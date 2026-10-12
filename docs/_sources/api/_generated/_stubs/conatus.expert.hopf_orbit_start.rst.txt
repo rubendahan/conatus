@@ -1,0 +1,6 @@
+﻿conatus.expert.hopf\_orbit\_start
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: hopf_orbit_start

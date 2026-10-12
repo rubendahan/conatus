@@ -1,0 +1,6 @@
+﻿conatus.expert.proportion\_ci
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: proportion_ci

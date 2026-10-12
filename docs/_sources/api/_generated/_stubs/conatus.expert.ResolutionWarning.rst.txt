@@ -1,0 +1,6 @@
+﻿conatus.expert.ResolutionWarning
+================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: ResolutionWarning

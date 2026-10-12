@@ -1,0 +1,6 @@
+﻿conatus.expert.CoordinateError
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: CoordinateError

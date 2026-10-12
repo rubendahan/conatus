@@ -1,0 +1,6 @@
+﻿conatus.expert.hill\_from\_plan
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: hill_from_plan

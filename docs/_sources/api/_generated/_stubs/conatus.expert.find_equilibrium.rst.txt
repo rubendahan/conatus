@@ -1,0 +1,6 @@
+﻿conatus.expert.find\_equilibrium
+================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: find_equilibrium

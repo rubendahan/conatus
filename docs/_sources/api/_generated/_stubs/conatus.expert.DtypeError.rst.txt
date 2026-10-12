@@ -1,0 +1,6 @@
+﻿conatus.expert.DtypeError
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: DtypeError

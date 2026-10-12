@@ -1,0 +1,6 @@
+﻿conatus.expert.gain
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: gain

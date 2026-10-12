@@ -1,0 +1,6 @@
+﻿conatus.expert.SBDF\_SCHEMES
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: SBDF_SCHEMES

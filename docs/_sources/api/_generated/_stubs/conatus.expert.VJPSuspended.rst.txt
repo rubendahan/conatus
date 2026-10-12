@@ -1,0 +1,6 @@
+﻿conatus.expert.VJPSuspended
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: VJPSuspended

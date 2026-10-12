@@ -1,0 +1,8 @@
+﻿conatus.expert.TanMap
+=====================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: TanMap
+   :members:
+   :show-inheritance:

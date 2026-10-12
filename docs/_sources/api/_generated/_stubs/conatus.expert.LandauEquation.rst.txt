@@ -1,0 +1,8 @@
+﻿conatus.expert.LandauEquation
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: LandauEquation
+   :members:
+   :show-inheritance:

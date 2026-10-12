@@ -1,0 +1,6 @@
+﻿conatus.expert.NumericalError
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: NumericalError

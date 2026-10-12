@@ -1,0 +1,6 @@
+﻿conatus.expert.lyapunov\_spectrum
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: lyapunov_spectrum

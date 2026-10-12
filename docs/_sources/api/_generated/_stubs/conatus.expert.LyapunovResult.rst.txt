@@ -1,0 +1,8 @@
+﻿conatus.expert.LyapunovResult
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: LyapunovResult
+   :members:
+   :show-inheritance:

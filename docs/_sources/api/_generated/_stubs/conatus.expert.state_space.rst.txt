@@ -1,0 +1,6 @@
+﻿conatus.expert.state\_space
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: state_space

@@ -1,0 +1,6 @@
+﻿conatus.expert.ir\_system
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: ir_system

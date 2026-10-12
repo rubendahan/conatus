@@ -1,0 +1,8 @@
+﻿conatus.expert.FlowMap
+======================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: FlowMap
+   :members:
+   :show-inheritance:

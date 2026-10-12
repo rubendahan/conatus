@@ -1,0 +1,6 @@
+﻿conatus.expert.monomials
+========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: monomials

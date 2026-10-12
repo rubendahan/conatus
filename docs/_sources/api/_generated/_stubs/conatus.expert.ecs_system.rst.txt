@@ -1,0 +1,6 @@
+﻿conatus.expert.ecs\_system
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: ecs_system

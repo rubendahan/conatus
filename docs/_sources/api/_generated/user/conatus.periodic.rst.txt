@@ -1,0 +1,6 @@
+﻿conatus.periodic
+================
+
+.. currentmodule:: conatus
+
+.. autofunction:: periodic

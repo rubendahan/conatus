@@ -1,0 +1,6 @@
+﻿conatus.expert.shell\_floquet
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: shell_floquet

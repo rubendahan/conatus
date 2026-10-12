@@ -1,0 +1,8 @@
+﻿conatus.expert.KSDomainContinuation
+===================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: KSDomainContinuation
+   :members:
+   :show-inheritance:

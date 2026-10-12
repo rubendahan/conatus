@@ -1,0 +1,6 @@
+﻿conatus.expert.restrict\_system
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: restrict_system

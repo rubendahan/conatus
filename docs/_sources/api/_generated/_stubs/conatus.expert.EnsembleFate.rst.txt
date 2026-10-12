@@ -1,0 +1,8 @@
+﻿conatus.expert.EnsembleFate
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: EnsembleFate
+   :members:
+   :show-inheritance:

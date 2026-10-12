@@ -1,0 +1,8 @@
+﻿conatus.expert.ForcingSensitivity
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: ForcingSensitivity
+   :members:
+   :show-inheritance:

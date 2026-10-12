@@ -1,0 +1,6 @@
+﻿conatus.expert.CorrectnessWarning
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: CorrectnessWarning

@@ -1,0 +1,6 @@
+﻿conatus.expert.ensemble\_fate
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: ensemble_fate

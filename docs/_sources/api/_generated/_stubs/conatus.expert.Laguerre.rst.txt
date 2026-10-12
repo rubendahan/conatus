@@ -1,0 +1,8 @@
+﻿conatus.expert.Laguerre
+=======================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Laguerre
+   :members:
+   :show-inheritance:

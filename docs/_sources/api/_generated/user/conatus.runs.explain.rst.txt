@@ -1,0 +1,6 @@
+﻿conatus.runs.explain
+====================
+
+.. currentmodule:: conatus.runs
+
+.. autofunction:: explain

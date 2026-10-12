@@ -1,0 +1,6 @@
+﻿conatus.expert.structural\_sensitivity
+======================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: structural_sensitivity

@@ -1,0 +1,8 @@
+﻿conatus.expert.BranchPoint
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: BranchPoint
+   :members:
+   :show-inheritance:

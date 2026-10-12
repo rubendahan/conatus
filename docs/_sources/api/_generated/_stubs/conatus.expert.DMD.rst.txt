@@ -1,0 +1,8 @@
+﻿conatus.expert.DMD
+==================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: DMD
+   :members:
+   :show-inheritance:

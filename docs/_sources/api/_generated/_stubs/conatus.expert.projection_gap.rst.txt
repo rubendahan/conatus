@@ -1,0 +1,6 @@
+﻿conatus.expert.projection\_gap
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: projection_gap

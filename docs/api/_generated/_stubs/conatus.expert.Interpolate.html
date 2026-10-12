@@ -1,0 +1,983 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html"><link rel="next" title="conatus.expert.Lift" href="conatus.expert.Lift.html"><link rel="prev" title="conatus.expert.Integrate" href="conatus.expert.Integrate.html">
+        <link rel="prefetch" href="../../../_static/logo.svg" as="image">
+        <link rel="prefetch" href="../../../_static/logo-dark.svg" as="image">
+
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>conatus.expert.Interpolate - Conatus</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/vendor/fonts/fonts.css?v=d20fc551" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tokens.css?v=6baad13e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=0b37a13f" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  --color-brand-primary: #A8281E;
+  --color-brand-content: #A8281E;
+  --color-background-primary: #EFEAE0;
+  --color-background-secondary: #E6E0D3;
+  --color-background-border: #CFC7B7;
+  --color-foreground-primary: #151310;
+  --color-foreground-secondary: #5E5A52;
+  --color-code-background: #E6E0D3;
+  --font-stack: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-stack--monospace: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-stack--headings: 'IM Fell English', 'IM Fell DW Pica', Georgia, serif;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #D4574A;
+  --color-brand-content: #D4574A;
+  --color-background-primary: #0B0B0B;
+  --color-background-secondary: #161615;
+  --color-background-border: #2A2A28;
+  --color-foreground-primary: #EDEBE6;
+  --color-foreground-secondary: #A3A29D;
+  --color-code-background: #161615;
+  --font-stack: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-stack--monospace: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-stack--headings: 'IM Fell English', 'IM Fell DW Pica', Georgia, serif;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #D4574A;
+  --color-brand-content: #D4574A;
+  --color-background-primary: #0B0B0B;
+  --color-background-secondary: #161615;
+  --color-background-border: #2A2A28;
+  --color-foreground-primary: #EDEBE6;
+  --color-foreground-secondary: #A3A29D;
+  --color-code-background: #161615;
+  --font-stack: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-stack--monospace: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-stack--headings: 'IM Fell English', 'IM Fell DW Pica', Georgia, serif;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">Conatus</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Conatus</span>
+  
+</a><div class="cn-site-link">
+  <a href="../../../../">&larr; Conatus website</a>
+  <a href="../../../tutorials/index.html">Tutorials</a>
+  <p class="cn-status">v0.1 preview &middot; private repository (source on request)</p>
+</div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Using Conatus</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../guide/index.html">User guide</a><input aria-label="Toggle navigation of User guide" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/geometries.html">Geometries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/shells.html">Spherical shells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/mapped.html">Channels between two surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/equations.html">Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/boundary_conditions.html">Boundary conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/problems.html">Ready problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/units.html">Units and conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/timesteppers.html">Simulations and time steppers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/gpu.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/diagnostics.html">Diagnostics and visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/particles.html">Particles and dye of a simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/io.html">Input and output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/notebook.html">Notebooks</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../guide/dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/eigenvalues.html">Eigenvalues and stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/onset.html">Onset of convection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/nonmodal.html">Non-modal analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/invariant_solutions.html">Invariant solutions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/continuation.html">Continuation and bifurcations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/floquet.html">Floquet analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/chaos.html">Chaos and ensembles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/manifolds.html">Invariant manifolds and slices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/symmetry.html">Symmetry subspaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/adjoint.html">Adjoints and sensitivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/optimal_perturbations.html">Tangent, adjoint and optimal perturbations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/data.html">Data-driven analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/explain.html">explain() and the Methods paragraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/uncertainty.html">Numerical uncertainty</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/runs.html">The run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/reproducibility.html">Reproducibility and provenance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/doctor.html">Checking an installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/errors.html">Errors and what they mean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/expert.html">The expert layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/operators.html">IR and operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/bases.html">Bases and domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/taus.html">Tau terms by hand</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../gallery/index.html">Gallery: fluids everywhere</a><input aria-label="Toggle navigation of Gallery: fluids everywhere" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_salt_fingers.html">Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines &amp; Gill 1969, J. Fluid Mech. 37, 289-306)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/manifolds_phase_space_geometry.html">Phase-space geometry in three steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/oscillatory_womersley.html">Womersley flow in a plane channel: exact profile (LBVP and IVP) and Floquet stability (Hill)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/patterns_brusselator.html">Turing instability of the Brusselator (Prigogine &amp; Lefever 1968)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/patterns_ginzburg_landau.html">Complex Ginzburg–Landau equation: Benjamin–Feir–Newell and Eckhaus instabilities of plane waves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/patterns_swift_hohenberg.html">Swift–Hohenberg: onset of rolls, weakly nonlinear amplitude, roll branch by continuation, 2D rolls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/shear_kelvin_helmholtz.html">Kelvin–Helmholtz instability of the tanh mixing layer (Michalke 1964), inviscid and viscous</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/shear_nonmodal_poiseuille.html">Non-modal stability of plane Poiseuille flow: transient growth and the continuous adjoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/shear_sensitivity_wavemaker.html">Wavemaker and base-flow sensitivity of Orszag’s Tollmien-Schlichting mode (plane Poiseuille, Re = 1e4, alpha = 1), then the steady-forcing sensitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/shear_taylor_goldstein.html">Stratified Kelvin–Helmholtz: Taylor–Goldstein equation for the tanh/tanh layer (Hazel 1972)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../index.html">API reference</a><input aria-label="Toggle navigation of API reference" checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../user.html">User layer: <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">conatus</span> <span class="pre">as</span> <span class="pre">cn</span></code></a><input aria-label="Toggle navigation of User layer: import conatus as cn" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.Box.html">conatus.Box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.Channel.html">conatus.Channel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.Disk.html">conatus.Disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.Annulus.html">conatus.Annulus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.Pipe.html">conatus.Pipe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.Sphere.html">conatus.Sphere</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.Ball.html">conatus.Ball</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.Shell.html">conatus.Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.periodic.html">conatus.periodic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.walls.html">conatus.walls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.Model.html">conatus.Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.model.Simulation.html">conatus.model.Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.model.Linearization.html">conatus.model.Linearization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.model.Compiled.html">conatus.model.Compiled</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.channel.html">conatus.problems.channel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.channel_evp.html">conatus.problems.channel_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.plane_couette.html">conatus.problems.plane_couette</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.plane_couette_evp.html">conatus.problems.plane_couette_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.rayleigh_benard.html">conatus.problems.rayleigh_benard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.rayleigh_benard_evp.html">conatus.problems.rayleigh_benard_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.taylor_couette.html">conatus.problems.taylor_couette</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.taylor_couette_evp.html">conatus.problems.taylor_couette_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.pipe.html">conatus.problems.pipe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.pipe_evp.html">conatus.problems.pipe_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.kuramoto_sivashinsky.html">conatus.problems.kuramoto_sivashinsky</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.kolmogorov.html">conatus.problems.kolmogorov</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.swift_hohenberg.html">conatus.problems.swift_hohenberg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.rotating_shell_convection.html">conatus.problems.rotating_shell_convection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.rotating_shell_convection_evp.html">conatus.problems.rotating_shell_convection_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.problems.Ready.html">conatus.problems.Ready</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.track.html">conatus.runs.track</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.record.html">conatus.runs.record</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.find.html">conatus.runs.find</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.get.html">conatus.runs.get</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.compare.html">conatus.runs.compare</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.lineage.html">conatus.runs.lineage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.reproduce.html">conatus.runs.reproduce</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.to_dataframe.html">conatus.runs.to_dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.export.html">conatus.runs.export</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.explain.html">conatus.runs.explain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.Run.html">conatus.runs.Run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.RunList.html">conatus.runs.RunList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.runs.Registry.html">conatus.runs.Registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.doctor.html">conatus.doctor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.from_dedalus.html">conatus.from_dedalus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.parse_equation.html">conatus.parse_equation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user/conatus.parse_expr.html">conatus.parse_expr</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../../expert.html">Expert layer: <code class="docutils literal notranslate"><span class="pre">conatus.expert</span></code></a><input aria-label="Toggle navigation of Expert layer: conatus.expert" checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../reference.html">Expert layer by module</a><input aria-label="Toggle navigation of Expert layer by module" checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Check.html">conatus.expert.Check</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.VerificationReport.html">conatus.expert.VerificationReport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.verify.html">conatus.expert.verify</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Coordinate.html">conatus.expert.Coordinate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CoordinateSystem.html">conatus.expert.CoordinateSystem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CartesianCoordinates.html">conatus.expert.CartesianCoordinates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PolarCoordinates.html">conatus.expert.PolarCoordinates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CylindricalCoordinates.html">conatus.expert.CylindricalCoordinates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.S2Coordinates.html">conatus.expert.S2Coordinates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SphericalCoordinates.html">conatus.expert.SphericalCoordinates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Basis.html">conatus.expert.Basis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.RealFourier.html">conatus.expert.RealFourier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ComplexFourier.html">conatus.expert.ComplexFourier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Jacobi.html">conatus.expert.Jacobi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Chebyshev.html">conatus.expert.Chebyshev</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ChebyshevT.html">conatus.expert.ChebyshevT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ChebyshevU.html">conatus.expert.ChebyshevU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ChebyshevV.html">conatus.expert.ChebyshevV</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Legendre.html">conatus.expert.Legendre</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Ultraspherical.html">conatus.expert.Ultraspherical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.DiskBasis.html">conatus.expert.DiskBasis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.AnnulusBasis.html">conatus.expert.AnnulusBasis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SphereBasis.html">conatus.expert.SphereBasis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ShellBasis.html">conatus.expert.ShellBasis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.BallBasis.html">conatus.expert.BallBasis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Hermite.html">conatus.expert.Hermite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Laguerre.html">conatus.expert.Laguerre</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CompoundChebyshev.html">conatus.expert.CompoundChebyshev</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Domain.html">conatus.expert.Domain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Expr.html">conatus.expert.Expr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Field.html">conatus.expert.Field</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.VectorField.html">conatus.expert.VectorField</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.TensorField.html">conatus.expert.TensorField</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Parameter.html">conatus.expert.Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Constant.html">conatus.expert.Constant</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Zero.html">conatus.expert.Zero</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.UnitVector.html">conatus.expert.UnitVector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Add.html">conatus.expert.Add</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Mul.html">conatus.expert.Mul</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Dot.html">conatus.expert.Dot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Cross.html">conatus.expert.Cross</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Outer.html">conatus.expert.Outer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Power.html">conatus.expert.Power</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Conj.html">conatus.expert.Conj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Component.html">conatus.expert.Component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Differentiate.html">conatus.expert.Differentiate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Gradient.html">conatus.expert.Gradient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Divergence.html">conatus.expert.Divergence</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Laplacian.html">conatus.expert.Laplacian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Curl.html">conatus.expert.Curl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.TimeDerivative.html">conatus.expert.TimeDerivative</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Integrate.html">conatus.expert.Integrate</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">conatus.expert.Interpolate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Lift.html">conatus.expert.Lift</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.TransposeResult.html">conatus.expert.TransposeResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.as_expr.html">conatus.expert.as_expr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.add.html">conatus.expert.add</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.mul.html">conatus.expert.mul</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.neg.html">conatus.expert.neg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.dot.html">conatus.expert.dot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.cross.html">conatus.expert.cross</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.outer.html">conatus.expert.outer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.power.html">conatus.expert.power</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.conj.html">conatus.expert.conj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.comp.html">conatus.expert.comp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.diff.html">conatus.expert.diff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.grad.html">conatus.expert.grad</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.div.html">conatus.expert.div</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.lap.html">conatus.expert.lap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.curl.html">conatus.expert.curl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.dt.html">conatus.expert.dt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.integ.html">conatus.expert.integ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.interp.html">conatus.expert.interp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.lift.html">conatus.expert.lift</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.pair.html">conatus.expert.pair</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.unit_vector.html">conatus.expert.unit_vector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.UnaryFunction.html">conatus.expert.UnaryFunction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.exp.html">conatus.expert.exp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.log.html">conatus.expert.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.sin.html">conatus.expert.sin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.cos.html">conatus.expert.cos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.tanh.html">conatus.expert.tanh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.sqrt.html">conatus.expert.sqrt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.absolute.html">conatus.expert.absolute</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.sign.html">conatus.expert.sign</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.pointwise.html">conatus.expert.pointwise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.has_nonpolynomial.html">conatus.expert.has_nonpolynomial</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Equation.html">conatus.expert.Equation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Problem.html">conatus.expert.Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.IVP.html">conatus.expert.IVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.LBVP.html">conatus.expert.LBVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EVP.html">conatus.expert.EVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NLBVP.html">conatus.expert.NLBVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NonlinearLHSError.html">conatus.expert.NonlinearLHSError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ProblemError.html">conatus.expert.ProblemError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.RankReport.html">conatus.expert.RankReport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Parity.html">conatus.expert.Parity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EVEN.html">conatus.expert.EVEN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ODD.html">conatus.expert.ODD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Reflection.html">conatus.expert.Reflection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SymmetrySubspace.html">conatus.expert.SymmetrySubspace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SymmetryError.html">conatus.expert.SymmetryError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SymmetryBreakingError.html">conatus.expert.SymmetryBreakingError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Translation.html">conatus.expert.Translation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SO2.html">conatus.expert.SO2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ShiftReflect.html">conatus.expert.ShiftReflect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.AzimuthalMFold.html">conatus.expert.AzimuthalMFold</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EquatorialParity.html">conatus.expert.EquatorialParity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CoordinateMap.html">conatus.expert.CoordinateMap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.MappedChebyshev.html">conatus.expert.MappedChebyshev</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.RationalMap.html">conatus.expert.RationalMap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.TanhMap.html">conatus.expert.TanhMap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.TanMap.html">conatus.expert.TanMap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.parse_equation.html">conatus.expert.parse_equation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.parse_expr.html">conatus.expert.parse_expr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ChannelBaseFlow.html">conatus.expert.ChannelBaseFlow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.channel.html">conatus.expert.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PROFILES.html">conatus.expert.PROFILES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Scale.html">conatus.expert.Scale</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Group.html">conatus.expert.Group</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.UnitSystem.html">conatus.expert.UnitSystem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.QUANTITY_DIMENSIONS.html">conatus.expert.QUANTITY_DIMENSIONS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.convert.html">conatus.expert.convert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Energy.html">conatus.expert.Energy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ENERGY_CONVENTIONS.html">conatus.expert.ENERGY_CONVENTIONS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ChannelUnits.html">conatus.expert.ChannelUnits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.DiscretizationError.html">conatus.expert.DiscretizationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.GroupMatrices.html">conatus.expert.GroupMatrices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.GroupRank.html">conatus.expert.GroupRank</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.LBVPSolution.html">conatus.expert.LBVPSolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Plan.html">conatus.expert.Plan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.RankError.html">conatus.expert.RankError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.discretize.html">conatus.expert.discretize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.FieldData.html">conatus.expert.FieldData</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ReferenceEvaluator.html">conatus.expert.ReferenceEvaluator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.evaluate.html">conatus.expert.evaluate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.grid.html">conatus.expert.grid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EVPResult.html">conatus.expert.EVPResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.biorthogonality.html">conatus.expert.biorthogonality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.drift_filter.html">conatus.expert.drift_filter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.matrix_derivative.html">conatus.expert.matrix_derivative</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.solve_dense.html">conatus.expert.solve_dense</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.solve_sparse.html">conatus.expert.solve_sparse</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.eigenvalues.html">conatus.expert.eigenvalues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ParametricEVP.html">conatus.expert.ParametricEVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.TrackedMode.html">conatus.expert.TrackedMode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CriticalPoint.html">conatus.expert.CriticalPoint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.critical.html">conatus.expert.critical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.laurent_exponents.html">conatus.expert.laurent_exponents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NewtonSolver.html">conatus.expert.NewtonSolver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NLBVPSolution.html">conatus.expert.NLBVPSolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NewtonIteration.html">conatus.expert.NewtonIteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NewtonNotConverged.html">conatus.expert.NewtonNotConverged</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PeriodicNewtonSolver.html">conatus.expert.PeriodicNewtonSolver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PeriodicNLBVPSolution.html">conatus.expert.PeriodicNLBVPSolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PhaseCondition.html">conatus.expert.PhaseCondition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.linearize.html">conatus.expert.linearize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.LinearizedEVP.html">conatus.expert.LinearizedEVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.InnerProduct.html">conatus.expert.InnerProduct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.chebyshev_gram.html">conatus.expert.chebyshev_gram</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CFL.html">conatus.expert.CFL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EmbeddedError.html">conatus.expert.EmbeddedError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.TauWatch.html">conatus.expert.TauWatch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.IVPSolver.html">conatus.expert.IVPSolver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SCHEMES.html">conatus.expert.SCHEMES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SBDF_SCHEMES.html">conatus.expert.SBDF_SCHEMES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CN_SCHEMES.html">conatus.expert.CN_SCHEMES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.RK_SCHEMES.html">conatus.expert.RK_SCHEMES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.STARTUPS.html">conatus.expert.STARTUPS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SpectralEvaluator.html">conatus.expert.SpectralEvaluator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SpectralError.html">conatus.expert.SpectralError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.GlobalSystem.html">conatus.expert.GlobalSystem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ORDERINGS.html">conatus.expert.ORDERINGS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.rk_tableau.html">conatus.expert.rk_tableau</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.sbdf_coefficients.html">conatus.expert.sbdf_coefficients</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.cn_coefficients.html">conatus.expert.cn_coefficients</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.scheme_description.html">conatus.expert.scheme_description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.FlowMap.html">conatus.expert.FlowMap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.VJPSuspended.html">conatus.expert.VJPSuspended</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.revolve_actions.html">conatus.expert.revolve_actions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.revolve_cost.html">conatus.expert.revolve_cost</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.revolve_schedule.html">conatus.expert.revolve_schedule</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.FourierOps.html">conatus.expert.FourierOps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NewtonKrylovHookstep.html">conatus.expert.NewtonKrylovHookstep</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NewtonKrylovResult.html">conatus.expert.NewtonKrylovResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.arnoldi_gmres.html">conatus.expert.arnoldi_gmres</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ECSSolution.html">conatus.expert.ECSSolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Equilibrium.html">conatus.expert.Equilibrium</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.TravellingWave.html">conatus.expert.TravellingWave</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.RelativePeriodicOrbit.html">conatus.expert.RelativePeriodicOrbit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PreperiodicOrbit.html">conatus.expert.PreperiodicOrbit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Flow.html">conatus.expert.Flow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.equilibrium_eigenvalues.html">conatus.expert.equilibrium_eigenvalues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.find_equilibrium.html">conatus.expert.find_equilibrium</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.find_travelling_wave.html">conatus.expert.find_travelling_wave</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.find_relative_periodic_orbit.html">conatus.expert.find_relative_periodic_orbit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.floquet_multipliers.html">conatus.expert.floquet_multipliers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.symmetry_breaking_check.html">conatus.expert.symmetry_breaking_check</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ks_solver.html">conatus.expert.ks_solver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EdgeTracker.html">conatus.expert.EdgeTracker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ThresholdBisection.html">conatus.expert.ThresholdBisection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.UndecidedTrajectory.html">conatus.expert.UndecidedTrajectory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Branch.html">conatus.expert.Branch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.BranchPoint.html">conatus.expert.BranchPoint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ContinuationSettings.html">conatus.expert.ContinuationSettings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Event.html">conatus.expert.Event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PseudoArclength.html">conatus.expert.PseudoArclength</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NLBVPContinuation.html">conatus.expert.NLBVPContinuation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.KSDomainContinuation.html">conatus.expert.KSDomainContinuation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.HillBlocks.html">conatus.expert.HillBlocks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.hill_from_plan.html">conatus.expert.hill_from_plan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.secant_root.html">conatus.expert.secant_root</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.exponents_dense.html">conatus.expert.exponents_dense</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.HillGPU.html">conatus.expert.HillGPU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CertifiedRoot.html">conatus.expert.CertifiedRoot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SecantRoot.html">conatus.expert.SecantRoot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.fold_floquet.html">conatus.expert.fold_floquet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.shell_floquet.html">conatus.expert.shell_floquet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.FloquetExponents.html">conatus.expert.FloquetExponents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.OptimalGain.html">conatus.expert.OptimalGain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PeriodicOperator.html">conatus.expert.PeriodicOperator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.floquet_exponents.html">conatus.expert.floquet_exponents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.operator_floquet.html">conatus.expert.operator_floquet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.operator_gain.html">conatus.expert.operator_gain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.optimal_gain.html">conatus.expert.optimal_gain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.periodic_operator.html">conatus.expert.periodic_operator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.periodic_operator_from_plan.html">conatus.expert.periodic_operator_from_plan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.GainResult.html">conatus.expert.GainResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.energy_factor.html">conatus.expert.energy_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.gain.html">conatus.expert.gain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.propagator.html">conatus.expert.propagator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.AdjointComparison.html">conatus.expert.AdjointComparison</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Descriptor.html">conatus.expert.Descriptor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ModalSystem.html">conatus.expert.ModalSystem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.StateSpace.html">conatus.expert.StateSpace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SteadyOperator.html">conatus.expert.SteadyOperator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Y.html">conatus.expert.Y</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.compare_adjoints.html">conatus.expert.compare_adjoints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.continuous_adjoint_mode.html">conatus.expert.continuous_adjoint_mode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.discrete_adjoint_mode.html">conatus.expert.discrete_adjoint_mode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.energy_growth.html">conatus.expert.energy_growth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.exp_norm.html">conatus.expert.exp_norm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.galerkin_numerical_abscissa.html">conatus.expert.galerkin_numerical_abscissa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.gram_energy_factor.html">conatus.expert.gram_energy_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.max_growth.html">conatus.expert.max_growth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.numerical_abscissa.html">conatus.expert.numerical_abscissa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.parallel_shear_flow.html">conatus.expert.parallel_shear_flow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.propagator_growth.html">conatus.expert.propagator_growth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.restrict.html">conatus.expert.restrict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.spectral_abscissa.html">conatus.expert.spectral_abscissa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.state_space.html">conatus.expert.state_space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.steady_operator.html">conatus.expert.steady_operator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CHANNEL_SYSTEMS.html">conatus.expert.CHANNEL_SYSTEMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.laminar_poiseuille.html">conatus.expert.laminar_poiseuille</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.MethodsText.html">conatus.expert.MethodsText</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.methods.html">conatus.expert.methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.BIBTEX.html">conatus.expert.BIBTEX</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.COMMANDS.html">conatus.expert.COMMANDS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CONFIRM_COMMANDS.html">conatus.expert.CONFIRM_COMMANDS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CONTROL_KINDS.html">conatus.expert.CONTROL_KINDS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.FILM_ENCODING.html">conatus.expert.FILM_ENCODING</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.FILM_POLICY.html">conatus.expert.FILM_POLICY</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.FRAME_KINDS.html">conatus.expert.FRAME_KINDS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.KINDS.html">conatus.expert.KINDS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PROTOCOL_VERSION.html">conatus.expert.PROTOCOL_VERSION</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SCALES.html">conatus.expert.SCALES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.STAT_KINDS.html">conatus.expert.STAT_KINDS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.VIEW_KINDS.html">conatus.expert.VIEW_KINDS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.check_controls.html">conatus.expert.check_controls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.check_set.html">conatus.expert.check_set</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.decode_curve.html">conatus.expert.decode_curve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.decode_frame.html">conatus.expert.decode_frame</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.decode_frame3d.html">conatus.expert.decode_frame3d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.decode_points.html">conatus.expert.decode_points</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.decode_vec2d.html">conatus.expert.decode_vec2d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.encode_curve.html">conatus.expert.encode_curve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.encode_frame.html">conatus.expert.encode_frame</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.encode_frame3d.html">conatus.expert.encode_frame3d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.encode_points.html">conatus.expert.encode_points</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.encode_vec2d.html">conatus.expert.encode_vec2d</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.film_frame.html">conatus.expert.film_frame</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.film_record.html">conatus.expert.film_record</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.FilmIndex.html">conatus.expert.FilmIndex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.RunState.html">conatus.expert.RunState</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SpoolReader.html">conatus.expert.SpoolReader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.StopRun.html">conatus.expert.StopRun</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Telemetry.html">conatus.expert.Telemetry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.default_spool.html">conatus.expert.default_spool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ConatusError.html">conatus.expert.ConatusError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EquationError.html">conatus.expert.EquationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.UndeclaredVariableError.html">conatus.expert.UndeclaredVariableError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ParameterError.html">conatus.expert.ParameterError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.BoundaryConditionError.html">conatus.expert.BoundaryConditionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EquationSyntaxError.html">conatus.expert.EquationSyntaxError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ConvergenceError.html">conatus.expert.ConvergenceError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NumericalError.html">conatus.expert.NumericalError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.UnderResolvedWarning.html">conatus.expert.UnderResolvedWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.IllPosedWarning.html">conatus.expert.IllPosedWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.InitialDataWarning.html">conatus.expert.InitialDataWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.GroupWarning.html">conatus.expert.GroupWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.DefaultChoiceWarning.html">conatus.expert.DefaultChoiceWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.doc_reference.html">conatus.expert.doc_reference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.gpu_available.html">conatus.expert.gpu_available</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.gpu_report.html">conatus.expert.gpu_report</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.DynamicalSystem.html">conatus.expert.DynamicalSystem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ir_system.html">conatus.expert.ir_system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ode_problem.html">conatus.expert.ode_problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ArclengthDriver.html">conatus.expert.ArclengthDriver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Curve.html">conatus.expert.Curve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CurveEvent.html">conatus.expert.CurveEvent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CurvePoint.html">conatus.expert.CurvePoint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.continue_equilibria.html">conatus.expert.continue_equilibria</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.newton_equilibrium.html">conatus.expert.newton_equilibrium</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.generalized_eigenvalues.html">conatus.expert.generalized_eigenvalues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.normal_form.html">conatus.expert.normal_form</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ZeroEigenvalueNormalForm.html">conatus.expert.ZeroEigenvalueNormalForm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.HopfNormalForm.html">conatus.expert.HopfNormalForm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.CollocationMesh.html">conatus.expert.CollocationMesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PeriodicOrbitProblem.html">conatus.expert.PeriodicOrbitProblem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.continue_orbits.html">conatus.expert.continue_orbits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.branch_switch.html">conatus.expert.branch_switch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.branching_directions.html">conatus.expert.branching_directions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.hopf_orbit_start.html">conatus.expert.hopf_orbit_start</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.continue_codim2.html">conatus.expert.continue_codim2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.LandauEquation.html">conatus.expert.LandauEquation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.amplitude_equation.html">conatus.expert.amplitude_equation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.GinzburgLandau.html">conatus.expert.GinzburgLandau</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ginzburg_landau.html">conatus.expert.ginzburg_landau</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.cos_mode_observable.html">conatus.expert.cos_mode_observable</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.FirstFourierModeSlice.html">conatus.expert.FirstFourierModeSlice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.RotationOps.html">conatus.expert.RotationOps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SliceTrajectory.html">conatus.expert.SliceTrajectory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SliceOrbitCheck.html">conatus.expert.SliceOrbitCheck</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SliceRPO.html">conatus.expert.SliceRPO</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.find_rpo_in_slice.html">conatus.expert.find_rpo_in_slice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.slice_equilibrium_check.html">conatus.expert.slice_equilibrium_check</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.slice_orbit_check.html">conatus.expert.slice_orbit_check</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.TWO_MODE_PARAMETERS.html">conatus.expert.TWO_MODE_PARAMETERS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.two_mode_problem.html">conatus.expert.two_mode_problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.two_mode_callables.html">conatus.expert.two_mode_callables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ODEIntegrator.html">conatus.expert.ODEIntegrator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SolverIntegrator.html">conatus.expert.SolverIntegrator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Trajectory.html">conatus.expert.Trajectory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Crossings.html">conatus.expert.Crossings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PoincareSection.html">conatus.expert.PoincareSection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.first_return_map.html">conatus.expert.first_return_map</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.poincare_crossings.html">conatus.expert.poincare_crossings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.UnstableManifold.html">conatus.expert.UnstableManifold</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.globalize.html">conatus.expert.globalize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.polynomial_degree_defect.html">conatus.expert.polynomial_degree_defect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.unstable_manifold.html">conatus.expert.unstable_manifold</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Connection.html">conatus.expert.Connection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.connection_vs_T.html">conatus.expert.connection_vs_T</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.find_connection.html">conatus.expert.find_connection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.projection_gap.html">conatus.expert.projection_gap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.scan_connection.html">conatus.expert.scan_connection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.unstable_left_basis.html">conatus.expert.unstable_left_basis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.equilibrium_connection.html">conatus.expert.equilibrium_connection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ecs_system.html">conatus.expert.ecs_system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ecs_integrator.html">conatus.expert.ecs_integrator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.orbit_manifold_seeds.html">conatus.expert.orbit_manifold_seeds</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.first_return_stretch.html">conatus.expert.first_return_stretch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.section_projector.html">conatus.expert.section_projector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PinningRegion.html">conatus.expert.PinningRegion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.even_subspace.html">conatus.expert.even_subspace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.pinning_region.html">conatus.expert.pinning_region</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.restrict_system.html">conatus.expert.restrict_system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ADJOINT_KINDS.html">conatus.expert.ADJOINT_KINDS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.BaseFlowSensitivity.html">conatus.expert.BaseFlowSensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EigenvalueSensitivity.html">conatus.expert.EigenvalueSensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ForcingSensitivity.html">conatus.expert.ForcingSensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.GinzburgLandauExact.html">conatus.expert.GinzburgLandauExact</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ModePair.html">conatus.expert.ModePair</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.StructuralSensitivity.html">conatus.expert.StructuralSensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.base_flow_sensitivity.html">conatus.expert.base_flow_sensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.eigenvalue_sensitivity.html">conatus.expert.eigenvalue_sensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.feedback_system.html">conatus.expert.feedback_system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ginzburg_landau_exact.html">conatus.expert.ginzburg_landau_exact</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.linear_ginzburg_landau.html">conatus.expert.linear_ginzburg_landau</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.mode_pair.html">conatus.expert.mode_pair</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.parameter_sensitivity.html">conatus.expert.parameter_sensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.steady_forcing_sensitivity.html">conatus.expert.steady_forcing_sensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.structural_sensitivity.html">conatus.expert.structural_sensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.AMPLITUDES.html">conatus.expert.AMPLITUDES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.DMD.html">conatus.expert.DMD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.DMD_METHODS.html">conatus.expert.DMD_METHODS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.DataInnerProduct.html">conatus.expert.DataInnerProduct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Dictionary.html">conatus.expert.Dictionary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EDMD.html">conatus.expert.EDMD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.MEAN_POLICIES.html">conatus.expert.MEAN_POLICIES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.POD.html">conatus.expert.POD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.POD_METHODS.html">conatus.expert.POD_METHODS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.SPOD.html">conatus.expert.SPOD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Snapshots.html">conatus.expert.Snapshots</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.dmd.html">conatus.expert.dmd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.edmd.html">conatus.expert.edmd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.monomials.html">conatus.expert.monomials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.pod.html">conatus.expert.pod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.rbf.html">conatus.expert.rbf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.snapshots_from_arrays.html">conatus.expert.snapshots_from_arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.snapshots_from_run.html">conatus.expert.snapshots_from_run</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.spod.html">conatus.expert.spod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.uniform_dt.html">conatus.expert.uniform_dt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.welch_blocks.html">conatus.expert.welch_blocks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Domination.html">conatus.expert.Domination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.LyapunovResult.html">conatus.expert.LyapunovResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.clv_subspace_angles.html">conatus.expert.clv_subspace_angles</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.kaplan_yorke.html">conatus.expert.kaplan_yorke</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.lyapunov_spectrum.html">conatus.expert.lyapunov_spectrum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.PoincareResult.html">conatus.expert.PoincareResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.poincare_section.html">conatus.expert.poincare_section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.rk_tangent_step.html">conatus.expert.rk_tangent_step</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.BatchedRHS.html">conatus.expert.BatchedRHS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.BatchedSystem.html">conatus.expert.BatchedSystem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.BatchMaps.html">conatus.expert.BatchMaps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.Ensemble.html">conatus.expert.Ensemble</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.EnsembleFate.html">conatus.expert.EnsembleFate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ensemble_fate.html">conatus.expert.ensemble_fate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.proportion_ci.html">conatus.expert.proportion_ci</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../principles.html">Principles</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../math/index.html">Mathematics</a><input aria-label="Toggle navigation of Mathematics" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/spectral.html">Spectral discretisation and the tau method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/curvilinear.html">Curvilinear geometries: regular bases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/timestepping.html">Implicit–explicit time stepping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/eigenproblems.html">Eigenproblems, residuals and the physical adjoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/invariant_solutions.html">Invariant solutions: Newton–Krylov–hookstep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/continuation.html">Continuation and bifurcations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/floquet.html">Floquet–Hill analysis of time-periodic flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/nonmodal.html">Non-modal analysis: transient growth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/chaos.html">Lyapunov exponents, covariant vectors and ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/symmetry.html">Symmetry subspaces, slices and phase-space geometry</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../citing.html">Citing Conatus</a></li>
+</ul>
+
+</div></div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="conatus-expert-interpolate">
+<h1>conatus.expert.Interpolate<a class="headerlink" href="#conatus-expert-interpolate" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="conatus.expert.Interpolate">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">conatus.expert.</span></span><span class="sig-name descname"><span class="pre">Interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coord</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">side</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/ir/expr_calculus.html#Interpolate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.Interpolate" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="conatus.expert.Expr.html#conatus.expert.Expr" title="conatus.ir.expr_base.Expr"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expr</span></code></a></p>
+<p>Trace / point evaluation along one coordinate: x(coord = position).</p>
+<p><code class="docutils literal notranslate"><span class="pre">side</span></code> (‘below’ / ‘above’, default None) selects a one-sided trace at an interface of a
+CompoundChebyshev basis (the two pieces meet there; continuity conditions compare the two
+traces). None keeps the node identical to the plain trace (same hash, same key).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>operand</strong> (<a class="reference internal" href="conatus.expert.Expr.html#conatus.expert.Expr" title="conatus.expert.Expr"><em>Expr</em></a>)</p></li>
+<li><p><strong>coord</strong> (<a class="reference internal" href="conatus.expert.Coordinate.html#conatus.expert.Coordinate" title="conatus.expert.Coordinate"><em>Coordinate</em></a>)</p></li>
+<li><p><strong>position</strong> (<em>float</em>)</p></li>
+<li><p><strong>label</strong> (<em>str</em>)</p></li>
+<li><p><strong>side</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="conatus.expert.Interpolate.rebuild">
+<span class="sig-name descname"><span class="pre">rebuild</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/ir/expr_calculus.html#Interpolate.rebuild"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.Interpolate.rebuild" title="Link to this definition">¶</a></dt>
+<dd><p>Rebuild this node with new children, through the canonicalising builders.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>Sequence</em><em>[</em><a class="reference internal" href="conatus.expert.Expr.html#conatus.expert.Expr" title="conatus.ir.expr_base.Expr"><em>Expr</em></a><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="conatus.expert.Expr.html#conatus.expert.Expr" title="conatus.ir.expr_base.Expr"><em>Expr</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="conatus.expert.Lift.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">conatus.expert.Lift</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="conatus.expert.Integrate.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">conatus.expert.Integrate</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Ruben Dahan and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">conatus.expert.Interpolate</a><ul>
+<li><a class="reference internal" href="#conatus.expert.Interpolate"><code class="docutils literal notranslate"><span class="pre">Interpolate</span></code></a><ul>
+<li><a class="reference internal" href="#conatus.expert.Interpolate.rebuild"><code class="docutils literal notranslate"><span class="pre">Interpolate.rebuild()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=fd10adb8"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>

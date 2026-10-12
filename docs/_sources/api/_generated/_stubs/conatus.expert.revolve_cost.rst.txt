@@ -1,0 +1,6 @@
+﻿conatus.expert.revolve\_cost
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: revolve_cost

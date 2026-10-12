@@ -1,0 +1,6 @@
+﻿conatus.expert.parse\_equation
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: parse_equation

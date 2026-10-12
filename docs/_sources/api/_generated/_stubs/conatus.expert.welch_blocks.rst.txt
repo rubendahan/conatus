@@ -1,0 +1,6 @@
+﻿conatus.expert.welch\_blocks
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: welch_blocks

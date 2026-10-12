@@ -1,0 +1,6 @@
+﻿conatus.expert.scan\_connection
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: scan_connection

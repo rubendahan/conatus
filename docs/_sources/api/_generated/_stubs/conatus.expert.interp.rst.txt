@@ -1,0 +1,6 @@
+﻿conatus.expert.interp
+=====================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: interp

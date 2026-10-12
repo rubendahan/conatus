@@ -1,0 +1,6 @@
+﻿conatus.expert.channel
+======================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: channel

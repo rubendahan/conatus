@@ -1,0 +1,6 @@
+﻿conatus.expert.galerkin\_numerical\_abscissa
+============================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: galerkin_numerical_abscissa

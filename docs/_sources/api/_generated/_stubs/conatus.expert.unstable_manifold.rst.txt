@@ -1,0 +1,6 @@
+﻿conatus.expert.unstable\_manifold
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: unstable_manifold

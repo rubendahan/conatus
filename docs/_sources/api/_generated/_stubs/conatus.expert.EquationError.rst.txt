@@ -1,0 +1,6 @@
+﻿conatus.expert.EquationError
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: EquationError

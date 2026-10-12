@@ -1,0 +1,6 @@
+﻿conatus.expert.SymmetryBreakingError
+====================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: SymmetryBreakingError

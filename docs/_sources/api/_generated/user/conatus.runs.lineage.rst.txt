@@ -1,0 +1,6 @@
+﻿conatus.runs.lineage
+====================
+
+.. currentmodule:: conatus.runs
+
+.. autofunction:: lineage

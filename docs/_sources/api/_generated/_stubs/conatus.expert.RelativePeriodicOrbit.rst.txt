@@ -1,0 +1,8 @@
+﻿conatus.expert.RelativePeriodicOrbit
+====================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: RelativePeriodicOrbit
+   :members:
+   :show-inheritance:

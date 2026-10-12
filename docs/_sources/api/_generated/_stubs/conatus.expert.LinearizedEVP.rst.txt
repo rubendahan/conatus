@@ -1,0 +1,8 @@
+﻿conatus.expert.LinearizedEVP
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: LinearizedEVP
+   :members:
+   :show-inheritance:

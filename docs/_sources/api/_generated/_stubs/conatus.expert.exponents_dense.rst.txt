@@ -1,0 +1,6 @@
+﻿conatus.expert.exponents\_dense
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: exponents_dense

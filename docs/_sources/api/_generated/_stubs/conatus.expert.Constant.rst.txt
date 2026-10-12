@@ -1,0 +1,8 @@
+﻿conatus.expert.Constant
+=======================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Constant
+   :members:
+   :show-inheritance:

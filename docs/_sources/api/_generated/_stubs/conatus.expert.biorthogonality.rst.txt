@@ -1,0 +1,6 @@
+﻿conatus.expert.biorthogonality
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: biorthogonality

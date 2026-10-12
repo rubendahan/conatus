@@ -1,0 +1,6 @@
+﻿conatus.expert.critical
+=======================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: critical

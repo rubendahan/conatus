@@ -1,0 +1,6 @@
+﻿conatus.expert.lap
+==================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: lap

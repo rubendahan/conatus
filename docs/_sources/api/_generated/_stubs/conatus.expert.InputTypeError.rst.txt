@@ -1,0 +1,6 @@
+﻿conatus.expert.InputTypeError
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: InputTypeError

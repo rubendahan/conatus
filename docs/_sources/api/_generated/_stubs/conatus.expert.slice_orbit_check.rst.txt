@@ -1,0 +1,6 @@
+﻿conatus.expert.slice\_orbit\_check
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: slice_orbit_check

@@ -1,0 +1,6 @@
+﻿conatus.expert.DMD\_METHODS
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: DMD_METHODS

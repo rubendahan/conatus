@@ -1,0 +1,6 @@
+﻿conatus.expert.tanh
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: tanh

@@ -1,0 +1,6 @@
+﻿conatus.expert.absolute
+=======================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: absolute

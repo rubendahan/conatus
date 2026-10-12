@@ -1,0 +1,6 @@
+﻿conatus.expert.CONTROL\_KINDS
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: CONTROL_KINDS

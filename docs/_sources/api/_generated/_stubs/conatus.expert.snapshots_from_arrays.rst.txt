@@ -1,0 +1,6 @@
+﻿conatus.expert.snapshots\_from\_arrays
+======================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: snapshots_from_arrays

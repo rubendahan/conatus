@@ -1,0 +1,6 @@
+﻿conatus.expert.poincare\_section
+================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: poincare_section

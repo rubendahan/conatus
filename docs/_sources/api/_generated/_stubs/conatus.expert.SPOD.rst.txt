@@ -1,0 +1,8 @@
+﻿conatus.expert.SPOD
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: SPOD
+   :members:
+   :show-inheritance:

@@ -1,0 +1,6 @@
+﻿conatus.expert.DiscretizationError
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: DiscretizationError

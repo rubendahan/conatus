@@ -1,0 +1,6 @@
+﻿conatus.expert.secant\_root
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: secant_root

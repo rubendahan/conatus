@@ -1,0 +1,6 @@
+﻿conatus.expert.amplitude\_equation
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: amplitude_equation

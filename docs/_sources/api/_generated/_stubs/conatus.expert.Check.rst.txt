@@ -1,0 +1,8 @@
+﻿conatus.expert.Check
+====================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Check
+   :members:
+   :show-inheritance:

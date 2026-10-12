@@ -1,0 +1,6 @@
+﻿conatus.expert.ParameterError
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: ParameterError

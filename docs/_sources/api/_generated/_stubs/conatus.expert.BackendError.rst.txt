@@ -1,0 +1,6 @@
+﻿conatus.expert.BackendError
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: BackendError

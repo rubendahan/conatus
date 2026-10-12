@@ -1,0 +1,8 @@
+﻿conatus.expert.Integrate
+========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Integrate
+   :members:
+   :show-inheritance:

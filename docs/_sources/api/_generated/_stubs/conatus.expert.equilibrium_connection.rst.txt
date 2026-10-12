@@ -1,0 +1,6 @@
+﻿conatus.expert.equilibrium\_connection
+======================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: equilibrium_connection

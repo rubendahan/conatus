@@ -1,0 +1,8 @@
+﻿conatus.expert.ContinuationSettings
+===================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: ContinuationSettings
+   :members:
+   :show-inheritance:

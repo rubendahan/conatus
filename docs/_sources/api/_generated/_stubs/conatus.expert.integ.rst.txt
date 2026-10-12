@@ -1,0 +1,6 @@
+﻿conatus.expert.integ
+====================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: integ

@@ -1,0 +1,6 @@
+﻿conatus.runs.record
+===================
+
+.. currentmodule:: conatus.runs
+
+.. autofunction:: record

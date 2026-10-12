@@ -1,0 +1,6 @@
+﻿conatus.expert.drift\_filter
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: drift_filter

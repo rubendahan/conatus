@@ -1,0 +1,6 @@
+﻿conatus.expert.grad
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: grad

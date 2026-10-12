@@ -1,0 +1,8 @@
+﻿conatus.expert.FourierOps
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: FourierOps
+   :members:
+   :show-inheritance:

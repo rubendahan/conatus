@@ -1,0 +1,6 @@
+﻿conatus.expert.decode\_points
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: decode_points

@@ -1,0 +1,6 @@
+﻿conatus.expert.normal\_form
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: normal_form

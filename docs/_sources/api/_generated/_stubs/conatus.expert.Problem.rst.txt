@@ -1,0 +1,8 @@
+﻿conatus.expert.Problem
+======================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Problem
+   :members:
+   :show-inheritance:

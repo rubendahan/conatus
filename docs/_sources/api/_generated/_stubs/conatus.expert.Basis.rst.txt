@@ -1,0 +1,8 @@
+﻿conatus.expert.Basis
+====================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Basis
+   :members:
+   :show-inheritance:

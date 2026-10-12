@@ -1,0 +1,8 @@
+﻿conatus.expert.PolarCoordinates
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: PolarCoordinates
+   :members:
+   :show-inheritance:

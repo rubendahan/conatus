@@ -1,0 +1,6 @@
+﻿conatus.problems.channel
+========================
+
+.. currentmodule:: conatus.problems
+
+.. autofunction:: channel

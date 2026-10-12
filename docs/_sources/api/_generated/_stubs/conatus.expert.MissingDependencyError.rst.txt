@@ -1,0 +1,6 @@
+﻿conatus.expert.MissingDependencyError
+=====================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: MissingDependencyError

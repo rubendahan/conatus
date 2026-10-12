@@ -1,0 +1,6 @@
+﻿conatus.Channel
+===============
+
+.. currentmodule:: conatus
+
+.. autofunction:: Channel

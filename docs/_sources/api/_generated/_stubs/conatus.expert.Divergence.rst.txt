@@ -1,0 +1,8 @@
+﻿conatus.expert.Divergence
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Divergence
+   :members:
+   :show-inheritance:

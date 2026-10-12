@@ -1,0 +1,6 @@
+﻿conatus.expert.propagator
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: propagator

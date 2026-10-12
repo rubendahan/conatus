@@ -1,0 +1,37 @@
+# Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines & Gill 1969, J. Fluid Mech. 37, 289-306)
+
+*Family:* `convection` · *Script:* `examples/convection/salt_fingers.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - R_S/τ − R_T = 27π⁴/4 to ≤ 4e-16 (4 pairs)
+* - Reference
+  - Stern 1960; Baines & Gill 1969, JFM 37
+```
+
+```text
+Warm salty water above cold fresh water: temperature is stabilizing (Rayleigh number R_T > 0)
+and salt, which diffuses tau = kappa_S / kappa_T < 1 times slower, is destabilizing (R_S > 0).
+Units: depth d, thermal diffusion time d^2 / kappa_T; normal mode exp(i k x + sigma t), D = d/dz:
+
+    sigma u = Pr (D^2 - k^2) u - i k p
+    sigma w = Pr (D^2 - k^2) w - D p + Pr (R_T T - R_S S)       (heat and salt both make it lighter)
+    sigma T =     (D^2 - k^2) T - w                              (stable temperature gradient)
+    sigma S = tau (D^2 - k^2) S - w                              (unstable salinity gradient)
+    0       = i k u + D w
+
+Free walls: w = Du = T = S = 0. With sin(pi z) modes and sigma = 0, the stationary (finger)
+threshold is  R_S / tau - R_T = min_k (pi^2 + k^2)^3 / k^2 = 27 pi^4 / 4  at k^2 = pi^2 / 2,
+independent of Pr (Baines & Gill 1969, §2).
+
+Run:  python examples/convection/salt_fingers.py
+```
+
+Run it: `python examples/convection/salt_fingers.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/convection/salt_fingers.py
+:language: python
+:linenos:
+```

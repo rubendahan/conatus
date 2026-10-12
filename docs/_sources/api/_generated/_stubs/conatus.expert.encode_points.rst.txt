@@ -1,0 +1,6 @@
+﻿conatus.expert.encode\_points
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: encode_points

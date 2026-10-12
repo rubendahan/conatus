@@ -1,0 +1,8 @@
+﻿conatus.expert.Parameter
+========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Parameter
+   :members:
+   :show-inheritance:

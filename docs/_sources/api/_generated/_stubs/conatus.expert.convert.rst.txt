@@ -1,0 +1,6 @@
+﻿conatus.expert.convert
+======================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: convert

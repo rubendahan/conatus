@@ -1,0 +1,6 @@
+﻿conatus.doctor
+==============
+
+.. currentmodule:: conatus
+
+.. autofunction:: doctor

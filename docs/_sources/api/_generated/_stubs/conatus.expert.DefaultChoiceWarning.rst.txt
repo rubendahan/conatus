@@ -1,0 +1,6 @@
+﻿conatus.expert.DefaultChoiceWarning
+===================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: DefaultChoiceWarning

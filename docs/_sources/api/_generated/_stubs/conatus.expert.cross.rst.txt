@@ -1,0 +1,6 @@
+﻿conatus.expert.cross
+====================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: cross

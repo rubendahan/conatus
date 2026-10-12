@@ -1,0 +1,6 @@
+﻿conatus.expert.two\_mode\_problem
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: two_mode_problem

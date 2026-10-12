@@ -1,0 +1,8 @@
+﻿conatus.expert.MappedChebyshev
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: MappedChebyshev
+   :members:
+   :show-inheritance:

@@ -1,0 +1,8 @@
+﻿conatus.Sphere
+==============
+
+.. currentmodule:: conatus
+
+.. autoclass:: Sphere
+   :members:
+   :show-inheritance:

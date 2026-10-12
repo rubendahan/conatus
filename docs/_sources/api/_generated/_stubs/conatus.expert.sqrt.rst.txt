@@ -1,0 +1,6 @@
+﻿conatus.expert.sqrt
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: sqrt

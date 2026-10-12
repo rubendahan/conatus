@@ -1,0 +1,8 @@
+﻿conatus.expert.Differentiate
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Differentiate
+   :members:
+   :show-inheritance:

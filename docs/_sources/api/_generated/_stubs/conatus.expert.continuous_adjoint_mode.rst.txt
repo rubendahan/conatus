@@ -1,0 +1,6 @@
+﻿conatus.expert.continuous\_adjoint\_mode
+========================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: continuous_adjoint_mode

@@ -1,0 +1,6 @@
+﻿conatus.expert.find\_travelling\_wave
+=====================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: find_travelling_wave

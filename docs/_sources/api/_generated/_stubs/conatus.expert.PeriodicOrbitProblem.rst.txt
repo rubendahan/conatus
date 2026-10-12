@@ -1,0 +1,8 @@
+﻿conatus.expert.PeriodicOrbitProblem
+===================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: PeriodicOrbitProblem
+   :members:
+   :show-inheritance:

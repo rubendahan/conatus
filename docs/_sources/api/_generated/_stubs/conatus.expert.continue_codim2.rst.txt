@@ -1,0 +1,6 @@
+﻿conatus.expert.continue\_codim2
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: continue_codim2

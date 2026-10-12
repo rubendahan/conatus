@@ -1,0 +1,8 @@
+﻿conatus.expert.LBVPSolution
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: LBVPSolution
+   :members:
+   :show-inheritance:

@@ -1,0 +1,6 @@
+﻿conatus.expert.eigenvalues
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: eigenvalues

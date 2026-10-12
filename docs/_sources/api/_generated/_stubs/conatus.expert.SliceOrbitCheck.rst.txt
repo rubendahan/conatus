@@ -1,0 +1,8 @@
+﻿conatus.expert.SliceOrbitCheck
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: SliceOrbitCheck
+   :members:
+   :show-inheritance:

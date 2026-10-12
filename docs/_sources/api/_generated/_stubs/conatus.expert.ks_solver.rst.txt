@@ -1,0 +1,6 @@
+﻿conatus.expert.ks\_solver
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: ks_solver

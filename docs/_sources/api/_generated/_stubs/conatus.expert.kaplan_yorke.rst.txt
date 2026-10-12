@@ -1,0 +1,6 @@
+﻿conatus.expert.kaplan\_yorke
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: kaplan_yorke

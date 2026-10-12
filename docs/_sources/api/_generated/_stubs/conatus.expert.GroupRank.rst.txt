@@ -1,0 +1,8 @@
+﻿conatus.expert.GroupRank
+========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: GroupRank
+   :members:
+   :show-inheritance:

@@ -1,0 +1,6 @@
+﻿conatus.expert.GroupWarning
+===========================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: GroupWarning

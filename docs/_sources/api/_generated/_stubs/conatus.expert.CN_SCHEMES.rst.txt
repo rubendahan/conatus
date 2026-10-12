@@ -1,0 +1,6 @@
+﻿conatus.expert.CN\_SCHEMES
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: CN_SCHEMES

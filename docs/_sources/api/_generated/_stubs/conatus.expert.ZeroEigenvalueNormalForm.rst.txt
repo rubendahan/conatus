@@ -1,0 +1,8 @@
+﻿conatus.expert.ZeroEigenvalueNormalForm
+=======================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: ZeroEigenvalueNormalForm
+   :members:
+   :show-inheritance:

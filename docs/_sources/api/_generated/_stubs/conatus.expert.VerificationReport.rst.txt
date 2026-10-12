@@ -1,0 +1,8 @@
+﻿conatus.expert.VerificationReport
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: VerificationReport
+   :members:
+   :show-inheritance:

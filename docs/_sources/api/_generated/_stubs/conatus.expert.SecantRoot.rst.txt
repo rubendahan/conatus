@@ -1,0 +1,8 @@
+﻿conatus.expert.SecantRoot
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: SecantRoot
+   :members:
+   :show-inheritance:

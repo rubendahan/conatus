@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://rubendahan.github.io/conatus/sitemap.xml

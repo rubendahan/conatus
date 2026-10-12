@@ -1,0 +1,6 @@
+﻿conatus.expert.periodic\_operator
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: periodic_operator

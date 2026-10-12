@@ -1,0 +1,6 @@
+﻿conatus.expert.base\_flow\_sensitivity
+======================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: base_flow_sensitivity

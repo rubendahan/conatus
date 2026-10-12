@@ -1,0 +1,8 @@
+﻿conatus.expert.SolverIntegrator
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: SolverIntegrator
+   :members:
+   :show-inheritance:

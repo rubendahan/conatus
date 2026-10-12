@@ -1,0 +1,8 @@
+﻿conatus.expert.EmbeddedError
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: EmbeddedError
+   :members:
+   :show-inheritance:

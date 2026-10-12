@@ -1,0 +1,6 @@
+﻿conatus.expert.EquationSyntaxError
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: EquationSyntaxError

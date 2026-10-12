@@ -1,0 +1,6 @@
+﻿conatus.expert.QUANTITY\_DIMENSIONS
+===================================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: QUANTITY_DIMENSIONS

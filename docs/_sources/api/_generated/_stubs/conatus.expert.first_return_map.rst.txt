@@ -1,0 +1,6 @@
+﻿conatus.expert.first\_return\_map
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: first_return_map

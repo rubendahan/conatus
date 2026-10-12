@@ -1,0 +1,6 @@
+﻿conatus.problems.kolmogorov
+===========================
+
+.. currentmodule:: conatus.problems
+
+.. autofunction:: kolmogorov

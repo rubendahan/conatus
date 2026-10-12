@@ -1,0 +1,8 @@
+﻿conatus.Shell
+=============
+
+.. currentmodule:: conatus
+
+.. autoclass:: Shell
+   :members:
+   :show-inheritance:

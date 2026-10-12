@@ -1,0 +1,8 @@
+﻿conatus.expert.Equilibrium
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Equilibrium
+   :members:
+   :show-inheritance:

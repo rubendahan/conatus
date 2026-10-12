@@ -1,0 +1,6 @@
+﻿conatus.expert.dmd
+==================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: dmd

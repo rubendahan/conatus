@@ -1,0 +1,6 @@
+﻿conatus.expert.rk\_tangent\_step
+================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: rk_tangent_step

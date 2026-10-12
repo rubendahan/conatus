@@ -1,0 +1,6 @@
+﻿conatus.expert.laminar\_poiseuille
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: laminar_poiseuille

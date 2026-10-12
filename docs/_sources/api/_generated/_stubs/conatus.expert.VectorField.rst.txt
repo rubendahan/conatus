@@ -1,0 +1,6 @@
+﻿conatus.expert.VectorField
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: VectorField

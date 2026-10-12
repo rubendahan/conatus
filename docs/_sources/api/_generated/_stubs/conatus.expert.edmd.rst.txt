@@ -1,0 +1,6 @@
+﻿conatus.expert.edmd
+===================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: edmd

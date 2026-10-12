@@ -1,0 +1,6 @@
+﻿conatus.expert.floquet\_exponents
+=================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: floquet_exponents

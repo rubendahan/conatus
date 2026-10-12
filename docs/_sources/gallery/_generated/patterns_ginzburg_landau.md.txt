@@ -1,0 +1,43 @@
+# Complex Ginzburg–Landau equation: Benjamin–Feir–Newell and Eckhaus instabilities of plane waves
+
+*Family:* `patterns` · *Script:* `examples/patterns/ginzburg_landau.py`
+
+```{list-table}
+:widths: 20 80
+
+* - Obtained
+  - complex form (conj() on the LHS, doubled system declared); BFN threshold: 1 + c₁c₃ < 1e-12 (Richardson k → 0); Eckhaus q_E² to 1e-7
+* - Reference
+  - Newell 1974; Aranson & Kramer 2002, RMP 74
+```
+
+```text
+dt A = A + (1 + i c1) dx^2 A - (1 + i c3) |A|^2 A
+
+(Aranson & Kramer 2002, Rev. Mod. Phys. 74, 99, eq. (1), with b = c1, c = c3). The plane wave
+A = R exp(i (q x - omega t)), R^2 = 1 - q^2, omega = c3 R^2 + c1 q^2, is linearly unstable to long
+waves (Benjamin–Feir–Newell) iff 1 + c1 c3 < 0 (Newell 1974; Aranson & Kramer 2002, Sec. II.B);
+for 1 + c1 c3 > 0 it is Eckhaus-unstable iff q^2 > q_E^2 = (1 + c1 c3) / (3 + c1 c3 + 2 c3^2).
+
+Written in the co-moving, co-rotating variable B = A exp(-i (q x - omega t)), the plane wave is the
+constant state B = R and the equation keeps constant coefficients:
+
+    dt B = (1 + i omega) B + (1 + i c1)(dx^2 B + 2 i q dx B - q^2 B) - (1 + i c3) |B|^2 B.
+
+The IR linearizes the complex form: conj(dB) appears (|B|^2 B = B B conj(B)), so the linear
+operator is R-linear, not C-linear, and couples the Fourier modes k and -k. The discretizer solves
+it as the equivalent doubled system in (dB, conj dB), every equation followed by its conjugate, the
+eigenvalue standing for d/dt (declared in explain(); before conj() in an LHS was refused
+and this example was written in the real variables B = X + i Y: same spectrum, checked in
+tests/discretize/test_conj_lhs.py). A perturbation exp(i k x + sigma t) lives in one Fourier group
+(2x2 pencil); the long-wave threshold is the k -> 0 limit.
+
+Run:  python examples/patterns/ginzburg_landau.py
+```
+
+Run it: `python examples/patterns/ginzburg_landau.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/patterns/ginzburg_landau.py
+:language: python
+:linenos:
+```

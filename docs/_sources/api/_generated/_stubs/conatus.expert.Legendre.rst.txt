@@ -1,0 +1,8 @@
+﻿conatus.expert.Legendre
+=======================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: Legendre
+   :members:
+   :show-inheritance:

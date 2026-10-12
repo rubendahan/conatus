@@ -1,0 +1,6 @@
+﻿conatus.expert.find\_rpo\_in\_slice
+===================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: find_rpo_in_slice

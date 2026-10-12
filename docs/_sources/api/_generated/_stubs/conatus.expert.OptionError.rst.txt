@@ -1,0 +1,6 @@
+﻿conatus.expert.OptionError
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: OptionError

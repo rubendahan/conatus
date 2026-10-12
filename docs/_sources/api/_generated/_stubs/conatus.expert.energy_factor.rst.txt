@@ -1,0 +1,6 @@
+﻿conatus.expert.energy\_factor
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: energy_factor

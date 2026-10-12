@@ -1,0 +1,6 @@
+﻿conatus.expert.solve\_sparse
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: solve_sparse

@@ -1,0 +1,6 @@
+﻿conatus.expert.find\_relative\_periodic\_orbit
+==============================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: find_relative_periodic_orbit

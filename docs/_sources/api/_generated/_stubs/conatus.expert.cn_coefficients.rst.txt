@@ -1,0 +1,6 @@
+﻿conatus.expert.cn\_coefficients
+===============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: cn_coefficients

@@ -1,0 +1,6 @@
+﻿conatus.parse\_equation
+=======================
+
+.. currentmodule:: conatus
+
+.. autofunction:: parse_equation

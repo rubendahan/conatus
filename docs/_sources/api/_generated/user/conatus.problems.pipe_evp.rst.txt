@@ -1,0 +1,6 @@
+﻿conatus.problems.pipe\_evp
+==========================
+
+.. currentmodule:: conatus.problems
+
+.. autofunction:: pipe_evp

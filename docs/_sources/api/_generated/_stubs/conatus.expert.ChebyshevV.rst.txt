@@ -1,0 +1,6 @@
+﻿conatus.expert.ChebyshevV
+=========================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: ChebyshevV

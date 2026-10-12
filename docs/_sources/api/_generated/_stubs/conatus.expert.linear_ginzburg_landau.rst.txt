@@ -1,0 +1,6 @@
+﻿conatus.expert.linear\_ginzburg\_landau
+=======================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: linear_ginzburg_landau

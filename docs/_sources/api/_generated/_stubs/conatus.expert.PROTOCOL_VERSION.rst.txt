@@ -1,0 +1,6 @@
+﻿conatus.expert.PROTOCOL\_VERSION
+================================
+
+.. currentmodule:: conatus.expert
+
+.. autodata:: PROTOCOL_VERSION

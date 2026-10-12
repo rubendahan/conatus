@@ -1,0 +1,6 @@
+﻿conatus.expert.scheme\_description
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: scheme_description

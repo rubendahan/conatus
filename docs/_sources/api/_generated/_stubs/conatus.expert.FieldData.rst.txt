@@ -1,0 +1,8 @@
+﻿conatus.expert.FieldData
+========================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: FieldData
+   :members:
+   :show-inheritance:

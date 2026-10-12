@@ -1,0 +1,8 @@
+﻿conatus.expert.CollocationMesh
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: CollocationMesh
+   :members:
+   :show-inheritance:

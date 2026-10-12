@@ -1,0 +1,8 @@
+﻿conatus.expert.GinzburgLandau
+=============================
+
+.. currentmodule:: conatus.expert
+
+.. autoclass:: GinzburgLandau
+   :members:
+   :show-inheritance:

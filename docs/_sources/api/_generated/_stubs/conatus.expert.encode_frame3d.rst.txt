@@ -1,0 +1,6 @@
+﻿conatus.expert.encode\_frame3d
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autofunction:: encode_frame3d
