@@ -1,0 +1,69 @@
+# t01_orr_sommerfeld: PASS (exit 0) in 3.6 s | 2026-10-09
+Model 'Orr-Sommerfeld'
+Geometry: Box(y=walls(-1, 1)) (Cartesian box)
+  bases (fixed per geometry, sizes given at discretization):
+    y: walls at -1, 1 -> Chebyshev T(N_y)
+  named boundaries: bottom = y left; top = y right; y=-1 = y left; y=1 = y right; walls = y left, y right
+Unknowns: v (scalar)
+Parameters: Re = 10000, alpha = 1 (change: m.<name> = value; for one call: simulate(..., name=value))
+Given fields: U
+Eigenvalue: c (complex); growth = Im c, declared with the eigenvalue c
+Operator: L2(f) = dy(dy(f)) - alpha**2*f
+Equations as written:
+  [0] Orr_Sommerfeld: L2(L2(v))/(1j*alpha*Re) - U*L2(v) + dy(dy(U))*v + c*L2(v) = 0
+Conditions as written:
+  at walls: v = 0
+  at walls: dy(v) = 0
+Problem kind: EVP (eigenvalue c declared)
+Term placement:
+  [0] Orr_Sommerfeld
+      operator  (1j*alpha*Re)**-1*(dy(dy(-alpha**2*v + dy(dy(v)))) - (-alpha**2*v + dy(dy(v)))*alpha**2)   (linear, constant coefficients)
+      operator  c*(-alpha**2*v + dy(dy(v)))   (linear, constant coefficients)
+      operator  dy(dy(U))*v   (linear, non-constant coefficient U)
+      operator  -(-alpha**2*v + dy(dy(v)))*U   (linear, non-constant coefficient U)
+Boundary conditions -> tau terms (automatic, deterministic):
+  v = 0 at walls (left: y=-1): tau_v1 lifted into mode N_y-1 of [0] Orr_Sommerfeld -- v has its highest y-order (4) there; Chebyshev lift into the last modes
+  v = 0 at walls (right: y=1): tau_v2 lifted into mode N_y-2 of [0] Orr_Sommerfeld -- v has its highest y-order (4) there; Chebyshev lift into the last modes
+  dy(v) = 0 at walls (left: y=-1): tau_v3 lifted into mode N_y-3 of [0] Orr_Sommerfeld -- v has its highest y-order (4) there; Chebyshev lift into the last modes
+  dy(v) = 0 at walls (right: y=1): tau_v4 lifted into mode N_y-4 of [0] Orr_Sommerfeld -- v has its highest y-order (4) there; Chebyshev lift into the last modes
+Dealiasing: y: 3/2 (declared default 3/2 of the native layer: max(3/2, (p+1)/2) for the highest polynomial degree p = 1 of the equations in the unknowns, exact (alias-free) products on Fourier and polynomial bases; override with dealias=)
+Bases: Chebyshev(y, size=8, bounds=(-1.0, 1.0), dealias=3/2)
+Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
+EVP result [single group (no Fourier direction)] (dense QZ (scipy.linalg.eig)): 8 finite modes kept by the filters below, 8 infinite (M singular on tau/boundary rows)
+  spectral-tail test (default, spurious='tail'): 0 of 8 modes flagged as spurious tau or unresolved modes (relative energy in the last 0.1 of the wall-normal coefficients above SPURIOUS_TAIL_TOL = 0.001); they are kept and ranked last by order()
+  kept 8 of 60 modes: resolution drift <= 1e-06 against 92 modes at the finer resolution; 52 unresolved or spurious (tau) modes removed
+  growth: growth = Im c, declared with the eigenvalue c
+  modes sorted by decreasing imag part:
+  c =  2.375264888194e-01+3.739670621163e-03j  residual 4.2e-16, drift 8.6e-12
+  c =  9.646309154726e-01-3.516727756365e-02j  residual 5.7e-16, drift 7.1e-11
+  c =  9.646425099829e-01-3.518658363628e-02j  residual 2.7e-16, drift 1.7e-10
+  c =  2.772043438891e-01-5.089872753275e-02j  residual 1.6e-15, drift 2.9e-10
+  c =  9.363165149228e-01-6.320147641683e-02j  residual 6.3e-16, drift 2.9e-08
+  c =  9.363517179151e-01-6.325156402150e-02j  residual 3.0e-16, drift 6.3e-08
+  (2 more log line(s): pencil and infinite-eigenvalue checks, solver settings: explain(full=True))
+c = 0.2375264888+0.0037396706j   backward residual 4.2e-16
+EVPMode 0 [single group (no Fourier direction)]: eigenvalue 0.237526488819+0.00373967062116j, residual 4.2e-16
+  unknowns: v (complex grid values on the non-dealiased grid, y: 64; tau variables left out)
+  normalisation: max |q| = 1 for the first non-zero unknown (declaration order), real and positive at its largest grid value; the other unknowns scaled by the same complex factor (here: v, max |v| = 1 at its largest grid value)
+CriticalPoint Re_c = 5772.221816 at alpha=1.020547442 (11 neutral-curve evaluations)
+  start: Re = 6000 (bracket midpoint (default))
+  tolerance: |dRe| <= 1e-09 |Re| + 2e-09
+  growth = Im c, declared with the eigenvalue c
+  spectral-tail test passed 35 of 60 (SPURIOUS_TAIL_TOL = 0.001); the spectral-tail test set aside 2 mode(s) of larger growth than every mode it kept (largest: sigma = 0.01709590363+2424.532428j, growth 2.425e+03, tail 1.0e+00): spurious tau or unresolved modes; raise N, or spurious='none' to select them; drift test kept 13 of 60 (resolution drift <= 1e-06 against the finer pencil [single group (no Fourier direction)] size (100, 100)) finite modes (8 infinite)
+  at the critical point: spectral-tail test passed 35 of 60 (SPURIOUS_TAIL_TOL = 0.001); the spectral-tail test set aside 2 mode(s) of larger growth than every mode it kept (largest: sigma = 0.01678229327+2495.520313j, growth 2.496e+03, tail 1.0e+00): spurious tau or unresolved modes; raise N, or spurious='none' to select them; drift test kept 14 of 60 (resolution drift <= 1e-06 against the finer pencil [single group (no Fourier direction)] size (100, 100)) finite modes (8 infinite)
+  ParametricEVP [single group (no Fourier direction)] size (68, 68): Re: exponents -1..0 (nominal 10000.0), alpha: exponents -1..3 (nominal 1.0); 5 coefficient matrices from 10 plans at roots of unity (5 identically zero dropped); reconstruction error at an independent real point 1.5e-16 (refused above 1e-10); pencil L + sM: structural rank 68/68, regular at a generic s (equilibrated sigma_min/sigma_max = 1.1e-07); mode tracking: bordered Newton, declared defaults TRACK_TOL = 1e-13, TRACK_MAX_ITERATIONS = 30
+  verification: full QZ at the critical point, tracked mode is the least stable admissible one (max growth -2.1e-13), residual 5.0e-20
+  TrackedMode sigma = 2.640002595765e-01-3.080497937910e-17j at {'alpha': np.float64(1.0205474415539748), 'Re': np.float64(5772.221816217812)}: residual 5.0e-20 after 1 bordered-Newton iterations; left vector available (sensitivities)
+Re_c = 5772.2218   alpha_c = 1.020547
+dc/dRe = -4.213e-06+3.428e-07j
+Verification report: 9 checks, 0 to investigate by hand
+  [PASS] pencil reconstruction: 1.54e-16 (threshold 1e-10) — parametric L(p), M(p) vs a directly assembled plan
+  [PASS] pencil regular: 0.00e+00 (threshold 5e-01) — pencil L + sM: structural rank 68/68, regular at a generic s (equilibrated sigma_min/sigma_max = 1.1e-07)
+  [PASS] right residual: 5.02e-20 (threshold 1e-12) — ||(L + sigma M) x|| backward error
+  [PASS] left residual: 1.28e-20 (threshold 1e-12) — ||y^H (L + sigma M)|| backward error
+  [PASS] spectral tail: 1.72e-10 (threshold 1e-08) — last 4 Chebyshev coefficients / max (mode resolved in N)
+  [PASS] d sigma/d Re Taylor test: 4.45e-09 (threshold 1e-05) — exact sensitivity vs central difference of tracked sigma
+  [PASS] d sigma/d alpha Taylor test: 7.60e-09 (threshold 1e-05) — exact sensitivity vs central difference of tracked sigma
+  [PASS] critical point mode: 0.00e+00 (threshold 5e-01) — full QZ at the critical point confirms the tracked mode is the least stable
+  [PASS] critical growth: 3.08e-17 (threshold 1e-10) — growth of the tracked mode at the neutral value
+OK: c and Re_c agree with Orszag (1971) to the published digits; alpha_c within 2e-5

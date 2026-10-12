@@ -1,0 +1,42 @@
+# Heavy / machine-specific
+scratch
+scratch/
+*.h5
+*.hdf5
+*.pt
+*.pth
+*.npz
+*.npy
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Editors
+.vscode/
+.idea/
+
+# Secrets
+.credentials.json
+.env
+wandb/
+
+# Build
+build/
+_build/
+*.so
+*.o
+CMakeCache.txt
+CMakeFiles/
+
+# Documentation site: pages generated at build time (docs/site/generate.py, autosummary)
+docs/site/*/_generated/
+
+# Tutorials run in place (t11 registry, t09 spool): local artefacts, not sources
+docs/site/tutorials/code/registry/
+docs/site/tutorials/code/spool/

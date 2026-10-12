@@ -1,0 +1,15 @@
+# conda-forge spec of the docs environment scratch/env/conatus-docs (created by build.sh --setup).
+# numpy/scipy pinned to the versions of the compute env `conatus` so that autodoc imports the same
+# library; nothing here is ever installed into `conatus`.
+python=3.12
+numpy=2.5.3
+scipy=1.17.1
+sympy
+mpmath
+matplotlib
+sphinx>=8
+myst-parser
+furo
+sphinx-copybutton
+numpydoc
+sphinx-design

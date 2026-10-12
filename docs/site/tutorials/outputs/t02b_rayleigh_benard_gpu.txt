@@ -1,0 +1,60 @@
+# t02b_rayleigh_benard_gpu: PASS (exit 0) in 14.5 s | 2026-10-02
+cpu: 27.98 ms per step
+gpu: 0.61 ms per step
+Simulation of 'Rayleigh-Benard 2D' (native model) at N = x: 128, z: 64
+Problem kind: IVP (a time derivative dt() appears)
+Term placement (IMEX split, automatic; override with implicit(...) / explicit(...)):
+  [0] momentum
+      implicit  grad(p)   (linear, constant coefficients)
+      implicit  -Pr*lap(u)   (linear, constant coefficients)
+      implicit  dt(u)   (linear, constant coefficients)
+      explicit  -dot(u, grad(u))   (nonlinear, degree(s) [2] in the unknowns)
+      implicit  -Ra*Pr*T*ez   (linear, constant coefficients; moved from the right side)
+  [1] continuity
+      implicit  div(u)   (linear, constant coefficients)
+  [2] heat
+      implicit  dt(T)   (linear, constant coefficients)
+      implicit  -lap(T)   (linear, constant coefficients)
+      explicit  dot(-u, grad(T))   (nonlinear, degree(s) [2] in the unknowns)
+Boundary conditions -> tau terms (automatic, deterministic):
+  u = 0 at bottom: tau_u1 lifted into mode 63 (N_z-1) of [0] momentum -- u has its highest z-order (2) there; Chebyshev lift into the last modes
+  u = 0 at top: tau_u2 lifted into mode 62 (N_z-2) of [0] momentum -- u has its highest z-order (2) there; Chebyshev lift into the last modes
+  T = 0.5 at bottom: tau_T1 lifted into mode 63 (N_z-1) of [2] heat -- T has its highest z-order (2) there; Chebyshev lift into the last modes
+  T = -0.5 at top: tau_T2 lifted into mode 62 (N_z-2) of [2] heat -- T has its highest z-order (2) there; Chebyshev lift into the last modes
+Incompressibility recognized: p enters only through grad(p) and has no condition; [1] continuity is its constraint (div(u), no time derivative):
+  gauge tau tau_p (a constant) added to [1]; integral constraint integ(p) = 0 fixes the mean p
+  divergence tau dot(ez, lift(tau_u2, z, -1)) (the velocity tau of the lowest lifted mode)
+Dealiasing: x: 3/2, z: 3/2 (declared default 3/2 of the native layer; override with dealias=)
+Bases: RealFourier(x, size=128, bounds=(0.0, 2.0), dealias=3/2); Chebyshev(z, size=64, bounds=(-0.5, 0.5), dealias=3/2)
+Initial state: T given; u, p start at zero
+IVPSolver(scheme=RK443, dt=0.0002, constant step, backend=cuda)
+  scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage explicit on F; global order 3 (Ascher, Ruuth & Spiteri 1997, (4,4,3))
+GlobalSystem: 64 group(s), 33275 unknowns (full space), dtype float64, ordering=interleaved, complexify=False
+  2 solver bucket(s) (groups sharing one sparsity pattern, batched GPU bordered banded solves, one warp per mode)
+  [x: k=0] n=263, border rows=7, band kl=12 ku=18
+  [x: k=3.14159] n=524, border rows=12, band kl=24 ku=37
+  0 complexified bucket(s)
+  state resident on the device (CuPy), pivot=partial
+  solves: gather/scatter fused in the solve kernel, independent buckets on concurrent streams, level-scheduled sparse LU factors (same factors and per-row arithmetic as the band kernel)
+  F: pseudospectral CuPy (GPU) evaluator, products on each basis' declared dealiased grid; linear solves: C++ bordered banded, batched per bucket
+FusedRHS (polynomial form): 8 factors -> 3 outputs, real, one batched transform each way, one fused kernel
+  factor u[0]
+  factor dx^1u[0]
+  factor dz^1u[0]
+  factor u[1]
+  factor dx^1u[1]
+  factor dz^1u[1]
+  factor dx^1T
+  factor dz^1T
+  eq 0[0]: 2 monomials
+  eq 0[1]: 2 monomials
+  eq 2: 2 monomials
+  real projection on RealFourier grids checked: imaginary part <= 1e-13 relative, error otherwise (GPU: accumulated on the device, checked after each step / replayed block)
+  derivatives of products are refused (no Leibniz rewrite); parameters frozen, recompiled when they change
+  F: 2D RealFourier x Chebyshev pipeline (8 factors -> 3 outputs, grid 192 x 96): factors from X (one block per Fourier pair), cuFFT (Chebyshev DCT by length-M real FFTs (Makhoul), then x), fused products, cuFFT back, C^(lam) conversion into the stacked rows; ~10 kernels per evaluation; same numbers as the fused evaluator to FFT rounding
+  step loop: Python loop over steps; step() launches every kernel from the host, run_graph(n) captures one step as a CUDA graph and replays it once per step (same kernels, same arithmetic; constant dt, F independent of t)
+  per stage: RK stage right-hand side MX0 + sum dt a F - dt h L X in one kernel for real float64 states (M X and L X applied inside it, roundings identical to the array operations; timestep/lincomb.py), then the batched solve
+gpu + CUDA graph: 0.67 ms per step
+after 20 steps: relative max |T_cpu - T_gpu| = 8.6e-15; graph vs plain = 0.0e+00
+after 200 steps: max |T_cpu - T_gpu| = 9.1e-07 (rounding amplified by the instability)
+OK: CPU and GPU agree to rounding; the graph replay is the same computation

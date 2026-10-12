@@ -1,0 +1,3 @@
+LBVP solution on a mapped domain: one coupled system, relative residual 2.24e-16 (sparse LU, scipy SuperLU)
+grid: (2, 16, 24) | z of the bottom row runs from -0.0089 to 0.0111
+max |u_x - (z + eps u_1)| = 4.30e-04 = 4.30 eps^2

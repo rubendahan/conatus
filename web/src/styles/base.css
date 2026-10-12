@@ -1,0 +1,162 @@
+/* Conatus website — base layer: reset, typography, layout primitives.
+   Colours come only from tokens.css (brand charter). One vivid colour per view:
+   rubric (--cn-accent) on paper, fluorescein (--cn-signal) on lab black. */
+
+@import "@fontsource/im-fell-english/400-italic.css";
+@import "@fontsource/im-fell-english-sc/400.css";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/400-italic.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/600.css";
+
+/* IM Fell English regular, declared here rather than imported so it can use font-display: optional:
+   it sets the page titles (the largest paint), which then never re-render late on a slow connection;
+   the file is preloaded (scripts/prerender.mjs), so on ordinary connections it is used from the first
+   paint, and it is always used once cached. Same file and unicode-range as @fontsource. */
+@font-face {
+  font-family: "IM Fell English";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 400;
+  src: url("@fontsource/im-fell-english/files/im-fell-english-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --cn-max: 72rem;          /* reading grid */
+  --cn-max-text: 42rem;     /* measure for prose */
+  --cn-gutter: clamp(1rem, 4vw, 2.5rem);
+  --cn-header-h: 3.75rem;
+  --cn-code-bg: #E3DCCD;
+  --cn-code-text: var(--cn-ink);
+  --cn-plate: var(--cn-lab);
+  --cn-plate-text: var(--cn-silver);
+  --cn-plate-muted: #A3A29D;
+  --cn-focus: var(--cn-accent);
+  --cn-shadow: 0 1px 0 rgba(21, 19, 16, 0.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --cn-code-bg: #141413; --cn-code-text: var(--cn-silver); --cn-focus: var(--cn-dye); }
+}
+:root[data-theme="dark"] { --cn-code-bg: #141413; --cn-code-text: var(--cn-silver); --cn-focus: var(--cn-dye); }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: calc(var(--cn-header-h) + 1rem); }
+body {
+  margin: 0;
+  background: var(--cn-bg);
+  color: var(--cn-text);
+  font-family: var(--cn-font-text);
+  font-size: var(--cn-size-body);
+  line-height: 1.6;
+  font-feature-settings: "kern" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img, svg, video, canvas { max-width: 100%; display: block; }
+img { height: auto; }
+button, input, select { font: inherit; color: inherit; }
+::selection { background: var(--cn-accent); color: var(--cn-bg); }
+
+/* ---------- typography ---------- */
+h1, h2, h3, .display {
+  font-family: var(--cn-font-display);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: 0;
+  margin: 0 0 0.5em;
+  text-wrap: balance;
+}
+/* Display sizes open up above the token scale on wide screens (h1 3.05rem → 4.2rem), the ratio kept. */
+h1 { font-size: clamp(2.5rem, 6.2vw, 4.2rem); line-height: 1.02; letter-spacing: -0.005em; }
+h2 { font-size: clamp(1.7rem, 3.6vw, 2.55rem); line-height: 1.08; }
+h3 { font-size: var(--cn-size-h3); }
+h4 { font-family: var(--cn-font-text); font-size: 1rem; font-weight: 600; margin: 0 0 0.4em; }
+p { margin: 0 0 1em; text-wrap: pretty; }
+/* links: rubric on paper, fluorescein on lab black (one vivid colour per view) */
+a { color: var(--cn-signal); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+code, kbd, pre, .mono { font-family: var(--cn-font-code); font-size: 0.875em; }
+/* No programming ligatures (W1: JetBrains Mono drew ">=" as one glyph; a reader retyping a line typed
+   the wrong thing). */
+code, kbd, pre, samp, .mono { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+:not(pre) > code { background: var(--cn-surface); padding: 0.08em 0.3em; border-radius: var(--cn-radius); }
+kbd { border: 1px solid var(--cn-rule); border-bottom-width: 2px; border-radius: 3px; padding: 0 0.35em; font-size: 0.78em; color: var(--cn-muted); }
+small, .caption { font-size: var(--cn-size-caption); color: var(--cn-muted); }
+.muted { color: var(--cn-muted); }
+.num, table { font-variant-numeric: tabular-nums lining-nums; }
+.caps { font-family: var(--cn-font-caps); letter-spacing: 0.02em; }
+.eyebrow {
+  display: flex; align-items: center; gap: 0.7rem;
+  font-family: var(--cn-font-text); font-size: 0.75rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--cn-muted); margin: 0 0 1rem;
+}
+.eyebrow::before { content: ""; width: 1.5rem; height: 1px; background: currentColor; flex: none; }
+.lede { font-size: clamp(1.08rem, 1.6vw, 1.22rem); line-height: 1.58; color: var(--cn-text); max-width: 40rem; }
+blockquote { margin: 0; }
+hr { border: 0; border-top: var(--cn-rule-w) solid var(--cn-rule); margin: 2.5rem 0; }
+
+/* ---------- focus and accessibility ---------- */
+:focus-visible { outline: 2px solid var(--cn-focus); outline-offset: 2px; border-radius: 1px; }
+.skip-link {
+  position: absolute; left: 0.75rem; top: -3rem; z-index: 100; padding: 0.5rem 0.9rem;
+  background: var(--cn-text); color: var(--cn-bg); border-radius: var(--cn-radius); text-decoration: none;
+}
+.skip-link:focus { top: 0.75rem; }
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- layout primitives ---------- */
+.wrap { width: 100%; max-width: var(--cn-max); margin: 0 auto; padding: 0 var(--cn-gutter); }
+.wrap-text { max-width: calc(var(--cn-max-text) + 2 * var(--cn-gutter)); }
+.section { padding: clamp(3.5rem, 9vw, 7rem) 0; border-top: var(--cn-rule-w) solid var(--cn-rule); }
+.section:first-of-type { border-top: 0; }
+.section-head { max-width: 46rem; margin-bottom: clamp(2rem, 5vw, 3.25rem); }
+.section-head h2 { margin-bottom: 0.9rem; }
+.section-intro, .section-intro p { font-size: 1.08rem; line-height: 1.6; color: var(--cn-muted); max-width: 40rem; }
+.section-intro p:last-child { margin-bottom: 0; }
+
+/* Laboratory bands (brand charter world B): black plates between the paper sections, in both themes.
+   Inside, the vivid colour is fluorescein. In the dark theme the band is set one step lighter than
+   the page so the alternation still reads. */
+.lab {
+  --cn-bg: var(--cn-lab); --cn-surface: #161615; --cn-text: var(--cn-silver); --cn-muted: #A3A29D;
+  --cn-rule: #2A2A28; --cn-accent: var(--cn-dye); --cn-signal: var(--cn-dye); --cn-focus: var(--cn-dye);
+  --cn-code-bg: #121211; --cn-code-text: var(--cn-silver);
+  background: var(--cn-bg); color: var(--cn-text); color-scheme: dark; border-top: 0;
+}
+.lab + .section, .section + .lab { border-top: 0; }
+.lab ::selection { background: var(--cn-dye); color: var(--cn-lab); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lab { --cn-bg: #131312; --cn-code-bg: #0B0B0B; --cn-surface: #1C1C1B; } }
+:root[data-theme="dark"] .lab { --cn-bg: #131312; --cn-code-bg: #0B0B0B; --cn-surface: #1C1C1B; }
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); }
+.stack > * + * { margin-top: 1rem; }
+.row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.page-head { padding-top: clamp(2.5rem, 7vw, 5rem); padding-bottom: clamp(0.5rem, 2vw, 1.5rem); }
+.page-head + .section, .page-head + nav + .section { border-top: 0; }
+.page-head h1 { max-width: 20ch; }
+.page-head .lede { margin-top: 1.25rem; color: var(--cn-muted); }
+.page-head .lede p { margin: 0 0 0.8em; }
+.prose { max-width: var(--cn-max-text); }
+.prose h2 { margin-top: 2.2em; }
+.prose h3 { margin-top: 1.8em; }
+.prose ul, .prose ol { padding-left: 1.2rem; }
+.prose li { margin: 0.3em 0; }
+
+/* ---------- print ---------- */
+@media print {
+  .site-header, .site-footer, .no-print { display: none !important; }
+  body { background: #fff; color: #000; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}

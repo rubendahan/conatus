@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Conatus">
+    
+    <circle cx="16.0" cy="16.0" r="13.50" fill="none" stroke="#151310" stroke-width="3"/>
+    <circle cx="16.0" cy="16.0" r="8.827" fill="none" stroke="#151310" stroke-width="1.6"/>
+    <circle cx="16.0" cy="16.0" r="7.483" fill="none" stroke="#151310" stroke-width="1.6"/>
+    <circle cx="16.0" cy="16.0" r="5.000" fill="none" stroke="#151310" stroke-width="1.6"/>
+    <circle cx="16.0" cy="16.0" r="1.756" fill="none" stroke="#151310" stroke-width="1.6"/>
+    <circle cx="16.0" cy="16.0" r="1.6" fill="#151310"/>
+</svg>

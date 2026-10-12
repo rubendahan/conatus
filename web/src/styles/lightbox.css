@@ -1,0 +1,78 @@
+/* Gallery lightbox (components/Lightbox.tsx): lab black in both themes (world B), silver text,
+   fluorescein only for focus. Full viewport; the image stage takes the free space, the caption sits
+   below it (scrollable on phones). */
+html.lb-lock, html.lb-lock body { overflow: hidden; }
+.lb {
+  position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; background: var(--cn-lab); color: var(--cn-silver); overflow: hidden;
+  opacity: 1; transition: background-color 280ms cubic-bezier(0.2, 0, 0, 1);
+}
+.lb::backdrop { background: var(--cn-lab); }
+.lb.is-opening, .lb.is-closing { background-color: rgba(11, 11, 11, 0); }
+.lb.is-opening::backdrop, .lb.is-closing::backdrop { background: transparent; }
+.lb.is-opening .lb-bar, .lb.is-opening .lb-info, .lb.is-opening .lb-nav,
+.lb.is-closing .lb-bar, .lb.is-closing .lb-info, .lb.is-closing .lb-nav { opacity: 0; }
+.lb-bar, .lb-info, .lb-nav { transition: opacity 200ms linear; }
+.lb :focus-visible { outline: 2px solid var(--cn-dye); outline-offset: 2px; }
+
+.lb-frame {
+  display: grid; height: 100%;
+  grid-template-columns: 3.5rem minmax(0, 1fr) 3.5rem;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: "bar bar close" "prev stage next" "info info info";
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.lb-bar {
+  grid-area: bar; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.5rem 0.75rem 0.5rem var(--cn-gutter); min-width: 0;
+}
+.lb-close { grid-area: close; align-self: center; justify-self: center; }
+.lb-count { margin: 0; font-family: var(--cn-font-code); font-size: 0.75rem; color: #A3A29D; }
+.lb-count .fig-num { font-family: var(--cn-font-text); color: var(--cn-silver); }
+.lb-btn {
+  display: inline-grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0;
+  background: transparent; border: 1px solid rgba(237, 235, 230, 0.22); border-radius: 50%;
+  color: var(--cn-silver); cursor: pointer;
+}
+.lb-btn:hover { border-color: var(--cn-silver); }
+.lb-btn svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+.lb-stage {
+  grid-area: stage; position: relative; display: grid; place-items: center; min-height: 0; overflow: hidden;
+  touch-action: none; cursor: zoom-in; user-select: none; -webkit-user-select: none; container-type: size;
+}
+.lb-stage.is-zoomed { cursor: grab; }
+.lb-stage.is-zoomed:active { cursor: grabbing; }
+.lb-img {
+  /* fitted from the known aspect ratio (--ar = width / height), so the box is right before the image decodes */
+  display: block; width: min(100cqw, 100cqh * var(--ar, 2)); height: auto; aspect-ratio: var(--ar, 2);
+  transform-origin: 50% 50%; will-change: transform; -webkit-user-drag: none;
+}
+.lb-nav { display: contents; }
+.lb-prev { grid-area: prev; align-self: center; justify-self: center; }
+.lb-next { grid-area: next; align-self: center; justify-self: center; }
+
+.lb-info {
+  grid-area: info; max-width: 60rem; width: 100%; margin: 0 auto; padding: 0.9rem var(--cn-gutter) 1.1rem;
+  max-height: 34vh; overflow-y: auto; border-top: 1px solid rgba(237, 235, 230, 0.12);
+}
+.lb-title { font-size: 1.5rem; margin: 0 0 0.35rem; color: var(--cn-silver); }
+.lb-caption { font-size: 0.88rem; line-height: 1.55; color: #D6D4CE; margin: 0 0 0.6rem; }
+.lb-prov { display: grid; gap: 0.2rem; margin: 0; font-size: var(--cn-size-caption); color: #A3A29D; }
+.lb-prov code, .lb-prov .run-id, .lb-prov .repo-path { background: rgba(237, 235, 230, 0.07); color: var(--cn-silver); }
+.lb-prov a { color: var(--cn-silver); }
+.lb-hint { margin: 0.6rem 0 0; font-size: 0.72rem; color: #8A8A86; }
+
+@media (max-width: 700px) {
+  .lb-frame {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-areas: "bar prev next close" "stage stage stage stage" "info info info info";
+    column-gap: 0.4rem;
+  }
+  .lb-bar { padding-right: 0; }
+  .lb-prev, .lb-next, .lb-close { align-self: center; }
+  .lb-close { margin-right: 0.75rem; }
+  .lb-btn { width: 2.5rem; height: 2.5rem; }
+  .lb-info { max-height: 40vh; }
+  .lb-title { font-size: 1.3rem; }
+}

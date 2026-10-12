@@ -1,0 +1,46 @@
+/* Gallery page: large plates on lab black, a metadata column set as a ledger (hairline rows,
+   small-caps terms, tabular values). The lightbox is in lightbox.css. */
+.gallery-section { border-top: 0; padding-top: 0.5rem; }
+.gplates { display: grid; gap: clamp(3rem, 7vw, 5.5rem); }
+.gplate {
+  display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: clamp(1.25rem, 3vw, 2.5rem);
+  align-items: start; scroll-margin-top: calc(var(--cn-header-h) + 1rem);
+}
+.gplate-fig { margin: 0; min-width: 0; }
+.gplate-img {
+  position: relative; display: block; background: var(--cn-lab); border-radius: var(--cn-radius); overflow: hidden;
+  cursor: zoom-in;
+}
+.gplate-img img { width: 100%; }
+.gplate-open {
+  position: absolute; right: 0.6rem; bottom: 0.6rem; display: grid; place-items: center; width: 2rem; height: 2rem;
+  border: 1px solid rgba(237, 235, 230, 0.3); border-radius: 50%; background: rgba(11, 11, 11, 0.5); color: var(--cn-silver);
+  transition: border-color 0.2s;
+}
+.gplate-open svg { width: 0.85rem; height: 0.85rem; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.gplate-img:hover .gplate-open, .gplate-img:focus-visible .gplate-open { border-color: var(--cn-silver); }
+.gplate-img:focus-visible { outline: 2px solid var(--cn-focus); outline-offset: 3px; }
+.gplate .plate-caption { max-width: 48rem; }
+
+.gplate-meta { min-width: 0; }
+.gplate-kicker {
+  display: flex; align-items: baseline; gap: 0.7rem; margin: 0 0 0.6rem; font-size: var(--cn-size-ui);
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--cn-muted);
+}
+.gplate-n { font-family: var(--cn-font-code); font-size: 0.78rem; letter-spacing: 0; color: var(--cn-accent); }
+.gplate-meta h2 { font-size: clamp(1.45rem, 2.4vw, 1.8rem); line-height: 1.15; margin-bottom: 1rem; }
+.gplate-dl { margin: 0; font-size: 0.9rem; border-top: 1px solid var(--cn-text); }
+.gplate-dl > div {
+  display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.75rem; padding: 0.6rem 0;
+  border-bottom: 1px solid var(--cn-rule);
+}
+.gplate-dl dt {
+  color: var(--cn-muted); font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em;
+  padding-top: 0.2rem;
+}
+.gplate-dl dd { margin: 0; min-width: 0; line-height: 1.5; overflow-wrap: anywhere; font-variant-numeric: tabular-nums lining-nums; }
+.gplate-value { font-weight: 500; }
+@media (max-width: 900px) {
+  .gplate { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+  .gplate-dl > div { grid-template-columns: 5.5rem minmax(0, 1fr); }
+}

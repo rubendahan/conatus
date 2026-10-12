@@ -1,0 +1,37 @@
+{
+  "name": "conatus-website",
+  "private": true,
+  "version": "0.1.0-preview",
+  "type": "module",
+  "description": "Conatus website (static, prerendered). Sources only; build with web/build.sh.",
+  "scripts": {
+    "data": "node scripts/gen-data.mjs",
+    "dev": "npm run data && vite",
+    "build:client": "vite build --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "prerender": "node scripts/prerender.mjs",
+    "build": "npm run data && tsc --noEmit && npm run build:client && npm run build:server && npm run prerender",
+    "preview": "vite preview --outDir dist/client",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "@fontsource/im-fell-english": "^5.3.0",
+    "@fontsource/im-fell-english-sc": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "minisearch": "^7.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.6"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "lighthouse": "^13.5.0",
+    "puppeteer": "^25.12.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1"
+  }
+}

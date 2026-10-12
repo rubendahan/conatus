@@ -1,0 +1,68 @@
+/* Conatus website — styles of the information pages (Install, Paper, Citing, 404). */
+.info-kv { display: grid; grid-template-columns: minmax(8rem, 14rem) 1fr; gap: 0; margin: 0; border-top: 1px solid var(--cn-rule); }
+.info-kv dt, .info-kv dd { margin: 0; padding: 0.75rem 1rem 0.75rem 0; border-bottom: 1px solid var(--cn-rule); }
+.info-kv dt { font-weight: 600; font-size: var(--cn-size-ui); }
+.info-kv dd { color: var(--cn-text); min-width: 0; }
+.info-kv dd .caption { display: block; margin-top: 0.2rem; }
+@media (max-width: 560px) {
+  .info-kv { grid-template-columns: 1fr; }
+  .info-kv dt { border-bottom: 0; padding-bottom: 0; }
+}
+.info-cols { display: grid; gap: 2.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); align-items: start; }
+.info-cols > * { min-width: 0; }
+
+/* ---------- tabs (Install: CPU / GPU) ---------- */
+.info-tablist { display: flex; gap: 0; border-bottom: 1px solid var(--cn-rule); margin-bottom: 1.5rem; }
+.info-tab {
+  background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  padding: 0.7rem 1.1rem; cursor: pointer; font-size: var(--cn-size-ui); font-weight: 500; color: var(--cn-muted);
+}
+.info-tab[aria-selected="true"] { color: var(--cn-text); border-bottom-color: var(--cn-accent); }
+.info-tab:hover { color: var(--cn-text); }
+.info-panel > h3 { margin-top: 0; }
+.info-panel + .info-panel { margin-top: 2.5rem; }        /* both panels visible before hydration */
+.info-tabs.is-ready .info-panel + .info-panel { margin-top: 0; }
+
+/* ---------- numbered steps ---------- */
+.info-steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: 1.6rem; }
+.info-steps > li { counter-increment: step; display: grid; grid-template-columns: 2.4rem 1fr; gap: 0 0.9rem; min-width: 0; }
+.info-steps > li::before {
+  content: counter(step); grid-row: 1 / span 3;
+  font-family: var(--cn-font-display); font-size: 1.5rem; line-height: 1; color: var(--cn-accent);
+  border: 1px solid var(--cn-rule); border-radius: 50%; width: 2.4rem; height: 2.4rem;
+  display: grid; place-items: center;
+}
+.info-steps > li > * { grid-column: 2; min-width: 0; }
+.info-steps h4, .info-steps .rule-h { margin-top: 0.45rem; }
+.info-steps p { margin: 0 0 0.6rem; }
+
+/* ---------- paper ---------- */
+.info-paper-title { font-family: var(--cn-font-display); font-size: clamp(1.4rem, 3vw, 1.85rem); line-height: 1.25; margin: 0 0 0.6rem; }
+.info-abstract {
+  border-top: 1px solid var(--cn-text); border-bottom: 1px solid var(--cn-rule);
+  padding: 1.4rem 0 0.6rem; margin-top: 2rem; max-width: var(--cn-max-text);
+}
+.info-abstract p { font-size: 1.02rem; }
+.info-abstract .caps { font-size: 1.125rem; color: var(--cn-accent); display: block; margin-bottom: 0.4rem; }
+.info-outline { list-style: none; counter-reset: sec; margin: 0; padding: 0; border-top: 1px solid var(--cn-rule); }
+.info-outline > li { counter-increment: sec; display: grid; grid-template-columns: 3rem 1fr; gap: 0 1rem; padding: 1rem 0; border-bottom: 1px solid var(--cn-rule); }
+.info-outline > li::before { content: counter(sec, decimal-leading-zero); font-family: var(--cn-font-code); font-size: 0.8rem; color: var(--cn-accent); line-height: 2.1; }
+.info-outline h3 { font-size: 1.25rem; margin: 0 0 0.25rem; }
+.info-outline p { margin: 0; color: var(--cn-muted); font-size: 0.95rem; }
+
+/* ---------- 404 ---------- */
+.info-404 { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2.5rem; align-items: center; padding: clamp(3rem, 9vw, 6rem) 0; }
+.info-404-mark { color: var(--cn-muted); }
+.info-404 h1 { margin-bottom: 0.3rem; }
+.info-404 .eyebrow { margin-bottom: 0.4rem; }
+.info-err { margin: 1.4rem 0 1.8rem; border: 1px solid var(--cn-rule); border-left: 2px solid var(--cn-accent); background: var(--cn-code-bg); color: var(--cn-code-text); padding: 1rem 1.1rem; font-family: var(--cn-font-code); font-size: 0.84rem; line-height: 1.7; overflow-wrap: anywhere; max-width: 44rem; }
+.info-err p { margin: 0; }
+.info-err .info-err-kind { color: var(--cn-accent); font-weight: 600; }
+.info-err .info-err-key { color: var(--cn-muted); display: inline-block; min-width: 4.5rem; }
+@media (max-width: 640px) {
+  .info-404 { grid-template-columns: 1fr; gap: 1.5rem; }
+  .info-404-mark svg { width: 88px; height: 88px; }
+}
+.info-404 button.btn-ghost { background: transparent; font-family: inherit; }
+
+.rule-h { font-family: var(--cn-font-text); font-size: 1rem; font-weight: 600; margin: 0 0 0.3rem; }

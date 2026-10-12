@@ -1,0 +1,6 @@
+ CNAB1: error 6.02e-04 at dt = 0.01, observed order 1.01
+ CNAB2: error 1.49e-06 at dt = 0.01, observed order 2.02
+MCNAB2: error 1.10e-06 at dt = 0.01, observed order 2.03
+ CNLF2: error 1.94e-05 at dt = 0.01, observed order 2.00
+ RKSMR: error 5.98e-08 at dt = 0.01, observed order 2.11
+ RKGFY: error 1.37e-06 at dt = 0.01, observed order 2.01

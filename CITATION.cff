@@ -1,0 +1,19 @@
+# Citation metadata (https://citation-file-format.github.io).
+cff-version: 1.2.0
+message: "If you use Conatus, please cite the software."
+title: "Conatus: spectral PDEs and dynamical systems"
+type: software
+authors:
+  - family-names: Dahan
+    given-names: Ruben
+version: 0.1.0
+date-released: 2026-10-12
+license: BSD-3-Clause
+repository-code: "https://github.com/rubendahan/conatus"
+url: "https://rubendahan.github.io/conatus/"
+keywords:
+  - spectral methods
+  - partial differential equations
+  - GPU
+  - hydrodynamic stability
+  - dynamical systems

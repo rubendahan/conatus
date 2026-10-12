@@ -1,0 +1,35 @@
+# t15_ks_covariant: PASS (exit 0) in 47.1 s | 2026-10-10
+Lyapunov spectrum of the discrete map (RK443, dt = 0.05, backend = cpu): 12 vector(s), 4 trajectory(ies)
+  transient 2000 steps, tangent transient 1000 steps, average over T = 200 per trajectory (400 QR every 10 steps = 0.5)
+  inner product: Euclidean on the coefficient vector; projection: zero mean: the wavenumber-zero coefficient of u set to 0 in every tangent vector (1 component(s) of the state vector); seed 1
+  error: standard error of 16 block means (4 per trajectory), max |lag-1 corr| = 0.58
+  λ1   = +0.04621 ± 0.00764   (CLV growth +0.05199)
+  λ2   = +0.01029 ± 0.00604   (CLV growth -0.00273)
+  λ3   = -0.00203 ± 0.00469   (CLV growth -0.01073)
+  λ4   = -0.01404 ± 0.00657   (CLV growth -0.03727)
+  λ5   = -0.19905 ± 0.01423   (CLV growth -0.17382)
+  λ6   = -0.24069 ± 0.00884   (CLV growth -0.29031)
+  λ7   = -0.29359 ± 0.01117   (CLV growth -0.29710)
+  λ8   = -0.31376 ± 0.00784   (CLV growth -0.31540)
+  λ9   = -1.96142 ± 0.00567   (CLV growth -1.95551)
+  λ10  = -1.96677 ± 0.00378   (CLV growth -1.96138)
+  λ11  = -5.60755 ± 0.00210   (CLV growth -5.60392)
+  λ12  = -5.60776 ± 0.00202   (CLV growth -5.60537)
+  sum = -16.15014
+  Kaplan–Yorke dimension = 4.2031 ± 0.0787
+  covariant vectors (Ginelli et al. 2007): 80 kept time(s) x 4 trajectory(ies), window 80 interval(s) after a backward transient of 80, kept every 1
+  memory: checkpointed: 8 checkpoint(s) (Q, X) every 20 interval(s), 160 R matrices, one segment of at most 20 Q_j recomputed at a time: 1.05 MiB instead of 2.67 MiB, for one extra forward pass over the 160 stored intervals
+  recomputed R vs stored R: max relative difference 0.00e+00
+  backward convergence (sine of the angle between the CLVs of two independent random backward starts): max 1.00e+00 (worst vector 8); slow for nearly equal exponents (rate λ_i-1 - λ_i): lengthen clv_backward if it matters
+  subspace convergence per split j (span(γ_j+1..γ_k), two starts, largest sine; rate λ_j - λ_j+1): 1.0e+00, 1.0e+00, 8.6e-01, 1.3e-01, 4.9e-01, 1.0e+00, 1.0e+00, 6.4e-15, 9.9e-01, 5.4e-15, 8.9e-01
+  covariance residual (sine of the angle between J γ_i(t_j) and γ_i(t_j+1) over one interval; consistency of the stored factors with the tangent): max 5.57e-15 (vector 11); largest ratio to its rounding floor eps exp((λ_1 - λ_i) Δt): 5.43 (vector 7)
+  smallest principal angle between span(γ_1..γ_j) and the rest, j = 1..11: 0.00483, 0.000164, 0.000597, 0.000841, 0.00916, 0.0106, 0.0278, 0.448, 0.0881, 0.94, 0.0641 rad
+  note: 12 of 31 exponents computed: sum and Kaplan–Yorke use these only
+  note: native: sim.lyapunov on 'Kuramoto-Sivashinsky L=22' (transient 100, align 50, T 200 per trajectory, CLV window 40 ending 40 before the end); the simulation's own state is not advanced
+Domination of the Oseledets splitting at tau = 5: 32 samples (windows x trajectories), 12 covariant vectors
+  violation fraction across each split j | j+1 (largest nu_ij, i <= j < l): 1:0.406, 2:0.406, 3:0.469, 4:0.219, 5:0.125, 6:0.406, 7:0.344, 8:0, 9:0.406, 10:0, 11:0.344
+  clusters of entangled modes (any observed violation joins them): 1-8, 9-10, 11-12
+  physical modes (leading entangled cluster): 8; the split after it has violation 0 and smallest principal angle 0.448 rad (its subspaces converged to 6.4e-15)
+  a violation fraction is a sample estimate: 0 means none observed in 32 samples; modes near k may entangle with modes not computed
+smallest angle at the split 8 | 9: 0.448 rad; at 4 | 5: 0.0008 rad (47% of the samples below 0.1 rad)
+checks passed: exponents within their errors of CDS 2010, eight physical modes

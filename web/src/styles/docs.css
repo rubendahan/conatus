@@ -1,0 +1,13 @@
+/* Documentation page: sections of entry cards (links to site pages or to the Sphinx pages under /docs/). */
+.doc-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
+.doc-entry {
+  display: block; padding: 1.1rem 1.2rem 1rem; border: 1px solid var(--cn-rule); border-radius: var(--cn-radius);
+  color: var(--cn-text); text-decoration: none; background: var(--cn-bg);
+}
+.doc-entry.is-link { transition: border-color 0.2s; }
+.doc-entry.is-link:hover { border-color: var(--cn-text); text-decoration: none; }
+.doc-entry.is-link:hover h3 { color: var(--cn-accent); }
+.doc-entry h3 { font-size: 1.3rem; margin: 0 0 0.35rem; }
+.doc-entry p { margin: 0; font-size: 0.93rem; line-height: 1.55; color: var(--cn-muted); }
+.doc-sec { padding: clamp(2rem, 5vw, 3rem) 0; }
+.doc-sec .section-head { margin-bottom: 1.25rem; }

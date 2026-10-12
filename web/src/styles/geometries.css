@@ -1,0 +1,12 @@
+/* Geometries page: one row per geometry (name and declaring line, then text), hairline rules. */
+.geo-list { margin: 0 0 1.5rem; border-top: 1px solid var(--cn-rule); }
+.geo-row { display: grid; grid-template-columns: minmax(0, 18rem) minmax(0, 1fr); gap: 0.5rem 2rem; padding: 1.25rem 0; border-bottom: 1px solid var(--cn-rule); scroll-margin-top: calc(var(--cn-header-h) + 1rem); }
+.geo-row dt { margin: 0; }
+.geo-row dd { margin: 0; }
+.geo-name { font-size: 1.35rem; margin: 0 0 0.35rem; }
+.geo-code { font-size: 0.82rem; overflow-wrap: anywhere; }
+.geo-row p { margin: 0 0 0.5rem; font-size: 0.97rem; }
+.geo-meta { color: var(--cn-muted); font-size: 0.9rem !important; }
+.geo-meta span { font-size: var(--cn-size-caption); letter-spacing: 0.06em; text-transform: uppercase; margin-right: 0.4rem; }
+.geo-uses { color: var(--cn-muted); font-size: 0.9rem !important; }
+@media (max-width: 760px) { .geo-row { grid-template-columns: minmax(0, 1fr); } }

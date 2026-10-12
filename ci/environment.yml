@@ -1,0 +1,22 @@
+# CPU environment of the GitHub Actions CI (.github/workflows/ci.yml): compiler, build tools,
+# LAPACK/BLAS for the C++ core, and the test dependencies. No CUDA: the GPU tests skip themselves.
+name: conatus-ci
+channels: [conda-forge]
+dependencies:
+  - python=3.12
+  - gxx_linux-64=13
+  - cmake>=3.27
+  - ninja
+  - nanobind
+  - numpy
+  - scipy
+  - sympy
+  - mpmath
+  - liblapack
+  - libblas
+  - h5py
+  - matplotlib-base
+  - pytest
+  - pytest-xdist
+  - hypothesis
+  - ruff=0.16.9

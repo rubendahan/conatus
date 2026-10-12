@@ -1,0 +1,144 @@
+[build-system]
+# scikit-build-core drives CMakeLists.txt: `pip install .` compiles the C++ core conatus._core
+# (nanobind) and installs it inside the conatus package (install rule in core/CMakeLists.txt).
+requires = ["scikit-build-core>=0.10", "nanobind>=2.0"]
+build-backend = "scikit_build_core.build"
+
+# ---------------------------------------------------------------------------------------------------
+# Installing
+#   Binary wheels: `pip install conatus` (CPU, PyPI); the CUDA 12 wheel (beta) is attached to the
+#   GitHub release. From source, LAPACK and BLAS are NOT pip dependencies: they are taken from the
+#   active conda env only ($CONDA_PREFIX, no system fallback, core/CMakeLists.txt), so install them
+#   first (there is no FFT library in the core):
+#     micromamba install -c conda-forge python=3.12 gxx_linux-64=13 liblapack libblas
+#   CPU only (default, CONATUS_CUDA=OFF), with what the tutorials need (matplotlib):
+#     pip install ".[tutorials]"
+#   With the CUDA backend (nvcc + cuFFT/cuBLAS from the env, archs 80;89 unless overridden):
+#     pip install . -Ccmake.define.CONATUS_CUDA=ON \
+#                   -Ccmake.define.CMAKE_CUDA_COMPILER=$CONDA_PREFIX/bin/nvcc \
+#                   -Ccmake.define.CUDAToolkit_ROOT=$CONDA_PREFIX
+#   Dependencies elsewhere: -Ccmake.define.CONATUS_DEPS_PREFIX=<prefix> (or LAPACK_LIB, BLAS_LIB).
+# ---------------------------------------------------------------------------------------------------
+
+[project]
+name = "conatus"
+dynamic = ["version"]          # single source: __version__ in python/conatus/__init__.py
+description = "A high-performance mathematical laboratory for PDEs and dynamical systems"
+readme = "README.md"
+authors = [{ name = "Ruben Dahan" }]
+maintainers = [{ name = "Ruben Dahan" }]
+license = "BSD-3-Clause"
+# LICENSE (the project), THIRD_PARTY_NOTICES.md (every bundled or vendored component, its licence and
+# where it ships) and licenses/*.txt (their licence texts) go into the wheel's .dist-info/licenses/
+# and the sdist. The binary wheels also carry permissively licensed libraries (OpenBLAS, compiler
+# runtimes); no GPL library is bundled.
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "licenses/*.txt"]
+# Tested minors only: 3.11, 3.12 and 3.13 (a wider range would resolve to an untested 3.14).
+requires-python = ">=3.11,<3.14"
+keywords = [
+    "PDE", "spectral methods", "Chebyshev", "Fourier", "eigenvalue problems", "Floquet",
+    "adjoint", "dynamical systems", "fluid dynamics", "HPC", "CUDA",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Environment :: GPU :: NVIDIA CUDA :: 12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+# sympy: conatus.verify.mms (manufactured solutions) is imported by conatus.expert.
+# h5py: outputs and checkpoints (sim.output, sim.checkpoints, cn.io; the default checkpoint format),
+# a core feature, so a dependency, not an extra.
+dependencies = ["numpy>=1.26", "scipy>=1.11", "sympy>=1.12", "h5py>=3.8"]
+
+[project.urls]
+Homepage = "https://rubendahan.github.io/conatus/"
+Repository = "https://github.com/rubendahan/conatus"
+Issues = "https://github.com/rubendahan/conatus/issues"
+Changelog = "https://github.com/rubendahan/conatus/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+# What the tutorials need beyond the library (figures): `pip install "conatus[tutorials]"`.
+tutorials = ["matplotlib>=3.7"]
+# GPU array path (cupy; the compiled CUDA backend itself needs CONATUS_CUDA=ON above).
+gpu = ["cupy-cuda12x>=13"]
+# Notebook widgets (conatus.notebook.parameter_widgets; imported lazily, never by the library).
+notebook = ["ipywidgets>=8"]
+# Dedalus, for the optional comparison scripts only (never imported by conatus). Its pip build needs MPI
+# and FFTW; prefer `micromamba install -c conda-forge dedalus`.
+dedalus-compare = ["dedalus>=3.0"]
+# Documentation pages (Sphinx + MyST Markdown, docs/site/).
+docs = ["sphinx>=7", "myst-parser>=2"]
+# Tests and lint (the CI): pytest + ruff; mpmath is used by a few high-precision oracles.
+dev = ["pytest>=8", "ruff>=0.5", "mpmath>=1.3"]
+all = ["conatus[tutorials,notebook,gpu,docs,dev]"]
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+cmake.version = ">=3.24"
+cmake.build-type = "Release"
+ninja.make-fallback = true
+# Pure-Python package from python/conatus; the compiled conatus/_core*.so comes from the CMake
+# install rule. Build tree kept out of the source tree (pip uses a temp dir unless build-dir is set).
+wheel.packages = ["python/conatus"]
+wheel.exclude = ["**/__pycache__/**", "**/*.pyc"]
+
+[tool.scikit-build.cmake.define]
+CONATUS_CUDA = "OFF"            # CPU-only by default; -Ccmake.define.CONATUS_CUDA=ON for CUDA
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "python/conatus/__init__.py"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: long tests (run via Slurm)",
+    "gpu: needs a CUDA device",
+]
+
+# ---------------------------------------------------------------------------------------------------
+# Library code (python/conatus) gets the full set; tests, benchmarks and ci a lighter one (below).
+# Rule families: E/W pycodestyle, F pyflakes (unused / undefined names), B bugbear (closures over
+# loop variables, mutable defaults, ...), BLE blind `except Exception` (a swallowed error is a
+# silent substitution: each remaining one is marked `# noqa: BLE001` with the reason on the line),
+# UP pyupgrade (Python >= 3.11 syntax). Not selected: I (isort) -- the code packs imports on aligned
+# continuation lines, which ruff's isort rewrites one name per line (it expects `ruff format`,
+# which this code base does not use); imports were sorted once (2026-09-29), not enforced.
+# ---------------------------------------------------------------------------------------------------
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+src = ["python"]
+extend-exclude = ["scratch", "scratch_build", "archive", "web"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP", "BLE"]
+ignore = [
+    "E501",   # line length: formulas, tables and error messages; 110 is the target, not enforced
+    "E741",   # ambiguous names: l (spherical degree), I (identity) follow the mathematical notation
+]
+# B905 (zip without strict=) is enforced; the modules below are still exempt.
+
+[tool.ruff.lint.per-file-ignores]
+# Tests, benchmarks, ci: pyflakes, syntax and bugbear (assertions, useless expressions) only. Closures
+# over loop variables are the norm in parametrised checks (called at once); style is not enforced.
+"tests/**" = ["E", "W", "UP", "B007", "B023", "B008", "BLE001", "B905"]
+"ci/**" = ["E", "W", "UP", "B007", "B023", "B008", "BLE001", "B905"]
+# Guide snippet checks: a bare expression shows an attribute as at a prompt (B018), and an
+# unpacked handle may stay unused (F841).
+"docs/site/guide/**/_check*.py" = ["B018", "F841"]
+# Tutorials are literate scripts: each import is written at the step that first needs it.
+"docs/site/tutorials/code/**" = ["E402"]
+"python/conatus/adjoint/**" = ["B905"]
+"python/conatus/reference/**" = ["B905"]
+"python/conatus/floquet/**" = ["B905"]
+"python/conatus/**/*sphere*.py" = ["B905"]
+"python/conatus/timestep/curvilinear_device.py" = ["B905"]

@@ -1,0 +1,69 @@
+/* Validation page (web/src/pages/Validation.tsx): topic links, one group per topic with a table that
+   becomes stacked rows on phones, two performance figures in the GPU group, a closing note.
+   Hairline rules, tabular numerals, one accent (the deviation column). */
+.v-topics { margin: 0.5rem auto 1rem; }
+.v-topics ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.v-topics a {
+  display: inline-flex; align-items: baseline; gap: 0.45rem; padding: 0.38rem 0.85rem; border: 1px solid var(--cn-rule);
+  border-radius: 999px; color: var(--cn-text); text-decoration: none; font-size: var(--cn-size-ui);
+}
+.v-topics a:hover { border-color: var(--cn-text); }
+.v-topics .num { font-family: var(--cn-font-code); font-size: 0.75em; color: var(--cn-muted); }
+
+.v-page { padding-bottom: clamp(3rem, 8vw, 5rem); }
+.v-group { padding-top: clamp(2.5rem, 6vw, 4rem); }
+.v-group-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 0.5rem 2rem; align-items: baseline;
+  padding-bottom: 1rem; border-bottom: 1px solid var(--cn-text); }
+.v-group-head h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.1rem); }
+.v-group-head p { margin: 0; color: var(--cn-muted); font-size: 0.97rem; }
+@media (max-width: 760px) { .v-group-head { grid-template-columns: 1fr; } }
+
+.v-figures { margin: 1.75rem 0 1rem; }
+
+/* ---- table ---- */
+.v-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 0.88rem; font-variant-numeric: tabular-nums lining-nums; }
+.v-table thead th {
+  text-align: left; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cn-muted);
+  padding: 0.8rem 1rem 0.55rem 0; border-bottom: 1px solid var(--cn-rule);
+}
+.v-table thead th:nth-child(1) { width: 27%; }
+.v-table thead th:nth-child(2) { width: 38%; }
+.v-table thead th:nth-child(3) { width: 21%; }
+.v-table thead th.v-dev { width: 14%; text-align: right; padding-right: 0; }
+.v-table tbody th, .v-table tbody td { padding: 0.85rem 1rem 0.85rem 0; vertical-align: top; border-bottom: 1px solid var(--cn-rule); line-height: 1.5; text-align: left; }
+.v-table tbody tr:last-child > * { border-bottom: 0; }
+.v-test { font-weight: 500; overflow-wrap: anywhere; }
+.v-value { overflow-wrap: anywhere; }
+.v-ref { color: var(--cn-muted); overflow-wrap: anywhere; }
+td.v-dev { text-align: right; padding-right: 0 !important; white-space: nowrap; font-family: var(--cn-font-code); font-size: 0.84rem; color: var(--cn-accent); }
+.v-table sub, .v-table sup { font-size: 0.72em; line-height: 0; }
+.v-table tr:target > * { background: color-mix(in srgb, var(--cn-accent) 7%, transparent); }
+
+/* run and source: quiet, on demand */
+.v-more { margin-top: 0.3rem; font-weight: 400; }
+.v-more summary {
+  display: inline; cursor: pointer; list-style: none; font-size: 0.72rem; color: var(--cn-muted);
+  text-decoration: underline; text-decoration-color: var(--cn-rule); text-underline-offset: 0.2em;
+}
+.v-more summary::-webkit-details-marker { display: none; }
+.v-more summary:hover { color: var(--cn-text); }
+.v-more p { margin: 0.35rem 0 0; font-size: 0.75rem; color: var(--cn-muted); overflow-wrap: anywhere; }
+.v-more code { font-size: 0.95em; }
+
+.v-note { margin-top: clamp(3rem, 7vw, 4.5rem); padding-top: 1.25rem; border-top: 1px solid var(--cn-rule); max-width: 42rem; }
+.v-note h2 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+.v-note p { color: var(--cn-muted); font-size: 0.95rem; margin: 0; }
+
+/* ---- phones: one block per test ---- */
+@media (max-width: 860px) {
+  .v-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .v-table, .v-table tbody, .v-table tr, .v-table tbody th, .v-table tbody td { display: block; width: auto; }
+  .v-table tr { padding: 1rem 0; border-bottom: 1px solid var(--cn-rule); }
+  .v-table tbody tr:last-child { border-bottom: 0; }
+  .v-table tbody th, .v-table tbody td { border: 0; padding: 0.15rem 0; }
+  .v-table tbody th { font-size: 0.98rem; padding-bottom: 0.4rem; }
+  .v-table tbody td { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.75rem; }
+  .v-table tbody td::before { content: attr(data-label); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cn-muted); padding-top: 0.2rem; }
+  td.v-dev { text-align: left; }
+  .v-more { order: 9; }
+}

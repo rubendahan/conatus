@@ -1,0 +1,10 @@
+/* Dynamics page: an in-page index, then one topic per row (hairline ledger, text only). */
+.toc-inline { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; padding-bottom: 1.5rem; font-size: var(--cn-size-ui); }
+.toc-inline a { color: var(--cn-muted); text-decoration: none; border-bottom: 1px solid var(--cn-rule); }
+.toc-inline a:hover { color: var(--cn-accent); border-color: var(--cn-accent); }
+.dyn-topics { padding-top: 1rem; }
+.dyn-list { max-width: 46rem; }
+.dyn-topic { padding: 1.5rem 0 1.25rem; border-top: 1px solid var(--cn-rule); scroll-margin-top: calc(var(--cn-header-h) + 1rem); }
+.dyn-topic h2 { font-size: clamp(1.35rem, 2.2vw, 1.6rem); margin-bottom: 0.6rem; }
+.dyn-topic p { margin: 0 0 0.6rem; }
+.dyn-tut { color: var(--cn-muted); font-size: var(--cn-size-ui); }

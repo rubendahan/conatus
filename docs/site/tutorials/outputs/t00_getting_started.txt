@@ -1,0 +1,27 @@
+# t00_getting_started: PASS (exit 0) in 75.6 s | 2026-10-09
+Model 'Rayleigh-Benard': Box(x=periodic((0, 2)), z=walls(-0.5, 0.5)) (Cartesian box)
+Unknowns: u (velocity), p (pressure), T (scalar); parameters: Ra = 2500, Pr = 1
+Equations as written:
+  momentum: dt(u) + grad(p) - Pr*lap(u) = Pr*Ra*T*ez - u·grad(u)
+  continuity: div(u) = 0
+  heat: dt(T) - lap(T) = -u·grad(T)
+Problem: IVP (a time derivative dt() appears)
+Time stepping: 7 linear term(s) implicit; nonlinear terms explicit (momentum, heat)
+Boundary conditions: bottom: u = 0, T = 0.5; top: u = 0, T = -0.5 (tau method, placed automatically)
+Gauge: the mean of p is fixed (integ(p) = 0)
+Dealiasing: x: 3/2, z: 3/2 (declared default for products of degree 2)
+Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
+(every decision, tau by tau and term by term: m.explain(full=True))
+Ra = 1500: largest growth rate -1.637012
+Ra = 2500: largest growth rate +5.542506
+Ra_c = 1707.7618   k_c = 3.11632
+measured growth rate 5.542508   eigenvalue 5.542506
+t = 6.0: Nu = 1.474455 (layer)  1.474455 (bottom plate)  1.474455 (top plate)
+Run (rb_Ra2500): state completed, status provisional, 47.5 s
+Methods paragraph generated from the plan (edit before publishing):
+
+The IVP 'Rayleigh-Benard' for (u, p, T) was solved with Conatus. The domain is discretized as follows: x ∈ [0, 2) is periodic and expanded in a real (cosine/sine) Fourier series of 32 modes; z ∈ [-0.5, 0.5] is expanded in 24 Chebyshev polynomials of the first kind. Derivatives, basis conversions and multiplications by non-constant coefficients use the sparse, banded ultraspherical operators of Olver & Townsend, and boundary conditions are imposed with the generalized tau method (4 tau variable(s), each entering through a lift polynomial), following Burns et al. The Fourier directions decouple, giving 16 independent systems, one per wavenumber. Nonlinear terms are evaluated pseudospectrally with dealiasing factors 3/2 in x, 3/2 in z. The structural rank of every system was checked before factorization. Time integration uses the third-order, four-stage IMEX Runge–Kutta scheme (4,4,3) of Ascher, Ruuth & Spiteri, whose implicit diagonal is constant so that a single factorization serves all stages, with a constant step Δt = 0.0005. The implicit systems are solved by banded LU factorization with a low-rank (Woodbury) correction for the tau rows, batched over wavenumbers on CPU, in float64 arithmetic. The equations were declared in the native layer of Conatus as written on paper; the implicit-explicit split, the 4 tau term(s) (each in the equation where its unknown has its highest wall-normal order) and the pressure gauge and its integral constraint were placed by fixed, declared rules (listed by explain()). The dealiasing factor 3/2 is the declared default of the native layer ((p+1)/2 for the highest polynomial degree p = 2 of the equations, at least 3/2).
+
+Citations: olver2013, burns2020, ascher1997
+Facts used: kind=IVP, groups=16, N_x=32, N_z=24, zbasis=Chebyshev, taus=4, dealias={'x': 1.5, 'z': 1.5}, scheme=RK443, dt=0.0005, backend=cpu, native=True, dealias_default=True
+OK: onset at Reid & Harris' Ra_c and k_c; the simulation grows at the eigenvalue's rate and saturates into rolls carrying the same heat through both plates

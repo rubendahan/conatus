@@ -1,0 +1,10 @@
+# t05_ks_orbits: PASS (exit 0) in 41.3 s | 2026-10-09
+equilibrium: space=antisymmetric subspace R u = u (cos components frozen at 0), mean frozen
+  relative residual 1.385e-16 (7 Newton iterations), energy E = 0.260873, status provisional
+  note: residual = ‖v(u)‖/‖u‖ with v = M⁻¹(F − L u), evaluated in the full space
+  note: trivial-state threshold: ‖u‖ < 1e-08 × 1 ⇒ retracted
+E1: energy 0.2609, residual 1.4e-16; leading eigenvalues [0.1308-0.3341j 0.1308+0.3341j 0.0824-0.3402j 0.0824+0.3402j]
+E2: energy 0.4382, residual 7.1e-16
+TW1: c = 0.73699, energy 0.4649, residual 2.5e-16
+ppo: T = 10.252881, residual 9.5e-14; mu_1 = 0.033208, theta_1 = 2.0079
+OK: E1, E2, TW1 and ppo_10.25 agree with the published digits

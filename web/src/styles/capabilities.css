@@ -1,0 +1,17 @@
+/* Capabilities page: parts navigation and a grid of capabilities per part. */
+.parts-nav { margin-bottom: 1.5rem; }
+.parts-nav ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.parts-nav a {
+  display: inline-flex; align-items: baseline; padding: 0.4rem 0.85rem; border: 1px solid var(--cn-rule);
+  border-radius: 999px; color: var(--cn-text); text-decoration: none; font-size: var(--cn-size-ui);
+}
+.parts-nav a:hover { border-color: var(--cn-text); }
+.caps-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 0 clamp(1.5rem, 3vw, 2.5rem); border-top: 1px solid var(--cn-text); }
+.cap { padding: 1.4rem 0 1.6rem; border-bottom: 1px solid var(--cn-rule); }
+.cap h3 { font-size: clamp(1.3rem, 2vw, 1.5rem); line-height: 1.2; margin: 0 0 0.55rem; }
+.cap p { margin: 0; color: var(--cn-muted); font-size: 0.97rem; }
+.cap .cap-more { margin-top: 0.75rem; font-size: var(--cn-size-ui); font-weight: 500; }
+.cap-more a { text-decoration: none; }
+.cap-more a:hover { text-decoration: underline; }
+.caps-validation { padding-top: clamp(2rem, 5vw, 3rem); padding-bottom: clamp(2rem, 5vw, 3rem); color: var(--cn-muted); font-size: 0.95rem; }
+.caps-validation p { margin: 0; }

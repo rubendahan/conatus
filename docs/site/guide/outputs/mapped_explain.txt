@@ -1,0 +1,20 @@
+Geometry: MappedBox(x=periodic(6.28319), z=between(function(x), 1)) (mapped box (terrain-following))
+  bases (fixed per geometry, sizes given at discretization):
+    x: periodic on [0, 6.28319) -> RealFourier (cos/sin)(N_x)
+    z: between the surfaces function(x) and 1 -> Chebyshev T(xi)(N_z) in the terrain-following coordinate xi in [-1, 1]
+    map: z = b(x) + (t(x) - b(x)) (1 + xi)/2, xi in [-1, 1] (b: function(x); t: 1)
+    metric (chain rule, coefficients of the operators): dz = J dxi, J = 2/(t - b); dx|_z = dx|_xi + (A_x + B_x xi) dxi, A_x = -J (b_x + t_x)/2, B_x = -J (t_x - b_x)/2; dV = H dxi dx, H = (t - b)/2
+    all Fourier modes coupled by the metric: one sparse system (banded along xi); traces 'bottom'/'top' are at xi = -1/+1; dz(f) in a condition is the physical vertical derivative, not the normal one
+  named boundaries: bottom = z left; top = z right; walls = z left, z right
+TerrainPlan of LBVP 'Poisson' on a mapped domain
+  map: z = b(x) + (t(x) - b(x)) (1 + xi)/2, xi in [-1, 1] (b: function(x); t: 1)
+  chain rule: dz = J dxi, J = 2/(t - b); dx|_z = dx|_xi + (A_x + B_x xi) dxi, A_x = -J (b_x + t_x)/2, B_x = -J (t_x - b_x)/2; dV = H dxi dx, H = (t - b)/2
+  metric terms implicit (one coupled sparse system, all Fourier modes; banded along xi: metric polynomial of degree <= 1 in xi, exact)
+  Fourier modes |k| <= N/2 - 1 per direction (23 complex modes of real fields), 16 Chebyshev modes along xi
+  system: 414 x 414, nnz(L) = 37397, nnz(M) = 0; direct sparse LU (SuperLU), refused above 100000 unknowns or nnz 1e+07
+  metric J: 23 of 45 Fourier coefficients kept (Fourier bandwidth), sampled tail 5.0e-15 on the grid (accepted up to ncc_tail_tol = 1e-08)
+  metric H: 3 of 45 Fourier coefficients kept (Fourier bandwidth), sampled tail 5.3e-18 on the grid (accepted up to ncc_tail_tol = 1e-08)
+  metric A_x: 24 of 45 Fourier coefficients kept (Fourier bandwidth), sampled tail 9.7e-14 on the grid (accepted up to ncc_tail_tol = 1e-08)
+  metric B_x: 24 of 45 Fourier coefficients kept (Fourier bandwidth), sampled tail 9.7e-14 on the grid (accepted up to ncc_tail_tol = 1e-08)
+  sampled Chebyshev tail of every non-constant coefficient <= ncc_tail_tol = 1e-08 (declared default); above: refused, never truncated silently
+  data and explicit terms: pointwise on the dealiased physical grid (x_j, z(x_j, xi_l))

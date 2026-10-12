@@ -1,0 +1,4 @@
+N = 16: max error 1.7e-07, residual 2.3e-16
+N = 20: max error 4.6e-10, residual 1.9e-16
+N = 24: max error 8.8e-13, residual 6.9e-16
+N = 28: max error 2.7e-15, residual 2.1e-16

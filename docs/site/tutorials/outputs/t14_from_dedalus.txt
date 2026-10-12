@@ -1,0 +1,60 @@
+# t14_from_dedalus: PASS (exit 0) in 2.8 s | 2026-10-10
+native model: t = 0.020, max|u| = 4.225e-02
+Dedalus -> Conatus: rb_cell_dedalus.py
+  39 translated, 0 approximated, 0 unsupported, 0 skipped (output only)
+  problem: IVP with 8 equations, variables u, p, th, u_bot, u_top, th_bot, th_top, gauge
+  time stepping: SBDF2, dt = 0.0005, stop_sim_time = None; ivp_solver() imposes time-dependent boundary data as Dedalus does (bc_time='step'; bc_time='auto' for the Conatus default, which keeps the order of the scheme)
+  data: th (translated)
+Line-by-line report:
+  20  translated   import numpy as np
+  21  translated   import dedalus.public as d3
+  24  translated   Ra = 3000.0
+  25  translated   Pr = 7.0
+  26  translated   period = 2.0
+  27  translated   N_x, N_z = 24, 16
+  28  translated   tstep = 5e-4
+  29  translated   steps = 40
+  32  translated   plane = d3.CartesianCoordinates('x', 'z')
+  33  translated   mesh = d3.Distributor(plane, dtype=np.float64)
+  34  translated   horiz = d3.RealFourier(plane['x'], size=N_x, bounds=(0, period), de...
+  35  translated   vert = d3.ChebyshevT(plane['z'], size=N_z, bounds=(0, 1), dealias=1.5)
+  36  translated   u = mesh.VectorField(plane, name='u', bases=(horiz, vert))
+  37  translated   p = mesh.Field(name='p', bases=(horiz, vert))
+  38  translated   th = mesh.Field(name='th', bases=(horiz, vert))
+  39  translated   u_bot = mesh.VectorField(plane, name='u_bot', bases=horiz)
+  40  translated   u_top = mesh.VectorField(plane, name='u_top', bases=horiz)
+  41  translated   th_bot = mesh.Field(name='th_bot', bases=horiz)
+  42  translated   th_top = mesh.Field(name='th_top', bases=horiz)
+  43  translated   gauge = mesh.Field(name='gauge')
+  46  translated   e_x, e_z = plane.unit_vector_fields(mesh)
+  47  translated   dz_basis = vert.derivative_basis(1)
+  48  translated   tau_z = lambda f: d3.Lift(f, dz_basis, -1)
+  49  translated   Gu = d3.grad(u) + e_z*tau_z(u_bot)
+                  -> 'ez*lift(u_bot, z, -1, lam=1)' of two tensors -> outer (Dedalus convention)
+  50  translated   Gth = d3.grad(th) + e_z*tau_z(th_bot)
+  52  translated   onset = d3.IVP([u, p, th, u_bot, u_top, th_bot, th_top, gauge], nam...
+  53  translated   onset.add_equation("dt(u) - Pr*div(Gu) + grad(p) - Ra*Pr*th*e_z + t...
+                  -> div(outer(ez, lift(u_bot, z, -1, lam=1))) -> dz(lift(u_bot, z, -1, lam=1)) (exact identity, constant unit vector)
+  54  translated   onset.add_equation("trace(Gu) + gauge = 0")
+                  -> trace(outer(ez, lift(u_bot, z, -1, lam=1))) -> dot(...) (exact identity); trace(grad(u)) -> div(u) (exact identity); namespace functions used: trace
+  55  translated   onset.add_equation("dt(th) - div(Gth) - u@e_z + tau_z(th_top) = -u@...
+  56  translated   onset.add_equation("u(z=0) = 0")
+  57  translated   onset.add_equation("th(z=0) = 0")
+  58  translated   onset.add_equation("u(z=1) = 0")
+  59  translated   onset.add_equation("th(z=1) = 0")
+  60  translated   onset.add_equation("integ(p) = 0")
+  63  translated   run = onset.build_solver(d3.SBDF2)
+                  -> solver: IVPSolver(plan, 'SBDF2', dt) (dt from the time loop)
+  64  translated   run.stop_iteration = steps
+                  -> number of steps: solver.run(n)
+  65  translated   x, z = mesh.local_grids(horiz, vert)
+                  -> grid coordinates: used for initial / given data only
+  66  translated   th['g'] = 1e-3*np.cos(2*np.pi*x/period)*np.sin(np.pi*z)
+                  -> grid data of th: initial condition / given field (tr.data)
+  67  translated   while run.proceed:
+                  -> time loop -> solver.run(n) with a fixed dt = 0.0005 (no Python loop); the loop body (logging, analysis) is not translated
+translation: t = 0.020 after 40 steps, max|u| = 4.225e-02
+nz = 12: native vs translated, relative difference th 1.2e-06, u 3.0e-07
+nz = 16: native vs translated, relative difference th 7.2e-09, u 2.2e-10
+nz = 32: native vs translated, relative difference th 3.8e-15, u 2.8e-15
+PASS

@@ -1,0 +1,28 @@
+# t04_bratu: PASS (exit 0) in 12.8 s | 2026-10-09
+Model 'Bratu': Box(x=walls(-1, 1)) (Cartesian box)
+Unknowns: u (scalar); parameters: lam = 0.3
+Equations as written:
+  bratu: dx(dx(u)) + lam*exp(u) = 0
+Problem: NLBVP (no dt(), nonlinear in the unknowns)
+Boundary conditions: walls (left: x=-1): u = 0; walls (right: x=1): u = 0 (tau method, placed automatically)
+Dealiasing: x: 3/2 (declared default for products of degree 1)
+  warning: not polynomial in the unknowns (no dealiasing factor removes their aliasing): exp(u)*lam
+Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
+(every decision, tau by tau and term by term: m.explain(full=True))
+Newton on NLBVP 'Newton step of Bratu': converged in 3 iteration(s)
+  settings: tolerance=1e-13, damping=1.0, max_iterations=20
+  k= 0  |F|=3.000e-01  |F|/scale=1.000e+00  |dx|=8.568e-02
+  k= 1  |F|=3.366e-03  |F|/scale=1.135e-02  |dx|=9.786e-04
+  k= 2  |F|=4.634e-07  |F|/scale=1.564e-06  |dx|=1.347e-07
+  k= 3  |F|=8.715e-15  |F|/scale=2.941e-14  |dx|=-
+  observed orders: 1.99
+  note: trivial-state check: max |u| = 8.665e-02 vs 1e-08 x the guess (0.000e+00)
+Pseudo-arclength branch: 7 points, p in [0.3, 0.87704], stop: max_points = 6 reached
+  ds = 0.2 in [1e-08, 0.6], x1.5 when the corrector takes <= 3 (default) its, /2 on failure
+  corrector: tolerance 1e-12, budget 15 its; G_p: central FD, dp = 1e-06 (given)
+  max points 6
+  events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(1, |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(1, |λ|))
+  corrector failures (step halved): 0
+  fold at p = 0.878457679781 between points (2, 3): |t_p| = 4.4e-18 at the located point, |G|/scale = 1.6e-15 [located by |t_p| <= fold_tol = 1e-12 (default)]
+fold: lam_c = 0.87845767978129
+OK: lam_c within 0.0e+00 of the closed form 0.87845767978129

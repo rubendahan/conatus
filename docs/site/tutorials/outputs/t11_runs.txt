@@ -1,0 +1,22 @@
+# t11_runs: PASS (exit 0) in 4.0 s | 2026-10-09
+Run (heat_k0.1): state completed, status provisional, 0.0359 s
+Run (heat_k0.2): state completed, status provisional, 0.034 s
+Run (heat_k0.4): state completed, status provisional, 0.033 s
+  completed certified   rate=1.8000000002184402, rel_error=1.2135564158515738e-10
+  completed certified   rate=3.600000003494189, rel_error=9.706080383864446e-10
+compare (a) vs (b)
+  problem: same structural hash
+  params kappa: 0.2 -> 0.4
+  numerics problem.parameters.kappa: 0.2 -> 0.4
+  result rate: a=1.8000000002184402 b=3.600000003494189 (rel. diff 5.000e-01)
+  result rel_error: a=1.2135564158515738e-10 b=9.706080383864446e-10 (rel. diff 8.750e-01)
+  code: identical executed tree; git b38dcba9a5 -> b38dcba9a5
+reproduce -> bit-for-bit identical
+  code: identical to the recorded code
+  steps: 200
+  compared: end state X (all unknowns)
+conatus.runs cache hit: nothing computed; state after 200 steps read from run (took 0.032884 s); key 63006cd4b163, report in run.cache_report
+{'hit': True, 'reused_from': '', 'computed': 'nothing: 0 steps taken'}
+ (this run)
+  └─ (cache reuse)
+OK: decay rates exact, query, bit-for-bit reproduce, cache only on request

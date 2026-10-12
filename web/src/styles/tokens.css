@@ -1,0 +1,69 @@
+/* Conatus — brand tokens, copied from docs/brand/tokens.css without the Google Fonts import:
+   the website self-hosts its fonts (@fontsource), so it depends on no external service.
+   Keep in sync with docs/brand/tokens.css (web/scripts/check-tokens.mjs compares them at build).
+   Two worlds: "Ethica" (paper, light) and "Album" (laboratory, dark).
+   A single bright colour per view: fluorescein in dark mode, rubric red in light mode. */
+
+
+:root {
+  /* Materials */
+  --cn-paper: #EFEAE0;      /* rag paper */
+  --cn-ink: #151310;        /* printing ink */
+  --cn-rubric: #A8281E;     /* rubric red = polishing red */
+  --cn-lab: #0B0B0B;        /* laboratory black */
+  --cn-silver: #EDEBE6;     /* silver-print white */
+  --cn-smoke: #8A8A86;      /* smoke grey */
+  --cn-dye: #C6F03C;        /* fluorescein */
+  --cn-glass: #7E9A86;      /* raw glass */
+  --cn-brass: #A8864F;      /* brass */
+
+  /* Roles (light world: Ethica) */
+  --cn-bg: var(--cn-paper);
+  --cn-surface: #E6E0D3;
+  --cn-text: var(--cn-ink);
+  --cn-muted: #5E5A52;
+  --cn-rule: #CFC7B7;
+  --cn-accent: var(--cn-rubric);
+  --cn-signal: var(--cn-rubric);
+
+  /* Typography */
+  --cn-font-display: "IM Fell English", "IM Fell DW Pica", Georgia, "Times New Roman", serif;
+  --cn-font-caps: "IM Fell English SC", "IM Fell English", Georgia, serif;
+  --cn-font-text: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --cn-font-code: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* Scale (ratio 1.25; base 16 px) */
+  --cn-size-caption: 0.8rem;
+  --cn-size-ui: 0.875rem;
+  --cn-size-body: 1rem;
+  --cn-size-h3: 1.25rem;
+  --cn-size-h2: 1.95rem;
+  --cn-size-h1: 3.05rem;
+
+  /* Geometry: few rounded corners, thin rules */
+  --cn-radius: 2px;
+  --cn-rule-w: 1px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --cn-bg: var(--cn-lab);
+    --cn-surface: #161615;
+    --cn-text: var(--cn-silver);
+    --cn-muted: #A3A29D;
+    --cn-rule: #2A2A28;
+    --cn-accent: #D4574A;
+    --cn-signal: var(--cn-dye);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --cn-bg: var(--cn-lab);
+  --cn-surface: #161615;
+  --cn-text: var(--cn-silver);
+  --cn-muted: #A3A29D;
+  --cn-rule: #2A2A28;
+  --cn-accent: #D4574A;
+  --cn-signal: var(--cn-dye);
+}

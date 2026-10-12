@@ -1,0 +1,41 @@
+/* Home hero (src/sim/FluidHero.tsx): a laboratory plate (world B) in both themes: lab black, silver
+   text, one fluorescein filament inside the simulation; no other vivid colour inside it. */
+
+.hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: min(calc(100svh - var(--cn-header-h)), 58rem);
+  display: grid; grid-template-rows: 1fr auto;
+  background: var(--cn-lab); color: var(--cn-silver);
+}
+.hero-sim { position: absolute; inset: 0; z-index: auto; pointer-events: none; }
+/* z-index auto: the poster and canvas (z -2 in FluidHero) sit under the veil in the hero's stacking
+   context, while the solver's readout and Pause button (z 2) sit above it, readable and clickable.
+   The layer ignores pointers; only the canvas (drag to inject dye) and the controls take them. */
+.hero-veil {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(11, 11, 11, 0.86) 0%, rgba(11, 11, 11, 0.55) 38%, rgba(11, 11, 11, 0) 70%),
+    linear-gradient(0deg, rgba(11, 11, 11, 0.9) 0%, rgba(11, 11, 11, 0) 30%);
+}
+.hero-content { align-self: end; padding-top: clamp(3rem, 10vh, 8rem); padding-bottom: 1.5rem; pointer-events: none; }
+.hero-content a, .hero-content button { pointer-events: auto; }
+.hero-eyebrow { font-size: var(--cn-size-ui); letter-spacing: 0.08em; text-transform: uppercase; color: #A3A29D; margin: 0 0 1rem; }
+.hero-title { font-size: clamp(2.5rem, 7vw, 4.77rem); line-height: 1.02; max-width: 19ch; margin: 0 0 1.25rem; color: var(--cn-silver); }
+.hero-lede { font-size: clamp(1.02rem, 1.6vw, 1.2rem); line-height: 1.55; max-width: 36rem; color: #D6D4CE; margin: 0 0 1.75rem; }
+/* First screen (W1): version, status and how to get the code. */
+.hero-status { margin: 1.25rem 0 0; font-size: var(--cn-size-ui); color: #A3A29D; max-width: 44rem; }
+.hero-status code { color: var(--cn-silver); background: rgba(237, 235, 230, 0.08); }
+.hero-status a { color: var(--cn-silver); }
+.hero .btn-primary { background: var(--cn-silver); color: var(--cn-lab); }
+.hero .btn-primary:hover { background: #FFFFFF; color: var(--cn-lab); }
+.hero .btn-ghost { border-color: rgba(237, 235, 230, 0.35); color: var(--cn-silver); }
+.hero .btn-ghost:hover { border-color: var(--cn-silver); }
+.hero :focus-visible { outline-color: var(--cn-dye); }
+.hero-caption { font-size: var(--cn-size-caption); color: #A3A29D; padding-bottom: 1.1rem; margin: 0; max-width: calc(46rem + 2 * var(--cn-gutter)); margin-left: max(0px, calc((100% - var(--cn-max)) / 2)); }
+.hero-caption .fig-num { color: var(--cn-silver); }
+.hero-caption a { color: var(--cn-silver); }
+@media (max-width: 640px) {
+  .hero { min-height: 88svh; }
+  .hero-veil { background: linear-gradient(0deg, rgba(11, 11, 11, 0.92) 0%, rgba(11, 11, 11, 0.6) 55%, rgba(11, 11, 11, 0.2) 100%); }
+}
+

@@ -1,0 +1,42 @@
+# t16_particles_dye: PASS (exit 0) in 70.5 s | 2026-10-10
+dt = 0.1   : largest tracer error 6.46e-05
+dt = 0.05  : largest tracer error 8.40e-06
+dt = 0.025 : largest tracer error 1.07e-06
+observed orders: [2.94 2.97]
+Particles: 32 passive tracer(s) advected by u, backend cpu, 80 step(s) taken; no file (particles.positions())
+  velocity at a particle: exact evaluation of the spectral series (x: cos/sin series (16 modes), y: cos/sin series (16 modes))
+  time integration: classical RK4 per flow step; the midpoint velocity is the cubic interpolant in time of the last four flow states (2 and 3 states on the first two steps of a run): order 4 in a steady flow, 3 in an unsteady flow (the time error of the flow states themselves, third order for RK443, and the linear midpoint of the first step of a run)
+  periodic axes: positions unwrapped (written also wrapped into [a, a + L))
+  walls: at_walls='refuse' (a step ending outside the walls raises); stage positions are not clipped (the series continues there)
+  not in the simulation's checkpoints: after a restart, declare the particles again (e.g. from the last row of the file)
+Model 'plane Couette with dye': Box(x=periodic((0, 4)), y=walls(-1, 1)) (Cartesian box)
+Unknowns: u (velocity), p (pressure), c (dye); parameters: nu = 0.1
+Equations as written:
+  eq0: dt(u) + grad(p) - nu*lap(u) = -u@grad(u)
+  eq1: div(u) = 0
+  dye_c: dt(c) - 0.01*lap(c) = -div(c*u)
+Problem: IVP (a time derivative dt() appears)
+Time stepping: 6 linear term(s) implicit; nonlinear terms explicit (eq0, dye_c)
+Boundary conditions: bottom: u = (-1, 0); top: u = (1, 0); walls (left: y=-1): dy(c) = 0; walls (right: y=1): dy(c) = 0 (tau method, placed automatically)
+Gauge: the mean of p is fixed (integ(p) = 0)
+Dealiasing: x: 3/2, y: 3/2 (declared default for products of degree 2)
+Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
+(every decision, tau by tau and term by term: m.explain(full=True))
+Dye file <path>/tmpv2xmfnu8/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (= 0.5 time units), 7 write(s) so far
+  dye c (m.dye): dt(c) - 0.01*lap(c) = -div(c*u); no flux: dy(c) = 0 at the walls; advected by u, same scheme and dt as the flow
+  c: grid values of c
+  mass: integ(c) (integral of the spectral series)
+  variance: integ(c*c) - integ(c)^2 / V, V = 8
+  minimum: min of the grid values of c
+  maximum: max of the grid values of c
+  tail: largest |coefficient| among the last two modes of each axis, relative to the largest
+  the state at the start (iteration 0, t = 0) written as a row (initial=True, the default of sim.output)
+  scales: sim_time, iteration, write_number, x, y; every array labelled with its dimensions (HDF5 dimension scales)
+  XDMF sidecar (ParaView): <path>/tmpv2xmfnu8/dye.xmf
+[[-3.  -1. ]
+ [-0.5 -0.5]
+ [ 2.   0. ]
+ [ 4.5  0.5]
+ [ 3.5  1. ]]
+dye mass 0.933219300417, largest relative drift 1.1e-11
+checks passed: order 3 in time, Couette tracers exact, dye mass conserved

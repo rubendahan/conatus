@@ -1,0 +1,39 @@
+{
+ "api": 1,
+ "calls": [
+  {
+   "action": "stopped",
+   "call": "Model.eigenvalues",
+   "line": 10
+  }
+ ],
+ "command": "check",
+ "errors": [],
+ "explain": {
+  "model": "Model 'Orr-Sommerfeld' ...",
+  "plan": "Discretization plan for EVP 'Orr-Sommerfeld' ..."
+ },
+ "memory": null,
+ "missing": [
+  {
+   "argument": "drift_tol",
+   "call": "Model.eigenvalues",
+   "kind": "tolerance",
+   "suggest": "1e-6",
+   "when": "drift=N2"
+  }
+ ],
+ "notes": [],
+ "ok": false,
+ "plan": {
+  "groups": 1,
+  "type": "Plan"
+ },
+ "refusals": [],
+ "script": "os_check.py",
+ "stopped_at": {
+  "call": "Model.eigenvalues",
+  "line": 10
+ },
+ "warnings": []
+}

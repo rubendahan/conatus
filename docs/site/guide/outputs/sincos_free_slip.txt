@@ -1,0 +1,11 @@
+sincos     Ra/Ra_c = 0.99: s = -0.074208019189858
+chebyshev  Ra/Ra_c = 0.99: s = -0.074208019189862
+sincos     Ra/Ra_c = 1.01: s = +0.073837897458271
+chebyshev  Ra/Ra_c = 1.01: s = +0.073837897458291
+z: walls at 0, 1 -> sine/cosine bases (N_z wavenumbers n pi/L, n < N_z, L = 1), realised as the reflection subspace of RealFourier(2 N_z) on [0, 2); no tau
+u: cosine/sine by component (x: cosine, z: sine) (free-slip (u·n = 0, dz(u_t) = 0) at walls)
+T: sine series (T = 0 at walls)
+p: cosine series (deduced from the equivariance of momentum)
+u: free-slip (u·n = 0, dz(u_t) = 0) at walls (left: z=0): tau_u1 lifted into mode N_z-1 of [0] momentum -- u has its highest z-order (2) there; Chebyshev lift into the last modes
+u: free-slip (u·n = 0, dz(u_t) = 0) at walls (right: z=1): tau_u2 lifted into mode N_z-2 of [0] momentum -- u has its highest z-order (2) there; Chebyshev lift into the last modes
+divergence tau dot(ez, lift(tau_u2, z, -1)) (the velocity tau of the lowest lifted mode)

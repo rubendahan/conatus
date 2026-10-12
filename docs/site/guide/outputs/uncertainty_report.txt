@@ -1,0 +1,3 @@
+u(0, T) = 2.32103549 +- 3.8e-06   trusted: True
+observed order in time: 2.01 (scheme order 2)
+exact value 2.32103854: inside the interval: True

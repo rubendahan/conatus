@@ -1,0 +1,54 @@
+# t03_symmetries: PASS (exit 0) in 1.8 s | 2026-10-09
+ full space: leading sigma = +1.6955e-06   n = 268   QZ 167.1 ms   residual 4.4e-18
+unknowns of the perturbation problem: du, dp, dT, dtau_u1, dtau_u2, dtau_T1, dtau_T2, dtau_p
+Symmetry subspace: Z2 (order 2)
+  generator: Reflection(z -> -z): reflection of z about z = 0; vector components along it change sign, others do not
+  T0         odd under Reflection(z -> -z)
+  dT         even under Reflection(z -> -z)
+  dp         odd under Reflection(z -> -z)
+  dtau_T1    odd under Reflection(z -> -z)
+  dtau_T2    even under Reflection(z -> -z)
+  dtau_p     odd under Reflection(z -> -z)
+  dtau_u1    even under Reflection(z -> -z)
+  dtau_u2    odd under Reflection(z -> -z)
+  du         odd under Reflection(z -> -z)
+  expected reduction: up to x2 per reflection, x m0 per m0-fold rotation (adapted bases: parity blocks, kept azimuthal classes, docs/site/tutorials/03_symmetries.md)
+  WARNING: computing in the invariant subspace hides symmetry-breaking instabilities; a symmetric solution is not declared stable before symmetry_breaking_check().
+onset class: leading sigma = +1.6955e-06   n = 134   QZ  67.1 ms   residual 4.2e-18
+Symmetry subspace: Z2 (order 2)
+  generator: Reflection(z -> -z): reflection of z about z = 0; vector components along it change sign, others do not
+  T0         odd under Reflection(z -> -z)
+  dT         even under Reflection(z -> -z)
+  dp         odd under Reflection(z -> -z)
+  dtau_T1    odd under Reflection(z -> -z)
+  dtau_T2    even under Reflection(z -> -z)
+  dtau_p     odd under Reflection(z -> -z)
+  dtau_u1    even under Reflection(z -> -z)
+  dtau_u2    odd under Reflection(z -> -z)
+  du         odd under Reflection(z -> -z)
+  expected reduction: up to x2 per reflection, x m0 per m0-fold rotation (adapted bases: parity blocks, kept azimuthal classes, docs/site/tutorials/03_symmetries.md)
+  WARNING: computing in the invariant subspace hides symmetry-breaking instabilities; a symmetric solution is not declared stable before symmetry_breaking_check().
+Equivariance (parity of each equation):
+  [0] odd under Reflection(z -> -z)
+  [1] odd under Reflection(z -> -z)
+  [2] even under Reflection(z -> -z)
+  [3] odd under Reflection(z -> -z)
+  [4] even under Reflection(z -> -z)
+  [5] odd under Reflection(z -> -z)
+  [6] even under Reflection(z -> -z)
+  [7] zero under Reflection(z -> -z)
+Under Reflection(z -> -z):
+  du         odd (du_x odd, du_z even)
+  dp         odd
+  dT         even
+  dtau_u1    even (dtau_u1_x even, dtau_u1_z odd)
+  dtau_u2    odd (dtau_u2_x odd, dtau_u2_z even)
+  dtau_T1    odd -> constant along the mirror direction and odd: vanishes identically
+  dtau_T2    even
+  dtau_p     odd -> constant along the mirror direction and odd: vanishes identically
+  BC [3] and [5] are mirror images under Reflection(z -> -z): redundant in the subspace, one of them (and its tau) is dropped at discretization
+  BC [4] and [6] are mirror images under Reflection(z -> -z): redundant in the subspace, one of them (and its tau) is dropped at discretization
+other class: leading sigma = -4.2627e+01   n = 134   QZ  66.0 ms   residual 4.4e-18
+refused: equation 's*du - Pr*lap(du) + lift(dtau_u1, z, -1) + grad(dp) + lift(dtau_u2, z, -2) - Ra*dT*Pr*ez = 0' is not equivariant under Reflection(z -> -z): term '-Ra*dT*Pr*ez' is odd but 's*du' is even. The term breaks the declared symmetry (fix the parities or drop the symmetry).
+  docs:  guide/errors#symmetrybreakingerror  (python -m conatus docs guide/errors)
+OK: neutral mode at Reid & Harris' (Ra_c, k_c) in the onset class, n = 134 vs 268

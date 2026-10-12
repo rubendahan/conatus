@@ -1,0 +1,19 @@
+# t08_polar: PASS (exit 0) in 3.7 s | 2026-10-09
+Model 'vibrating drum': Disk(radius=1) (disk)
+Unknowns: T (scalar)
+Eigenvalue: s; growth = Re s, declared with the eigenvalue s
+Equations as written:
+  eq0: s*T = lap(T)
+Problem: EVP (eigenvalue s declared)
+Boundary conditions: wall: T = 0 (tau method, placed automatically)
+Dealiasing: phi: 3/2, r: 3/2 (declared default for products of degree 1)
+Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
+(every decision, tau by tau and term by term: m.explain(full=True))
+m = 0: s = [ -5.78318596 -30.47126234 -74.88700679]  backward residual 5.8e-16
+m = 1: s = [ -14.68197064  -49.21845632 -103.4994539 ]  backward residual 4.5e-16
+m = 2: s = [ -26.37461643  -70.84999892 -135.02070887]  backward residual 5.1e-16
+Hagen-Poiseuille stability | Use plan.group(1, 1.0). Eigenvalue s = sigma + i omega.
+rightmost eigenvalues (m, k) = (1, 1): [-0.07086401-0.84674983j -0.0911426 -0.46914288j -0.15121606-0.74819401j]
+max backward residual 1.1e-15
+neutral Re(k): {3.1: 68.2054, 3.16: 68.1863, 3.22: 68.2021}
+OK: drum = Bessel zeros; pipe eigenvalues to 1e-10 of Meseguer & Trefethen; Re_c(3.16) = 68.1863

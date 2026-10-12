@@ -1,0 +1,10 @@
+{#- Link back to the website (critique W1: the docs had no way back to the site) and the
+    status line. The docs are served under /docs/ of the website (web/build.sh --with-docs), so the
+    site root is one level above the docs root: pathto('', 1) is the docs root, relative to this page.
+    "Tutorials" is the docs' own index (the same list as the site's /tutorials): the site's page
+    does not exist as a folder in the portable, hash-routed build (144 broken links). -#}
+<div class="cn-site-link">
+  <a href="{{ pathto('', 1) }}../">&larr; Conatus website</a>
+  <a href="{{ pathto('tutorials/index') }}">Tutorials</a>
+  <p class="cn-status">v0.1 preview &middot; private repository (source on request)</p>
+</div>
