@@ -4,7 +4,7 @@
 coefficients of every variable of a Cartesian plan, direction by direction, and says whether the
 declared resolution resolves them. ``estimate_modes(coeffs, basis)`` answers "how many modes?" for
 one coefficient array. Nothing here changes the plan, the solver or the state: the recommended
-sizes are printed, never applied (no silent substitution, CLAUDE.md).
+sizes are printed, never applied (no silent substitution).
 
 Definitions (all declared; the thresholds are module constants printed in every report):
 

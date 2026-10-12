@@ -15,7 +15,7 @@ export default defineConfig({
     __REPO_URL__: JSON.stringify(process.env.REPO_URL ?? ""),
     __WITH_DOCS__: JSON.stringify(process.env.WITH_DOCS === "1"),
     // HASH=1: single-page build with hash routes (#/quickstart), for hosts that serve one page and
-    // its files only (a claude.ai artifact, a phone preview); see web/build-portable.sh.
+    // its files only (a phone preview); see web/build-portable.sh.
     __HASH_ROUTER__: JSON.stringify(process.env.HASH === "1"),
   },
   // Build output of the client lives outside the home (quota): web/dist is only a staging area

@@ -5,8 +5,8 @@ Every error Conatus raises on purpose derives from :class:`ConatusError`. A mess
 * **what** is wrong (first line, unchanged from the historical message where one existed),
 * **where** (equation, term, variable, group),
 * **why** it is refused,
-* **fix**: a concrete suggestion. Conatus never applies it for you (no silent substitution,
-  CLAUDE.md); the user edits the problem and runs again,
+* **fix**: a concrete suggestion. Conatus never applies it for you (no silent substitution);
+  the user edits the problem and runs again,
 * **docs**: the page of the user guide and its section (``guide/errors#conatuserror``), with the
   command that locates it (``python -m conatus docs guide/errors``): a name valid in an installed
   copy, never a path of the source repository. ``err.doc`` keeps the source

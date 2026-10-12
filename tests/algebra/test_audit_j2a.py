@@ -51,7 +51,7 @@ def test_core_realfourier_backward_keeps_imaginary_part():
 
 
 # ----------------------------------------------------------------------------------------------
-# InnerProduct (linearize/inner_product.py): the product defines the adjoint (CLAUDE.md, spec §4)
+# InnerProduct (linearize/inner_product.py): the product defines the adjoint (spec §4)
 # ----------------------------------------------------------------------------------------------
 
 def _two_field_plan(mapped=False):

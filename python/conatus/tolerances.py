@@ -29,7 +29,7 @@ finite-state check of the time steppers) has a declared default, listed in :data
 (``fold_tol``, ``crossing_tol``, ``hopf_imag_tol``) keep their declared defaults and are printed in
 the result of each located event.
 
-Nothing here changes a value for you: the code suggests, it does not modify (CLAUDE.md).
+Nothing here changes a value for you: the code suggests, it does not modify.
 """
 from __future__ import annotations
 

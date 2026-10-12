@@ -31,8 +31,8 @@ __all__ = ["Flow", "VectorField", "Equilibrium", "TravellingWave", "RelativePeri
 
 _DOC = "docs/site/guide/dynamics/invariant_solutions.md"
 
-#: Scope of find_equilibrium / find_travelling_wave / find_relative_periodic_orbit (critique
-#: C6): stated in every refusal, in AGENTS.md and in the guide.
+#: Scope of find_equilibrium / find_travelling_wave / find_relative_periodic_orbit
+#: stated in every refusal and in the guide.
 SCOPE = ("one periodic direction with a real Fourier basis and no other axis (1D periodic "
          "problems: Kuramoto-Sivashinsky, 1D Swift-Hohenberg, ...); find_equilibrium searches "
          "the odd subspace u(-x) = -u(x) (R u = u with R u(x) = -u(-x))")

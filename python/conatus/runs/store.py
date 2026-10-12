@@ -69,7 +69,7 @@ _OPS = {"eq": "=", "ne": "!=", "gt": ">", "ge": ">=", "lt": "<", "le": "<=", "in
 def default_root() -> Path:
     """Declared registry root: ``$CN_RUNS`` (any path, the user's explicit choice), else
     ``$CN_TMP/runs``, else ``<repository>/scratch/runs``. A default (not ``$CN_RUNS``) that
-    resolves under the home directory is refused: the home is small and backed up (CLAUDE.md)."""
+    resolves under the home directory is refused: the home is small and backed up."""
     env = os.environ.get("CN_RUNS")
     if env:
         return Path(env)

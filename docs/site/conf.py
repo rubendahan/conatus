@@ -74,7 +74,7 @@ autodoc_default_options = {"members": True, "undoc-members": False, "show-inheri
 autodoc_typehints = "description"
 autodoc_member_order = "bysource"
 numpydoc_show_class_members = False
-numpydoc_validation_checks = set()     # short docstrings by project convention (CLAUDE.md)
+numpydoc_validation_checks = set()     # short docstrings by project convention
 numpydoc_xref_param_type = False
 
 copybutton_prompt_text = r">>> |\.\.\. |\$ "
