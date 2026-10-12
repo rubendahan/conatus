@@ -1,4 +1,4 @@
-""" (/Y9): root and Newton results say whether they are roots.
+"""Root and Newton results say whether they are roots.
 
 * Y8: ``secant_root`` returns a SecantRoot (converged, residual, iterations, reasons) and raises
   ConvergenceError when unconverged unless ``allow_unconverged=True``; the v0.1 tuple unpacking

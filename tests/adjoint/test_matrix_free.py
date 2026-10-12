@@ -1,4 +1,4 @@
-"""Matrix-free transpose of the linearized RHS and of the dealiased transforms ( phase 2)."""
+"""Matrix-free transpose of the linearized RHS and of the dealiased transforms (phase 2)."""
 import numpy as np
 import pytest
 from rounding_bounds import adjoint_dot_check
@@ -120,7 +120,7 @@ def test_complexified_groups_dot_test():
 
 @pytest.mark.parametrize("scheme", ["RK443", "SBDF2"])
 def test_linearization_sees_in_place_updates_of_the_state(scheme):
-    """ ( in the Cartesian adjoint): ``LinearizedRHS`` kept factor grids
+    """ (in the Cartesian adjoint): ``LinearizedRHS`` kept factor grids
     across calls in an LRU keyed by the array's id and pointer; ``fm.vjp(X0, W)``, then
     ``X0[:] = X1``, then ``fm.vjp(X0, W)`` returned the adjoint about the old X0 (``apply``: 4x the
     norm of the answer off). No state-dependent data is kept across calls any more."""

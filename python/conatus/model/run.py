@@ -166,7 +166,7 @@ class Simulation:
         return self.solver.iteration
 
     def _initial_time(self, t: Any, values: dict, where: str) -> float | None:
-        """The start time given as ``t=`` (feat2), or None. A model with an unknown named ``t``
+        """The start time given as ``t=``, or None. A model with an unknown named ``t``
         has no time t (``t`` is then that unknown): its ``t=`` is the unknown's initial data, as
         before, and the start time cannot be set by name (declared here)."""
         if t is None:
@@ -192,8 +192,7 @@ class Simulation:
 
         On a grid with two axes of the same size the shape cannot tell ``indexing="ij"`` from
         NumPy's default ``"xy"`` (transposed): such an array is refused unless it is one
-        returned by ``sim.grid(...)`` or ``layout="ij"`` declares it (critique
-        X5).
+        returned by ``sim.grid(...)`` or ``layout="ij"`` declares it.
 
         Callable data are checked (``conatus.model.initial_check``):
         non-finite values are refused, and so are clearly wrong data (relative spectral tail
@@ -204,7 +203,7 @@ class Simulation:
         ``InitialDataWarning``, recorded by :meth:`explain`. ``check=False`` silences both
         (declared by :meth:`explain`).
 
-        ``t``: the time at which this state is given (default 0; feat2). Time-dependent forcing
+        ``t``: the time at which this state is given (default 0). Time-dependent forcing
         and boundary data are evaluated from it, every output row and checkpoint carries times
         t + k dt, ``run(until=...)`` is read on that clock, checkpoints record it (a chain
         continued by :meth:`resume_or_start` with another ``t`` is refused) and :meth:`explain`
@@ -259,7 +258,7 @@ class Simulation:
                 R = reflection(self.compiled.model.geometry, self.compiled.coordsys)
                 data[f] = extend_to_period(self.compiled, data[f], f.rank,
                                            sym.parity(f, R), f"initial {k}")
-        if warned:                    # not fully resolved: warned once, recorded ( review)
+        if warned:                    # not fully resolved: warned once, recorded
             import warnings
 
             from ..errors import InitialDataWarning
@@ -629,7 +628,7 @@ class Simulation:
         Both checkpoint formats are found (``checkpoint_*.h5`` and ``checkpoint_*.npz``).
         ``t``: the start time of a fresh start (:meth:`initial`); on a resume it must be the
         start time recorded by the chain's checkpoints (refused otherwise: the script would
-        describe another run; feat2)."""
+        describe another run)."""
         from ..io import latest
         t0 = self._initial_time(t, initial, "resume_or_start")
         d = Path(directory)
@@ -658,7 +657,7 @@ class Simulation:
 
     def _check_chain_start(self, ck: Path, t0: float | None) -> None:
         """The start time of the resumed chain (recorded by its checkpoints) against the ``t`` of
-        this script (``resume_or_start(..., t=...)``, feat2): a difference is refused."""
+        this script (``resume_or_start(..., t=...)``): a difference is refused."""
         rec = getattr(self.solver, "_t_initial", None)
         want = 0.0 if t0 is None else t0
         if rec is None:
@@ -1182,7 +1181,7 @@ class Linearization:
         # res.mode(i) shows the perturbation variables ("du") under the unknowns' names ("u")
         evp.mode_names = {"d" + u.name: u.name for u in self.model.unknowns}
         # growth convention (normal modes exp(s t): growth = Re s, whatever the name of s): set
-        # by conatus.linearize itself, one sentence for both layers (Q10.11)
+        # by conatus.linearize itself, one sentence for both layers
         if comp.time is not None:
             # (native2): a coefficient written with t in the equations (a base
             # flow in the right-hand side, cos(t)*Uc*dx(u)) used to be frozen silently at the
@@ -1550,8 +1549,8 @@ class Linearization:
                               doc=_LIN_DOC)
         check_call_options(None, kw, _EIG_OPTIONS + ("n_modes",), "lin.eigenvalues")
         if which and k is not None:
-            # a curvilinear group is chosen by m=/kz=/ell=: k was ignored without a word (lot
-            # the shell docstring passed k=4 meaning four shift-invert modes)
+            # a curvilinear group is chosen by m=/kz=/ell=: k used to be ignored without a
+            # word (the shell docstring passed k=4 meaning four shift-invert modes)
             if isinstance(k, numbers.Integral) and not isinstance(k, bool) and \
                     "n_modes" not in kw and kw.get("method") == "shift-invert":
                 from ..errors import _warn_user

@@ -1,4 +1,4 @@
-"""``cross(Omega, u)`` on the left-hand side in a Cartesian box: implicit Coriolis (feat2).
+"""``cross(Omega, u)`` on the left-hand side in a Cartesian box: implicit Coriolis.
 
 Rotating triply periodic box, dt(u) + 2 Om cross(ez, u) + grad(p) = 0, div(u) = 0, from one
 divergence-free Fourier mode u0 = a0 sin(k.x), a0 perpendicular to k. The amplitude obeys the
@@ -181,7 +181,7 @@ def test_rotating_channel_with_walls_implicit_equals_explicit():
 
 
 def test_implicit_rotation_is_declared_and_warned_when_its_waves_are_not_resolved():
-    """Review of feat2: the implicit Coriolis term is stable at any dt but damps its waves when
+    """Review the implicit Coriolis term is stable at any dt but damps its waves when
     |W| dt > 1 (|W| = 2 Om bounds the inertial frequency 2 Om.k/|k|): explain() states |W| dt for
     every implicit rotation term, one UnderResolvedWarning per solver above 1 (also after set_dt),
     nothing for the explicit treatment. The damping itself: |R(i omega dt)| of the implicit RK443

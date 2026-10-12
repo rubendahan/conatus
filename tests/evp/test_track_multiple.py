@@ -1,5 +1,5 @@
 """track()/critical() on a double eigenvalue: the (cos, sin) pair of a RealFourier group of a
-reflection-symmetric problem (gallery gap, BACKLOG wave 1: LinAlgError in the bordered Newton,
+reflection-symmetric problem (gallery gap: LinAlgError in the bordered Newton,
 Swift–Hohenberg had to switch to ComplexFourier). The eigenspace member is a declared choice."""
 import numpy as np
 

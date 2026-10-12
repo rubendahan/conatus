@@ -1,9 +1,9 @@
 """EVP: the eigenvalue may multiply a sum, (U - c) L(v), as long as the pencil stays linear in it.
 
-Gallery gap (BACKLOG wave 1): ``(U - c) * L(v)`` was refused ("eigenvalue must appear linearly")
+Gallery gap: ``(U - c) * L(v)`` was refused ("eigenvalue must appear linearly")
 although c enters linearly; worse, ``U * (L(v) - c v)`` compiled the inner ``c v`` into neither L nor
 M (the product's M part was dropped because the outer factor had no c): in a system whose other
-equations carry c, that term vanished silently (ERREURS_COURANTES). The compiler
+equations carry c, that term vanished silently. The compiler
 now splits every LHS as x0 + c x1 (products of sums distributed) and refuses any other dependence.
 """
 import numpy as np

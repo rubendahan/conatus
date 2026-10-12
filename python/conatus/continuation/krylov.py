@@ -185,7 +185,7 @@ class KrylovArclength:
                 self.refused.append((ds, str(e)[:200]))
                 if getattr(e, "stagnated_near_tol", False):
                     # the corrector stalled just above tol: halving ds does not help and the step
-                    # never grows back (seen on the 3D Couette continuations of). Counted
+                    # never grows back (seen on the 3D Couette continuations). Counted
                     # and said once; the numerics are unchanged.
                     self.floor_failures.append(float(e.relative_residual))
                     if self.log and len(self.floor_failures) == 1:

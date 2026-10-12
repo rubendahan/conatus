@@ -140,7 +140,7 @@ export default function Install() {
       <PageHead eyebrow="Install" title="Install">
         <p>Conatus 0.1.0 installs with pip from a binary wheel, with its compiled core inside: no compiler needed. The CPU
           wheel is on PyPI; a CUDA 12 wheel for NVIDIA GPUs, in beta, is attached to the{" "}
-          <a href="https://github.com/rubendahan/conatus/releases">GitHub release</a>. It also builds from source.</p>
+          <a href="https://github.com/rubendahan/conatus/releases/tag/v0.1.0">GitHub release</a>. It also builds from source.</p>
       </PageHead>
 
       <Section id="requirements" title="Requirements">

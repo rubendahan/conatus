@@ -1,4 +1,4 @@
-"""Executable examples of the user guide for the features added in the parity, B1, B3 and
+"""Executable examples of the user guide for the features added in the parity and
 Studio lots: sine/cosine walls and free slip, the whole and half line and compound intervals, the
 new time steppers, the native tangent/adjoint/NLOP of a simulation, and the Studio's ``sim.watch``.
 
@@ -324,7 +324,7 @@ def uncertainty_report() -> None:
 
 
 def initial_time() -> None:
-    """io.md, *A run that starts at a time other than zero* (feat2): moving walls read on the
+    """io.md, *A run that starts at a time other than zero*: moving walls read on the
     clock of initial(t=), the start time in outputs, checkpoints and explain()."""
     # [initial-time]
     import tempfile
@@ -358,7 +358,7 @@ def initial_time() -> None:
 
 
 def implicit_coriolis() -> None:
-    """operators.md, *cross products in a box* (feat2 and its review): an implicit Coriolis term
+    """operators.md, *cross products in a box*: an implicit Coriolis term
     in a rotating periodic box, its explain() line and the warning when 2 Om dt > 1."""
     # [coriolis]
     import warnings

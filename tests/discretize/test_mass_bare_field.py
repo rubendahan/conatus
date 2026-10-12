@@ -1,4 +1,4 @@
-"""A bare unknown (coefficient 1) never enters the mass matrix (ERREURS_COURANTES: bare unknown in M).
+"""A bare unknown (coefficient 1) never enters the mass matrix (bare unknown in M).
 
 Found by the Swift–Hohenberg gallery case: in an equation holding dt() or the eigenvalue, a bare
 field u was compiled as the identity in M as well as in L, so dt(u) + u = 0 decayed as e^{-t/2}

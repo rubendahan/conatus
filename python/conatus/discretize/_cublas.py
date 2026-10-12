@@ -41,7 +41,7 @@ def _lib():
         import sys
         last = None
         # absolute candidates only (an empty CUDA_HOME gave the relative 'lib/libcublas.so.12',
-        # looked up from the current directory review B2)
+        # looked up from the current directory)
         here = [os.path.join(p, "lib", "libcublas.so.12") for p in (sys.prefix, os.environ.get("CUDA_HOME", ""))
                 if p and os.path.isabs(p)]
         lib = None

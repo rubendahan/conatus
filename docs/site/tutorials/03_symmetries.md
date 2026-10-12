@@ -7,7 +7,7 @@ leading growth rate is zero to the published digits; the subspace gives the same
 rounding with half the unknowns. The complementary class decays.
 **Time:** a few seconds of CPU.
 **Script:** [`t03_symmetries.py`](code/t03_symmetries.py) · **Tests behind it:**
-`tests/algebra/test_symmetry.py`, `tests/evp/test_rayleigh_benard.py`, `tests/ivp/test_nonlinear.py`.
+`tests/evp/test_rayleigh_benard.py`.
 
 ## The idea
 

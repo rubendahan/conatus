@@ -282,7 +282,7 @@ class Problem:
         return out
 
     def _check_bc_count(self, coord, basis, into: int, eqs: list[Equation]) -> None:
-        """Refuse more boundary conditions than the differential order along ``coord`` ( v0.1:
+        """Refuse more boundary conditions than the differential order along ``coord`` (v0.1:
         an extra condition got an extra tau, the square system solved to a 1e-15 discrete
         residual and the PDE itself was no longer satisfied), a periodic direction, and a basis
         with fewer modes than tau terms."""

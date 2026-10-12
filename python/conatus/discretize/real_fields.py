@@ -14,8 +14,7 @@ from .compiler import DiscretizationError
 __all__ = ["REAL_TOL", "STATE_REAL_TOL", "FUNC_REAL_TOL", "checked_real"]
 
 REAL_TOL = 1e-12
-"""Relative tolerance on the imaginary part of a real field inside the transforms of F (audit
-R9: was a hidden 1e-9); rounding of the transforms is ~1e-15 relative. Declared on
+"""Relative tolerance on the imaginary part of a real field inside the transforms of F (was a hidden 1e-9); rounding of the transforms is ~1e-15 relative. Declared on
 ``PolarSpace.real_tol`` / ``SphereSpace.real_tol``. Since the m = 0 projection at the exit of the
 solves, ``solver.grid`` also checks a projected state at this tolerance."""
 

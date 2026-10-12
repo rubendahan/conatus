@@ -20,7 +20,7 @@ level-0 Chebyshev coefficients in r,
 (4π for m > 0: the mode m and its conjugate partner -m; ComplexFourier: 2π for every m) and
 G_r[i, j] = ∫_ri^ro T_i T_j r² dr computed by Gauss-Legendre (N + 4 nodes, exact for the
 polynomial integrand). E(u) = ½ ⟨u, u⟩. Checked against the grid quadrature of |u|² r² sin θ in
-``tests/adjoint/test_sphere_adjoint.py``.
+the development test suite.
 
 Admissible set: {v real (m = 0 rule above) : C_v v + C_o o = 0 for some o}, C the algebraic rows
 (rows without mass: continuity, boundary conditions, gauges) of the discrete system and o the

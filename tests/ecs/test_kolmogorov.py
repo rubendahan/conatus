@@ -13,7 +13,7 @@ def lead(Re, N):
     assert np.abs(r).max() < 1e-12                          # laminar state is steady
     ev = linear_stability_dense(s, X, dense_max=2000, finite_max=1e8)
     # k = 0 group: two algebraic rows, the gauge ∫ψ = 0 and the vorticity equation (lap ψ_0 = 0, so
-    # it reads τ = <RHS>). Was 1 before the "bare unknown in M" fix (ERREURS_COURANTES, gallery):
+    # it reads τ = <RHS>). Was 1 before the "bare unknown in M" fix (gallery):
     # the bare τ was put in M as well (dt τ + τ = <RHS>).
     assert ev.n_infinite == 2
     return ev[0]

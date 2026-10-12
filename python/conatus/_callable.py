@@ -10,7 +10,7 @@ the function of the same name, with the same signature (``inspect.signature`` re
     cn.discretize.Plan              # the package's contents stay reachable
 
 Nothing else changes: the package is still a module (``isinstance(.., types.ModuleType)``), its
-submodules import as before. ``tests/infra/test_api.py`` checks that every name shared by ``cn``
+submodules import as before. The development test suite checks that every name shared by ``cn``
 and ``conatus.expert`` is the same object or a package whose call is that object.
 """
 from __future__ import annotations

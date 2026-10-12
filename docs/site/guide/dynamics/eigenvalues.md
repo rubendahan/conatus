@@ -54,7 +54,7 @@ says so.
 A mode can pass the flag and still be under-resolved: for Orr–Sommerfeld at $Re = 10^4$ and
 $N = 24$ the least stable mode that passes is $c = 0.580 + 0.024i$ (the converged value is
 $0.2375 + 0.0037i$), with a tail of $3.7\times10^{-4}$ and a residual of $10^{-16}$. So the mode a
-result **selects** — `res.order()[0]`, `P.least_stable(...)`, the mode of `critical(...)` — is
+result **selects** (`res.order()[0]`, `P.least_stable(...)`, the mode of `critical(...)`) is
 held to a second, stricter declared level, `cn.tolerances.UNRESOLVED_TAIL_TOL` ($10^{-10}$; measured:
 the tail is $10^{-8}$ at $N = 32$ with $c$ off by $4\times10^{-5}$, $10^{-12}$ at $N = 48$ with
 $9\times10^{-8}$). Without `drift=`, a selected mode above it gets the sentence "selected mode

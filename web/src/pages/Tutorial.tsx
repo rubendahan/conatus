@@ -218,7 +218,7 @@ export default function Tutorial() {
             <ol className="tu-more">
               {more.map((t) => (
                 <li key={t.slug}><DocLink to={`tutorials/${t.slug}.html`}>{t.title}</DocLink>
-                  {t.learn && <span className="tu-more-l"> — {t.learn}</span>}</li>
+                  {t.learn && <span className="tu-more-l">: {t.learn}</span>}</li>
               ))}
             </ol>
             <p>Every part of Conatus is described once in the <Link to="/documentation">documentation</Link>: the user guide,

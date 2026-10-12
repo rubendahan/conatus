@@ -349,7 +349,7 @@ def test_polar_plan_explain_and_methods():
 
 
 def test_real_field_imaginary_tolerance_declared():
-    """Audit R9 (polar part): the tolerance on the imaginary part of real fields on the grid is a
+    """Audit (polar part): the tolerance on the imaginary part of real fields on the grid is a
     declared, visible value (plan.space.real_tol = 1e-12, printed by explain()) -- it used to be a
     hidden 1e-9 default argument of polar_eval._real. An inconsistent m = 0 pair (u_+ != conj(u_-))
     is refused above it, rounding-level imaginary parts are accepted."""

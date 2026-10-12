@@ -232,7 +232,7 @@ class ParametricEVP:
             subst[d] = g
         self.problem = _substituted(problem, subst) if subst else problem
         # parameters still present after the substitution (a pencil parameter used only through a
-        # derived coordinate, e.g. Ta in sqrt(Ta), is not a key discretize accepts: audit R1)
+        # derived coordinate, e.g. Ta in sqrt(Ta), is not a key discretize accepts)
         self._pnames = problem_parameter_names(self.problem)
         self._g = tuple(subst.values())
         kparams = set(self.wavenumbers.values())
@@ -387,7 +387,7 @@ class ParametricEVP:
             if ex[j] == 0:
                 continue
             # d/dp (p/p0)^e = e (p/p0)^(e-1) / p0: finite at p = 0 for e >= 1 (the former
-            # (p/p0)^e * e / p gave 0/0 = NaN there; gallery, BACKLOG wave 1)
+            # (p/p0)^e * e / p gave 0/0 = NaN there; gallery)
             w = np.prod([t[n] ** (e - 1 if k == j else e) for k, (n, e) in enumerate(zip(names, ex, strict=True))])
             w = w * ex[j] / self.p0[names[j]]
             dL += w * C
@@ -586,7 +586,7 @@ class ParametricEVP:
         test (``spurious='tail'``) and the drift test of :meth:`set_drift` if set. With
         ``growth`` (a callable of sigma), the sentence also says when the spectral-tail test set
         aside a mode of larger growth than every mode it kept (a selection that could otherwise
-        jump to another branch without a word; review of)."""
+        jump to another branch without a word)."""
         keep = np.ones(r.values.size, bool) if select is None else np.asarray(select(r.values), bool)
         notes = [] if select is None else [f"select() kept {int(keep.sum())} of {keep.size}"]
         if self.spurious == "tail":

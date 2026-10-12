@@ -293,7 +293,7 @@ class Cross(Expr):
 
 def cartesian_cross_table(coordsys) -> dict[tuple[int, int], tuple[int, float]]:
     """(i, j) -> (k, sign) with e_i x e_j = sign e_k for the unit vectors of a 3D Cartesian
-    system, indices in the order of the system (feat2). Coordinates named x, y, z, declared in
+    system, indices in the order of the system. Coordinates named x, y, z, declared in
     any order: the physical right-handed frame (e_x x e_y = e_z whatever the order of the axes);
     other names: the order of declaration is the right-handed frame (e_0 x e_1 = e_2)."""
     from ..errors import TensorError
@@ -554,7 +554,7 @@ NONDIFFERENTIABLE_FIX = ("replace it by a smooth approximation whose derivative 
                          "declared parameter (the model then means that); or leave the term out of "
                          "the model you differentiate (adjoint of the remaining dynamics)")
 #: Name of the marker left by the linearization of abs() about a zero base (refused by
-#: Expr.linearize when it survives the simplification; review of).
+#: Expr.linearize when it survives the simplification).
 ABS_AT_ZERO = "abs'(0)"
 _USER_FUNCS: dict[str, Any] = {}       # name -> the user's callable (pointwise())
 
@@ -682,7 +682,7 @@ class UnaryFunction(Expr):
         base = u.substitute(around)
         if self.func == "abs" and base.is_zero():
             # abs at a zero base: no derivative there (|du| is not linear in du). sign(0) = 0
-            # would drop the term silently (review of): a marker instead, which survives
+            # would drop the term silently: a marker instead, which survives
             # only if no other factor vanishes with the base (|u| u at u = 0 is differentiable,
             # its marker is multiplied by 0); Expr.linearize refuses a result that still holds it
             return mul(Parameter(ABS_AT_ZERO), du)
@@ -769,5 +769,5 @@ def has_nonpolynomial(e: Expr) -> list[str]:
     """Names of the non-polynomial pointwise functions of grid data in ``e`` (aliasing reports).
 
     A function of parameters only (cos(omega t), sqrt(1 - q^2)) is a number and is not listed: it
-    was, and every such problem was wrongly declared "NOT alias-free" (gallery, BACKLOG wave 1)."""
+    was, and every such problem was wrongly declared "NOT alias-free" (gallery)."""
     return sorted({x.func for x in e.walk() if isinstance(x, UnaryFunction) and x.on_grid})

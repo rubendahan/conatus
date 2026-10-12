@@ -77,7 +77,7 @@ def _tree_sha256(root: Path, suffixes: tuple[str, ...]) -> tuple[str, int]:
 
 #: Sources of the compiled core whose content decides whether a build is stale.
 CORE_SUFFIXES = (".hpp", ".cpp", ".cu", ".cuh", ".txt")
-#: Written next to the compiled module by ``core/build.sh``: the hash of the core sources it was
+#: Written next to the compiled module by the development build script: the hash of the core sources it was
 #: built from.
 CORE_STAMP = "_core.sources.json"
 
@@ -98,7 +98,7 @@ def core_sources_sha256(repo: Path | None = None) -> tuple[str, int]:
 
 def record_core_sources(module_dir: str | Path, repo: str | Path | None = None) -> Path:
     """Write :data:`CORE_STAMP` in ``module_dir`` (the directory of the built ``_core``) with the
-    hash of the sources just compiled; called by ``core/build.sh`` after a successful build."""
+    hash of the sources just compiled; called by a build script after a successful build."""
     digest, n = core_sources_sha256(None if repo is None else Path(repo))
     out = Path(module_dir) / CORE_STAMP
     out.write_text(json.dumps({"core_sources_sha256": digest, "files": n,
@@ -158,7 +158,7 @@ def _core_state() -> dict:
             info["stale_vs_sources"] = bool(newest > path.stat().st_mtime)
             info["stale_test"] = (f"modification times (no valid {CORE_STAMP} next to the "
                                   "module: a build older than the hash stamp, or a module rebuilt "
-                                  "after its stamp; core/build.sh records one)")
+                                  "after its stamp)")
     return info
 
 
@@ -166,7 +166,7 @@ TREE_MARKER = ".conatus_tree.json"
 
 
 def _exported_tree() -> dict | None:
-    """Marker written by ``ci/export_tree.sh`` in a tree exported without ``.git``."""
+    """Marker written by an export script in a tree exported without ``.git``."""
     if (REPO_ROOT / ".git").exists():
         return None
     try:
@@ -178,7 +178,7 @@ def _exported_tree() -> dict | None:
 def code_state() -> dict:
     """What code is executing now, checked at call time.
 
-    In an exported tree (no ``.git``, CI jobs of) the base commit and the overlaid paths are
+    In an exported tree (no ``.git``, CI jobs) the base commit and the overlaid paths are
     read from the export marker: ``git_head`` is the base commit, the overlaid paths under
     ``python/`` or ``core/`` are reported as dirty, and ``code_matches_commit`` stays False.
     Without a marker ``git_head`` is None and a ``warning`` says why (never a guessed commit).
@@ -208,10 +208,10 @@ def code_state() -> dict:
         state["code_matches_commit"] = False
         state["warning"] = (
             "compiled core differs from the core/ sources of this checkout (content hash recorded "
-            "at build time): rebuild (core/build.sh) before trusting this run"
+            "at build time): rebuild the core before trusting this run"
             if state["core"].get("core_sources_sha256") else
             "compiled core is older than core/ sources (modification times; no source hash "
-            "recorded with this build): rebuild (core/build.sh) before trusting this run")
+            "recorded with this build): rebuild the core before trusting this run")
     elif dirty:
         state["warning"] = f"uncommitted changes in {len(dirty)} path(s) under python/ or core/"
     elif head is None and PKG_DIR.parent.name != "python":

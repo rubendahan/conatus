@@ -111,8 +111,7 @@ def _covering_time(integrator, t_end: float) -> float:
     """Time to integrate so that the trajectory covers [0, t_end]. A fixed-step map
     (``SolverIntegrator``, attribute ``dt``) only reaches its step grid and refuses any other end
     time; the first inward crossing of the end sphere is located on the dense
-    output, between two steps, so the trajectory runs to the first step at or after it (review
-    of find_connection with end_radius on a SolverIntegrator was refused)."""
+    output, between two steps, so the trajectory runs to the first step at or after it (find_connection with end_radius on a SolverIntegrator was refused)."""
     import math
     dt = getattr(integrator, "dt", None)
     if dt is None:

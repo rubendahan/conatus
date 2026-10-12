@@ -3,7 +3,7 @@ the transposed transforms of Legendre, Jacobi, Hermite, Laguerre and compound Ch
 family matrices) were not exercised by an adjoint identity.
 
 Problem on each basis: u_t - nu u_xx = -u u_x (+ taus for the walls the basis has), RK443 and
-SBDF2, 6 steps; |<J v, w> - <v, J^T w>| within the rounding of this computation ( rule,
+SBDF2, 6 steps; |<J v, w> - <v, J^T w>| within the rounding of this computation (rule,
 ``tests/rounding_bounds.py``: measured linearity defects; w on u, the tau outputs carry the rounding
 of the bordered solves) and a Taylor remainder of order 2. Before this pass the polynomial transpose of F refused every family basis at the first
 vjp (after a successful jvp): their dense transforms are now transposed as they are.

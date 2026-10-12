@@ -33,7 +33,7 @@ shell, RealFourier in phi, a product tree at the top of ``le``, active leaves th
 fields d or grad(d) of a direction field on the full domain. The passive values come from the
 planned evaluator itself (same leaves, same constants, same time factors as the planned tangent).
 Same adjoint as the explicit walk up to rounding (the summation order changes), checked by
-dot-product tests stage by stage (``tests/adjoint/test_sphere_planned.py``) and end to end.
+dot-product tests stage by stage (the development test suite) and end to end.
 """
 from __future__ import annotations
 

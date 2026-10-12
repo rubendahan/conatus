@@ -51,7 +51,7 @@ _DOC = "docs/site/guide/dynamics/nonmodal.md"
 
 LEAK_MAX = 1e-8
 """Default bound on the admissible leak of the monodromy matrix, ||Phi Z - Z (Z* Phi Z)|| / ||Phi Z||
-(method='monodromy'; the same bound as the residual filter of the Hill method (residual_max)."""
+(method='monodromy'): the same bound as the residual filter of the Hill method (residual_max)."""
 
 #: Folding of Im mu into (-pi/P, pi/P]: an exponent within FOLD_ROUNDING x (2 pi / P) of the lower
 #: end is on it to the rounding of the mod (a few eps of w), and moves up by one period; nothing

@@ -276,11 +276,11 @@ class NewtonKrylovHookstep:
         ``stalled``: the last iteration no longer halved ‖R‖ (or no step decreased it at the
         minimal trust radius); a search cut by its budget while ‖R‖ still fell is not stalled.
         ``last_iterate``: the unknowns at the failure (a copy), e.g. the wave speed of a
-        travelling-wave search (review of).
+        travelling-wave search.
 
         ``stagnated_near_tol``: the last iteration no longer halved ‖R‖ (``stalled``) and ‖R‖/scale
         is within 10x of tol: the tolerance is below the residual floor this problem can reach
-        (Krylov tolerance, rounding at this size; seen on the 3D Couette continuations of stalled at 2-4e-10 against 1e-10). A run still converging when its budget ends is not
+        (Krylov tolerance, rounding at this size; seen on the 3D Couette continuations stalled at 2-4e-10 against 1e-10). A run still converging when its budget ends is not
         labelled so. Said, never loosened for you."""
         floor = stalled and rel < 10 * self.tol
         e = NewtonNotConverged(

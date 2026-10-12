@@ -1,6 +1,6 @@
 """Symmetry subspaces of curvilinear plans: disk, annulus, cylinder, S2, shell, ball.
 
-Same contract as the Cartesian subspaces (docs/SYMMETRIES.md, D7): the problem declares a
+Same contract as the Cartesian subspaces: the problem declares a
 ``SymmetrySubspace`` whose generators are
 
 - ``AzimuthalMFold(phi, m0)``: rotation by 2 pi / m0 (every geometry). Polar and spherical frame
@@ -576,7 +576,7 @@ def isotypic_classes(sym) -> list[dict]:
 def symmetry_breaking_check(plan, group=None, *, method: str = "dense", target: complex | None = None,
                             k: int = 8, unstable_tol: float, matrices=None) -> dict:
     """Leading eigenvalue of an EVP group in **every isotypic class** of the declared group
-    (docs/SYMMETRIES.md, "Safeguard"): the declared subspace sees only its own class; the other
+    ("Safeguard"): the declared subspace sees only its own class; the other
     classes (reflection sign -1; rotation residues shifted by 1..m0-1) are assembled with the same
     plan and the same equivariance check. An eigenvalue with Re > ``unstable_tol`` (explicit) outside
     the declared class is a symmetry-breaking instability, reported in the verdict.

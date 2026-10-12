@@ -1,4 +1,4 @@
-"""Projection of the m = 0 coefficients of a curvilinear state onto real fields ( e216).
+"""Projection of the m = 0 coefficients of a curvilinear state onto real fields.
 
 Real fields on the disk, the sphere, the shell and the ball store m >= 0 only; the m = 0 rows
 are complex and a real field needs them to satisfy c = J c, with J the antilinear map
@@ -145,7 +145,7 @@ class M0RealProjection:
         sigma = Jz[idx] / np.conj(zp[idx][loc])
         # independent probe on every entry (m > 0 included): the transforms' projection must be
         # (z + J z)/2 on the m = 0 entries and the identity elsewhere, both to PROBE_TOL (a probe
-        # zero outside the m = 0 entries would not test the identity part e216 review)
+        # zero outside the m = 0 entries would not test the identity part)
         z2 = rng.standard_normal(n) + 1j * rng.standard_normal(n)
         z2[null] = 0.0
         Pz2 = proj(z2)

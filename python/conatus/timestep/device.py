@@ -1,4 +1,4 @@
-"""GPU-resident stacked system for ``IVPSolver(..., backend="cuda")`` ( → performance target).
+"""GPU-resident stacked system for ``IVPSolver(..., backend="cuda")``.
 
 Mirror of :class:`GlobalSystem` whose state, matrices and gather/scatter maps live on the
 device (CuPy arrays). Linear solves: the batched bordered banded GPU solver of
@@ -177,7 +177,7 @@ class DeviceSystem:
 
     @compact_factors.setter
     def compact_factors(self, on: bool) -> None:
-        # refused, never ignored ( step 3): a core without the transposed level
+        # refused, never ignored: a core without the transposed level
         # schedule, or solves without level schedule, used to leave every batch uncompacted with
         # only a count in explain() -- the memory plan of the caller then silently did not hold
         on = bool(on)
@@ -189,8 +189,8 @@ class DeviceSystem:
                     "solves (BandedBatch.build_transpose_schedule)",
                     where="DeviceSystem.compact_factors",
                     why="the core was built before",
-                    fix="build the core of this tree (bash core/build.sh, or CN_CORE_BUILD=<dir> and "
-                        "CONATUS_CORE_PATH=<dir>/core/core), or keep compact_factors=False")
+                    fix="rebuild the core of this tree (pip install ., or the CMake build of the install "
+                        "page), or keep compact_factors=False")
             if not self.level_schedule:
                 raise OptionError("compact_factors=True needs level_schedule=True (the factors are "
                                   "kept as level streams)", where="DeviceSystem.compact_factors",
@@ -296,7 +296,7 @@ class DeviceSystem:
     def _batch(self, *args, **kw):
         """cuda.BandedBatch (compacted at once with compact_factors: its band LU released before
         the next batch is factored, so the band storage of only one batch is alive at a time, as
-        the memory planner models it step 3)."""
+        the memory planner models it)."""
         bb = self._batch_alloc(*args, **kw)
         if self._compact:
             # a batch whose schedule does not apply keeps its band LU (level_note / level_t_note
@@ -323,7 +323,7 @@ class DeviceSystem:
             except (RuntimeError, MemoryError) as err2:
                 if "out of memory" not in str(err2).lower():
                     raise
-                # a real shortage: say so with the numbers ( step 3)
+                # a real shortage: say so with the numbers
                 free, total = self.cp.cuda.runtime.memGetInfo()
                 st = self._cuda.pool_stats()
                 raise MemoryError(
@@ -407,7 +407,7 @@ class DeviceSystem:
         global _zb_module
         if _zb_module is None:
             # no FMA contraction: acc + w * rhs rounded as the separate CuPy operations it replaces
-            # (contracted, the gather differed from the CuPy path in the last bit; review)
+            # (contracted, the gather differed from the CuPy path in the last bit)
             _zb_module = cp.RawModule(code=_ZB_SRC, options=("-std=c++17", "--fmad=false"))
         kg, ks = _zb_module.get_function("zb_gather"), _zb_module.get_function("zb_scatter")
         for (_keys, rows, cols, _wr, _wc), batch, (wr, wc) in zip(self._zbuckets, zf, self._zw, strict=False):

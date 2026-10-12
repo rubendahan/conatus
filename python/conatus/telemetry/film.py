@@ -188,8 +188,8 @@ class FilmIndex:
 def thin_to_budget(films: dict[Any, FilmIndex], max_bytes: int) -> int:
     """Memory mode, several runs: thin the name holding the most bytes until the total fits
     ``max_bytes``; when no name has 3 frames left, drop the oldest frame of the largest name (a
-    name of one frame goes entirely). The budget is therefore always met (50 names
-    of 2 frames each used to stay 10x over it). Returns the number of passes; every dropped frame
+    name of one frame goes entirely). The budget is therefore always met (50 names of 2 frames
+    each used to stay 10x over it). Returns the number of passes; every dropped frame
     is counted in its index's ``thinned_here``."""
     passes = 0
     while sum(f.bytes for f in films.values()) > max_bytes:

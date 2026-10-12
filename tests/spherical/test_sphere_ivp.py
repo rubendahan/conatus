@@ -1,4 +1,4 @@
-"""Spherical IVPs: exact decay rates (the scale of M, ERREURS_COURANTES) and temporal orders."""
+"""Spherical IVPs: exact decay rates (the scale of M) and temporal orders."""
 import numpy as np
 import pytest
 from scipy.special import spherical_jn

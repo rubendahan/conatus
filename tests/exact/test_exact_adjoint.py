@@ -1,4 +1,4 @@
-"""Adjoint gradients against closed forms (audit coverage hole 4: analytic adjoint gradient).
+"""Adjoint gradients against closed forms (coverage hole 4: analytic adjoint gradient).
 
 Equation (RealFourier on (0, 2 pi), one unknown u, parameters carried as frozen fields):
 
@@ -30,7 +30,7 @@ e^{sigma T} by O(dt^3). Measured relative gradient errors (dt = 1e-2 / 4e-3 / 2e
 4.9e-8 / 3.1e-9 / 3.9e-10, SBDF3 5.6e-7 / 3.7e-8 / 4.7e-9, dJ/dD 4.2e-7 / 2.6e-8 / 3.3e-9 (ratio 8:
 third order). Tolerance 3e-7; an-type error changes 2 sigma T by ~0.2 (a 20 % gradient error).
 
-Mutations (script outside the repository, audit): with reintroduced (bare unknown in M) the
+Mutations (script outside the repository): with reintroduced (bare unknown in M) the
 rates become -(g + a + D k^2)/(c + 1) or -(...)/(2c): every test fails. (eigenvalue lost in a
 nested product) lives in the EVP split, which an IVP flow map never calls: not reachable here; the
 nested IVP form c*(dt(u) + u) is its IVP analogue and is covered by the mutation.

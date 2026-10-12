@@ -1,5 +1,5 @@
 """Periodic NLBVP (all-Fourier domain): Newton with a dense coupled Jacobian and a declared phase
-condition (gallery gap, BACKLOG wave 1: the banded NewtonSolver refuses an x-dependent iterate,
+condition (gallery gap: the banded NewtonSolver refuses an x-dependent iterate,
 "non-constant coefficient 'U_u' varies along a Fourier direction").
 
 Oracle: Swift–Hohenberg rolls r u - (1 + d_xx)^2 u - u^3 = 0 at r = 0.1; the odd-subspace

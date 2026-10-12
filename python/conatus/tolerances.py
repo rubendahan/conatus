@@ -12,7 +12,7 @@ Rule (from the proposed of the):
   its singular values, an iteration cap that raises, a classification note), or a stopping test
   at the attainable floor whose residual is always returned, keeps a **declared default**: a
   named value listed in :data:`DECLARED` (with the reason), printed by :func:`explain` and by the
-  ``explain()`` of the object that uses it. ``tests/infra/test_tolerances.py`` fails if a public
+  ``explain()`` of the object that uses it. The development test suite fails if a public
   signature gains a numeric tolerance default that is not declared here, or if a declared value
   changes without this table.
 
@@ -99,15 +99,15 @@ class Declared:
 #: NCC resolution: refusal threshold of the relative Chebyshev tail of a non-constant
 #: coefficient sampled on the grid (refused above, with the resolution to use or the cutoff to
 #: declare). Same value as ``conatus.resolution.TAIL_TARGET``, the tail Conatus calls "resolved"
-#: for a solution field: one meaning of "resolved" for fields and coefficients. Measured (lot API
-#: v0.1): the coefficients of the test suite and tutorials are either resolved to 1e-10..4e-9 or
+#: for a solution field: one meaning of "resolved" for fields and coefficients. Measured:
+#: the coefficients of the test suite and tutorials are either resolved to 1e-10..4e-9 or
 #: clearly under-resolved (1e-7..1e-1); 1e-12 (the former warning) flagged correct profiles.
 NCC_TAIL_TOL = 1e-8
 #: NCC rounding floor: a tail below NCC_ROUNDING x eps x (data scale) x (derivative
 #: amplification) is the rounding of the coefficient's computation, not under-resolution. The
 #: derivative amplification applies only when the differentiated data are themselves exact to
 #: NCC_ROUNDING x eps (relative tail); otherwise the amplified tail is interpolation error, judged
-#: like any coefficient (api01 review).
+#: like any coefficient.
 NCC_ROUNDING = 1e3
 #: Round-off of an imaginary part: a complex array that stands for a real
 #: quantity (a starting state of a real continuation, a grid property of a ComplexFourier problem)
@@ -533,7 +533,7 @@ ALGORITHM_DEFAULTS: dict[str, Declared] = dict([
 
 #: Internal deciding literals (float literals inside the library's comparisons, G4): a second
 #: table, by meaning, with the functions that use each value (``conatus._tolerances_internal``;
-#: ``tests/infra/test_internal_constants.py``). Not part of ``__all__``.
+#: the development test suite). Not part of ``__all__``.
 from ._tolerances_internal import INTERNAL  # noqa: E402,F401
 
 

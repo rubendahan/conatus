@@ -1,4 +1,4 @@
-""" (/Y4/Y5/Y6): runs that went wrong without a word.
+"""Runs that went wrong without a word.
 
 * Y2: a checkpoint of another model, other equations, other parameters, another box or another
   resolution is refused at restart (both formats), unless ``allow=`` names the change, which is
@@ -124,7 +124,7 @@ def _two_eq_hash(order):
 
 
 def test_equations_hash_is_canonical_and_process_independent():
-    """Review of the hash ignores whitespace and the order of terms and equations, and is
+    """Review the hash ignores whitespace and the order of terms and equations, and is
     the same in a process with another PYTHONHASHSEED (no salted hash() of strings)."""
     import os
     import subprocess

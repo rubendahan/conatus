@@ -25,5 +25,4 @@ User lines = lines of code excluding docstrings, comments and blank lines (funct
 The API gaps encountered are in (entry "gallery, wave 1"); those that are
 closed are struck through there with their commit (2026-09-28: `discretize` in `conatus.expert`, (U − c)·L, conj() on the LHS,
 wavenumber as a parameter, √Ta declared, `critical()` start/xtol, double eigenvalue, aliasing alert,
-periodic NLBVP, mapped domains); the bugs found along the way are fixed ("gallery" entries of
-).
+periodic NLBVP, mapped domains); the bugs found along the way are fixed ("gallery" entries).

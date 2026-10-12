@@ -1,5 +1,4 @@
-"""Ill-posedness check of a native initial-value problem at compile time (critique
-Y6).
+"""Ill-posedness check of a native initial-value problem at compile time.
 
 ``dt(T) + kappa*lap(T) = 0`` (a sign error for the heat equation) was built, run and explained
 without a word: its implicit operator makes every Fourier mode grow like ``exp(kappa k^2 t)``,

@@ -231,7 +231,7 @@ class PolarGlobalSystem:
     def gather_state(self, coeffs, check_subspace: bool = True) -> np.ndarray:
         """Coefficient arrays -> global vector. With ``check_subspace`` (default), data in slots
         the system does not represent (per-m radial truncation N_m) is refused instead of
-        being dropped; the argument used to be ignored (audit). The polar forward transform
+        being dropped; the argument used to be ignored. The polar forward transform
         leaves those slots exactly 0, so only hand-built coefficients can trip the check."""
         X = np.zeros(self.n, dtype=self.dtype)
         flat_in = []
@@ -360,7 +360,7 @@ class PolarIVPSolver(IVPSolver):
         self._check_projected_subspace(self.X, "initial data")
         self.t, self.iteration = float(t), 0
         self._t_origin, self._it_origin = float(t), 0
-        self._t_initial = float(t)                  # start time of the chain (checkpoints, feat2)
+        self._t_initial = float(t)                  # start time of the chain (checkpoints)
         self._reset_history()
 
     def _check_projected_subspace(self, X, what: str) -> None:

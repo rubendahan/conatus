@@ -1,7 +1,7 @@
 """Compile a native :class:`~conatus.model.Model` into the IR (the expert layer) at a resolution.
 
 Every automatic choice is made by a fixed rule and recorded (``Compiled.explain()``); anything the
-rules cannot decide is refused with the explicit override. Rules (docs/API_NATIVE.md):
+rules cannot decide is refused with the explicit override. Rules:
 
 * **Split** (IVP): a term linear in the unknowns (constant, parameter or declared ``given``
   coefficients) goes to the implicit side, a nonlinear term or a source to the explicit side;
@@ -540,7 +540,7 @@ def compile_model(model, N, dealias=None, *, check_conditions: bool = True,
     comp._time_candidate = tpar
     if not check_conditions:
         return comp
-    if kind == "IVP":                # backward diffusion / negative viscosity (Y6)
+    if kind == "IVP":                # backward diffusion / negative viscosity
         from .wellposed import check_ill_posed
         comp.illposed = check_ill_posed(comp, eqs, labels, _terms)
     sym = None
@@ -710,8 +710,7 @@ def _pressure_like(q, eqs) -> bool:
 
 
 def _normal_mode_pressure_like(q, eqs, geo, comp) -> bool:
-    """q is the pressure of a normal-mode model on one wall coordinate (critique
-    N1): a scalar unknown of a geometry with the wall coordinate only, written as on paper for
+    """q is the pressure of a normal-mode model on one wall coordinate: a scalar unknown of a geometry with the wall coordinate only, written as on paper for
     modes exp(i k x): it enters algebraically (``1j*k*p``) and through its first derivative along
     the wall (``dz(p)``), never with a higher derivative, and only on the left-hand sides."""
     wall = geo.wall_coord
@@ -854,7 +853,7 @@ _TRACE_SAFE = (Add, Mul, Power, UnaryFunction)   # pointwise: trace(f(g)) = f(tr
 
 
 def _wall_traces(comp: Compiled, e, coord, side, cond):
-    """Audit A22 (curved geometries): a given field that depends on the wall coordinate, in the
+    """Curved geometries: a given field that depends on the wall coordinate, in the
     right side of a condition, is replaced by its trace at the wall evaluated from its function
     (g(phi, R): exact, declared in explain()); the polar and spherical right-hand sides do not
     evaluate traces. Under a derivative (dr(g)) the trace of the function is not enough: refused
@@ -1021,8 +1020,7 @@ def _lift_for(recipe: str, tau, basis, k: int):
     raise AssertionError(recipe)
 
 
-# Shown by explain(): the rule itself, never an internal test or tutorial file name (audit
-#); the provenance of each recipe is in docs/API_NATIVE.md §4.
+# Shown by explain(): the rule itself, never an internal test or tutorial file name.
 _RULES = {"cartesian": "Chebyshev lift into the last modes",
           "regular": "lift in the derivative basis lam=2 (regular at the centre)",
           "annulus": "lift in the derivative basis lam=2",

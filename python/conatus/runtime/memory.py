@@ -877,7 +877,7 @@ class _Model(_XTModel):
         # complex-mode buckets sharing their partner's factors (checked exactly on the host
         # matrices of this key, timestep/shared_factors.py): two (n,) or (batch, n) sign arrays
         # checked on the actual (a, b) of the key when dt is known (the relation is a property
-        # of a M + b L, not of M and L separately: step 3); without dt on the
+        # of a M + b L, not of M and L separately); without dt on the
         # model key's coefficients (RK: (1, a_ii)); keys that are not two floats: not shared
         ab = self._actual_coefficients(key)
         coef = ab if ab is not None else key[-2:]
@@ -1287,7 +1287,7 @@ def _report(model: _Model, steps: int) -> MemoryReport:
         cufft_source=model.cufft.source,
         # the factorization is transient: the core pool's high-water mark (band LU and level
         # streams of a batch alive together) on top of everything the CuPy pool holds is an
-        # upper bound of the device peak ( step 3: "held" alone missed it)
+        # upper bound of the device peak ("held" alone missed it)
         core_pool_peak_bytes=int(core.peak), peak_bound_bytes=int(held + core.peak),
         # declared process floor (CUDA context, kernels, library handles), its own line
         cuda_process_floor_bytes=int(CUDA_PROCESS_FLOOR_BYTES),

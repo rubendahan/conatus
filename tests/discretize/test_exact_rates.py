@@ -1,4 +1,4 @@
-"""Nonzero dynamic quantities against exact values, one per way a term reaches M or L (audit).
+"""Nonzero dynamic quantities against exact values, one per way a term reaches M or L.
 
 The defect (a bare unknown compiled into the mass matrix) left every threshold and steady-state
 check green: sigma = 0 and L u = f do not see a wrong scale of M. Each test below measures a growth

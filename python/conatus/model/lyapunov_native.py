@@ -93,8 +93,8 @@ def _starts(sim: Any, starts: Any) -> np.ndarray:
                                  f"(B, {sv.system.n}) (sim.solver.X of each start)", doc=_DOC)
         return X
     if isinstance(starts, Sequence) and starts and all(isinstance(d, Mapping) for d in starts):
-        # every attribute sim.initial and set_state may rebind or clear is restored (feat1
-        # review: a fixed list missed the start time of the run, _t_initial / _t_given,
+        # every attribute sim.initial and set_state may rebind or clear is restored (a fixed
+        # list missed the start time of the run, _t_initial / _t_given,
         # added by sim.initial(t=), and the multistep history lists)
         saved_sv = _snapshot(sv)
         saved_sim = _snapshot(sim)

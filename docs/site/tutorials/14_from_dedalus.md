@@ -20,8 +20,7 @@ SBDF2).
 **Scripts:** [`t14_from_dedalus.py`](code/t14_from_dedalus.py) (no Dedalus needed),
 [`rb_cell_dedalus.py`](code/rb_cell_dedalus.py) (the Dedalus script, written for this tutorial),
 [`t14b_dedalus_check.py`](code/t14b_dedalus_check.py) (the comparison with Dedalus).
-**Tests behind it:** `tests/translate/`, `tests/parse/`, and the official Dedalus examples in
-`tests/translate/run_dedalus_examples.py` (fetched at test time, never stored here).
+**Tests behind it:** `tests/translate/`, `tests/parse/`.
 **Guide:** {doc}`../guide/dedalus`, {doc}`../guide/equations`.
 
 ## The cell as a native model

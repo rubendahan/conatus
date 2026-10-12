@@ -54,8 +54,7 @@ class _D3:
         if not isinstance(cs, CoordinateSystem):
             raise _Unsupported("Distributor of an unknown coordinate object")
         if mesh is not None:
-            self.tr.note("process mesh ignored: the parallel layout is not part of the problem "
-                         "(conatus.distributed decides it at run time)")
+            self.tr.note("process mesh ignored: the parallel layout is not part of the problem")
         return _Dist(cs, np.dtype(dtype))
 
     # bases -----------------------------------------------------------------------------------
@@ -129,8 +128,8 @@ class _D3:
                       dealias=self._dealias(dealias, f"Jacobi({coord.name})"))
 
     def Ultraspherical(self, coord, size, bounds=None, alpha=None, dealias=None, library=None):
-        """Dedalus Ultraspherical(alpha) = C^(alpha): a trial basis since (missing-features
-        lot, discretize/jacobi_family.py); its derivative_basis(k) lifts at level k."""
+        """Dedalus Ultraspherical(alpha) = C^(alpha): a trial basis
+        (discretize/jacobi_family.py); its derivative_basis(k) lifts at level k."""
         if alpha is None:
             raise _Unsupported("Ultraspherical without alpha")
         if not isinstance(coord, Coordinate) or bounds is None:

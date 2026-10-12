@@ -1,5 +1,4 @@
-"""critical(): explicit starting point, bracket centred on 0, sensitivity at p = 0 (gallery gaps,
-BACKLOG wave 1). Swift–Hohenberg growth pencil s = r - (1 - q^2)^2: neutral r = (1 - q^2)^2, ds/dr = 1."""
+"""critical(): explicit starting point, bracket centred on 0, sensitivity at p = 0 (gallery gaps). Swift–Hohenberg growth pencil s = r - (1 - q^2)^2: neutral r = (1 - q^2)^2, ds/dr = 1."""
 import numpy as np
 import pytest
 

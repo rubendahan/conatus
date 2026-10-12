@@ -1,4 +1,4 @@
-"""Parametric pencil: exact Laurent reconstruction, tracking, Re_c and dc/dRe ( speed)."""
+"""Parametric pencil: exact Laurent reconstruction, tracking, Re_c and dc/dRe (speed)."""
 import numpy as np
 import pytest
 

@@ -155,7 +155,7 @@ const today = new Date().toISOString().slice(0, 10);
 const locBase = SITE_URL || (BASE === "/" || BASE.startsWith(".") ? "" : BASE.replace(/\/$/, ""));
 const locs = allRoutes.filter((r) => r.path !== "/404").map((r) => `  <url><loc>${locBase}${r.path === "/" ? "/" : r.path + "/"}</loc><lastmod>${today}</lastmod></url>`);
 fs.writeFileSync(path.join(clientDir, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${locs.join("\n")}\n</urlset>\n`);
-// Preview: not indexed until v0.1 is public (INDEXABLE=1 at build time lifts it).
+// robots.txt: search engines are kept out unless the build sets INDEXABLE=1 (the published site does).
 fs.writeFileSync(path.join(clientDir, "robots.txt"), process.env.INDEXABLE === "1"
   ? `User-agent: *\nAllow: /\n${SITE_URL ? `Sitemap: ${SITE_URL}/sitemap.xml\n` : ""}` : "User-agent: *\nDisallow: /\n");
 console.log(`prerendered ${pages} pages, ${searchDocs.length} search documents (${docDocs} from the documentation)`);

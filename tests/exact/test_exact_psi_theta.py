@@ -1,5 +1,5 @@
 """Rayleigh–Bénard 2D (psi-theta), linear, stress-free walls: growth rate against the exact dispersion
-relation (audit hole 5: the psi-theta IVP was only compared with Conatus' own EVP).
+relation (hole 5: the psi-theta IVP was only compared with Conatus' own EVP).
 
 Thermal-diffusion units, z in (0, 1), u = psi_z, w = -psi_x, stress-free isothermal walls
 (psi = psi_zz = theta = 0), plus a Newtonian cooling gamma theta (written as a *bare* + theta and

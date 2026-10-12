@@ -9,7 +9,7 @@ Cvitanović, Davidchack & Siminos (2010), *SIAM J. Appl. Dyn. Syst.* 9, 1–33, 
 Pre-periodic orbit $\overline{pp}_{10.25}$: leading Floquet exponent $\mu_1 = 0.033209$,
 $\theta_1 = 2.0079$ (Ding & Cvitanović 2016, *SIAM J. Appl. Dyn. Syst.* 15, Table 1).
 **Time:** about a minute on one CPU core (the orbit's dense monodromy dominates).
-**Script:** [`t05_ks_orbits.py`](code/t05_ks_orbits.py) · **Tests behind it:** `tests/ecs/test_ecs_ks.py`.
+**Script:** [`t05_ks_orbits.py`](code/t05_ks_orbits.py) · **Tests behind it:** `tests/ecs/`.
 
 ## The system
 

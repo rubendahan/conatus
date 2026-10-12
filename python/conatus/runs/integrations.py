@@ -552,7 +552,7 @@ def _reproduce_ivp(run: Run, solver: Any, record: bool, rec_opts: dict, code_sam
 
 # ------------------------------------------------------------------------------------ exports
 def export(dest: str | os.PathLike, runs: Iterable[Run]) -> list[Path]:
-    """Small versionable JSON per run (no arrays): what ``results/registry/`` and the paper read."""
+    """Small versionable JSON per run (no arrays), to keep a results registry under version control."""
     dest = Path(dest)
     dest.mkdir(parents=True, exist_ok=True)
     out = []

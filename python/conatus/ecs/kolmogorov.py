@@ -85,7 +85,7 @@ def linear_stability_dense(solver: IVPSolver, X: np.ndarray, *, dense_max: int,
 class _Eig(np.ndarray):
     """Finite eigenvalues; ``n_infinite`` counts the infinite ones of the same problem. A view,
     slice or copy keeps the count (it describes the solve, not the entries kept): without
-    ``__array_finalize__`` a slice fell back to the class default 0 (audit EC11)."""
+    ``__array_finalize__`` a slice fell back to the class default 0."""
     n_infinite: int = 0
 
     def __array_finalize__(self, obj) -> None:
@@ -98,7 +98,7 @@ def resample_state(X: np.ndarray, src: IVPSolver, dst: IVPSolver, *,
     """Copy the RealFourier coefficients of ψ (and τ) from ``src`` to ``dst`` (spectral
     interpolation: truncation or zero padding of the high modes; explicit, exact on the kept modes).
 
-    What a truncation drops is measured (audit R6): ``report`` (if given) receives ``kept``
+    What a truncation drops is measured: ``report`` (if given) receives ``kept``
     (coefficients kept per direction), ``truncated_max`` (max |a| dropped) and ``energy_lost_rel``
     (Σ a² dropped / Σ a², plain coefficient norm); a UserWarning is issued when it is non-zero."""
     a, t = src.system.scatter(X)

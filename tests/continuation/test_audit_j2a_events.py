@@ -1,4 +1,4 @@
-"""Audit R4: located continuation events carry a converged flag; tolerances declared.
+"""Audit located continuation events carry a converged flag; tolerances declared.
 
 Written before the fix; failed on the code it guards (docs/AUDIT_J2a.md §3).
 """

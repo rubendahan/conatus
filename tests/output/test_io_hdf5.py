@@ -1,4 +1,4 @@
-"""cn.io ( I/O): HDF5 analysis files, exact checkpoints, restart of an IVP from a file.
+"""cn.io (I/O): HDF5 analysis files, exact checkpoints, restart of an IVP from a file.
 
 Problem: viscous Burgers u_t - nu u_xx = -u u_x on a periodic interval (nonlinear, so the
 multistep history F(X^{n-i}) matters for an exact restart). Checks: a run cut in two by an HDF5

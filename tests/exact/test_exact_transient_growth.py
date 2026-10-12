@@ -1,4 +1,4 @@
-"""Exact transient growth of a non-normal 2 x 2 system, on every time-stepping path (audit hole 2).
+"""Exact transient growth of a non-normal 2 x 2 system, on every time-stepping path (hole 2).
 
 Per Fourier mode e^{ikx}, the IR problem
 

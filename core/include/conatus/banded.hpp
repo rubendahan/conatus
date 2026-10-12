@@ -1,4 +1,4 @@
-// Bordered banded solves (technical spec §19–20, DEDALUS.md §4, pitfall P8 of).
+// Bordered banded solves (technical spec §19–20, DEDALUS.md §4, pitfall P8).
 //
 // A tau/BC system is "almost banded": after moving the r boundary rows to the top, every other
 // row has its nonzeros inside a band [i-kl, i+ku]. We write P A = B + U V^T with

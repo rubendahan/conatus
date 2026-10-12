@@ -1,4 +1,4 @@
-"""IR -> sparse blocks, for one mode group (the core of).
+"""IR -> sparse blocks, for one mode group (the core).
 
 A linear expression is compiled into a *form*: for each output tensor component,
 an ``Entry`` = (ultraspherical index lam along z or None if constant in z,
@@ -174,8 +174,8 @@ class Compiler:
             raise DiscretizationError(f"'{x}' does not depend on the unknowns: it belongs on the RHS")
         if isinstance(x, E.Field):
             if self.mode == "M":
-                # A bare unknown has no dt() and no eigenvalue, so it never enters M (ERREURS_COURANTES,
-                # gallery, "bare unknown in M"). It was returned as the identity in M mode too, so dt(u) + u = 0 gave M = 2 (u decaying
+                # A bare unknown has no dt() and no eigenvalue, so it never enters M.
+                # It was returned as the identity in M mode too, so dt(u) + u = 0 gave M = 2 (u decaying
                 # as e^{-t/2}) and s*u + u = 0 gave s = -1/2: growth rates silently wrong.
                 return {}
             fdep = self.L.fdep_of(x.domain)
@@ -486,7 +486,7 @@ class Compiler:
 
     def _const_vector(self, f: E.Expr) -> np.ndarray | None:
         """Components of a constant vector (unit vectors times numbers or parameters, and sums
-        of them; feat2), or None when f is not such a constant."""
+        of them), or None when f is not such a constant."""
         if isinstance(f, E.UnitVector):
             v = np.zeros(f.coordsys.dim)
             v[f.index] = 1.0
@@ -512,7 +512,7 @@ class Compiler:
         return None
 
     def _cross(self, x: E.Cross) -> dict:
-        """cross(W, u) or cross(u, W) with W a constant vector (implicit Coriolis, feat2): each
+        """cross(W, u) or cross(u, W) with W a constant vector (implicit Coriolis): each
         component of the result is a combination of the components of u with constant
         coefficients, so it couples the components inside the groups of the banded solve."""
         from ..ir.expr_algebra import cartesian_cross_table
@@ -598,8 +598,7 @@ class _Constants:
 
 def implicit_rotation_rate(problem: Any, params: Mapping[str, Any]) -> tuple[float, str] | None:
     """Largest |c W| over the terms c cross(W, u) (or c cross(u, W)) with a constant vector W on
-    the left-hand sides of ``problem``, and the text of that term; None if there is none (feat2
-    review). |c W| bounds the frequency of the waves the implicit term carries (the inertial
+    the left-hand sides of ``problem``, and the text of that term; None if there is none. |c W| bounds the frequency of the waves the implicit term carries (the inertial
     waves 2 Omega.k/|k| <= 2 |Omega| of a Coriolis term 2 Omega cross(ez, u)): with |c W| dt > 1
     the implicit stages damp and slow them (RK443: 1.7 % of amplitude per step at omega dt = 1,
     13 % at 2), which explain() and a warning of the solver state."""

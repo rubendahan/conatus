@@ -302,7 +302,7 @@ class Plan:
         if stray:
             raise DiscretizationError(
                 f"ncc given for field(s) not used by the problem: {', '.join(sorted(stray))}")
-        # same rule for parameter values (audit R1): a key that names no Parameter of the
+        # same rule for parameter values: a key that names no Parameter of the
         # problem used to be ignored, and the value declared on the Parameter used instead
         check_param_keys(self.params, problem_parameter_names(problem), where="discretize")
         self._ncc_data = {f: self._as_grid(f, d) for f, d in (ncc or {}).items()}
@@ -403,7 +403,7 @@ class Plan:
         amp = 1.0
         if zc is not None and zb is not None:
             k = sum(1 for n in f.walk() if isinstance(n, E.Differentiate) and n.coord == zc)
-            # (api01 review): the amplified floor is rounding only if the data the derivatives
+            # the amplified floor is rounding only if the data the derivatives
             # act on are themselves exact to rounding. Data resolved to, say, 1e-10 give a U''
             # whose error is that interpolation error x N^4 (not rounding): it is then judged by
             # its relative tail like any coefficient, never exempted as "rounding".
@@ -416,7 +416,7 @@ class Plan:
 
     def _data_tail(self, x: E.Field) -> float:
         """Relative Chebyshev tail (last 3 / max) of the data of the NCC field ``x`` along the
-        bounded axis; 0 if the data do not depend on it ( rounding floor, see above)."""
+        bounded axis; 0 if the data do not depend on it (rounding floor, see above)."""
         zc = self.layout.zcoord
         if x.domain is None or not x.domain.has(zc):
             return 0.0
@@ -906,7 +906,7 @@ class Plan:
             xf[gm.col_index] = x                                    # E: subspace -> full space
             if np.iscomplexobj(xf) and not cplx:
                 # A complex LHS (e.g. i*omega*u) with real data and a real layout gives a complex
-                # solution (ERREURS_COURANTES, gallery, "complex LBVP"); it used to be cast into real arrays (imaginary part dropped
+                # solution (gallery, "complex LBVP"); it used to be cast into real arrays (imaginary part dropped
                 # with only a numpy ComplexWarning). Promote instead of discarding.
                 cplx = True
                 out = {k: a.astype(complex) for k, a in out.items()}

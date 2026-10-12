@@ -3,7 +3,7 @@
 The Newton step of ``NewtonSolver`` is a per-wavenumber LBVP: it refuses a Jacobian whose
 coefficients vary along a Fourier direction ("couples wavenumbers"), which is exactly the case of
 any x-dependent steady state (rolls, fronts, cellular patterns). This solver treats the coupled
-problem directly (gallery gap, BACKLOG wave 1, Swift–Hohenberg rolls):
+problem directly (gallery gap, Swift–Hohenberg rolls):
 
 * unknowns: all represented Fourier coefficients of every variable (RealFourier pairs
   [cos_n, -sin_n] without msin_0; ComplexFourier without the Nyquist entry), plus the scalar
@@ -168,7 +168,7 @@ class PeriodicNewtonSolver:
         self.tol = self.tolerance = tol
         self.damping, self.max_iterations = damping, max_iterations
         self.params = dict(params or {})
-        # this solver evaluates the IR directly (no discretize): check the keys here (audit R11)
+        # this solver evaluates the IR directly (no discretize): check the keys here
         check_param_keys(self.params, problem_parameter_names(problem), where="PeriodicNewtonSolver")
         self.allow_drift = allow_drift
         self.phase = [phase] if isinstance(phase, PhaseCondition) else list(phase or [])

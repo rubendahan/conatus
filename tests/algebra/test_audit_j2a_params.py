@@ -1,4 +1,4 @@
-"""Audit R1, R11 (params keys never checked) and the proposed NCC-tail decision.
+"""Audit (params keys never checked) and the proposed NCC-tail decision.
 
 Written before the fixes; each failed on the code it guards (docs/AUDIT_J2a.md §3).
 """

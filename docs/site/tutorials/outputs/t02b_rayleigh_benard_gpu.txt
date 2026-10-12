@@ -28,7 +28,7 @@ Dealiasing: x: 3/2, z: 3/2 (declared default 3/2 of the native layer; override w
 Bases: RealFourier(x, size=128, bounds=(0.0, 2.0), dealias=3/2); Chebyshev(z, size=64, bounds=(-0.5, 0.5), dealias=3/2)
 Initial state: T given; u, p start at zero
 IVPSolver(scheme=RK443, dt=0.0002, constant step, backend=cuda)
-  scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage explicit on F; global order 3 (Ascher, Ruuth & Spiteri 1997, (4,4,3))
+  scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage Runge–Kutta on F; global order 3 (Ascher, Ruuth & Spiteri 1997, (4,4,3))
 GlobalSystem: 64 group(s), 33275 unknowns (full space), dtype float64, ordering=interleaved, complexify=False
   2 solver bucket(s) (groups sharing one sparsity pattern, batched GPU bordered banded solves, one warp per mode)
   [x: k=0] n=263, border rows=7, band kl=12 ku=18

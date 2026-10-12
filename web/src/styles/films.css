@@ -1,0 +1,10 @@
+/* Films (components/Film.tsx): looping videos of Conatus runs on lab black, two side by side on a
+   desktop, one per row on a phone. The box holds the aspect ratio before anything loads. */
+.films { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 2.5vw, 1.75rem); }
+.films > li { min-width: 0; }
+.film { margin: 0; display: grid; gap: 0.65rem; }
+.film-box { position: relative; width: 100%; background: var(--cn-lab); border-radius: var(--cn-radius); overflow: hidden; }
+.film-box video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.film figcaption { display: grid; gap: 0.25rem; font-size: var(--cn-size-caption); color: var(--cn-muted); line-height: 1.45; }
+.film figcaption strong { color: var(--cn-text); font-weight: 500; font-size: var(--cn-size-ui); }
+@media (max-width: 900px) { .films { grid-template-columns: minmax(0, 1fr); } }

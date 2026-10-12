@@ -3,7 +3,7 @@ z = b + (t - b)(1 + xi)/2, physical operators by the chain rule, metric implicit
 sparse system). Validation by manufactured solutions (observed spectral convergence), the flat
 limit (= cn.Box to rounding), Stokes-Couette over a wavy wall against the first-order
 perturbation solution (remainder O(eps^2) observed), time order of the IMEX schemes, and the
-refusals ( metric/NCC, traces off the surfaces, slip conditions on a curved wall)."""
+refusals (metric/NCC, traces off the surfaces, slip conditions on a curved wall)."""
 import numpy as np
 import pytest
 

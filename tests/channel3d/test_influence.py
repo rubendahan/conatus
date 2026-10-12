@@ -1,4 +1,4 @@
-"""Pressure treatment (T4): Kleiser–Schumann influence matrix vs the plan's generalized
+"""Pressure treatment: Kleiser–Schumann influence matrix vs the plan's generalized
 tau, on a manufactured Stokes-resolvent mode. Both converge spectrally to the exact solution;
 the influence solver leaves an O(tau) interior divergence (no tau correction), reported."""
 import numpy as np

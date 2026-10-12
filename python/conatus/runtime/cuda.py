@@ -44,8 +44,7 @@ def _need():
         raise BackendError(
             "CUDA backend not available: build with CONATUS_CUDA=ON and run on a GPU node",
             why=unavailable_reason(),
-            fix="bash core/build.sh on a machine with nvcc (CONATUS_CUDA=ON), or "
-                "pip install . -Ccmake.define.CONATUS_CUDA=ON; then run on a GPU node, or use "
+            fix="pip install . -Ccmake.define.CONATUS_CUDA=ON; then run on a GPU node, or use "
                 "the CPU backend")
     return _cu
 

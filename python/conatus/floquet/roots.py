@@ -16,7 +16,7 @@ __all__ = ["fold_floquet", "CertifiedRoot", "SecantRoot", "SecantRun", "determin
 
 # : Second point of the determinant secants (``secant_root``.find_root``,
 #: secant stops on the caller's ``tol`` and reports a stall); declared in
-#: ``conatus.tolerances.DECLARED`` (audit FQ3: it was a literal signature default).
+#: ``conatus.tolerances.DECLARED`` (it was a literal signature default).
 SECANT_STEP = 1e-4 * (1 + 1j)
 #: Iteration cap of the secant searches (find_root, secant_root): a budget with a declared
 #: default (rule); the accuracy tol stays required. A search that ends on the
@@ -48,7 +48,7 @@ class SecantRun:
 def determinant_secant(f, start: complex, step: complex, *, tol: float, max_iterations: int,
                        stall_after: int | None = None) -> SecantRun:
     """Secant iteration on ``f`` (a scaled determinant) from ``start`` and ``start + step``,
-    (Q10.13: three copies reported a zero secant denominator as "not converged"
+    (three copies reported a zero secant denominator as "not converged"
     and counted the step not taken). Converged: the last step is below ``tol``. Otherwise the
     reason names the stop: equal determinants at the last two iterates (stalled, no step
     possible), no halving of the step for ``stall_after`` iterations (stalled), or the budget."""
@@ -191,7 +191,7 @@ class CertifiedRoot:
     convergence: dict = field(default_factory=dict)   # resolution label -> μ
     status: str = "provisional"              # certified / provisional / retracted
     reasons: list[str] = field(default_factory=list)
-    #: the secant reached its tol (Y8); False only with allow_unconverged=True
+    #: the secant reached its tol; False only with allow_unconverged=True
     converged: bool = True
 
     @property

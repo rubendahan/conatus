@@ -128,7 +128,7 @@ def backward(c: np.ndarray, b: Basis, axis: int = 0, dealias: bool = True) -> np
         if np.iscomplexobj(c):
             # Complex coefficients on a real basis (complex LBVP / EVP solutions): transform Re and
             # Im separately. Folding them into one Hermitian spectrum returned a real array with the
-            # wrong values, silently (audit C1).
+            # wrong values, silently.
             c = np.moveaxis(c, 0, axis)
             return (backward(c.real, b, axis, dealias) + 1j * backward(c.imag, b, axis, dealias))
         K = N // 2

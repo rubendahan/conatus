@@ -1,4 +1,4 @@
-"""Continuation with a nonzero dynamic quantity against closed forms (audit coverage hole 6).
+"""Continuation with a nonzero dynamic quantity against closed forms (coverage hole 6).
 
 The continuation tests of validated folds (stationary quantities) and Hopf points of toy maps:
 a wrong mass matrix (bare unknown in M: eigenvalue term lost inside a product) moves

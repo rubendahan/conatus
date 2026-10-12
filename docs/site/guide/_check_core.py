@@ -243,7 +243,7 @@ def timesteppers_boundary_data():
 
 
 def boundary_conditions_time():
-    """boundary_conditions.md, *Boundary values that depend on time* and curved walls (A22)."""
+    """boundary_conditions.md, *Boundary values that depend on time* and curved walls."""
     m = cn.Model(cn.Box(x=cn.periodic(2 * np.pi), z=cn.walls(0, 1)), name="travelling wall")
     m.scalar("u")
     m.given(S=lambda x: np.sin(x), C=lambda x: np.cos(x))

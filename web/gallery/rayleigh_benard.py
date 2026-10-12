@@ -158,7 +158,7 @@ def main():
 
     validated = {"value": "Nu = 4.99432 at Ra = 1e5 (2D, Lx = 2, RK443), agreement with Dedalus to 1e-8",
                  "reference": "Dedalus (Burns et al. 2020, Phys. Rev. Research 2, 023068), same equations",
-                 "source": "paper/conatus.tex §Verification table; docs/JOURNAL.md",
+                 "source": "paper/conatus.tex §Verification table",
                  "run_id": ""}
     meta = {"title": "Rayleigh–Bénard convection",
             "script": "web/gallery/rayleigh_benard.py",

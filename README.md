@@ -17,7 +17,7 @@ discretisation, then lets you simulate the model or take apart its dynamics.
 ![License](https://img.shields.io/badge/license-BSD--3-success)
 ![Version](https://img.shields.io/badge/version-0.1.0-blue)
 
-<img src="web/public/gallery/kelvin-helmholtz-dye.webp" alt="Kelvin-Helmholtz billows in a shear layer, dye field computed with Conatus" width="85%"/>
+<img src="https://raw.githubusercontent.com/rubendahan/conatus/main/web/public/gallery/kelvin-helmholtz-dye.webp" alt="Kelvin-Helmholtz billows in a shear layer, dye field computed with Conatus" width="85%"/>
 
 *Kelvin-Helmholtz billows rolling up in a shear layer, with a passive dye (`examples/shear/kelvin_helmholtz.py`).*
 
@@ -106,7 +106,7 @@ python -m conatus doctor     # what this machine can run, and what is missing
 
 **GPU (beta).** For an NVIDIA A100 or L40S class card with a driver that supports CUDA 12.9.
 The CUDA wheel is not on PyPI: grab the one matching your Python from the
-[releases page](https://github.com/rubendahan/conatus/releases) and install it with CuPy:
+[v0.1.0 release](https://github.com/rubendahan/conatus/releases/tag/v0.1.0) and install it with CuPy:
 
 ```bash
 pip install "$(echo ./conatus-0.1.0+cu12-cp312-*.whl)[gpu]"   # the file you downloaded (CPython 3.12 here)
@@ -120,7 +120,7 @@ python -m conatus doctor                                      # says whether the
 
 - The [website](https://rubendahan.github.io/conatus/) has the tutorials, the user guide, the API
   reference and the maths behind each method.
-- [`examples/`](examples/) holds ready-to-run cases: convection, shear flows, patterns,
+- [`examples/`](https://github.com/rubendahan/conatus/tree/main/examples) holds ready-to-run cases: convection, shear flows, patterns,
   bifurcations.
 
 ## ⚠️ Good to know
@@ -130,12 +130,12 @@ python -m conatus doctor                                      # says whether the
   grids. The speed comes from the GPU path, which is still in beta.
 - **One GPU.** 0.1.0 runs a simulation on one CPU process or one GPU. No multi-GPU or MPI yet.
 - **Young API.** The 0.1 interface can still change. Any change comes with a deprecation warning
-  and a line in the [changelog](CHANGELOG.md).
+  and a line in the [changelog](https://github.com/rubendahan/conatus/blob/main/CHANGELOG.md).
 
 ## 📄 License
 
-BSD-3-Clause, see [LICENSE](LICENSE). Bundled third-party components and their licences are
-listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), with the full texts in
-[`licenses/`](licenses/). To cite Conatus, see [CITATION.cff](CITATION.cff).
+BSD-3-Clause, see [LICENSE](https://github.com/rubendahan/conatus/blob/main/LICENSE). Bundled third-party components and their licences are
+listed in [THIRD_PARTY_NOTICES.md](https://github.com/rubendahan/conatus/blob/main/THIRD_PARTY_NOTICES.md), with the full texts in
+[`licenses/`](https://github.com/rubendahan/conatus/tree/main/licenses). To cite Conatus, see [CITATION.cff](https://github.com/rubendahan/conatus/blob/main/CITATION.cff).
 
 Made by Ruben Dahan.

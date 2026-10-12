@@ -191,8 +191,8 @@ class CheckpointSeries:
         self.written: list[Path] = []                  # would cost more than the write
 
     def _adopt(self) -> None:
-        """Files already in the directory, looked at before the first write (review of the missing-features
-        lot: they used to be ignored, so a new run silently replaced the files of another run
+        """Files already in the directory, looked at before the first write (they
+        used to be ignored, so a new run silently replaced the files of another run
         with the same names, ``cn.io.latest`` could then pick a file of the other run, and ``keep``
         never applied to the files of the previous job). Allowed only when this run continues
         from a checkpoint of this directory: its files up to the restart iteration are adopted
@@ -232,7 +232,7 @@ class CheckpointSeries:
         """Write a checkpoint of the current state now, then delete beyond the ``keep`` newest."""
         if not getattr(self, "_adopted", False):
             self._adopt()
-        if getattr(self.solver, "_finite_every", 0):     # never a NaN checkpoint (C2)
+        if getattr(self.solver, "_finite_every", 0):     # never a NaN checkpoint
             from ..timestep.integrator import solver_finite_check     # collective if distributed
             solver_finite_check(self.solver, f"checkpoints({str(self.directory)!r})")
         meta, arrays = self.solver._checkpoint_payload()

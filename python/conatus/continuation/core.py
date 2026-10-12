@@ -120,7 +120,7 @@ class ContinuationSettings:
     # central FD step for G_p: "auto" (the rule fd_step), a number, or None (an analytic G_p
     # must be given)
     dp_fd: float | str | None = "auto"
-    # event location (audit R4: were literals). Defaults = the former values, all shown by
+    # event location (were literals). Defaults = the former values, all shown by
     # explain(); an event whose secant stops outside its tolerance is flagged converged=False.
     event_max_iterations: int = 30   # secant budget per event (each iterate = one corrected point)
     fold_tol: float = 1e-12          # fold located when |t_p| <= fold_tol (t is a unit vector)

@@ -277,7 +277,7 @@ def _upp_lbvp(N):
 
 @pytest.mark.parametrize("N, a", [(64, 4.0), (256, 20.0)])
 def test_rounding_exemption_does_not_mask_an_amplified_interpolation_error(N, a):
-    """ (api01 review): the rounding floor of a derived NCC grows like N^4 for U''; it used to
+    """The rounding floor of a derived NCC grows like N^4 for U''; it used to
     exempt U'' whenever its absolute tail was below it, even when the data U were only resolved
     to 6e-11 (N = 64) or 6e-10 (N = 256): U'' then carries U's interpolation error x N^4 (true
     pointwise error 9e-6 and 2e-3), not rounding, and was labelled 'rounding level, not judged'.

@@ -1,4 +1,4 @@
-"""Audit R8: no dead argument in the nested helpers of the fused-RHS compiler.
+"""Audit no dead argument in the nested helpers of the fused-RHS compiler.
 """
 import ast
 import pathlib

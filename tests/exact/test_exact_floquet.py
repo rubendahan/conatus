@@ -1,4 +1,4 @@
-"""Floquet–Hill exponents against closed forms (audit coverage hole 3).
+"""Floquet–Hill exponents against closed forms (coverage hole 3).
 
 The Floquet tests so far compared Hill roots with a numerical monodromy or with published tables;
 none met an exponent known in closed form, and none went through ``hill_from_plan`` with a mass
@@ -19,9 +19,9 @@ matrix M != I. Here:
     diffusion problem m (s u + a u) + u - D u'' + b cos(wt) u = 0, whose exponents are exactly
     -(m a + 1 + D (n pi/2)^2) / m (u = e^{-((m a + 1 + D k^2) t + b sin(wt)/w)/m} sin k(z+1)).
     Both carry a *bare* unknown (coefficient 1, cancelled by a ``Parameter`` so that the IR does not
-    fold it) and a nested eigenvalue ``c * (s u + ...)`` ( family).
+    fold it) and a nested eigenvalue ``c * (s u + ...)`` (family).
 
-Mutation check ( method, plugin outside the repository): (c) fails with reintroduced (bare
+Mutation check (method, plugin outside the repository): (c) fails with reintroduced (bare
 unknown in M) and with reintroduced (sigma part of a product dropped when the eigenvalue is
 not a direct factor). (a) and (b) build their Hill blocks by hand and never call the compiler: they
 test the Hill engine and the root finder, not M, and are unaffected by these mutations by design.
@@ -72,7 +72,7 @@ def test_mathieu_small_q_matches_perturbation_series(nu, q):
     predicted = abs(t6) / (2 * nu)
     r4 = secant_root(_mathieu_hill(t2 + t4, q, 16), 1j * nu + 1e-3, tol=1e-14, max_iterations=80)
     r6 = secant_root(_mathieu_hill(t2 + t4 + t6, q, 16), 1j * nu + 1e-3, tol=1e-14, max_iterations=80)
-    assert r4.converged and r6.converged          # an unconverged search raises (Y8)
+    assert r4.converged and r6.converged          # an unconverged search raises
     mu4, mu6 = r4.mu, r6.mu
     err4, err6 = _dist_mod(mu4, 1j * nu, 2.0), _dist_mod(mu6, 1j * nu, 2.0)
     assert predicted / 1.5 < err4 < 1.5 * predicted          # the discrepancy is the q^6 term
@@ -132,7 +132,7 @@ def test_meissner_exponent_closed_form(a, b):
 
 
 # ---------------------------------------------------------------------------------------------
-# (c) hill_from_plan with M != I: bare unknown + nested eigenvalue ( family)
+# (c) hill_from_plan with M != I: bare unknown + nested eigenvalue (family)
 # ---------------------------------------------------------------------------------------------
 
 def _cheb(N):

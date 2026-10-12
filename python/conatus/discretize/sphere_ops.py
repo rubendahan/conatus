@@ -275,7 +275,7 @@ class ShellOps:
         """int q r^2 dr = h int X(t) (c + h t)^(2-p) dt by Gauss-Legendre on N + 4 nodes: exact for
         p <= 2 (polynomial integrand); for p > 2 the integrand is rational and the rule converges
         geometrically (error ~ rho^(-2N), rho >= 3.9 for ri/ro >= 0.35): rounding in practice, not
-        exact (SC6)."""
+        exact."""
         key = ("int", level, p)
         if key not in self._cache:
             t, w = gauss_legendre(self.N + 4)

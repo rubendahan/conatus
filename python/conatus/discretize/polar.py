@@ -225,7 +225,7 @@ class Disk:
 
     def trace_row(self, k: int, lam: int, p: int, side: str) -> np.ndarray:
         """Value at r = R of rho^|k| X (rho = 1): X(z = 1)."""
-        if p:                           # was ignored (audit C8); the other disk rows refuse it
+        if p:                           # was ignored; the other disk rows refuse it
             raise ValueError("disk: no r-multiplier (p must be 0)")
         if side != "outer":
             raise BoundaryConditionError("the disk has a single boundary, r = R",
@@ -279,7 +279,7 @@ class Disk:
         lam = lam[lam > 0]
         if lam.size < n_modes:
             # fewer real positive eigenvalues than asked: used to return a short array silently
-            # (audit C8); the discarded ones are complex or non-positive (unresolved)
+            # before; the discarded ones are complex or non-positive (unresolved)
             raise ResolutionError(f"bessel_modes: only {lam.size} real positive eigenvalues at N = {self.N}, "
                                   f"n_modes = {n_modes} requested (increase N)",
                                   fix="a larger N, or fewer requested modes")

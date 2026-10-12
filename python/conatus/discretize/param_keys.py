@@ -2,7 +2,7 @@
 
 A stray key is almost always a typo (``"Ra_"`` for ``"Ra"``) or a stale name; ignoring it would
 make the solver use the value declared on the ``Parameter`` instead of the one intended, i.e. a
-silent change of the physics (audit R1 / C7 / R11). The message lists the valid keys and
+silent change of the physics. The message lists the valid keys and
 suggests the closest one; nothing is ever applied for the user.
 """
 from __future__ import annotations

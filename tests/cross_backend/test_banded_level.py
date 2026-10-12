@@ -33,7 +33,7 @@ def sparse_banded(n, kl, ku, r, dtype, density=0.4):
 def conditioned(n, kl, ku, r, shift=8.0, dtype=float):
     """sparse_banded with its banded rows made diagonally dominant: condition number ~1e3-1e4.
     The plain random matrices reach cond 1e11-1e17 at n = 900 (host LAPACK solve residuals up
-    to 0.7, measured): a residual bound on them tests the matrix, not the solver ( 512)."""
+    to 0.7, measured): a residual bound on them tests the matrix, not the solver (512)."""
     A = sparse_banded(n, kl, ku, r, dtype)
     A[np.arange(r, n), np.arange(r, n)] += shift
     return sp.csr_matrix(A)
@@ -221,7 +221,7 @@ def test_solve_mapped_refuses_maps_it_would_misread():
     bb.solve_mapped(rhs, None, x, ok)
 
 
-# --- edge structures of the merged levels ( 512 review) --------------------------------------
+# --- edge structures of the merged levels (512 review) --------------------------------------
 # Own generator: the tests above keep their draws (a shared generator moved their matrices).
 _rng_edge = np.random.default_rng(5)
 

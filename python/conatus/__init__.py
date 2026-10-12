@@ -3,15 +3,15 @@ __version__ = "0.1.0"  # single source of the version (pyproject reads it)
 
 
 # Two layers: ``import conatus as cn`` is the user layer (native models
-# cn.Box, cn.Model, ... from conatus.model, docs/API_NATIVE.md, and the utilities below);
+# cn.Box, cn.Model, ... from conatus.model, and the utilities below);
 # ``conatus.expert`` is the expert layer (the IR, flattened). A name in both means the same thing
-# in both (tests/infra/test_api.py); ``conatus.api`` is the deprecated former name of the expert layer.
+# in both (the development test suite); ``conatus.api`` is the deprecated former name of the expert layer.
 _NATIVE = ("Box", "Channel", "Disk", "Annulus", "Pipe", "Cylinder", "TaylorCouette", "Sphere", "Ball", "Shell",
            "periodic", "walls", "line", "half_line", "MappedBox", "between", "Model", "free_slip", "no_slip", "navier_slip", "view",
            "spectrum", "profile", "series")
 
 
-# The user layer, frozen in v0.1 (snapshot tests/infra/api_surface_v0.1.txt):
+# The user layer, frozen in v0.1 (snapshot the development test suite):
 # the native layer, the utility entry points and modules below, and the four packages shared with
 # conatus.expert whose call is the expert function (cn.discretize(pb), cn.linearize, cn.methods,
 # cn.verify). ``cn.api`` (deprecated, FutureWarning) is reachable but not listed.
@@ -50,7 +50,7 @@ def __getattr__(name: str):
     if name in _MODULES or name == "api":
         return importlib.import_module(f"conatus.{name}")
     lazy = _LAZY
-    if name in _NATIVE:                       # native layer (docs/API_NATIVE.md)
+    if name in _NATIVE:                       # native layer
         return getattr(importlib.import_module("conatus.model"), name)
     if name in lazy:
         return getattr(importlib.import_module(lazy[name]), name)

@@ -187,7 +187,7 @@ class _PolarCompiler:
         if isinstance(x, E.Field):
             if self.mode == "M":
                 # A bare unknown has no dt() and no eigenvalue: it never enters M. Same defect as the
-                # Cartesian compiler (ERREURS_COURANTES), found here by the dt(u) + u = 0
+                # Cartesian compiler, found here by the dt(u) + u = 0
                 # on the disk decayed as e^{-t/2} and s u + u = 0 gave s = -1/2.
                 return {}
             return self._field(x)
@@ -560,7 +560,7 @@ class PolarPlan:
             raise DiscretizationError(
                 f"ncc given for field(s) not used by the problem: {', '.join(sorted(stray))}")
         # same rule for parameter values: an unknown key (typo) used to be ignored and the value
-        # declared on the Parameter used instead (audit C7)
+        # declared on the Parameter used instead
         pnames = {p.name for eq in problem.equations for side in (eq.lhs, eq.rhs)
                   for p in side.free_parameters()}
         stray_p = sorted(set(self.params) - pnames)
@@ -585,7 +585,7 @@ class PolarPlan:
             else:
                 self.eq_kind.append("constraint")
         # symmetry subspace (AzimuthalMFold, cylinder Reflection(z)): orbits of the signed
-        # permutations on the coefficients, docs/SYMMETRIES.md, curvilinear_symmetry
+        # permutations on the coefficients, curvilinear_symmetry
         self.subspace = CurvilinearReduction(self) if problem.symmetry is not None else None
 
     # ---------------------------------------------------------------- sizes and data

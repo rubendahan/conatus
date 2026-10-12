@@ -115,7 +115,7 @@ class SpherePlan:
             raise DiscretizationError(
                 f"ncc given for field(s) not used by the problem: {', '.join(sorted(stray))}")
         # same rule for parameter values: an unknown key (typo) would be ignored and the value
-        # declared on the Parameter used instead (audit R10, as C7 for the polar plans)
+        # declared on the Parameter used instead (as C7 for the polar plans)
         pnames = {p.name for eq in problem.equations for side in (eq.lhs, eq.rhs)
                   for p in side.free_parameters()}
         stray_p = sorted(set(self.params) - pnames)
@@ -158,7 +158,7 @@ class SpherePlan:
             else:
                 self.eq_kind.append("constraint")
         # symmetry subspace (EquatorialParity, AzimuthalMFold): orbits of the signed permutations
-        # on the coefficients, docs/SYMMETRIES.md, curvilinear_symmetry
+        # on the coefficients, curvilinear_symmetry
         self.subspace = CurvilinearReduction(self) if problem.symmetry is not None else None
 
     def _angular(self, c: np.ndarray) -> bool:

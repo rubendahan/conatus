@@ -1,0 +1,85 @@
+{
+ "generated": "2026-10-12T21:52:54.797Z",
+ "tutorials": {
+  "t00_getting_started": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t01_orr_sommerfeld": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t02a_rayleigh_benard_cpu": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t02b_rayleigh_benard_gpu": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t03_symmetries": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t04_bratu": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t05_ks_orbits": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t08_polar": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t10_bifurcations": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t11_runs": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t12_chaos_ensembles": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t13_sensitivity_data": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t14_from_dedalus": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t14b_dedalus_check": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t15_ks_covariant": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  },
+  "t16_particles_dye": {
+   "fresh": true,
+   "by": "commit",
+   "reason": null
+  }
+ }
+}

@@ -685,7 +685,7 @@ __global__ void __launch_bounds__(32) k_solve_lvl(const unsigned long long* blob
         if (r <= RS) {
             // S z' = z by the LU of S, one lane per entry: entry i receives the same updates in
             // the same order as in small_solve (bitwise the serial result), r + r warp steps
-            // instead of r^2 dependent shared-memory updates on one lane ( 512)
+            // instead of r^2 dependent shared-memory updates on one lane (512)
             if (lane == 0)
                 for (int j = 0; j < r; ++j)
                     if (sp[j] != j) { T t = z[j]; z[j] = z[sp[j]]; z[sp[j]] = t; }
@@ -833,7 +833,7 @@ struct LvlBuilder {
             out.push_back(word);
         }
     }
-    // Merged levels ( 512). A level holds ~4 rows of RB 2D (one warp of 32 lanes), so
+    // Merged levels (512). A level holds ~4 rows of RB 2D (one warp of 32 lanes), so
     // the sweep is a chain of ~n/4 steps whose cost is mostly per-step latency. Consecutive levels
     // are merged into one step of up to WARP rows: a row of a later level is rewritten in terms of
     // the values y holds at the start of the step (its own input, the inputs of the step's

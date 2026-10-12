@@ -314,7 +314,7 @@ class SpectralEvaluator:
             self.n_products += 1
             return self.to_coeffs(out, r)
         if isinstance(x, E.Cross):
-            # (a x b)_k = sum sign a_i b_j on the dealiased grid (feat2; frame of
+            # (a x b)_k = sum sign a_i b_j on the dealiased grid (frame of
             # cartesian_cross_table: e_x x e_y = e_z for coordinates named x, y, z)
             from ..ir.expr_algebra import cartesian_cross_table
             a, b = x.args

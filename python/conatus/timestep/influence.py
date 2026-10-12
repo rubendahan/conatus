@@ -1,4 +1,4 @@
-"""Kleiser–Schumann influence-matrix Stokes solve for one channel Fourier mode (T4).
+"""Kleiser–Schumann influence-matrix Stokes solve for one channel Fourier mode.
 
 Solves, for one mode exp(i(kx x + kz z)) on y in (-1, 1),
 
@@ -17,7 +17,7 @@ generalized-tau system of the plan:
 Discretization: Chebyshev T coefficients, ultraspherical operators (Olver–Townsend) with the two
 boundary rows replacing the last two rows of each C^(2) equation (tau). No tau-error correction
 is applied: the interior divergence is therefore *not* zero to roundoff but O(last tau
-coefficients) — measured and reported, never hidden (T4).
+coefficients) — measured and reported, never hidden.
 The mean mode k = 0 (no pressure coupling) and the pressure gauge are outside this solver."""
 from __future__ import annotations
 

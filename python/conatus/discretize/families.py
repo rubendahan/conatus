@@ -135,8 +135,7 @@ def laguerre_functions(N: int, y: np.ndarray, k: int = 0) -> np.ndarray:
 
 def _frozen(*arrays: np.ndarray) -> tuple[np.ndarray, ...]:
     """Arrays returned by an ``lru_cache`` are shared by every later caller: read-only, so an
-    in-place update by one caller cannot change the transforms of all the others (audit
-    cache family of)."""
+    in-place update by one caller cannot change the transforms of all the others (cache family)."""
     for a in arrays:
         a.setflags(write=False)
     return arrays

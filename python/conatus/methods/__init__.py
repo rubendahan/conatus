@@ -167,7 +167,7 @@ def _zbasis_text(b: Any) -> tuple[str, str]:
     a, z = (_num(x) for x in b.bounds) if hasattr(b, "bounds") else ("", "")
     banded = "sparse, banded operators exact on the truncated space"
     from conatus.ir.maps import is_mapped
-    if is_mapped(b):                      # review of was the generic fallback
+    if is_mapped(b):                      # was the generic fallback
         return (f"∈ [{a}, {z}] is expanded in {b.size} Chebyshev polynomials of the first kind of "
                 f"a mapped coordinate ({b.map.explain()})",
                 "the sparse, banded ultraspherical operators of Olver & Townsend, the metric of the "

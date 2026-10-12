@@ -1,4 +1,4 @@
-""" (C2, C3, C4, C11): parameters as attributes, per-run overrides, the
+"""Parameters as attributes, per-run overrides, the
 finite-state check, eigenfunctions on the grid, the growth convention of critical() and the
 degree rule of the default dealiasing factor."""
 import numpy as np

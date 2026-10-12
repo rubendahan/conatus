@@ -58,7 +58,7 @@ def test_spod_of_a_vector_ar1_process_matches_the_closed_form_spectrum():
     exact = -np.sort(-S, axis=1)
     est = sp.eigenvalues[:, :3]
     ratio = est / exact
-    # all three eigenvalues (review of the paper claims the three; measured mean
+    # all three eigenvalues (the paper claims the three; measured mean
     # ratios 0.997 / 1.003 / 1.016 on this seed, within 1.6 % on seeds 1-3)
     assert np.all(np.abs(ratio.mean(axis=0) - 1) < 0.03), ratio.mean(axis=0)  # over 64 frequencies
     assert abs(ratio[:, 0].mean() - 1) < 0.02, ratio[:, 0].mean()

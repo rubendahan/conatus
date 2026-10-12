@@ -199,9 +199,9 @@ def default_ang_chunks(space, xp) -> int:
     return ang_chunks_rule(space, xp)[0]
 
 
-# at most 4 chunks: 8 was never faster on A100 (both B2 grids) nor in the L40S micro-benchmark (B2
-# review); on L40S at 256x127x64, 8 chunks beat 1 by 5 %, 4 unmeasured
-# there: cap kept at 4 ( gpu1), to be confirmed by a 1/2/4/8 measurement.
+# at most 4 chunks: 8 was never faster on A100 (both B2 grids) nor in the L40S micro-benchmark;
+# on L40S at 256x127x64, 8 chunks beat 1 by 5 %, 4 unmeasured
+# there: cap kept at 4, to be confirmed by a 1/2/4/8 measurement.
 _MAX_CHUNKS = 4
 
 

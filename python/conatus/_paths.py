@@ -3,7 +3,7 @@
 Two install modes, told apart without importing the compiled core:
 
 * **development checkout**: this package is the repository's ``python/conatus`` (the repository
-  has ``core/CMakeLists.txt``); scratch data goes to ``$CN_TMP`` (``source env/env.sh``) or the
+  has ``core/CMakeLists.txt``); scratch data goes to ``$CN_TMP`` or the
   checkout's ``scratch/``, as before;
 * **installed package** (``pip install .``, a wheel, conda): the package sits in
   ``site-packages`` of an environment. Nothing is ever written next to it (the

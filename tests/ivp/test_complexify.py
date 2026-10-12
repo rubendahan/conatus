@@ -66,7 +66,7 @@ def test_complexified_trajectory_matches_real_path():
     out = []
     # the third run: the real path from an initial state perturbed by 1e-15 (relative), whose move
     # is the rounding level of these 20 steps; the complexified path must agree within 10x of it
-    # ( rule, as test_m0_projection; the former fixed 1e-11 was met at 5.6e-13, margin 2.8,
+    # (rule, as test_m0_projection; the former fixed 1e-11 was met at 5.6e-13, margin 2.8,
     # run)
     for cx, noise in ((False, 0.0), (True, 0.0), (False, 1e-15)):
         s = IVPSolver(plan, "RK443", 1e-4, complexify=cx)

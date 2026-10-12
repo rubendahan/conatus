@@ -3,7 +3,7 @@
 The device keeps the LU factors of each mode as a stream of words (``core/src/cuda/banded.cu``,
 ``LvlBuilder``): the rows of L' and U without their zeros, grouped by dependency level, consecutive
 levels merged into warp steps of at most 32 rows, in chunks of a fixed layout. Its size depends on the
-fill of the factorization, so the memory planner could not count it ( measured it at +12 % of
+fill of the factorization, so the memory planner could not count it (measured it at +12 % of
 the factors on the real path). This module replays, for one mode, the device factorization (the
 ``k_factor`` algorithm: banded LU with partial pivoting on the modulus, inside the band), then the
 builder (levels, merging, chunking) and counts the words, forward and transposed. Nothing here runs

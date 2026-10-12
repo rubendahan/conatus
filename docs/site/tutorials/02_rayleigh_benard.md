@@ -38,7 +38,7 @@ the split (override with `implicit(...)` / `explicit(...)`).
 ```
 
 - The geometry names its boundaries (`bottom`, `top`); conditions are given there by unknown.
-  No basis, no size, no tau variable, no lift: `m.explain()` prints what the native layer placed —
+  No basis, no size, no tau variable, no lift: `m.explain()` prints what the native layer placed:
   two taus per second-order equation (modes $N_z-1$, $N_z-2$ of the equation where the unknown has
   its highest $z$-order), the pressure gauge `tau_p` with `integ(p) = 0` and the divergence tau
   `dot(ez, lift(tau_u2, z, -1))`, recognized from the structure ($p$ only under `grad`, `div(u) = 0`
@@ -152,7 +152,7 @@ captures one step as a CUDA graph and replays it, which removes the launch laten
 ```
 
 CPU and GPU are not bitwise equal (different summation orders), so the check is agreement to
-rounding, the cross-backend model of the test suite — and it is made **early** (20 steps). At
+rounding, the cross-backend model of the test suite, and it is made **early** (20 steps). At
 $Ra = 10^5$ the conduction state is violently unstable: the linearized problem has growth rates up
 to $\sigma \approx 225$ (wavenumber $2\pi$), and the flow saturates nonlinearly within the 200
 steps. Any rounding difference is amplified with it: after 200 steps two *CPU* evaluations of the

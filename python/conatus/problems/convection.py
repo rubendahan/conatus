@@ -141,8 +141,7 @@ def rotating_shell_convection(*, Nphi: int, Ntheta: int, Nr: int, eta: float,
     Ra = alpha g_0 DeltaT D / (nu Omega) (Christensen's modified Rayleigh number), Pr = nu/kappa.
     First-order tau form: tau_1 lifted in the derivative basis ``lam=1`` inside the gradient,
     tau_2 one basis higher (``lam=2``) in the equation -- the Dedalus shell examples lift both in
-    ``lam=1``, which gives a spurious growing tau mode from N_r ~ 48 (timestep/tau_modes.py); the Coriolis term is explicit (RHS), as in benchmarks/spherical/
-    christensen_case0.py: its rate 2/E bounds the time step of an explicit scheme. NCC data
+    ``lam=1``, which gives a spurious growing tau mode from N_r ~ 48 (timestep/tau_modes.py); the Coriolis term is explicit (RHS): its rate 2/E bounds the time step of an explicit scheme. NCC data
     ``rvec`` (r e_r), ``ez`` (e_z = cos(theta) e_r - sin(theta) e_theta) and ``gT0``
     (grad T0). Bases: RealFourier(phi, Nphi) x SphereBasis(theta, Ntheta) x ShellBasis(r, Nr).
     ``extras["initial_theta"]``: the benchmark's initial perturbation, eq. (9) (m = 4, A = 0.1).
@@ -197,7 +196,7 @@ def rotating_shell_convection_evp(*, Nr: int, Lmax: int, m: int, eta: float,
                                   Ra: float, E: float, Pr: float) -> Ready:
     """Linear onset of rotating shell convection: normal modes exp(i m phi + s t) about the
     conduction state, equations and units of :func:`rotating_shell_convection` multiplied back
-    by E (benchmarks/spherical/validate_spherical.py, ``onset_problem``)::
+    by E::
 
         E (s u - lap u) + 2 e_z x u + grad p - (Ra / r_o) T r e_r = 0,   div u = 0,
         s T + u.grad(T0) - lap(T)/Pr = 0,   u = T = 0 at r_i and r_o.

@@ -92,7 +92,7 @@ class NLBVPSolution:
     converged: bool
     plan: Plan
     settings: dict = dc_field(default_factory=dict)
-    #: the iterate converged to the trivial state (NEWTON_TRIVIAL_FRACTION, Y9)
+    #: the iterate converged to the trivial state (NEWTON_TRIVIAL_FRACTION)
     trivial: bool = False
     notes: list = dc_field(default_factory=list)
 

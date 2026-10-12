@@ -41,19 +41,18 @@ from .errors import AmbiguousNameError
 from .verify import Check, VerificationReport, verify
 
 # Order matters only for clashes (earlier wins); see SHADOWED.
-# "discretize" and "reference" were missing (gallery, BACKLOG wave 1: every example imported
-# ``discretize`` from conatus.discretize); "reference" gives FieldData (explicit data layout) and grid.
-# "presets", "methods" and "telemetry" added by the (public, documented, imported by users
-# from their modules). "provenance", "errors" and "gpu" added after the docs-site UX review.
+# "discretize" and "reference": the examples import ``discretize`` from conatus.discretize;
+# "reference" gives FieldData (explicit data layout) and grid. "presets", "methods", "telemetry",
+# "provenance", "errors" and "gpu": public, documented, imported by users from their modules.
 # "bifurcation" (native bifurcation core: branch switching, orbits, codim 2, normal forms) added
-# with that package. "runtime" (compiled core internals) and "distributed" (imports MPI) stay out:
-# use conatus.runtime / conatus.distributed explicitly. "slices" and "manifolds" ( phase-space
-# geometry: symmetry reduction, Poincaré sections, invariant manifolds, connections, snaking).
-# "sensitivity" (wavemaker, base-flow/forcing sensitivity, unified dσ/dp) and "datadriven" (POD,
-# DMD, SPOD, EDMD): names distinct from every earlier export.
-# "chaos" (Lyapunov spectrum, Poincaré sections) and "ensembles" (batched members, fates) added
-# by the package audit: public and documented (tutorial 12), they were reachable only
-# as conatus.chaos / conatus.ensembles.
+# with that package. "slices" and "manifolds" (phase-space geometry: symmetry reduction,
+# Poincaré sections, invariant manifolds, connections, snaking). "sensitivity" (wavemaker,
+# base-flow/forcing sensitivity, unified dσ/dp) and "datadriven" (POD, DMD, SPOD,
+# EDMD), with names distinct from every earlier export. Modules that need more
+# than NumPy (the compiled core internals in conatus.runtime, for one) stay out: import them
+# explicitly.
+# "chaos" (Lyapunov spectrum, Poincaré sections) and "ensembles" (batched members, fates): public
+# and documented (tutorial 12).
 _MODULES = ("ir", "flows", "units", "discretize", "reference", "solvers", "linearize", "timestep",
             "adjoint", "ecs", "continuation", "floquet", "growth", "nonmodal", "presets", "methods",
             "telemetry",

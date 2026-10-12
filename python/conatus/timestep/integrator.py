@@ -1,6 +1,6 @@
 """IVP solver: M dX/dt + L X = F(X, t), IMEX multistep and Runge–Kutta schemes.
 
-Schemes (``SCHEMES``; catalogue, coefficients and observed orders in),
+Schemes (``SCHEMES``; catalogue, coefficients and observed orders),
 constant step k = dt:
 
 * SBDF1–4: semi-implicit backward differentiation (Wang & Ruuth 2008); same coefficients as the
@@ -191,9 +191,9 @@ _SCHEME_INFO = {
               "Wang & Ruuth 2008, eq. 2.11"),
     "RK111": ("Runge–Kutta (1 stage)", "backward Euler", "forward Euler", 1,
               "Ascher, Ruuth & Spiteri 1997, (1,1,1)"),
-    "RK222": ("Runge–Kutta (2 stages)", "L-stable SDIRK2", "2-stage explicit", 2,
+    "RK222": ("Runge–Kutta (2 stages)", "L-stable SDIRK2", "2-stage Runge–Kutta", 2,
               "Ascher, Ruuth & Spiteri 1997, (2,2,2)"),
-    "RK443": ("Runge–Kutta (4 stages)", "L-stable SDIRK3", "4-stage explicit", 3,
+    "RK443": ("Runge–Kutta (4 stages)", "L-stable SDIRK3", "4-stage Runge–Kutta", 3,
               "Ascher, Ruuth & Spiteri 1997, (4,4,3)"),
     "RKSMR": ("Runge–Kutta (3 stages)", "Crank–Nicolson per stage (order 2)",
               "Wray's low-storage RK3 (order 3)", 2,
@@ -448,7 +448,7 @@ class IVPSolver:
         self.plan = plan
         self._params0 = dict(plan.params)   # matrices built with these (check_params_unchanged)
         self.scheme, self.dt = scheme, float(dt)
-        # implicit cross(W, u) with a constant W (Coriolis in a box, feat2): stable at any dt, but
+        # implicit cross(W, u) with a constant W (Coriolis in a box): stable at any dt, but
         # its waves (frequency <= |W|) are damped by the implicit stages when |W| dt > 1
         from ..discretize.compiler import implicit_rotation_rate
         pb = getattr(plan, "problem", None)
@@ -523,7 +523,7 @@ class IVPSolver:
         fused, self._fc2d_note = self._fused, ""
         if getattr(fused, "reflection", None) is not None:
             # In a reflection subspace the parity-reduced evaluator (half-grid products, ~80
-            # kernels) was slower on the GPU than the 2D pipeline on the full grid ( 512:
+            # kernels) was slower on the GPU than the 2D pipeline on the full grid (512:
             # A100 256x64 RK443 1.71 against 1.06 ms/step in the full space, run
             #). The pipeline reads only the subspace's coefficients
             # (the others are zero) and writes only its rows: the same products on the same
@@ -584,7 +584,7 @@ class IVPSolver:
         self._restart_changes = []
         self.t, self.iteration = float(t), 0
         self._t_origin, self._it_origin = float(t), 0
-        self._t_initial = float(t)                  # start time of the chain (checkpoints, feat2)
+        self._t_initial = float(t)                  # start time of the chain (checkpoints)
         self._reset_history()
 
     def _reset_history(self) -> None:
@@ -1136,7 +1136,7 @@ class IVPSolver:
             g["stream"].synchronize()
         # Copies out on the caller's stream (the replay is finished): enqueued on the graph's
         # non-blocking stream, after its last synchronize, they raced with whatever the caller
-        # ran next on its own stream (the reverse of).
+        # ran next on its own stream (the reverse).
         self.X = g["X"].copy()
         if multistep:
             self._buffers_to_history(g)
@@ -1273,8 +1273,8 @@ class IVPSolver:
         meta["identity"] = checkpoint_identity(self)
         if getattr(self, "_restart_changes", None):
             meta["restart_changes"] = list(self._restart_changes)
-        # the time the chain of this state started from (set_state(t=...), sim.initial(t=...);
-        # feat2): compared by resume_or_start(..., t=...); None when the state was set otherwise
+        # the time the chain of this state started from (set_state(t=...), sim.initial(t=...)):
+        # compared by resume_or_start(..., t=...); None when the state was set otherwise
         t_init = getattr(self, "_t_initial", None)
         meta["t_initial"] = None if t_init is None else float(t_init)
         h = (lambda a: a) if self.backend == "cpu" else self.xp.asnumpy
@@ -1367,7 +1367,7 @@ class IVPSolver:
         self._LXh = deque(dev(arrays[f"LX{i}"]) for i in range(meta.get("nhist_LX", 0)))
         self.iteration, self.t = int(meta["iteration"]), float(meta["t"])
         self._t_origin, self._it_origin = float(meta["t_origin"]), int(meta["it_origin"])
-        t_init = meta.get("t_initial")             # None: written before the record (feat2)
+        t_init = meta.get("t_initial")             # None: written before the record
         self._t_initial = None if t_init is None else float(t_init)
 
     def _repr_html_(self) -> str:       # Jupyter display (conatus.notebook)
@@ -1578,7 +1578,7 @@ class IVPSolver:
     def _fused_text(self) -> str:
         """explain() of the fused evaluator; in a reflection subspace with the 2D pipeline, the
         parity-reduced evaluator is only the fallback (F runs on the full grid, restricted): it
-        used to be printed as if it computed F ("products on the half grid" 512 review)."""
+        used to be printed as if it computed F ("products on the half grid")."""
         txt = self._fused.explain()
         fz = getattr(self, "_fc2d_fused", None)
         if getattr(self, "_fc2d", None) is not None and fz is not None and fz is not self._fused:

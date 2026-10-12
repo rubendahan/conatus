@@ -5,7 +5,7 @@
 //  - Runge–Kutta IMEX (RK111, RK222, RK443, ARS tableaux): stage i solves
 //    (M + dt H_ii L) X_i = M X_0 + dt sum_{j<i} (A_ij F_j - H_ij L X_j).
 // Factorizations are cached by their LHS coefficients: RK443 has all H_ii = 1/2, so a single
-// factorization serves every stage ( P1); L X_0 is skipped when H[:,0] = 0 (P2).
+// factorization serves every stage; L X_0 is skipped when H[:,0] = 0 (P2).
 #pragma once
 
 #include <deque>

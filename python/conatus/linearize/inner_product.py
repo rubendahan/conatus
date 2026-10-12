@@ -52,7 +52,7 @@ def basis_gram(basis, n: int) -> np.ndarray:
                             Ultraspherical)
     if is_mapped(basis):
         # The closed-form Gram is for the affine map only; a mapped axis needs the map's metric
-        # dy = m'(xi) dxi (audit C5: non-finite or wrong entries).
+        # dy = m'(xi) dxi (non-finite or wrong entries).
         raise UnsupportedError(f"InnerProduct on {basis!r}: the Gram with the map metric is not "
                                "implemented (MappedChebyshev)")
     if n != basis.size:
@@ -100,7 +100,7 @@ class InnerProduct:
                 raise OptionError(f"weights for unknown variables: {sorted(unknown)}",
                                   fix="weights only for the unknowns of the problem")
             # Every state unknown needs an explicit weight (0 allowed): an unlisted one used to get
-            # 0 silently, changing the norm and the adjoint (audit C3).
+            # 0 silently, changing the norm and the adjoint.
             missing = [n for n in names if n not in taus and n not in weights]
             if missing:
                 raise OptionError(f"no weight for {', '.join(repr(n) for n in missing)}: give every "
@@ -108,7 +108,7 @@ class InnerProduct:
                                   fix="give every non-tau unknown a weight (0 to exclude it from the state)")
             default = {n: float(weights.get(n, 0.0)) for n in names}
         negative = sorted(n for n, w in default.items() if not w >= 0)
-        if negative:                    # W must be positive semi-definite (audit C4)
+        if negative:                    # W must be positive semi-definite
             raise OptionError(f"negative (or NaN) weights for {negative}: not an inner product",
                               fix="non-negative weights")
         self.weights = default

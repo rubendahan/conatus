@@ -1,8 +1,8 @@
 """Test oracle: the step-by-step propagator that ``conatus.growth.propagator`` used before.
 
 Kept verbatim (loop over time steps in Python, RK stages inside) as the reference the batched
-implementation must reproduce to round-off, and for the before/after timing
-(``benchmarks/growth_propagator_timing.py``). Never imported by ``python/conatus/``.
+implementation must reproduce to round-off, and for a before/after timing. Never imported by
+``python/conatus/``.
 """
 from __future__ import annotations
 

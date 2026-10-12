@@ -164,7 +164,7 @@ class SphereGlobalSystem(PolarGlobalSystem):
         # border='auto': every bucket is declared, moved or not, with the reason when it is kept
         # on the row border (no dense column worth moving, gain too small, singular core). The
         # old text said "none needed (no group with dense columns)" whenever nothing moved, also
-        # when dense columns were there and the plan was refused (B2 review, column border).
+        # when dense columns were there and the plan was refused.
         moved = [n for n in self._border_notes if n[2].startswith("column border")]
         kept = [n for n in self._border_notes if not n[2].startswith("column border")]
         lines = [text, f"  border='auto': column border in {len(moved)} of {len(self._border_notes)} "
@@ -265,11 +265,11 @@ class SphereIVPSolver(PolarIVPSolver):
             return None
         if self._sfused.ev.products != "kernel":
             # only the generated product kernels read the device slots: array operations would
-            # take a_g(t) as host numbers frozen by the capture ( review B2)
+            # take a_g(t) as host numbers frozen by the capture
             return None
         from ..discretize._cublas import available
         if not available():
-            return None                  # CuPy's cuBLAS cannot be captured ( B2): refused
+            return None                  # CuPy's cuBLAS cannot be captured: refused
         if getattr(self, "_gscalars", None) is None:
             from .sphere_fused import GraphScalars
             self._gscalars = GraphScalars(self, self._sfused.ev)

@@ -303,8 +303,7 @@ class Journal:
         diff = sorted(k for k in set(old) | set(self.fp)
                       if old.get(k) != self.fp.get(k) and not (k == "W" and self.fp.get(k) is None))
         if diff == ["adjoint"]:
-            # the same sweep with the other shell adjoint (planned vs node-by-node walk, feat2
-            # review): same adjoint up to rounding, not to the bit, so never mixed; say which
+            # the same sweep with the other shell adjoint (planned vs node-by-node walk): same adjoint up to rounding, not to the bit, so never mixed; say which
             # path wrote it and how to finish it
             def path(fp: dict) -> str:
                 return ("the planned adjoint" if fp.get("adjoint") == "planned"

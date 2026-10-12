@@ -709,8 +709,7 @@ class _Parser:
             raise self._err(
                 f"name '{name}' is not declared." + (did_you_mean(name, own)
                                                      # a one- or two-letter name is no typo
-                                                     # of an operator ('s' -> 'sin'; critique
-                                                     #)
+                                                     # of an operator ('s' -> 'sin')
                                                      or ("" if len(name) <= 2 else
                                                          did_you_mean(name, self.ns.names()))),
                 a.pos,

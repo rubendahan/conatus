@@ -1,4 +1,4 @@
-"""Regression tests for the (docs/AUDIT_J0.md): silent substitutions that must be refused."""
+"""Regression tests for the silent substitutions that must be refused."""
 import numpy as np
 import pytest
 import scipy.sparse as sp

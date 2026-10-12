@@ -16,7 +16,7 @@ part). The tutorials also need matplotlib (``pip install ".[tutorials]"``), repo
 exact install line. Everything else (GPU, CuPy, MPI, NCCL, Dedalus, ipywidgets) is optional.
 
 The first line says how Conatus is installed (``conatus._paths.install_mode``): a development
-checkout gets developer advice (``source env/env.sh``, ``bash core/build.sh``), an installed
+checkout gets developer advice (the CMake build of the install page), an installed
 package gets ``pip`` advice and the user directories it writes to.
 """
 from __future__ import annotations
@@ -240,7 +240,7 @@ def _core(ctx: dict) -> list[Check]:
     ctx["core"] = core
     from . import __version__
     built = getattr(core, "__version__", "?")
-    if built == __version__:     # one version (Z6): shown once, in the header
+    if built == __version__:     # one version: shown once, in the header
         out = [Check("compiled core (CPU)", "ok", "same version as the package",
                      f"{runtime.CORE_SOURCE}: {runtime.CORE_FILE}", required=True)]
     else:                        # a core built from another checkout or an older build
@@ -334,7 +334,7 @@ def _core_fix() -> str:
     """How to (re)build the compiled core, for this install mode."""
     from ._paths import in_checkout
     if in_checkout():
-        return "source env/env.sh && bash core/build.sh (development checkout)"
+        return "CMake build of core/ into $CN_BUILD/core, see Install, development tree"
     return ("reinstall the conatus wheel, or pip install . from the source tree in a conda env "
             "with liblapack and libblas (README, Install)")
 
@@ -343,7 +343,7 @@ def _cuda_fix() -> str:
     """How to get the CUDA part of the core, for this install mode."""
     from ._paths import in_checkout
     if in_checkout():
-        return "rebuild with CUDA: CONATUS_CUDA=ON bash core/build.sh (nvcc in the env)"
+        return "rebuild with CUDA: -DCONATUS_CUDA=ON in the CMake build of core/ (nvcc in the env)"
     return ("reinstall with CUDA: pip install . -Ccmake.define.CONATUS_CUDA=ON (nvcc, cuFFT, cuBLAS "
             "in the env; documentation, Install page, GPU section)")
 
@@ -484,7 +484,7 @@ def _cn_tmp() -> list[Check]:
             return [Check("CN_TMP", "ok", "unset", "not needed by an installed package (optional "
                           "scratch root: telemetry and runs go under it when set)")]
         return [Check("CN_TMP", "warning", "unset", "scratch root for builds, outputs, runs",
-                      "source env/env.sh (development checkout) or export CN_TMP=/scratch/path")]
+                      "export CN_TMP=/scratch/path")]
     return _disk("CN_TMP", Path(v), "", "free space under $CN_TMP")
 
 

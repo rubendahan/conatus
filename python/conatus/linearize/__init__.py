@@ -90,7 +90,7 @@ def linearize(problem: IVP, around: Mapping[E.Field, Any], eigenvalue: E.Paramet
             raise ProblemError(f"equation '{eq}' linearizes to 0 around the given base state; "
                                "remove it from the problem or check the base state")
         evp.add_equation((lin, 0))
-    # growth convention fixed by the construction (review of only the
+    # growth convention fixed by the construction (only the
     # native Linearization declared it): dt -> eigenvalue, normal modes exp(eigenvalue t),
     # whatever the eigenvalue's name ("c" was guessed as a phase speed, ranked by Im c)
     _n = getattr(eigenvalue, "name", eigenvalue)

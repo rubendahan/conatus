@@ -7,7 +7,7 @@ Where the compiled module comes from (first match wins, never a silent fallback)
 2. The installed copy, found by the normal import system as ``conatus._core`` (``pip install .``,
    wheel, conda package; editable installs too). It was compiled from the same sources as the
    Python package it ships with, so it is preferred over any build tree.
-3. The development build ``$CN_BUILD/core/core`` (``bash core/build.sh``; default
+3. The development build ``$CN_BUILD/core/core`` (CMake, see the install page; default
    ``<repo>/scratch/build`` only when this package is the repository's ``python/conatus``).
    In a dev checkout there is no ``.so`` inside ``python/conatus`` (never copied there, gitignored),
    so step 2 finds nothing and the behaviour is unchanged.
@@ -25,7 +25,7 @@ from pathlib import Path
 
 from ..errors import MissingDependencyError
 
-_FIX = ("development checkout: `source env/env.sh && bash core/build.sh` (builds into $CN_BUILD); "
+_FIX = ("development tree: CMake build of core/ into $CN_BUILD/core (install page); "
         "installed use: install a conatus binary wheel (documentation, Install page), or "
         "`pip install .` from the repository in a conda env with liblapack and libblas (compiles "
         "the core; see pyproject.toml)")

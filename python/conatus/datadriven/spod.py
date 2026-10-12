@@ -43,7 +43,7 @@ __all__ = ["SPOD", "spod", "welch_blocks"]
 #: Numerical rank of the CSD at one frequency: eigenvalues λ > RANK_RTOL x max(n, N_b) x eps x λ_1
 #: (the rounding of a Hermitian eigensolve of that size, relative to the largest); a mode beyond the
 #: rank is not defined and is refused, never returned as a zero column (declared in
-#: ``conatus.tolerances.DECLARED``; decision DD4 of the pass-3 quality review).
+#: ``conatus.tolerances.DECLARED``).
 RANK_RTOL = 10.0
 
 

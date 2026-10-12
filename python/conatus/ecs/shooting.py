@@ -393,7 +393,7 @@ class ShootingRPO:
         # The neutral eigenvalue is degenerate (time + each translation: all ≈ 1), so single Ritz
         # vectors are arbitrary mixtures and per-vector overlaps can label both "time". The
         # well-posed check: the fraction of each neutral direction lying in the span of the
-        # 1 + len(shifts) Ritz vectors closest to 1 (review).
+        # 1 + len(shifts) Ritz vectors closest to 1.
         nn = 1 + len(self.shift_ops)
         near = np.argsort(np.abs(out["values"] - 1.0))[:nn]
         out["neutral_span"] = span_fractions(out["vectors"][:, near], dirs)

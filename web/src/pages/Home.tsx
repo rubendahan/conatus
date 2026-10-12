@@ -1,5 +1,5 @@
-// Home page: a thesis over a live simulation (the one visual of the page: a real computation),
-// then the code of an executed tutorial with its output, what Conatus lets you do, and the way in.
+// Home page: a thesis over a live simulation (a real computation), two short films of Conatus
+// runs, then the code of an executed tutorial with its output, what Conatus lets you do, and the way in.
 // Text-first, like a project home page (Ruben, 2026-10-02). No measured figures here: the numbers
 // live on the Validation page only. Code and output are cut from the executed tutorial
 // (lib/snippet.ts), never retyped.
@@ -10,8 +10,11 @@ import { ButtonLink, Code } from "../components/ui";
 import { SITE } from "../content/site";
 import { region, tutorial } from "../lib/snippet";
 import Executed from "../components/Executed";
+import Film from "../components/Film";
+import { films } from "../data/films";
 import "../styles/home.css";
 import "../styles/hero.css";
+import "../styles/films.css";
 
 const PAGE = "web/src/pages/Home.tsx";
 
@@ -61,6 +64,24 @@ export default function Home() {
           A Kelvin–Helmholtz shear layer rolling up, computed live in your browser.
         </p>
       </section>
+
+      {/* two short films of real runs (web/gallery/films.py), each frame a state the solver computed */}
+      {films.length > 0 && (
+        <section className="section home-films" aria-labelledby="films-h">
+          <div className="wrap">
+            <div className="section-head">
+              <p className="eyebrow">In motion</p>
+              <h2 id="films-h">Computed with Conatus</h2>
+              <p className="section-intro">Each film is a Conatus run, frame by frame: a shear layer rolling up, and rolls
+                emerging from noise.</p>
+            </div>
+            <ul className="films">
+              {films.map((f) => <li key={f.slug}><Film f={f} /></li>)}
+            </ul>
+            <p className="more-link"><Link to="/gallery">The gallery <span aria-hidden="true">→</span></Link></p>
+          </div>
+        </section>
+      )}
 
       <section className="section lab home-code" aria-labelledby="code-h">
         <div className="wrap">

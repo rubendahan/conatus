@@ -40,7 +40,7 @@ def find_relative_equilibrium_dae(solver, X0: np.ndarray, c0: float, newton: New
                                   coord: str, log=None, c_zero_tol: float = 1e-10) -> ECSSolution:
     """Solve F(U) − L U + c M ∂x U = 0, unknowns (U, c), phase ⟨∂x U*, δU⟩ = 0.
     ``c_zero_tol``: |c| < c_zero_tol · max(1, max|U|) is reported as an equilibrium (note only;
-    declared threshold, audit R7)."""
+    declared threshold)."""
     sysm = solver.system
     ops = AxisOps(solver, coord)
     lin = _Lin(solver)
@@ -87,7 +87,7 @@ def stability_dae(solver, sol: ECSSolution, *, dense_max: int, finite_max: float
     translation vector t = ∂x U is non-zero, lies in the kernel (‖A t‖ ≤ ``translation_kernel_tol``
     · ‖A‖_F ‖t‖, A = J_F − L + c M ∂x) and one eigenvector overlaps it by at least
     ``translation_overlap_min``. Otherwise nothing is removed and ``out["translation"]`` says why
-    (audit R3: on an x-invariant state the most unstable mode used to be removed)."""
+    (on an x-invariant state the most unstable mode used to be removed)."""
     sysm = solver.system
     n = sysm.n
     if n > dense_max:

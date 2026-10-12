@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-# One version for the package and its compiled core ( Z6): read
+# One version for the package and its compiled core: read
 # from __version__ in python/conatus/__init__.py, the single source pyproject also reads (the core
 # said "0.0.1", hard-coded, next to a 0.1.0 package). CMake's project(VERSION) takes numbers only
 # (no "rc1"), so the full string is passed to the module as CONATUS_VERSION; the numeric part is

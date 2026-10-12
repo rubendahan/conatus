@@ -34,7 +34,7 @@ __all__ = [
     "EquatorialParity",
 ]
 
-# Mapped Chebyshev bases on (semi-)infinite intervals (gallery gap, BACKLOG wave 1; anticipates)
+# Mapped Chebyshev bases on (semi-)infinite intervals (gallery gap; anticipates)
 from .maps import CoordinateMap, MappedChebyshev, RationalMap, TanhMap, TanMap  # noqa: E402
 
 __all__ += ["CoordinateMap", "MappedChebyshev", "RationalMap", "TanhMap", "TanMap"]

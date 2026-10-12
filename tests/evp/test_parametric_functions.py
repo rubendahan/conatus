@@ -1,5 +1,5 @@
 """ParametricEVP: Fourier wavenumber as a continuous parameter, declared functions of parameters
-(gallery gaps, BACKLOG wave 1: Swift–Hohenberg rebuilt one pencil per q; rotating convection one
+(gallery gaps: Swift–Hohenberg rebuilt one pencil per q; rotating convection one
 pencil per Ta because sqrt(Ta) is not a Laurent polynomial)."""
 import numpy as np
 import pytest

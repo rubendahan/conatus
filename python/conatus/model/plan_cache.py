@@ -1,4 +1,4 @@
-"""Reuse of assembled operators between two ``simulate()`` of the same model (P1).
+"""Reuse of assembled operators between two ``simulate()`` of the same model.
 
 Building a simulation is dominated by the assembly of the implicit operators: the sparse ``L`` and
 ``M`` of every Fourier group (``Plan.matrices``; about 1.3 s for Rayleigh-Benard at 64 x 32, more

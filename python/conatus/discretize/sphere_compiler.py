@@ -207,7 +207,7 @@ class _SphereCompiler:
         if isinstance(x, E.Field):
             if self.mode == "M":
                 # a bare unknown has no dt() and no eigenvalue: it never enters M (the defect found
-                # in the Cartesian and polar compilers, ERREURS_COURANTES avoided here)
+                # in the Cartesian and polar compilers, avoided here)
                 return {}
             return self._field(x)
         if isinstance(x, E.TimeDerivative):

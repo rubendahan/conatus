@@ -1,5 +1,4 @@
-"""Floquet exponents of a linear periodic IVP in the spherical shell by the monodromy map
-(docs/DEMANDES_PROJET36.md).
+"""Floquet exponents of a linear periodic IVP in the spherical shell by the monodromy map.
 
 The perturbation u of a time-periodic *axisymmetric* base flow (NCC of m = 0 only: the spherical
 plans refuse any phi dependence of a coefficient) obeys a linear IVP whose azimuthal wavenumbers

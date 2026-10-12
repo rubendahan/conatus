@@ -5,11 +5,11 @@ One line per public object: the user layer ``cn.*`` (``conatus.__all__``) and it
 the call signature of every function and class and of every public method of a class. Defaults
 are part of the signature: a changed default is a changed API (never change silently).
 
-``tests/infra/test_api_surface.py`` compares this text with the frozen snapshot
-``tests/infra/api_surface_v0.1.txt`` and fails on any difference, printing it. After a deliberate
-change (an addition, or a deprecation declared in CHANGELOG.md and docs/API_V0.1.md)::
+The development test suite compares this text with a frozen snapshot and fails on any
+difference, printing it. After a deliberate
+change (an addition, or a deprecation declared in CHANGELOG.md)::
 
-    python -m conatus._surface --write tests/infra/api_surface_v0.1.txt
+    python -m conatus._surface --write <snapshot.txt>
 """
 from __future__ import annotations
 

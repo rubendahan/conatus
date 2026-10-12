@@ -1,5 +1,5 @@
 """Exact decay rates on every time-stepping path: CPU, fused F, CUDA, fused F on the GPU, CUDA graph
-(audit hole 1: the GPU paths had only ever been compared with the CPU, never with an exact value).
+(hole 1: the GPU paths had only ever been compared with the CPU, never with an exact value).
 
 The cases are those of tests/discretize/test_exact_rates.py that reach a different part of the
 device code: Fourier rate with a mass coefficient and an explicit RHS (dense spectral solve, F on

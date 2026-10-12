@@ -31,7 +31,7 @@ __all__ = ["Flow", "VectorField", "Equilibrium", "TravellingWave", "RelativePeri
 
 _DOC = "docs/site/guide/dynamics/invariant_solutions.md"
 
-#: Scope of find_equilibrium / find_travelling_wave / find_relative_periodic_orbit
+#: Scope of find_equilibrium / find_travelling_wave / find_relative_periodic_orbit,
 #: stated in every refusal and in the guide.
 SCOPE = ("one periodic direction with a real Fourier basis and no other axis (1D periodic "
          "problems: Kuramoto-Sivashinsky, 1D Swift-Hohenberg, ...); find_equilibrium searches "
@@ -39,8 +39,8 @@ SCOPE = ("one periodic direction with a real Fourier basis and no other axis (1D
 _ALTERNATIVES = ("for flows with walls or several directions: conatus.ecs.steady."
                  "AffineSteadyProblem (steady states of large IVPs, symmetry subspaces, Couette), "
                  "conatus.ecs.pipe.PipeTravellingWave (pipe travelling waves), "
-                 "conatus.ecs.kolmogorov (2D Kolmogorov flow); the generalisation of these "
-                 "finders is in docs/BACKLOG.md")
+                 "conatus.ecs.kolmogorov (2D Kolmogorov flow); these finders are not yet "
+                 "general")
 
 
 class _MissingSpeedError(OptionError, KeyError):
@@ -213,8 +213,8 @@ def _guard_trivial(sol: ECSSolution, scale: float) -> ECSSolution:
 STEADY_TOL = 1e3
 #: Number of states of the period at which the shape change is measured (all of them up to it).
 STEADY_SAMPLES = 64
-#: Size up to which the stability problems of invariant solutions are solved densely (lot
-#: rule a budget has a declared default): QZ on the full Jacobian (every eigenvalue,
+#: Size up to which the stability problems of invariant solutions are solved densely (a budget
+#: has a declared default): QZ on the full Jacobian (every eigenvalue,
 #: marginal modes included); above it ARPACK (equilibrium_eigenvalues, floquet_multipliers, with
 #: a required arnoldi_tol) or a refusal (symmetry_breaking_check, a dense-only check).
 DENSE_MAX = 2000
@@ -472,7 +472,7 @@ def _note_repeated_stagnation(err: NewtonNotConverged, solver: object, c0: float
     solver stalled at the same point: the same final residual and the same final wave speed, each
     to a relative 1e-3 (INTERNAL SAME_STAGNATION). Only a stalled search counts (``err.stalled``:
     no decrease of ‖R‖ at the end); one cut by its budget while ‖R‖ still fell is no stagnation
-    point (review of two 2-iteration searches from the same seed were told they
+    point (two 2-iteration searches from the same seed were told they
     had found "a local minimum of ‖R‖"). A note on the error only; nothing is retried or changed."""
     rel = getattr(err, "relative_residual", None)
     last = getattr(err, "last_iterate", None)
@@ -582,7 +582,7 @@ def equilibrium_eigenvalues(solver, sol: ECSSolution, n_modes: int, *, dense_max
     budget is declared, the tolerance required; ``k=`` is the former name of
     ``n_modes``, k being a wavenumber everywhere else).
     Marginal eigenvalues (translation) are part of the output. A travelling wave must carry
-    ``params['c']`` (audit R5: it used to fall back to the fixed frame, c = 0); an equilibrium
+    ``params['c']`` (it used to fall back to the fixed frame, c = 0); an equilibrium
     without it has c = 0 by definition."""
     if "c" in sol.params:
         c = sol.params["c"]
@@ -594,7 +594,7 @@ def equilibrium_eigenvalues(solver, sol: ECSSolution, n_modes: int, *, dense_max
                                  fix="pass the solution returned by find_travelling_wave (it "
                                  "carries params['c'])", doc=_DOC)
     tol = _arpack_tol(arnoldi_tol, "equilibrium_eigenvalues")
-    # a Simulation (or a cn.Model refused with its fix) like the finders (A3.2)
+    # a Simulation (or a cn.Model refused with its fix) like the finders
     solver, _ = _solver_of(solver, "equilibrium_eigenvalues")
     ops, v = FourierOps(solver), Flow(solver)
     sp = _Space(ops, solver.system.n, odd=False)

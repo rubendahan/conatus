@@ -34,7 +34,7 @@ explicit adjoint is written below next to the forward formula it transposes:
 * the equation rows (``SphereGlobalSystem.gather_rhs``, one sparse map per equation) -> R^H;
   the scatter of the state into coefficient arrays -> the gather of the same indices.
 
-Each transposed stage is checked by a dot-product test in ``tests/adjoint/test_sphere_adjoint.py``.
+Each transposed stage is checked by a dot-product test in the development test suite.
 Time dependence (``time_parameter``): the passive values (base flow U = sum_g a_g(t) U_g with the
 a_g evaluated at the stage time, Coriolis NCC, ...) are evaluated at the stage time t given by
 FlowMap, as the forward F; no split is needed because a_g(t) enters as a passive scalar factor.
@@ -368,7 +368,7 @@ class SphereLinearizedRHS:
                                     f"of the planned F could not be built ({pr.reason}); use "
                                     "f_backend='evaluator' for the adjoint")
             self._real_P = pr
-        # planned adjoint (feat2): on fused solvers the transpose follows the planned path of the
+        # planned adjoint: on fused solvers the transpose follows the planned path of the
         # tangent stage by stage (adjoint/sphere_planned.py); equations outside its scope keep the
         # explicit walk below. planned=False keeps the explicit walk everywhere (the oracle).
         self._planned = None
@@ -704,7 +704,7 @@ class SphereLinearizedRHS:
                 cbar = cbar[tuple(slice(0, n_) for n_ in cs)]
             m = self._meta_of(le, data, ctx["params"])
             if k:
-                # forward: forward(broadcast(grid(v)) * r^k) ( projection of r^k F)
+                # forward: forward(broadcast(grid(v)) * r^k) (projection of r^k F)
                 gfull = self.T.forward_T(cbar, dom, rank)
                 gbar = gfull * xp.asarray(S.ops.grid(gfull.shape[-1]) ** k)
                 self._T(le, self._grid_T(m, unbroadcast(gbar, m.gshape)), ctx)

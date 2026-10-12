@@ -25,7 +25,7 @@ from conatus.ecs import NewtonKrylovHookstep, find_equilibrium, ks_solver
 
 L0 = 22.0
 # name: (starting L, {sin mode: amplitude}) — E1–E3 as tests/ecs; C1 = Greene–Kim 1-cell at a = 13
-# (L = π√a, convention checked in)
+# (L = π√a, convention checked)
 SEEDS = {"E1": (L0, {1: 1.0}), "E2": (L0, {2: 1.0}), "E3": (L0, {3: 2.0}),
          "C1": (float(np.pi * np.sqrt(13.0)), {1: 1.0, 2: 0.5})}
 

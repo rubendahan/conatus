@@ -328,7 +328,7 @@ def integration_row(N: int, lam: int) -> np.ndarray:
         even = n % 2 == 0
         out[even] = 2.0 / (1.0 - n[even] ** 2)
         return out
-    from .jacobi_family import gauss_legendre    # refined weights (Q8.8)
+    from .jacobi_family import gauss_legendre    # refined weights
     x, w = gauss_legendre(N // 2 + 2)
     n = np.arange(N)
     return eval_gegenbauer(n[:, None], lam, x[None, :]) @ w

@@ -1,4 +1,4 @@
-"""Fused evaluation of polynomial explicit right-hand sides ( performance target, ``f_backend="fused"``).
+"""Fused evaluation of polynomial explicit right-hand sides (``f_backend="fused"``).
 
 The IR right-hand sides are compiled **once** into a polynomial form
 
@@ -79,7 +79,7 @@ def _mul_monos(a: list, b: list) -> list:
 
 
 def _cross_monos(x: E.Expr, ex, mul) -> dict:
-    """Expansion of cross(a, b) (feat2): out[(k,)] = sum sign A[(i,)] B[(j,)] with the frame of
+    """Expansion of cross(a, b): out[(k,)] = sum sign A[(i,)] B[(j,)] with the frame of
     ``cartesian_cross_table``; ``mul`` multiplies two monomial lists of the expander."""
     from ..ir.expr_algebra import cartesian_cross_table
     a, b = x.args
@@ -162,7 +162,7 @@ def expand_polynomial(e: E.Expr, coords: Sequence, params: Mapping[str, Any]) ->
                     if ca[-1] == cb[0]:
                         out.setdefault(ca[:-1] + cb[1:], []).extend(_mul_monos(ma, mb))
             return out
-        if isinstance(x, E.Cross):                 # feat2: frame of cartesian_cross_table
+        if isinstance(x, E.Cross):                 # frame of cartesian_cross_table
             return _cross_monos(x, ex, _mul_monos)
         if isinstance(x, E.Component):
             A = ex(x.args[0])
@@ -301,8 +301,7 @@ def expand_general(e: E.Expr, coords: Sequence, params: Mapping[str, Any],
         return out
 
     def integ1(d: dict, i: int) -> dict:
-        """Mark axis i as integrated; the interval length is applied in post() (audit R8:
-        a `length` argument was passed here and never read)."""
+        """Mark axis i as integrated; the interval length is applied in post() (a `length` argument was passed here and never read)."""
         out: dict = {}
         for comp, terms in d.items():
             res = []
@@ -947,7 +946,7 @@ class FusedRHS:
         return "\n".join(lines)
 
     # Tolerance of the real projection on RealFourier grids (same rule as spectral.py): a larger
-    # imaginary part is an error, never dropped silently (R4).
+    # imaginary part is an error, never dropped silently.
     IMAG_TOL = 1e-13
 
     def _low_grids(self, data, shape, cdt):

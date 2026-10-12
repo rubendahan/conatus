@@ -8,7 +8,7 @@
 3. Lorenz: the homoclinic orbit of the origin found as a *connection* (unstable manifold by the
    parametrization method, projection condition on a sphere around the origin), r ≈ 13.926.
 
-Run: source env/env.sh && python examples/manifolds/phase_space_geometry.py
+Run: python examples/manifolds/phase_space_geometry.py
 """
 import numpy as np
 import scipy.optimize as so

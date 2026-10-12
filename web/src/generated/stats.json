@@ -1,0 +1,30 @@
+{
+ "generated": "2026-10-12T21:52:54.797Z",
+ "commit": null,
+ "counts": {
+  "tests": 2015,
+  "runs": 0,
+  "decisions": 0,
+  "errors": 0,
+  "scorecardPass": 28,
+  "scorecardFail": 0,
+  "scorecardNotMeasured": 13,
+  "date": "2026-10-10"
+ },
+ "ledger": {
+  "entries": 59,
+  "verification": 59,
+  "gallery": 0,
+  "performance": 0,
+  "domains": 12,
+  "withRunId": 8,
+  "withDeviation": 46
+ },
+ "runsArchived": 0,
+ "tutorials": {
+  "total": 14,
+  "passing": 14
+ },
+ "warnings": 17,
+ "divergences": 0
+}

@@ -1,4 +1,4 @@
-"""The "NOT alias-free" warning is for functions of grid data only (gallery, BACKLOG wave 1).
+"""The "NOT alias-free" warning is for functions of grid data only (gallery).
 
 cos(omega t) or sqrt(1 - q^2) with t, omega, q parameters is a number: it is evaluated exactly and
 has no aliasing error. The warning (explain() of the problem and of the node, methods, MMS report)

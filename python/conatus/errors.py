@@ -312,7 +312,7 @@ class InitialDataWarning(UserWarning):
     """Callable initial data are not fully resolved: their relative spectral tail beyond the
     resolution (sampled on twice the grid) lies between ``INITIAL_TAIL_TOL`` and the refusal level
     ``INITIAL_TAIL_REFUSE`` (a coarse ``N`` of a resolution study); warned once per
-    ``initial(...)`` call and recorded by ``explain()`` ( review)."""
+    ``initial(...)`` call and recorded by ``explain()``."""
 
 
 class IllPosedWarning(UserWarning):
@@ -413,7 +413,7 @@ def _warn_user(message: str, category: type[Warning]) -> None:
 def did_you_mean(name: str, choices: Iterable[str]) -> str:
     """``" Did you mean 'RK443'?"`` when a close match exists, else ``""`` (never auto-applied)."""
     choices = [str(c) for c in choices]
-    # the same name in another case first ('ra' -> 'Ra', 't' -> 'T'/X2),
+    # the same name in another case first ('ra' -> 'Ra', 't' -> 'T'),
     # then the closest spellings
     same = sorted(c for c in choices if c.lower() == str(name).lower() and c != str(name))
     close = same + [c for c in difflib.get_close_matches(str(name), choices, n=3, cutoff=0.5)

@@ -46,7 +46,7 @@ def test_hermite_dense_output_and_exact_restep_on_ks():
         integ.integrate(X0, 40.03)
     with pytest.raises(OptionError, match="every"):
         integ.integrate(X0, 40.0, every=0)
-    # review of find_connection integrates a fixed-step map up to the end-sphere
+    # find_connection integrates a fixed-step map up to the end-sphere
     # crossing, a time between two steps; it now runs to the first step at or after it
     from conatus.manifolds.connections import _covering_time
     t = _covering_time(integ, 1.2345)

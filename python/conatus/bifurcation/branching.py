@@ -83,7 +83,7 @@ def _kernel_complement(null: np.ndarray, t0: np.ndarray) -> np.ndarray:
     unless its norm is below KERNEL_SWITCH_TOL. The rule fixes the sign of φ, hence the sense of
     ``direction=+1`` at a pitchfork (new tangent = ±φ): a threshold-free choice (the larger
     projection oriented along the first) would take that sign from the round-off of a first
-    projection of norm ~1e-17 (review of the)."""
+    projection of norm ~1e-17."""
     cand = null[:, 0] - t0 * (t0 @ null[:, 0])
     if np.linalg.norm(cand) < KERNEL_SWITCH_TOL:
         cand = null[:, 1] - t0 * (t0 @ null[:, 1])

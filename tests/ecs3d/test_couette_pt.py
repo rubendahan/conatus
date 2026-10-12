@@ -92,7 +92,7 @@ def test_shift_reflect_group_is_a_symmetry_of_the_discrete_step():
 def test_symmetry_group_refuses_a_forgotten_field():
     """A variable left out of field_signs was treated like a tau: unlabelled, zeroed by project()
     and left out of the isotypic spectra. Only the tau variables (inside lift) stay unlabelled;
-    a forgotten field is refused (review of)."""
+    a forgotten field is refused."""
     import pytest
     from couette_cases import S1, S2
     from conatus.ecs.subspace import DiagonalSymmetry, DiagonalSymmetryGroup

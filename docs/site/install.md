@@ -2,7 +2,7 @@
 
 Conatus 0.1.0 is installed **from a binary wheel** (no compiler needed) or **from source**. The CPU
 wheel is on PyPI (`pip install conatus`); the CUDA 12 wheel (beta) is a file attached to the
-[GitHub release](https://github.com/rubendahan/conatus/releases). The compiled C++ core, inside
+[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.1.0). The compiled C++ core, inside
 both wheels, is required for time integration; the GPU backend is optional.
 
 
@@ -110,7 +110,7 @@ Do not add the `gpu` extra here: it would install a second CuPy from pip next to
 Recipe 0, the CUDA binary wheel (beta; no compiler, no CUDA toolkit; the driver must support
 CUDA 12.9, i.e. driver ≥ 575 or an older 12.x driver through CUDA minor-version compatibility).
 Download the `conatus-0.1.0+cu12-cp3XX-…whl` file of your Python from the
-[GitHub release](https://github.com/rubendahan/conatus/releases), then:
+[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.1.0), then:
 
 ```bash
 python3.12 -m venv venv && . venv/bin/activate
@@ -149,7 +149,7 @@ said separately; the same text appears when `backend="cuda"` is refused).
 To work on Conatus itself, build the core in place and use the package from the tree:
 
 ```bash
-micromamba create -n conatus-dev -f ci/environment.yml      # the CI environment
+micromamba create -n conatus-dev -f ci/environment.yml      # the development environment
 micromamba activate conatus-dev
 cmake -S . -B build/core -G Ninja -DCMAKE_BUILD_TYPE=Release -DCONATUS_CUDA=OFF
 cmake --build build/core -j 8

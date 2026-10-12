@@ -171,7 +171,7 @@ def backward(xp: Any, c, b: Basis, axis: int = 0):
     elif isinstance(b, RealFourier):
         if xp.iscomplexobj(c):
             # complex coefficients: irfft of the folded spectrum returned a REAL array, the
-            # imaginary part silently lost (the production twin of): Re and Im separately
+            # imaginary part silently lost (the production twin): Re and Im separately
             return backward(xp, c.real, b, axis) + 1j * backward(xp, c.imag, b, axis)
         K = N // 2
         shp = list(c.shape)

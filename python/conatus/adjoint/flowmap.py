@@ -151,7 +151,7 @@ def flowmap_memory_estimate(fm: FlowMap) -> dict:
     * ``checkpoint``: one augmented state (what each Revolve slot holds).
 
     Not counted: the forward step itself (see ``conatus.runtime.memory``), allocator rounding,
-    the CUDA context. Compared to measurement in benchmarks/tts4/b9_measure.py."""
+    the CUDA context."""
     it = np.dtype(fm.dtype).itemsize
     n = fm.n
     s = fm.solver
@@ -214,8 +214,7 @@ def _lever_keys(s) -> dict:
     """Fingerprint keys of the levers that change the arithmetic in the last bits:
     complex modes, the level-scheduled solve variants, the F transform options. Only their
     non-default values are added, so the journals of maps without them keep their fingerprint;
-    a journal written without a lever is refused by a map with it and conversely (review of
-    before, a sweep resumed with complexify=True or compact factors mixed two
+    a journal written without a lever is refused by a map with it and conversely (before, a sweep resumed with complexify=True or compact factors mixed two
     trajectories silently). Shared factors and the fused complex-mode maps give the same bits:
     not part of it."""
     out: dict = {}
@@ -780,7 +779,7 @@ class FlowMap:
             fp.update(f_backend="fused", ang_chunks=int(sf.ev.S.nchunk))
             pl = getattr(self.rhs_lin, "_planned", None)
             if pl is not None and pl.planned:
-                # planned adjoint (feat2): same adjoint as the explicit walk up to rounding, not
+                # planned adjoint: same adjoint as the explicit walk up to rounding, not
                 # to the bit; a sweep journaled by the explicit walk is refused, not mixed
                 fp.update(adjoint="planned")
         if self._m0proj is not None:
@@ -844,8 +843,8 @@ class FlowMap:
         finally:
             # the store is never needed after this call: a suspended sweep lives in its journal
             # (hard links for the disk store, copies otherwise). Clearing it here releases pinned
-            # host buffers and removes disk-store files also on a suspension or an error (before
-            # the review they were left behind in checkpoint_dir)
+            # host buffers and removes disk-store files also on a suspension or an error (they
+            # used to be left behind in checkpoint_dir)
             store.clear()
 
     def _revolve_loop(self, acts, store, jr, hist0, bars, cursor, progress, work, deadline,

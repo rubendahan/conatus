@@ -1,4 +1,4 @@
-"""An LBVP with a complex LHS and real data returns the complex solution (ERREURS_COURANTES).
+"""An LBVP with a complex LHS and real data returns the complex solution.
 
 Before the fix, Plan.solve() allocated real output arrays whenever the layout and the data were
 real, and the complex solution of i u - u'' = 1 lost its imaginary part (numpy ComplexWarning only).

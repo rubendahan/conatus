@@ -84,7 +84,7 @@ class DedalusTranslation:
         """IVPSolver with the scheme and fixed dt declared by the script (explicit arguments win,
         and are required when the script's dt was not translatable, e.g. an adaptive CFL).
 
-        Time-dependent boundary data follow the Dedalus convention, ``bc_time="step"`` (audit package): the translation reproduces the script, and the Conatus
+        Time-dependent boundary data follow the Dedalus convention, ``bc_time="step"``: the translation reproduces the script, and the Conatus
         default (``"auto"`` = ``"rk"``: the order of the scheme kept) would change the
         digits of every scheme that loses order with moving boundary data. Pass
         ``bc_time="auto"`` (or ``"stage"``) to get a Conatus convention; ``explain()`` states

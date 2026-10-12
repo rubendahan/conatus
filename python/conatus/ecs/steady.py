@@ -50,7 +50,7 @@ __all__ = ["AffineSteadyProblem", "SteadyResult", "isotypic_spectrum"]
 class _PhaseReferenceError(OptionError, RuntimeError):
     """A solve before ``set_phase_reference``: an OptionError that keeps the built-in base of the
     historical raise (RuntimeError), so ``except RuntimeError`` still catches it (errors.py,
-    compatibility rule review)."""
+    compatibility rule)."""
 
 
 class SteadyResult:

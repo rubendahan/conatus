@@ -912,7 +912,7 @@ class GlobalSystem:
 def _band_of(M, L, rperm, cperm, n_border: int) -> tuple[int, int]:
     """(kl, ku) of the bulk rows (all but the first ``n_border`` rows, the border) of the
     permuted pattern of |M| + |L|: the measure of ``measure_band`` in
-    core/include/conatus/banded.hpp, structural (no factorization; System.bands Y5)."""
+    core/include/conatus/banded.hpp, structural (no factorization; System.bands)."""
     A = (abs(sp.csr_matrix(M)) + abs(sp.csr_matrix(L))).tocsr()[rperm][:, cperm].tocoo()
     keep = (A.row >= n_border) & (A.data != 0)
     if not keep.any():

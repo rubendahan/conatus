@@ -73,7 +73,7 @@ def error(scheme, nsteps, T=0.5, phi="cos"):
     ("SBDF1", 1, "cos"), ("SBDF2", 2, "cos"), ("SBDF3", 3, "flat"), ("SBDF4", 4, "flat"),
     ("RK111", 1, "cos"), ("RK222", 2, "cos"), ("RK443", 3, "cos")])
 def test_observed_order(scheme, order, phi):
-    """Each scheme at its own order (audit coverage hole 6: SBDF3/4 used to be accepted at 2).
+    """Each scheme at its own order (coverage hole 6: SBDF3/4 used to be accepted at 2).
 
     SBDF3/4 run on the flat-start solution (see PHI). Observed log2(e40 / e80) on SBDF1 0.992, SBDF2 2.005, SBDF3 2.943, SBDF4 3.962, RK111 0.992, RK222 1.977, RK443 2.920;
     every deficit shrinks when dt is halved (SBDF3 2.972, SBDF4 3.981, RK443 2.959 at 80/160):

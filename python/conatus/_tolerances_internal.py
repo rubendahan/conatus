@@ -7,7 +7,7 @@ whether a matrix is singular, whether a duration is a whole number of steps. The
 grouped by what they decide, so that every such number has a stated reason (from G4 / Q9.6).
 
 Each :class:`Internal` entry names one value and the functions (``module:qualname``) whose
-comparisons use it with that meaning. ``tests/infra/test_internal_constants.py`` reads every
+comparisons use it with that meaning. The development test suite reads every
 comparison of ``python/conatus`` (and the ``rtol``/``atol`` of ``np.allclose``/``np.isclose``,
 which must be written out: NumPy's implicit ``rtol = 1e-5`` is a hidden literal) and fails when a
 float literal other than 0 and 1 is neither listed here for that function nor exempted in the
@@ -187,7 +187,7 @@ _ENTRIES = (
              "and final wave speeds both agree to this relative bound stopped at the same "
              "stagnation point (the residual is printed to 4 digits; a search cut by its budget "
              "while the residual still fell is not compared); said in the refusal, nothing "
-             "retried ( and its review)",
+             "retried",
              ("conatus.ecs.solutions:_note_repeated_stagnation",)),
     Internal("BORDER_RTOL", 1e-5, "classification",
              "optimal_growth reports BORDER when the optimum lies within this relative distance "

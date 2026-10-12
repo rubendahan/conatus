@@ -1,4 +1,4 @@
-"""Spectral-tail spurious flag (X1) on the published eigenvalue benchmarks.
+"""Spectral-tail spurious flag on the published eigenvalue benchmarks.
 
 Contract checked here: on every benchmark of the paper and tutorials that goes through the
 flag (Cartesian plans with a wall-normal Chebyshev, Laguerre or compound axis), (1) no mode that
@@ -33,7 +33,7 @@ def _check_resolved_not_flagged(res, fine):
 
 
 def _os(Re, alpha, flow):
-    # no warning to silence (review of the former DeprecationWarning filter here
+    # no warning to silence (the former DeprecationWarning filter here
     # hid nothing, and would have hidden a correctness warning of the old category)
     return NS.orr_sommerfeld(Re=Re, alpha=alpha, flow=flow)
 

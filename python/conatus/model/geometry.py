@@ -9,7 +9,7 @@ names). The spectral bases are chosen from a fixed table (one choice per geometr
                                       on periodic axes, Chebyshev T on the (single) wall axis
   Box(..., z=walls(a, b, basis="sincos"))  the wall axis in sine/cosine series: the reflection
                                       subspace of RealFourier(2 N_z) on [a, 2b - a) (no tau;
-                                      parities from the wall conditions, docs/API_NATIVE.md)
+                                      parities from the wall conditions)
   Box(..., z=walls(a, c, b))          compound interval: Chebyshev T on [a, c] and [c, b], glued by
                                       automatic continuity conditions (N_z = (N_1, N_2))
   Box(..., x=line(scale=s))           whole line: Hermite functions (no boundary)

@@ -12,7 +12,7 @@ E(u) = ½ ⟨u, u⟩ the energy of the **physical fields** only. Three explicit 
   cos/sin coefficient; exact Chebyshev Gram ∫ T_m T_n along the Chebyshev axis). W is zero on the
   pressure, the tau variables and the gauges (and on the msin_0 slots, which are not modes): it is
   singular on the whole state, so the physical adjoint W⁻¹ Jᵀ W is taken on the velocity
-  subspace only ( would refuse the full singular W).
+  subspace only (W itself is singular, so the adjoint on the full state is not defined).
 * :class:`AdmissibleProjector` P: the W-orthogonal projection of a velocity field onto the
   admissible set {v : C_v v + C_o o = 0 for some o}, C the algebraic rows of the discrete system
   (rows without mass: continuity, boundary conditions, gauges) and o the non-velocity unknowns

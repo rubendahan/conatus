@@ -1,5 +1,5 @@
 """Symmetry subspaces of Fourier × Chebyshev × Fourier states made of reflections and half-period
-shifts (docs/SYMMETRIES.md).
+shifts.
 
 Every such operation is **diagonal with signs ±1** on the coefficients:
 
@@ -117,7 +117,7 @@ class DiagonalSymmetryGroup:
         # Unlisted variables get no label: project() sets them to 0 and the spectra leave them out.
         # That is right for the tau variables only; a forgotten field would be erased silently, so
         # an unlisted variable that is neither lifted in some equation nor a constant (gauge tau,
-        # Lagrange multiplier) is refused (review of).
+        # Lagrange multiplier) is refused.
         taus = _tau_variables(getattr(plan, "problem", None))
         if taus is not None:
             forgotten = [v for v in names if v not in fields and v not in taus]

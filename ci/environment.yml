@@ -1,5 +1,6 @@
-# CPU environment of the GitHub Actions CI (.github/workflows/ci.yml): compiler, build tools,
-# LAPACK/BLAS for the C++ core, and the test dependencies. No CUDA: the GPU tests skip themselves.
+# CPU development environment: compiler, build tools, LAPACK/BLAS for the C++ core, and the test
+# dependencies (docs/site/install.md, "From source: development tree"). No CUDA: the GPU tests
+# skip themselves.
 name: conatus-ci
 channels: [conda-forge]
 dependencies:

@@ -1,5 +1,4 @@
-"""conj() in a linear LHS: discretized as the declared doubled system (X, conj X) (gallery gap,
-BACKLOG wave 1: "cannot discretize node Conj ('conj(dB)') in the LHS"). Checked against the same
+"""conj() in a linear LHS: discretized as the declared doubled system (X, conj X) (gallery gap: "cannot discretize node Conj ('conj(dB)') in the LHS"). Checked against the same
 equations written by hand in real variables (the form the CGLE example used before)."""
 import numpy as np
 import pytest

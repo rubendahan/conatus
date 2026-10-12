@@ -1,4 +1,4 @@
-"""``sim.initial(t=...)``: a non-zero initial time (feat2).
+"""``sim.initial(t=...)``: a non-zero initial time.
 
 Problem: u_t = u_yy / 2 on [0, 5] with the moving walls u(0) = cos(t), u(5) = exp(-5) cos(t - 5),
 exact u = exp(-y) cos(t - y) (tests/model/test_native_time.py). Started at t0 = 0.7 from the
@@ -141,7 +141,7 @@ def test_an_unknown_named_t_keeps_its_meaning():
 def test_guide_examples_run_as_written(name):
     """The guide blocks of io.md (start time) and operators.md (implicit Coriolis) are regions of
     docs/site/guide/_check_features.py: each region runs on its own in a fresh namespace (as a
-    reader would paste it), then the checked function with its asserts (review of feat2)."""
+    reader would paste it), then the checked function with its asserts."""
     import importlib.util
     import re
     from pathlib import Path

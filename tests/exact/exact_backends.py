@@ -1,4 +1,4 @@
-"""Backend matrix shared by the closed-form tests of tests/exact/ (audit holes 1 and 2).
+"""Backend matrix shared by the closed-form tests of tests/exact/ (holes 1 and 2).
 
 One IVP is run through every time-stepping path Conatus has, and each path is compared with the
 *same closed form* (never with another Conatus path):

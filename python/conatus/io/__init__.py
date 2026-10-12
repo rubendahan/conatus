@@ -235,8 +235,8 @@ def read(path: str | Path) -> AnalysisData | CheckpointData:
             scales = {k: sc[k][()] for k in sc if k not in ("sim_time", "iteration", "write_number")}
             attrs = {k: f.attrs[k] for k in ("problem", "scheme", "dt", "every")}
             attrs = {k: (v.decode() if isinstance(v, bytes) else v) for k, v in attrs.items()}
-            # the model's parameters, name and geometry with the rest (critique
-            # pass 4: they were in the HDF5 root and the xarray attrs, not in .attrs)
+            # the model's parameters, name and geometry with the rest (they
+            # used to be in the HDF5 root and the xarray attrs, not in .attrs)
             attrs["parameters"] = read_json_attr(f, "parameters") or {}
             attrs.update({k: _str_attr(f, k) for k in ("model", "geometry") if k in f.attrs})
             scales.pop(COMPONENT, None)                # component names: an attribute per task

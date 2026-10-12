@@ -2,7 +2,7 @@
 
 All notable changes to Conatus.
 
-## [0.1.0] — 2026-10-12
+## [0.1.0] - 2026-10-12
 
 First public release. Linux x86-64, CPython 3.11–3.13. BSD-3-Clause.
 

@@ -1,4 +1,4 @@
-"""Principled bounds for dot-product (adjoint) tests: the rule of in one place.
+"""Principled bounds for dot-product (adjoint) tests: the rule in one place.
 
 A dot-product test compares a = <W, J V> with b = <J^T W, V>. For exact adjoints the difference
 is the rounding of the two computations, a - b = <W, e1> - <e2, V> (e1, e2: the errors of J V and
@@ -116,7 +116,7 @@ def chain_rounding_bound(mats, f, k: float = 4.0) -> np.ndarray:
     entries) and propagates the earlier ones through A^2; ``k`` standard deviations (4) are
     allowed. It describes the products only: a basis whose stored entries carry more than their
     representation error (inaccurate nodes, weights or function values) exceeds it, which is what
-    a test built on it detects (Q10.15: Gauss-Jacobi on scipy's float64 nodes
+    a test built on it detects (Gauss-Jacobi on scipy's float64 nodes
     fails it 1.9 to 1900 times; the long-double nodes pass with a margin of 15 to 21)."""
     v = np.asarray(f, dtype=float)
     var = np.zeros_like(v)

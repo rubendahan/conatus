@@ -62,7 +62,7 @@ def test_gauss_jacobi_ball_weights_integrate_exactly():
 
 def _fb(F, B, ok=None):
     """max |F B - I| / bound over the entries (ok: the valid rows/columns), with the worst-case
-    rounding bound 2 M eps |F| |B| of tests/rounding_bounds.py ( rule: the former literals
+    rounding bound 2 M eps |F| |B| of tests/rounding_bounds.py (rule: the former literals
     1e-14 / 5e-15 were met at 6.0e-15 / 2.8e-15, margins 1.7-2.1, run
    )."""
     D = np.abs(F @ B - np.eye(B.shape[1])) / product_identity_bound(F, B)

@@ -332,7 +332,7 @@ class Run:
                     it_origin=solver._it0, reduced=solver.system.reduced,
                     ordering=solver.system.ordering, problem=solver.plan.problem.name,
                     nhist=len(solver._MXh))
-        from ..io._identity import checkpoint_identity       # compared at restart (Y2)
+        from ..io._identity import checkpoint_identity       # compared at restart
         meta["identity"] = checkpoint_identity(solver)
         arrays = {"X": _to_host(solver.X)}
         for i, (mx, f) in enumerate(zip(solver._MXh, solver._Fh, strict=True)):

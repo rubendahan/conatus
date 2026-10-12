@@ -1,4 +1,4 @@
-"""Full-space steady problem of plane Couette ( S vs full): the translation
+"""Full-space steady problem of plane Couette (S vs full): the translation
 generators ∂x, ∂z on the state (StateTranslation) and the phase-condition system of
 AffineSteadyProblem (unknowns x + speeds c, rows ⟨D X_ref, X⟩)."""
 import numpy as np

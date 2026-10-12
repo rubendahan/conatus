@@ -6,8 +6,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { PageHead, Section } from "../components/ui";
 import Lightbox from "../components/Lightbox";
+import Film from "../components/Film";
+import { films } from "../data/films";
 import { gallery, plainCaption, plainTitle, src, type GalleryItem } from "../data/gallery";
 import "../styles/gallery.css";
+import "../styles/films.css";
 
 const DOMAIN_LABEL: Record<string, string> = {
   shear: "Shear flows", convection: "Convection", patterns: "Patterns", pipe: "Pipes", rotating: "Rotating flows",
@@ -86,6 +89,13 @@ export default function Gallery() {
         <p>Flows computed with Conatus, drawn like the photographs of <i>An Album of Fluid Motion</i>: magnitudes in smoke
           greys, signed fields through black at zero, from red to glass green. Open a plate to see it at full size.</p>
       </PageHead>
+      {films.length > 0 && (
+        <Section id="films" className="gallery-section" title="In motion" intro={<p>Two Conatus runs, frame by frame, looping.</p>}>
+          <ul className="films">
+            {films.map((f) => <li key={f.slug}><Film f={f} /></li>)}
+          </ul>
+        </Section>
+      )}
       <Section id="plates" className="gallery-section">
         {gallery.length === 0 ? (
           <p className="note">The gallery is empty in this build.</p>

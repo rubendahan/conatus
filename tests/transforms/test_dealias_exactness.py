@@ -97,7 +97,7 @@ def test_integration_rows_and_grams_use_refined_weights():
     n = np.arange(N)
     # int_{-1}^{1} C_n^(1)(t) dt = 2/(n+1) for even n, 0 for odd n
     exact = np.where(n % 2 == 0, 2.0 / (n + 1), 0.0)
-    # literal bounds kept (Q10.15, margins 2.7-3.0): dominated by the recurrence
+    # literal bounds kept (margins 2.7-3.0): dominated by the recurrence
     # evaluation of C_n^(1) and P_n (eval_gegenbauer, eval_jacobi), which no product rounding model
     # describes; the pre-pass-9 weights (3.1e-13 / 1.9e-12) fail them 3-19x
     assert np.max(np.abs(integration_row(N, 1) - exact)) < 1e-13   # |C_n^(1)| <= n + 1: eps n floor

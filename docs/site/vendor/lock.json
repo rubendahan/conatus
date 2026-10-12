@@ -1,7 +1,7 @@
 {
   "_comment": [
     "Third-party files the documentation serves from its own _static/vendor (no CDN, no Google Fonts:",
-    "S8 residual and 'Docs fonts'). Each package is an npm tarball pinned by",
+    " residual and 'Docs fonts'). Each package is an npm tarball pinned by",
     "version and by its registry integrity (sha512, verified before extraction by docs/site/vendor/fetch.py).",
     "Only the listed paths are copied. The fonts are the @fontsource versions of web/package-lock.json, so",
     "the site and the docs ship the same faces. To upgrade: change version, tarball and integrity together",

@@ -27,7 +27,7 @@ Gauge: the mean of p is fixed (integ(p) = 0)
 Dealiasing: x: 3/2, z: 3/2 (declared default for products of degree 2)
 Initial state: T given; u, p start at zero
 IVPSolver(scheme=RK443, dt=0.0005, constant step, backend=cpu)
-  scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage explicit on F; global order 3 (Ascher, Ruuth & Spiteri 1997, (4,4,3))
+  scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage Runge–Kutta on F; global order 3 (Ascher, Ruuth & Spiteri 1997, (4,4,3))
   finite-state check: every 100 steps (default), at the end of each run call and before each checkpoint/output write (NaN/inf -> NumericalError naming step, time and unknown; check_finite=False turns it off)
   resolution check: with the finite-state check, the relative spectral tail of each unknown and direction above 0.001 warns once (none so far)
 (every decision, tau by tau and term by term, and the solver layout: sim.explain(full=True))

@@ -90,12 +90,12 @@ copybutton_prompt_is_regexp = True
 # on), keeps the assistive MathML, and typesets one formula per task in idle time. The font loader
 # points at the vendored package. Lazy typesetting (ui/lazy) was measured too and not kept: it left
 # off-screen formulas empty (find-in-page, printing, full-page captures) and raised the layout shift
-# (CLS 0.24 against 0.06; docs/DECISIONS.md).
+# (CLS 0.24 against 0.06).
 mathjax_path = "vendor/mathjax/tex-chtml.js"          # relative: _static/vendor/mathjax/
 mathjax_config_path = "mathjax_config.js"
 
 # -- HTML --------------------------------------------------------------------------------------
-# Brand charter (docs/DECISIONS.md, docs/brand/guidelines.html): the docs are world C, "Ethica":
+# Brand charter (docs/brand/guidelines.html): the docs are world C, "Ethica":
 # ink on rag paper, one rubric red; dark mode is world B, lab black and silver (rubric lightened
 # to #D4574A for titles and links; fluorescein is kept for data, never for text). Variables come
 # from docs/brand/tokens.css (the single source); the fonts (IM Fell English for titles >= 18 px,

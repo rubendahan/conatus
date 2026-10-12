@@ -351,7 +351,7 @@ class PipeTravellingWave:
         # disk nodes r_i = sqrt((1 + z_i) / 2), z_i Gauss-Legendre: r dr = dz / 4 (exact for the
         # polynomial |u|^2 on the dealiased grid); uniform phi and z grids: plain means. The weights
         # are the refined ones of the disk grid itself (``DiskOps.grid``; numpy's leggauss weights
-        # are off by up to 4e-12 relative at 100 points, review of)
+        # are off by up to 4e-12 relative at 100 points)
         _, w = gauss_legendre(g.shape[2])
         dens = 0.5 * np.sum(np.abs(g) ** 2, axis=0)            # (Mphi, Mr, Mz)
         return float(2 * np.pi * self.case.Lz * 0.25 * np.sum(dens.mean(axis=(0, 2)) * w))

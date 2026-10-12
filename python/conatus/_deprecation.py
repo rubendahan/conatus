@@ -2,8 +2,8 @@
 
 A renamed argument keeps its former name for one cycle: the old name gives the same value (never
 another behaviour), with a ``DeprecationWarning`` that names the new one; giving both is refused.
-Every alias is listed in :data:`DEPRECATED` (and in CHANGELOG.md, docs/API_V0.1.md);
-``tests/infra/test_deprecations.py`` checks each one. Removal: v0.2.
+Every alias is listed in :data:`DEPRECATED` (and in CHANGELOG.md);
+the development test suite checks each one. Removal: v0.2.
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ __all__ = ["DEPRECATED", "RENAMES", "RENAME_NOTES", "VOCABULARY", "renamed", "re
 
 #: Deprecations that are not argument renames (those are in :data:`RENAMES`): where -> (former
 #: name, new name, category); ``conatus.api`` predates v0.1 (FutureWarning, shown to end users by
-#: default) and is kept as declared in docs/API_V0.1.md §0.
+#: default) and is kept for 0.1.
 DEPRECATED: dict[str, tuple[str, str, str]] = {
     "conatus.api": ("conatus.api", "conatus.expert", "FutureWarning"),
     "NCCResolutionWarning": ("NCCResolutionWarning", "DiscretizationError (refusal)",
@@ -34,8 +34,8 @@ DEPRECATED: dict[str, tuple[str, str, str]] = {
 #: The one table of renamed arguments: qualified site (module:
 #: qualname) -> {former name: new name}. Applied by :func:`renames`; listed by the frozen
 #: surface (``[renamed: ...]``);
-#: ``tests/infra/test_deprecations.py`` checks that every entry works, warns, refuses both names
-#: together and is documented in CHANGELOG.md and docs/API_V0.1.md. Removal of the old names: v0.2.
+#: the development test suite checks that every entry works, warns, refuses both names
+#: together and is documented in CHANGELOG.md. Removal of the old names: v0.2.
 RENAMES: dict[str, dict[str, str]] = {
     # v0.1 freeze: one budget name, the step, the continuation parameter
     "conatus.solvers.parametric:ParametricEVP.track": {"maxit": "max_iterations"},
@@ -126,7 +126,7 @@ RENAME_NOTES: dict[str, str] = {
 }
 
 #: Names that the surface may carry only as declared aliases or with a stated reason (the
-#: vocabulary rule of the renaming, enforced by tests/infra/test_deprecations.py): former name ->
+#: vocabulary rule of the renaming, enforced by the development test suite): former name ->
 #: the name to use instead.
 VOCABULARY: dict[str, str] = {
     "maxit": "max_iterations", "maxiter": "max_iterations", "max_iter": "max_iterations",
@@ -138,7 +138,7 @@ VOCABULARY: dict[str, str] = {
 }
 
 #: Surface entries that keep a former name of :data:`VOCABULARY`, with the reason (the rule is
-#: that nothing else may): ``tests/infra/test_deprecations.py`` enforces both.
+#: that nothing else may): the development test suite enforces both.
 VOCABULARY_KEPT: dict[str, str] = {
     "expert.ContinuationSettings(tolerance)": "a dataclass field that scripts read back "
     "(cfg.tolerance); renamed with an attribute alias in v0.2",
@@ -249,7 +249,7 @@ def renamed(where: str, old: str, new: str, old_value: Any, new_value: Any, *,
                               why=f"{old} is the deprecated name of {new} (same meaning)",
                               fix=f"keep {new}= only")
         meaning = f"same meaning: {note}" if note else "same meaning"
-        # attributed to the user's line whatever the depth ( review: a fixed
+        # attributed to the user's line whatever the depth (a fixed
         # stacklevel=3 pointed into the library when a conatus function forwards **kw to a
         # renamed one, e.g. floquet_exponents(nsteps=...), where the default filter hides it)
         from .errors import _warn_user

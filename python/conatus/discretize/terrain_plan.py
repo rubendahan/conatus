@@ -13,7 +13,7 @@ the flat Cartesian discretizer does per Fourier group (Olver–Townsend: derivat
 conversions S, multiplication by xi tridiagonal) -- but the metric functions J, A, B, H of x are
 **convolutions** in k: the Fourier modes are coupled.
 
-Choice ( mapped): the metric terms are **implicit**, in one coupled sparse
+Choice (mapped): the metric terms are **implicit**, in one coupled sparse
 system for the whole domain (no splitting of the metric into an explicit correction): along xi
 the bandwidth is the one of the flat channel plus one (metric polynomial of degree <= 1 in xi,
 exact); along k it is the number of kept Fourier coefficients of the metric (reported by
@@ -194,7 +194,7 @@ class TerrainPlan:
         if params:
             # a key naming no Parameter of the problem (a typo) was ignored here and the value
             # declared on the Parameter used instead: refused, as by
-            # the flat, polar and spherical plans (audit R1)
+            # the flat, polar and spherical plans
             check_param_keys(params, {p.name for p in self._parameters()},
                              where="discretize (mapped domain)")
             self.params.update(params)
@@ -208,7 +208,7 @@ class TerrainPlan:
                 f"ncc given for field(s) not used by the problem: {', '.join(stray)}",
                 fix="remove them from ncc= (or check the field names)", doc=_DOC)
         self._ncc_src = dict(ncc or {})
-        # metric ( check at this resolution)
+        # metric (check at this resolution)
         try:
             self.metric, self.metric_reports = self.terrain.metric_coeffs(
                 tuple(b.size for _, b in self.fdirs), self.ncc_tail_tol)

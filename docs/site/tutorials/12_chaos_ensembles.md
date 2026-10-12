@@ -2,7 +2,7 @@
 
 The tangent of the discrete step is exact, so the Lyapunov spectrum of a discretized flow is the
 spectrum of the map actually computed; and because many trajectories share one batch, the
-statistics that make an exponent trustworthy — independent trajectories, block errors — cost
+statistics that make an exponent trustworthy (independent trajectories, block errors) cost
 little more than one trajectory.
 
 **Goal.** Compute the Lyapunov spectrum, the Kaplan–Yorke dimension and the covariant Lyapunov
@@ -100,10 +100,3 @@ basins exchanged exactly by $(x, y) \to (-x, -y)$.
 ```{literalinclude} outputs/t12_chaos_ensembles.txt
 :language: text
 ```
-
-## Going further
-
-- KS $L = 22$: spectrum against Cvitanović, Davidchack & Siminos (2010) and Edson et al. (2019),
-  physical/isolated split of the covariant vectors: `benchmarks/j3/lyapunov_run.py`.
-- Probability of transition to turbulence in plane Couette flow from GPU ensembles:
-  `benchmarks/j3/couette_transition.py`; throughput CPU vs GPU: `benchmarks/j3/ensemble_throughput.py`.
