@@ -875,7 +875,7 @@ domination of the Oseledets splitting.
 -0.256, -0.290, -0.310, -1.963, -1.967, \dots)\)</span> in the zero-mean subspace; Ding, Chaté, Cvitanović,
 Siminos &amp; Takeuchi (2016): eight physical modes. <strong>Time:</strong> about two minutes on one CPU core.
 <strong>Script:</strong> <a class="reference download internal" download="" href="../_downloads/cf5a628015e1e275e9a322367fd9c6f7/t15_ks_covariant.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t15_ks_covariant.py</span></code></span></a> · <strong>Tests behind it:</strong>
-<code class="docutils literal notranslate"><span class="pre">tests/chaos/test_clv_feat1.py</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/chaos/test_lyapunov.py</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">tests/chaos/</span></code>.</p>
 <section id="the-model-and-four-starts">
 <h2>The model and four starts<a class="headerlink" href="#the-model-and-four-starts" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">L</span> <span class="o">=</span> <span class="mf">22.0</span>
@@ -993,8 +993,6 @@ checks passed: exponents within their errors of CDS 2010, eight physical modes
 <section id="going-further">
 <h2>Going further<a class="headerlink" href="#going-further" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Long runs (16 trajectories, 2500 time units, 24 vectors; full space against Edson et al. 2019;
-Lorenz tangencies): <code class="docutils literal notranslate"><span class="pre">benchmarks/feat1/clv_validation.py</span></code>.</p></li>
 <li><p>The same call on the GPU: <code class="docutils literal notranslate"><span class="pre">m.simulate(...,</span> <span class="pre">backend=&quot;cuda&quot;)</span></code>, nothing else changes (not yet
 verified against the CPU on GPU hardware: experimental until <code class="docutils literal notranslate"><span class="pre">tests/model/test_particles_gpu.py</span></code> has run).</p></li>
 </ul>

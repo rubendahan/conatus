@@ -866,7 +866,7 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
 <p>Conatus 0.1.0 is installed <strong>from a binary wheel</strong> (no compiler needed) or <strong>from source</strong>. The CPU
 wheel is on PyPI (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">conatus</span></code>); the CUDA 12 wheel (beta) is a file attached to the
-<a class="reference external" href="https://github.com/rubendahan/conatus/releases">GitHub release</a>. The compiled C++ core, inside
+<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.1.0">GitHub release</a>. The compiled C++ core, inside
 both wheels, is required for time integration; the GPU backend is optional.</p>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
@@ -974,7 +974,7 @@ pip<span class="w"> </span>install<span class="w"> </span>.<span class="w"> </sp
 <p>Recipe 0, the CUDA binary wheel (beta; no compiler, no CUDA toolkit; the driver must support
 CUDA 12.9, i.e. driver ≥ 575 or an older 12.x driver through CUDA minor-version compatibility).
 Download the <code class="docutils literal notranslate"><span class="pre">conatus-0.1.0+cu12-cp3XX-…whl</span></code> file of your Python from the
-<a class="reference external" href="https://github.com/rubendahan/conatus/releases">GitHub release</a>, then:</p>
+<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.1.0">GitHub release</a>, then:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>.<span class="w"> </span>venv/bin/activate
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"./conatus-0.1.0+cu12-cp312-cp312-&lt;platform&gt;.whl[gpu,tutorials]"</span><span class="w">   </span><span class="c1"># the file you downloaded</span>
 </pre></div>
@@ -1004,7 +1004,7 @@ said separately; the same text appears when <code class="docutils literal notran
 <section id="from-source-development-tree">
 <h2>From source: development tree<a class="headerlink" href="#from-source-development-tree" title="Link to this heading">¶</a></h2>
 <p>To work on Conatus itself, build the core in place and use the package from the tree:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>micromamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>conatus-dev<span class="w"> </span>-f<span class="w"> </span>ci/environment.yml<span class="w">      </span><span class="c1"># the CI environment</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>micromamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>conatus-dev<span class="w"> </span>-f<span class="w"> </span>ci/environment.yml<span class="w">      </span><span class="c1"># the development environment</span>
 micromamba<span class="w"> </span>activate<span class="w"> </span>conatus-dev
 cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build/core<span class="w"> </span>-G<span class="w"> </span>Ninja<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w"> </span>-DCONATUS_CUDA<span class="o">=</span>OFF
 cmake<span class="w"> </span>--build<span class="w"> </span>build/core<span class="w"> </span>-j<span class="w"> </span><span class="m">8</span>

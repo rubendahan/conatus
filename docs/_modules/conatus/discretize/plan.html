@@ -1190,7 +1190,7 @@
         <span class="k">if</span> <span class="n">stray</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">DiscretizationError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"ncc given for field(s) not used by the problem: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">stray</span><span class="p">))</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="c1"># same rule for parameter values (audit R1): a key that names no Parameter of the</span>
+        <span class="c1"># same rule for parameter values: a key that names no Parameter of the</span>
         <span class="c1"># problem used to be ignored, and the value declared on the Parameter used instead</span>
         <span class="n">check_param_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">problem_parameter_names</span><span class="p">(</span><span class="n">problem</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="s2">"discretize"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ncc_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_grid</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ncc</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -1294,7 +1294,7 @@
         <span class="n">amp</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="k">if</span> <span class="n">zc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">zb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">k</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">walk</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">E</span><span class="o">.</span><span class="n">Differentiate</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n</span><span class="o">.</span><span class="n">coord</span> <span class="o">==</span> <span class="n">zc</span><span class="p">)</span>
-            <span class="c1"># (api01 review): the amplified floor is rounding only if the data the derivatives</span>
+            <span class="c1"># the amplified floor is rounding only if the data the derivatives</span>
             <span class="c1"># act on are themselves exact to rounding. Data resolved to, say, 1e-10 give a U''</span>
             <span class="c1"># whose error is that interpolation error x N^4 (not rounding): it is then judged by</span>
             <span class="c1"># its relative tail like any coefficient, never exempted as "rounding".</span>
@@ -1307,7 +1307,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_data_tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">E</span><span class="o">.</span><span class="n">Field</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Relative Chebyshev tail (last 3 / max) of the data of the NCC field ``x`` along the</span>
-<span class="sd">        bounded axis; 0 if the data do not depend on it ( rounding floor, see above)."""</span>
+<span class="sd">        bounded axis; 0 if the data do not depend on it (rounding floor, see above)."""</span>
         <span class="n">zc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">zcoord</span>
         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">zc</span><span class="p">):</span>
             <span class="k">return</span> <span class="mf">0.0</span>
@@ -1820,7 +1820,7 @@
             <span class="n">xf</span><span class="p">[</span><span class="n">gm</span><span class="o">.</span><span class="n">col_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>                                    <span class="c1"># E: subspace -&gt; full space</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">xf</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cplx</span><span class="p">:</span>
                 <span class="c1"># A complex LHS (e.g. i*omega*u) with real data and a real layout gives a complex</span>
-                <span class="c1"># solution (ERREURS_COURANTES, gallery, "complex LBVP"); it used to be cast into real arrays (imaginary part dropped</span>
+                <span class="c1"># solution (gallery, "complex LBVP"); it used to be cast into real arrays (imaginary part dropped</span>
                 <span class="c1"># with only a numpy ComplexWarning). Promote instead of discarding.</span>
                 <span class="n">cplx</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">out</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>

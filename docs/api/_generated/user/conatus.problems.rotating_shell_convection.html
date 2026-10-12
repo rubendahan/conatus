@@ -882,8 +882,7 @@ perturbation theta = T - T0 about the conduction profile T0 = r_i r_o / r - r_i
 <p>Ra = alpha g_0 DeltaT D / (nu Omega) (Christensen’s modified Rayleigh number), Pr = nu/kappa.
 First-order tau form: tau_1 lifted in the derivative basis <code class="docutils literal notranslate"><span class="pre">lam=1</span></code> inside the gradient,
 tau_2 one basis higher (<code class="docutils literal notranslate"><span class="pre">lam=2</span></code>) in the equation – the Dedalus shell examples lift both in
-<code class="docutils literal notranslate"><span class="pre">lam=1</span></code>, which gives a spurious growing tau mode from N_r ~ 48 (timestep/tau_modes.py); the Coriolis term is explicit (RHS), as in benchmarks/spherical/
-christensen_case0.py: its rate 2/E bounds the time step of an explicit scheme. NCC data
+<code class="docutils literal notranslate"><span class="pre">lam=1</span></code>, which gives a spurious growing tau mode from N_r ~ 48 (timestep/tau_modes.py); the Coriolis term is explicit (RHS): its rate 2/E bounds the time step of an explicit scheme. NCC data
 <code class="docutils literal notranslate"><span class="pre">rvec</span></code> (r e_r), <code class="docutils literal notranslate"><span class="pre">ez</span></code> (e_z = cos(theta) e_r - sin(theta) e_theta) and <code class="docutils literal notranslate"><span class="pre">gT0</span></code>
 (grad T0). Bases: RealFourier(phi, Nphi) x SphereBasis(theta, Ntheta) x ShellBasis(r, Nr).
 <code class="docutils literal notranslate"><span class="pre">extras[&quot;initial_theta&quot;]</span></code>: the benchmark’s initial perturbation, eq. (9) (m = 4, A = 0.1).</p>

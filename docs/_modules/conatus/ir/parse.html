@@ -1571,8 +1571,7 @@
             <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">_err</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"name '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' is not declared."</span> <span class="o">+</span> <span class="p">(</span><span class="n">did_you_mean</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">own</span><span class="p">)</span>
                                                      <span class="c1"># a one- or two-letter name is no typo</span>
-                                                     <span class="c1"># of an operator ('s' -&gt; 'sin'; critique</span>
-                                                     <span class="c1">#)</span>
+                                                     <span class="c1"># of an operator ('s' -&gt; 'sin')</span>
                                                      <span class="ow">or</span> <span class="p">(</span><span class="s2">""</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="k">else</span>
                                                          <span class="n">did_you_mean</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns</span><span class="o">.</span><span class="n">names</span><span class="p">()))),</span>
                 <span class="n">a</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span>

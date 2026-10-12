@@ -1190,7 +1190,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">n_products</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_coeffs</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">E</span><span class="o">.</span><span class="n">Cross</span><span class="p">):</span>
-            <span class="c1"># (a x b)_k = sum sign a_i b_j on the dealiased grid (feat2; frame of</span>
+            <span class="c1"># (a x b)_k = sum sign a_i b_j on the dealiased grid (frame of</span>
             <span class="c1"># cartesian_cross_table: e_x x e_y = e_z for coordinates named x, y, z)</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">..ir.expr_algebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">cartesian_cross_table</span>
             <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">args</span>

@@ -12,7 +12,7 @@ domination of the Oseledets splitting.
 -0.256, -0.290, -0.310, -1.963, -1.967, \dots)$ in the zero-mean subspace; Ding, Chaté, Cvitanović,
 Siminos & Takeuchi (2016): eight physical modes. **Time:** about two minutes on one CPU core.
 **Script:** [`t15_ks_covariant.py`](code/t15_ks_covariant.py) · **Tests behind it:**
-`tests/chaos/test_clv_feat1.py`, `tests/chaos/test_lyapunov.py`.
+`tests/chaos/`.
 
 ## The model and four starts
 
@@ -76,7 +76,5 @@ physical block has near-tangencies.
 
 ## Going further
 
-- Long runs (16 trajectories, 2500 time units, 24 vectors; full space against Edson et al. 2019;
-  Lorenz tangencies): `benchmarks/feat1/clv_validation.py`.
 - The same call on the GPU: `m.simulate(..., backend="cuda")`, nothing else changes (not yet
   verified against the CPU on GPU hardware: experimental until `tests/model/test_particles_gpu.py` has run).

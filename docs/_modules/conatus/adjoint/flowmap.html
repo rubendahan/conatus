@@ -1022,7 +1022,7 @@
 <span class="sd">    * ``checkpoint``: one augmented state (what each Revolve slot holds).</span>
 
 <span class="sd">    Not counted: the forward step itself (see ``conatus.runtime.memory``), allocator rounding,</span>
-<span class="sd">    the CUDA context. Compared to measurement in benchmarks/tts4/b9_measure.py."""</span>
+<span class="sd">    the CUDA context."""</span>
     <span class="n">it</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">fm</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">itemsize</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">n</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">solver</span>
@@ -1085,8 +1085,7 @@
 <span class="w">    </span><span class="sd">"""Fingerprint keys of the levers that change the arithmetic in the last bits:</span>
 <span class="sd">    complex modes, the level-scheduled solve variants, the F transform options. Only their</span>
 <span class="sd">    non-default values are added, so the journals of maps without them keep their fingerprint;</span>
-<span class="sd">    a journal written without a lever is refused by a map with it and conversely (review of</span>
-<span class="sd">    before, a sweep resumed with complexify=True or compact factors mixed two</span>
+<span class="sd">    a journal written without a lever is refused by a map with it and conversely (before, a sweep resumed with complexify=True or compact factors mixed two</span>
 <span class="sd">    trajectories silently). Shared factors and the fused complex-mode maps give the same bits:</span>
 <span class="sd">    not part of it."""</span>
     <span class="n">out</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1665,7 +1664,7 @@
             <span class="n">fp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">f_backend</span><span class="o">=</span><span class="s2">"fused"</span><span class="p">,</span> <span class="n">ang_chunks</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">sf</span><span class="o">.</span><span class="n">ev</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">nchunk</span><span class="p">))</span>
             <span class="n">pl</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rhs_lin</span><span class="p">,</span> <span class="s2">"_planned"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">pl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pl</span><span class="o">.</span><span class="n">planned</span><span class="p">:</span>
-                <span class="c1"># planned adjoint (feat2): same adjoint as the explicit walk up to rounding, not</span>
+                <span class="c1"># planned adjoint: same adjoint as the explicit walk up to rounding, not</span>
                 <span class="c1"># to the bit; a sweep journaled by the explicit walk is refused, not mixed</span>
                 <span class="n">fp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">adjoint</span><span class="o">=</span><span class="s2">"planned"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m0proj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1729,8 +1728,8 @@
         <span class="k">finally</span><span class="p">:</span>
             <span class="c1"># the store is never needed after this call: a suspended sweep lives in its journal</span>
             <span class="c1"># (hard links for the disk store, copies otherwise). Clearing it here releases pinned</span>
-            <span class="c1"># host buffers and removes disk-store files also on a suspension or an error (before</span>
-            <span class="c1"># the review they were left behind in checkpoint_dir)</span>
+            <span class="c1"># host buffers and removes disk-store files also on a suspension or an error (they</span>
+            <span class="c1"># used to be left behind in checkpoint_dir)</span>
             <span class="n">store</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_revolve_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acts</span><span class="p">,</span> <span class="n">store</span><span class="p">,</span> <span class="n">jr</span><span class="p">,</span> <span class="n">hist0</span><span class="p">,</span> <span class="n">bars</span><span class="p">,</span> <span class="n">cursor</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">work</span><span class="p">,</span> <span class="n">deadline</span><span class="p">,</span>

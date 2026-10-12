@@ -985,8 +985,7 @@
 <span class="w">    </span><span class="sd">"""Time to integrate so that the trajectory covers [0, t_end]. A fixed-step map</span>
 <span class="sd">    (``SolverIntegrator``, attribute ``dt``) only reaches its step grid and refuses any other end</span>
 <span class="sd">    time; the first inward crossing of the end sphere is located on the dense</span>
-<span class="sd">    output, between two steps, so the trajectory runs to the first step at or after it (review</span>
-<span class="sd">    of find_connection with end_radius on a SolverIntegrator was refused)."""</span>
+<span class="sd">    output, between two steps, so the trajectory runs to the first step at or after it (find_connection with end_radius on a SolverIntegrator was refused)."""</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">integrator</span><span class="p">,</span> <span class="s2">"dt"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

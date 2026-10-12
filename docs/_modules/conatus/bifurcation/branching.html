@@ -945,7 +945,7 @@
 <span class="sd">    unless its norm is below KERNEL_SWITCH_TOL. The rule fixes the sign of φ, hence the sense of</span>
 <span class="sd">    ``direction=+1`` at a pitchfork (new tangent = ±φ): a threshold-free choice (the larger</span>
 <span class="sd">    projection oriented along the first) would take that sign from the round-off of a first</span>
-<span class="sd">    projection of norm ~1e-17 (review of the)."""</span>
+<span class="sd">    projection of norm ~1e-17."""</span>
     <span class="n">cand</span> <span class="o">=</span> <span class="n">null</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">t0</span> <span class="o">*</span> <span class="p">(</span><span class="n">t0</span> <span class="o">@</span> <span class="n">null</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">cand</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">KERNEL_SWITCH_TOL</span><span class="p">:</span>
         <span class="n">cand</span> <span class="o">=</span> <span class="n">null</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t0</span> <span class="o">*</span> <span class="p">(</span><span class="n">t0</span> <span class="o">@</span> <span class="n">null</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>

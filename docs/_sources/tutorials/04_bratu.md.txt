@@ -52,7 +52,7 @@ there. Pseudo-arclength continuation parametrises the branch by its arclength in
 
 Tolerance, damping and iteration budget have no defaults: they are choices, and they are printed with
 the result. `sol.explain()` lists the residual of every iteration and the **observed** order of
-convergence $q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})$ — about 2 here, the signature of an exact
+convergence $q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})$, about 2 here, the signature of an exact
 Jacobian. Non-convergence raises `NewtonNotConverged` with the history; it never returns the last
 iterate silently.
 

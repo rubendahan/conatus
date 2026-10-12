@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "kelvin-helmholtz-film",
+    "title": "Kelvin–Helmholtz billows",
+    "alt": "A pale band of dye between two shear layers whose edges roll up into rows of spirals, outlined by a thin yellow-green line.",
+    "caption": "Passive dye between two shear layers rolling up, Re = 400, t = 2 to 9.95. 384 × 192 Fourier modes, RK443, dt = 0.0025, CPU.",
+    "video_webm": "/films/kelvin-helmholtz-film.webm",
+    "video_mp4": "/films/kelvin-helmholtz-film.mp4",
+    "poster": "/films/kelvin-helmholtz-film.webp",
+    "width": 720,
+    "height": 360,
+    "duration_s": 7.17,
+    "script": "web/gallery/films.py",
+    "example_script": "examples/shear/kelvin_helmholtz.py",
+    "domain": "shear"
+  },
+  {
+    "slug": "swift-hohenberg-film",
+    "title": "Swift–Hohenberg rolls",
+    "alt": "Light and dark stripes appear out of grey noise, curve into a labyrinth and slowly straighten into patches of parallel rolls.",
+    "caption": "Rolls of du/dt = r u − (1 + ∇²)² u − u³ at r = 0.1 growing from noise in a periodic box of 24 × 12 roll wavelengths, t = 10 to 3000 on a logarithmic clock. 192 × 96 Fourier modes, SBDF2, dt = 0.5.",
+    "video_webm": "/films/swift-hohenberg-film.webm",
+    "video_mp4": "/films/swift-hohenberg-film.mp4",
+    "poster": "/films/swift-hohenberg-film.webp",
+    "width": 720,
+    "height": 360,
+    "duration_s": 7.12,
+    "script": "web/gallery/films.py",
+    "example_script": "examples/patterns/swift_hohenberg.py",
+    "domain": "patterns"
+  }
+]

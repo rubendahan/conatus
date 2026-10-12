@@ -957,7 +957,7 @@
             <span class="k">raise</span> <span class="n">ProblemError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"equation '</span><span class="si">{</span><span class="n">eq</span><span class="si">}</span><span class="s2">' linearizes to 0 around the given base state; "</span>
                                <span class="s2">"remove it from the problem or check the base state"</span><span class="p">)</span>
         <span class="n">evp</span><span class="o">.</span><span class="n">add_equation</span><span class="p">((</span><span class="n">lin</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-    <span class="c1"># growth convention fixed by the construction (review of only the</span>
+    <span class="c1"># growth convention fixed by the construction (only the</span>
     <span class="c1"># native Linearization declared it): dt -&gt; eigenvalue, normal modes exp(eigenvalue t),</span>
     <span class="c1"># whatever the eigenvalue's name ("c" was guessed as a phase speed, ranked by Im c)</span>
     <span class="n">_n</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">eigenvalue</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="n">eigenvalue</span><span class="p">)</span>

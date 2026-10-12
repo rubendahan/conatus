@@ -909,7 +909,7 @@ the split (override with <code class="docutils literal notranslate"><span class=
 </div>
 <ul class="simple">
 <li><p>The geometry names its boundaries (<code class="docutils literal notranslate"><span class="pre">bottom</span></code>, <code class="docutils literal notranslate"><span class="pre">top</span></code>); conditions are given there by unknown.
-No basis, no size, no tau variable, no lift: <code class="docutils literal notranslate"><span class="pre">m.explain()</span></code> prints what the native layer placed —
+No basis, no size, no tau variable, no lift: <code class="docutils literal notranslate"><span class="pre">m.explain()</span></code> prints what the native layer placed:
 two taus per second-order equation (modes <span class="math notranslate nohighlight">\(N_z-1\)</span>, <span class="math notranslate nohighlight">\(N_z-2\)</span> of the equation where the unknown has
 its highest <span class="math notranslate nohighlight">\(z\)</span>-order), the pressure gauge <code class="docutils literal notranslate"><span class="pre">tau_p</span></code> with <code class="docutils literal notranslate"><span class="pre">integ(p)</span> <span class="pre">=</span> <span class="pre">0</span></code> and the divergence tau
 <code class="docutils literal notranslate"><span class="pre">dot(ez,</span> <span class="pre">lift(tau_u2,</span> <span class="pre">z,</span> <span class="pre">-1))</span></code>, recognized from the structure (<span class="math notranslate nohighlight">\(p\)</span> only under <code class="docutils literal notranslate"><span class="pre">grad</span></code>, <code class="docutils literal notranslate"><span class="pre">div(u)</span> <span class="pre">=</span> <span class="pre">0</span></code>
@@ -1056,7 +1056,7 @@ Gauge: the mean of p is fixed (integ(p) = 0)
 Dealiasing: x: 3/2, z: 3/2 (declared default for products of degree 2)
 Initial state: T given; u, p start at zero
 IVPSolver(scheme=RK443, dt=0.0005, constant step, backend=cpu)
-  scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage explicit on F; global order 3 (Ascher, Ruuth &amp; Spiteri 1997, (4,4,3))
+  scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage Runge–Kutta on F; global order 3 (Ascher, Ruuth &amp; Spiteri 1997, (4,4,3))
   finite-state check: every 100 steps (default), at the end of each run call and before each checkpoint/output write (NaN/inf -&gt; NumericalError naming step, time and unknown; check_finite=False turns it off)
   resolution check: with the finite-state check, the relative spectral tail of each unknown and direction above 0.001 warns once (none so far)
 (every decision, tau by tau and term by term, and the solver layout: sim.explain(full=True))
@@ -1117,7 +1117,7 @@ captures one step as a CUDA graph and replays it, which removes the launch laten
 </pre></div>
 </div>
 <p>CPU and GPU are not bitwise equal (different summation orders), so the check is agreement to
-rounding, the cross-backend model of the test suite — and it is made <strong>early</strong> (20 steps). At
+rounding, the cross-backend model of the test suite, and it is made <strong>early</strong> (20 steps). At
 <span class="math notranslate nohighlight">\(Ra = 10^5\)</span> the conduction state is violently unstable: the linearized problem has growth rates up
 to <span class="math notranslate nohighlight">\(\sigma \approx 225\)</span> (wavenumber <span class="math notranslate nohighlight">\(2\pi\)</span>), and the flow saturates nonlinearly within the 200
 steps. Any rounding difference is amplified with it: after 200 steps two <em>CPU</em> evaluations of the
@@ -1158,7 +1158,7 @@ Dealiasing: x: 3/2, z: 3/2 (declared default 3/2 of the native layer; override w
 Bases: RealFourier(x, size=128, bounds=(0.0, 2.0), dealias=3/2); Chebyshev(z, size=64, bounds=(-0.5, 0.5), dealias=3/2)
 Initial state: T given; u, p start at zero
 IVPSolver(scheme=RK443, dt=0.0002, constant step, backend=cuda)
-  scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage explicit on F; global order 3 (Ascher, Ruuth &amp; Spiteri 1997, (4,4,3))
+  scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage Runge–Kutta on F; global order 3 (Ascher, Ruuth &amp; Spiteri 1997, (4,4,3))
 GlobalSystem: 64 group(s), 33275 unknowns (full space), dtype float64, ordering=interleaved, complexify=False
   2 solver bucket(s) (groups sharing one sparsity pattern, batched GPU bordered banded solves, one warp per mode)
   [x: k=0] n=263, border rows=7, band kl=12 ku=18

@@ -862,7 +862,7 @@
           <h1>Source code for conatus.timestep.integrator</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""IVP solver: M dX/dt + L X = F(X, t), IMEX multistep and Runge–Kutta schemes.</span>
 
-<span class="sd">Schemes (``SCHEMES``; catalogue, coefficients and observed orders in),</span>
+<span class="sd">Schemes (``SCHEMES``; catalogue, coefficients and observed orders),</span>
 <span class="sd">constant step k = dt:</span>
 
 <span class="sd">* SBDF1–4: semi-implicit backward differentiation (Wang &amp; Ruuth 2008); same coefficients as the</span>
@@ -1053,9 +1053,9 @@
               <span class="s2">"Wang &amp; Ruuth 2008, eq. 2.11"</span><span class="p">),</span>
     <span class="s2">"RK111"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"Runge–Kutta (1 stage)"</span><span class="p">,</span> <span class="s2">"backward Euler"</span><span class="p">,</span> <span class="s2">"forward Euler"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
               <span class="s2">"Ascher, Ruuth &amp; Spiteri 1997, (1,1,1)"</span><span class="p">),</span>
-    <span class="s2">"RK222"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"Runge–Kutta (2 stages)"</span><span class="p">,</span> <span class="s2">"L-stable SDIRK2"</span><span class="p">,</span> <span class="s2">"2-stage explicit"</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">"RK222"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"Runge–Kutta (2 stages)"</span><span class="p">,</span> <span class="s2">"L-stable SDIRK2"</span><span class="p">,</span> <span class="s2">"2-stage Runge–Kutta"</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>
               <span class="s2">"Ascher, Ruuth &amp; Spiteri 1997, (2,2,2)"</span><span class="p">),</span>
-    <span class="s2">"RK443"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"Runge–Kutta (4 stages)"</span><span class="p">,</span> <span class="s2">"L-stable SDIRK3"</span><span class="p">,</span> <span class="s2">"4-stage explicit"</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s2">"RK443"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"Runge–Kutta (4 stages)"</span><span class="p">,</span> <span class="s2">"L-stable SDIRK3"</span><span class="p">,</span> <span class="s2">"4-stage Runge–Kutta"</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>
               <span class="s2">"Ascher, Ruuth &amp; Spiteri 1997, (4,4,3)"</span><span class="p">),</span>
     <span class="s2">"RKSMR"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"Runge–Kutta (3 stages)"</span><span class="p">,</span> <span class="s2">"Crank–Nicolson per stage (order 2)"</span><span class="p">,</span>
               <span class="s2">"Wray's low-storage RK3 (order 3)"</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>
@@ -1324,7 +1324,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">plan</span> <span class="o">=</span> <span class="n">plan</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_params0</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>   <span class="c1"># matrices built with these (check_params_unchanged)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">scheme</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-        <span class="c1"># implicit cross(W, u) with a constant W (Coriolis in a box, feat2): stable at any dt, but</span>
+        <span class="c1"># implicit cross(W, u) with a constant W (Coriolis in a box): stable at any dt, but</span>
         <span class="c1"># its waves (frequency &lt;= |W|) are damped by the implicit stages when |W| dt &gt; 1</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..discretize.compiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">implicit_rotation_rate</span>
         <span class="n">pb</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="s2">"problem"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1399,7 +1399,7 @@
         <span class="n">fused</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fc2d_note</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fused</span><span class="p">,</span> <span class="s2">""</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fused</span><span class="p">,</span> <span class="s2">"reflection"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># In a reflection subspace the parity-reduced evaluator (half-grid products, ~80</span>
-            <span class="c1"># kernels) was slower on the GPU than the 2D pipeline on the full grid ( 512:</span>
+            <span class="c1"># kernels) was slower on the GPU than the 2D pipeline on the full grid (512:</span>
             <span class="c1"># A100 256x64 RK443 1.71 against 1.06 ms/step in the full space, run</span>
             <span class="c1">#). The pipeline reads only the subspace's coefficients</span>
             <span class="c1"># (the others are zero) and writes only its rows: the same products on the same</span>
@@ -1462,7 +1462,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_restart_changes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_t_origin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it_origin</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_t_initial</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>                  <span class="c1"># start time of the chain (checkpoints, feat2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t_initial</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>                  <span class="c1"># start time of the chain (checkpoints)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reset_history</span><span class="p">()</span></div>
 
 
@@ -2044,7 +2044,7 @@
             <span class="n">g</span><span class="p">[</span><span class="s2">"stream"</span><span class="p">]</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
         <span class="c1"># Copies out on the caller's stream (the replay is finished): enqueued on the graph's</span>
         <span class="c1"># non-blocking stream, after its last synchronize, they raced with whatever the caller</span>
-        <span class="c1"># ran next on its own stream (the reverse of).</span>
+        <span class="c1"># ran next on its own stream (the reverse).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s2">"X"</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">multistep</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_buffers_to_history</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
@@ -2182,8 +2182,8 @@
         <span class="n">meta</span><span class="p">[</span><span class="s2">"identity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">checkpoint_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_restart_changes"</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">meta</span><span class="p">[</span><span class="s2">"restart_changes"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_restart_changes</span><span class="p">)</span>
-        <span class="c1"># the time the chain of this state started from (set_state(t=...), sim.initial(t=...);</span>
-        <span class="c1"># feat2): compared by resume_or_start(..., t=...); None when the state was set otherwise</span>
+        <span class="c1"># the time the chain of this state started from (set_state(t=...), sim.initial(t=...)):</span>
+        <span class="c1"># compared by resume_or_start(..., t=...); None when the state was set otherwise</span>
         <span class="n">t_init</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_t_initial"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">meta</span><span class="p">[</span><span class="s2">"t_initial"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">t_init</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">t_init</span><span class="p">)</span>
         <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="s2">"cpu"</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">xp</span><span class="o">.</span><span class="n">asnumpy</span>
@@ -2282,7 +2282,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_LXh</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">dev</span><span class="p">(</span><span class="n">arrays</span><span class="p">[</span><span class="sa">f</span><span class="s2">"LX</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"nhist_LX"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iteration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s2">"iteration"</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s2">"t"</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_t_origin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it_origin</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s2">"t_origin"</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s2">"it_origin"</span><span class="p">])</span>
-        <span class="n">t_init</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"t_initial"</span><span class="p">)</span>             <span class="c1"># None: written before the record (feat2)</span>
+        <span class="n">t_init</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"t_initial"</span><span class="p">)</span>             <span class="c1"># None: written before the record</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_t_initial</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">t_init</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">t_init</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>       <span class="c1"># Jupyter display (conatus.notebook)</span>
@@ -2496,7 +2496,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_fused_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""explain() of the fused evaluator; in a reflection subspace with the 2D pipeline, the</span>
 <span class="sd">        parity-reduced evaluator is only the fallback (F runs on the full grid, restricted): it</span>
-<span class="sd">        used to be printed as if it computed F ("products on the half grid" 512 review)."""</span>
+<span class="sd">        used to be printed as if it computed F ("products on the half grid")."""</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fused</span><span class="o">.</span><span class="n">explain</span><span class="p">()</span>
         <span class="n">fz</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_fc2d_fused"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"_fc2d"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fused</span><span class="p">:</span>

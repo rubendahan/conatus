@@ -931,7 +931,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">default_root</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Declared registry root: ``$CN_RUNS`` (any path, the user's explicit choice), else</span>
 <span class="sd">    ``$CN_TMP/runs``, else ``&lt;repository&gt;/scratch/runs``. A default (not ``$CN_RUNS``) that</span>
-<span class="sd">    resolves under the home directory is refused: the home is small and backed up (CLAUDE.md)."""</span>
+<span class="sd">    resolves under the home directory is refused: the home is small and backed up."""</span>
     <span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"CN_RUNS"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">env</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>

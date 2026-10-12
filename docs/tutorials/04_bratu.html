@@ -922,7 +922,7 @@ left to the native default; resolution is then checked by convergence in <span c
 </div>
 <p>Tolerance, damping and iteration budget have no defaults: they are choices, and they are printed with
 the result. <code class="docutils literal notranslate"><span class="pre">sol.explain()</span></code> lists the residual of every iteration and the <strong>observed</strong> order of
-convergence <span class="math notranslate nohighlight">\(q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})\)</span> — about 2 here, the signature of an exact
+convergence <span class="math notranslate nohighlight">\(q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})\)</span>, about 2 here, the signature of an exact
 Jacobian. Non-convergence raises <code class="docutils literal notranslate"><span class="pre">NewtonNotConverged</span></code> with the history; it never returns the last
 iterate silently.</p>
 </section>

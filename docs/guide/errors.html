@@ -867,7 +867,7 @@
 <p>Every error says what is wrong, where, why it is refused, and what to write instead.</p>
 <p>Conatus refuses rather than guesses. When a problem is ill-posed, a choice is missing or a solver
 does not converge, it raises an exception that says <strong>what</strong> is wrong, <strong>where</strong> (equation, term,
-variable, group), <strong>why</strong> it is refused and a suggested <strong>fix</strong> — which it never applies for you
+variable, group), <strong>why</strong> it is refused and a suggested <strong>fix</strong>, which it never applies for you
 (see <a class="reference internal" href="../principles.html"><span class="doc">Principles</span></a>). The last line of every message links to the section of this page
 named after the exception class.</p>
 <p>All errors derive from <code class="docutils literal notranslate"><span class="pre">ConatusError</span></code>, and each also derives from the built-in exception its code
@@ -1086,7 +1086,7 @@ detected when the model is compiled and named with the term.
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Callable initial data are not fully resolved: their relative spectral tail beyond the
 resolution (sampled on twice the grid) lies between ``INITIAL_TAIL_TOL`` and the refusal level
 ``INITIAL_TAIL_REFUSE`` (a coarse ``N`` of a resolution study); warned once per
-``initial(...)`` call and recorded by ``explain()`` ( review).
+``initial(...)`` call and recorded by ``explain()``.
 </pre></div>
 </div>
 </section>

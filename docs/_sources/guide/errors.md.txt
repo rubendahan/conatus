@@ -4,7 +4,7 @@ Every error says what is wrong, where, why it is refused, and what to write inst
 
 Conatus refuses rather than guesses. When a problem is ill-posed, a choice is missing or a solver
 does not converge, it raises an exception that says **what** is wrong, **where** (equation, term,
-variable, group), **why** it is refused and a suggested **fix** — which it never applies for you
+variable, group), **why** it is refused and a suggested **fix**, which it never applies for you
 (see {doc}`../principles`). The last line of every message links to the section of this page
 named after the exception class.
 

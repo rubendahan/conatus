@@ -1317,7 +1317,7 @@ it and documented from its docstring.</p>
 </section>
 <section id="conatus-reference">
 <h2><code class="docutils literal notranslate"><span class="pre">conatus.reference</span></code><a class="headerlink" href="#conatus-reference" title="Link to this heading">¶</a></h2>
-<p>NumPy reference backend: the oracle of every fast path (C++/CUDA banded solves, NumPy/CuPy transforms and fused kernels; docs/ARCHITECTURE.md).</p>
+<p>NumPy reference backend: the oracle of every fast path (C++/CUDA banded solves, NumPy/CuPy transforms and fused kernels).</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -1964,7 +1964,7 @@ it and documented from its docstring.</p>
 <td><p>An implicit term makes the initial-value problem ill-posed: its leading-order growth rate increases without bound with the wavenumber (backward diffusion, a negative viscosity), detected when the model is compiled and named with the term.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.InitialDataWarning.html#conatus.expert.InitialDataWarning" title="conatus.expert.InitialDataWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InitialDataWarning</span></code></a></p></td>
-<td><p>Callable initial data are not fully resolved: their relative spectral tail beyond the resolution (sampled on twice the grid) lies between <code class="docutils literal notranslate"><span class="pre">INITIAL_TAIL_TOL</span></code> and the refusal level <code class="docutils literal notranslate"><span class="pre">INITIAL_TAIL_REFUSE</span></code> (a coarse <code class="docutils literal notranslate"><span class="pre">N</span></code> of a resolution study); warned once per <code class="docutils literal notranslate"><span class="pre">initial(...)</span></code> call and recorded by <code class="docutils literal notranslate"><span class="pre">explain()</span></code> ( review).</p></td>
+<td><p>Callable initial data are not fully resolved: their relative spectral tail beyond the resolution (sampled on twice the grid) lies between <code class="docutils literal notranslate"><span class="pre">INITIAL_TAIL_TOL</span></code> and the refusal level <code class="docutils literal notranslate"><span class="pre">INITIAL_TAIL_REFUSE</span></code> (a coarse <code class="docutils literal notranslate"><span class="pre">N</span></code> of a resolution study); warned once per <code class="docutils literal notranslate"><span class="pre">initial(...)</span></code> call and recorded by <code class="docutils literal notranslate"><span class="pre">explain()</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.BackendError.html#conatus.expert.BackendError" title="conatus.expert.BackendError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BackendError</span></code></a>([message, where, why, fix, doc])</p></td>
 <td><p>The requested backend (GPU, compiled core) is not available here.</p></td>

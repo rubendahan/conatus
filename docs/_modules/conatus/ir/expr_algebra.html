@@ -1191,7 +1191,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">cartesian_cross_table</span><span class="p">(</span><span class="n">coordsys</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""(i, j) -&gt; (k, sign) with e_i x e_j = sign e_k for the unit vectors of a 3D Cartesian</span>
-<span class="sd">    system, indices in the order of the system (feat2). Coordinates named x, y, z, declared in</span>
+<span class="sd">    system, indices in the order of the system. Coordinates named x, y, z, declared in</span>
 <span class="sd">    any order: the physical right-handed frame (e_x x e_y = e_z whatever the order of the axes);</span>
 <span class="sd">    other names: the order of declaration is the right-handed frame (e_0 x e_1 = e_2)."""</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorError</span>
@@ -1494,7 +1494,7 @@
                          <span class="s2">"declared parameter (the model then means that); or leave the term out of "</span>
                          <span class="s2">"the model you differentiate (adjoint of the remaining dynamics)"</span><span class="p">)</span>
 <span class="c1">#: Name of the marker left by the linearization of abs() about a zero base (refused by</span>
-<span class="c1">#: Expr.linearize when it survives the simplification; review of).</span>
+<span class="c1">#: Expr.linearize when it survives the simplification).</span>
 <span class="n">ABS_AT_ZERO</span> <span class="o">=</span> <span class="s2">"abs'(0)"</span>
 <span class="n">_USER_FUNCS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>       <span class="c1"># name -&gt; the user's callable (pointwise())</span>
 
@@ -1630,7 +1630,7 @@
         <span class="n">base</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">substitute</span><span class="p">(</span><span class="n">around</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">==</span> <span class="s2">"abs"</span> <span class="ow">and</span> <span class="n">base</span><span class="o">.</span><span class="n">is_zero</span><span class="p">():</span>
             <span class="c1"># abs at a zero base: no derivative there (|du| is not linear in du). sign(0) = 0</span>
-            <span class="c1"># would drop the term silently (review of): a marker instead, which survives</span>
+            <span class="c1"># would drop the term silently: a marker instead, which survives</span>
             <span class="c1"># only if no other factor vanishes with the base (|u| u at u = 0 is differentiable,</span>
             <span class="c1"># its marker is multiplied by 0); Expr.linearize refuses a result that still holds it</span>
             <span class="k">return</span> <span class="n">mul</span><span class="p">(</span><span class="n">Parameter</span><span class="p">(</span><span class="n">ABS_AT_ZERO</span><span class="p">),</span> <span class="n">du</span><span class="p">)</span>
@@ -1744,7 +1744,7 @@
 <span class="w">    </span><span class="sd">"""Names of the non-polynomial pointwise functions of grid data in ``e`` (aliasing reports).</span>
 
 <span class="sd">    A function of parameters only (cos(omega t), sqrt(1 - q^2)) is a number and is not listed: it</span>
-<span class="sd">    was, and every such problem was wrongly declared "NOT alias-free" (gallery, BACKLOG wave 1)."""</span>
+<span class="sd">    was, and every such problem was wrongly declared "NOT alias-free" (gallery)."""</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">x</span><span class="o">.</span><span class="n">func</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">walk</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">UnaryFunction</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">on_grid</span><span class="p">})</span></div>
 
 </pre></div>

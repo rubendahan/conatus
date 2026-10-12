@@ -863,7 +863,7 @@
 <span></span><span class="sd">"""Compile a native :class:`~conatus.model.Model` into the IR (the expert layer) at a resolution.</span>
 
 <span class="sd">Every automatic choice is made by a fixed rule and recorded (``Compiled.explain()``); anything the</span>
-<span class="sd">rules cannot decide is refused with the explicit override. Rules (docs/API_NATIVE.md):</span>
+<span class="sd">rules cannot decide is refused with the explicit override. Rules:</span>
 
 <span class="sd">* **Split** (IVP): a term linear in the unknowns (constant, parameter or declared ``given``</span>
 <span class="sd">  coefficients) goes to the implicit side, a nonlinear term or a source to the explicit side;</span>
@@ -1417,7 +1417,7 @@
     <span class="n">comp</span><span class="o">.</span><span class="n">_time_candidate</span> <span class="o">=</span> <span class="n">tpar</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">check_conditions</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">comp</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"IVP"</span><span class="p">:</span>                <span class="c1"># backward diffusion / negative viscosity (Y6)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"IVP"</span><span class="p">:</span>                <span class="c1"># backward diffusion / negative viscosity</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.wellposed</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_ill_posed</span>
         <span class="n">comp</span><span class="o">.</span><span class="n">illposed</span> <span class="o">=</span> <span class="n">check_ill_posed</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">eqs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">_terms</span><span class="p">)</span>
     <span class="n">sym</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1587,8 +1587,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_normal_mode_pressure_like</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">eqs</span><span class="p">,</span> <span class="n">geo</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""q is the pressure of a normal-mode model on one wall coordinate (critique</span>
-<span class="sd">    N1): a scalar unknown of a geometry with the wall coordinate only, written as on paper for</span>
+<span class="w">    </span><span class="sd">"""q is the pressure of a normal-mode model on one wall coordinate: a scalar unknown of a geometry with the wall coordinate only, written as on paper for</span>
 <span class="sd">    modes exp(i k x): it enters algebraically (``1j*k*p``) and through its first derivative along</span>
 <span class="sd">    the wall (``dz(p)``), never with a higher derivative, and only on the left-hand sides."""</span>
     <span class="n">wall</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">wall_coord</span>
@@ -1731,7 +1730,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_wall_traces</span><span class="p">(</span><span class="n">comp</span><span class="p">:</span> <span class="n">Compiled</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">cond</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Audit A22 (curved geometries): a given field that depends on the wall coordinate, in the</span>
+<span class="w">    </span><span class="sd">"""Curved geometries: a given field that depends on the wall coordinate, in the</span>
 <span class="sd">    right side of a condition, is replaced by its trace at the wall evaluated from its function</span>
 <span class="sd">    (g(phi, R): exact, declared in explain()); the polar and spherical right-hand sides do not</span>
 <span class="sd">    evaluate traces. Under a derivative (dr(g)) the trace of the function is not enough: refused</span>
@@ -1898,8 +1897,7 @@
     <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
 
 
-<span class="c1"># Shown by explain(): the rule itself, never an internal test or tutorial file name (audit</span>
-<span class="c1">#); the provenance of each recipe is in docs/API_NATIVE.md §4.</span>
+<span class="c1"># Shown by explain(): the rule itself, never an internal test or tutorial file name.</span>
 <span class="n">_RULES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"cartesian"</span><span class="p">:</span> <span class="s2">"Chebyshev lift into the last modes"</span><span class="p">,</span>
           <span class="s2">"regular"</span><span class="p">:</span> <span class="s2">"lift in the derivative basis lam=2 (regular at the centre)"</span><span class="p">,</span>
           <span class="s2">"annulus"</span><span class="p">:</span> <span class="s2">"lift in the derivative basis lam=2"</span><span class="p">,</span>

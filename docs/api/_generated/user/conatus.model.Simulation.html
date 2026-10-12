@@ -910,8 +910,7 @@ order, i.e. <code class="docutils literal notranslate"><span class="pre">np.mesh
 (declared by explain()).</p>
 <p>On a grid with two axes of the same size the shape cannot tell <code class="docutils literal notranslate"><span class="pre">indexing=&quot;ij&quot;</span></code> from
 NumPy’s default <code class="docutils literal notranslate"><span class="pre">&quot;xy&quot;</span></code> (transposed): such an array is refused unless it is one
-returned by <code class="docutils literal notranslate"><span class="pre">sim.grid(...)</span></code> or <code class="docutils literal notranslate"><span class="pre">layout=&quot;ij&quot;</span></code> declares it (critique
-X5).</p>
+returned by <code class="docutils literal notranslate"><span class="pre">sim.grid(...)</span></code> or <code class="docutils literal notranslate"><span class="pre">layout=&quot;ij&quot;</span></code> declares it.</p>
 <p>Callable data are checked (<code class="docutils literal notranslate"><span class="pre">conatus.model.initial_check</span></code>):
 non-finite values are refused, and so are clearly wrong data (relative spectral tail
 beyond the resolution above <code class="docutils literal notranslate"><span class="pre">INITIAL_TAIL_REFUSE</span></code> on some axis, or a jump at the ends of
@@ -920,7 +919,7 @@ data that are only not fully resolved (tail between <code class="docutils litera
 <code class="docutils literal notranslate"><span class="pre">INITIAL_TAIL_REFUSE</span></code>, e.g. the coarse N of a resolution study) give one
 <code class="docutils literal notranslate"><span class="pre">InitialDataWarning</span></code>, recorded by <a class="reference internal" href="#conatus.model.Simulation.explain" title="conatus.model.Simulation.explain"><code class="xref py py-meth docutils literal notranslate"><span class="pre">explain()</span></code></a>. <code class="docutils literal notranslate"><span class="pre">check=False</span></code> silences both
 (declared by <a class="reference internal" href="#conatus.model.Simulation.explain" title="conatus.model.Simulation.explain"><code class="xref py py-meth docutils literal notranslate"><span class="pre">explain()</span></code></a>).</p>
-<p><code class="docutils literal notranslate"><span class="pre">t</span></code>: the time at which this state is given (default 0; feat2). Time-dependent forcing
+<p><code class="docutils literal notranslate"><span class="pre">t</span></code>: the time at which this state is given (default 0). Time-dependent forcing
 and boundary data are evaluated from it, every output row and checkpoint carries times
 t + k dt, <code class="docutils literal notranslate"><span class="pre">run(until=...)</span></code> is read on that clock, checkpoints record it (a chain
 continued by <a class="reference internal" href="#conatus.model.Simulation.resume_or_start" title="conatus.model.Simulation.resume_or_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resume_or_start()</span></code></a> with another <code class="docutils literal notranslate"><span class="pre">t</span></code> is refused) and <a class="reference internal" href="#conatus.model.Simulation.explain" title="conatus.model.Simulation.explain"><code class="xref py py-meth docutils literal notranslate"><span class="pre">explain()</span></code></a>
@@ -1179,7 +1178,7 @@ may differ); <code class="docutils literal notranslate"><span class="pre">check<
 Both checkpoint formats are found (<code class="docutils literal notranslate"><span class="pre">checkpoint_*.h5</span></code> and <code class="docutils literal notranslate"><span class="pre">checkpoint_*.npz</span></code>).
 <code class="docutils literal notranslate"><span class="pre">t</span></code>: the start time of a fresh start (<a class="reference internal" href="#conatus.model.Simulation.initial" title="conatus.model.Simulation.initial"><code class="xref py py-meth docutils literal notranslate"><span class="pre">initial()</span></code></a>); on a resume it must be the
 start time recorded by the chain’s checkpoints (refused otherwise: the script would
-describe another run; feat2).</p>
+describe another run).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

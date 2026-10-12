@@ -1,23 +1,20 @@
 # Citing Conatus
 
-Conatus is described in a *living paper*, modelled on the founding Dedalus article (Burns et al.
-2020): it details the design and **every** validation test, and each figure or number in it points
-to an archived run. It is updated with the code; the version in the repository is the reference.
-
-> R. Dahan, *Conatus: a GPU-native spectral framework for partial differential equations and
-> the dynamical systems they define*, in preparation (living document: `paper/conatus.pdf` in the repository).
+If Conatus contributes to your work, please cite the software. The repository carries a
+`CITATION.cff` file (GitHub shows it as "Cite this repository"); the same entry in BibTeX:
 
 ```bibtex
-@unpublished{dahan_conatus,
-  author = {Dahan, Ruben},
-  title  = {Conatus: a {GPU}-native spectral framework for partial differential equations
-            and the dynamical systems they define},
-  note   = {In preparation. Living document distributed with the source code},
-  year   = {2026}
+@software{dahan2026conatus,
+  author  = {Dahan, Ruben},
+  title   = {{Conatus: spectral PDEs and dynamical systems}},
+  year    = {2026},
+  version = {0.1.0},
+  license = {BSD-3-Clause},
+  url     = {https://github.com/rubendahan/conatus},
 }
 ```
 
-The repository carries a `CITATION.cff` file; a software DOI will accompany the 0.1 release.
+A paper describing the design and the validation tests is in preparation.
 
 ## Cite the methods too
 

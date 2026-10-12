@@ -10,11 +10,11 @@ licence text is. The texts are in `licenses/` in the repository, in the source d
 Nothing here is copied into the Conatus sources (`python/conatus/`, `core/`): the components below
 are linked, bundled by the build, or served by the documentation and the website.
 
-## 1. Binary wheels (`conatus-<version>+cpu` and `+cu12`)
+## 1. Binary wheels (`conatus-<version>` on PyPI and `conatus-<version>+cu12`)
 
-`auditwheel repair` copies these shared libraries into `conatus.libs/` of the wheel
-(`packaging/README.md`); the compiled core `conatus._core` links them. They are the conda-forge
-builds of the wheel build environment (`packaging/build_wheels.sh`: OpenBLAS, pthreads build).
+`auditwheel repair` copies these shared libraries into `conatus.libs/` of the wheel; the compiled
+core `conatus._core` links them. They are the conda-forge builds of the wheel build environment
+(OpenBLAS, pthreads build).
 No GPL library is bundled: FFTW, which earlier development builds linked for test-only transforms,
 was dropped from every build in 0.1.0.
 
@@ -113,9 +113,5 @@ Build tools that do not ship (Vite, TypeScript, Lighthouse, Puppeteer and the re
 ## 4. Dedalus
 
 Dedalus (GPL-3.0, the Dedalus Project developers) is not distributed with Conatus and the
-`conatus` package never imports it. It runs, when installed, in test and benchmark oracles and in
-the optional check script of tutorial 14 (`docs/site/tutorials/code/t14b_dedalus_check.py`). Two
-benchmark oracles, `benchmarks/dedalus/rb2d.py` and `benchmarks/dedalus/poisson2d.py`, follow the
-set-up of a Dedalus example and say so in their header; `benchmarks/` is excluded from the source
-distribution and is not in the wheel. The official Dedalus examples used by the translator tests
-are fetched at test time into `scratch/` and never stored in the repository.
+`conatus` package never imports it. It runs, when installed, only in the optional check script of
+tutorial 14 (`docs/site/tutorials/code/t14b_dedalus_check.py`).

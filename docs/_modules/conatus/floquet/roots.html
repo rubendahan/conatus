@@ -878,7 +878,7 @@
 
 <span class="c1"># : Second point of the determinant secants (``secant_root``.find_root``,</span>
 <span class="c1">#: secant stops on the caller's ``tol`` and reports a stall); declared in</span>
-<span class="c1">#: ``conatus.tolerances.DECLARED`` (audit FQ3: it was a literal signature default).</span>
+<span class="c1">#: ``conatus.tolerances.DECLARED`` (it was a literal signature default).</span>
 <span class="n">SECANT_STEP</span> <span class="o">=</span> <span class="mf">1e-4</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="p">)</span>
 <span class="c1">#: Iteration cap of the secant searches (find_root, secant_root): a budget with a declared</span>
 <span class="c1">#: default (rule); the accuracy tol stays required. A search that ends on the</span>
@@ -910,7 +910,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">determinant_secant</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">complex</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">complex</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                        <span class="n">stall_after</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecantRun</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Secant iteration on ``f`` (a scaled determinant) from ``start`` and ``start + step``,</span>
-<span class="sd">    (Q10.13: three copies reported a zero secant denominator as "not converged"</span>
+<span class="sd">    (three copies reported a zero secant denominator as "not converged"</span>
 <span class="sd">    and counted the step not taken). Converged: the last step is below ``tol``. Otherwise the</span>
 <span class="sd">    reason names the stop: equal determinants at the last two iterates (stalled, no step</span>
 <span class="sd">    possible), no halving of the step for ``stall_after`` iterations (stalled), or the budget."""</span>
@@ -1064,7 +1064,7 @@
     <span class="n">convergence</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>   <span class="c1"># resolution label -&gt; μ</span>
     <span class="n">status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"provisional"</span>              <span class="c1"># certified / provisional / retracted</span>
     <span class="n">reasons</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="c1">#: the secant reached its tol (Y8); False only with allow_unconverged=True</span>
+    <span class="c1">#: the secant reached its tol; False only with allow_unconverged=True</span>
     <span class="n">converged</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="nd">@property</span>

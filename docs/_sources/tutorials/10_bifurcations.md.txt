@@ -64,7 +64,7 @@ here, so the Hopf bifurcation of Lorenz is subcritical. Every quantity is report
 
 The first cycle is *predicted by the normal form* (amplitude declared, $\Delta r = -\mathrm{Re}\,c_1|z|^2/\alpha'$),
 corrected by orthogonal collocation (AUTO's method) and continued. Subcritical: the cycles exist for
-$r < r_H$. Followed further (study `benchmarks/bifurcation/lorenz_study.py`), their period diverges at
+$r < r_H$. Followed further, their period diverges at
 the homoclinic explosion $r \approx 13.926$.
 
 ## Two parameters: fold and Hopf curves
@@ -122,5 +122,5 @@ $g_0 = 3$ are all recovered to rounding.
 
 - Period doubling with branch switching onto the doubled orbit, Neimark–Sacker detection, branch
   points of cycles: `tests/bifurcation/test_bifurcation_core.py` (constructed systems with exact
-  multipliers) and the Lorenz $x^2y$ window (Sparrow 1982) in `benchmarks/bifurcation/lorenz_study.py`.
+  multipliers).
 - Continuation and bifurcations in the user guide: {doc}`../guide/index`.

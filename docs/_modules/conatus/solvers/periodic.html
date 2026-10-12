@@ -865,7 +865,7 @@
 <span class="sd">The Newton step of ``NewtonSolver`` is a per-wavenumber LBVP: it refuses a Jacobian whose</span>
 <span class="sd">coefficients vary along a Fourier direction ("couples wavenumbers"), which is exactly the case of</span>
 <span class="sd">any x-dependent steady state (rolls, fronts, cellular patterns). This solver treats the coupled</span>
-<span class="sd">problem directly (gallery gap, BACKLOG wave 1, Swift–Hohenberg rolls):</span>
+<span class="sd">problem directly (gallery gap, Swift–Hohenberg rolls):</span>
 
 <span class="sd">* unknowns: all represented Fourier coefficients of every variable (RealFourier pairs</span>
 <span class="sd">  [cos_n, -sin_n] without msin_0; ComplexFourier without the Nyquist entry), plus the scalar</span>
@@ -1053,7 +1053,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolerance</span> <span class="o">=</span> <span class="n">tol</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">damping</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span> <span class="o">=</span> <span class="n">damping</span><span class="p">,</span> <span class="n">max_iterations</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">params</span> <span class="ow">or</span> <span class="p">{})</span>
-        <span class="c1"># this solver evaluates the IR directly (no discretize): check the keys here (audit R11)</span>
+        <span class="c1"># this solver evaluates the IR directly (no discretize): check the keys here</span>
         <span class="n">check_param_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">problem_parameter_names</span><span class="p">(</span><span class="n">problem</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="s2">"PeriodicNewtonSolver"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">allow_drift</span> <span class="o">=</span> <span class="n">allow_drift</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="o">=</span> <span class="p">[</span><span class="n">phase</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">PhaseCondition</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">phase</span> <span class="ow">or</span> <span class="p">[])</span>

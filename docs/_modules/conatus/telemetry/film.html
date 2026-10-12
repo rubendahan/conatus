@@ -1074,8 +1074,8 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">thin_to_budget</span><span class="p">(</span><span class="n">films</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">FilmIndex</span><span class="p">],</span> <span class="n">max_bytes</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Memory mode, several runs: thin the name holding the most bytes until the total fits</span>
 <span class="sd">    ``max_bytes``; when no name has 3 frames left, drop the oldest frame of the largest name (a</span>
-<span class="sd">    name of one frame goes entirely). The budget is therefore always met (50 names</span>
-<span class="sd">    of 2 frames each used to stay 10x over it). Returns the number of passes; every dropped frame</span>
+<span class="sd">    name of one frame goes entirely). The budget is therefore always met (50 names of 2 frames</span>
+<span class="sd">    each used to stay 10x over it). Returns the number of passes; every dropped frame</span>
 <span class="sd">    is counted in its index's ``thinned_here``."""</span>
     <span class="n">passes</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="nb">sum</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">bytes</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">films</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;</span> <span class="n">max_bytes</span><span class="p">:</span>

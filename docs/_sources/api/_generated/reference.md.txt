@@ -198,7 +198,7 @@ Spectral discretization: Olver–Townsend operators, generalized tau, per-group 
 
 ## `conatus.reference`
 
-NumPy reference backend: the oracle of every fast path (C++/CUDA banded solves, NumPy/CuPy transforms and fused kernels; docs/ARCHITECTURE.md).
+NumPy reference backend: the oracle of every fast path (C++/CUDA banded solves, NumPy/CuPy transforms and fused kernels).
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert

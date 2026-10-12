@@ -1030,7 +1030,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">iteration</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_initial_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""The start time given as ``t=`` (feat2), or None. A model with an unknown named ``t``</span>
+<span class="w">        </span><span class="sd">"""The start time given as ``t=``, or None. A model with an unknown named ``t``</span>
 <span class="sd">        has no time t (``t`` is then that unknown): its ``t=`` is the unknown's initial data, as</span>
 <span class="sd">        before, and the start time cannot be set by name (declared here)."""</span>
         <span class="k">if</span> <span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1058,8 +1058,7 @@
 
 <span class="sd">        On a grid with two axes of the same size the shape cannot tell ``indexing="ij"`` from</span>
 <span class="sd">        NumPy's default ``"xy"`` (transposed): such an array is refused unless it is one</span>
-<span class="sd">        returned by ``sim.grid(...)`` or ``layout="ij"`` declares it (critique</span>
-<span class="sd">        X5).</span>
+<span class="sd">        returned by ``sim.grid(...)`` or ``layout="ij"`` declares it.</span>
 
 <span class="sd">        Callable data are checked (``conatus.model.initial_check``):</span>
 <span class="sd">        non-finite values are refused, and so are clearly wrong data (relative spectral tail</span>
@@ -1070,7 +1069,7 @@
 <span class="sd">        ``InitialDataWarning``, recorded by :meth:`explain`. ``check=False`` silences both</span>
 <span class="sd">        (declared by :meth:`explain`).</span>
 
-<span class="sd">        ``t``: the time at which this state is given (default 0; feat2). Time-dependent forcing</span>
+<span class="sd">        ``t``: the time at which this state is given (default 0). Time-dependent forcing</span>
 <span class="sd">        and boundary data are evaluated from it, every output row and checkpoint carries times</span>
 <span class="sd">        t + k dt, ``run(until=...)`` is read on that clock, checkpoints record it (a chain</span>
 <span class="sd">        continued by :meth:`resume_or_start` with another ``t`` is refused) and :meth:`explain`</span>
@@ -1125,7 +1124,7 @@
                 <span class="n">R</span> <span class="o">=</span> <span class="n">reflection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compiled</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">geometry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">compiled</span><span class="o">.</span><span class="n">coordsys</span><span class="p">)</span>
                 <span class="n">data</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">extend_to_period</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compiled</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">f</span><span class="p">],</span> <span class="n">f</span><span class="o">.</span><span class="n">rank</span><span class="p">,</span>
                                            <span class="n">sym</span><span class="o">.</span><span class="n">parity</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">R</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"initial </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">warned</span><span class="p">:</span>                    <span class="c1"># not fully resolved: warned once, recorded ( review)</span>
+        <span class="k">if</span> <span class="n">warned</span><span class="p">:</span>                    <span class="c1"># not fully resolved: warned once, recorded</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
             <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">InitialDataWarning</span>
@@ -1525,7 +1524,7 @@
 <span class="sd">        Both checkpoint formats are found (``checkpoint_*.h5`` and ``checkpoint_*.npz``).</span>
 <span class="sd">        ``t``: the start time of a fresh start (:meth:`initial`); on a resume it must be the</span>
 <span class="sd">        start time recorded by the chain's checkpoints (refused otherwise: the script would</span>
-<span class="sd">        describe another run; feat2)."""</span>
+<span class="sd">        describe another run)."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..io</span><span class="w"> </span><span class="kn">import</span> <span class="n">latest</span>
         <span class="n">t0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_time</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">initial</span><span class="p">,</span> <span class="s2">"resume_or_start"</span><span class="p">)</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
@@ -1555,7 +1554,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_chain_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ck</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">t0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The start time of the resumed chain (recorded by its checkpoints) against the ``t`` of</span>
-<span class="sd">        this script (``resume_or_start(..., t=...)``, feat2): a difference is refused."""</span>
+<span class="sd">        this script (``resume_or_start(..., t=...)``): a difference is refused."""</span>
         <span class="n">rec</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="p">,</span> <span class="s2">"_t_initial"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">want</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">t0</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">t0</span>
         <span class="k">if</span> <span class="n">rec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2117,7 +2116,7 @@
         <span class="c1"># res.mode(i) shows the perturbation variables ("du") under the unknowns' names ("u")</span>
         <span class="n">evp</span><span class="o">.</span><span class="n">mode_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"d"</span> <span class="o">+</span> <span class="n">u</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">u</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">unknowns</span><span class="p">}</span>
         <span class="c1"># growth convention (normal modes exp(s t): growth = Re s, whatever the name of s): set</span>
-        <span class="c1"># by conatus.linearize itself, one sentence for both layers (Q10.11)</span>
+        <span class="c1"># by conatus.linearize itself, one sentence for both layers</span>
         <span class="k">if</span> <span class="n">comp</span><span class="o">.</span><span class="n">time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># (native2): a coefficient written with t in the equations (a base</span>
             <span class="c1"># flow in the right-hand side, cos(t)*Uc*dx(u)) used to be frozen silently at the</span>
@@ -2494,8 +2493,8 @@
                               <span class="n">doc</span><span class="o">=</span><span class="n">_LIN_DOC</span><span class="p">)</span>
         <span class="n">check_call_options</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">_EIG_OPTIONS</span> <span class="o">+</span> <span class="p">(</span><span class="s2">"n_modes"</span><span class="p">,),</span> <span class="s2">"lin.eigenvalues"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">which</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># a curvilinear group is chosen by m=/kz=/ell=: k was ignored without a word (lot</span>
-            <span class="c1"># the shell docstring passed k=4 meaning four shift-invert modes)</span>
+            <span class="c1"># a curvilinear group is chosen by m=/kz=/ell=: k used to be ignored without a</span>
+            <span class="c1"># word (the shell docstring passed k=4 meaning four shift-invert modes)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Integral</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">and</span> \
                     <span class="s2">"n_modes"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kw</span> <span class="ow">and</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"method"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"shift-invert"</span><span class="p">:</span>
                 <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">_warn_user</span>

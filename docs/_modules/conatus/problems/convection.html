@@ -1011,8 +1011,7 @@
 <span class="sd">    Ra = alpha g_0 DeltaT D / (nu Omega) (Christensen's modified Rayleigh number), Pr = nu/kappa.</span>
 <span class="sd">    First-order tau form: tau_1 lifted in the derivative basis ``lam=1`` inside the gradient,</span>
 <span class="sd">    tau_2 one basis higher (``lam=2``) in the equation -- the Dedalus shell examples lift both in</span>
-<span class="sd">    ``lam=1``, which gives a spurious growing tau mode from N_r ~ 48 (timestep/tau_modes.py); the Coriolis term is explicit (RHS), as in benchmarks/spherical/</span>
-<span class="sd">    christensen_case0.py: its rate 2/E bounds the time step of an explicit scheme. NCC data</span>
+<span class="sd">    ``lam=1``, which gives a spurious growing tau mode from N_r ~ 48 (timestep/tau_modes.py); the Coriolis term is explicit (RHS): its rate 2/E bounds the time step of an explicit scheme. NCC data</span>
 <span class="sd">    ``rvec`` (r e_r), ``ez`` (e_z = cos(theta) e_r - sin(theta) e_theta) and ``gT0``</span>
 <span class="sd">    (grad T0). Bases: RealFourier(phi, Nphi) x SphereBasis(theta, Ntheta) x ShellBasis(r, Nr).</span>
 <span class="sd">    ``extras["initial_theta"]``: the benchmark's initial perturbation, eq. (9) (m = 4, A = 0.1).</span>
@@ -1070,7 +1069,7 @@
                                   <span class="n">Ra</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">E</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Pr</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Ready</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Linear onset of rotating shell convection: normal modes exp(i m phi + s t) about the</span>
 <span class="sd">    conduction state, equations and units of :func:`rotating_shell_convection` multiplied back</span>
-<span class="sd">    by E (benchmarks/spherical/validate_spherical.py, ``onset_problem``)::</span>
+<span class="sd">    by E::</span>
 
 <span class="sd">        E (s u - lap u) + 2 e_z x u + grad p - (Ra / r_o) T r e_r = 0,   div u = 0,</span>
 <span class="sd">        s T + u.grad(T0) - lap(T)/Pr = 0,   u = T = 0 at r_i and r_o.</span>
