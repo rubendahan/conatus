@@ -72,8 +72,8 @@ export default function Home() {
             <div className="section-head">
               <p className="eyebrow">In motion</p>
               <h2 id="films-h">Computed with Conatus</h2>
-              <p className="section-intro">Each film is a Conatus run, frame by frame: a shear layer rolling up, and rolls
-                emerging from noise.</p>
+              <p className="section-intro">Each film is a Conatus run, frame by frame: a shear layer rolling up, and a
+                Rossby wave travelling round the rotating sphere.</p>
             </div>
             <ul className="films">
               {films.map((f) => <li key={f.slug}><Film f={f} /></li>)}

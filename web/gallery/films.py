@@ -1,6 +1,6 @@
 """Website films: short looping videos of real Conatus runs (no mock-up, no decorative effect).
 
-Three cases, each a time series of the solver's own state, drawn with the gallery colormaps
+Four cases, each a time series of the solver's own state, drawn with the gallery colormaps
 (brand_cmaps.py) and encoded as WebM (VP9), MP4 (H.264, fallback) and a WebP poster:
 
   * kelvin-helmholtz-film  passive dye between two tanh shear layers rolling up (same problem and
@@ -8,7 +8,9 @@ Three cases, each a time series of the solver's own state, drawn with the galler
   * rayleigh-benard-film   temperature of 2D convection at Ra = 1e6 after a spin-up from noise
                            (the equations of web/gallery/rayleigh_benard.py, a box of aspect 2);
   * swift-hohenberg-film   rolls growing from noise and coarsening, sampled on a logarithmic
-                           clock (the equation of web/gallery/swift_hohenberg.py).
+                           clock (the equation of web/gallery/swift_hohenberg.py);
+  * rossby-haurwitz-film   vorticity of the wavenumber-4 Rossby-Haurwitz wave on the rotating sphere
+                           over one period (the problem of web/gallery/rossby_haurwitz.py).
 
 Every frame is a state of the run at a recorded time; the loop closes with a short cross-fade
 from the last frame to the first (a display transition, stated in the metadata). Numerics are
@@ -46,10 +48,11 @@ import brand_cmaps as C  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC = ROOT / "web" / "public" / "films"
-SLUGS = {"kh": "kelvin-helmholtz-film", "rb": "rayleigh-benard-film", "sh": "swift-hohenberg-film"}
-# Films published on the site, in display order (the Rayleigh-Benard film at Ra = 1e6 is too soft
-# at this resolution to show; its case stays runnable).
-PUBLISHED = ("kelvin-helmholtz-film", "swift-hohenberg-film")
+SLUGS = {"kh": "kelvin-helmholtz-film", "rb": "rayleigh-benard-film", "sh": "swift-hohenberg-film",
+         "rh": "rossby-haurwitz-film"}
+# Films published on the site, in display order. Not shown, cases kept runnable: Rayleigh-Benard at
+# Ra = 1e6 (too soft at this resolution), Swift-Hohenberg (too little visible change at site size).
+PUBLISHED = ("kelvin-helmholtz-film", "rossby-haurwitz-film")
 MAX_VIDEO_BYTES = 1_500_000          # per file (WebM and MP4), checked
 FPS = 24
 FADE_S = 0.5                         # loop cross-fade (last frame -> first frame)
@@ -114,11 +117,14 @@ def encode(frames: list[np.ndarray], slug: str, out: Path, poster: np.ndarray) -
             "duration_s": round(len(frames) / FPS, 2), "files": facts}
 
 
-def finish(slug: str, out: Path, frames: list[np.ndarray], poster: np.ndarray, meta: dict) -> None:
-    facts = encode(loop_frames(frames), slug, out, poster)
+def finish(slug: str, out: Path, frames: list[np.ndarray], poster: np.ndarray, meta: dict,
+           loop: str | None = None) -> None:
+    """Encode and write <slug>.film.json. ``loop``: how the film closes on itself when it needs no
+    cross-fade (a travelling wave filmed over exactly one period)."""
+    facts = encode(frames if loop else loop_frames(frames), slug, out, poster)
     meta = dict(meta, slug=slug, video_webm=f"/films/{slug}.webm", video_mp4=f"/films/{slug}.mp4",
-                poster=f"/films/{slug}.webp", loop=f"run frames, then a {FADE_S:g} s cross-fade "
-                "from the last frame to the first", run_id=os.environ.get("CN_RUN_ID"), **facts)
+                poster=f"/films/{slug}.webp", loop=loop or f"run frames, then a {FADE_S:g} s "
+                "cross-fade from the last frame to the first", run_id=os.environ.get("CN_RUN_ID"), **facts)
     (out / f"{slug}.film.json").write_text(json.dumps(meta, indent=1, ensure_ascii=False))
     f = facts["files"]
     print(f"[films] {slug}: {facts['width']}x{facts['height']}, {facts['duration_s']} s, webm "
@@ -303,6 +309,127 @@ def swift_hohenberg(a, out: Path) -> None:
         "scale": {"vmin": -lim, "vmax": lim}})
 
 
+# ---- Rossby-Haurwitz wave: vorticity on the rotating sphere -------------------------------------------
+def rossby_haurwitz(a, out: Path) -> None:
+    """The problem of web/gallery/rossby_haurwitz.py (Williamson et al. 1992, case 6: T63, RK443,
+    dt = 0.03/Omega), filmed over one period of the wave: the run stops when the m = 4 phase of the
+    vorticity at 45 deg N has turned by 2 pi (the pattern has moved one wavelength, 90 deg east), and
+    the camera turns 90 deg west over the same frames, so the last frame joins the first."""
+    import conatus.expert as CN
+    import rossby_haurwitz as RHG
+    from conatus.discretize import discretize
+    from scipy.ndimage import map_coordinates
+
+    rh = RHG.load_driver()
+    s2 = CN.S2Coordinates("phi", "theta")
+    bt = CN.SphereBasis(s2["theta"], a.rh_L + 1, radius=1.0, dealias=3 / 2)
+    Np = 2 * (a.rh_L + 1)
+    D = CN.Domain(s2, [CN.RealFourier(s2["phi"], Np, (0, 2 * np.pi), dealias=3 / 2), bt])
+    u, h = CN.VectorField("u", D), CN.Field("h", D)
+    Cz = CN.TensorField("Cz", CN.Domain(s2, [bt]), 2)
+    pb = CN.IVP([u, h])                                       # same equations as the gallery plate
+    pb.add_equation((CN.dt(u) + CN.grad(h) + CN.dot(Cz, u), -CN.dot(u, CN.grad(u))))
+    pb.add_equation((CN.dt(h) + rh.H0 * CN.div(u), -CN.div((h - rh.H0) * u)))
+
+    def cz(P, T):
+        c = 2 * np.cos(T) + 0 * P
+        return np.array([[0 * c, c], [-c, 0 * c]])
+    plan = discretize(pb, ncc={Cz: cz})
+    s = CN.IVPSolver(plan, "RK443", a.rh_dt)
+    s.set_state({u: lambda P, T: np.array(rh.initial(P, T)[:2]), h: lambda P, T: rh.initial(P, T)[2]})
+    print(s.explain(), flush=True)
+    S = plan.space
+    zeta = lambda: plan.evaluator.evaluate(CN.curl(u), {u: s.coeffs("u")}, {})   # noqa: E731
+    i4 = list(S.ms).index(rh.RW)
+    x45 = np.array([np.cos(np.pi / 4)])
+
+    def phase(z):                                             # arg of the m = 4 part at 45 deg N
+        return float(np.angle(S.H.values(rh.RW, 0, x45) @ z[i4])[0])
+    # frame spacing from the non-divergent Haurwitz speed (an estimate; the stop uses the measured phase)
+    R, W = rh.RW, rh.W
+    nu = (R * (3 + R) * W - 2) / ((1 + R) * (2 + R))         # rad per unit time (units of 1/Omega)
+    period_est = (2 * np.pi / R) / abs(nu) * 1.08            # the run is ~8 % slower (gallery plate)
+    every = max(1, int(round(period_est / a.rh_dt / a.frames)))
+    days_per_unit = 1.0 / (rh.OMEGA * 86400)
+    t0 = time.perf_counter()
+    s.run(int(round(a.rh_t0_days / days_per_unit / a.rh_dt)))   # the small-scale ripples set in first
+    zs, ph = [zeta()], [phase(zeta())]
+    turned = 0.0
+    while True:
+        s.run(every)
+        z = zeta()
+        check_finite(z, t=s.t)
+        p_ = phase(z)
+        turned += (p_ - ph[-1] + np.pi) % (2 * np.pi) - np.pi
+        if abs(turned) >= 2 * np.pi - 1e-12:
+            break
+        zs.append(z)
+        ph.append(p_)
+        if len(zs) > 4 * a.frames:
+            raise RuntimeError("the m = 4 phase did not turn by 2 pi: not a travelling wave here")
+    n = len(zs)
+    k = int(round(FADE_S * FPS))                              # frames past the period, for the seam
+    zs.append(z)
+    for _ in range(k - 1):
+        s.run(every)
+        zs.append(zeta())
+        check_finite(zs[-1], t=s.t)
+    wall = time.perf_counter() - t0
+    period_days = n * every * a.rh_dt * days_per_unit
+    ncol, nlon = 361, 720
+    colat = np.linspace(0, np.pi, ncol)
+    lon = 2 * np.pi * np.arange(nlon) / nlon
+    Wpx, Hpx = a.width, a.width // 2
+    rad = a.rh_radius * Hpx
+    X = (np.arange(Wpx) + 0.5 - Wpx / 2) / rad
+    Y = (Hpx / 2 - np.arange(Hpx) - 0.5) / rad
+    XX, YY = np.meshgrid(X, Y)
+    rho2 = XX ** 2 + YY ** 2
+    inside = rho2 <= 1.0
+    ZZ = np.sqrt(np.clip(1 - rho2, 0, None))
+    p0 = np.radians(a.rh_view_lat)
+    ex, ez, ey = ZZ * np.cos(p0) - YY * np.sin(p0), ZZ * np.sin(p0) + YY * np.cos(p0), XX
+    c_lat = np.arccos(np.clip(ez, -1, 1))
+    limb = np.clip(1.0 - np.abs(np.sqrt(rho2) - 1.0) * rad / 0.8, 0, 1)
+    west = -np.sign(nu)                                       # the camera turns against the wave
+    vmax = None
+    frames = []
+    for i, z in enumerate(zs):
+        Z = RHG.synth(S, z, colat, lon)
+        vmax = vmax or float(np.abs(Z).max())
+        centre = west * (np.pi / 2) * i / n                   # longitude at the centre of the view:
+        c_lon = np.mod(np.arctan2(ey, ex) + centre, 2 * np.pi)   # 90 deg over the film, joins frame 0
+        wrap = np.concatenate([Z, Z[:, :1]], axis=1)
+        f = map_coordinates(wrap, [(c_lat / np.pi * (ncol - 1)).ravel(),
+                                   (c_lon / (2 * np.pi) * nlon).ravel()], order=3, mode="nearest")
+        f = f.reshape(Hpx, Wpx)
+        f[~inside] = np.nan
+        rgb, _ = C.field_image(f, "signed", grain_sigma=0, vmax=vmax)
+        frames.append(C.overlay_line(rgb, limb, color="#3A3A38", alpha=0.9))
+    # seam: frames n..n+k-1 sit where frames 0..k-1 sit (one period later, camera one wavelength on);
+    # they are cross-faded into those, so the film is frames k..n-1 then the k blended frames.
+    blend = [np.clip(np.rint((1 - w) * frames[n + j].astype(float) + w * frames[j]), 0, 255).astype(np.uint8)
+             for j, w in enumerate((np.arange(k) + 1) / (k + 1))]
+    frames = frames[k:n] + blend
+    finish(SLUGS["rh"], out, frames, frames[0], {
+        "title": "Rossby–Haurwitz wave",
+        "alt": "A turning globe on black covered by large alternating red and green vorticity lobes, "
+               "four around each hemisphere, travelling east.",
+        "caption": f"Relative vorticity of the wavenumber-4 Rossby–Haurwitz wave (Williamson et al. "
+                   f"1992, case 6) in inviscid shallow water on the rotating sphere, over one period of "
+                   f"the wave ({period_days:.1f} days, from day {a.rh_t0_days:g}), seen from {a.rh_view_lat:g}° N by a camera "
+                   f"turning against it. T{a.rh_L}, RK443, dt = {a.rh_dt:g}/Ω, CPU.",
+        "script": "web/gallery/films.py", "example_script": "benchmarks/spherical/rossby_haurwitz.py",
+        "domain": "rotating", "colormap": "signed",
+        "parameters": {"Lmax": a.rh_L, "R": rh.RW, "view_lat": a.rh_view_lat},
+        "numerics": {"Nphi": Np, "dealias": 1.5, "scheme": "RK443", "dt": a.rh_dt, "backend": "cpu",
+                     "steps": s.iteration, "steps_per_frame": every, "wall_s": wall},
+        "period_days": period_days, "t0_days": a.rh_t0_days, "scale": {"vmax": vmax}},
+        loop=f"one period of the wave (m = 4 phase measured), camera turned by one wavelength; the "
+             f"last {k} frames are cross-faded with the same view one period earlier (the slowly "
+             f"growing small-scale ripples differ)")
+
+
 # ---- collect into the site ---------------------------------------------------------------------------
 FIELDS = ("slug", "title", "alt", "caption", "video_webm", "video_mp4", "poster", "width", "height",
           "duration_s", "run_id", "script", "example_script", "domain")
@@ -366,6 +493,12 @@ def main() -> None:
     ap.add_argument("--sh-t0", type=float, default=10.0)
     ap.add_argument("--sh-t1", type=float, default=3000.0)
     ap.add_argument("--sh-poster-t", type=float, default=300.0, help="poster: the labyrinth stage")
+    # Rossby-Haurwitz (gallery plate values)
+    ap.add_argument("--rh-L", type=int, default=63)
+    ap.add_argument("--rh-dt", type=float, default=0.03)
+    ap.add_argument("--rh-view-lat", type=float, default=35.0)
+    ap.add_argument("--rh-radius", type=float, default=0.6, help="globe radius / film height")
+    ap.add_argument("--rh-t0-days", type=float, default=4.0, help="days run before the first frame")
     a = ap.parse_args()
     if a.collect:
         return collect(a.collect)
@@ -373,7 +506,8 @@ def main() -> None:
         ap.error("--case or --collect")
     out = Path(os.environ.get("CN_OUT", "."))
     out.mkdir(parents=True, exist_ok=True)
-    {"kh": kelvin_helmholtz, "rb": rayleigh_benard, "sh": swift_hohenberg}[a.case](a, out)
+    {"kh": kelvin_helmholtz, "rb": rayleigh_benard, "sh": swift_hohenberg,
+     "rh": rossby_haurwitz}[a.case](a, out)
 
 
 if __name__ == "__main__":
