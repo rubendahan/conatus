@@ -963,7 +963,7 @@
 
 
 <div class="viewcode-block" id="Run">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Run</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""A registry run. Created live by :func:`conatus.runs.track` / :func:`conatus.runs.record` /</span>
 <span class="sd">    ``solver.run(record=...)``, or read back by :func:`conatus.runs.get` / ``find``.</span>
@@ -1036,7 +1036,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_put</span><span class="p">((</span><span class="s2">"open"</span><span class="p">,))</span>
 
 <div class="viewcode-block" id="Run.load">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.load">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.load">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">registry</span><span class="p">:</span> <span class="n">Registry</span><span class="p">,</span> <span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Run</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Read-only view of a stored run."""</span>
@@ -1120,7 +1120,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Run.attach">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.attach">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.attach">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Run</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Record the problem hash, the numerical configuration (``conatus.provenance.numerics``)</span>
 <span class="sd">        and the ``explain()`` text of a Problem, Plan or solver. The problem's parameter values (IR</span>
@@ -1159,7 +1159,7 @@
 
 
 <div class="viewcode-block" id="Run.log">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.log">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.log">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">scalars</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Append one row of series values (``run.log(t=t, energy=E)``); ``step`` is optional (the</span>
 <span class="sd">        row number is always kept, so series logged together can be plotted against each other).</span>
@@ -1170,7 +1170,7 @@
 
 
 <div class="viewcode-block" id="Run.result">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.result">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.result">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">values</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Scalar results (numbers, strings, booleans, complex): stored in ``run.json`` and</span>
 <span class="sd">        indexed, so ``find(Nu__gt=...)`` works."""</span>
@@ -1180,7 +1180,7 @@
 
 
 <div class="viewcode-block" id="Run.save_field">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.save_field">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.save_field">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">compression</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                    <span class="n">t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Queue a copy of ``array`` for ``data.h5`` (``fields/&lt;name&gt;/&lt;k&gt;``). ``compression`` has no</span>
@@ -1197,7 +1197,7 @@
 
 
 <div class="viewcode-block" id="Run.save_file">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.save_file">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.save_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Queue a copy of a file into ``files/`` (sha256 recorded). The copy is taken by the</span>
 <span class="sd">        writer thread: a file changed right after this call may be copied changed."""</span>
@@ -1225,7 +1225,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"outputs"</span><span class="p">][</span><span class="sa">f</span><span class="s2">"state_</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"state_</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.npz"</span>
 
 <div class="viewcode-block" id="Run.set_status">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.set_status">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.set_status">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">evidence</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Run</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Change the status (history kept, never rewritten). ``reason`` is required."""</span>
         <span class="k">if</span> <span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">STATUSES</span><span class="p">:</span>
@@ -1246,21 +1246,21 @@
 
 
 <div class="viewcode-block" id="Run.certify">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.certify">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.certify">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">certify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">evidence</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Run</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Mark the run ``certified`` (reason and optional evidence, e.g. residuals, recorded)."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="s2">"certified"</span><span class="p">,</span> <span class="n">reason</span><span class="p">,</span> <span class="n">evidence</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Run.retract">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.retract">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.retract">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Run</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Mark the run ``retracted`` (kept, never deleted; never reused by the cache)."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="s2">"retracted"</span><span class="p">,</span> <span class="n">reason</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Run.close">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.close">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.close">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"completed"</span><span class="p">,</span> <span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
               <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">CLOSE_TIMEOUT_S</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Run</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Finish the run: series to ``data.h5``, final ``run.json``, index. Waits for the writer at</span>
@@ -1429,7 +1429,7 @@
         <span class="k">return</span> <span class="n">_h5_open</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Run.series">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.series">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.series">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""{"row", "step", "value"} arrays of one series; with ``x`` (another series logged in the</span>
 <span class="sd">        same rows, e.g. "t"), also "x" aligned on the rows both have (no interpolation)."""</span>
@@ -1448,7 +1448,7 @@
 
 
 <div class="viewcode-block" id="Run.load_field">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.load_field">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.load_field">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""One saved snapshot of a field (default: the last one)."""</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5</span><span class="p">()</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
@@ -1461,7 +1461,7 @@
 
 
 <div class="viewcode-block" id="Run.file_path">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.file_path">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.file_path">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s2">"files"</span> <span class="o">/</span> <span class="n">name</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -1471,7 +1471,7 @@
 
 
 <div class="viewcode-block" id="Run.refresh">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.refresh">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.refresh">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">refresh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Run</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Re-read ``run.json`` (e.g. after another process changed the status)."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
@@ -1479,14 +1479,14 @@
 
 
 <div class="viewcode-block" id="Run.lineage">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.lineage">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.lineage">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lineage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">lineage</span>
         <span class="k">return</span> <span class="n">lineage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Run.reproduce">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.reproduce">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.reproduce">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">reproduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Run this computation again and compare (see :func:`conatus.runs.reproduce`)."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.integrations</span><span class="w"> </span><span class="kn">import</span> <span class="n">reproduce</span>
@@ -1494,7 +1494,7 @@
 
 
 <div class="viewcode-block" id="Run.explain">
-<a class="viewcode-back" href="../../../api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.explain">[docs]</a>
+<a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.explain">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec</span>
         <span class="n">code</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"code"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>

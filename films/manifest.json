@@ -15,18 +15,18 @@
     "domain": "shear"
   },
   {
-    "slug": "swift-hohenberg-film",
-    "title": "Swift–Hohenberg rolls",
-    "alt": "Light and dark stripes appear out of grey noise, curve into a labyrinth and slowly straighten into patches of parallel rolls.",
-    "caption": "Rolls of du/dt = r u − (1 + ∇²)² u − u³ at r = 0.1 growing from noise in a periodic box of 24 × 12 roll wavelengths, t = 10 to 3000 on a logarithmic clock. 192 × 96 Fourier modes, SBDF2, dt = 0.5.",
-    "video_webm": "/films/swift-hohenberg-film.webm",
-    "video_mp4": "/films/swift-hohenberg-film.mp4",
-    "poster": "/films/swift-hohenberg-film.webp",
+    "slug": "rossby-haurwitz-film",
+    "title": "Rossby–Haurwitz wave",
+    "alt": "A turning globe on black covered by large alternating red and green vorticity lobes, four around each hemisphere, travelling east.",
+    "caption": "Relative vorticity of the wavenumber-4 Rossby–Haurwitz wave (Williamson et al. 1992, case 6) in inviscid shallow water on the rotating sphere, over one period of the wave (7.8 days, from day 4), seen from 35° N by a camera turning against it. T63, RK443, dt = 0.03/Ω, CPU.",
+    "video_webm": "/films/rossby-haurwitz-film.webm",
+    "video_mp4": "/films/rossby-haurwitz-film.mp4",
+    "poster": "/films/rossby-haurwitz-film.webp",
     "width": 720,
     "height": 360,
-    "duration_s": 7.12,
+    "duration_s": 6.83,
     "script": "web/gallery/films.py",
-    "example_script": "examples/patterns/swift_hohenberg.py",
-    "domain": "patterns"
+    "example_script": "benchmarks/spherical/rossby_haurwitz.py",
+    "domain": "rotating"
   }
 ]
