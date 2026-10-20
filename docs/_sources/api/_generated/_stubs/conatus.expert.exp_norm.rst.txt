@@ -1,6 +1,0 @@
-﻿conatus.expert.exp\_norm
-========================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: exp_norm

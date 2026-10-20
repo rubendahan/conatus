@@ -1,6 +1,0 @@
-﻿conatus.expert.mul
-==================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: mul

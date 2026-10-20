@@ -1,8 +1,0 @@
-﻿conatus.expert.TimeDerivative
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: TimeDerivative
-   :members:
-   :show-inheritance:

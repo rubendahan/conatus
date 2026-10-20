@@ -1,0 +1,6 @@
+﻿conatus.contour.count
+=====================
+
+.. currentmodule:: conatus.contour
+
+.. autofunction:: count

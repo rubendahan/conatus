@@ -1,8 +1,0 @@
-﻿conatus.expert.Dot
-==================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Dot
-   :members:
-   :show-inheritance:

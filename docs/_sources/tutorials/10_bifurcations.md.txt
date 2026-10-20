@@ -41,6 +41,13 @@ solves the algebraic branching equation with the exact second derivatives; the d
 $S = \mathrm{diag}(-1,-1,1)$ classifies the point as a *symmetry-breaking pitchfork*: the kernel is
 $S$-odd, and the two half-branches $C^\pm$ are images of each other. Nothing is guessed from a plot.
 
+```{figure} media/t10_lorenz.png
+:alt: Bifurcation diagram of the Lorenz system, x against r: a black line along x = 0 that turns dashed at r = 1, where two red branches split off; they turn dashed at the Hopf points near r = 24.7, from which brass lines of cycles bend back.
+:width: 100%
+
+The equilibria of the Lorenz system and their stability, as continued by the page: the origin, the pitchfork at r = 1, the branches C± and their subcritical Hopf points, and the cycles born there.
+```
+
 ## Normal forms
 
 ```{literalinclude} code/t10_bifurcations.py
@@ -67,6 +74,13 @@ corrected by orthogonal collocation (AUTO's method) and continued. Subcritical: 
 $r < r_H$. Followed further, their period diverges at
 the homoclinic explosion $r \approx 13.926$.
 
+```{figure} media/t10_cycles.png
+:alt: Nested closed loops in the (x, z) plane around the point C+, small ones near it and larger ones further out.
+:width: 100%
+
+The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of degree 4) for r from 24.735 down to 22.335: born at the Hopf point around the equilibrium of the continued branch (cross), they grow as r decreases.
+```
+
 ## Two parameters: fold and Hopf curves
 
 ```{literalinclude} code/t10_bifurcations.py
@@ -79,6 +93,13 @@ Minimally augmented systems (Govaerts): one scalar condition $g = 0$ from a bord
 for Hopf (bordered $J^2 + \kappa I$, $\kappa = \omega^2$). Along the curves, test functions detect cusp,
 Bogdanov–Takens, Bautin, fold–Hopf and Hopf–Hopf points; here both curves end at the BT point, and the
 vanishing determinant there is *not* reported as a fold–Hopf point (rejected with its reason).
+
+```{figure} media/t10_bogdanov_takens.png
+:alt: Two curves in the parameter plane: a red parabola of folds and a green line of Hopf points at beta1 = 0, meeting at the Bogdanov-Takens point at the origin.
+:width: 100%
+
+Codimension two: the fold and Hopf curves of the Bogdanov-Takens normal form, continued in (β₁, β₂). The fold curve follows β₁ = β₂²/4, the Hopf curve β₁ = 0; both end at the BT point.
+```
 
 ## Landau and Ginzburg–Landau equations of a PDE
 

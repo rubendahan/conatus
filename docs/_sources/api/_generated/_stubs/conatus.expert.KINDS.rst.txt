@@ -1,6 +1,0 @@
-﻿conatus.expert.KINDS
-====================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: KINDS

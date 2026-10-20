@@ -1,8 +1,0 @@
-﻿conatus.expert.MethodsText
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: MethodsText
-   :members:
-   :show-inheritance:

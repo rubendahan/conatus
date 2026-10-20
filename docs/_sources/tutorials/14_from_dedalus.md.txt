@@ -99,6 +99,13 @@ both converge to the same solution, and the difference measures how far the coar
 from it. `overrides={"N_z": nz}` changes one top-level assignment of the script, and the report
 lists the change.
 
+```{figure} media/t14_convergence.png
+:alt: The relative difference between the native model and the translated Dedalus script on a log scale, falling steeply with the number of wall-normal modes down to rounding.
+:width: 100%
+
+Native model against the translated Dedalus script after 40 SBDF2 steps: two tau formulations of the same equations, whose difference falls spectrally with nz down to rounding.
+```
+
 ## Compare with Dedalus
 
 [`t14b_dedalus_check.py`](code/t14b_dedalus_check.py) runs the same file with Dedalus, if
@@ -128,8 +135,8 @@ The Dedalus check:
 
 ## Going further
 
-- `print(tr.to_script())` writes a readable Conatus script, with the report as comments.
+- `print(tr.to_script())` writes a runnable Conatus program (it replays the translation and runs it), with the report as comments.
 - For a problem built inside a function, use `cn.from_dedalus(script, entry=("f", {...}))`.
 - {doc}`../guide/dedalus` lists the translated subset and the comparisons on the official Dedalus
-  examples. These include KdV–Burgers (1.6e-15), Poisson (7e-16), shear flow (1.3e-15), the
+  examples. These include KdV–Burgers (1.3e-15), Poisson (7e-16), shear flow (1.3e-15), the
   Rayleigh–Bénard eigenvalue problem (4e-16) and the pipe-flow eigenvalues on the disk (5e-14).

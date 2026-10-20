@@ -1,8 +1,0 @@
-﻿conatus.expert.PseudoArclength
-==============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: PseudoArclength
-   :members:
-   :show-inheritance:

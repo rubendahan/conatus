@@ -1,8 +1,0 @@
-﻿conatus.expert.Group
-====================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Group
-   :members:
-   :show-inheritance:

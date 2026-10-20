@@ -10,21 +10,24 @@ until you call `discretize`. Everything below comes from a single import:
 from conatus.expert import *        # IR, bases, problems, solvers, time stepping, dynamics toolkit
 ```
 
-`conatus.expert` re-exports the public objects of every user-facing module; name clashes are never
-resolved silently and are listed by `conatus.expert.explain()` (see {doc}`explain`).
+`conatus.expert` re-exports the documented public objects of every user-facing module; name
+clashes are never resolved silently and are listed by `conatus.expert.explain()` (see
+{doc}`explain`). Helpers and result types that the guide does not show stay in their module
+(`conatus.<module>.<name>`).
 
 ## Fields and parameters
 
 ```python
 import numpy as np
 from conatus.expert import (CartesianCoordinates, Chebyshev, Domain, Field, Parameter,
-                            RealFourier, VectorField)
+                            RealFourier, TensorField, VectorField)
 
 cs = CartesianCoordinates("x", "z")
 x, z = cs.coords
 D = Domain(cs, [RealFourier(x, 64, (0, 2 * np.pi), dealias=3/2),
                 Chebyshev(z, 32, (-1, 1), dealias=3/2)])
 u = VectorField("u", D)                 # one component per coordinate of cs
+S = TensorField("S", D, 2)              # rank 2: one component per pair of coordinates
 T = Field("T", D)                       # scalar; dtype=complex for complex unknowns
 Ra = Parameter("Ra", 1e5)               # named scalar; its value is not part of the hash
 c = Parameter("c", dtype=complex)       # an eigenvalue is a Parameter too
@@ -41,7 +44,9 @@ resolve it. To accept it as it is, declare it: `ncc_cutoff=1e-6` drops its coeff
 $10^{-6}\max|a_k|$, `ncc_tail_tol=1e-6` keeps them all; `plan.explain()` reports either. The
 native calls take the same arguments (`m.simulate(N, ..., ncc_cutoff=1e-6)`, `m.eigenvalues`,
 `m.solve`, `lin.eigenvalues`). Coefficient data (`FieldData(..., "coeff")`) is exact and never
-refused.
+refused. A tail below `conatus.tolerances.NCC_ROUNDING` ($10^3$) times the machine epsilon times the
+scale of the data is the rounding of the coefficient's own computation, not under-resolution, and
+is accepted.
 
 **Residual digits and coefficient digits.** A Newton or eigenvalue residual of $10^{-12}$ next to
 an accepted NCC tail of $10^{-9}$ is not a contradiction: the residual measures how well the

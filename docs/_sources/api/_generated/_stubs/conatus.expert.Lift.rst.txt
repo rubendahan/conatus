@@ -1,8 +1,0 @@
-﻿conatus.expert.Lift
-===================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Lift
-   :members:
-   :show-inheritance:

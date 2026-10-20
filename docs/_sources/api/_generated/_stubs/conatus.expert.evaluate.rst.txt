@@ -1,6 +1,0 @@
-﻿conatus.expert.evaluate
-=======================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: evaluate

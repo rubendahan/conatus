@@ -1,8 +1,0 @@
-﻿conatus.expert.FloquetExponents
-===============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: FloquetExponents
-   :members:
-   :show-inheritance:

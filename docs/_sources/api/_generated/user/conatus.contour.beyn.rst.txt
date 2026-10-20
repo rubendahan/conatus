@@ -1,0 +1,6 @@
+﻿conatus.contour.beyn
+====================
+
+.. currentmodule:: conatus.contour
+
+.. autofunction:: beyn

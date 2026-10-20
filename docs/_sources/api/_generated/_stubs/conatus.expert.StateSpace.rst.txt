@@ -1,8 +1,0 @@
-﻿conatus.expert.StateSpace
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: StateSpace
-   :members:
-   :show-inheritance:

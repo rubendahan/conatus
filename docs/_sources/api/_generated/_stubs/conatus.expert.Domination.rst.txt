@@ -1,8 +1,0 @@
-﻿conatus.expert.Domination
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Domination
-   :members:
-   :show-inheritance:

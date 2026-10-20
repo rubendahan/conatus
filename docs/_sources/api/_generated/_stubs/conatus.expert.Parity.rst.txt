@@ -1,8 +1,0 @@
-﻿conatus.expert.Parity
-=====================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Parity
-   :members:
-   :show-inheritance:

@@ -1,8 +1,0 @@
-﻿conatus.expert.Scale
-====================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Scale
-   :members:
-   :show-inheritance:

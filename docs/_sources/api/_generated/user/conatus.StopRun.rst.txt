@@ -1,0 +1,6 @@
+﻿conatus.StopRun
+===============
+
+.. currentmodule:: conatus
+
+.. autoexception:: StopRun

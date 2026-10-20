@@ -1,8 +1,0 @@
-﻿conatus.expert.CurvePoint
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: CurvePoint
-   :members:
-   :show-inheritance:

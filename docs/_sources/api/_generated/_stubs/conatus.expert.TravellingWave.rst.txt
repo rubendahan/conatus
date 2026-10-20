@@ -1,8 +1,0 @@
-﻿conatus.expert.TravellingWave
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: TravellingWave
-   :members:
-   :show-inheritance:

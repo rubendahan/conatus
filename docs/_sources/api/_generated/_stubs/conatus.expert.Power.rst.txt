@@ -1,8 +1,0 @@
-﻿conatus.expert.Power
-====================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Power
-   :members:
-   :show-inheritance:

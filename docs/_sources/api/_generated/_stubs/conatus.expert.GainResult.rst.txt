@@ -1,8 +1,0 @@
-﻿conatus.expert.GainResult
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: GainResult
-   :members:
-   :show-inheritance:

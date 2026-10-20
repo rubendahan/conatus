@@ -1,6 +1,0 @@
-﻿conatus.expert.branching\_directions
-====================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: branching_directions

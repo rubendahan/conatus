@@ -1,8 +1,0 @@
-﻿conatus.expert.Translation
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Translation
-   :members:
-   :show-inheritance:

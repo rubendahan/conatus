@@ -1,8 +1,0 @@
-﻿conatus.expert.Flow
-===================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Flow
-   :members:
-   :show-inheritance:

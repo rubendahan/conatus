@@ -1,6 +1,0 @@
-﻿conatus.expert.BIBTEX
-=====================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: BIBTEX

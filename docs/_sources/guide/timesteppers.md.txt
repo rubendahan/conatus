@@ -57,7 +57,7 @@ are explicit ({doc}`equations`).
 
 | Scheme | Family (`solver.family`) | Implicit part on $L$ / explicit part on $F$ | Order | Reference |
 |---|---|---|---|---|
-| `SBDF1`–`SBDF4` | multistep (`"sbdf"`) | BDF$q$ / $q$-step extrapolation | $q$ | Wang & Ruuth 2008 |
+| `SBDF1`–`SBDF4` | multistep (`"sbdf"`) | BDF$q$ / $q$-step extrapolation | $q$ (with the default `startup="lower_order"`: $\min(q, 2)$) | Wang & Ruuth 2008 |
 | `CNAB1` | multistep (`"cn"`) | Crank–Nicolson / forward Euler | 1 | Wang & Ruuth 2008, eq. 2.5.3 |
 | `CNAB2` | multistep (`"cn"`) | Crank–Nicolson / Adams–Bashforth 2 | 2 | eq. 2.9 |
 | `MCNAB2` | multistep (`"cn"`) | modified CN (9/16, 6/16, 1/16) / Adams–Bashforth 2 | 2 | eq. 2.10 |
@@ -66,7 +66,7 @@ are explicit ({doc}`equations`).
 | `RKSMR` | Runge–Kutta (`"rk"`) | CN per stage (order 2) / Wray RK3 (order 3) | 2 | Spalart, Moser & Rogers 1991 |
 | `RKGFY` | Runge–Kutta (`"rk"`) | Crank–Nicolson / Heun | 2 | Hollerbach 2002 |
 
-All thirteen schemes are in Dedalus 3 too, and give the same numbers to round-off for the same
+Their names are listed by `conatus.expert.SCHEMES`. All thirteen schemes are in Dedalus 3 too, and give the same numbers to round-off for the same
 problem, basis, resolution, `dt` and start-up (relative differences $\le 10^{-15}$ with Fourier and
 $\le 1.1\times10^{-14}$ with Chebyshev and tau rows after 20 steps; with time-dependent boundary data, under
 `bc_time="step"`, below). Conatus implements them from the papers; Dedalus is only an external
@@ -177,7 +177,11 @@ questions:
 - **Temporal error**: `EmbeddedError(sim.solver)` compares one step with a lower-order companion
   on the same data (SBDF$q$ against SBDF$q{-}1$, RK443 against RK222, RKSMR or RKGFY against
   RK111; refused for the CN family, which has no companion) and reports the
-  difference. It adapts `dt` only if you ask, with `adapt=True` and an explicit `tol=`.
+  difference. It adapts `dt` only if you ask, with `adapt=True` and an explicit `tol=` and
+  `safety=` (Runge–Kutta schemes): a step whose estimate exceeds `tol` is rejected, the state
+  restored and the step retried with a smaller `dt`; an accepted step proposes the next `dt`.
+  If `tol` cannot be met at `dt_min` (or after 20 rejections in a row) a `ConvergenceError` is
+  raised: no step above `tol` is ever kept.
 
 ```python
 import numpy as np
@@ -214,8 +218,8 @@ sim = m.simulate(N=(64, 32), scheme="RK443", dt=1e-3, check_finite=10)
 
 At each finite-state check the relative spectral tail of every unknown along every direction (the
 largest coefficient among the last 10 % of the mode numbers over the largest one, as in
-{doc}`resolution`) is measured on the coefficients in memory. Above `RUN_TAIL_TOL = 1e-3` (about
-3 % of the energy in the tail window; `1e-4` warned on the resolved flagship run, KS `L = 22`,
+{doc}`resolution`) is measured on the coefficients in memory. Above `RUN_TAIL_TOL = 1e-3` (a ratio of
+amplitudes: a tail coefficient then carries about $10^{-6}$ of the energy of the largest one; `1e-4` warned on the resolved flagship run, KS `L = 22`,
 `N = 32`, tutorial 5) a `cn.errors.UnderResolvedWarning` names the
 unknown, the direction, the tail and the time, once per run, and `sim.explain()` repeats it. Nothing
 is changed. Kuramoto–Sivashinsky on `L = 22` with `N = 8` (where `max|u|` reaches 64 instead of
@@ -265,7 +269,7 @@ print(np.array_equal(sim.grid("T"), sim2.grid("T")))     # True
 
 A checkpoint loaded into a simulation with different numerics (another `dt`, scheme or start-up)
 is refused with the difference, and so is a checkpoint of another model, other equations, other
-parameter values, another box or another resolution ({doc}`io`); `restart(path, allow=("kappa",))`
+parameter values, other given-field data, another box or another resolution ({doc}`io`); `restart(path, allow=("kappa",))`
 continues the state at a new value of a named parameter, declared by `explain()`. Periodic
 checkpoints, snapshots and runs split over several jobs: {doc}`io`.
 
@@ -275,7 +279,7 @@ checkpoints, snapshots and runs split over several jobs: {doc}`io`.
 `sim.solver.run(n, callback=f, every=10)` calls `f(sim.solver)`); the period is part of the run and
 has no default, and a number of steps or a period that is not an integer is refused, never rounded.
 `sim.run(..., record=True)` records the run in the registry and returns it ({doc}`runs`).
-A callback ends a run early by raising `cn.StopRun`; with
+A callback ends a run early by raising `cn.StopRun` (the Studio's *stop* raises the same); with
 `on_stop="return"` the run returns and `sim.stopped` says why, with the default `"raise"` the
 exception leaves `run`:
 
@@ -293,9 +297,11 @@ def guard(sim):
 sim.run(steps=100, callback=guard, every=10, on_stop="return")
 print(sim.stopped, sim.iteration)          # stopped at t = 0.50 50
 ```
- For anything you want to see
-while the run goes on (fields, curves, controls), use the a feature outside this release: it never slows or changes
-the computation. To keep a run so that you can find, compare and reproduce it, see {doc}`runs`.
+
+To keep a run so that you can find, compare and reproduce it, see {doc}`runs`.
+
+- **Watching a run.** For anything you want to see while the run goes on (fields, curves,
+  controls), use the {doc}`studio`: it never slows or changes the computation.
 
 ## On a GPU
 

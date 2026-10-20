@@ -68,5 +68,17 @@ the device; `positions()` and the files copy to the host. The test
 `tests/model/test_particles_gpu.py` compares GPU and CPU runs. **Not yet verified on GPU hardware:**
 that test has not run yet, so treat the GPU path of tracers and dye as experimental until it has.
 
+## Two interfaces
+
+| | `sim.particles`, `sim.dye` (this page) | `cn.diagnostics.Particles`, `Dye` ({doc}`diagnostics`) |
+|---|---|---|
+| Velocity | the running simulation, its exact spectral series | any callable, or grid snapshots with a declared interpolation |
+| Time step | one RK4 step per flow step, past flow states for the midpoint | the caller's `dt`, RK4 or RK2 |
+| Walls | `at_walls="refuse"` or `"clip"` (counted) | `boundary="raise"` or `"clip"` (counted) |
+| Output | HDF5 file (`cn.io.read`) and `positions()` | arrays in memory |
+
+Use `sim.particles` while a native simulation runs; use the diagnostics module for a velocity you
+own or for data after a run.
+
 **See also:** {doc}`diagnostics` (tracers from snapshots or analytic velocities, inertial
 particles, streaklines, timelines, FTLE, mixing), tutorial {doc}`../tutorials/16_particles_dye`.

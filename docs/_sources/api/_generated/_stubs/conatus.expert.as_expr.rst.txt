@@ -1,6 +1,0 @@
-﻿conatus.expert.as\_expr
-=======================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: as_expr

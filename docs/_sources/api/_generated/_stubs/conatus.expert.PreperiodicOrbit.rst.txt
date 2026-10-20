@@ -1,8 +1,0 @@
-﻿conatus.expert.PreperiodicOrbit
-===============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: PreperiodicOrbit
-   :members:
-   :show-inheritance:

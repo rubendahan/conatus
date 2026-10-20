@@ -1,6 +1,0 @@
-﻿conatus.expert.eigenvalue\_sensitivity
-======================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: eigenvalue_sensitivity

@@ -1,6 +1,0 @@
-﻿conatus.expert.even\_subspace
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: even_subspace

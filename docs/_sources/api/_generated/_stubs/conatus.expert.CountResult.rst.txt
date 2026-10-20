@@ -1,0 +1,12 @@
+﻿conatus.expert.CountResult
+==========================
+
+.. currentmodule:: conatus.expert
+
+.. The object is indexed on the user-layer page (api/user.md); this re-export page is not, so
+   Sphinx does not see two descriptions of one object (generate.py, api_tables).
+
+.. autoclass:: CountResult
+   :members:
+   :show-inheritance:
+   :no-index:

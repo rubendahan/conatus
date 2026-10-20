@@ -1,8 +1,0 @@
-﻿conatus.expert.Trajectory
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Trajectory
-   :members:
-   :show-inheritance:

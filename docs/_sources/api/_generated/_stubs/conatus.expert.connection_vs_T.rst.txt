@@ -1,6 +1,0 @@
-﻿conatus.expert.connection\_vs\_T
-================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: connection_vs_T

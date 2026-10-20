@@ -1,8 +1,0 @@
-﻿conatus.expert.CurveEvent
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: CurveEvent
-   :members:
-   :show-inheritance:

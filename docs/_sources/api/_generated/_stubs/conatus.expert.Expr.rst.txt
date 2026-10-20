@@ -1,8 +1,0 @@
-﻿conatus.expert.Expr
-===================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Expr
-   :members:
-   :show-inheritance:

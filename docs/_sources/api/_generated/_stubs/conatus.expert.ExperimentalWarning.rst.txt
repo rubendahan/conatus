@@ -1,0 +1,6 @@
+﻿conatus.expert.ExperimentalWarning
+==================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: ExperimentalWarning

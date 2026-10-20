@@ -1,8 +1,0 @@
-﻿conatus.expert.ModalSystem
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: ModalSystem
-   :members:
-   :show-inheritance:

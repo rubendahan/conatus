@@ -1,8 +1,0 @@
-﻿conatus.expert.DynamicalSystem
-==============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: DynamicalSystem
-   :members:
-   :show-inheritance:

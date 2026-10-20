@@ -1,6 +1,0 @@
-﻿conatus.expert.MEAN\_POLICIES
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: MEAN_POLICIES

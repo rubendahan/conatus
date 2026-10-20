@@ -1,8 +1,0 @@
-﻿conatus.expert.EigenvalueSensitivity
-====================================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: EigenvalueSensitivity
-   :members:
-   :show-inheritance:

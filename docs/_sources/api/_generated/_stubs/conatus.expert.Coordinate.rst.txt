@@ -1,8 +1,0 @@
-﻿conatus.expert.Coordinate
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Coordinate
-   :members:
-   :show-inheritance:

@@ -1,6 +1,0 @@
-﻿conatus.expert.COMMANDS
-=======================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: COMMANDS

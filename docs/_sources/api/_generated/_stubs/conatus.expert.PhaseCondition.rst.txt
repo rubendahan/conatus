@@ -1,8 +1,0 @@
-﻿conatus.expert.PhaseCondition
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: PhaseCondition
-   :members:
-   :show-inheritance:

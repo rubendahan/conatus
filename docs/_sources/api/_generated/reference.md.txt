@@ -5,7 +5,7 @@ it and documented from its docstring.
 
 ## `conatus.verify`
 
-Verification tools (spec §68–86): MMS, convergence studies, reports — never a CORRECT flag.
+Verification tools: MMS, convergence studies, reports — never a CORRECT flag.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert
@@ -16,6 +16,7 @@ Verification tools (spec §68–86): MMS, convergence studies, reports — never
    Check
    VerificationReport
    verify
+
 ```
 
 ## `conatus.ir`
@@ -28,14 +29,11 @@ Mathematical IR: coordinates, bases, domains, fields, expressions, problems.
 .. autosummary::
    :toctree: _stubs
 
-   Coordinate
-   CoordinateSystem
    CartesianCoordinates
    PolarCoordinates
    CylindricalCoordinates
    S2Coordinates
    SphericalCoordinates
-   Basis
    RealFourier
    ComplexFourier
    Jacobi
@@ -54,40 +52,13 @@ Mathematical IR: coordinates, bases, domains, fields, expressions, problems.
    Laguerre
    CompoundChebyshev
    Domain
-   Expr
    Field
    VectorField
    TensorField
    Parameter
-   Constant
-   Zero
-   UnitVector
-   Add
-   Mul
-   Dot
-   Cross
-   Outer
-   Power
-   Conj
-   Component
-   Differentiate
-   Gradient
-   Divergence
-   Laplacian
-   Curl
-   TimeDerivative
-   Integrate
-   Interpolate
-   Lift
-   TransposeResult
-   as_expr
-   add
-   mul
-   neg
    dot
    cross
    outer
-   power
    conj
    comp
    diff
@@ -99,9 +70,7 @@ Mathematical IR: coordinates, bases, domains, fields, expressions, problems.
    integ
    interp
    lift
-   pair
    unit_vector
-   UnaryFunction
    exp
    log
    sin
@@ -110,9 +79,6 @@ Mathematical IR: coordinates, bases, domains, fields, expressions, problems.
    sqrt
    absolute
    sign
-   pointwise
-   has_nonpolynomial
-   Equation
    Problem
    IVP
    LBVP
@@ -121,25 +87,27 @@ Mathematical IR: coordinates, bases, domains, fields, expressions, problems.
    NonlinearLHSError
    ProblemError
    RankReport
-   Parity
    EVEN
    ODD
    Reflection
    SymmetrySubspace
    SymmetryError
    SymmetryBreakingError
-   Translation
-   SO2
    ShiftReflect
    AzimuthalMFold
    EquatorialParity
-   CoordinateMap
    MappedChebyshev
    RationalMap
    TanhMap
    TanMap
+
+.. autosummary::
+   :toctree: _stubs
+   :template: autosummary/noindex.rst
+
    parse_equation
    parse_expr
+
 ```
 
 ## `conatus.flows`
@@ -154,7 +122,7 @@ Usual base flows and their domains, stated explicitly (no hidden defaults).
 
    ChannelBaseFlow
    channel
-   PROFILES
+
 ```
 
 ## `conatus.units`
@@ -167,14 +135,11 @@ Units and nondimensionalizations.
 .. autosummary::
    :toctree: _stubs
 
-   Scale
-   Group
    UnitSystem
-   QUANTITY_DIMENSIONS
    convert
    Energy
-   ENERGY_CONVENTIONS
    ChannelUnits
+
 ```
 
 ## `conatus.discretize`
@@ -188,12 +153,11 @@ Spectral discretization: Olver–Townsend operators, generalized tau, per-group 
    :toctree: _stubs
 
    DiscretizationError
-   GroupMatrices
-   GroupRank
    LBVPSolution
    Plan
    RankError
    discretize
+
 ```
 
 ## `conatus.reference`
@@ -207,9 +171,8 @@ NumPy reference backend: the oracle of every fast path (C++/CUDA banded solves, 
    :toctree: _stubs
 
    FieldData
-   ReferenceEvaluator
-   evaluate
    grid
+
 ```
 
 ## `conatus.solvers`
@@ -223,24 +186,17 @@ Solvers on discretization plans: generalized EVP, Newton for NLBVP; LBVP lives o
    :toctree: _stubs
 
    EVPResult
-   biorthogonality
-   drift_filter
-   matrix_derivative
    solve_dense
    solve_sparse
    eigenvalues
    ParametricEVP
-   TrackedMode
    CriticalPoint
    critical
-   laurent_exponents
    NewtonSolver
    NLBVPSolution
-   NewtonIteration
    NewtonNotConverged
    PeriodicNewtonSolver
-   PeriodicNLBVPSolution
-   PhaseCondition
+
 ```
 
 ## `conatus.linearize`
@@ -254,9 +210,8 @@ Linearization of a problem around a base state, and inner products.
    :toctree: _stubs
 
    linearize
-   LinearizedEVP
    InnerProduct
-   chebyshev_gram
+
 ```
 
 ## `conatus.timestep`
@@ -274,18 +229,8 @@ Time integration of IVPs: pseudospectral F, stacked groups, IMEX schemes.
    TauWatch
    IVPSolver
    SCHEMES
-   SBDF_SCHEMES
-   CN_SCHEMES
-   RK_SCHEMES
-   STARTUPS
-   SpectralEvaluator
    SpectralError
-   GlobalSystem
-   ORDERINGS
-   rk_tableau
-   sbdf_coefficients
-   cn_coefficients
-   scheme_description
+
 ```
 
 ## `conatus.adjoint`
@@ -300,9 +245,8 @@ Discrete tangent and adjoint of the IMEX time steppers (see).
 
    FlowMap
    VJPSuspended
-   revolve_actions
    revolve_cost
-   revolve_schedule
+
 ```
 
 ## `conatus.ecs`
@@ -317,24 +261,16 @@ Exact coherent structures: Newton–Krylov–hookstep, equilibria, travelling wa
 
    FourierOps
    NewtonKrylovHookstep
-   NewtonKrylovResult
-   arnoldi_gmres
-   ECSSolution
    Equilibrium
-   TravellingWave
-   RelativePeriodicOrbit
-   PreperiodicOrbit
-   Flow
    equilibrium_eigenvalues
    find_equilibrium
    find_travelling_wave
    find_relative_periodic_orbit
    floquet_multipliers
    symmetry_breaking_check
-   ks_solver
    EdgeTracker
    ThresholdBisection
-   UndecidedTrajectory
+
 ```
 
 ## `conatus.continuation`
@@ -347,13 +283,10 @@ Pseudo-arclength continuation: generic core and NLBVP adapter.
 .. autosummary::
    :toctree: _stubs
 
-   Branch
-   BranchPoint
    ContinuationSettings
-   Event
-   PseudoArclength
    NLBVPContinuation
    KSDomainContinuation
+
 ```
 
 ## `conatus.floquet`
@@ -373,8 +306,8 @@ Floquet–Hill toolkit (decision D9).
    HillGPU
    CertifiedRoot
    SecantRoot
-   fold_floquet
    shell_floquet
+
 ```
 
 ## `conatus.growth`
@@ -387,19 +320,13 @@ Floquet–Hill toolkit (decision D9).
 .. autosummary::
    :toctree: _stubs
 
-   FloquetExponents
-   OptimalGain
-   PeriodicOperator
    floquet_exponents
-   operator_floquet
-   operator_gain
    optimal_gain
    periodic_operator
-   periodic_operator_from_plan
-   GainResult
    energy_factor
    gain
    propagator
+
 ```
 
 ## `conatus.nonmodal`
@@ -412,27 +339,13 @@ Non-modal stability: transient growth and the continuous adjoint.
 .. autosummary::
    :toctree: _stubs
 
-   AdjointComparison
-   Descriptor
-   ModalSystem
-   StateSpace
-   SteadyOperator
    Y
    compare_adjoints
-   continuous_adjoint_mode
-   discrete_adjoint_mode
-   energy_growth
-   exp_norm
-   galerkin_numerical_abscissa
-   gram_energy_factor
    max_growth
    numerical_abscissa
    parallel_shear_flow
-   propagator_growth
-   restrict
-   spectral_abscissa
    state_space
-   steady_operator
+
 ```
 
 ## `conatus.presets`
@@ -447,11 +360,12 @@ Study presets built on the generic unit systems of :mod:`conatus.units`.
 
    CHANNEL_SYSTEMS
    laminar_poiseuille
+
 ```
 
 ## `conatus.methods`
 
-``plan.methods()``: a "Methods" paragraph generated from the plan (spec §116).
+``plan.methods()``: a "Methods" paragraph generated from the plan.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert
@@ -459,52 +373,8 @@ Study presets built on the generic unit systems of :mod:`conatus.units`.
 .. autosummary::
    :toctree: _stubs
 
-   MethodsText
    methods
-   BIBTEX
-```
 
-## `conatus.telemetry`
-
-Telemetry of a run, read by a monitor (any process reading the spool): protocol v1, non-blocking emitter, spool reader.
-
-```{eval-rst}
-.. currentmodule:: conatus.expert
-
-.. autosummary::
-   :toctree: _stubs
-
-   COMMANDS
-   CONFIRM_COMMANDS
-   CONTROL_KINDS
-   FILM_ENCODING
-   FILM_POLICY
-   FRAME_KINDS
-   KINDS
-   PROTOCOL_VERSION
-   SCALES
-   STAT_KINDS
-   VIEW_KINDS
-   check_controls
-   check_set
-   decode_curve
-   decode_frame
-   decode_frame3d
-   decode_points
-   decode_vec2d
-   encode_curve
-   encode_frame
-   encode_frame3d
-   encode_points
-   encode_vec2d
-   film_frame
-   film_record
-   FilmIndex
-   RunState
-   SpoolReader
-   StopRun
-   Telemetry
-   default_spool
 ```
 
 ## `conatus.errors`
@@ -544,7 +414,8 @@ Public exception hierarchy of Conatus (v0.1).
    BaseStateWarning
    GroupWarning
    DefaultChoiceWarning
-   doc_reference
+   ExperimentalWarning
+
 ```
 
 ## `conatus.gpu`
@@ -559,6 +430,7 @@ Is there a usable GPU here? ``gpu_available()`` and ``gpu_report()``.
 
    gpu_available
    gpu_report
+
 ```
 
 ## `conatus.bifurcation`
@@ -571,31 +443,19 @@ Native bifurcation core on the Conatus IR.
 .. autosummary::
    :toctree: _stubs
 
-   DynamicalSystem
    ir_system
    ode_problem
-   ArclengthDriver
-   Curve
-   CurveEvent
-   CurvePoint
    continue_equilibria
-   newton_equilibrium
-   generalized_eigenvalues
    normal_form
-   ZeroEigenvalueNormalForm
-   HopfNormalForm
    CollocationMesh
    PeriodicOrbitProblem
    continue_orbits
    branch_switch
-   branching_directions
-   hopf_orbit_start
    continue_codim2
-   LandauEquation
    amplitude_equation
-   GinzburgLandau
    ginzburg_landau
    cos_mode_observable
+
 ```
 
 ## `conatus.slices`
@@ -609,16 +469,9 @@ Symmetry reduction by slices: first Fourier mode slice of a translation symmetry
    :toctree: _stubs
 
    FirstFourierModeSlice
-   RotationOps
-   SliceTrajectory
-   SliceOrbitCheck
-   SliceRPO
    find_rpo_in_slice
    slice_equilibrium_check
-   slice_orbit_check
-   TWO_MODE_PARAMETERS
-   two_mode_problem
-   two_mode_callables
+
 ```
 
 ## `conatus.manifolds`
@@ -631,33 +484,14 @@ Phase-space geometry: trajectories with declared dense output, Poincaré section
 .. autosummary::
    :toctree: _stubs
 
-   ODEIntegrator
-   SolverIntegrator
-   Trajectory
-   Crossings
    PoincareSection
    first_return_map
-   poincare_crossings
-   UnstableManifold
    globalize
-   polynomial_degree_defect
    unstable_manifold
-   Connection
-   connection_vs_T
    find_connection
-   projection_gap
    scan_connection
-   unstable_left_basis
-   equilibrium_connection
    ecs_system
-   ecs_integrator
-   orbit_manifold_seeds
-   first_return_stretch
-   section_projector
-   PinningRegion
-   even_subspace
-   pinning_region
-   restrict_system
+
 ```
 
 ## `conatus.sensitivity`
@@ -670,22 +504,11 @@ Sensitivity of global modes: structural sensitivity, base flow, steady forcing, 
 .. autosummary::
    :toctree: _stubs
 
-   ADJOINT_KINDS
-   BaseFlowSensitivity
-   EigenvalueSensitivity
-   ForcingSensitivity
-   GinzburgLandauExact
-   ModePair
-   StructuralSensitivity
    base_flow_sensitivity
-   eigenvalue_sensitivity
-   feedback_system
    ginzburg_landau_exact
    linear_ginzburg_landau
-   mode_pair
-   parameter_sensitivity
-   steady_forcing_sensitivity
    structural_sensitivity
+
 ```
 
 ## `conatus.datadriven`
@@ -698,27 +521,16 @@ Data-driven decompositions: POD, DMD, SPOD, EDMD/Koopman.
 .. autosummary::
    :toctree: _stubs
 
-   AMPLITUDES
    DMD
-   DMD_METHODS
    DataInnerProduct
-   Dictionary
-   EDMD
-   MEAN_POLICIES
-   POD
-   POD_METHODS
    SPOD
-   Snapshots
    dmd
    edmd
    monomials
    pod
    rbf
-   snapshots_from_arrays
-   snapshots_from_run
    spod
-   uniform_dt
-   welch_blocks
+
 ```
 
 ## `conatus.chaos`
@@ -731,14 +543,10 @@ Chaos: Lyapunov spectrum on the exact tangent of the step, covariant Lyapunov ve
 .. autosummary::
    :toctree: _stubs
 
-   Domination
-   LyapunovResult
-   clv_subspace_angles
    kaplan_yorke
    lyapunov_spectrum
-   PoincareResult
    poincare_section
-   rk_tangent_step
+
 ```
 
 ## `conatus.ensembles`
@@ -751,11 +559,25 @@ Ensembles on one batch: batches of initial conditions and/or parameter values ad
 .. autosummary::
    :toctree: _stubs
 
-   BatchedRHS
-   BatchedSystem
-   BatchMaps
    Ensemble
-   EnsembleFate
    ensemble_fate
    proportion_ci
+
+```
+
+## `conatus.contour`
+
+Contour methods in the complex plane.
+
+```{eval-rst}
+.. currentmodule:: conatus.expert
+
+.. autosummary::
+   :toctree: _stubs
+   :template: autosummary/noindex.rst
+
+   CountResult
+   BeynResult
+   RegionEVPResult
+
 ```

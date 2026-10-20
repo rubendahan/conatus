@@ -1,6 +1,0 @@
-﻿conatus.expert.restrict
-=======================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: restrict

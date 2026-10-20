@@ -4,15 +4,16 @@ Tutorial 0 (getting started) walks the whole path once; the shorter ones after i
 plain Python script, shown piece by piece on its page, that **ends by checking its result against
 a published value or a closed form** (an `assert`, with the reference in a comment). The output
 printed on each page is the output of that script, executed as it is shown; the table below says
-when it last ran.
+when it last ran and whether it passed.
 
 Prerequisites: {doc}`../install` with the `tutorials` extra (`pip install "conatus[tutorials]"`: matplotlib for
-the figures), and some familiarity with spectral methods. Run a tutorial with
+the figures, xarray for tutorial 16), and some familiarity with spectral methods. Run a tutorial with
 `python docs/site/tutorials/code/<script>.py` from a copy of the repository. Tutorial 2b needs a
 GPU; the check script of tutorial 14 (14b) needs Dedalus.
 
 | # | Tutorial | You will learn | Reference value |
 |---|---|---|---|
+| — | {doc}`first_steps` | ten minutes: one equation written as on paper, a simulation, a plot, one physical number, four guided changes | Cole (1951), Hopf (1950) |
 | 0 | {doc}`00_getting_started` | the whole path once: a native model, `explain()`, stability, the onset by `critical`, a simulation, the heat flux, the *Methods* paragraph, the run registry | Reid & Harris (1958) |
 | 1 | {doc}`01_orr_sommerfeld` | a native model, conditions by wall name, eigenvalues with residuals, critical parameters, `verify` | Orszag (1971) |
 | 2 | {doc}`02_rayleigh_benard` | a simulation on CPU, then on GPU; time steppers, CFL, the *Methods* paragraph | linear growth rate, CPU/GPU agreement |
@@ -40,6 +41,7 @@ only passing outputs are copied into the pages.
 :hidden:
 :maxdepth: 1
 
+first_steps
 00_getting_started
 01_orr_sommerfeld
 02_rayleigh_benard

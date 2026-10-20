@@ -1,6 +1,0 @@
-﻿conatus.expert.gram\_energy\_factor
-===================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: gram_energy_factor

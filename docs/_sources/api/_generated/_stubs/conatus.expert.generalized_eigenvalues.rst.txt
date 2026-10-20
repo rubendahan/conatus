@@ -1,6 +1,0 @@
-﻿conatus.expert.generalized\_eigenvalues
-=======================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: generalized_eigenvalues

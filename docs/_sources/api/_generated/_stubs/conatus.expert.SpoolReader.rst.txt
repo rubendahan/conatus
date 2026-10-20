@@ -1,8 +1,0 @@
-﻿conatus.expert.SpoolReader
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: SpoolReader
-   :members:
-   :show-inheritance:

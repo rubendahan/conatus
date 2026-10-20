@@ -1,0 +1,6 @@
+﻿conatus.view
+============
+
+.. currentmodule:: conatus
+
+.. autofunction:: view

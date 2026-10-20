@@ -97,3 +97,19 @@ particles with an error; bounded axes either clip (counted) or raise.
 `potential_energies(g, b, vertical_axis=...)` (E_p, E_b by sorting and APE = E_p − E_b ≥ 0 exactly,
 Winters et al. 1995), `mixing_rate(t, E_b, phi_i=...)` (the boundary flux is required) and
 `mixing_efficiency(phi_d, eps, t=...)`.
+
+## In the Studio
+
+The telemetry protocol carries three more frame kinds, all lossy by declaration and sent by the
+same non-blocking path: `Telemetry.frame3d` (a volume, strided on its own device, 8 bits, with the
+sample positions), `points3d` (particles or polylines, 16 bits) and `vec2d` (a 2D velocity for line
+integral convolution). `Telemetry.want_frame(name)` says whether a frame would leave now, so that
+Q or λ₂ are computed only then. The Studio shows them in a WebGL2 view: orbit, zoom and pan by mouse
+or touch, movable slices, isosurfaces, volume rendering in the chart's scales, Eulerian and
+Lagrangian side by side, LIC in 2D and the mixing curves. See `studio/README.md`.
+
+Two real examples ship with the repository: `studio/runs/channel3d_live.py` (the Re_τ 180 channel
+restarted from a checkpoint, with Q, λ₂, u′ volumes, a hydrogen-bubble wire and smoke streaklines;
+`--check-bitwise N` proves that the visualization does not change the computation) and
+`studio/runs/kh2d_live.py` (Kelvin–Helmholtz with a dye, mixing curves and a live check of the
+variance budget d⟨c′²⟩/dt + χ = 0).

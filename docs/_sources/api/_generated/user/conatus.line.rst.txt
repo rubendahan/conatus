@@ -1,0 +1,6 @@
+﻿conatus.line
+============
+
+.. currentmodule:: conatus
+
+.. autofunction:: line

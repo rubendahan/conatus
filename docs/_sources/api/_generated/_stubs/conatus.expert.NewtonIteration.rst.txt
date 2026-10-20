@@ -1,8 +1,0 @@
-﻿conatus.expert.NewtonIteration
-==============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: NewtonIteration
-   :members:
-   :show-inheritance:

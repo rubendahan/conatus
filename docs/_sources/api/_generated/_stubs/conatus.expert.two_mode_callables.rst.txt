@@ -1,6 +1,0 @@
-﻿conatus.expert.two\_mode\_callables
-===================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: two_mode_callables

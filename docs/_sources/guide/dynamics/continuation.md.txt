@@ -66,6 +66,10 @@ $\partial_p G$ and the multilinear forms used by the normal forms.
 At a symmetry-breaking pitchfork the symmetry is declared (`symmetry=S`) and the branch point is
 classified. At a Hopf point the first Lyapunov coefficient decides between sub- and
 supercritical; the cycles born there are continued by orthogonal collocation on a declared mesh.
+A branch of cycles can also start from any orbit given as a collocation state `z0` (the mesh
+values, the period and the parameter):
+`continue_orbits(PeriodicOrbitProblem(system, "r", mesh), z0, settings)`, with the same tests
+(`"lpc"`, `"pd"`, `"ns"`, `"bpc"`) and `explain()`.
 
 ## Codimension two
 

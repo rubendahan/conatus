@@ -1,6 +1,0 @@
-﻿conatus.expert.film\_record
-===========================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: film_record

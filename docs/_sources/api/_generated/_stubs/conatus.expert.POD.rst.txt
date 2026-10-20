@@ -1,8 +1,0 @@
-﻿conatus.expert.POD
-==================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: POD
-   :members:
-   :show-inheritance:

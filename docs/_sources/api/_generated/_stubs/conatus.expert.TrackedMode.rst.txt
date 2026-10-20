@@ -1,8 +1,0 @@
-﻿conatus.expert.TrackedMode
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: TrackedMode
-   :members:
-   :show-inheritance:

@@ -1,0 +1,8 @@
+﻿conatus.contour.BeynResult
+==========================
+
+.. currentmodule:: conatus.contour
+
+.. autoclass:: BeynResult
+   :members:
+   :show-inheritance:

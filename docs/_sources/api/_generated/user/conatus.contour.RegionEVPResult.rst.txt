@@ -1,0 +1,8 @@
+﻿conatus.contour.RegionEVPResult
+===============================
+
+.. currentmodule:: conatus.contour
+
+.. autoclass:: RegionEVPResult
+   :members:
+   :show-inheritance:

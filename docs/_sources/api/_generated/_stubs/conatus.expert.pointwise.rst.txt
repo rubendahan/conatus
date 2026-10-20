@@ -1,6 +1,0 @@
-﻿conatus.expert.pointwise
-========================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: pointwise

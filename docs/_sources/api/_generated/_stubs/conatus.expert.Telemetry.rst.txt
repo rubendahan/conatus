@@ -1,8 +1,0 @@
-﻿conatus.expert.Telemetry
-========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Telemetry
-   :members:
-   :show-inheritance:

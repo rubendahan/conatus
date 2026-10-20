@@ -1,0 +1,8 @@
+﻿conatus.contour.CountResult
+===========================
+
+.. currentmodule:: conatus.contour
+
+.. autoclass:: CountResult
+   :members:
+   :show-inheritance:

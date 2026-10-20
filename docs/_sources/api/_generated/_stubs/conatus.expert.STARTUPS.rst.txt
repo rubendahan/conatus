@@ -1,6 +1,0 @@
-﻿conatus.expert.STARTUPS
-=======================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: STARTUPS

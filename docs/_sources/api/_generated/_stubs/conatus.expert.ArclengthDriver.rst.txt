@@ -1,8 +1,0 @@
-﻿conatus.expert.ArclengthDriver
-==============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: ArclengthDriver
-   :members:
-   :show-inheritance:

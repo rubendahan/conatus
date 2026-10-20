@@ -1,6 +1,0 @@
-﻿conatus.expert.chebyshev\_gram
-==============================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: chebyshev_gram

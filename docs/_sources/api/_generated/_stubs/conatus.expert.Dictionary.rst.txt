@@ -1,8 +1,0 @@
-﻿conatus.expert.Dictionary
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Dictionary
-   :members:
-   :show-inheritance:

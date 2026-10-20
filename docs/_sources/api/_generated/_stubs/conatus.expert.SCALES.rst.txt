@@ -1,6 +1,0 @@
-﻿conatus.expert.SCALES
-=====================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: SCALES

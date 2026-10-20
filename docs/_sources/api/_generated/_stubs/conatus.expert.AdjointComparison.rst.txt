@@ -1,8 +1,0 @@
-﻿conatus.expert.AdjointComparison
-================================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: AdjointComparison
-   :members:
-   :show-inheritance:

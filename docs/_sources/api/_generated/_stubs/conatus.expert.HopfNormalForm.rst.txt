@@ -1,8 +1,0 @@
-﻿conatus.expert.HopfNormalForm
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: HopfNormalForm
-   :members:
-   :show-inheritance:

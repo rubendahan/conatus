@@ -1,6 +1,0 @@
-﻿conatus.expert.orbit\_manifold\_seeds
-=====================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: orbit_manifold_seeds

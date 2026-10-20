@@ -1,8 +1,0 @@
-﻿conatus.expert.Conj
-===================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Conj
-   :members:
-   :show-inheritance:

@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=0b37a13f" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=58773021" />
     
     
 
@@ -230,7 +230,7 @@
 </a><div class="cn-site-link">
   <a href="../../../../">&larr; Conatus website</a>
   <a href="../../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">v0.1 preview &middot; private repository (source on request)</p>
+  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
 </div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -241,6 +241,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
@@ -274,6 +275,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/particles.html">Particles and dye of a simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/io.html">Input and output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/studio.html">The Studio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/notebook.html">Notebooks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../guide/dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/eigenvalues.html">Eigenvalues and stability</a></li>
@@ -282,6 +286,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/invariant_solutions.html">Invariant solutions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/continuation.html">Continuation and bifurcations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/floquet.html">Floquet analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/contour.html">Eigenvalues in a region</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/chaos.html">Chaos and ensembles</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/manifolds.html">Invariant manifolds and slices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/symmetry.html">Symmetry subspaces</a></li>
@@ -296,6 +301,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/reproducibility.html">Reproducibility and provenance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/errors.html">Errors and what they mean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/experimental.html">Experimental features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Coming from Dedalus</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/operators.html">IR and operators</a></li>
@@ -329,8 +335,16 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Sphere.html">conatus.Sphere</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Ball.html">conatus.Ball</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Shell.html">conatus.Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.TaylorCouette.html">conatus.TaylorCouette</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.MappedBox.html">conatus.MappedBox</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.periodic.html">conatus.periodic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.walls.html">conatus.walls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.line.html">conatus.line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.half_line.html">conatus.half_line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.between.html">conatus.between</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.no_slip.html">conatus.no_slip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.free_slip.html">conatus.free_slip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.navier_slip.html">conatus.navier_slip</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Model.html">conatus.Model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.model.Simulation.html">conatus.model.Simulation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.model.Linearization.html">conatus.model.Linearization</a></li>
@@ -364,10 +378,23 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.Run.html">conatus.runs.Run</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.RunList.html">conatus.runs.RunList</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.Registry.html">conatus.runs.Registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.series.html">conatus.series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.spectrum.html">conatus.spectrum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.profile.html">conatus.profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.view.html">conatus.view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.time_average.html">conatus.time_average</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.uncertainty.html">conatus.uncertainty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.StopRun.html">conatus.StopRun</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.doctor.html">conatus.doctor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.from_dedalus.html">conatus.from_dedalus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.parse_equation.html">conatus.parse_equation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.parse_expr.html">conatus.parse_expr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.box.html">conatus.box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.contour.count.html">conatus.contour.count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.contour.beyn.html">conatus.contour.beyn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.contour.CountResult.html">conatus.contour.CountResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.contour.BeynResult.html">conatus.contour.BeynResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.contour.RegionEVPResult.html">conatus.contour.RegionEVPResult</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/expert.html">Expert layer: <code class="docutils literal notranslate"><span class="pre">conatus.expert</span></code></a><input aria-label="Toggle navigation of Expert layer: conatus.expert" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -375,14 +402,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Check.html">conatus.expert.Check</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.VerificationReport.html">conatus.expert.VerificationReport</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.verify.html">conatus.expert.verify</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Coordinate.html">conatus.expert.Coordinate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CoordinateSystem.html">conatus.expert.CoordinateSystem</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CartesianCoordinates.html">conatus.expert.CartesianCoordinates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PolarCoordinates.html">conatus.expert.PolarCoordinates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CylindricalCoordinates.html">conatus.expert.CylindricalCoordinates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.S2Coordinates.html">conatus.expert.S2Coordinates</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SphericalCoordinates.html">conatus.expert.SphericalCoordinates</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Basis.html">conatus.expert.Basis</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RealFourier.html">conatus.expert.RealFourier</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ComplexFourier.html">conatus.expert.ComplexFourier</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Jacobi.html">conatus.expert.Jacobi</a></li>
@@ -401,40 +425,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Laguerre.html">conatus.expert.Laguerre</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CompoundChebyshev.html">conatus.expert.CompoundChebyshev</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Domain.html">conatus.expert.Domain</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Expr.html">conatus.expert.Expr</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Field.html">conatus.expert.Field</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.VectorField.html">conatus.expert.VectorField</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TensorField.html">conatus.expert.TensorField</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Parameter.html">conatus.expert.Parameter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Constant.html">conatus.expert.Constant</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Zero.html">conatus.expert.Zero</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnitVector.html">conatus.expert.UnitVector</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Add.html">conatus.expert.Add</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Mul.html">conatus.expert.Mul</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Dot.html">conatus.expert.Dot</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Cross.html">conatus.expert.Cross</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Outer.html">conatus.expert.Outer</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Power.html">conatus.expert.Power</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Conj.html">conatus.expert.Conj</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Component.html">conatus.expert.Component</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Differentiate.html">conatus.expert.Differentiate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Gradient.html">conatus.expert.Gradient</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Divergence.html">conatus.expert.Divergence</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Laplacian.html">conatus.expert.Laplacian</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Curl.html">conatus.expert.Curl</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TimeDerivative.html">conatus.expert.TimeDerivative</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Integrate.html">conatus.expert.Integrate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Interpolate.html">conatus.expert.Interpolate</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Lift.html">conatus.expert.Lift</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TransposeResult.html">conatus.expert.TransposeResult</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.as_expr.html">conatus.expert.as_expr</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.add.html">conatus.expert.add</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.mul.html">conatus.expert.mul</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.neg.html">conatus.expert.neg</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.dot.html">conatus.expert.dot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.cross.html">conatus.expert.cross</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.outer.html">conatus.expert.outer</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.power.html">conatus.expert.power</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.conj.html">conatus.expert.conj</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.comp.html">conatus.expert.comp</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.diff.html">conatus.expert.diff</a></li>
@@ -446,9 +443,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.integ.html">conatus.expert.integ</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.interp.html">conatus.expert.interp</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.lift.html">conatus.expert.lift</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.pair.html">conatus.expert.pair</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.unit_vector.html">conatus.expert.unit_vector</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnaryFunction.html">conatus.expert.UnaryFunction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.exp.html">conatus.expert.exp</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.log.html">conatus.expert.log</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.sin.html">conatus.expert.sin</a></li>
@@ -457,9 +452,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.sqrt.html">conatus.expert.sqrt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.absolute.html">conatus.expert.absolute</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.sign.html">conatus.expert.sign</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.pointwise.html">conatus.expert.pointwise</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.has_nonpolynomial.html">conatus.expert.has_nonpolynomial</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Equation.html">conatus.expert.Equation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Problem.html">conatus.expert.Problem</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.IVP.html">conatus.expert.IVP</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.LBVP.html">conatus.expert.LBVP</a></li>
@@ -468,19 +460,15 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NonlinearLHSError.html">conatus.expert.NonlinearLHSError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ProblemError.html">conatus.expert.ProblemError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RankReport.html">conatus.expert.RankReport</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Parity.html">conatus.expert.Parity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EVEN.html">conatus.expert.EVEN</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ODD.html">conatus.expert.ODD</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Reflection.html">conatus.expert.Reflection</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SymmetrySubspace.html">conatus.expert.SymmetrySubspace</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SymmetryError.html">conatus.expert.SymmetryError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SymmetryBreakingError.html">conatus.expert.SymmetryBreakingError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Translation.html">conatus.expert.Translation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SO2.html">conatus.expert.SO2</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ShiftReflect.html">conatus.expert.ShiftReflect</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.AzimuthalMFold.html">conatus.expert.AzimuthalMFold</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EquatorialParity.html">conatus.expert.EquatorialParity</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CoordinateMap.html">conatus.expert.CoordinateMap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MappedChebyshev.html">conatus.expert.MappedChebyshev</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RationalMap.html">conatus.expert.RationalMap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TanhMap.html">conatus.expert.TanhMap</a></li>
@@ -489,96 +477,51 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.parse_expr.html">conatus.expert.parse_expr</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ChannelBaseFlow.html">conatus.expert.ChannelBaseFlow</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.channel.html">conatus.expert.channel</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PROFILES.html">conatus.expert.PROFILES</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Scale.html">conatus.expert.Scale</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Group.html">conatus.expert.Group</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnitSystem.html">conatus.expert.UnitSystem</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.QUANTITY_DIMENSIONS.html">conatus.expert.QUANTITY_DIMENSIONS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.convert.html">conatus.expert.convert</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Energy.html">conatus.expert.Energy</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ENERGY_CONVENTIONS.html">conatus.expert.ENERGY_CONVENTIONS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ChannelUnits.html">conatus.expert.ChannelUnits</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DiscretizationError.html">conatus.expert.DiscretizationError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.GroupMatrices.html">conatus.expert.GroupMatrices</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.GroupRank.html">conatus.expert.GroupRank</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.LBVPSolution.html">conatus.expert.LBVPSolution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Plan.html">conatus.expert.Plan</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RankError.html">conatus.expert.RankError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.discretize.html">conatus.expert.discretize</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FieldData.html">conatus.expert.FieldData</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ReferenceEvaluator.html">conatus.expert.ReferenceEvaluator</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.evaluate.html">conatus.expert.evaluate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.grid.html">conatus.expert.grid</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EVPResult.html">conatus.expert.EVPResult</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.biorthogonality.html">conatus.expert.biorthogonality</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.drift_filter.html">conatus.expert.drift_filter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.matrix_derivative.html">conatus.expert.matrix_derivative</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.solve_dense.html">conatus.expert.solve_dense</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.solve_sparse.html">conatus.expert.solve_sparse</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.eigenvalues.html">conatus.expert.eigenvalues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ParametricEVP.html">conatus.expert.ParametricEVP</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TrackedMode.html">conatus.expert.TrackedMode</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CriticalPoint.html">conatus.expert.CriticalPoint</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.critical.html">conatus.expert.critical</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.laurent_exponents.html">conatus.expert.laurent_exponents</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NewtonSolver.html">conatus.expert.NewtonSolver</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NLBVPSolution.html">conatus.expert.NLBVPSolution</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NewtonIteration.html">conatus.expert.NewtonIteration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NewtonNotConverged.html">conatus.expert.NewtonNotConverged</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PeriodicNewtonSolver.html">conatus.expert.PeriodicNewtonSolver</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PeriodicNLBVPSolution.html">conatus.expert.PeriodicNLBVPSolution</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PhaseCondition.html">conatus.expert.PhaseCondition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.linearize.html">conatus.expert.linearize</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.LinearizedEVP.html">conatus.expert.LinearizedEVP</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.InnerProduct.html">conatus.expert.InnerProduct</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.chebyshev_gram.html">conatus.expert.chebyshev_gram</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CFL.html">conatus.expert.CFL</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EmbeddedError.html">conatus.expert.EmbeddedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TauWatch.html">conatus.expert.TauWatch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.IVPSolver.html">conatus.expert.IVPSolver</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SCHEMES.html">conatus.expert.SCHEMES</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SBDF_SCHEMES.html">conatus.expert.SBDF_SCHEMES</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CN_SCHEMES.html">conatus.expert.CN_SCHEMES</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RK_SCHEMES.html">conatus.expert.RK_SCHEMES</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.STARTUPS.html">conatus.expert.STARTUPS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SpectralEvaluator.html">conatus.expert.SpectralEvaluator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SpectralError.html">conatus.expert.SpectralError</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.GlobalSystem.html">conatus.expert.GlobalSystem</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ORDERINGS.html">conatus.expert.ORDERINGS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.rk_tableau.html">conatus.expert.rk_tableau</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.sbdf_coefficients.html">conatus.expert.sbdf_coefficients</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.cn_coefficients.html">conatus.expert.cn_coefficients</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.scheme_description.html">conatus.expert.scheme_description</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FlowMap.html">conatus.expert.FlowMap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.VJPSuspended.html">conatus.expert.VJPSuspended</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.revolve_actions.html">conatus.expert.revolve_actions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.revolve_cost.html">conatus.expert.revolve_cost</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.revolve_schedule.html">conatus.expert.revolve_schedule</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FourierOps.html">conatus.expert.FourierOps</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NewtonKrylovHookstep.html">conatus.expert.NewtonKrylovHookstep</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NewtonKrylovResult.html">conatus.expert.NewtonKrylovResult</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.arnoldi_gmres.html">conatus.expert.arnoldi_gmres</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ECSSolution.html">conatus.expert.ECSSolution</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Equilibrium.html">conatus.expert.Equilibrium</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TravellingWave.html">conatus.expert.TravellingWave</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RelativePeriodicOrbit.html">conatus.expert.RelativePeriodicOrbit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PreperiodicOrbit.html">conatus.expert.PreperiodicOrbit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Flow.html">conatus.expert.Flow</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.equilibrium_eigenvalues.html">conatus.expert.equilibrium_eigenvalues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.find_equilibrium.html">conatus.expert.find_equilibrium</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.find_travelling_wave.html">conatus.expert.find_travelling_wave</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.find_relative_periodic_orbit.html">conatus.expert.find_relative_periodic_orbit</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.floquet_multipliers.html">conatus.expert.floquet_multipliers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.symmetry_breaking_check.html">conatus.expert.symmetry_breaking_check</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ks_solver.html">conatus.expert.ks_solver</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EdgeTracker.html">conatus.expert.EdgeTracker</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ThresholdBisection.html">conatus.expert.ThresholdBisection</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UndecidedTrajectory.html">conatus.expert.UndecidedTrajectory</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Branch.html">conatus.expert.Branch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BranchPoint.html">conatus.expert.BranchPoint</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ContinuationSettings.html">conatus.expert.ContinuationSettings</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Event.html">conatus.expert.Event</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PseudoArclength.html">conatus.expert.PseudoArclength</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NLBVPContinuation.html">conatus.expert.NLBVPContinuation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.KSDomainContinuation.html">conatus.expert.KSDomainContinuation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.HillBlocks.html">conatus.expert.HillBlocks</a></li>
@@ -588,78 +531,22 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.HillGPU.html">conatus.expert.HillGPU</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CertifiedRoot.html">conatus.expert.CertifiedRoot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SecantRoot.html">conatus.expert.SecantRoot</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.fold_floquet.html">conatus.expert.fold_floquet</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.shell_floquet.html">conatus.expert.shell_floquet</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FloquetExponents.html">conatus.expert.FloquetExponents</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.OptimalGain.html">conatus.expert.OptimalGain</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PeriodicOperator.html">conatus.expert.PeriodicOperator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.floquet_exponents.html">conatus.expert.floquet_exponents</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.operator_floquet.html">conatus.expert.operator_floquet</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.operator_gain.html">conatus.expert.operator_gain</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.optimal_gain.html">conatus.expert.optimal_gain</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.periodic_operator.html">conatus.expert.periodic_operator</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.periodic_operator_from_plan.html">conatus.expert.periodic_operator_from_plan</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.GainResult.html">conatus.expert.GainResult</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.energy_factor.html">conatus.expert.energy_factor</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.gain.html">conatus.expert.gain</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.propagator.html">conatus.expert.propagator</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.AdjointComparison.html">conatus.expert.AdjointComparison</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Descriptor.html">conatus.expert.Descriptor</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ModalSystem.html">conatus.expert.ModalSystem</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.StateSpace.html">conatus.expert.StateSpace</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SteadyOperator.html">conatus.expert.SteadyOperator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Y.html">conatus.expert.Y</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.compare_adjoints.html">conatus.expert.compare_adjoints</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.continuous_adjoint_mode.html">conatus.expert.continuous_adjoint_mode</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.discrete_adjoint_mode.html">conatus.expert.discrete_adjoint_mode</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.energy_growth.html">conatus.expert.energy_growth</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.exp_norm.html">conatus.expert.exp_norm</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.galerkin_numerical_abscissa.html">conatus.expert.galerkin_numerical_abscissa</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.gram_energy_factor.html">conatus.expert.gram_energy_factor</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.max_growth.html">conatus.expert.max_growth</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.numerical_abscissa.html">conatus.expert.numerical_abscissa</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.parallel_shear_flow.html">conatus.expert.parallel_shear_flow</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.propagator_growth.html">conatus.expert.propagator_growth</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.restrict.html">conatus.expert.restrict</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.spectral_abscissa.html">conatus.expert.spectral_abscissa</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.state_space.html">conatus.expert.state_space</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.steady_operator.html">conatus.expert.steady_operator</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CHANNEL_SYSTEMS.html">conatus.expert.CHANNEL_SYSTEMS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.laminar_poiseuille.html">conatus.expert.laminar_poiseuille</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MethodsText.html">conatus.expert.MethodsText</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.methods.html">conatus.expert.methods</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BIBTEX.html">conatus.expert.BIBTEX</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.COMMANDS.html">conatus.expert.COMMANDS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CONFIRM_COMMANDS.html">conatus.expert.CONFIRM_COMMANDS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CONTROL_KINDS.html">conatus.expert.CONTROL_KINDS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FILM_ENCODING.html">conatus.expert.FILM_ENCODING</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FILM_POLICY.html">conatus.expert.FILM_POLICY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FRAME_KINDS.html">conatus.expert.FRAME_KINDS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.KINDS.html">conatus.expert.KINDS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PROTOCOL_VERSION.html">conatus.expert.PROTOCOL_VERSION</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SCALES.html">conatus.expert.SCALES</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.STAT_KINDS.html">conatus.expert.STAT_KINDS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.VIEW_KINDS.html">conatus.expert.VIEW_KINDS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.check_controls.html">conatus.expert.check_controls</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.check_set.html">conatus.expert.check_set</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.decode_curve.html">conatus.expert.decode_curve</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.decode_frame.html">conatus.expert.decode_frame</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.decode_frame3d.html">conatus.expert.decode_frame3d</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.decode_points.html">conatus.expert.decode_points</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.decode_vec2d.html">conatus.expert.decode_vec2d</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.encode_curve.html">conatus.expert.encode_curve</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.encode_frame.html">conatus.expert.encode_frame</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.encode_frame3d.html">conatus.expert.encode_frame3d</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.encode_points.html">conatus.expert.encode_points</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.encode_vec2d.html">conatus.expert.encode_vec2d</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.film_frame.html">conatus.expert.film_frame</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.film_record.html">conatus.expert.film_record</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FilmIndex.html">conatus.expert.FilmIndex</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RunState.html">conatus.expert.RunState</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SpoolReader.html">conatus.expert.SpoolReader</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.StopRun.html">conatus.expert.StopRun</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Telemetry.html">conatus.expert.Telemetry</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.default_spool.html">conatus.expert.default_spool</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ConatusError.html">conatus.expert.ConatusError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EquationError.html">conatus.expert.EquationError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UndeclaredVariableError.html">conatus.expert.UndeclaredVariableError</a></li>
@@ -687,124 +574,53 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.GroupWarning.html">conatus.expert.GroupWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DefaultChoiceWarning.html">conatus.expert.DefaultChoiceWarning</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.doc_reference.html">conatus.expert.doc_reference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ExperimentalWarning.html">conatus.expert.ExperimentalWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.gpu_available.html">conatus.expert.gpu_available</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.gpu_report.html">conatus.expert.gpu_report</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DynamicalSystem.html">conatus.expert.DynamicalSystem</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ir_system.html">conatus.expert.ir_system</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ode_problem.html">conatus.expert.ode_problem</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ArclengthDriver.html">conatus.expert.ArclengthDriver</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Curve.html">conatus.expert.Curve</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CurveEvent.html">conatus.expert.CurveEvent</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CurvePoint.html">conatus.expert.CurvePoint</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.continue_equilibria.html">conatus.expert.continue_equilibria</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.newton_equilibrium.html">conatus.expert.newton_equilibrium</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.generalized_eigenvalues.html">conatus.expert.generalized_eigenvalues</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.normal_form.html">conatus.expert.normal_form</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ZeroEigenvalueNormalForm.html">conatus.expert.ZeroEigenvalueNormalForm</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.HopfNormalForm.html">conatus.expert.HopfNormalForm</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CollocationMesh.html">conatus.expert.CollocationMesh</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PeriodicOrbitProblem.html">conatus.expert.PeriodicOrbitProblem</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.continue_orbits.html">conatus.expert.continue_orbits</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.branch_switch.html">conatus.expert.branch_switch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.branching_directions.html">conatus.expert.branching_directions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.hopf_orbit_start.html">conatus.expert.hopf_orbit_start</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.continue_codim2.html">conatus.expert.continue_codim2</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.LandauEquation.html">conatus.expert.LandauEquation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.amplitude_equation.html">conatus.expert.amplitude_equation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.GinzburgLandau.html">conatus.expert.GinzburgLandau</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ginzburg_landau.html">conatus.expert.ginzburg_landau</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.cos_mode_observable.html">conatus.expert.cos_mode_observable</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FirstFourierModeSlice.html">conatus.expert.FirstFourierModeSlice</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RotationOps.html">conatus.expert.RotationOps</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SliceTrajectory.html">conatus.expert.SliceTrajectory</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SliceOrbitCheck.html">conatus.expert.SliceOrbitCheck</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SliceRPO.html">conatus.expert.SliceRPO</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.find_rpo_in_slice.html">conatus.expert.find_rpo_in_slice</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.slice_equilibrium_check.html">conatus.expert.slice_equilibrium_check</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.slice_orbit_check.html">conatus.expert.slice_orbit_check</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TWO_MODE_PARAMETERS.html">conatus.expert.TWO_MODE_PARAMETERS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.two_mode_problem.html">conatus.expert.two_mode_problem</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.two_mode_callables.html">conatus.expert.two_mode_callables</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ODEIntegrator.html">conatus.expert.ODEIntegrator</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SolverIntegrator.html">conatus.expert.SolverIntegrator</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Trajectory.html">conatus.expert.Trajectory</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Crossings.html">conatus.expert.Crossings</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PoincareSection.html">conatus.expert.PoincareSection</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.first_return_map.html">conatus.expert.first_return_map</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.poincare_crossings.html">conatus.expert.poincare_crossings</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnstableManifold.html">conatus.expert.UnstableManifold</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.globalize.html">conatus.expert.globalize</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.polynomial_degree_defect.html">conatus.expert.polynomial_degree_defect</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.unstable_manifold.html">conatus.expert.unstable_manifold</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Connection.html">conatus.expert.Connection</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.connection_vs_T.html">conatus.expert.connection_vs_T</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.find_connection.html">conatus.expert.find_connection</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.projection_gap.html">conatus.expert.projection_gap</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.scan_connection.html">conatus.expert.scan_connection</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.unstable_left_basis.html">conatus.expert.unstable_left_basis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.equilibrium_connection.html">conatus.expert.equilibrium_connection</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ecs_system.html">conatus.expert.ecs_system</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ecs_integrator.html">conatus.expert.ecs_integrator</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.orbit_manifold_seeds.html">conatus.expert.orbit_manifold_seeds</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.first_return_stretch.html">conatus.expert.first_return_stretch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.section_projector.html">conatus.expert.section_projector</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PinningRegion.html">conatus.expert.PinningRegion</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.even_subspace.html">conatus.expert.even_subspace</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.pinning_region.html">conatus.expert.pinning_region</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.restrict_system.html">conatus.expert.restrict_system</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ADJOINT_KINDS.html">conatus.expert.ADJOINT_KINDS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BaseFlowSensitivity.html">conatus.expert.BaseFlowSensitivity</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EigenvalueSensitivity.html">conatus.expert.EigenvalueSensitivity</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ForcingSensitivity.html">conatus.expert.ForcingSensitivity</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.GinzburgLandauExact.html">conatus.expert.GinzburgLandauExact</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ModePair.html">conatus.expert.ModePair</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.StructuralSensitivity.html">conatus.expert.StructuralSensitivity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.base_flow_sensitivity.html">conatus.expert.base_flow_sensitivity</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.eigenvalue_sensitivity.html">conatus.expert.eigenvalue_sensitivity</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.feedback_system.html">conatus.expert.feedback_system</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ginzburg_landau_exact.html">conatus.expert.ginzburg_landau_exact</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.linear_ginzburg_landau.html">conatus.expert.linear_ginzburg_landau</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.mode_pair.html">conatus.expert.mode_pair</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.parameter_sensitivity.html">conatus.expert.parameter_sensitivity</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.steady_forcing_sensitivity.html">conatus.expert.steady_forcing_sensitivity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.structural_sensitivity.html">conatus.expert.structural_sensitivity</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.AMPLITUDES.html">conatus.expert.AMPLITUDES</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DMD.html">conatus.expert.DMD</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DMD_METHODS.html">conatus.expert.DMD_METHODS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DataInnerProduct.html">conatus.expert.DataInnerProduct</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Dictionary.html">conatus.expert.Dictionary</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EDMD.html">conatus.expert.EDMD</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MEAN_POLICIES.html">conatus.expert.MEAN_POLICIES</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.POD.html">conatus.expert.POD</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.POD_METHODS.html">conatus.expert.POD_METHODS</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SPOD.html">conatus.expert.SPOD</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Snapshots.html">conatus.expert.Snapshots</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.dmd.html">conatus.expert.dmd</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.edmd.html">conatus.expert.edmd</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.monomials.html">conatus.expert.monomials</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.pod.html">conatus.expert.pod</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.rbf.html">conatus.expert.rbf</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.snapshots_from_arrays.html">conatus.expert.snapshots_from_arrays</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.snapshots_from_run.html">conatus.expert.snapshots_from_run</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.spod.html">conatus.expert.spod</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.uniform_dt.html">conatus.expert.uniform_dt</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.welch_blocks.html">conatus.expert.welch_blocks</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Domination.html">conatus.expert.Domination</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.LyapunovResult.html">conatus.expert.LyapunovResult</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.clv_subspace_angles.html">conatus.expert.clv_subspace_angles</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.kaplan_yorke.html">conatus.expert.kaplan_yorke</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.lyapunov_spectrum.html">conatus.expert.lyapunov_spectrum</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PoincareResult.html">conatus.expert.PoincareResult</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.poincare_section.html">conatus.expert.poincare_section</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.rk_tangent_step.html">conatus.expert.rk_tangent_step</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BatchedRHS.html">conatus.expert.BatchedRHS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BatchedSystem.html">conatus.expert.BatchedSystem</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BatchMaps.html">conatus.expert.BatchMaps</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Ensemble.html">conatus.expert.Ensemble</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EnsembleFate.html">conatus.expert.EnsembleFate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ensemble_fate.html">conatus.expert.ensemble_fate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.proportion_ci.html">conatus.expert.proportion_ci</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CountResult.html">conatus.expert.CountResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BeynResult.html">conatus.expert.BeynResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RegionEVPResult.html">conatus.expert.RegionEVPResult</a></li>
 </ul>
 </li>
 </ul>
@@ -863,9 +679,11 @@
 <span></span><span class="sd">"""One run of the registry: live recorder (non-blocking writer thread) and read-only view.</span>
 
 <span class="sd">A live :class:`Run` never raises into the computation after its construction and never waits for</span>
-<span class="sd">the disk while the computation is running (spec §94–97, same rule as the telemetry):</span>
+<span class="sd">the disk while the computation is running (same rule as the telemetry):</span>
 
-<span class="sd">* scalars and series are appended to in-memory lists (no I/O);</span>
+<span class="sd">* scalars are kept in memory; series rows are buffered and handed to the writer thread every</span>
+<span class="sd">  :data:`SERIES_FLUSH_ROWS` rows (appended to ``.series.jsonl.part``, turned into ``data.h5`` at</span>
+<span class="sd">  close), so a long run's series do not grow in memory (review finding 45);</span>
 <span class="sd">* fields, files and solver states are *copied* in the calling thread (a copy is needed anyway: the</span>
 <span class="sd">  computation will overwrite its arrays) and handed to a bounded queue drained by one background</span>
 <span class="sd">  thread. A full queue drops the item and counts it (``dropped``); nothing waits;</span>
@@ -885,10 +703,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">queue</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -909,6 +729,10 @@
 <span class="n">CLOSE_TIMEOUT_S</span> <span class="o">=</span> <span class="mf">600.0</span>
 <span class="c1">#: HDF5 compressions a field may declare (all lossless); ``None`` = stored as is</span>
 <span class="n">COMPRESSIONS</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">"gzip"</span><span class="p">,</span> <span class="s2">"lzf"</span><span class="p">)</span>
+<span class="c1">#: series rows kept in memory before they are handed to the writer thread (streamed to disk)</span>
+<span class="n">SERIES_FLUSH_ROWS</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="c1">#: name of the series stream in the run directory (removed once ``data.h5`` holds the series)</span>
+<span class="n">_SERIES_STREAM</span> <span class="o">=</span> <span class="s2">".series.jsonl.part"</span>
 
 <span class="n">_CURRENT</span><span class="p">:</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">ContextVar</span><span class="p">[</span><span class="n">Run</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">ContextVar</span><span class="p">(</span><span class="s2">"conatus_run"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="n">_STOP</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
@@ -947,6 +771,31 @@
             <span class="s2">"cuda_visible_devices"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"CUDA_VISIBLE_DEVICES"</span><span class="p">),</span>
             <span class="s2">"slurm_nodelist"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SLURM_JOB_NODELIST"</span><span class="p">),</span>
             <span class="s2">"slurm_gpus"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SLURM_JOB_GPUS"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SLURM_GPUS_ON_NODE"</span><span class="p">)}</span>
+
+
+<span class="c1">#: ``--passes`` nor ``--keyframes``)</span>
+<span class="n">_SECRET_OPTION</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"TOKEN|SECRET|PASSW|PASSPHRASE|CREDENTIAL|(API|PRIVATE|ACCESS)[-_]?KEY|"</span>
+                            <span class="sa">r</span><span class="s2">"AUTH|COOKIE|SESSION"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_argv</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""``sys.argv`` with the value of every credential-like option (``--token X``,</span>
+<span class="sd">    ``--api-key=X``) replaced by ``&lt;redacted&gt;`` (security the run record, kept</span>
+<span class="sd">    on a shared store and shown by the Studio, held the command line verbatim)."""</span>
+    <span class="n">out</span><span class="p">,</span> <span class="n">hide</span> <span class="o">=</span> <span class="p">[],</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">hide</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"-"</span><span class="p">):</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;redacted&gt;"</span><span class="p">)</span>
+            <span class="n">hide</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">continue</span>
+        <span class="n">hide</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_SECRET_OPTION</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="s2">"="</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"=&lt;redacted&gt;"</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">hide</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_slurm</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -988,7 +837,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dropped</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>   <span class="c1"># rows not yet handed to the writer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span> <span class="o">=</span> <span class="mi">0</span>                                        <span class="c1"># rows logged so far</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_series_summary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>             <span class="c1"># name -&gt; {n, last}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="n">_record</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_token</span><span class="p">:</span> <span class="n">contextvars</span><span class="o">.</span><span class="n">Token</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1017,7 +868,7 @@
             <span class="s2">"params"</span><span class="p">:</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">jsonable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">params</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
             <span class="s2">"problem"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"numerics"</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">"explain"</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">"code"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"code_fingerprint"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">"environment"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"hardware"</span><span class="p">:</span> <span class="n">_hardware</span><span class="p">(),</span> <span class="s2">"slurm"</span><span class="p">:</span> <span class="n">_slurm</span><span class="p">(),</span>
-            <span class="s2">"invocation"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"argv"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">),</span> <span class="s2">"cwd"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">"pid"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span>
+            <span class="s2">"invocation"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"argv"</span><span class="p">:</span> <span class="n">_argv</span><span class="p">(),</span> <span class="s2">"cwd"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">"pid"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span>
                            <span class="s2">"python"</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">},</span>
             <span class="s2">"telemetry_id"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">telemetry</span><span class="p">,</span> <span class="s2">"run_id"</span><span class="p">,</span> <span class="n">telemetry</span><span class="p">),</span>
             <span class="s2">"cache_key"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"cache"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"inputs"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"returns"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -1111,12 +962,15 @@
                               <span class="n">why</span><span class="o">=</span><span class="s2">"a closed record is only changed by certify / retract (history kept)"</span><span class="p">,</span>
                               <span class="n">fix</span><span class="o">=</span><span class="s2">"record into a new run (relation='fork' or 'restart', parent=this run)"</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Queue ``item`` for the writer without waiting; a full queue drops it (counted, unless</span>
+<span class="sd">        ``count`` is False: series rows are then kept and handed over later)."""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Full</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dropped</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">count</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dropped</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">return</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Run.attach">
@@ -1154,6 +1008,9 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"problem"</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"numerics"</span><span class="p">]</span> <span class="o">=</span> <span class="n">num</span>
+                    <span class="n">ident</span> <span class="o">=</span> <span class="n">_identity_of</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">ident</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>          <span class="c1"># the canonical identity (0.1.1, lot A)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"identity"</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"identity_sha256"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ident</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"explain"</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -1165,8 +1022,15 @@
 <span class="sd">        row number is always kept, so series logged together can be plotted against each other).</span>
 <span class="sd">        In-memory only; written to ``data.h5`` at close."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_live</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">),</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">),</span>
-                           <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">jsonable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">scalars</span><span class="o">.</span><span class="n">items</span><span class="p">()}))</span></div>
+        <span class="n">vals</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">jsonable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">scalars</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">,</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">),</span> <span class="n">vals</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_series_summary</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">{</span><span class="s2">"n"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"last"</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">"n"</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">d</span><span class="p">[</span><span class="s2">"last"</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">SERIES_FLUSH_ROWS</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_put</span><span class="p">((</span><span class="s2">"rows"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">),</span> <span class="n">count</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span> <span class="o">=</span> <span class="p">[]</span>                  <span class="c1"># handed to the writer; kept if the queue is full</span></div>
 
 
 <div class="viewcode-block" id="Run.result">
@@ -1192,6 +1056,14 @@
                               <span class="n">why</span><span class="o">=</span><span class="s2">"storage choices are declared, never chosen for you (all are lossless)"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">compression</span> <span class="o">!=</span> <span class="s2">"gzip"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"save_field: level= applies to gzip only"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
+                                  <span class="ow">or</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">level</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">):</span>
+            <span class="c1"># checked here, in the caller's thread (review finding 58): h5py refused it later in</span>
+            <span class="c1"># the writer thread, where the field was lost with a warning at close</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"save_field: level=</span><span class="si">{</span><span class="n">level</span><span class="si">!r}</span><span class="s2">: gzip level is an integer 0-9"</span><span class="p">,</span>
+                              <span class="n">why</span><span class="o">=</span><span class="s2">"a bad level used to be refused by HDF5 in the writer thread, "</span>
+                                  <span class="s2">"after the call returned, and the field was lost"</span><span class="p">,</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="s2">"level=4 (any integer from 0, fastest, to 9, smallest)"</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_put</span><span class="p">((</span><span class="s2">"field"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">_to_host</span><span class="p">(</span><span class="n">array</span><span class="p">),</span>
                           <span class="p">{</span><span class="s2">"compression"</span><span class="p">:</span> <span class="n">compression</span><span class="p">,</span> <span class="s2">"level"</span><span class="p">:</span> <span class="n">level</span><span class="p">,</span> <span class="s2">"t"</span><span class="p">:</span> <span class="n">t</span><span class="p">,</span> <span class="s2">"step"</span><span class="p">:</span> <span class="n">step</span><span class="p">}))</span></div>
 
@@ -1202,24 +1074,24 @@
 <span class="w">        </span><span class="sd">"""Queue a copy of a file into ``files/`` (sha256 recorded). The copy is taken by the</span>
 <span class="sd">        writer thread: a file changed right after this call may be copied changed."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_live</span><span class="p">(</span><span class="s2">"save_file"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_put</span><span class="p">((</span><span class="s2">"file"</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">name</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"."</span><span class="p">,</span> <span class="s2">".."</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"/"</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">"</span><span class="se">\\</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">name</span>
+                <span class="ow">or</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">Path</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">name</span><span class="p">):</span>
+            <span class="c1"># review finding 47: name="../../../outside.txt" was copied outside the run directory</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"save_file: file name </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> is not a plain file name"</span><span class="p">,</span>
+                              <span class="n">why</span><span class="o">=</span><span class="s2">"attached files are copied into the run's files/ directory; a "</span>
+                                  <span class="s2">"path in the name would write elsewhere"</span><span class="p">,</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="s2">"name='result.txt' (no directory part, not '.' or '..')"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_put</span><span class="p">((</span><span class="s2">"file"</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">name</span><span class="p">))</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Queue a checkpoint of an IVPSolver in its own format (``state_&lt;tag&gt;.npz``, loadable by</span>
-<span class="sd">        ``solver.load_checkpoint``): same fields as ``IVPSolver.save_checkpoint``."""</span>
-        <span class="n">meta</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">scheme</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">startup</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">startup</span><span class="p">,</span>
-                    <span class="n">startup_substeps</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">startup_substeps</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">n</span><span class="p">,</span>
-                    <span class="n">iteration</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">iteration</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">t_origin</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">_t0</span><span class="p">,</span>
-                    <span class="n">it_origin</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">_it0</span><span class="p">,</span> <span class="n">reduced</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">reduced</span><span class="p">,</span>
-                    <span class="n">ordering</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">ordering</span><span class="p">,</span> <span class="n">problem</span><span class="o">=</span><span class="n">solver</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">nhist</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">_MXh</span><span class="p">))</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">..io._identity</span><span class="w"> </span><span class="kn">import</span> <span class="n">checkpoint_identity</span>       <span class="c1"># compared at restart</span>
-        <span class="n">meta</span><span class="p">[</span><span class="s2">"identity"</span><span class="p">]</span> <span class="o">=</span> <span class="n">checkpoint_identity</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
-        <span class="n">arrays</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"X"</span><span class="p">:</span> <span class="n">_to_host</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">X</span><span class="p">)}</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">mx</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">_MXh</span><span class="p">,</span> <span class="n">solver</span><span class="o">.</span><span class="n">_Fh</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
-            <span class="n">arrays</span><span class="p">[</span><span class="sa">f</span><span class="s2">"MX</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_to_host</span><span class="p">(</span><span class="n">mx</span><span class="p">)</span>
-            <span class="n">arrays</span><span class="p">[</span><span class="sa">f</span><span class="s2">"F</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_to_host</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="sd">        ``solver.load_checkpoint``): the payload of ``IVPSolver.save_checkpoint`` itself (state,</span>
+<span class="sd">        every history array including the L X history of the CN family, clock, bc_time and</span>
+<span class="sd">        the identity), copied now because the computation goes on."""</span>
+        <span class="n">meta</span><span class="p">,</span> <span class="n">arrays</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">_checkpoint_payload</span><span class="p">()</span>
+        <span class="n">arrays</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_to_host</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">arrays</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_put</span><span class="p">((</span><span class="s2">"npz"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"state_</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.npz"</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">arrays</span><span class="p">)):</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"outputs"</span><span class="p">][</span><span class="sa">f</span><span class="s2">"state_</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"state_</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.npz"</span>
@@ -1269,19 +1141,26 @@
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">STATES</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"conatus.runs: state </span><span class="si">{</span><span class="n">state</span><span class="si">!r}</span><span class="s2"> unknown; one of </span><span class="si">{</span><span class="n">STATES</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="c1"># one deadline for the whole close (review finding 46: two queue puts and the join each</span>
+        <span class="c1"># waited up to ``timeout``)</span>
+        <span class="n">deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">left</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_closed</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"state"</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"error"</span><span class="p">]</span> <span class="o">=</span> <span class="n">error</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"ended_utc"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_utc</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"duration_s"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">,</span> <span class="p">[]</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_q</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="s2">"finalize"</span><span class="p">,),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_STOP</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_q</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="s2">"finalize"</span><span class="p">,</span> <span class="n">rows</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">left</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">_STOP</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">left</span><span class="p">())</span>
         <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Full</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"writer queue still full at close: record not finalized"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">left</span><span class="p">())</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"writer thread still busy after </span><span class="si">{</span><span class="n">timeout</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> s at close"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropped</span><span class="p">:</span>
@@ -1322,9 +1201,17 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"environment"</span><span class="p">]</span> <span class="o">=</span> <span class="n">jsonable</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"hardware"</span><span class="p">][</span><span class="s2">"gpu"</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"gpu"</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"code_fingerprint"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fp</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_key_parts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"cache_key"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="c1"># sources edited after import: the key would name code that did not</span>
+                        <span class="c1"># run, so the run is never a cache source (audit state)</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_key_parts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"cache_key"</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+                                <span class="ow">and</span> <span class="ow">not</span> <span class="n">fp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"changed_since_import"</span><span class="p">)):</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"cache_key"</span><span class="p">]</span> <span class="o">=</span> <span class="n">finish_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_key_parts</span><span class="p">,</span> <span class="n">fp</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="c1"># writable by this user only, whatever the umask: the writer's temporary</span>
+                    <span class="c1"># names (data.h5.part, the series stream) and the files it replaces are then</span>
+                    <span class="c1"># out of reach of other accounts (no planted link), and reproduce() accepts</span>
+                    <span class="c1"># the record as the user's own (security)</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">chmod</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_mode</span> <span class="o">&amp;</span> <span class="o">~</span><span class="mo">0o022</span><span class="p">)</span>
                     <span class="n">atomic_write_json</span><span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="s2">"run.json"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span><span class="p">())</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">()</span>
                     <span class="k">continue</span>
@@ -1357,18 +1244,26 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"files"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"npz"</span><span class="p">:</span>
                     <span class="n">_</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">arrays</span> <span class="o">=</span> <span class="n">item</span>
-                    <span class="n">tmp</span> <span class="o">=</span> <span class="n">d</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">".</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">.part"</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-                        <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">meta</span><span class="p">),</span> <span class="o">**</span><span class="n">arrays</span><span class="p">)</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">d</span> <span class="o">/</span> <span class="n">fname</span><span class="p">)</span>
+                    <span class="n">fd</span><span class="p">,</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">".</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">".part"</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">meta</span><span class="p">),</span> <span class="o">**</span><span class="n">arrays</span><span class="p">)</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">d</span> <span class="o">/</span> <span class="n">fname</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                        <span class="n">Path</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="k">raise</span>
+                <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"rows"</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_stream_rows</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"finalize"</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_stream_rows</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="n">_SERIES_STREAM</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
                         <span class="n">h5</span> <span class="o">=</span> <span class="n">h5</span> <span class="ow">or</span> <span class="n">_h5_open</span><span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="s2">"data.h5.part"</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_write_series</span><span class="p">(</span><span class="n">h5</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_write_series</span><span class="p">(</span><span class="n">h5</span><span class="p">,</span> <span class="n">d</span> <span class="o">/</span> <span class="n">_SERIES_STREAM</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">h5</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">h5</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                         <span class="n">h5</span> <span class="o">=</span> <span class="kc">None</span>
                         <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="s2">"data.h5.part"</span><span class="p">,</span> <span class="n">d</span> <span class="o">/</span> <span class="s2">"data.h5"</span><span class="p">)</span>
+                        <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="n">_SERIES_STREAM</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">atomic_write_json</span><span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="s2">"run.json"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_snapshot</span><span class="p">())</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 -- never raised into the computation; recorded</span>
@@ -1394,35 +1289,68 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"index_note"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"index not updated at write (</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">); "</span>
                                                   <span class="s2">"reconciled by the next query"</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_write_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="p">:</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_stream_rows</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Append series rows to the run's stream file (one JSON line per row; writer thread)."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="n">_SERIES_STREAM</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+                <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="n">row</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">vals</span><span class="p">],</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">","</span><span class="p">,</span> <span class="s2">":"</span><span class="p">))</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h5</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">stream</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Series of the stream file into ``data.h5`` (``series/&lt;name&gt;/{row, step, value}``), in</span>
+<span class="sd">        two passes so that memory stays bounded: count and type each series, then fill."""</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">rows</span><span class="p">():</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fh</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">count</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">numeric</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">_row</span><span class="p">,</span> <span class="n">_step</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">names</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">row</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">step</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
-        <span class="n">summary</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">pts</span> <span class="ow">in</span> <span class="n">names</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pts</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-            <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pts</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pts</span><span class="p">]</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">from_jsonable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+                <span class="n">count</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">from_jsonable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="n">numeric</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">numeric</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+        <span class="n">ds</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">buf</span> <span class="o">=</span> <span class="p">{},</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">([],</span> <span class="p">[],</span> <span class="p">[])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">count</span><span class="p">}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">r</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="n">ds</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">],</span> <span class="n">ds</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">],</span> <span class="n">ds</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">v</span>
+            <span class="n">pos</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">n</span>
+            <span class="n">buf</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">([],</span> <span class="p">[],</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">count</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">g</span> <span class="o">=</span> <span class="n">h5</span><span class="o">.</span><span class="n">require_group</span><span class="p">(</span><span class="sa">f</span><span class="s2">"series/</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"row"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">rows</span><span class="p">)</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"step"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">steps</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">object</span><span class="p">:</span>
-                <span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
-                <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">h5py</span><span class="o">.</span><span class="n">string_dtype</span><span class="p">())</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-            <span class="n">summary</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"n"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">pts</span><span class="p">),</span> <span class="s2">"last"</span><span class="p">:</span> <span class="n">vals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]}</span>
+            <span class="n">ds</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"row"</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+                     <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"step"</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+                     <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">if</span> <span class="n">numeric</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">else</span>
+                     <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">h5py</span><span class="o">.</span><span class="n">string_dtype</span><span class="p">()))</span>
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">vals</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">r</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">vv</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">step</span><span class="p">)</span>
+                <span class="n">vv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">from_jsonable</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">if</span> <span class="n">numeric</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">SERIES_FLUSH_ROWS</span><span class="p">:</span>
+                    <span class="n">flush</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">count</span><span class="p">:</span>
+            <span class="n">flush</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"series"</span><span class="p">]</span> <span class="o">=</span> <span class="n">summary</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="p">[</span><span class="s2">"series"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_series_summary</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
     <span class="c1"># ------------------------------------------------------------------ reading</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_h5</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s2">"data.h5"</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"reused_from"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">src</span><span class="p">:</span>
+            <span class="c1"># a cache hit computed nothing: its series and fields are those of the source run,</span>
+            <span class="c1"># read through this run (review finding 52: the report said they were reused, but</span>
+            <span class="c1"># they could not be reached from the new run)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">run_dir</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data.h5"</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"conatus.runs: run </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has no data.h5"</span><span class="p">,</span>
                               <span class="n">why</span><span class="o">=</span><span class="s2">"no series or field was recorded (or the run is still running)"</span><span class="p">)</span>
@@ -1463,6 +1391,12 @@
 <div class="viewcode-block" id="Run.file_path">
 <a class="viewcode-back" href="../../../guide/runs.html#conatus.runs.Run.file_path">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The attached file ``name`` of this run (a plain file name: no directory part, never</span>
+<span class="sd">        "." or ".."; security name="../../x" read outside the run)."""</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"."</span><span class="p">,</span> <span class="s2">".."</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"/"</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">"</span><span class="se">\\</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">name</span>
+                <span class="ow">or</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">Path</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">name</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"conatus.runs: file name </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> is not a plain file name"</span><span class="p">,</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="s2">"the name given to save_file (no directory part)"</span><span class="p">)</span>
         <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s2">"files"</span> <span class="o">/</span> <span class="n">name</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"conatus.runs: run </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has no file </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">"</span><span class="p">,</span>
@@ -1545,6 +1479,20 @@
         <span class="k">return</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">locking</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>                                  <span class="c1"># h5py built without the locking argument</span>
         <span class="k">return</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_identity_of</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""(canonical identity, its sha256) of a solver or plan (``conatus.io._identity``), JSON-safe;</span>
+<span class="sd">    None for a bare problem (no discretization: nothing bound yet)."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..io._identity</span><span class="w"> </span><span class="kn">import</span> <span class="n">computation_identity</span><span class="p">,</span> <span class="n">digest</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">obj</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">"plan"</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">"groups"</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ident</span> <span class="o">=</span> <span class="n">jsonable</span><span class="p">(</span><span class="n">computation_identity</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 -- the record never fails the computation; declared</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"unreadable"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">"</span><span class="p">},</span> <span class="s2">""</span>
+    <span class="k">return</span> <span class="n">ident</span><span class="p">,</span> <span class="n">digest</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
 </pre></div>
         </article>
       </div>
@@ -1577,12 +1525,13 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=fd10adb8"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script defer="defer" src="../../../_static/tutorial_films.js?v=57865db1"></script>
     </body>
 </html>

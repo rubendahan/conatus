@@ -1,8 +1,0 @@
-﻿conatus.expert.BaseFlowSensitivity
-==================================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: BaseFlowSensitivity
-   :members:
-   :show-inheritance:

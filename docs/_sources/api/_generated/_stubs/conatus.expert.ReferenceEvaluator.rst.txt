@@ -1,8 +1,0 @@
-﻿conatus.expert.ReferenceEvaluator
-=================================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: ReferenceEvaluator
-   :members:
-   :show-inheritance:

@@ -1,6 +1,0 @@
-﻿conatus.expert.steady\_operator
-===============================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: steady_operator

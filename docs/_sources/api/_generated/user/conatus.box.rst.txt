@@ -1,0 +1,6 @@
+﻿conatus.box
+===========
+
+.. currentmodule:: conatus
+
+.. autofunction:: box

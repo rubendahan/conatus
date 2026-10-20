@@ -1,6 +1,0 @@
-﻿conatus.expert.FRAME\_KINDS
-===========================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: FRAME_KINDS

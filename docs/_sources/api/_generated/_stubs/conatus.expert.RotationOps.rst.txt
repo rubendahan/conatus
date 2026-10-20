@@ -1,8 +1,0 @@
-﻿conatus.expert.RotationOps
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: RotationOps
-   :members:
-   :show-inheritance:

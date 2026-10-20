@@ -1,8 +1,0 @@
-﻿conatus.expert.StructuralSensitivity
-====================================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: StructuralSensitivity
-   :members:
-   :show-inheritance:

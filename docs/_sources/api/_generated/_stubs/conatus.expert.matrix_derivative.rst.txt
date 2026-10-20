@@ -1,6 +1,0 @@
-﻿conatus.expert.matrix\_derivative
-=================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: matrix_derivative

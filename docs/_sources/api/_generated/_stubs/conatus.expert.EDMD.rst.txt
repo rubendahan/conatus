@@ -1,8 +1,0 @@
-﻿conatus.expert.EDMD
-===================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: EDMD
-   :members:
-   :show-inheritance:

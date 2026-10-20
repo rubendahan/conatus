@@ -1,6 +1,0 @@
-﻿conatus.expert.mode\_pair
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: mode_pair

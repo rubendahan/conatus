@@ -1,0 +1,6 @@
+﻿conatus.series
+==============
+
+.. currentmodule:: conatus
+
+.. autofunction:: series

@@ -1,6 +1,0 @@
-﻿conatus.expert.doc\_reference
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: doc_reference

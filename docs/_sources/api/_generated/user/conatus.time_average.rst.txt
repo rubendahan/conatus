@@ -1,0 +1,6 @@
+﻿conatus.time\_average
+=====================
+
+.. currentmodule:: conatus
+
+.. autofunction:: time_average

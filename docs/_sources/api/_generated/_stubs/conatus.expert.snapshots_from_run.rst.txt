@@ -1,6 +1,0 @@
-﻿conatus.expert.snapshots\_from\_run
-===================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: snapshots_from_run

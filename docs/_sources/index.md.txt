@@ -4,7 +4,8 @@ Conatus solves partial differential equations with spectral methods, on CPUs and
 equations written as on paper, and studies the dynamical systems they define.
 
 **Status: 0.1.0.** CPU supported, GPU (CUDA 12) in beta. Install with `pip install conatus` ({doc}`install`), then
-start with {doc}`tutorials/00_getting_started`.
+start with {doc}`tutorials/first_steps` (ten minutes) or, for the whole path through one
+problem, {doc}`tutorials/00_getting_started`.
 
 ```python
 import numpy as np
@@ -86,8 +87,9 @@ The methods behind each part of the library.
 - **No silent substitution.** Basis, resolution, boundary treatment, dealiasing, time stepper,
   tolerances and inner product are written by you or printed by `explain()`; Conatus suggests,
   it never modifies ({doc}`principles`).
-- **Validation by residual.** Every eigenvalue, steady state or orbit comes with its residual and
-  a resolution check, never as a bare number.
+- **Validation by residual.** Every eigenvalue, steady state or orbit comes with its residual,
+  never as a bare number. A check against a finer resolution is computed when you ask for it
+  (`drift=` for eigenvalues, a second resolution for a solution): it is not automatic.
 - **Every capability tied to a published value.** Each method is tested against a published
   table or a closed form, and each tutorial ends on one.
 

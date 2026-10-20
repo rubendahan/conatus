@@ -1,6 +1,0 @@
-﻿conatus.expert.parameter\_sensitivity
-=====================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: parameter_sensitivity

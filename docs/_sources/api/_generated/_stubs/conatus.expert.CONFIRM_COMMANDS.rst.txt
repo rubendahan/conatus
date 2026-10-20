@@ -1,6 +1,0 @@
-﻿conatus.expert.CONFIRM\_COMMANDS
-================================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: CONFIRM_COMMANDS

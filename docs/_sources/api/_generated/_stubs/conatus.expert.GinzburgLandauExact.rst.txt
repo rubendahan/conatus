@@ -1,8 +1,0 @@
-﻿conatus.expert.GinzburgLandauExact
-==================================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: GinzburgLandauExact
-   :members:
-   :show-inheritance:

@@ -86,8 +86,12 @@ Conatus does not decide for you:
 
 - `every` is a whole number of steps: the time step is never adjusted to land on an output time;
 - an existing file is never replaced or extended without your saying so: `mode="w"` (replace),
-  `mode="a"` (append: task names, `dt` and `every` must match, and time must go forward) or
-  `mode="resume"`;
+  `mode="a"` (append: time must go forward) or `mode="resume"`. One file holds one computation:
+  an append is refused, with the list of what differs, when the model, equations, parameters,
+  given-field data, resolution, box, scheme, `dt`, `every` or the source of any task differs from
+  the computation the file records (a task function is compared by its code and the values it
+  reads; one reading an object without a content hash is compared by its code only, said by
+  `explain()`);
 - `mode="resume"` is for a job that restarts from a checkpoint older than the last rows of the file
   (the previous job was killed between two checkpoints): the rows after the restart are dropped
   first, their number is printed by `explain()`, and the restarted run writes them again;
@@ -113,15 +117,22 @@ from `cn.io.latest` with a one-step and a multistep scheme and the CUDA graph re
 restart. The restarting simulation must use the same numerics (scheme, `dt`, resolution, start-up,
 options): a difference is refused with the option to change, never adapted. It must also be the same
 problem: every checkpoint records the model name, a hash of the compiled equations, the parameter
-values, the resolution and the bounds of every direction, and a restart refuses any difference with
-the list of what differs (`parameter kappa: 1 in the checkpoint, 5 now`; `geometry along x: ...`;
+values, the data of every given field (by content: a forcing `f = 1` is not `f = 2`), the user
+functions (`m.function`, by their code), the resolution and the bounds of every direction, and a
+restart refuses any difference with the list of what differs (`parameter kappa: 1 in the
+checkpoint, 5 now`; `given field f: its data differ ...`; `geometry along x: ...`;
 `equations: hash ... (another equation, term or sign)`), so a job chain whose script was edited
 between two jobs cannot mix two problems in one output. To continue a state at another value
-deliberately, name it: `sim.restart(path, allow=("kappa",))` (or `allow="parameters"`, `"model"`,
-`"equations"`, `"geometry"`; the resolution can never be allowed). The allowed change is printed by
+deliberately, name it: `sim.restart(path, allow=("kappa",))` (a parameter, given-field or function
+name, or `allow="parameters"`, `"data"`, `"functions"`, `"model"`, `"equations"`, `"geometry"`; the
+resolution can never be allowed). The allowed change is printed by
 `explain()` and recorded in every later checkpoint. A checkpoint written before this record restarts
-with a `CheckpointWarning` saying that only the problem name and the numerics could be compared. A checkpoint directory
-that holds files of another run is refused as well. With `grids=True` a checkpoint also stores the
+with a `CheckpointWarning` saying that only the problem name and the numerics could be compared (one
+written by 0.1.0: that its given-field data were not compared). A checkpoint directory that holds
+files of another run is refused as well: every checkpoint already in the directory is checked
+against the one the run restarted from before anything is written or deleted, and a refused
+write is refused again on every retry. `cn.io.latest` considers only complete Conatus checkpoints
+(an HDF5 file of another format, or a `.npz` without the state, is ignored). With `grids=True` a checkpoint also stores the
 grid values of each unknown, for reading with `h5py`. The suffix chooses the format: `.h5` or `.npz`
 (NumPy), which restart to the same numbers.
 

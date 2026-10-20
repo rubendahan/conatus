@@ -1,6 +1,0 @@
-﻿conatus.expert.FILM\_ENCODING
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: FILM_ENCODING

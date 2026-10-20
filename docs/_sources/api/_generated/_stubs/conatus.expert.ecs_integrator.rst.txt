@@ -1,6 +1,0 @@
-﻿conatus.expert.ecs\_integrator
-==============================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: ecs_integrator

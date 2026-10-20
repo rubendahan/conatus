@@ -1,8 +1,0 @@
-﻿conatus.expert.Component
-========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Component
-   :members:
-   :show-inheritance:

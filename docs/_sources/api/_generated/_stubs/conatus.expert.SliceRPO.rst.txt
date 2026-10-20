@@ -1,8 +1,0 @@
-﻿conatus.expert.SliceRPO
-=======================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: SliceRPO
-   :members:
-   :show-inheritance:

@@ -27,11 +27,32 @@ A geometry fixes the coordinates, the spectral bases (chosen once per geometry, 
    Sphere
    Ball
    Shell
+   TaylorCouette
+   MappedBox
    periodic
    walls
+   line
+   half_line
+   between
 ```
 
 `cn.Cylinder` is another name for `cn.Pipe`.
+
+## Wall conditions on a vector unknown
+
+Named conditions for `m.at(...)` (guide: {doc}`../guide/boundary_conditions`).
+
+```{eval-rst}
+.. currentmodule:: conatus
+
+.. autosummary::
+   :toctree: _generated/user
+   :nosignatures:
+
+   no_slip
+   free_slip
+   navier_slip
+```
 
 ## The model
 
@@ -113,6 +134,29 @@ Record runs, find and compare them, reproduce one bit for bit (guide: {doc}`../g
    Registry
 ```
 
+## Quantities of a run
+
+Series, spectra and profiles of a simulation, what to watch while it runs, and the statistics of a
+result (guide: {doc}`../guide/diagnostics`).
+
+```{eval-rst}
+.. currentmodule:: conatus
+
+.. autosummary::
+   :toctree: _generated/user
+   :nosignatures:
+
+   series
+   spectrum
+   profile
+   view
+   time_average
+   uncertainty
+   StopRun
+```
+
+`cn.StopRun` is the exception a callback raises to stop a run.
+
 ## Utilities
 
 ```{eval-rst}
@@ -126,4 +170,25 @@ Record runs, find and compare them, reproduce one bit for bit (guide: {doc}`../g
    from_dedalus
    parse_equation
    parse_expr
+```
+
+## Regions of the complex plane: `cn.box`, `cn.contour`
+
+`m.eigenvalues(N, ..., region=cn.box(re=(a, b), im=(c, d)))` returns every eigenvalue in the box
+with a certified count; `cn.contour.count` and `cn.contour.beyn` take any operator
+({doc}`../guide/dynamics/contour`).
+
+```{eval-rst}
+.. currentmodule:: conatus
+
+.. autosummary::
+   :toctree: _generated/user
+   :nosignatures:
+
+   box
+   contour.count
+   contour.beyn
+   contour.CountResult
+   contour.BeynResult
+   contour.RegionEVPResult
 ```

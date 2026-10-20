@@ -1,8 +1,0 @@
-﻿conatus.expert.Branch
-=====================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Branch
-   :members:
-   :show-inheritance:

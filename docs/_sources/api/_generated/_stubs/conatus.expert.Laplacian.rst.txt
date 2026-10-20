@@ -1,8 +1,0 @@
-﻿conatus.expert.Laplacian
-========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Laplacian
-   :members:
-   :show-inheritance:

@@ -1,8 +1,0 @@
-﻿conatus.expert.Connection
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Connection
-   :members:
-   :show-inheritance:

@@ -1,8 +1,0 @@
-﻿conatus.expert.FilmIndex
-========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: FilmIndex
-   :members:
-   :show-inheritance:

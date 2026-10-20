@@ -20,7 +20,7 @@ $\eta = 0.5$, outer cylinder at rest: $Re_c = 68.19$ at $k_c = 3.16$ (Recktenwal
 
 On the disk each component is expanded in a regular (Zernike-type) basis
 $\rho^{|m|}\,P_n^{(a,|m|)}(2\rho^2 - 1)$, vectors are stored in spin components
-$u_\pm = u_r \mp i u_\varphi$, and every operator is a sparse map between these bases (Vasil et al.
+$u_\pm = u_r \pm i u_\varphi$ (regular as $\rho^{|m\pm1|}$), and every operator is a sparse map between these bases (Vasil et al.
 2016). There is no axis condition to impose and no $1/(r + \varepsilon)$: regularity at $r = 0$ is
 built in. You name the geometry and its wall; `explain()` prints the bases it chose.
 
@@ -47,6 +47,13 @@ built in. You name the geometry and its wall; `explain()` prints the bases it ch
 - The exact answer is $s = -j_{m,n}^2$: separation of variables gives $J_m(\sqrt{-s}\,r)$, and the
   wall condition picks the zeros $j_{m,n}$ of $J_m$.
 
+```{figure} media/t08_drum.png
+:alt: Left: the computed eigenvalues of the drum for m = 0, 1, 2 as coloured dots, each on a black tick of the squared Bessel zeros. Right: their relative errors on a log scale, at rounding for the first modes and growing for the last ones.
+:width: 100%
+
+The vibrating drum at N = 32 radial modes: the eight slowest modes of each azimuthal group against the closed form −j²ₘ,ₙ. The first ones agree to rounding; the error grows with n as the modes become finer than the grid.
+```
+
 ## Hagen–Poiseuille
 
 ```{literalinclude} code/t08_polar.py
@@ -64,6 +71,13 @@ built in. You name the geometry and its wall; `explain()` prints the bases it ch
   sign to the one implied by their own eq. (15) and $V_t = \mathcal{L}V$ (the centre mode advected by
   $W \approx 1$ must have $\operatorname{Im}\lambda \approx -k$); Dedalus agrees with Conatus. The
   comparison is made with the conjugate, and that is written in the check.
+
+```{figure} media/t08_pipe_spectrum.png
+:alt: The spectrum of pipe flow at Re = 1000 for (m, k) = (1, 1): eigenvalues on three branches in the left half of the complex plane, the two rightmost marked red.
+:width: 100%
+
+Hagen-Poiseuille flow, R = 1000, (m, k) = (1, 1): the spectrum of the pipe block. All modes decay; the two least stable (red) are the centre and wall modes of Meseguer and Trefethen.
+```
 
 ## Taylor–Couette
 

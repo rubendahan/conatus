@@ -1,6 +1,0 @@
-﻿conatus.expert.encode\_curve
-============================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: encode_curve

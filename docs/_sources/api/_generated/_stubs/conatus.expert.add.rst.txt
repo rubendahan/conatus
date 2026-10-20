@@ -1,6 +1,0 @@
-﻿conatus.expert.add
-==================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: add

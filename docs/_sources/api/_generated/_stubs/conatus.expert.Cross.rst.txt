@@ -1,8 +1,0 @@
-﻿conatus.expert.Cross
-====================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Cross
-   :members:
-   :show-inheritance:

@@ -1,0 +1,6 @@
+﻿conatus.uncertainty
+===================
+
+.. currentmodule:: conatus
+
+.. autofunction:: uncertainty

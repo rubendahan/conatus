@@ -1,8 +1,0 @@
-﻿conatus.expert.GroupMatrices
-============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: GroupMatrices
-   :members:
-   :show-inheritance:

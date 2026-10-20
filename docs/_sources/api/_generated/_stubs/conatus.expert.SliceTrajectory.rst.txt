@@ -1,8 +1,0 @@
-﻿conatus.expert.SliceTrajectory
-==============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: SliceTrajectory
-   :members:
-   :show-inheritance:

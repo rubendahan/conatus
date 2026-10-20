@@ -1,0 +1,6 @@
+﻿conatus.between
+===============
+
+.. currentmodule:: conatus
+
+.. autofunction:: between

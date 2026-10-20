@@ -1,8 +1,0 @@
-﻿conatus.expert.Add
-==================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Add
-   :members:
-   :show-inheritance:

@@ -22,8 +22,9 @@ several processes writing at once, and an unwritable registry leaving the run bi
 :end-before: "# [/imports]"
 ```
 
-The tutorial keeps its registry in its working directory (`CN_RUNS=registry`). Point `CN_RUNS` at a
-scratch disk for your own work: a registry holds states, and states can be large.
+The tutorial keeps its registry in a new temporary directory, so it never reads or deletes a
+registry of yours. Point `CN_RUNS` at a scratch disk for your own work: a registry holds states, and
+states can be large.
 
 ```{literalinclude} code/t11_runs.py
 :language: python
@@ -49,6 +50,13 @@ key (two runs at different $\kappa$ are never confused).
   `run`.
 - `run.result(...)` stores scalars you can query. `certify` needs a reason, and here carries the
   evidence (the relative error against the closed form); the history of statuses is kept.
+
+```{figure} media/t11_decay.png
+:alt: Three straight lines on a log scale, the decay of sin 3x for three diffusivities, the coloured dots on thin grey closed-form lines.
+:width: 100%
+
+The three recorded runs, sampled every five steps: each decays as exp(−9κt) (grey), the closed form the registry's results are checked against.
+```
 
 ## Query and compare
 

@@ -60,8 +60,9 @@ sim = m.simulate((64, 48, 48), scheme="RK443", dt=1e-3, backend="cuda", f_backen
 print(sim.explain())           # what is planned, and which sums change order (rounding only)
 ```
 
-`run` and `run_graph` can be mixed, and checkpoints taken on the GPU restart bit for bit. CPU and
-GPU results agree to round-off; every GPU path is tested against the CPU reference.
+`run` and `run_graph` can be mixed, and checkpoints taken on the GPU restart bit for bit. Where
+a GPU path has been run on GPU hardware its results agree with the CPU to round-off; which paths
+have been run is listed below.
 
 ## What runs on the GPU
 
@@ -74,6 +75,29 @@ GPU results agree to round-off; every GPU path is tested against the CPU referen
 | Transient growth (propagator) | yes |
 | Several GPUs | not in this release |
 | Eigenvalue problems, steady Newton solves, continuation | CPU |
+
+## What has been tested on a GPU
+
+Each GPU path has tests that compare it with the CPU (`pytest -m gpu`; they are skipped on a
+machine without a GPU). This release has not been re-run on a GPU: the last complete GPU suite
+(`pytest -m "gpu and not slow"`, October 2026, on a development tree before this release) passed
+276 tests and failed 11 on an A100 and on an L40S; the 11 were fixed and re-run as targeted tests
+on an A100, where one memory-prediction test still predicts 3 % more than measured. Paths whose
+tests were written after that suite have not been run on a GPU: treat them as experimental there.
+
+| Capability | GPU tests | Run on GPU hardware |
+|---|---|---|
+| Box and channel simulations, fused kernels, CUDA graphs | `tests/ivp/test_gpu_backend.py`, `tests/cross_backend/` | A100 and L40S |
+| HDF5 checkpoints and restarts on the GPU | `tests/ivp/test_checkpoint_series_gpu.py` | A100 and L40S |
+| Disk, annulus, pipe, sphere, ball, shell | `tests/curvilinear/test_curvilinear_gpu.py`, `tests/spherical/` | A100 (on the L40S the comparison ran before a fix of the test's own assertions and was not re-run) |
+| Hermite, Laguerre and compound bases | `tests/discretize/test_families_gpu.py` | A100 and L40S |
+| Legendre, Jacobi and ultraspherical bases | `tests/discretize/test_families_gpu.py` | A100 |
+| User functions (`m.function`) | `tests/model/test_pointwise_function_gpu.py` | A100 |
+| Tangent and adjoint of the time-stepping map | `tests/adjoint/test_gpu_adjoint.py`, `tests/adjoint/test_sphere_adjoint.py` | A100 and L40S |
+| Floquet–Hill determinants | `tests/floquet/test_hill_gpu.py` | A100 and L40S |
+| Ensembles | `tests/ensembles/test_gpu_ensemble.py` | A100 and L40S |
+| Tracers, dye, Lyapunov exponents | `tests/model/test_particles_gpu.py` | not run on a GPU |
+| Symmetry subspaces of the disk, cylinder and pipe | `tests/polar/test_polar_symmetry_gpu.py` | L40S |
 
 ## How much GPU memory?
 

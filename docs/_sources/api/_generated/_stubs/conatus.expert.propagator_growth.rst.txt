@@ -1,6 +1,0 @@
-﻿conatus.expert.propagator\_growth
-=================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: propagator_growth

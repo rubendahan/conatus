@@ -1,8 +1,0 @@
-﻿conatus.expert.UnstableManifold
-===============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: UnstableManifold
-   :members:
-   :show-inheritance:

@@ -69,7 +69,9 @@ is refused with the group concerned, instead of producing a meaningless solution
 Products are evaluated on a grid (pseudospectrally) and transformed back. A quadratic product of
 two series truncated at $N$ modes has $2N$ modes; evaluating it on $3N/2$ points removes the aliased
 part exactly (the "3/2 rule"); a product of $p$ fields needs $(p+1)N/2$ points. The native layer
-reads the highest polynomial degree $p$ of its equations and uses $\max(3/2, (p+1)/2)$ in every
+reads the highest polynomial degree $p$ of its equations, counting each spatially varying given
+field as one factor (its coefficients are truncated at the same $N$ modes), and uses
+$\max(3/2, (p+1)/2)$ in every
 direction by default (3/2 for Navier–Stokes, 2 for the cubic term of Swift–Hohenberg), and prints
 the factor with its reason; `dealias=` changes it. Terms that are not polynomial in the unknowns
 (`exp(u)`, `1/T`, a pointwise function) are listed by `explain()`: no factor removes their

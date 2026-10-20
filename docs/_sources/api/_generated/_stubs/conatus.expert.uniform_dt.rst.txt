@@ -1,6 +1,0 @@
-﻿conatus.expert.uniform\_dt
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: uniform_dt

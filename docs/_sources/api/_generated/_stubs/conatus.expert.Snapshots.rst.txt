@@ -1,8 +1,0 @@
-﻿conatus.expert.Snapshots
-========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Snapshots
-   :members:
-   :show-inheritance:

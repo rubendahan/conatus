@@ -1,8 +1,0 @@
-﻿conatus.expert.TransposeResult
-==============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: TransposeResult
-   :members:
-   :show-inheritance:

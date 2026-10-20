@@ -1,0 +1,1003 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+        <link rel="prefetch" href="../../../_static/logo.svg" as="image">
+        <link rel="prefetch" href="../../../_static/logo-dark.svg" as="image">
+
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>conatus.verify.uncertainty - Conatus</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/vendor/fonts/fonts.css?v=d20fc551" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/tokens.css?v=6baad13e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=58773021" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  --color-brand-primary: #A8281E;
+  --color-brand-content: #A8281E;
+  --color-background-primary: #EFEAE0;
+  --color-background-secondary: #E6E0D3;
+  --color-background-border: #CFC7B7;
+  --color-foreground-primary: #151310;
+  --color-foreground-secondary: #5E5A52;
+  --color-code-background: #E6E0D3;
+  --font-stack: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-stack--monospace: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-stack--headings: 'IM Fell English', 'IM Fell DW Pica', Georgia, serif;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #D4574A;
+  --color-brand-content: #D4574A;
+  --color-background-primary: #0B0B0B;
+  --color-background-secondary: #161615;
+  --color-background-border: #2A2A28;
+  --color-foreground-primary: #EDEBE6;
+  --color-foreground-secondary: #A3A29D;
+  --color-code-background: #161615;
+  --font-stack: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-stack--monospace: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-stack--headings: 'IM Fell English', 'IM Fell DW Pica', Georgia, serif;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #D4574A;
+  --color-brand-content: #D4574A;
+  --color-background-primary: #0B0B0B;
+  --color-background-secondary: #161615;
+  --color-background-border: #2A2A28;
+  --color-foreground-primary: #EDEBE6;
+  --color-foreground-secondary: #A3A29D;
+  --color-code-background: #161615;
+  --font-stack: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-stack--monospace: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-stack--headings: 'IM Fell English', 'IM Fell DW Pica', Georgia, serif;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">Conatus</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../_static/logo.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../_static/logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Conatus</span>
+  
+</a><div class="cn-site-link">
+  <a href="../../../../">&larr; Conatus website</a>
+  <a href="../../../tutorials/index.html">Tutorials</a>
+  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
+</div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Using Conatus</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../guide/index.html">User guide</a><input aria-label="Toggle navigation of User guide" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/geometries.html">Geometries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/shells.html">Spherical shells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/mapped.html">Channels between two surfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/equations.html">Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/boundary_conditions.html">Boundary conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/problems.html">Ready problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/units.html">Units and conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/timesteppers.html">Simulations and time steppers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/gpu.html">GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/diagnostics.html">Diagnostics and visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/particles.html">Particles and dye of a simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/io.html">Input and output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/studio.html">The Studio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/agents.html">For AI agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/notebook.html">Notebooks</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../guide/dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/eigenvalues.html">Eigenvalues and stability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/onset.html">Onset of convection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/nonmodal.html">Non-modal analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/invariant_solutions.html">Invariant solutions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/continuation.html">Continuation and bifurcations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/floquet.html">Floquet analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/contour.html">Eigenvalues in a region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/chaos.html">Chaos and ensembles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/manifolds.html">Invariant manifolds and slices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/symmetry.html">Symmetry subspaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/adjoint.html">Adjoints and sensitivity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/optimal_perturbations.html">Tangent, adjoint and optimal perturbations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../guide/dynamics/data.html">Data-driven analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/explain.html">explain() and the Methods paragraph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/uncertainty.html">Numerical uncertainty</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/runs.html">The run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/reproducibility.html">Reproducibility and provenance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/doctor.html">Checking an installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/errors.html">Errors and what they mean</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/experimental.html">Experimental features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/expert.html">The expert layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/operators.html">IR and operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/bases.html">Bases and domains</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/taus.html">Tau terms by hand</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../gallery/index.html">Gallery: fluids everywhere</a><input aria-label="Toggle navigation of Gallery: fluids everywhere" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_salt_fingers.html">Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines &amp; Gill 1969, J. Fluid Mech. 37, 289-306)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/manifolds_phase_space_geometry.html">Phase-space geometry in three steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/oscillatory_womersley.html">Womersley flow in a plane channel: exact profile (LBVP and IVP) and Floquet stability (Hill)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/patterns_brusselator.html">Turing instability of the Brusselator (Prigogine &amp; Lefever 1968)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/patterns_ginzburg_landau.html">Complex Ginzburg–Landau equation: Benjamin–Feir–Newell and Eckhaus instabilities of plane waves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/patterns_swift_hohenberg.html">Swift–Hohenberg: onset of rolls, weakly nonlinear amplitude, roll branch by continuation, 2D rolls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/shear_kelvin_helmholtz.html">Kelvin–Helmholtz instability of the tanh mixing layer (Michalke 1964), inviscid and viscous</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/shear_nonmodal_poiseuille.html">Non-modal stability of plane Poiseuille flow: transient growth and the continuous adjoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/shear_sensitivity_wavemaker.html">Wavemaker and base-flow sensitivity of Orszag’s Tollmien-Schlichting mode (plane Poiseuille, Re = 1e4, alpha = 1), then the steady-forcing sensitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/shear_taylor_goldstein.html">Stratified Kelvin–Helmholtz: Taylor–Goldstein equation for the tanh/tanh layer (Hazel 1972)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/index.html">API reference</a><input aria-label="Toggle navigation of API reference" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/user.html">User layer: <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">conatus</span> <span class="pre">as</span> <span class="pre">cn</span></code></a><input aria-label="Toggle navigation of User layer: import conatus as cn" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Box.html">conatus.Box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Channel.html">conatus.Channel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Disk.html">conatus.Disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Annulus.html">conatus.Annulus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Pipe.html">conatus.Pipe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Sphere.html">conatus.Sphere</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Ball.html">conatus.Ball</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Shell.html">conatus.Shell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.TaylorCouette.html">conatus.TaylorCouette</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.MappedBox.html">conatus.MappedBox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.periodic.html">conatus.periodic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.walls.html">conatus.walls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.line.html">conatus.line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.half_line.html">conatus.half_line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.between.html">conatus.between</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.no_slip.html">conatus.no_slip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.free_slip.html">conatus.free_slip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.navier_slip.html">conatus.navier_slip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.Model.html">conatus.Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.model.Simulation.html">conatus.model.Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.model.Linearization.html">conatus.model.Linearization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.model.Compiled.html">conatus.model.Compiled</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.channel.html">conatus.problems.channel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.channel_evp.html">conatus.problems.channel_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.plane_couette.html">conatus.problems.plane_couette</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.plane_couette_evp.html">conatus.problems.plane_couette_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.rayleigh_benard.html">conatus.problems.rayleigh_benard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.rayleigh_benard_evp.html">conatus.problems.rayleigh_benard_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.taylor_couette.html">conatus.problems.taylor_couette</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.taylor_couette_evp.html">conatus.problems.taylor_couette_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.pipe.html">conatus.problems.pipe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.pipe_evp.html">conatus.problems.pipe_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.kuramoto_sivashinsky.html">conatus.problems.kuramoto_sivashinsky</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.kolmogorov.html">conatus.problems.kolmogorov</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.swift_hohenberg.html">conatus.problems.swift_hohenberg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.rotating_shell_convection.html">conatus.problems.rotating_shell_convection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.rotating_shell_convection_evp.html">conatus.problems.rotating_shell_convection_evp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.problems.Ready.html">conatus.problems.Ready</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.track.html">conatus.runs.track</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.record.html">conatus.runs.record</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.find.html">conatus.runs.find</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.get.html">conatus.runs.get</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.compare.html">conatus.runs.compare</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.lineage.html">conatus.runs.lineage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.reproduce.html">conatus.runs.reproduce</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.to_dataframe.html">conatus.runs.to_dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.export.html">conatus.runs.export</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.explain.html">conatus.runs.explain</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.Run.html">conatus.runs.Run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.RunList.html">conatus.runs.RunList</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.runs.Registry.html">conatus.runs.Registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.series.html">conatus.series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.spectrum.html">conatus.spectrum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.profile.html">conatus.profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.view.html">conatus.view</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.time_average.html">conatus.time_average</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.uncertainty.html">conatus.uncertainty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.StopRun.html">conatus.StopRun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.doctor.html">conatus.doctor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.from_dedalus.html">conatus.from_dedalus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.parse_equation.html">conatus.parse_equation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.parse_expr.html">conatus.parse_expr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.box.html">conatus.box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.contour.count.html">conatus.contour.count</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.contour.beyn.html">conatus.contour.beyn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.contour.CountResult.html">conatus.contour.CountResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.contour.BeynResult.html">conatus.contour.BeynResult</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/_generated/user/conatus.contour.RegionEVPResult.html">conatus.contour.RegionEVPResult</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/expert.html">Expert layer: <code class="docutils literal notranslate"><span class="pre">conatus.expert</span></code></a><input aria-label="Toggle navigation of Expert layer: conatus.expert" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/_generated/reference.html">Expert layer by module</a><input aria-label="Toggle navigation of Expert layer by module" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Check.html">conatus.expert.Check</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.VerificationReport.html">conatus.expert.VerificationReport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.verify.html">conatus.expert.verify</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CartesianCoordinates.html">conatus.expert.CartesianCoordinates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PolarCoordinates.html">conatus.expert.PolarCoordinates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CylindricalCoordinates.html">conatus.expert.CylindricalCoordinates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.S2Coordinates.html">conatus.expert.S2Coordinates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SphericalCoordinates.html">conatus.expert.SphericalCoordinates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RealFourier.html">conatus.expert.RealFourier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ComplexFourier.html">conatus.expert.ComplexFourier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Jacobi.html">conatus.expert.Jacobi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Chebyshev.html">conatus.expert.Chebyshev</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ChebyshevT.html">conatus.expert.ChebyshevT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ChebyshevU.html">conatus.expert.ChebyshevU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ChebyshevV.html">conatus.expert.ChebyshevV</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Legendre.html">conatus.expert.Legendre</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Ultraspherical.html">conatus.expert.Ultraspherical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DiskBasis.html">conatus.expert.DiskBasis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.AnnulusBasis.html">conatus.expert.AnnulusBasis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SphereBasis.html">conatus.expert.SphereBasis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ShellBasis.html">conatus.expert.ShellBasis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BallBasis.html">conatus.expert.BallBasis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Hermite.html">conatus.expert.Hermite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Laguerre.html">conatus.expert.Laguerre</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CompoundChebyshev.html">conatus.expert.CompoundChebyshev</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Domain.html">conatus.expert.Domain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Field.html">conatus.expert.Field</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.VectorField.html">conatus.expert.VectorField</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TensorField.html">conatus.expert.TensorField</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Parameter.html">conatus.expert.Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.dot.html">conatus.expert.dot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.cross.html">conatus.expert.cross</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.outer.html">conatus.expert.outer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.conj.html">conatus.expert.conj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.comp.html">conatus.expert.comp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.diff.html">conatus.expert.diff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.grad.html">conatus.expert.grad</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.div.html">conatus.expert.div</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.lap.html">conatus.expert.lap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.curl.html">conatus.expert.curl</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.dt.html">conatus.expert.dt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.integ.html">conatus.expert.integ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.interp.html">conatus.expert.interp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.lift.html">conatus.expert.lift</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.unit_vector.html">conatus.expert.unit_vector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.exp.html">conatus.expert.exp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.log.html">conatus.expert.log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.sin.html">conatus.expert.sin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.cos.html">conatus.expert.cos</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.tanh.html">conatus.expert.tanh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.sqrt.html">conatus.expert.sqrt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.absolute.html">conatus.expert.absolute</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.sign.html">conatus.expert.sign</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Problem.html">conatus.expert.Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.IVP.html">conatus.expert.IVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.LBVP.html">conatus.expert.LBVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EVP.html">conatus.expert.EVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NLBVP.html">conatus.expert.NLBVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NonlinearLHSError.html">conatus.expert.NonlinearLHSError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ProblemError.html">conatus.expert.ProblemError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RankReport.html">conatus.expert.RankReport</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EVEN.html">conatus.expert.EVEN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ODD.html">conatus.expert.ODD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Reflection.html">conatus.expert.Reflection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SymmetrySubspace.html">conatus.expert.SymmetrySubspace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SymmetryError.html">conatus.expert.SymmetryError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SymmetryBreakingError.html">conatus.expert.SymmetryBreakingError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ShiftReflect.html">conatus.expert.ShiftReflect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.AzimuthalMFold.html">conatus.expert.AzimuthalMFold</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EquatorialParity.html">conatus.expert.EquatorialParity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MappedChebyshev.html">conatus.expert.MappedChebyshev</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RationalMap.html">conatus.expert.RationalMap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TanhMap.html">conatus.expert.TanhMap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TanMap.html">conatus.expert.TanMap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.parse_equation.html">conatus.expert.parse_equation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.parse_expr.html">conatus.expert.parse_expr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ChannelBaseFlow.html">conatus.expert.ChannelBaseFlow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.channel.html">conatus.expert.channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnitSystem.html">conatus.expert.UnitSystem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.convert.html">conatus.expert.convert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Energy.html">conatus.expert.Energy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ChannelUnits.html">conatus.expert.ChannelUnits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DiscretizationError.html">conatus.expert.DiscretizationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.LBVPSolution.html">conatus.expert.LBVPSolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Plan.html">conatus.expert.Plan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RankError.html">conatus.expert.RankError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.discretize.html">conatus.expert.discretize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FieldData.html">conatus.expert.FieldData</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.grid.html">conatus.expert.grid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EVPResult.html">conatus.expert.EVPResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.solve_dense.html">conatus.expert.solve_dense</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.solve_sparse.html">conatus.expert.solve_sparse</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.eigenvalues.html">conatus.expert.eigenvalues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ParametricEVP.html">conatus.expert.ParametricEVP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CriticalPoint.html">conatus.expert.CriticalPoint</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.critical.html">conatus.expert.critical</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NewtonSolver.html">conatus.expert.NewtonSolver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NLBVPSolution.html">conatus.expert.NLBVPSolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NewtonNotConverged.html">conatus.expert.NewtonNotConverged</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PeriodicNewtonSolver.html">conatus.expert.PeriodicNewtonSolver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.linearize.html">conatus.expert.linearize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.InnerProduct.html">conatus.expert.InnerProduct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CFL.html">conatus.expert.CFL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EmbeddedError.html">conatus.expert.EmbeddedError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TauWatch.html">conatus.expert.TauWatch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.IVPSolver.html">conatus.expert.IVPSolver</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SCHEMES.html">conatus.expert.SCHEMES</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SpectralError.html">conatus.expert.SpectralError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FlowMap.html">conatus.expert.FlowMap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.VJPSuspended.html">conatus.expert.VJPSuspended</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.revolve_cost.html">conatus.expert.revolve_cost</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FourierOps.html">conatus.expert.FourierOps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NewtonKrylovHookstep.html">conatus.expert.NewtonKrylovHookstep</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Equilibrium.html">conatus.expert.Equilibrium</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.equilibrium_eigenvalues.html">conatus.expert.equilibrium_eigenvalues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.find_equilibrium.html">conatus.expert.find_equilibrium</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.find_travelling_wave.html">conatus.expert.find_travelling_wave</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.find_relative_periodic_orbit.html">conatus.expert.find_relative_periodic_orbit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.floquet_multipliers.html">conatus.expert.floquet_multipliers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.symmetry_breaking_check.html">conatus.expert.symmetry_breaking_check</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EdgeTracker.html">conatus.expert.EdgeTracker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ThresholdBisection.html">conatus.expert.ThresholdBisection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ContinuationSettings.html">conatus.expert.ContinuationSettings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NLBVPContinuation.html">conatus.expert.NLBVPContinuation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.KSDomainContinuation.html">conatus.expert.KSDomainContinuation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.HillBlocks.html">conatus.expert.HillBlocks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.hill_from_plan.html">conatus.expert.hill_from_plan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.secant_root.html">conatus.expert.secant_root</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.exponents_dense.html">conatus.expert.exponents_dense</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.HillGPU.html">conatus.expert.HillGPU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CertifiedRoot.html">conatus.expert.CertifiedRoot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SecantRoot.html">conatus.expert.SecantRoot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.shell_floquet.html">conatus.expert.shell_floquet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.floquet_exponents.html">conatus.expert.floquet_exponents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.optimal_gain.html">conatus.expert.optimal_gain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.periodic_operator.html">conatus.expert.periodic_operator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.energy_factor.html">conatus.expert.energy_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.gain.html">conatus.expert.gain</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.propagator.html">conatus.expert.propagator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Y.html">conatus.expert.Y</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.compare_adjoints.html">conatus.expert.compare_adjoints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.max_growth.html">conatus.expert.max_growth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.numerical_abscissa.html">conatus.expert.numerical_abscissa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.parallel_shear_flow.html">conatus.expert.parallel_shear_flow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.state_space.html">conatus.expert.state_space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CHANNEL_SYSTEMS.html">conatus.expert.CHANNEL_SYSTEMS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.laminar_poiseuille.html">conatus.expert.laminar_poiseuille</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.methods.html">conatus.expert.methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ConatusError.html">conatus.expert.ConatusError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EquationError.html">conatus.expert.EquationError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UndeclaredVariableError.html">conatus.expert.UndeclaredVariableError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ParameterError.html">conatus.expert.ParameterError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BoundaryConditionError.html">conatus.expert.BoundaryConditionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.EquationSyntaxError.html">conatus.expert.EquationSyntaxError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ConvergenceError.html">conatus.expert.ConvergenceError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NumericalError.html">conatus.expert.NumericalError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnderResolvedWarning.html">conatus.expert.UnderResolvedWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.IllPosedWarning.html">conatus.expert.IllPosedWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.InitialDataWarning.html">conatus.expert.InitialDataWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.GroupWarning.html">conatus.expert.GroupWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DefaultChoiceWarning.html">conatus.expert.DefaultChoiceWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ExperimentalWarning.html">conatus.expert.ExperimentalWarning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.gpu_available.html">conatus.expert.gpu_available</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.gpu_report.html">conatus.expert.gpu_report</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ir_system.html">conatus.expert.ir_system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ode_problem.html">conatus.expert.ode_problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.continue_equilibria.html">conatus.expert.continue_equilibria</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.normal_form.html">conatus.expert.normal_form</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CollocationMesh.html">conatus.expert.CollocationMesh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PeriodicOrbitProblem.html">conatus.expert.PeriodicOrbitProblem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.continue_orbits.html">conatus.expert.continue_orbits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.branch_switch.html">conatus.expert.branch_switch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.continue_codim2.html">conatus.expert.continue_codim2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.amplitude_equation.html">conatus.expert.amplitude_equation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ginzburg_landau.html">conatus.expert.ginzburg_landau</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.cos_mode_observable.html">conatus.expert.cos_mode_observable</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.FirstFourierModeSlice.html">conatus.expert.FirstFourierModeSlice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.find_rpo_in_slice.html">conatus.expert.find_rpo_in_slice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.slice_equilibrium_check.html">conatus.expert.slice_equilibrium_check</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.PoincareSection.html">conatus.expert.PoincareSection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.first_return_map.html">conatus.expert.first_return_map</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.globalize.html">conatus.expert.globalize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.unstable_manifold.html">conatus.expert.unstable_manifold</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.find_connection.html">conatus.expert.find_connection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.scan_connection.html">conatus.expert.scan_connection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ecs_system.html">conatus.expert.ecs_system</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.base_flow_sensitivity.html">conatus.expert.base_flow_sensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ginzburg_landau_exact.html">conatus.expert.ginzburg_landau_exact</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.linear_ginzburg_landau.html">conatus.expert.linear_ginzburg_landau</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.structural_sensitivity.html">conatus.expert.structural_sensitivity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DMD.html">conatus.expert.DMD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DataInnerProduct.html">conatus.expert.DataInnerProduct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.SPOD.html">conatus.expert.SPOD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.dmd.html">conatus.expert.dmd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.edmd.html">conatus.expert.edmd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.monomials.html">conatus.expert.monomials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.pod.html">conatus.expert.pod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.rbf.html">conatus.expert.rbf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.spod.html">conatus.expert.spod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.kaplan_yorke.html">conatus.expert.kaplan_yorke</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.lyapunov_spectrum.html">conatus.expert.lyapunov_spectrum</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.poincare_section.html">conatus.expert.poincare_section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.Ensemble.html">conatus.expert.Ensemble</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ensemble_fate.html">conatus.expert.ensemble_fate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.proportion_ci.html">conatus.expert.proportion_ci</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CountResult.html">conatus.expert.CountResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BeynResult.html">conatus.expert.BeynResult</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.RegionEVPResult.html">conatus.expert.RegionEVPResult</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../principles.html">Principles</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../math/index.html">Mathematics</a><input aria-label="Toggle navigation of Mathematics" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/spectral.html">Spectral discretisation and the tau method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/curvilinear.html">Curvilinear geometries: regular bases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/timestepping.html">Implicit–explicit time stepping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/eigenproblems.html">Eigenproblems, residuals and the physical adjoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/invariant_solutions.html">Invariant solutions: Newton–Krylov–hookstep</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/continuation.html">Continuation and bifurcations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/floquet.html">Floquet–Hill analysis of time-periodic flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/nonmodal.html">Non-modal analysis: transient growth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/chaos.html">Lyapunov exponents, covariant vectors and ensembles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../math/symmetry.html">Symmetry subspaces, slices and phase-space geometry</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../citing.html">Citing Conatus</a></li>
+</ul>
+
+</div></div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for conatus.verify.uncertainty</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Numerical-uncertainty report of a scalar result: resolution and time-step</span>
+<span class="sd">studies, observed orders, Richardson extrapolation, an error estimate with its assumptions.</span>
+
+<span class="sd">::</span>
+
+<span class="sd">    def nusselt(N, dt):</span>
+<span class="sd">        sim = model.simulate(N=(2 * N, N), scheme="RK443", dt=dt)</span>
+<span class="sd">        ...</span>
+<span class="sd">        return float(nu)</span>
+
+<span class="sd">    rep = cn.uncertainty(nusselt, N=[32, 48, 64], dt=[4e-3, 2e-3, 1e-3], scheme_order=3)</span>
+<span class="sd">    print(rep.explain())          # value, estimate of the error, observed orders, verdicts</span>
+<span class="sd">    rep.value, rep.error, rep.interval</span>
+
+<span class="sd">What is computed (every number in the report, nothing hidden):</span>
+
+<span class="sd">* **temporal study** at the finest N: q(dt_1), q(dt_2), q(dt_3) with a constant ratio r =</span>
+<span class="sd">  dt_i / dt_{i+1}; observed order p = log(|q1 - q2| / |q2 - q3|) / log r; Richardson value</span>
+<span class="sd">  q_R = q3 + (q3 - q2) / (r^p - 1); temporal error estimate e_t = F_s |q_R - q3|, F_s =</span>
+<span class="sd">  ``SAFETY`` = 1.25 (the safety factor of Roache's grid convergence index for three-level</span>
+<span class="sd">  studies; |q_R - q3| alone is an estimate, not a bound, and falls short of the true error about</span>
+<span class="sd">  half the time); with the formal</span>
+<span class="sd">  order ``scheme_order`` when given, p is compared to it: an observed order off by more than</span>
+<span class="sd">  ``ORDER_TOL`` means the asymptotic range is not reached and the estimate is flagged; without</span>
+<span class="sd">  ``scheme_order`` the study is flagged as unchecked);</span>
+<span class="sd">* **spatial study** at the finest dt: q(N_1), q(N_2), q(N_3) (spectral: q(N) = q_inf + C e^{-a N}</span>
+<span class="sd">  at the actual N); a from rho = |d_2| / |d_1| = e^{-a h_1} (1 - e^{-a h_2}) / (1 - e^{-a h_1})</span>
+<span class="sd">  (h_i the increments of N, d_i the successive differences), and e_s = F_s |d_2| / (e^{a h_2} - 1)</span>
+<span class="sd">  (with equal increments: F_s |d_2| rho / (1 - rho), the geometric tail of the next differences);</span>
+<span class="sd">  flagged when the differences do not decrease geometrically (rho &gt;= h_2 / h_1) or when tuple</span>
+<span class="sd">  resolutions are refined in different proportions;</span>
+<span class="sd">* **total**: value q3 (finest N and dt; the Richardson value is reported, never substituted),</span>
+<span class="sd">  error = e_t + e_s (a sum: independent sources, no quadrature assumed), interval = value +- error.</span>
+
+<span class="sd">The finest-grid / finest-step value is the one reported; extrapolations are shown beside it. A</span>
+<span class="sd">flagged study keeps its numbers and says why they should not be trusted.</span>
+<span class="sd">"""</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputTypeError</span><span class="p">,</span> <span class="n">OptionError</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"uncertainty"</span><span class="p">,</span> <span class="s2">"UncertaintyReport"</span><span class="p">,</span> <span class="s2">"ORDER_TOL"</span><span class="p">,</span> <span class="s2">"ROUNDOFF_REL"</span><span class="p">,</span> <span class="s2">"SAFETY"</span><span class="p">]</span>
+
+<span class="n">ORDER_TOL</span> <span class="o">=</span> <span class="mf">0.3</span>          <span class="c1"># |observed - formal| above this: not in the asymptotic range (flagged)</span>
+<span class="n">ROUNDOFF_REL</span> <span class="o">=</span> <span class="mf">1e-13</span>     <span class="c1"># successive differences below this (relative to |q|): round-off plateau</span>
+<span class="n">SAFETY</span> <span class="o">=</span> <span class="mf">1.25</span>            <span class="c1"># F_s of Roache's GCI (three-level studies); Roache, J. Fluids Eng. 116 (1994)</span>
+<span class="n">_DOC</span> <span class="o">=</span> <span class="s2">"docs/site/guide/uncertainty.md"</span>
+<span class="c1"># increments of tuple resolutions are "in the same proportion" to this relative rounding</span>
+<span class="n">_SPACING_RTOL</span> <span class="o">=</span> <span class="mf">1e-12</span>
+<span class="c1"># decay rate per mode beyond which the spatial fit gives up (e^-1e6: no remaining error at all)</span>
+<span class="n">_DECAY_RATE_MAX</span> <span class="o">=</span> <span class="mf">1e6</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Study</span><span class="p">:</span>
+    <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">params</span><span class="p">:</span> <span class="nb">list</span>
+    <span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">estimate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
+    <span class="n">extrapolated</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">flags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">lines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">"dt"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"temporal"</span> <span class="k">else</span> <span class="s2">"N"</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2"> study (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s1">g</span><span class="si">}</span><span class="s1">'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="si">}</span><span class="s2">): "</span>
+               <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.15g</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    observed order p = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> (ratio r = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)"</span>
+                       <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">", Richardson value </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">extrapolated</span><span class="si">:</span><span class="s2">.15g</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extrapolated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">""</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"spatial"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    contraction of successive differences rho = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    error estimate </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">estimate</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"    ** </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> **"</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UncertaintyReport</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Value, error estimate and the two studies behind them (see the module docstring)."""</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">error</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">temporal</span><span class="p">:</span> <span class="n">_Study</span>
+    <span class="n">spatial</span><span class="p">:</span> <span class="n">_Study</span>
+    <span class="n">scheme_order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"q"</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">interval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trusted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Every hypothesis checked: no study flagged (asymptotic range reached against the</span>
+<span class="sd">        formal order, differences above round-off, a resolution study the model applies to).</span>
+<span class="sd">        Without ``scheme_order`` the asymptotic range is not checked, so never trusted."""</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temporal</span><span class="o">.</span><span class="n">flags</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">flags</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"Numerical uncertainty of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.15g</span><span class="si">}</span><span class="s2"> +- </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> "</span>
+                 <span class="sa">f</span><span class="s2">"(finest N and dt; error = temporal + spatial estimates)"</span>
+                 <span class="o">+</span> <span class="p">(</span><span class="s2">""</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trusted</span> <span class="k">else</span> <span class="s2">"  [flagged: see below]"</span><span class="p">)]</span>
+        <span class="n">lines</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal</span><span class="o">.</span><span class="n">lines</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">lines</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheme_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  formal order of the time scheme: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheme_order</span><span class="si">}</span><span class="s2"> (tolerance </span><span class="si">{</span><span class="n">ORDER_TOL</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"  assumptions: smooth dependence on dt in the asymptotic range (Richardson); "</span>
+                     <span class="sa">f</span><span class="s2">"geometric (spectral) convergence in N; the two errors add; safety factor "</span>
+                     <span class="sa">f</span><span class="s2">"F_s = </span><span class="si">{</span><span class="n">SAFETY</span><span class="si">}</span><span class="s2"> on both (Roache's GCI)"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+    <span class="fm">__str__</span> <span class="o">=</span> <span class="n">explain</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_temporal</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">dts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">formal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Study</span><span class="p">:</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">_Study</span><span class="p">(</span><span class="s2">"temporal"</span><span class="p">,</span> <span class="n">dts</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+    <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span> <span class="o">=</span> <span class="n">dts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">dts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">dts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">,</span> <span class="n">rel_tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"uncertainty(dt=</span><span class="si">{</span><span class="n">dts</span><span class="si">}</span><span class="s2">): the ratio dt_i/dt_(i+1) must be constant "</span>
+                          <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">r1</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="n">r2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="n">why</span><span class="o">=</span><span class="s2">"Richardson extrapolation with three steps "</span>
+                          <span class="s2">"needs one refinement ratio"</span><span class="p">,</span> <span class="n">fix</span><span class="o">=</span><span class="s2">"dt=[4e-3, 2e-3, 1e-3]"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="n">r1</span>
+    <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">1.0</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">ROUNDOFF_REL</span> <span class="o">*</span> <span class="n">scale</span> <span class="ow">or</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">ROUNDOFF_REL</span> <span class="o">*</span> <span class="n">scale</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"differences at round-off: temporal error below what this study resolves"</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="k">if</span> <span class="n">d1</span> <span class="o">*</span> <span class="n">d2</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"non-monotone in dt: no observed order (not in the asymptotic range)"</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">d1</span><span class="p">),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">))</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">p</span>
+    <span class="k">if</span> <span class="n">formal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"no scheme_order given: the asymptotic range is not checked (pass the "</span>
+                        <span class="s2">"formal order of the time scheme)"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">formal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">formal</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ORDER_TOL</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"observed order </span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> differs from the formal order </span><span class="si">{</span><span class="n">formal</span><span class="si">}</span><span class="s2"> by more than "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ORDER_TOL</span><span class="si">}</span><span class="s2">: not in the asymptotic range, the estimate is unreliable"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"observed order &lt;= 0: the values diverge as dt decreases"</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">extrapolated</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">r1</span> <span class="o">**</span> <span class="n">p</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="n">SAFETY</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">extrapolated</span> <span class="o">-</span> <span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">st</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_spacing</span><span class="p">(</span><span class="n">Ns</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Increments (h1, h2) of the resolutions along one representative entry, or None when the</span>
+<span class="sd">    entries of tuple resolutions are refined in different proportions (no single N to model)."""</span>
+    <span class="n">sz</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="k">else</span> <span class="p">(</span><span class="n">n</span><span class="p">,)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">Ns</span><span class="p">]</span>
+    <span class="n">h1</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sz</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+    <span class="n">h2</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sz</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sz</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span> <span class="k">if</span> <span class="n">h</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">h2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">h2</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="n">h1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">ratio</span> <span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="n">rel_tol</span><span class="o">=</span><span class="n">_SPACING_RTOL</span><span class="p">,</span> <span class="n">abs_tol</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">h1</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">h2</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_decay_rate</span><span class="p">(</span><span class="n">rho</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">h1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">h2</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""a &gt; 0 with |d2|/|d1| = e^{-a h1} (1 - e^{-a h2}) / (1 - e^{-a h1}) (model q(N) = q_inf +</span>
+<span class="sd">    C e^{-a N} at the actual N; equal steps give rho = e^{-a h}); None if rho is not reachable</span>
+<span class="sd">    (rho &gt;= h2 / h1, the limit a -&gt; 0: no geometric decrease)."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">rho</span> <span class="o">&lt;</span> <span class="n">h2</span> <span class="o">/</span> <span class="n">h1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">a</span> <span class="o">*</span> <span class="n">h1</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="o">-</span><span class="n">a</span> <span class="o">*</span> <span class="n">h2</span><span class="p">)</span> <span class="o">/</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="o">-</span><span class="n">a</span> <span class="o">*</span> <span class="n">h1</span><span class="p">))</span> <span class="o">-</span> <span class="n">rho</span>
+    <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mf">1e-12</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">),</span> <span class="mf">1.0</span>
+    <span class="k">while</span> <span class="n">f</span><span class="p">(</span><span class="n">hi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>                     <span class="c1"># f decreases from h2/h1 (a -&gt; 0) to 0 (a -&gt; inf)</span>
+        <span class="n">hi</span> <span class="o">*=</span> <span class="mf">2.0</span>
+        <span class="k">if</span> <span class="n">hi</span> <span class="o">&gt;</span> <span class="n">_DECAY_RATE_MAX</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">brentq</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-14</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_spatial</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Ns</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Study</span><span class="p">:</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">_Study</span><span class="p">(</span><span class="s2">"spatial"</span><span class="p">,</span> <span class="n">Ns</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+    <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">1.0</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">ROUNDOFF_REL</span> <span class="o">*</span> <span class="n">scale</span><span class="p">:</span>
+        <span class="c1"># resolved to the precision of the arithmetic: the last difference is the estimate (not</span>
+        <span class="c1"># a flag: a converged spectral result is the expected case)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span> <span class="k">if</span> <span class="n">d1</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span> <span class="k">if</span> <span class="n">d1</span> <span class="k">else</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="n">rho</span>
+    <span class="n">spacing</span> <span class="o">=</span> <span class="n">_spacing</span><span class="p">(</span><span class="n">Ns</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">spacing</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># finding 12: the tail formula assumes the actual increments of N;</span>
+        <span class="c1"># entries refined in different proportions leave no single N to model it with</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"tuple resolutions refined in different proportions: the geometric "</span>
+                        <span class="s2">"model of the spatial error cannot be applied (refine every entry in the "</span>
+                        <span class="s2">"same proportion)"</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="n">h1</span><span class="p">,</span> <span class="n">h2</span> <span class="o">=</span> <span class="n">spacing</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">_decay_rate</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">h1</span><span class="p">,</span> <span class="n">h2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"successive differences do not decrease (rho = </span><span class="si">{</span><span class="n">rho</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">"</span>
+                        <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">", steps in N </span><span class="si">{</span><span class="n">h1</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> then </span><span class="si">{</span><span class="n">h2</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">h1</span> <span class="o">!=</span> <span class="n">h2</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="s2">"): not resolved"</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">st</span>
+    <span class="c1"># remaining error after the finest N under q(N) = q_inf + C e^{-a N} at the actual N</span>
+    <span class="c1"># (review finding 12: N = [1, 4, 5] was modelled as equally spaced, error 13.6x too small);</span>
+    <span class="c1"># equal steps give |d2| rho / (1 - rho), the geometric tail sum of the next differences</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="n">SAFETY</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">h2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">st</span>
+
+
+<div class="viewcode-block" id="uncertainty">
+<a class="viewcode-back" href="../../../api/_generated/user/conatus.uncertainty.html#conatus.uncertainty">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">uncertainty</span><span class="p">(</span><span class="n">quantity</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">N</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">dt</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                <span class="n">scheme_order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"q"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UncertaintyReport</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Run ``quantity(N=..., dt=...)`` (a number) on the declared studies and report its value</span>
+<span class="sd">    with an error estimate: three time steps at the finest N, three resolutions at the finest</span>
+<span class="sd">    dt (5 runs; the finest/finest run is shared). ``N``: increasing resolutions (an int or a</span>
+<span class="sd">    tuple per run, passed as given; the last one is the finest); ``dt``: decreasing steps with a</span>
+<span class="sd">    constant ratio; ``scheme_order``: formal order of the time scheme (checks the asymptotic</span>
+<span class="sd">    range). Nothing is chosen for you: no default list, no adaptive refinement."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_real</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="s2">"__iter__"</span><span class="p">)</span>
+                                                         <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="s2">"__iter__"</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"uncertainty(N=</span><span class="si">{</span><span class="n">N</span><span class="si">!r}</span><span class="s2">, dt=</span><span class="si">{</span><span class="n">dt</span><span class="si">!r}</span><span class="s2">): two lists of three values"</span><span class="p">,</span>
+                             <span class="n">fix</span><span class="o">=</span><span class="s2">"N=[32, 48, 64], dt=[4e-3, 2e-3, 1e-3]"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+    <span class="c1"># each step a finite real number &gt; 0, never parsed from text (audit inputs)</span>
+    <span class="n">Ns</span><span class="p">,</span> <span class="n">dts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="p">[</span><span class="n">check_real</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="s2">"dt"</span><span class="p">,</span> <span class="s2">"uncertainty()"</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">dt</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ns</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">dts</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"uncertainty(N=</span><span class="si">{</span><span class="n">Ns</span><span class="si">}</span><span class="s2">, dt=</span><span class="si">{</span><span class="n">dts</span><span class="si">}</span><span class="s2">): three resolutions and three time steps"</span><span class="p">,</span>
+                             <span class="n">why</span><span class="o">=</span><span class="s2">"an observed order and a geometric contraction need three values each"</span><span class="p">,</span>
+                             <span class="n">fix</span><span class="o">=</span><span class="s2">"N=[32, 48, 64], dt=[4e-3, 2e-3, 1e-3]"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dts</span><span class="p">,</span> <span class="n">dts</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"uncertainty(dt=</span><span class="si">{</span><span class="n">dts</span><span class="si">}</span><span class="s2">): decreasing positive steps"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sizes</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="k">else</span> <span class="p">(</span><span class="n">n</span><span class="p">,)</span>
+
+    <span class="c1"># the last N is reported as the finest; a list given in</span>
+    <span class="c1"># the wrong order used to report the coarsest run as "the value" without a word</span>
+    <span class="n">sz</span> <span class="o">=</span> <span class="p">[</span><span class="n">_sizes</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">Ns</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">len</span><span class="p">({</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sz</span><span class="p">})</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">all</span><span class="p">(</span><span class="n">b</span> <span class="o">&gt;=</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span> <span class="ow">and</span> <span class="n">s1</span> <span class="o">!=</span> <span class="n">s0</span>
+            <span class="k">for</span> <span class="n">s0</span><span class="p">,</span> <span class="n">s1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sz</span><span class="p">,</span> <span class="n">sz</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">))):</span>
+        <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"uncertainty(N=</span><span class="si">{</span><span class="n">Ns</span><span class="si">}</span><span class="s2">): increasing resolutions, the finest last"</span><span class="p">,</span>
+                             <span class="n">why</span><span class="o">=</span><span class="s2">"the value reported is the one at the last N (and the last dt)"</span><span class="p">,</span>
+                             <span class="n">fix</span><span class="o">=</span><span class="s2">"N=[32, 48, 64] (or tuples growing in every entry)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">quantity</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span><span class="s2">"uncertainty(quantity, ...): a function quantity(N=..., dt=...)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">scheme_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># checked before the five runs (audit inputs: scheme_order="2" failed with a</span>
+        <span class="c1"># bare TypeError after them, 0 or 2.5 were accepted as a formal order)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_count</span>
+        <span class="n">check_count</span><span class="p">(</span><span class="n">scheme_order</span><span class="p">,</span> <span class="s2">"scheme_order"</span><span class="p">,</span> <span class="s2">"uncertainty()"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">q</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">quantity</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">h</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"uncertainty: quantity(N=</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, dt=</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">) returned </span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">, not a number"</span><span class="p">,</span>
+                                 <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"uncertainty: quantity(N=</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, dt=</span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s2">) = </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
+    <span class="n">fine</span> <span class="o">=</span> <span class="n">q</span><span class="p">(</span><span class="n">Ns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">tvals</span> <span class="o">=</span> <span class="p">[</span><span class="n">q</span><span class="p">(</span><span class="n">Ns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dts</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">q</span><span class="p">(</span><span class="n">Ns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dts</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">fine</span><span class="p">]</span>
+    <span class="n">svals</span> <span class="o">=</span> <span class="p">[</span><span class="n">q</span><span class="p">(</span><span class="n">Ns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">q</span><span class="p">(</span><span class="n">Ns</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">fine</span><span class="p">]</span>
+    <span class="n">tst</span><span class="p">,</span> <span class="n">sst</span> <span class="o">=</span> <span class="n">_temporal</span><span class="p">(</span><span class="n">tvals</span><span class="p">,</span> <span class="n">dts</span><span class="p">,</span> <span class="n">scheme_order</span><span class="p">),</span> <span class="n">_spatial</span><span class="p">(</span><span class="n">svals</span><span class="p">,</span> <span class="n">Ns</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">UncertaintyReport</span><span class="p">(</span><span class="n">fine</span><span class="p">,</span> <span class="n">tst</span><span class="o">.</span><span class="n">estimate</span> <span class="o">+</span> <span class="n">sst</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span> <span class="n">tst</span><span class="p">,</span> <span class="n">sst</span><span class="p">,</span> <span class="n">scheme_order</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2026, Ruben Dahan and contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=fd10adb8"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script defer="defer" src="../../../_static/tutorial_films.js?v=57865db1"></script>
+    </body>
+</html>

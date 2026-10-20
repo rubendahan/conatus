@@ -1,6 +1,0 @@
-﻿conatus.expert.operator\_gain
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: operator_gain

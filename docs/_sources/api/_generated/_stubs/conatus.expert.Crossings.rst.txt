@@ -1,8 +1,0 @@
-﻿conatus.expert.Crossings
-========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Crossings
-   :members:
-   :show-inheritance:

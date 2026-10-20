@@ -21,8 +21,8 @@ print(provenance.problem_hash(sim.solver.plan.problem))   # structural hash of t
 ```
 
 `provenance_record` is `conatus.provenance.record`. The bare name `conatus.expert.record` is refused
-(`AmbiguousNameError`): `conatus.telemetry.record` (a telemetry frame, `telemetry_record` in
-`conatus.expert`) is a different function.
+(`AmbiguousNameError`): `conatus.telemetry.record` (a telemetry frame of the Studio, which is not
+part of the expert layer) is a different function.
 
 `record(run)` accepts a `Problem`, a `Plan`, an `IVPSolver`, or `None` (environment only), and
 writes `provenance.json` atomically when `out=` is given.
@@ -47,8 +47,11 @@ exactly (dirty tree, package outside the repository, or a compiled core older th
   (`dt`, scheme, start-up) is refused ({doc}`timesteppers`).
 - **Cross-backend**: fast paths (compiled core, CUDA, fused kernels, graphs) are compared with the
   NumPy reference backend at round-off tolerance, not bit for bit.
+- **Watching**: a run with the Studio attached is bit-identical to the same run without it
+  ({doc}`studio`).
 
 ## Tutorials
 
 The outputs shown in the tutorials are those of the scripts, executed as shown and included
-verbatim; the first line of each output says when and on which commit it ran.
+verbatim; the first line of each output says whether the script passed, how long it took and on
+which date it ran.

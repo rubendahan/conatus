@@ -1,0 +1,6 @@
+﻿conatus.navier\_slip
+====================
+
+.. currentmodule:: conatus
+
+.. autofunction:: navier_slip

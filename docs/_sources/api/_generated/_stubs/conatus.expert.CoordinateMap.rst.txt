@@ -1,8 +1,0 @@
-﻿conatus.expert.CoordinateMap
-============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: CoordinateMap
-   :members:
-   :show-inheritance:

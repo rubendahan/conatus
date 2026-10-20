@@ -79,9 +79,10 @@ there: `lift(tau, basis, -1, lam=q)`. Every operator is sparse and exact on the 
 grid is the Gauss–Jacobi grid of the family, and a non-constant coefficient reports its spectral
 tail as on a Chebyshev axis. The checks: Poisson with an exact solution to round-off in each family,
 the eigenvalues of a string to $10^{-10}$, and a viscous Burgers run equal to the Chebyshev $T$ run
-to $5\times10^{-13}$. In the native layer `cn.walls` is always Chebyshev $T$; these families are
-for the expert layer and for Dedalus scripts translated by `cn.from_dedalus` ({doc}`dedalus`), on
-the CPU (they have not yet been run on a GPU).
+to $5\times10^{-13}$. In the native layer `cn.walls` is Chebyshev $T$ by default, or a sine/cosine series with
+`cn.walls(a, b, basis="sincos")` ({doc}`geometries`); these Jacobi families are
+for the expert layer and for Dedalus scripts translated by `cn.from_dedalus` ({doc}`dedalus`). Their GPU path
+(`backend="cuda"`) has run on an A100 only ({doc}`gpu`).
 
 Mapped bases put the resolution where a free shear layer or a critical layer is, without
 truncating the line to $[-L, L]$: the Taylor–Goldstein example of the gallery reaches
@@ -184,8 +185,7 @@ Chebyshev walls), a source term of the wrong parity, and `drift=` (no tau, no sp
 ## Whole line, half line, compound intervals
 
 Three more axes for `cn.Box`, each discretized by a fixed basis printed by `explain()`
-(details: IR: `Hermite`, `Laguerre`,
-`CompoundChebyshev`):
+(IR: `Hermite`, `Laguerre`, `CompoundChebyshev`):
 
 | Axis | Basis | Conditions | Resolution |
 |---|---|---|---|

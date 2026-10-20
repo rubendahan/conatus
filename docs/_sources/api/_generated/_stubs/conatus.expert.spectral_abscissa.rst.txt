@@ -1,6 +1,0 @@
-﻿conatus.expert.spectral\_abscissa
-=================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: spectral_abscissa

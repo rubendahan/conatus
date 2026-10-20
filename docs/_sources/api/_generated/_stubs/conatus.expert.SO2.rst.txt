@@ -1,8 +1,0 @@
-﻿conatus.expert.SO2
-==================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: SO2
-   :members:
-   :show-inheritance:

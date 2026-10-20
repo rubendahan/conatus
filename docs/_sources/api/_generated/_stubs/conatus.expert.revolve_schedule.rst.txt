@@ -1,6 +1,0 @@
-﻿conatus.expert.revolve\_schedule
-================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: revolve_schedule

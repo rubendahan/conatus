@@ -1,8 +1,0 @@
-﻿conatus.expert.PoincareResult
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: PoincareResult
-   :members:
-   :show-inheritance:

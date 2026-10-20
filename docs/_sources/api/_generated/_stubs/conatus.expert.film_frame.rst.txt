@@ -1,6 +1,0 @@
-﻿conatus.expert.film\_frame
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: film_frame

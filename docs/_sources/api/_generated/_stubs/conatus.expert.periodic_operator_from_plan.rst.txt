@@ -1,6 +1,0 @@
-﻿conatus.expert.periodic\_operator\_from\_plan
-=============================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: periodic_operator_from_plan

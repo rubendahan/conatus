@@ -1,8 +1,0 @@
-﻿conatus.expert.OptimalGain
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: OptimalGain
-   :members:
-   :show-inheritance:

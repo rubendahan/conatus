@@ -1,8 +1,0 @@
-﻿conatus.expert.Curve
-====================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Curve
-   :members:
-   :show-inheritance:

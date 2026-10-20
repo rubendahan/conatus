@@ -1,12 +1,15 @@
 # 0. Getting started: convection between two plates
 
 One problem from beginning to end: a layer of fluid heated from below. You write its equations as
-on paper, ask whether the fluid at rest is stable, find where convection starts to the digits of
-the published value, then simulate the rolls that appear above onset and measure the heat they
-carry. The same path, with more explanation, is the Tutorial page of the website.
+on paper, ask whether the fluid at rest is stable, find where convection starts (the published
+value to $2\times10^{-4}$ in $Ra_c$ and $7\times10^{-4}$ in $k_c$), then simulate the rolls that appear above onset and measure the heat they
+carry. New to Conatus? The ten-minute {doc}`first_steps` comes before this one.
 
 **Expected.** Onset at $Ra_c = 1707.762$, $k_c = 3.117$ between rigid plates (Reid & Harris 1958;
-Chandrasekhar 1961); the simulation grows at the eigenvalue's rate; the saturated rolls carry the
+Chandrasekhar 1961); the script finds $Ra_c = 1707.7618$ (absolute difference $2\times10^{-4}$,
+relative $10^{-7}$: the published value is rounded) and $k_c = 3.11632$ (difference $7\times10^{-4}$,
+relative $2\times10^{-4}$: the tabulated 3.117 differs in its fourth digit) and
+checks both to $10^{-3}$; the simulation grows at the eigenvalue's rate; the saturated rolls carry the
 same heat through both plates and across the layer.
 **Time:** about two minutes of CPU (136 s on a cluster CPU node). **Needs:** the `tutorials` extra (`pip install "conatus[tutorials]"`, {doc}`../install`). **Script:** [`t00_getting_started.py`](code/t00_getting_started.py).
 
@@ -69,6 +72,13 @@ only if the same pencil at 48 modes has it too, within `drift_tol` (a physical m
 does not move; a spurious one jumps). The growth of $s$ is its real part, read off its name and
 printed by `crit.explain()`.
 
+```{figure} media/t00_neutral_curve.png
+:alt: The neutral curve in the plane of wavenumber and Rayleigh number: a U-shaped red line with its minimum marked at Ra about 1708 and k about 3.12; the region above it is shaded.
+:width: 100%
+
+Growth rate of the least stable mode over a grid of (k, Ra), from the parametric pencil of the onset block. The red line is where it vanishes; its minimum is the critical point the script finds, Ra_c = 1707.762 at k_c = 3.1163.
+```
+
 ## Simulate above onset
 
 ```{literalinclude} code/t00_getting_started.py
@@ -79,6 +89,13 @@ printed by `crit.explain()`.
 
 The simulation and the eigenvalue problem come from the same model; while the disturbance is small
 they agree.
+
+```{figure} media/t00_growth_saturation.png
+:alt: Left: the roll amplitude on a log scale rises along a straight dashed line, then levels off. Right: the Nusselt number stays at 1, rises to a peak and settles to a constant.
+:width: 100%
+
+The simulation of the page. Left: the rolls grow at the rate of the eigenvalue (dashed) until the nonlinear terms stop them. Right: the heat carried across the layer, in units of conduction, settles to a steady value.
+```
 
 ## Steady rolls and the heat they carry
 

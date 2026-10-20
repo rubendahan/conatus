@@ -1,0 +1,8 @@
+﻿conatus.MappedBox
+=================
+
+.. currentmodule:: conatus
+
+.. autoclass:: MappedBox
+   :members:
+   :show-inheritance:

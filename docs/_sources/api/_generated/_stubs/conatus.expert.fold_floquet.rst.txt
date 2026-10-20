@@ -1,6 +1,0 @@
-﻿conatus.expert.fold\_floquet
-============================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: fold_floquet

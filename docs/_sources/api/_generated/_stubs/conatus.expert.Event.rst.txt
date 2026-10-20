@@ -1,8 +1,0 @@
-﻿conatus.expert.Event
-====================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Event
-   :members:
-   :show-inheritance:

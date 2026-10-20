@@ -3,7 +3,7 @@
 **Goal.** Compute the Rayleigh–Bénard onset mode in the subspace of solutions symmetric about
 mid-depth, with half the unknowns, and see what the subspace hides.
 **Expected.** At $(Ra_c, k_c) = (1707.762, 3.1163)$ (Reid & Harris 1958; Chandrasekhar 1961) the
-leading growth rate is zero to the published digits; the subspace gives the same eigenvalue to
+leading growth rate is zero within the rounding of the published values; the subspace gives the same eigenvalue to
 rounding with half the unknowns. The complementary class decays.
 **Time:** a few seconds of CPU.
 **Script:** [`t03_symmetries.py`](code/t03_symmetries.py) · **Tests behind it:**
@@ -72,6 +72,20 @@ equation and the boundary conditions dropped as mirror images, and always warns 
 strongly, so the onset mode found in the symmetric class is the leading mode of the
 full problem. A dense QZ costs $O(n^3)$; halving $n$ saves 2–8× depending on the size.
 
+```{figure} media/t03_spectra.png
+:alt: Eigenvalues of the full problem as grey rings; each ring holds either a red dot (onset class) or a green cross (other class), and the rightmost, at zero, holds a red dot.
+:width: 100%
+
+Every eigenvalue of the full space (rings) is found in exactly one of the two symmetry classes, each solved with half the unknowns. The neutral mode at the onset point belongs to the onset class.
+```
+
+```{figure} media/t03_cost.png
+:alt: Two bar charts: the number of unknowns, 268 for the full space and 134 for each class; and the time of the dense eigenvalue solve, several times shorter for each class.
+:width: 100%
+
+Size and cost of each eigenproblem as measured in this run. Halving the unknowns makes the dense QZ solve several times cheaper (it scales as n³).
+```
+
 ## A wrong declaration is refused
 
 ```{literalinclude} code/t03_symmetries.py
@@ -82,7 +96,7 @@ full problem. A dense QZ costs $O(n^3)$; halving $n$ saves 2–8× depending on 
 
 ## Check
 
-At Reid & Harris' $(Ra_c, k_c)$ the leading growth rate vanishes to the published digits, the
+At Reid & Harris' $(Ra_c, k_c)$ the leading growth rate is $1.7\times10^{-6}$ (zero within the rounding of the published $Ra_c$ and $k_c$), the
 onset class gives the same eigenvalue to rounding with half the unknowns, and the other class
 decays.
 

@@ -11,22 +11,24 @@
     "height": 360,
     "duration_s": 7.17,
     "script": "web/gallery/films.py",
-    "example_script": "examples/shear/kelvin_helmholtz.py",
-    "domain": "shear"
+    "example_script": "web/gallery/kelvin_helmholtz.py",
+    "domain": "shear",
+    "loop": "run frames, then a 0.5 s cross-fade from the last frame to the first"
   },
   {
-    "slug": "rossby-haurwitz-film",
-    "title": "Rossby–Haurwitz wave",
-    "alt": "A turning globe on black covered by large alternating red and green vorticity lobes, four around each hemisphere, travelling east.",
-    "caption": "Relative vorticity of the wavenumber-4 Rossby–Haurwitz wave (Williamson et al. 1992, case 6) in inviscid shallow water on the rotating sphere, over one period of the wave (7.8 days, from day 4), seen from 35° N by a camera turning against it. T63, RK443, dt = 0.03/Ω, CPU.",
-    "video_webm": "/films/rossby-haurwitz-film.webm",
-    "video_mp4": "/films/rossby-haurwitz-film.mp4",
-    "poster": "/films/rossby-haurwitz-film.webp",
+    "slug": "rayleigh-taylor-film",
+    "title": "Rayleigh–Taylor instability",
+    "alt": "Dark heavy fluid falls into pale light fluid in mushroom-shaped fingers that roll up and mix, while pale plumes rise.",
+    "caption": "Heavy fluid falling into light fluid, Ra 1e7, computed with Conatus.",
+    "video_webm": "/films/rayleigh-taylor-film.webm",
+    "video_mp4": "/films/rayleigh-taylor-film.mp4",
+    "poster": "/films/rayleigh-taylor-film.webp",
     "width": 720,
     "height": 360,
-    "duration_s": 6.83,
+    "duration_s": 7.5,
     "script": "web/gallery/films.py",
-    "example_script": "benchmarks/spherical/rossby_haurwitz.py",
-    "domain": "rotating"
+    "example_script": "docs/site/tutorials/code/t02b_rayleigh_benard_gpu.py",
+    "domain": "convection",
+    "loop": "fade from black over the first 7 frames and to black over the last 7 (the mixed end state is not the start state)"
   }
 ]

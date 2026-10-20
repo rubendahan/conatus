@@ -1,0 +1,6 @@
+﻿conatus.free\_slip
+==================
+
+.. currentmodule:: conatus
+
+.. autodata:: free_slip

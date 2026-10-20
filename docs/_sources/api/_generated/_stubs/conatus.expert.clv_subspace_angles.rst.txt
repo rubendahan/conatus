@@ -1,6 +1,0 @@
-﻿conatus.expert.clv\_subspace\_angles
-====================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: clv_subspace_angles

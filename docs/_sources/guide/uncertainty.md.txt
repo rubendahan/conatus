@@ -29,11 +29,14 @@ three resolutions at the finest time step (the finest run is shared).
   shown beside the result, and the error estimate is $1.25\,|q_R - q_3|$, with the safety factor of
   Roache's grid-convergence index (Roache 1994). With `scheme_order`, an observed order more than
   0.3 away from it is flagged: the time steps are not yet in the asymptotic range.
-- **Space**: spectral convergence is geometric; the ratio $\rho$ of successive differences gives
-  the estimate $1.25\,|d_2|\,\rho/(1-\rho)$. Differences that do not decrease are flagged.
+- **Space**: spectral convergence is geometric, $q(N) = q_\infty + C e^{-aN}$ at the resolutions
+  actually given; the ratio $\rho$ of successive differences fixes $a$, and the estimate is
+  $1.25\,|d_2|/(e^{a h_2}-1)$ with $h_2$ the last increment of $N$ (equal increments:
+  $1.25\,|d_2|\,\rho/(1-\rho)$). Differences that do not decrease geometrically, and tuple
+  resolutions refined in different proportions, are flagged.
 - **Result**: the value at the finest resolution and time step (the Richardson value is never
   substituted for it), the sum of both estimates, and the interval. `rep.trusted` is false as soon
-  as a study is flagged, and `rep.explain()` prints every number and assumption.
+  as a study is flagged (also without `scheme_order`: the asymptotic range is then unchecked), and `rep.explain()` prints every number and assumption.
 
 The time steps must have a constant ratio and the resolutions must increase, the finest last;
 anything else is refused.

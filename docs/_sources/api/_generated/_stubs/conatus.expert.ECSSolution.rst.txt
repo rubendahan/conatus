@@ -1,8 +1,0 @@
-﻿conatus.expert.ECSSolution
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: ECSSolution
-   :members:
-   :show-inheritance:

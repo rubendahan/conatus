@@ -1,8 +1,0 @@
-﻿conatus.expert.UnaryFunction
-============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: UnaryFunction
-   :members:
-   :show-inheritance:

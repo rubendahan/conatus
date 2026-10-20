@@ -1,0 +1,8 @@
+﻿conatus.TaylorCouette
+=====================
+
+.. currentmodule:: conatus
+
+.. autoclass:: TaylorCouette
+   :members:
+   :show-inheritance:

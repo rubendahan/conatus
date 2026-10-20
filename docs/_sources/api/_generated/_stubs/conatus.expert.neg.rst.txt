@@ -1,6 +1,0 @@
-﻿conatus.expert.neg
-==================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: neg

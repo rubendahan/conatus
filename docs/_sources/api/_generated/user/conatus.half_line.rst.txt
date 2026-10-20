@@ -1,0 +1,6 @@
+﻿conatus.half\_line
+==================
+
+.. currentmodule:: conatus
+
+.. autofunction:: half_line

@@ -1,8 +1,0 @@
-﻿conatus.expert.PinningRegion
-============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: PinningRegion
-   :members:
-   :show-inheritance:

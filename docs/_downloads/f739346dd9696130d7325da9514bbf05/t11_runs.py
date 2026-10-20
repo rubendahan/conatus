@@ -10,15 +10,16 @@ Run: python t11_runs.py   (a few seconds of CPU)
 """
 # [imports]
 import os
-import shutil
+import tempfile
 import warnings
 
 import numpy as np
 
 import conatus as cn
 
-os.environ["CN_RUNS"] = "registry"          # this tutorial's own registry, in the working directory
-shutil.rmtree("registry", ignore_errors=True)   # (default: the directory named by $CN_RUNS)
+# this tutorial's own registry, in a new temporary directory: nothing of yours is read or deleted
+# (your own work: point CN_RUNS at a scratch disk, or give root= to cn.runs.track)
+os.environ["CN_RUNS"] = tempfile.mkdtemp(prefix="conatus_t11_registry_")
 # [/imports]
 
 # [problem]

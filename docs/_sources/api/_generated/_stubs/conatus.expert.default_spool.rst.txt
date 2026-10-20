@@ -1,6 +1,0 @@
-﻿conatus.expert.default\_spool
-=============================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: default_spool

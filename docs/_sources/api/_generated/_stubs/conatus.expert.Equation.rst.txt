@@ -1,8 +1,0 @@
-﻿conatus.expert.Equation
-=======================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Equation
-   :members:
-   :show-inheritance:

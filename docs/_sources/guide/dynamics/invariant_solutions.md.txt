@@ -31,8 +31,8 @@ problems with **one periodic direction** (a real Fourier basis, no other axis): 
 with `N=` for equilibria and waves, whose search does not depend on the time scheme). Anything else
 is refused with this scope and the alternatives: steady states of large problems in symmetry
 subspaces (plane Couette, `conatus.ecs.steady.AffineSteadyProblem`), pipe travelling waves
-(`conatus.ecs.pipe.PipeTravellingWave`), 2D Kolmogorov flow (`conatus.ecs.kolmogorov`). A
-generalisation to every geometry is planned, not available.
+(`conatus.ecs.pipe.PipeTravellingWave`, experimental: {doc}`../experimental`), 2D Kolmogorov flow
+(`conatus.ecs.kolmogorov`). A generalisation to every geometry is planned, not available.
 
 The seed `x0` of every finder is the state vector of the solver (`sim.solver.X`), the simulation
 itself (its current state), or the grid values of the unknown (`sim.grid("u")`), converted to the

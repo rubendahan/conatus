@@ -1,6 +1,0 @@
-﻿conatus.expert.discrete\_adjoint\_mode
-======================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: discrete_adjoint_mode

@@ -1,8 +1,0 @@
-﻿conatus.expert.PeriodicOperator
-===============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: PeriodicOperator
-   :members:
-   :show-inheritance:

@@ -1,8 +1,0 @@
-﻿conatus.expert.ODEIntegrator
-============================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: ODEIntegrator
-   :members:
-   :show-inheritance:

@@ -1,8 +1,0 @@
-﻿conatus.expert.Interpolate
-==========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Interpolate
-   :members:
-   :show-inheritance:

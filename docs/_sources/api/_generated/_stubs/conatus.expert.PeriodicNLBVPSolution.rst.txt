@@ -1,8 +1,0 @@
-﻿conatus.expert.PeriodicNLBVPSolution
-====================================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: PeriodicNLBVPSolution
-   :members:
-   :show-inheritance:

@@ -1,8 +1,0 @@
-﻿conatus.expert.Mul
-==================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Mul
-   :members:
-   :show-inheritance:

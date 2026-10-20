@@ -1,6 +1,0 @@
-﻿conatus.expert.decode\_frame3d
-==============================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: decode_frame3d

@@ -46,6 +46,9 @@ gpu
 diagnostics
 particles
 io
+studio
+studio_agents
+agents
 notebook
 ```
 
@@ -55,6 +58,10 @@ notebook
 - {doc}`diagnostics`: vorticity, vortex criteria, particles, dye and mixing.
 - {doc}`particles`: tracers and a dye inside a simulation (`sim.particles`, `m.dye`, `sim.dye`).
 - {doc}`io`: snapshots and checkpoints in HDF5, and a run split over several jobs.
+- {doc}`studio`: watch a run as a film from a browser or a phone, and control it.
+- {doc}`studio_agents`: follow and pilot a run from a script or an AI agent (JSON, tokens, audit).
+- {doc}`agents`: what an AI agent reads first (`AGENTS.md`), and `python -m conatus agent`: the
+  library's facts and a dry run of a script, in JSON.
 - {doc}`notebook`: rich display in Jupyter.
 
 ## Dynamics
@@ -81,6 +88,7 @@ runs
 reproducibility
 doctor
 errors
+experimental
 ```
 
 - {doc}`explain`: `explain()` on every key object, and the *Methods* paragraph of your paper.
@@ -90,6 +98,7 @@ errors
 - {doc}`reproducibility`: the provenance record and what is deterministic.
 - {doc}`doctor`: what your installation can run.
 - {doc}`errors`: how to read an error message.
+- {doc}`experimental`: what is shipped but not promised, and the warning that says so.
 
 ## Coming from Dedalus
 

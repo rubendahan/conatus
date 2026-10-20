@@ -1,8 +1,0 @@
-﻿conatus.expert.Descriptor
-=========================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: Descriptor
-   :members:
-   :show-inheritance:

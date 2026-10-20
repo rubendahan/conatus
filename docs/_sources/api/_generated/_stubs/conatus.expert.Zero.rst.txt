@@ -1,6 +1,0 @@
-﻿conatus.expert.Zero
-===================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: Zero

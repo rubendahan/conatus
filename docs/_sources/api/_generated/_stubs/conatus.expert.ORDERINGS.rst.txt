@@ -1,6 +1,0 @@
-﻿conatus.expert.ORDERINGS
-========================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: ORDERINGS

@@ -1,6 +1,0 @@
-﻿conatus.expert.ENERGY\_CONVENTIONS
-==================================
-
-.. currentmodule:: conatus.expert
-
-.. autodata:: ENERGY_CONVENTIONS

@@ -1,0 +1,6 @@
+﻿conatus.profile
+===============
+
+.. currentmodule:: conatus
+
+.. autofunction:: profile

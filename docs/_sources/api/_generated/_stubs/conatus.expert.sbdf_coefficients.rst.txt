@@ -1,6 +1,0 @@
-﻿conatus.expert.sbdf\_coefficients
-=================================
-
-.. currentmodule:: conatus.expert
-
-.. autofunction:: sbdf_coefficients

@@ -1,8 +1,0 @@
-﻿conatus.expert.ModePair
-=======================
-
-.. currentmodule:: conatus.expert
-
-.. autoclass:: ModePair
-   :members:
-   :show-inheritance:
