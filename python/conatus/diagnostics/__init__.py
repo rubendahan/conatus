@@ -1,8 +1,7 @@
 """Declared, read-only diagnostics of a flow: Eulerian, Lagrangian, mixing.
 
 Nothing here modifies a computation: every function reads physical values on a declared
-:class:`Grid` (NumPy or CuPy, same code) and returns new arrays. Spec, conventions and tests:
- ``explain()`` lists every diagnostic with its definition.
+:class:`Grid` (NumPy or CuPy, same code) and returns new arrays. ``explain()`` lists every diagnostic with its definition.
 
     from conatus import diagnostics as dg
     g = dg.Grid([dg.Periodic(4 * pi, 192), dg.Chebyshev(-1, 1, 129), dg.Periodic(2 * pi, 160)])

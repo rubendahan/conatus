@@ -30,9 +30,10 @@ USER_MODULES = ("model", "problems", "problems.native", "runs", "io", "notebook"
 DISPATCHED = (("expert.IVPSolver[polar]", "conatus.timestep.polar", "PolarIVPSolver"),
               ("expert.IVPSolver[sphere]", "conatus.timestep.sphere", "SphereIVPSolver"))
 
-# Optional-extra modules a documented script imports directly; their public names are frozen
-# too (none in this release).
-EXTRA_MODULES: tuple[str, ...] = ()
+# Optional-extra modules a documented script imports directly (``from conatus.studio.client
+# import connect``, docs/site/guide/studio_agents.md; ``conatus.agent``, AGENTS.md); their public
+# names are frozen too.
+EXTRA_MODULES = ("studio.client", "agent")
 
 _ADDR = re.compile(r" at 0x[0-9a-fA-F]+")
 

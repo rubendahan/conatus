@@ -1,4 +1,4 @@
-"""Inner products as objects (spec §30): Gram matrices on the coefficient vector of a group.
+"""Inner products as objects: Gram matrices on the coefficient vector of a group.
 
 ``InnerProduct(plan, weights={"u": 1, "T": 1})`` is the weighted L² product
 sum_v w_v ∫ conj(v1) v2 dV over the field unknowns of one group. Gram
@@ -9,7 +9,7 @@ modes carry their exact norm (L for complex e^{ikx}, L/2 for cos/sin, L for the
 mean). Tau and constant unknowns get weight 0: they are not part of the state.
 
 The adjoint of an operator A for this product is A† = W⁻¹ Aᴴ W on the field
-subspace (spec §4: transpose ≠ adjoint). It is only defined where W is
+subspace (transpose ≠ adjoint). It is only defined where W is
 invertible: a singular W (tau or zero-weight columns) is refused by ``adjoint()``,
 which points to the left eigenvectors (``solve_dense(..., left=True)``) or a tau-free
 formulation. No column is ever dropped for you.
@@ -29,6 +29,14 @@ __all__ = ["InnerProduct", "chebyshev_gram", "basis_gram"]
 
 def chebyshev_gram(n: int, a: float = -1.0, b: float = 1.0) -> np.ndarray:
     """G[m, k] = ∫_a^b T_m T_k dz (affine map to [-1, 1]), exact."""
+    # audit inputs: n=4.5 and n=0 returned a matrix, a > b a negative-definite one
+    from ..errors import CoordinateError, check_count, check_real
+    n = check_count(n, "n", "chebyshev_gram()")
+    a, b = check_real(a, "a", "chebyshev_gram()"), check_real(b, "b", "chebyshev_gram()")
+    if not a < b:
+        raise CoordinateError(f"chebyshev_gram(n, a={a!r}, b={b!r}): need a < b",
+                              fix="chebyshev_gram(n, -1.0, 1.0)")
+
     def I(k):  # noqa: E743 -- ∫_{-1}^{1} T_k (mathematical notation)
         # 2/(1 - k²) for even k, 0 for odd k; the division runs on even k only (np.where would
         # evaluate it at k = 1 too and emit a spurious divide-by-zero warning)

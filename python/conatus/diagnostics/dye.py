@@ -17,6 +17,10 @@ product is resolved (dealiased): the k = 0 mode of u . grad c equals -<c div u> 
 ``kappa = 0`` is allowed (pure advection) but declared, like everything else, in :meth:`Dye.explain`.
 Grids with a Chebyshev axis are refused (:class:`~conatus.errors.UnsupportedError`): wall
 boundary conditions for the dye are not implemented.
+
+This is the **standalone** dye (a velocity you give, periodic grids only); ``sim.dye(...)``
+(:mod:`conatus.model.dye`) is the one inside a running native simulation. Contracts compared in
+:mod:`conatus.diagnostics.lagrangian` (finding 63).
 """
 from __future__ import annotations
 

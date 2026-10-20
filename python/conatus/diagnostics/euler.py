@@ -1,6 +1,6 @@
 """Eulerian diagnostics (read-only, NumPy or CuPy): vorticity, stream function, vector
 potential, poloidal–toroidal potentials, velocity gradient, Q, lambda_2, helicity, dissipation,
-pressure, spectra. Spec and conventions:
+pressure, spectra.
 
 Every function takes a declared :class:`~conatus.diagnostics.grid.Grid` and physical values
 (velocity = sequence of ``grid.ndim`` arrays, component i along axis i) and returns new arrays;

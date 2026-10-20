@@ -23,6 +23,7 @@ import pytest
 from scipy.special import jn, jn_zeros
 
 import conatus.expert as C
+from conatus.ir import Parity
 from conatus.discretize import discretize
 from conatus.reference import transforms as T
 
@@ -423,7 +424,7 @@ def test_disk_mfold_subspace_decay_with_bare_term_and_rhs(m0, par, m):
     br = C.DiskBasis(R, 20, 1.0, dealias=3 / 2)
     D = C.Domain(PC, [C.RealFourier(PHI, 16, (0, 2 * np.pi), dealias=3 / 2), br])     # m <= 7
     j = jn_zeros(m, 1)[0]
-    err, n, nf = _sym_decay(D, br, R, [C.AzimuthalMFold(PHI, m0)], C.Parity(par),
+    err, n, nf = _sym_decay(D, br, R, [C.AzimuthalMFold(PHI, m0)], Parity(par),
                             lambda P, Rr: jn(m, j * Rr) * np.cos(m * P), -(1 + A - B + j ** 2) / 2,
                             dt=5e-4 if m < 4 else 2.5e-4, steps=400 if m < 4 else 800)   # |sigma| dt <= 8e-3
     # time error of RK443, O(dt^3): 2.5e-7 at m = 4 (sigma = -29); an defect is O(1)
@@ -437,7 +438,7 @@ def test_sphere_equatorial_subspace_decay_with_bare_term_and_rhs(ell, par, Y):
     s2 = C.S2Coordinates("phi", "theta")
     D = C.Domain(s2, [C.RealFourier(s2["phi"], 8, (0, 2 * np.pi), dealias=3 / 2),
                       C.SphereBasis(s2["theta"], 8, radius=1.0, dealias=3 / 2)])
-    err, n, nf = _sym_decay(D, None, None, [C.EquatorialParity(s2)], C.Parity(par),
+    err, n, nf = _sym_decay(D, None, None, [C.EquatorialParity(s2)], Parity(par),
                             lambda P, T: Y(T) + 0 * P, -(1 + A - B + ell * (ell + 1)) / 2,
                             dt=1e-3, steps=200, walls=())
     assert abs(err) < 1e-8 and n < 0.6 * nf
@@ -463,7 +464,7 @@ def test_ball_equatorial_mfold_subspace_decay(par):
         ic = (lambda P, T, Rr: spherical_jn(1, k * Rr) * np.cos(T) + 0 * P)
     u = C.Field("u", D)
     t1 = C.Field("t1", D.without(r))
-    G = C.SymmetrySubspace(eq, rot, u={eq: C.Parity(par), rot: C.EVEN}, t1={eq: C.Parity(par), rot: C.EVEN})
+    G = C.SymmetrySubspace(eq, rot, u={eq: Parity(par), rot: C.EVEN}, t1={eq: Parity(par), rot: C.EVEN})
     pb = C.IVP([u, t1], symmetry=G)
     pb.add_equation((2.0 * C.dt(u) + u + _a() * u - C.lap(u) + C.lift(t1, br, -1, lam=2), B * u))
     pb.add_equation((C.interp(u, r, "right"), 0))

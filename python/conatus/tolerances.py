@@ -33,14 +33,15 @@ Nothing here changes a value for you: the code suggests, it does not modify.
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any
 
 # IMAG_ROUNDOFF is importable and declared, but not in __all__: the v0.1 API surface is frozen
-__all__ = ["REQUIRED", "require", "is_required", "Declared", "DECLARED", "ALGORITHM_DEFAULTS", "NCC_TAIL_TOL", "NCC_ROUNDING",
-           "ncc_floor_text",
-           "SPURIOUS_TAIL_TOL", "SPURIOUS_TAIL_FRACTION", "SPURIOUS_SIGNIFICANT",
-           "UNRESOLVED_TAIL_TOL", "HILL_TAIL_TOL", "BASE_RESIDUAL_TOL", "DRIFT_TOL_MAX", "explain"]
+# Documented names only (M5, 0.2); the others stay importable from this module.
+__all__ = ["Declared", "NCC_TAIL_TOL", "NCC_ROUNDING", "ncc_floor_text", "SPURIOUS_TAIL_TOL",
+           "SPURIOUS_TAIL_FRACTION", "SPURIOUS_SIGNIFICANT", "UNRESOLVED_TAIL_TOL", "HILL_TAIL_TOL",
+           "BASE_RESIDUAL_TOL", "DRIFT_TOL_MAX", "explain"]
 
 
 class _Required:
@@ -266,6 +267,17 @@ DECLARED: dict[str, Declared] = dict([
        "factorization; the LU fills in far beyond it)"),
     _d("conatus.solvers.evp.INF_TOL", 1e3 * 2.220446049250313e-16, "detection",
        "infinite eigenvalues (|beta| small): counted and logged, never returned as finite modes"),
+    _d("conatus.solvers.evp.DRIFT_FLOOR", 1e-3, "detection",
+       "floor of the drift ratio as a fraction of the median nonzero |sigma| of the finer spectrum: the "
+       "drift test is relative, and a mode below this fraction of the spectrum's scale is near "
+       "zero for it (judged against the floor); no unit of the eigenvalue enters (audit "
+       "invariance; was max(|sigma|, 1))"),
+    _d("conatus._scales.SPECTRAL_FLOOR", 1e-3, "detection",
+       "near zero for a relative test on an eigenvalue: below this fraction of the median modulus "
+       "of the nonzero eigenvalues of the spectrum (Hopf / neutral-saddle split of equilibria, "
+       "codim-2 and continuation, the continuation crossing test, the mode-switch check of "
+       "critical(), the sensitivity gap); replaces the unit-carrying max(|x|, 1) (critic review of the invariance audit, "
+       ")"),
     _d("conatus.solvers.evp.ARNOLDI_TOL", 0.0, "stop at the floor",
        "ARPACK tol = 0 is machine precision (the strictest), each mode's residual is returned",
        ("conatus.solvers.evp:solve_sparse(tol)",)),
@@ -447,6 +459,17 @@ DECLARED: dict[str, Declared] = dict([
        "NewtonNotConverged with the residual of every iterate",
        ("conatus.solvers.nlbvp:NewtonSolver.__init__(max_iterations)",
         "conatus.solvers.periodic:PeriodicNewtonSolver.__init__(max_iterations)")),
+    # contour methods (conatus.contour)
+    _d("conatus.contour.beyn.RESIDUAL_TOL", 1e-13, "refusal",
+       "certification of every root of beyn() and of m.eigenvalues(region=): relative backward "
+       "residual ||T(z) v|| / (||T(z)|| ||v||) at most this, else the root is not returned (and "
+       "the call is refused if the certified roots do not add up to the count)",
+       ("conatus.contour.beyn:beyn(residual_tol)",
+        "conatus.contour.evp:region_eigenvalues(residual_tol)")),
+    _d("conatus.contour.beyn.POLISH_MAX_ITERATIONS", 20, "iteration cap",
+       "nonlinear inverse iterations of one Ritz value; the residual of every root is checked "
+       "against residual_tol whatever the number of iterations",
+       ("conatus.contour.beyn:beyn(polish_max_iterations)",)),
 ])
 
 _ALG = "algorithm control: changes the path or the speed, not the accuracy target"
@@ -524,10 +547,44 @@ ALGORITHM_DEFAULTS: dict[str, Declared] = dict([
     _d("conatus.timestep.integrator.FINITE_CHECK_EVERY", 100, "detection",
        "finite-state check of the time steppers every 100 steps, at the end of each run call and "
        "before each write (check_finite=False turns it off); NaN/inf raises NumericalError"),
+    _d("conatus.solvers.parametric.OVER_EDGE_FRACTION", 1e-6, "detection",
+       "critical(over=): a minimum of the neutral value within this fraction of the width of the "
+       "over interval from one of its ends, or within the bounded minimizer's own tolerance "
+       "3 (xtol max|end| + sqrt(eps) |end|) if larger, is at the edge (a constrained minimum): "
+       "CorrectnessWarning, and the CriticalPoint's repr and explain() say it"),
     _d("conatus.solvers.parametric.BRACKET_SCAN_POINTS", 8, "detection",
        "critical(): when the growth of the least stable admissible mode has the same sign at both "
        "ends of the bracket (refused), this many interior points are scanned (geometric for a "
        "positive bracket wider than a factor 4) to name the sub-brackets holding neutral points"),
+    # contour methods (conatus.contour)
+    _d("conatus.contour.count.PHASE_STEP_MAX", math.pi / 4, "detection",
+       "principal-increment bound of the argument-principle walk: a step (and each of its halves) "
+       "is accepted only when det T turns by at most pi/4 over it and log det T is resolved by it; "
+       "else it is bisected (count(phase_step=))"),
+    _d("conatus.contour.count.INITIAL_POINTS", 16, "algorithm control",
+       "points per edge of the box before any refinement of the walk (count(initial_points=))"),
+    _d("conatus.contour.count.MAX_EVALUATIONS", 20000, "iteration cap",
+       "determinant evaluations of one walk; reaching it refuses the count with the place where "
+       "the walk stalled (an eigenvalue on the boundary, a discontinuous determinant)"),
+    _d("conatus.contour.beyn.CLUSTER_RADII", (1e-6, 1e-4, 1e-2, 1e-1), "detection",
+       "linkage radii (fractions of the box half-diagonal) tried in turn to group Beyn's polished "
+       "roots: 1e-6 merges duplicates and a double root split by rounding (~ sqrt(eps)), the "
+       "larger radii a defective eigenvalue of order m split on a circle of radius ~ eps^(1/m). "
+       "Every group, a single root included, is counted by the argument principle on its own "
+       "square; a grouping is accepted only when every count is >= 1 and they add up to Z, "
+       "else the round fails (never a root reported without its own count)"),
+    _d("conatus.contour.beyn.QUADRATURE_POINTS", 32, "algorithm control",
+       "Gauss-Legendre nodes per edge for Beyn's moments, doubled at each new round"),
+    _d("conatus.contour.beyn.BEYN_MARGIN", 2, "algorithm control",
+       "probe columns x moments of Beyn's method above the count Z (doubled at each new round)"),
+    _d("conatus.contour.beyn.BEYN_MAX_ROUNDS", 3, "iteration cap",
+       "rounds of moments on one box (more nodes, columns and moments each) before it is cut"),
+    _d("conatus.contour.beyn.BEYN_MAX_SPLITS", 3, "iteration cap",
+       "levels of cuts of a box whose rounds did not certify its roots (each half counted, the "
+       "counts adding up, and solved) before beyn() is refused"),
+    _d("conatus.contour.operators.DERIVATIVE_STEP", 6e-6, "algorithm control",
+       "relative step of the central difference for T'(z) of a callable given without its "
+       "derivative: used by the polish only (convergence rate), never by a certificate"),
 ])
 
 

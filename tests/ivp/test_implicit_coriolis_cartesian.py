@@ -197,7 +197,9 @@ def test_implicit_rotation_is_declared_and_warned_when_its_waves_are_not_resolve
         sim = _model(1.0).simulate(N=(8, 8, 8), scheme="RK443", dt=0.1)    # |W| dt = 0.2
     line = [ln for ln in sim.explain().splitlines() if "implicit rotation" in ln]
     assert len(line) == 1 and "2*Om*cross(ez, u): |W| = 2, |W| dt = 0.2" in line[0], line
-    assert "resolved in time" in line[0]
+    # audit "assurances": never "resolved in time" (scheme-independent claim; SBDF1
+    # at |W| dt = 1 damps its waves by 29 % per step), the scheme's own error is said
+    assert "below the rotation time" in line[0] and "resolved in time" not in line[0]
     with pytest.warns(cn.errors.UnderResolvedWarning, match=r"\|W\| dt = 6"):
         sim.solver.set_dt(3.0)
     assert "damp and slow" in sim.solver.explain(full=True)

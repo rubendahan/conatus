@@ -4,8 +4,7 @@ Conatus itself is distributed under the BSD 3-Clause licence (`LICENSE`, Ruben D
 contributors). Some files that ship with it come from other projects, under their own licences.
 Each is listed below: its version, its licence (SPDX identifier), where it ships, and where its
 licence text is. The texts are in `licenses/` in the repository, in the source distribution, and in
-`.dist-info/licenses/licenses/` of every wheel. How this list was made and checked:
-.
+`.dist-info/licenses/licenses/` of every wheel.
 
 Nothing here is copied into the Conatus sources (`python/conatus/`, `core/`): the components below
 are linked, bundled by the build, or served by the documentation and the website.
@@ -15,8 +14,13 @@ are linked, bundled by the build, or served by the documentation and the website
 `auditwheel repair` copies these shared libraries into `conatus.libs/` of the wheel; the compiled
 core `conatus._core` links them. They are the conda-forge builds of the wheel build environment
 (OpenBLAS, pthreads build).
-No GPL library is bundled: FFTW, which earlier development builds linked for test-only transforms,
-was dropped from every build in 0.1.0.
+Two of these libraries are under GNU licences, and their terms allow shipping them with BSD
+code: the GCC runtimes (`libgfortran` here, `libstdc++` and `libgcc` below) are under GPL-3.0
+**with the GCC Runtime Library Exception 3.1**, which permits distributing them with programs under
+any licence, and `libquadmath` is under the **LGPL-2.1-or-later**, linked dynamically so that it
+can be replaced. No library under the GPL without that exception is bundled: FFTW (GPL-2.0-or-later),
+which earlier development builds linked for test-only transforms, was dropped from every build in
+0.1.0.
 
 | Component | Version | Licence | Licence text |
 |---|---|---|---|
@@ -73,10 +77,10 @@ Written into the built site by the documentation tools (not stored in the reposi
 | sphinx-design | 0.7.0 | MIT |
 | sphinx-copybutton, with clipboard.js 2.0.8 (Zeno Rocha) | 0.5.2 | MIT |
 
-## 3. Website (`web/`)
+## 3. Website (`web/`) and Studio app
 
-Bundled by Vite into the built site. The bundles drop
-the licence comments, so `web/build.sh` copies this file and `licenses/`
+Bundled by Vite into the built site and the Studio app (`conatus/studio/static/app/` in the
+package). The bundles drop the licence comments, so the builds copy this file and `licenses/`
 into the build output (`/THIRD_PARTY_NOTICES.md`, `/licenses/`).
 
 | Component | Version | Licence | Copyright |

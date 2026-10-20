@@ -1,4 +1,4 @@
-"""Coordinates and coordinate systems (spec §8, §9, §12, §13).
+"""Coordinates and coordinate systems.
 
 A coordinate system is a first-class object: it owns its coordinates, its metric
 and its regularity conditions. Cartesian systems polar and cylindrical coordinates (regular bases
@@ -59,6 +59,11 @@ class CoordinateSystem:
     def __init__(self, *names: str) -> None:
         if len(names) == 0:
             raise CoordinateError("a coordinate system needs at least one coordinate name",
+                                  fix="CartesianCoordinates('x', 'z')")
+        bad = [n for n in names if not isinstance(n, str) or not n.isidentifier()]
+        if bad:                    # audit inputs: CartesianCoordinates(1, 2) passed
+            raise CoordinateError(f"coordinate names must be identifiers, got {bad[0]!r}",
+                                  why="a coordinate is named in equations (dx, dz) and outputs",
                                   fix="CartesianCoordinates('x', 'z')")
         if len(set(names)) != len(names):
             raise CoordinateError(f"duplicate coordinate names: {names}",

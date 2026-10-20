@@ -31,6 +31,17 @@ _RADII = {"absolute": "(absolute)", "relative": "(× ‖z0‖)"}
 def arnoldi_gmres(apply_A: Callable[[np.ndarray], np.ndarray], b: np.ndarray, *,
                   rtol: float, max_iterations: int):
     """Arnoldi–GMRES from x₀ = 0. Returns (V, H̄, β, y, relres) with ‖b − A V_m y‖ = relres ‖b‖."""
+    # audit inputs: a 2D b was a bare broadcast error, a NaN one a LinAlgError of the
+    # least squares, a complex one lost its imaginary part in the real Krylov basis, rtol < 0 and
+    # max_iterations = 0 returned without iterating, 2.5 was a bare TypeError
+    from ..errors import InputTypeError, check_count, check_real
+    rtol = check_real(rtol, "rtol", "arnoldi_gmres()", nonnegative=True)
+    max_iterations = check_count(max_iterations, "max_iterations", "arnoldi_gmres()")
+    b = np.asarray(b)
+    if b.ndim != 1 or np.iscomplexobj(b) or not np.all(np.isfinite(b)):
+        raise InputTypeError(f"arnoldi_gmres: b must be a 1D finite real vector, got shape "
+                             f"{b.shape}, dtype {b.dtype}",
+                             fix="b.ravel() of a real state (the Krylov basis is real)")
     beta = float(np.linalg.norm(b))
     if beta == 0:
         raise OptionError("GMRES: zero right-hand side",
@@ -169,6 +180,13 @@ class NewtonKrylovHookstep:
         self.rho_bad, self.rho_good = float(rho_bad), float(rho_good)
         self.radii = radii
 
+    def __repr__(self) -> str:
+        """Every control on one line, as the constructor takes them."""
+        g = self.__dict__.get
+        keys = ("tol", "max_iterations", "gmres_rtol", "gmres_max_iterations", "delta0", "delta_min",
+                "delta_max", "rho_bad", "rho_good", "radii")
+        return (f"NewtonKrylovHookstep({', '.join(f'{k}={g(k)!r}' for k in keys)}; .explain())")
+
     @property
     def gmres_maxiter(self) -> int:
         """Former name of :attr:`gmres_max_iterations` (read-only, kept for v0.1 readers)."""
@@ -216,7 +234,7 @@ class NewtonKrylovHookstep:
               scale: float, log: Callable[[str], None] | None = None,
               on_iteration: Callable[[dict], None] | None = None) -> NewtonKrylovResult:
         """Iterate from z0. ``scale`` normalizes ‖R‖ for the stopping test (declared by caller).
-        ``on_iteration`` (optional, explicit) receives each iteration's record, e.g. a monitor
+        ``on_iteration`` (optional, explicit) receives each iteration's record, e.g. the Studio
         telemetry ``Telemetry.newton_callback()``; it never changes the iteration."""
         z = np.array(z0, dtype=float)
         delta0, delta_min, delta_max, trust = self._radii(z)

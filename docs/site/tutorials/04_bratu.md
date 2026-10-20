@@ -50,11 +50,19 @@ there. Pseudo-arclength continuation parametrises the branch by its arclength in
 :end-before: "# [/newton]"
 ```
 
-Tolerance, damping and iteration budget have no defaults: they are choices, and they are printed with
-the result. `sol.explain()` lists the residual of every iteration and the **observed** order of
+The tolerance `tol` is required: it decides the digits of the solution. The damping (default 1,
+full Newton steps) and the iteration budget (default 50) have declared defaults; the script gives
+both explicitly (1 and 20). All three are printed with the result. `sol.explain()` lists the residual of every iteration and the **observed** order of
 convergence $q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})$, about 2 here, the signature of an exact
 Jacobian. Non-convergence raises `NewtonNotConverged` with the history; it never returns the last
 iterate silently.
+
+```{figure} media/t04_newton.png
+:alt: The relative residual of Newton's method on a log scale, dropping faster at each iteration below the dashed tolerance line.
+:width: 100%
+
+Newton from u = 0 at λ = 0.3, as printed by sol.explain(): the number of correct digits doubles at each step (quadratic convergence) down to the declared tolerance.
+```
 
 ## Continuation through the fold
 
@@ -64,8 +72,10 @@ iterate silently.
 :end-before: "# [/continuation]"
 ```
 
-`ContinuationSettings` has no defaults either (step size and its bounds, adaptation factor, corrector
-tolerance and budget, finite-difference step for $\partial G/\partial\lambda$). The branch starts on the
+`ContinuationSettings` requires what sets the accuracy and the scale of the branch (step size and
+its bounds, corrector tolerance, number of points); the algorithm controls (adaptation factor,
+corrector budget, finite-difference step for $\partial G/\partial\lambda$) have declared defaults,
+marked "(default)" by `explain()`. The branch starts on the
 lower branch at $\lambda = 0.3$, passes the fold and comes back down the upper branch for a few
 points (`max_points`). Up there $u$ grows and $e^u$ needs more modes: at 64 modes its Chebyshev tail
 stays below $10^{-12}$ along the whole branch; at too few modes Conatus refuses the step (a
@@ -73,6 +83,13 @@ non-constant coefficient whose Chebyshev tail exceeds `ncc_tail_tol`, $10^{-8}$ 
 used or truncated silently: the error gives the resolution to use, or the `ncc_cutoff=` to declare). Folds are *located* (the $\lambda$-component of the tangent changes sign,
 refined to $|t_\lambda| \approx 10^{-16}$), not read off the nearest point; `branch.explain()` reports
 the residual at the located point and every step-size change.
+
+```{figure} media/t04_branch.png
+:alt: The solution branch of the Bratu problem: u(0) rises with lambda, turns back at a red fold near lambda = 0.878 and climbs on the upper branch, the dots lying on a thin closed-form curve.
+:width: 100%
+
+The branch followed by pseudo-arclength continuation (the page's settings, run for more points), on the closed form u(0) = 2 ln cosh a. The fold is located by bisection on the tangent.
+```
 
 ## Check against the closed form
 

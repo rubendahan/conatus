@@ -21,6 +21,16 @@ touch the computation. Everything numerical is declared and shown by ``explain()
   only, dv/dt = (u(x, t) - v) / tau_p + (1 - beta) g. Neglected, and listed by ``explain()``:
   added mass, fluid acceleration (pressure gradient) term, Basset history force, Faxén
   corrections, Saffman lift, particle-particle and two-way coupling.
+
+Two particle interfaces, two contracts (finding 63): this module is the
+**standalone** one: any velocity (an analytic callable, or grid snapshots interpolated by a
+declared method), a caller-chosen ``dt`` and scheme (RK4 / RK2), boundaries ``"clip"`` /
+``"raise"``, positions in memory. ``sim.particles(...)`` (:mod:`conatus.model.particles`) is the
+**in-simulation** one: the exact spectral series of the running simulation, one RK4 step per flow
+step with past flow states for the midpoint, walls ``"refuse"`` / ``"clip"``, an HDF5 file. Use
+this module for a velocity you own or for data after a run; use ``sim.particles`` while a native
+simulation runs. The same split holds for the dye (:mod:`conatus.diagnostics.dye` vs
+``sim.dye``).
 """
 from __future__ import annotations
 
@@ -201,7 +211,8 @@ class AnalyticVelocity:
     """Velocity given by a callable ``u(x, t)``: x of shape (Np, d) -> (Np, d)."""
 
     def __init__(self, fn: Callable[[Any, float], Any], d: int, xp: Any = np) -> None:
-        self.fn, self.d, self.xp = fn, int(d), xp
+        from ..errors import check_count
+        self.fn, self.d, self.xp = fn, check_count(d, "d", "AnalyticVelocity"), xp
 
     def __call__(self, x, t: float):
         """Velocity at the points x (Np, d) at time t."""
@@ -226,8 +237,10 @@ class GridVelocity:
 
     def set(self, u, t: float) -> None:
         """Add the snapshot (u at time t); keeps the last two."""
+        # a copy: the snapshot must not follow later in-place changes of the caller's array
+        # (finding 68: asarray kept a view of a float array)
         U = self.xp.stack([self.xp.asarray(c, dtype=float) for c in u]) if not hasattr(u, "shape") \
-            else self.xp.asarray(u, dtype=float)
+            else self.xp.array(u, dtype=float, copy=True)
         if U.shape != (self.d,) + self.grid.shape:
             raise CoordinateError(f"velocity snapshot of shape {U.shape}: ({self.d}, *{self.grid.shape}) expected")
         if self._snaps and t <= self._snaps[-1][0]:
@@ -417,9 +430,11 @@ class PathRecorder:
     at most ``max_points`` positions per particle (oldest dropped, counted in ``dropped``)."""
 
     def __init__(self, particles: Particles, *, every: int, max_points: int) -> None:
-        if every < 1 or max_points < 2:
-            raise OptionError("PathRecorder needs every >= 1 and max_points >= 2")
-        self.p, self.every, self.max_points = particles, int(every), int(max_points)
+        from ..errors import check_count
+        # integers, never truncated (finding 66)
+        self.p = particles
+        self.every = check_count(every, "every", "PathRecorder")
+        self.max_points = check_count(max_points, "max_points", "PathRecorder", minimum=2)
         self._calls, self.dropped = 0, 0
         self._hist: list = []
         self.times: list[float] = []
@@ -466,8 +481,10 @@ class Emitter:
                  scheme: str, boundary: str, mode: str, t0: float = 0.0, xp: Any = None) -> None:
         if mode not in ("streak", "timeline"):
             raise OptionError(f"mode {mode!r}: 'streak' or 'timeline'")
-        if emit_every < 1 or capacity < 1:
-            raise OptionError("emit_every >= 1 and capacity >= 1 are required")
+        from ..errors import check_count
+        # integers, never truncated (finding 66)
+        emit_every = check_count(emit_every, "emit_every", "Emitter")
+        capacity = check_count(capacity, "capacity", "Emitter")
         self.xp = xp if xp is not None else getattr(velocity, "xp", np)
         self.seeds = self.xp.array(seeds, dtype=float)
         self.mode, self.emit_every, self.capacity = mode, int(emit_every), int(capacity)

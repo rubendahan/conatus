@@ -65,9 +65,10 @@ export function pick(src: Src, patterns: RegExp[], page?: string): string {
   return lines.filter((l) => patterns.some((p) => p.test(l))).join("\n");
 }
 
-/** Header of an executed output: "# t05_ks_orbits: PASS (exit 0) in 61.4 s | run_id … | commit … | host | date". */
+/** Header of an executed output: "# t05_ks_orbits: PASS (exit 0) in 61.4 s | run_id … | commit … | host | date
+ *  | script sha256 …" (the public export keeps "… in 61.4 s | date | script sha256 …"). */
 export function outputHeader(src: Src): { script: string; status: string; seconds: number; runId: string; date: string } {
-  const m = src.text.match(/^# (\S+): (\w+) \(exit \d+\) in ([\d.]+) s \| (?:run_id (\S+) \| commit \S+ \| \S+ \| )?(\S+)/);
+  const m = src.text.match(/^# (\S+): (\w+) \(exit \d+\) in ([\d.]+) s(?: \| run_id (\S+) \| commit \S+ \| \S+)? \| (\S+)/);
   if (!m) fail(src, "unexpected output header (expected '# name: PASS (exit 0) in … s | run_id …')");
   if (m[2] !== "PASS") fail(src, `the tutorial did not pass (status ${m[2]}): the site shows only passing executions`);
   return { script: m[1], status: m[2], seconds: Number(m[3]), runId: m[4] ?? "", date: m[5] };

@@ -35,6 +35,7 @@ equations, no pivoting across blocks is possible. Declared in ``explain()``.
 """
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Sequence
 from dataclasses import dataclass
 from types import SimpleNamespace
@@ -47,12 +48,38 @@ from ..discretize.compiler import _comps
 from ..discretize.plan import Plan, RankError
 from ..runtime import BorderedBandedBatch
 from .shared_factors import SharedFactor
-from ..errors import OptionError, SymmetryError
+from ..errors import DtypeError, OptionError, SymmetryError
 from .._repr import compact_repr
 
 __all__ = ["GlobalSystem", "GroupSlot", "ORDERINGS"]
 
 ORDERINGS = ("interleaved", "variable-major")
+
+#: Factorizations of a M + b L kept per system (distinct (a, b) keys; the least recently used is
+#: dropped first). Every (a, b) used to be kept forever: an adaptive step (EmbeddedError with
+#: adapt=True: a new dt at every step) held two more factor sets per step, 406 after 200 steps
+#: (audit state). Above the keys one run uses (SBDF start-up orders, the
+#: diagonals of an IMEX Runge-Kutta tableau, a transposed solve shares its key), so a
+#: constant-step run never factors twice.
+FACTOR_CACHE_SIZE = 16
+
+
+class FactorCache(OrderedDict):
+    """The ``_factors`` store of a system: a dict bounded to :data:`FACTOR_CACHE_SIZE` entries,
+    least recently used first out (``get`` and assignment count as a use)."""
+
+    def get(self, key, default=None):
+        """The factors of ``key`` (marked most recently used), or ``default``."""
+        if key in self:
+            self.move_to_end(key)
+            return self[key]
+        return default
+
+    def __setitem__(self, key, value) -> None:
+        super().__setitem__(key, value)
+        self.move_to_end(key)
+        while len(self) > FACTOR_CACHE_SIZE:
+            self.popitem(last=False)
 
 
 @dataclass
@@ -196,7 +223,17 @@ def _compound_pinning(pat, border, pinned, kinds, col_n, col_kind, piece, offs, 
     return [int(cols[i]) for i in border]
 
 
-_BUILD_SELF = None          # (system, groups, reduced) of a parallel build, read by forked workers
+#: (system, groups, reduced) of a parallel build, set in each forked worker by the pool
+#: initializer and never in the parent: a parent-side global was read by the workers at fork time,
+#: so two threads building systems at once could fork with each other's groups (review of the
+#: state audit, F7). The initializer's arguments reach a forked worker by the fork itself (no
+#: pickling): each pool carries its own build.
+_BUILD_SELF = None
+
+
+def _build_worker_init(state: tuple) -> None:
+    global _BUILD_SELF
+    _BUILD_SELF = state
 
 
 def _build_group_worker(i: int) -> list:
@@ -213,11 +250,15 @@ class GlobalSystem:
         if ordering not in ORDERINGS:
             raise OptionError(f"ordering must be one of {ORDERINGS}",
                               fix="ordering='interleaved' or ordering='variable-major'")
+        # switches are True/False, never the truth value of another object (audit inputs,
+        # reduced="no" or complexify="no" switched them on)
+        from ..errors import check_flag
         if reduced is None:
             reduced = plan.problem.symmetry is not None
+        reduced = check_flag(reduced, "reduced", "IVPSolver")
         self.plan, self.reduced, self.ordering = plan, reduced, ordering
-        self.complexify = bool(complexify)
-        self.decouple = bool(decouple)
+        self.complexify = check_flag(complexify, "complexify", "IVPSolver")
+        self.decouple = check_flag(decouple, "decouple", "IVPSolver")
         # worker processes of the group assembly: argument, else $CONATUS_BUILD_WORKERS, else
         # serial (a performance setting only: the system is the same; declared in explain())
         if build_workers is None:
@@ -257,7 +298,20 @@ class GlobalSystem:
         self.rows_obj = np.array(rows_obj, int)
         self.rows_flat = np.array(rows_flat, int)
         self.rows_lam = np.array(rows_lam, int)
-        self.complex = plan.layout.complex or any(
+        # Common dtype of the system (review finding 2): complex as soon as the layout, a matrix
+        # block or a declared variable is complex. An equation with complex coefficients on
+        # variables that are all declared real has no real solution: refused here rather than
+        # dropping the imaginary part at every gather.
+        var_complex = any(np.dtype(v.dtype).kind == "c" for v in self.variables)
+        eq_complex = [k for k, eq in enumerate(pb.equations)
+                      if any(np.dtype(side.dtype).kind == "c" for side in (eq.lhs, eq.rhs))]
+        if eq_complex and not var_complex and not plan.layout.complex:
+            raise DtypeError(f"equation(s) {eq_complex} have complex coefficients but every variable "
+                             f"({', '.join(v.name for v in self.variables)}) is declared real: the "
+                             "imaginary part would be dropped",
+                             fix="declare the unknowns complex (Field(..., dtype=complex)) or make the "
+                                 "equations real")
+        self.complex = plan.layout.complex or var_complex or any(
             np.iscomplexobj(s.L.data) or np.iscomplexobj(s.M.data) for s in self.slots)
         self.dtype = np.complex128 if self.complex else np.float64
         self.M = sp.block_diag([s.M for s in self.slots], format="csr").astype(self.dtype)
@@ -265,7 +319,7 @@ class GlobalSystem:
         self._check_structure()
         self._buckets, self._cbuckets = self._make_buckets()
         self._zbuckets = self._make_zbuckets()
-        self._factors: dict = {}
+        self._factors = FactorCache()
         # complex-mode buckets equal up to signs share one factorization (exact, checked at
         # factor time; timestep/shared_factors.py). False: every bucket factors its own matrices.
         self.share_factors = True
@@ -289,15 +343,10 @@ class GlobalSystem:
         if w <= 1 or len(groups) < 2 * w:
             return [self._build_group(g, reduced) for g in groups]
         import multiprocessing as mp
-        global _BUILD_SELF
-        _BUILD_SELF = (self, groups, reduced)
-        try:
-            ctx = mp.get_context("fork")
-            chunk = max(1, len(groups) // (8 * w))
-            with ctx.Pool(w) as pool:
-                return pool.map(_build_group_worker, range(len(groups)), chunksize=chunk)
-        finally:
-            _BUILD_SELF = None
+        ctx = mp.get_context("fork")
+        chunk = max(1, len(groups) // (8 * w))
+        with ctx.Pool(w, initializer=_build_worker_init, initargs=((self, groups, reduced),)) as pool:
+            return pool.map(_build_group_worker, range(len(groups)), chunksize=chunk)
 
     def _build_group(self, g, reduced) -> list:
         plan = self.plan
@@ -587,7 +636,7 @@ class GlobalSystem:
         for name, X in (("M", gm.M.tocsr()), ("L", gm.L.tocsr())):
             P, Q = X[rc][:, cc], X[rc][:, cs]
             S, T = X[rs][:, cc], X[rs][:, cs]
-            scale = max(1.0, abs(X).max())
+            scale = abs(X).max()          # relative (critic review: max(1, .) was absolute for small operators)
             e1 = abs(P - T).max() if (P - T).nnz else 0.0
             e2 = abs(S + Q).max() if (S + Q).nnz else 0.0
             if max(e1, e2) > 1e-13 * scale:
@@ -655,7 +704,7 @@ class GlobalSystem:
                 m = len(ri[P[0]])
                 A = sp.csr_matrix((m, m), dtype=complex) if A is None else sp.csr_matrix(A, dtype=complex)
                 B = sp.csr_matrix((m, m), dtype=complex) if B is None else sp.csr_matrix(B, dtype=complex)
-                scale = max(1.0, abs(X).max() if X.nnz else 0.0)
+                scale = abs(X).max() if X.nnz else 0.0   # relative (critic review)
                 err = abs(B - 1j * A).max() if (B - 1j * A).nnz else 0.0
                 if err > 1e-13 * scale:
                     raise RankError(
@@ -737,7 +786,10 @@ class GlobalSystem:
         from .shared_factors import SharedFactor
         n_sh = sum(isinstance(e, SharedFactor) for e in entries)
         n_cand = sum(p is not None for p in (self._zpartners or []))
-        self._share_stats = getattr(self, "_share_stats", {})
+        if getattr(self, "_share_stats", None) is None:
+            # bounded like the factors (review of the state audit: one entry per (a, b) grew
+            # with every adaptive step although the factors themselves were bounded)
+            self._share_stats = FactorCache()
         self._share_stats[key] = (n_sh, n_cand)
 
     def solve(self, a: float, b: float, rhs: np.ndarray) -> np.ndarray:
@@ -840,13 +892,14 @@ class GlobalSystem:
         X = np.zeros(self.n, dtype=self.dtype)
         for k, a in enumerate(coeffs):
             a = np.asarray(a).reshape(-1)
+            a = self._refuse_lossy(a, f"initial data for {self.variables[k].name}")
             sel = self._col_sel[k]
             X[sel] = a[self.cols_flat[sel]]
             if check_subspace and self.reduced:
                 kept = np.zeros(a.size, bool)
                 kept[self.cols_flat[sel]] = True
                 lost = np.abs(a[~kept])
-                if lost.size and lost.max() > 1e-12 * max(1.0, np.abs(a).max()):
+                if lost.size and lost.max() > 1e-12 * np.abs(a).max():   # relative to the data (critic review)
                     raise SymmetryError(f"initial data for {self.variables[k].name} has components outside the "
                                         f"symmetry subspace (max {lost.max():.2e})",
                                         fix="project the data on the subspace (solver.symmetrize_state(X)) "
@@ -872,8 +925,23 @@ class GlobalSystem:
                         S = self._conv[lam] = self.plan.layout.zconv(lam).tocsr()
                     cm = np.moveaxis(c, ax, 0)
                     c = np.moveaxis((S @ cm.reshape(cm.shape[0], -1)).reshape(cm.shape), 0, ax)
-            b[sel] = np.asarray(c).reshape(-1)[self.rows_flat[sel]]
+            c = self._refuse_lossy(np.asarray(c), f"right-hand side of equation {k}")
+            b[sel] = c.reshape(-1)[self.rows_flat[sel]]
         return b
+
+    def _refuse_lossy(self, a: np.ndarray, what: str) -> np.ndarray:
+        """``a`` ready for this system's dtype: complex data with a non-zero imaginary part is
+        refused in a real system (the cast would drop it silently; review finding 2); an exactly
+        zero imaginary part is exact and its real part is returned."""
+        if self.complex or not np.iscomplexobj(a) or a.size == 0:
+            return a
+        im = float(np.max(np.abs(a.imag)))
+        if im != 0.0:
+            raise DtypeError(f"{what} is complex (max |imag| = {im:.3e}) but the system is real: "
+                             "the imaginary part would be dropped",
+                             fix="declare the unknowns complex (Field(..., dtype=complex)) or pass "
+                                 "real data")
+        return a.real
 
     def explain(self) -> str:
         lines = [f"GlobalSystem: {len(self.slots)} group(s), {self.n} unknowns "

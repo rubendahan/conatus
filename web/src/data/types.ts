@@ -42,6 +42,8 @@ export interface Counts {
 export interface Ledger {
   generated: string;
   commit: string | null;
+  /** Package version the record describes (python/conatus/__init__.py). */
+  version?: string;
   sources: string[];
   counts: Counts;
   scorecard: string;

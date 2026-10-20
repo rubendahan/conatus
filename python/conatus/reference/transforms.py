@@ -23,6 +23,7 @@ from __future__ import annotations
 import numpy as np
 import scipy.fft as sfft
 
+from ..errors import CoordinateError, DtypeError
 from ..ir.bases import Basis, Chebyshev, ComplexFourier, RealFourier
 
 __all__ = ["grid", "forward", "backward", "grid_size", "coeff_size"]
@@ -79,7 +80,10 @@ def forward(f: np.ndarray, b: Basis, axis: int = 0, dealias: bool = True) -> np.
     f = np.asarray(f)
     M, N = grid_size(b, dealias), b.size
     if f.shape[axis] != M:
-        raise ValueError(f"expected {M} grid points along axis {axis}, got {f.shape[axis]}")
+        # typed (audit inputs: initial(u=lambda x: np.zeros(3)) ended in a bare error)
+        raise CoordinateError(f"expected {M} grid points along axis {axis}, got {f.shape[axis]}",
+                              fix="grid values of the shape of the grid (a function of the "
+                                  "coordinate grids returns arrays of their broadcast shape)")
     f = np.moveaxis(f, axis, 0)
     if isinstance(b, Chebyshev):
         y = sfft.dct(f, type=2, axis=0) / M
@@ -88,7 +92,12 @@ def forward(f: np.ndarray, b: Basis, axis: int = 0, dealias: bool = True) -> np.
         c = (y * sign.reshape((M,) + (1,) * (f.ndim - 1)))[:N]
     elif isinstance(b, RealFourier):
         if np.iscomplexobj(f):
-            raise TypeError("RealFourier takes real data")
+            # a complex state of a real problem is refused, never made real (audit inputs: it
+            # surfaced as a bare TypeError from sim.initial(u=1+1j))
+            raise DtypeError("RealFourier takes real data: complex values given for a real field",
+                             why="the problem was compiled real; the imaginary part is never "
+                                 "dropped for you",
+                             fix="real data, or a complex problem: periodic(L, complex=True)")
         F = np.fft.rfft(f, axis=0) / M
         K = N // 2
         c = np.zeros((N,) + f.shape[1:])

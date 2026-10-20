@@ -11,7 +11,7 @@ back close to (a symmetry copy of) itself after T; since the loop ends at u(t_n)
 (T, ℓ) is a guess for an orbit **through the current state** (equivariance: S τ_ℓ commutes with the
 flow). This is the same measure as the KS benchmark, restricted to the
 last state so that it is cheap (one lag sweep, O(n · n_ell · N)) and can run inside the job when
-a monitor asks for a checkpoint. Norm: the L²(0, L) norm / L (mean weight 1, pairs weight 1/2).
+the Studio asks for a checkpoint. Norm: the L²(0, L) norm / L (mean weight 1, pairs weight 1/2).
 Everything is an argument; nothing is chosen here.
 """
 from __future__ import annotations

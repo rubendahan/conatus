@@ -1,4 +1,4 @@
-"""Incremental reader of a telemetry spool (used by a monitor; see protocol.py).
+"""Incremental reader of a telemetry spool (used by the Studio server; see protocol.py).
 
 Keeps one byte offset per ``<run_id>.jsonl`` and returns only complete new lines, so it can be
 polled cheaply. Frames are re-read only when their file changes. Malformed lines are counted, not
@@ -18,7 +18,7 @@ from .protocol import FRAME_KINDS, run_file_id
 
 
 class RunState:
-    """What a monitor knows about one run (bounded)."""
+    """What the Studio knows about one run (bounded)."""
 
     def __init__(self, run_id: str, max_scalars: int, max_logs: int) -> None:
         self.run_id = run_id

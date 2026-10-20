@@ -1,7 +1,7 @@
 """Mode groups and coefficient layout for Fourier^k x (Chebyshev | nothing) domains.
 
 A *group* is one Fourier wavenumber per periodic direction: the linear problem
-decouples into one sparse system per group (spec §10: never lose Fourier
+decouples into one sparse system per group (never lose Fourier
 separability). Inside a group, an object (variable or equation) that depends on
 the Fourier direction i holds ``len(indices_i)`` Fourier coefficients (2 for a
 real cos/-sin pair, 1 otherwise); an object constant along i only exists in the

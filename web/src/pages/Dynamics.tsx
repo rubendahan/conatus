@@ -9,9 +9,10 @@ import "../styles/dynamics.css";
 
 const TOPICS: { id: string; title: string; body: ReactNode; tut: number[] }[] = [
   { id: "eigen", title: "Where a flow becomes unstable", tut: [1, 8],
-    body: <p>Linearise the equations you already wrote about a base state and ask for their eigenmodes, with left
-      eigenvectors and the residual of each. Follow the least stable one as a parameter changes and find the critical
-      point where it starts to grow. Modes that do not survive a finer resolution are removed, and you are told.</p> },
+    body: <p>Linearise the equations you already wrote about a base state and ask for their eigenmodes, with the
+      residual of each (left eigenvectors on request). Follow the least stable one as a parameter changes and find the
+      critical point where it starts to grow. Ask for a drift check and the modes that do not survive a finer
+      resolution are removed, and you are told.</p> },
   { id: "symmetry", title: "Symmetry subspaces", tut: [3],
     body: <p>Declare a reflection or a rotation and solve in the symmetric subspace: the same eigenvalues for a fraction
       of the cost, after a check that the equations respect the symmetry.</p> },

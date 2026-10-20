@@ -4,7 +4,8 @@ Swift–Hohenberg had to switch to ComplexFourier). The eigenspace member is a d
 import numpy as np
 
 from conatus.expert import (IVP, CartesianCoordinates, Chebyshev, Domain, Field, Parameter,
-                            ParametricEVP, RealFourier, Zero, critical, diff, dt, interp, lap, linearize)
+                            ParametricEVP, RealFourier, critical, diff, dt, interp, lap, linearize)
+from conatus.ir import Zero
 
 
 def _sh_real(q):

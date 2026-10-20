@@ -71,6 +71,28 @@ def _beta(c: int, r: int) -> int:
     return comb(c + r, c)
 
 
+#: Review of the audit "inputs": a budget of 0 slots was accepted ("no slot:
+#: recompute from the start") but its schedule was exactly that of checkpoints=1 (split at
+#: steps - 1, one stored state at a time): the run held a checkpoint the budget said it would not
+#: (revolve_cost(n, 0)["peak_stored"] == 1). 0 is refused rather than renamed.
+_ZERO_SLOTS = "{where}: checkpoints=0 is not a Revolve budget"
+_ZERO_WHY = ("reversing a step needs its input state: with 0 slots the schedule was that of "
+             "checkpoints=1 and stored one state at a time, a memory the budget said was not used")
+_ZERO_FIX = ("checkpoints=1 (the least memory: one stored state besides the input), a larger "
+             "budget, or checkpoints=None (store every step)")
+
+
+def _check_revolve(steps: object, checkpoints: object, where: str) -> None:
+    """Integer counts (audit inputs: revolve_schedule(10.5, 2) returned a float
+    split point, a float checkpoint budget looped on non-integer binomials)."""
+    from ..errors import check_count
+    check_count(steps, "steps", f"{where}()")
+    check_count(checkpoints, "checkpoints", f"{where}()", minimum=0)
+    if checkpoints == 0:
+        raise OptionError(_ZERO_SLOTS.format(where=f"{where}({steps}, 0)"),
+                          why=_ZERO_WHY, fix=_ZERO_FIX)
+
+
 @renames("conatus.adjoint.flowmap:revolve_schedule")
 def revolve_schedule(steps: int, checkpoints: int) -> int:
     """Binomial split point for reversing ``steps`` steps with ``checkpoints`` free slots.
@@ -78,11 +100,10 @@ def revolve_schedule(steps: int, checkpoints: int) -> int:
     Returns m (1 <= m < steps): advance m steps, store a checkpoint, reverse the tail, then
     reverse the head with one slot less. Any 1 <= m < steps is correct; the binomial choice
     minimizes recomputation (Griewank & Walther 2000)."""
+    _check_revolve(steps, checkpoints, "revolve_schedule")
     if steps < 2:
         raise OptionError(f"revolve_schedule({steps}, {checkpoints}): nothing to split",
                           fix="a split point needs steps >= 2 (one step is reversed directly)")
-    if checkpoints < 1:
-        return steps - 1                      # no slot: recompute from the start each time
     r = 0
     while _beta(checkpoints, r) < steps:
         r += 1
@@ -103,6 +124,7 @@ def revolve_actions(steps: int, checkpoints: int) -> list[tuple]:
     at most ``checkpoints`` (+ the input) are held at once. An explicit list (not a recursion)
     has no depth limit and gives a position (an index) at which a reverse sweep can be suspended
     and resumed by another job."""
+    _check_revolve(steps, checkpoints, "revolve_actions")
     out: list[tuple] = []
     stack = [(0, steps, checkpoints)]
     while stack:
@@ -113,7 +135,7 @@ def revolve_actions(steps: int, checkpoints: int) -> list[tuple]:
         m = revolve_schedule(stop - start, c)
         out.append(("advance", start, start + m))
         stack.append((start, start + m, c))            # head: done after the tail
-        stack.append((start + m, stop, c - 1 if c > 0 else 0))
+        stack.append((start + m, stop, c - 1))
     return out
 
 
@@ -241,9 +263,44 @@ def _lever_keys(s) -> dict:
     return out
 
 
+_ABSENT = object()
+_STATE_ATTRS = ("t", "iteration", "_t_origin", "_it_origin")
+_HISTORY_ATTRS = ("_MXh", "_Fh", "_LXh")
+
+
+def _solver_state(s) -> tuple:
+    """A copy of what ``IVPSolver.run`` changes: state, clock, time origin, multistep history."""
+    from collections import deque
+    hist = {}
+    for name in _HISTORY_ATTRS:
+        h = getattr(s, name, None)
+        hist[name] = None if h is None else deque((x.copy() for x in h), maxlen=h.maxlen)
+    return (s.X.copy(), {a: s.__dict__.get(a, _ABSENT) for a in _STATE_ATTRS}, hist)
+
+
+def _set_solver_state(s, saved: tuple) -> None:
+    """Put back a state taken by :func:`_solver_state` (new history deques: the run cleared and
+    refilled the old ones in place)."""
+    X, clock, hist = saved
+    s.X = X
+    for a, v in clock.items():
+        if v is _ABSENT:
+            s.__dict__.pop(a, None)
+        else:
+            setattr(s, a, v)
+    for name, h in hist.items():
+        if h is not None:
+            setattr(s, name, h)
+
+
 class FlowMap:
     """Φ(X_0) = X_N for an :class:`IVPSolver` (CPU or GPU), with exact discrete ``jvp`` and ``vjp``
     (see the module docstring for the explicit choices ``f_transpose``, ``solves``, ``checkpoints``)."""
+
+    #: True: Φ(X_0) puts the solver's state, clock and multistep history back after its run
+    #: (set by ``Simulation.flowmap``; review of the state audit, F6: ``sim.flowmap(T)(X0)``
+    #: moved the simulation to X_N). False (the expert default): they are left at X_N.
+    restore: bool = False
 
     @renames("conatus.adjoint.flowmap:FlowMap.__init__")
     def __init__(self, solver: IVPSolver, steps: int, *, checkpoints: int | None = None,
@@ -278,9 +335,12 @@ class FlowMap:
                                   "(oracle)", doc="docs/site/guide/dynamics/adjoint.md")
         if checkpoints is not None and (isinstance(checkpoints, bool) or not isinstance(
                 checkpoints, (int, np.integer)) or checkpoints < 0):
-            raise OptionError(f"checkpoints must be None (full storage) or >= 0, got {checkpoints!r}",
+            raise OptionError(f"checkpoints must be None (full storage) or >= 1, got {checkpoints!r}",
                               fix="checkpoints=None (store every step) or checkpoints=k (Revolve "
                                   "with k slots)", doc="docs/site/guide/dynamics/adjoint.md")
+        if checkpoints is not None and checkpoints == 0:       # not a bound (review, inputs)
+            raise OptionError(_ZERO_SLOTS.format(where="FlowMap(..., checkpoints=0)"),
+                              why=_ZERO_WHY, fix=_ZERO_FIX, doc="docs/site/guide/dynamics/adjoint.md")
         from .checkpoints import STORES
         if checkpoint_store not in STORES:
             raise OptionError(f"checkpoint_store must be one of {STORES}, got {checkpoint_store!r}",
@@ -539,8 +599,19 @@ class FlowMap:
         return states
 
     def __call__(self, X0: np.ndarray) -> np.ndarray:
-        """Φ(X_0): the solver run ``nsteps`` steps from X_0 at t0 (its state, clock and
-        multistep history are overwritten)."""
+        """Φ(X_0): the solver run ``nsteps`` steps from X_0 at t0. Its state, clock and
+        multistep history are overwritten, unless ``restore`` is True (the maps of
+        ``Simulation.flowmap``): they are then put back as they were, also on an error."""
+        if not self.restore:
+            return self._run_from(X0)
+        saved = _solver_state(self.solver)
+        try:
+            return self._run_from(X0)
+        finally:
+            _set_solver_state(self.solver, saved)
+
+    def _run_from(self, X0: np.ndarray) -> np.ndarray:
+        """Φ(X_0) on the solver itself (its state, clock and history left at the end)."""
         s = self.solver
         s.X = self.xp.array(X0, dtype=self.dtype)
         s.t, s.iteration, s._t_origin, s._it_origin = self.t0, 0, self.t0, 0
@@ -754,7 +825,7 @@ class FlowMap:
         Y = hist
         for n in range(start, start + m):             # recompute forward to the split
             Y = self._next_hist(Y, n)
-        bars = self._revolve_recursive(Y, start + m, stop, bars, c - 1 if c > 0 else 0)
+        bars = self._revolve_recursive(Y, start + m, stop, bars, c - 1)
         return self._revolve_recursive(hist, start, start + m, bars, c)
 
     def _fingerprint(self, X0, W) -> dict:
@@ -973,7 +1044,11 @@ class FlowMap:
                    "tangent's solves, P before the adjoint's transposed solves (self-adjoint for "
                    "the real pairing)\n" if self._m0proj is not None else "")
                 + f"  F linearization: {fl}\n"
-                f"  checkpointing: {ck}")
+                f"  checkpointing: {ck}\n"
+                + ("  Φ(X_0) runs the solver and puts its state, clock and history back"
+                   if self.restore else
+                   "  Φ(X_0) runs the solver: its state, clock and history are left at X_N "
+                   "(restore=True keeps them)"))
 
 
 class _Without0:

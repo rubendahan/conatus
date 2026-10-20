@@ -24,9 +24,8 @@ from typing import Any
 
 import numpy as np
 
-__all__ = ["explain_html", "problem_html", "rank_report_html", "plan_html", "group_rank_html",
-           "evp_html", "spectrum_svg", "verification_html", "check_html", "newton_html",
-           "parameter_widgets", "ParameterWidgets"]
+# Documented names only (M5, 0.2); the others stay importable from this module.
+__all__ = ["parameter_widgets"]
 
 # --------------------------------------------------------------------------- style
 # Scoped CSS. Backgrounds are rgba tints so they sit on either a white or a dark notebook
@@ -292,6 +291,11 @@ def spectrum_svg(values: np.ndarray, highlight: Sequence[int] = (), *, width: in
     """Inline SVG scatter of eigenvalues, Re sigma (x) against Im sigma (y). Non-finite values
     are not plotted (the caption counts them). ``highlight``: indices drawn as leading modes.
     Each dot has a <title> tooltip with its value."""
+    from .errors import check_count
+    # pixel sizes are integers larger than the margins (review of the inputs audit:
+    # width=0 drew a negative plot area, "360" was a bare TypeError)
+    width = check_count(width, "width", "spectrum_svg()", minimum=80)
+    height = check_count(height, "height", "spectrum_svg()", minimum=60)
     v = np.asarray(values, dtype=complex).ravel()
     fin = np.isfinite(v)
     pts = v[fin]
@@ -356,6 +360,8 @@ def spectrum_svg(values: np.ndarray, highlight: Sequence[int] = (), *, width: in
 def evp_html(res, n: int = 10, key: str = "growth") -> str:
     """EVP result card: counts, log, table of the ``n`` leading modes (order ``key``, as in
     ``explain``) with their residuals (and drift ratio if a drift test ran), spectrum SVG."""
+    from .errors import check_count
+    n = check_count(n, "n", "evp_html()", minimum=0)   # n=-3 sliced all but 3 (review, inputs)
     title = f"EVP result <code>{_e(res.label)}</code>" if res.label else "EVP result"
     parts = [f"<div>{_e(res.method)}: <b>{res.values.size}</b> finite mode(s), "
              f"<b>{res.n_infinite}</b> infinite (M singular on tau/boundary rows)</div>"]

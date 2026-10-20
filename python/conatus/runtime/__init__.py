@@ -81,6 +81,20 @@ def _load_core():
 _core, CORE_SOURCE = _load_core()
 CORE_FILE = getattr(_core, "__file__", None)
 
+
+def _file_stamp(path: str | None) -> tuple[int, int] | None:
+    """(size, mtime in ns) of ``path``, or None."""
+    try:
+        st = os.stat(path) if path else None
+    except OSError:
+        return None
+    return (st.st_size, st.st_mtime_ns) if st is not None else None
+
+
+#: (size, mtime) of the core module file when it was loaded: a file replaced later (a rebuild in
+#: another shell) is not the core that runs (provenance, audit state).
+CORE_STAMP_AT_LOAD = _file_stamp(CORE_FILE)
+
 from .banded import BorderedBanded, BorderedBandedBatch  # noqa: E402
 from .imex import ImexIntegrator  # noqa: E402
 

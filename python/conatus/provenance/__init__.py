@@ -1,11 +1,13 @@
-"""Run provenance: one JSON record per run (spec §85).
+"""Run provenance: one JSON record per run.
 
 ``record(run, ...)`` collects what is needed to reproduce and audit a run:
 
 - structural hash of the problem (IR) and of each equation, problem kind and name;
 - the complete numerical configuration read from the objects themselves (bases, sizes, bounds,
-  dealias, groups, symmetry, NCC cutoff, parameters; scheme, dt, startup, backend, ordering,
-  reduced space; eigenvalue name; tolerances passed by the caller);
+  dealias, groups, symmetry, NCC cutoff, parameters; the data of every given field by content and
+  the user functions by code, ``conatus.io._identity``; scheme, dt, startup, time parameter,
+  bc_time, backends of the solve and of F, pivoting, ordering, reduced space; eigenvalue name;
+  tolerances passed by the caller);
 - versions (python, numpy, scipy, conatus, compiled core and CUDA availability), host, GPU;
 - the **executed code**, verified at record time: git HEAD, dirty paths under ``python/`` and
   ``core/``, sha256 of the ``conatus`` source tree actually imported, whether that tree is the
@@ -61,6 +63,19 @@ def _git(*args: str) -> str | None:
     except (OSError, subprocess.TimeoutExpired):
         return None
     return out.stdout.strip() if out.returncode == 0 else None
+
+
+def _git_status(*paths: str) -> str | None:
+    """``git status --porcelain`` NOT stripped: stripping removed the leading space of the first
+    line, so its path lost its first character (``ython/conatus/...`` in every record since). Asked only in a checkout of Conatus itself, like :func:`_git`."""
+    if not _in_git_checkout():
+        return None
+    try:
+        out = subprocess.run(["git", "-C", str(REPO_ROOT), "status", "--porcelain", "--", *paths],
+                             capture_output=True, text=True, timeout=20)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return out.stdout if out.returncode == 0 else None
 
 
 def _tree_sha256(root: Path, suffixes: tuple[str, ...]) -> tuple[str, int]:
@@ -123,6 +138,11 @@ def _core_state() -> dict:
         return info
     path = Path(getattr(core, "__file__", "") or "")
     info["module"] = str(path) if path else None
+    loaded = getattr(runtime, "CORE_STAMP_AT_LOAD", None)
+    if loaded is not None and runtime._file_stamp(str(path)) != loaded:
+        # the file was replaced after this process loaded it: the hashes read now describe
+        # another module than the one that runs (audit state)
+        info["changed_since_load"] = True
     # Which copy the loader picked: CONATUS_CORE_PATH, installed (pip/wheel/conda) or dev-build.
     info["source"] = getattr(runtime, "CORE_SOURCE", None)
     cuda = getattr(core, "cuda", None)
@@ -162,6 +182,28 @@ def _core_state() -> dict:
     return info
 
 
+def changed_since_import() -> list[str]:
+    """The ``conatus`` modules this process imported whose source changed on disk since
+    (relative paths, `` (deleted)`` for a removed file): the code that runs is then not the one
+    on disk, which is what ``python_tree_sha256`` hashes (audit state an edit, a
+    ``git pull`` or a checkout during a session left both the provenance and the run-cache key
+    describing code that never ran). By content: the sha256 of each module's source recorded at
+    its import (``conatus._import_record``) against the file now; a ``touch`` or a checkout back
+    to the same text is not a change, an edit within any delay of the import is (review F8: the
+    first version compared modification times with a 2 s slack). Modules never imported do not
+    count: if imported later, they run the text on disk, which the tree hash describes."""
+    from .. import _import_record
+    out = []
+    for path, how in _import_record.changed():
+        p = Path(path).resolve()
+        try:
+            name = str(p.relative_to(PKG_DIR))
+        except ValueError:
+            name = path
+        out.append(name if how == "edited" else f"{name} (deleted)")
+    return out
+
+
 TREE_MARKER = ".conatus_tree.json"
 
 
@@ -175,6 +217,32 @@ def _exported_tree() -> dict | None:
         return None
 
 
+def _submission_code() -> dict | None:
+    """The code stored with this job at submission (``$CN_OUT/code/``, written by
+    commit, the sha256 of the uncommitted diff (``code.patch``, untracked files included) and
+    whether the tree at job start was still the submitted one. None outside a submitted job.
+
+    It complements the computation identity (``conatus.io._identity``: what was computed) with
+    where the executed code can be rebuilt from; the two together make a dirty run reproducible.
+    """
+    out = os.environ.get("CN_OUT")
+    if not out:
+        return None
+    d = Path(out) / "code"
+    try:
+        sub = json.loads((d / "code.json").read_text())
+    except (OSError, ValueError):
+        return None
+    try:
+        start = json.loads((d / "code_at_start.json").read_text())
+    except (OSError, ValueError):
+        start = {}
+    return {"dir": str(d), "head": sub.get("head"), "patch_sha256": sub.get("patch_sha256"),
+            "patch_stored": bool(sub.get("patch")), "complete": bool(sub.get("complete")),
+            "pushed": bool(sub.get("pushed_on")),
+            "same_at_start": start.get("same_as_submission")}
+
+
 def code_state() -> dict:
     """What code is executing now, checked at call time.
 
@@ -184,7 +252,7 @@ def code_state() -> dict:
     Without a marker ``git_head`` is None and a ``warning`` says why (never a guessed commit).
     """
     head = _git("rev-parse", "HEAD")
-    status = _git("status", "--porcelain", "--", "python", "core")
+    status = _git_status("python", "core")
     dirty = [ln[3:] for ln in (status or "").splitlines() if ln.strip()]
     tree, nfiles = _tree_sha256(PKG_DIR, (".py",))
     in_repo = (REPO_ROOT / ".git").exists() and PKG_DIR == (REPO_ROOT / "python" / "conatus")
@@ -204,8 +272,19 @@ def code_state() -> dict:
     }
     if exported is not None:
         state["exported_tree"] = exported
+    sub = _submission_code()
+    if sub is not None:
+        state["submission"] = sub
+    # reproducible = the executed code can be rebuilt from the remote: a clean pushed commit, or
+    # the submitted commit plus its complete stored diff, unchanged until the job started
+    state["code_reproducible"] = bool(state["code_matches_commit"] or (
+        sub is not None and sub["complete"] and sub["pushed"] and sub["head"] == head
+        and sub["same_at_start"] is True))
+    changed = changed_since_import()
+    if state["core"].get("changed_since_load"):
+        changed.append(f"compiled core {state['core'].get('module')}")
     if state["core"].get("stale_vs_sources"):
-        state["code_matches_commit"] = False
+        state["code_matches_commit"] = state["code_reproducible"] = False
         state["warning"] = (
             "compiled core differs from the core/ sources of this checkout (content hash recorded "
             "at build time): rebuild the core before trusting this run"
@@ -224,6 +303,15 @@ def code_state() -> dict:
     elif exported is not None:
         state["warning"] = (f"exported tree (no .git) based on {str(head)[:10]}: code matches that "
                             "commit plus the recorded overlay only if the tree was not edited")
+    if changed:
+        state["changed_since_import"] = changed
+        state["code_matches_commit"] = state["code_reproducible"] = False
+        state["warning"] = (
+            f"{len(changed)} source file(s) changed after this process imported conatus ("
+            + ", ".join(changed[:3]) + (", ..." if len(changed) > 3 else "") + "): the hashes and "
+            "the commit describe the files on disk, not the code that runs; restart the "
+            "interpreter before trusting this run" + (f" ({state['warning']})" if state.get("warning")
+                                                      else ""))
     return state
 
 
@@ -370,20 +458,22 @@ def numerics(run, tolerances: Mapping[str, float] | None = None,
                        for k, v in plan.params.items()},
             "method": _method(plan, bases),
         }
+        # the given fields' data and the user functions, from the canonical identity (0.1.1,
+        # lot A: two forcings f = 1 and f = 2 had the same record and the same cache key)
+        from ..io._identity import given_data, user_functions
+        data, und_d = given_data(plan)
+        funcs, und_f = user_functions(problem)
+        out["data"], out["functions"] = data, funcs
+        if und_d or und_f:
+            out["undeclared"] = und_d + und_f
     if solver is not None:
-        system = getattr(solver, "system", None)
-        out["time_stepping"] = {
-            "scheme": solver.scheme,
-            "dt": solver.dt,
-            "startup": getattr(solver, "startup", None),
-            "startup_substeps": getattr(solver, "startup_substeps", None),
-            "backend": getattr(solver, "backend", None),
-            "ordering": getattr(getattr(system, "host", system), "ordering", None),
-            "reduced_space": getattr(getattr(system, "host", system), "reduced", None),
-            "dtype": str(np.dtype(getattr(system, "dtype", np.float64))),
-            "iteration": getattr(solver, "iteration", None),
-            "t": getattr(solver, "t", None),
-        }
+        # every numerical choice that changes the numbers (review finding 22: time_parameter,
+        # bc_time, f_backend and the device pivoting were missing), read by the same function
+        # as the identity, plus the clock
+        from ..io._identity import stepping
+        out["time_stepping"] = {**stepping(solver),
+                                "iteration": getattr(solver, "iteration", None),
+                                "t": getattr(solver, "t", None)}
     out["tolerances"] = dict(tolerances) if tolerances else {}
     out["inner_product"] = None if inner_product is None else (
         inner_product.explain() if hasattr(inner_product, "explain") else repr(inner_product))
@@ -398,6 +488,9 @@ def record(run=None, *, seed: int | None = None, tolerances: Mapping[str, float]
     """Build the provenance record of ``run`` (Problem, Plan or IVPSolver, or None for a bare
     environment record). With ``out`` (a directory or a .json path) the record is written.
     ``require_clean=True`` raises if the executed code is not exactly a commit."""
+    if seed is not None:                     # audit inputs: a seed 1.5 was recorded as given
+        from ..errors import check_count
+        seed = check_count(seed, "seed", "provenance record()", minimum=0)
     now = _dt.datetime.now(_dt.UTC)
     code = code_state()
     if require_clean and not code["code_matches_commit"]:

@@ -51,7 +51,19 @@ function useRouteEffects() {
 function Header() {
   const [menu, setMenu] = useState(false);
   const { pathname } = useLocation();
-  useEffect(() => setMenu(false), [pathname]);
+  const moreRef = useRef<HTMLDetailsElement>(null);
+  // Every menu closes when the page changes (external review 0.1.0, finding 78: "More" stayed open
+  // over the new page); "More" also closes on a click outside it and on Escape.
+  useEffect(() => { setMenu(false); if (moreRef.current) moreRef.current.open = false; }, [pathname]);
+  useEffect(() => {
+    const close = (e: Event) => {
+      const d = moreRef.current;
+      if (d?.open && (e.type === "keydown" ? (e as KeyboardEvent).key === "Escape" : !d.contains(e.target as Node))) d.open = false;
+    };
+    document.addEventListener("click", close);
+    document.addEventListener("keydown", close);
+    return () => { document.removeEventListener("click", close); document.removeEventListener("keydown", close); };
+  }, []);
   const btn = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!menu) return;
@@ -74,7 +86,7 @@ function Header() {
               <li key={r.path}><NavLink to={r.path}>{r.nav ?? r.title}</NavLink></li>
             ))}
             <li className="nav-more">
-              <details>
+              <details ref={moreRef}>
                 <summary>More</summary>
                 <ul className="nav-more-list">
                   {more.map((r) => (<li key={r.path}><NavLink to={r.path}>{r.nav ?? r.title}</NavLink></li>))}

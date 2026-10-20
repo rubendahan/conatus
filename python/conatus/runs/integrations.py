@@ -11,6 +11,7 @@ import functools
 import hashlib
 import importlib
 import inspect
+import json
 import math
 import os
 import time
@@ -99,15 +100,34 @@ def ivp_run(solver: Any, nsteps: int, callback: Callable | None, every: int | No
     reg = _registry(o.get("root"))
     name = o.get("name") or solver.plan.problem.name or "ivp"
     parts = ivp_parts(solver, nsteps) if store_state else None
+    if parts is not None and series:
+        # the series a hit returns are those of the source run: their functions and cadence are
+        # part of the key (identity review: a hit with other series functions or another
+        # series_every returned the source run's series under this run's request)
+        from ..io._identity import Undeclared, callable_identity
+        try:
+            parts["series"] = {"every": int(series_every), "functions": {
+                str(k): callable_identity(f, f"series {k}") for k, f in sorted(series.items())}}
+        except Undeclared as why:
+            parts["undeclared"] = [*parts.get("undeclared", []), str(why)]
+    undeclared = (parts or {}).get("undeclared")
+    if undeclared:
+        parts = None             # no key: never a cache source, never a hit (review finding 1)
     kw = dict(tags=o.get("tags", ()), params=o.get("params"), parent=o.get("parent"),
               relation=o.get("relation"), status=o.get("status", "provisional"),
               telemetry=o.get("telemetry"), capacity=o.get("capacity", QUEUE_CAPACITY),
               notes=o.get("notes"))
     report = None
-    if cache:
+    if cache and undeclared:
+        why = "; ".join(undeclared)
+        report = {"enabled": True, "hit": False, "miss_reason": f"no cache key: {why}"}
+        warnings.warn(CacheReuseWarning(
+            f"conatus.runs: cache not used for {name}: {why} (a dependency without a content "
+            "hash could have changed since an earlier run); computing"), stacklevel=3)
+    elif cache:
         key, full = finish_key(parts, code_fingerprint())
         report = {"enabled": True, "hit": False, "key": key, "parts": describe_parts(full)}
-        src_id = _lookup(reg, key, report)
+        src_id = _lookup(reg, key, report, full)
         if src_id is not None:
             src = Run.load(reg, src_id)
             end = src.path / "state_end.npz"
@@ -117,7 +137,9 @@ def ivp_run(solver: Any, nsteps: int, callback: Callable | None, every: int | No
                 solver.load_checkpoint(end)
                 report.update(hit=True, reused_from=src_id,
                               reused=["end state (X, multistep history, t, iteration) from "
-                                      f"{end.name}", "results and series of the source run"],
+                                      f"{end.name}", "results (copied into this run)",
+                                      f"series and fields: read from run {src_id} through "
+                                      "this run (run.series(), run.load_field())"],
                               computed="nothing: 0 steps taken",
                               source_duration_s=src.rec.get("duration_s"),
                               load_s=round(time.perf_counter() - t0, 6))
@@ -142,8 +164,18 @@ def ivp_run(solver: Any, nsteps: int, callback: Callable | None, every: int | No
     return run
 
 
-def _lookup(reg: Registry, key: str, report: dict) -> str | None:
-    """Cache lookup that never fails the computation: an unreadable registry is a miss (reported)."""
+def _lookup(reg: Registry, key: str, report: dict, full: dict | None = None) -> str | None:
+    """Cache lookup that never fails the computation: an unreadable registry is a miss (reported).
+    No lookup when the package sources changed after import (``full["code"]``): the key would
+    name code that does not run (audit state)."""
+    changed = ((full or {}).get("code") or {}).get("changed_since_import")
+    if changed:
+        report["miss_reason"] = ("package sources changed after import (" + ", ".join(changed[:3])
+                                 + "): the code that runs is not the one the key names")
+        warnings.warn(CacheReuseWarning(
+            f"conatus.runs: cache not used: {report['miss_reason']}; computing (restart the "
+            "interpreter to use the cache)"), stacklevel=4)
+        return None
     try:
         src = reg.cache_lookup(key)
     except Exception as err:  # noqa: BLE001 -- a cache never fails the computation; reported
@@ -217,7 +249,16 @@ class Tracker:
         @functools.wraps(fn)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             return call_recorded(fn, args, kwargs, name=name, **opts)
+        wrapper.__conatus_tracked__ = fn            # what reproduce() calls (_untracked)
         return wrapper
+
+
+def _untracked(fn: Callable) -> Callable:
+    """The function a :func:`track` decorator wraps (with the user's own decorators, which
+    ``inspect.unwrap`` would strip: identity review)."""
+    while getattr(fn, "__conatus_tracked__", None) is not None:
+        fn = fn.__conatus_tracked__
+    return fn
 
 
 def track(name: str | None = None, *, tags: Iterable[str] = (), params: Mapping[str, Any] | None = None,
@@ -247,21 +288,33 @@ def call_recorded(fn: Callable, args: tuple, kwargs: dict, *, name: str, cache: 
     except (OSError, TypeError):
         src_sha = None
     inexact = [k for k, v in argsd.items() if not exact_hash(v)]
-    parts = None if (src_sha is None or inexact) else function_parts(target, src_sha, argsd)
+    # what the function reads besides its arguments: closure values, module globals, the user
+    # functions it calls (review finding 49: two closures of one factory shared a key)
+    from ..io._identity import Undeclared, callable_identity
+    try:
+        # ``fn`` as called, with the user's own decorators (their parameters are part of what
+        # is computed; ``raw`` names the target and gives the source)
+        deps, undeclared = callable_identity(fn, target), None
+    except Undeclared as why:
+        deps, undeclared = None, str(why)
+    parts = (None if (src_sha is None or inexact or undeclared)
+             else function_parts(target, src_sha, argsd, deps))
     reg = _registry(root)
     params = {**(run_kw.pop("params", None) or {}), **argsd}
     report = None
     if cache:
         if parts is None:
             why = ("source code unavailable" if src_sha is None
-                   else f"argument(s) {inexact} have no exact content hash")
+                   else f"argument(s) {inexact} have no exact content hash" if inexact
+                   else f"{undeclared} (a dependency without a content hash could have changed "
+                        "since an earlier call)")
             report = {"enabled": True, "hit": False, "miss_reason": f"no cache key: {why}"}
             warnings.warn(CacheReuseWarning(f"conatus.runs: cache not used for {target}: {why}; "
                                             "computing"), stacklevel=3)
         else:
             key, full = finish_key(parts, code_fingerprint())
             report = {"enabled": True, "hit": False, "key": key, "parts": describe_parts(full)}
-            src_id = _lookup(reg, key, report)
+            src_id = _lookup(reg, key, report, full)
             if src_id is not None:
                 src = Run.load(reg, src_id)
                 try:
@@ -270,7 +323,10 @@ def call_recorded(fn: Callable, args: tuple, kwargs: dict, *, name: str, cache: 
                     report["miss_reason"] = f"run {src_id}: return value unreadable ({err})"
                 else:
                     run = Run(reg, name, params=params, key_parts=parts, **run_kw)
-                    report.update(hit=True, reused_from=src_id, reused=["return value"],
+                    report.update(hit=True, reused_from=src_id,
+                                  reused=["return value", "results (copied into this run)",
+                                          f"series and fields: read from run {src_id} through "
+                                          "this run"],
                                   computed="nothing: the function was not called",
                                   source_duration_s=src.rec.get("duration_s"))
                     with run._lock:
@@ -288,7 +344,10 @@ def call_recorded(fn: Callable, args: tuple, kwargs: dict, *, name: str, cache: 
         if report is not None:
             run.rec["cache"] = report
     with run:
-        out = raw(*args, **kwargs)
+        # the function as decorated by the user: calling ``inspect.unwrap(fn)`` skipped the
+        # user's own decorators (``@track @scale(2) def g`` returned g(x), not 2 g(x); identity
+        # review)
+        out = fn(*args, **kwargs)
         _store_return(run, out, compression)
     return (out, run) if _with_run else out
 
@@ -305,6 +364,14 @@ def _scalar(v: Any) -> bool:
 def _store_return(run: Run, out: Any, compression: str | None) -> None:
     """Return value -> results (scalars) and fields (arrays); layout in ``rec['returns']``."""
     def one(key: str, v: Any) -> dict | None:
+        if isinstance(v, np.generic) and v.dtype.kind in "biufc":
+            # a NumPy number keeps its dtype (review finding 50: a cache hit returned another
+            # type): stored as a 0-d field, also indexed as a result. Numbers only: HDF5 has no
+            # type for np.str_ or np.datetime64, whose field was lost in the writer thread
+            # (identity review); np.str_ stays a string result
+            run.result(**{key: v})
+            run.save_field(key, np.asarray(v), compression=None)
+            return {"field": key, "scalar": True}
         if _scalar(v):
             run.result(**{key: v})
             return {"result": key}
@@ -343,7 +410,8 @@ def load_return(run: Run) -> Any:
     def one(item: dict) -> Any:
         if "result" in item:
             return from_jsonable(run.results[item["result"]])
-        return run.load_field(item["field"])
+        a = run.load_field(item["field"])
+        return a[()] if item.get("scalar") else a
     if kind == "none":
         return None
     if kind == "value":
@@ -471,6 +539,16 @@ def reproduce(run: Run, solver: Any = None, *, fn: Callable | None = None, recor
         if mod == "__main__":
             raise OptionError(f"reproduce({run.id}): {inputs['target']} was defined in a script",
                               fix="pass the function: run.reproduce(fn=my_function)")
+        problem = _untrusted_record(run)
+        if problem is not None:
+            raise OptionError(
+                f"reproduce({run.id}): the record names the function {inputs['target']!r} to "
+                f"import and call, but {problem}",
+                why="reproduce() imports the module and calls the function a run record names, "
+                    "with the recorded arguments: a record that another account can write could "
+                    "make it run any code (security)",
+                fix="pass the function yourself: run.reproduce(fn=my_function); or, if the record "
+                    "is yours, chmod go-w it and its directories")
         obj = importlib.import_module(mod)
         for part in qual.split("."):
             obj = getattr(obj, part)
@@ -479,35 +557,110 @@ def reproduce(run: Run, solver: Any = None, *, fn: Callable | None = None, recor
         raise UnsupportedError(f"reproduce({run.id}): some arguments were stored as summaries "
                                "(large arrays or objects) and cannot be replayed exactly")
     raw = inspect.unwrap(fn)
+    call = _untracked(fn)                        # the user's decorators kept, track's removed
     src_sha = hashlib.sha256(inspect.getsource(raw).encode()).hexdigest()
-    args = {k: from_jsonable(v) for k, v in inputs["args"].items()}
+    pos, kw = _call_args(raw, {k: from_jsonable(v) for k, v in inputs["args"].items()})
     if record:
         opts = {k: v for k, v in rec_opts.items() if k != "name"}
-        out, new = call_recorded(raw, (), args, name=run.name, _with_run=True, **opts)
+        out, new = call_recorded(call, pos, kw, name=run.name, _with_run=True, **opts)
     else:
-        out, new = raw(**args), None
+        out, new = call(*pos, **kw), None
     ref = load_return(run)
     same, maxd = _same(ref, out)
     details = {"source_changed": src_sha != inputs.get("source_sha256")}
     return ReproduceReport(run, new, same, maxd, code_same, code_diff, details)
 
 
+def _untrusted_record(run: Run) -> str | None:
+    """Why the record of ``run`` may not choose code to import and call, or None: ``run.json``,
+    its run directory and the registry's ``runs/`` directory must belong to this user and be
+    writable by nobody else (the rule of the Studio control files)."""
+    uid = getattr(os, "getuid", lambda: None)()
+    for p in (run.path / "run.json", run.path, run.path.parent):
+        try:
+            st = os.stat(p)
+        except OSError as err:
+            return f"{p} cannot be checked ({err})"
+        if uid is not None and st.st_uid != uid:
+            return f"{p} is owned by uid {st.st_uid}, not by you (uid {uid})"
+        if st.st_mode & 0o022:
+            return f"{p} is writable by group or others (mode {st.st_mode & 0o777:o})"
+    return None
+
+
+#: numerics keys a 0.1.0 record does not hold (0.1.1, lot A: the canonical identity added them)
+_ADDED_IN_011 = ("data", "functions", "undeclared", *(f"time_stepping.{k}" for k in (
+    "time_parameter", "bc_time", "f_backend", "complexify", "decouple", "pivot")))
+
+
+def _added_in_011(key: str) -> bool:
+    return any(key == k or key.startswith(k + ".") for k in _ADDED_IN_011)
+
+
+def _unrecorded_numerics(rec: Mapping[str, Any], d: Mapping[str, Any]) -> list[str]:
+    """The numerics keys of this solver that a record written before 0.1.1 (no ``identity``)
+    does not hold, when they are the only difference; [] otherwise (a newer record, or any
+    other difference: refused as before)."""
+    if rec.get("identity") is not None or d["changed"] or d["only_a"]:
+        return []
+    keys = list(d["only_b"])
+    if not keys or not all(_added_in_011(k) for k in keys):
+        return []
+    return sorted({next(k2 for k2 in _ADDED_IN_011 if k == k2 or k.startswith(k2 + "."))
+                   for k in keys})
+
+
+def _call_args(fn: Callable, argsd: Mapping[str, Any]) -> tuple[tuple, dict]:
+    """(positional, keyword) arguments rebuilding a call from its bound arguments by name
+    (``inspect.BoundArguments.arguments``): positional-only parameters and ``*args`` are passed
+    by position, ``**kwargs`` expanded (review finding 51: ``fn(**args)`` broke them)."""
+    P = inspect.Parameter  # noqa: N806
+    pos: list = []
+    kw: dict = {}
+    for name, p in inspect.signature(fn).parameters.items():
+        if name not in argsd:
+            continue
+        v = argsd[name]
+        if p.kind in (P.POSITIONAL_ONLY, P.POSITIONAL_OR_KEYWORD):
+            pos.append(v)
+        elif p.kind is P.VAR_POSITIONAL:
+            pos.extend(v)
+        elif p.kind is P.KEYWORD_ONLY:
+            kw[name] = v
+        else:
+            kw.update(v)
+    return tuple(pos), kw
+
+
 def _same(a: Any, b: Any) -> tuple[bool, float]:
-    """(bitwise equal, max abs difference) of two return values of the same layout."""
+    """(bitwise identical, max abs difference) of two return values of the same layout.
+    Bitwise means the bits (review finding 23): same type of container, same dtype and shape,
+    same bytes (``-0.0`` is not ``+0.0``; a NaN equals only the same NaN)."""
     if isinstance(a, dict) and isinstance(b, dict) and a.keys() == b.keys():
         pairs = [_same(a[k], b[k]) for k in a]
     elif isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)) and len(a) == len(b):
         pairs = [_same(x, y) for x, y in zip(a, b, strict=True)]
+        if type(a) is not type(b):
+            pairs.append((False, 0.0))
     else:
         try:
             x, y = np.asarray(a), np.asarray(b)
-            if x.shape != y.shape:
-                return False, math.inf
-            eq = bool(np.array_equal(x, y, equal_nan=x.dtype.kind in "fc"))
-            d = float(np.max(np.abs(x - y))) if x.size and x.dtype.kind in "biufc" else (0.0 if eq else math.inf)
-            return eq, d
         except (TypeError, ValueError):
-            return a == b, 0.0 if a == b else math.inf
+            return a == b and type(a) is type(b), 0.0 if a == b else math.inf
+        if x.shape != y.shape:
+            return False, math.inf
+        if x.dtype == object or y.dtype == object:
+            eq = type(a) is type(b) and bool(a == b)
+            return eq, 0.0 if eq else math.inf
+        eq = (x.dtype == y.dtype and type(a) is type(b)
+              and np.ascontiguousarray(x).tobytes() == np.ascontiguousarray(y).tobytes())
+        if x.size and x.dtype.kind in "biufc" and y.dtype.kind in "biufc":
+            with np.errstate(invalid="ignore"):
+                diff = np.abs(x.astype(np.result_type(x, y)) - y)
+            d = 0.0 if eq else float(np.max(np.where(np.isnan(x) & np.isnan(y), 0.0, diff)))
+        else:
+            d = 0.0 if eq else math.inf
+        return bool(eq), d
     return all(p[0] for p in pairs), max((p[1] for p in pairs), default=0.0)
 
 
@@ -532,6 +685,18 @@ def _reproduce_ivp(run: Run, solver: Any, record: bool, rec_opts: dict, code_sam
                               f"{str((run.rec.get('problem') or {}).get('hash'))[:12]}")
     d = diff_dicts(_clockless(run.rec.get("numerics") or {}),
                    _clockless(jsonable(provenance.numerics(solver))))
+    unrecorded = _unrecorded_numerics(run.rec, d)
+    if unrecorded:
+        # a record written before 0.1.1 lacks what the identity added (given data, user
+        # functions, six numerical choices): those cannot be compared, which is said, and the
+        # bitwise comparison of the whole end state stays the verdict (identity review)
+        from ..io._identity import IdentityWarning
+        warnings.warn(IdentityWarning(
+            f"reproduce({run.id}): the run was recorded before 0.1.1 and does not hold "
+            + ", ".join(unrecorded) + ": those were not compared with this solver; the end state "
+            "is still compared bit for bit"), stacklevel=3)
+        d = dict(d, only_b={k: v for k, v in d["only_b"].items()
+                            if not _added_in_011(k)})
     if d["changed"] or d["only_a"] or d["only_b"]:
         items = [f"{k}: {a} -> {b}" for k, (a, b) in d["changed"].items()] + \
                 [f"{k} missing now" for k in d["only_a"]] + [f"{k} new" for k in d["only_b"]]
@@ -541,13 +706,31 @@ def _reproduce_ivp(run: Run, solver: Any, record: bool, rec_opts: dict, code_sam
     solver.load_checkpoint(start)
     new = ivp_run(solver, inputs["nsteps"], None, None, record=rec_opts, cache=False) if record \
         else solver.run(inputs["nsteps"])
+    # the whole end state (review finding 24: X only was compared): X, every multistep history
+    # array and the clock, bit for bit
     with np.load(end) as z:
-        ref = z["X"]
-    X = _to_host(solver.X)
-    same = bool(np.array_equal(ref, X))
-    maxd = float(np.max(np.abs(ref - X))) if X.size else 0.0
-    return ReproduceReport(run, new, same, maxd, code_same, code_diff,
-                           {"steps": inputs["nsteps"], "compared": "end state X (all unknowns)"})
+        ref = {k: z[k] for k in z.files if k != "meta"}
+        ref_meta = json.loads(str(z["meta"]))
+    meta, arrays = solver._checkpoint_payload()
+    arrays = {k: _to_host(v) for k, v in arrays.items()}
+    differ, maxd = [], 0.0
+    for k in sorted(set(ref) | set(arrays)):
+        if k not in ref or k not in arrays:
+            differ.append(f"{k} ({'absent from the record' if k not in ref else 'absent now'})")
+            maxd = math.inf
+            continue
+        same_k, d = _same(ref[k], arrays[k])
+        if not same_k:
+            differ.append(k)
+        maxd = max(maxd, d)
+    for k in ("t", "iteration"):
+        if k in ref_meta and ref_meta[k] != meta[k]:
+            differ.append(f"{k} ({ref_meta[k]!r} recorded, {meta[k]!r} now)")
+    return ReproduceReport(run, new, not differ, maxd, code_same, code_diff,
+                           {"steps": inputs["nsteps"],
+                            "compared": "end state: X, multistep history (" + ", ".join(
+                                k for k in sorted(ref) if k != "X") + "), t, iteration",
+                            "differ": ", ".join(differ) if differ else "nothing"})
 
 
 # ------------------------------------------------------------------------------------ exports

@@ -100,7 +100,7 @@ print(tr.explain())                               # counts + one line per statem
 tr.problem                                        # an ordinary Conatus Problem
 solver = tr.ivp_solver(startup="lower_order")     # scheme and fixed dt from the script
 solver.run(tr.steps())                            # stop_sim_time / dt steps, no Python loop
-print(tr.to_script())                             # a readable Conatus script, report as comments
+print(tr.to_script())                             # a runnable program, report as comments
 ```
 
 In a notebook, `tr` displays the report as a colour-coded table. {doc}`../tutorials/14_from_dedalus`
@@ -127,6 +127,14 @@ Each statement gets one of four statuses:
 | **unsupported** | not translated, with the reason and what to write instead; everything that depends on it is reported as well |
 | **skipped** | output only: logging, plots, reading results after the solve |
 
+`tr.complete` is true only when a problem was translated with no line unsupported and none
+approximated. A time loop whose body changes the simulation (writes field data, calls a mutating
+method, stops on a condition) is unsupported: `solver.run(n)` would not do it. `**options` in a
+call are expanded, and a problem's own `namespace={...}` alone resolves the names of its equations,
+as in Dedalus. `tr.to_script()` is a runnable program: it translates the embedded script again,
+refuses to run if a line is unsupported, then runs the IVP or solves the LBVP (an EVP or NLBVP stops
+at the discretized plan: the group or the initial guess is your choice).
+
 ## The translated subset
 
 | Dedalus | Conatus | Note |
@@ -147,7 +155,7 @@ Each statement gets one of four statuses:
 | `CFL(...)`, `compute_timestep()` | — | **unsupported**: Conatus never changes `dt` by itself; give `dt`, `conatus.expert.CFL` reports the CFL step |
 | `f['g'] = ...`, `f['g'][i] += ...` with grids from `local_grids` | grid functions `tr.data`, used by `set_state` / `ncc` | NumPy/SciPy whitelist |
 | `fill_random`, `low_pass_filter`, `f['c'] = ...` | — | **unsupported**: Dedalus's random layout cannot be reproduced; write an explicit initial condition |
-| file handlers, `GlobalFlowProperty` | — | **unsupported**: use `conatus.runs` and `sim.output` |
+| file handlers, `GlobalFlowProperty` | — | **unsupported**: use `conatus.runs` and the Studio |
 | `solve_dense` / `solve_sparse(subproblems[i])` | `eigenvalues(plan, group)` | **approximated**: a Dedalus subproblem index is not a Conatus group; select the group by wavenumber |
 
 Scripts that build their problem inside a function (for example `rayleigh_benard_evp.py`) are

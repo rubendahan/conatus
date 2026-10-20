@@ -37,7 +37,7 @@ values given for one call, a symmetry subspace that hides symmetry-breaking inst
 m = 0 projection of curvilinear solvers, spurious tau modes of a shell, the order of the scheme
 with time-dependent boundary values, fallbacks and first-order modes of the right-hand side,
 eigenproblem checks that were skipped). `explain(full=True)` is
-the complete record, and is what `python -m conatus agent check` reports.
+the complete record.
 
 This is how "no silent substitution" is made checkable ({doc}`../principles`): if a choice is not
 in `explain(full=True)`, it is a bug. For a native model, the full text lists the term placement

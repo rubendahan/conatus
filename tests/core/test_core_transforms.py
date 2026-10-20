@@ -11,8 +11,6 @@ from conatus.ir import CartesianCoordinates, Chebyshev, ComplexFourier, RealFour
 from conatus.reference import transforms as REF
 from conatus.timestep import xp_transforms as XT
 
-rng = np.random.default_rng(1)
-
 
 def _bases():
     cs = CartesianCoordinates("x")
@@ -24,7 +22,7 @@ def _bases():
 
 @pytest.mark.parametrize("b", _bases(), ids=lambda b: f"{type(b).__name__}-{b.dealias}")
 @pytest.mark.parametrize("axis", [0, 1])
-def test_basis_transforms_match_reference(b, axis):
+def test_basis_transforms_match_reference(b, axis, rng):
     M = REF.grid_size(b)
     assert b.grid_size == M
     shape = [3, 3]
@@ -40,7 +38,7 @@ def test_basis_transforms_match_reference(b, axis):
     assert np.max(abs(XT.forward(np, XT.backward(np, c, b, axis), b, axis) - c)) < 1e-13
 
 
-def test_chebyshev_complex_rows():
+def test_chebyshev_complex_rows(rng):
     b = _bases()[1]
     f = rng.standard_normal((REF.grid_size(b), 4)) + 1j * rng.standard_normal((REF.grid_size(b), 4))
     assert np.max(abs(XT.forward(np, f, b) - REF.forward(f, b))) < 1e-13
@@ -48,7 +46,7 @@ def test_chebyshev_complex_rows():
     assert np.max(abs(XT.backward(np, c, b) - REF.backward(c, b))) < 1e-13
 
 
-def test_transforms_are_deterministic():
+def test_transforms_are_deterministic(rng):
     b = _bases()[0]
     f = rng.standard_normal((REF.grid_size(b), 7))
     assert np.array_equal(XT.forward(np, f, b), XT.forward(np, f, b))     # bitwise
@@ -60,7 +58,7 @@ def test_fourier_needs_even_size():
 
 
 @pytest.mark.parametrize("dealias", [1, 3 / 2])
-def test_realfourier_complex_data_keeps_imaginary_part(dealias):
+def test_realfourier_complex_data_keeps_imaginary_part(dealias, rng):
     """Complex data or coefficients on a RealFourier axis went through rfft/irfft and the
     imaginary part was lost (backward returned a real array) without a warning; Re and Im are now
     transformed separately, as the reference does."""
@@ -84,7 +82,7 @@ def _cupy_device():
 @pytest.mark.gpu
 @pytest.mark.skipif(not _cupy_device(), reason="no CUDA device")
 @pytest.mark.parametrize("dealias", [1, 3 / 2])
-def test_realfourier_complex_data_keeps_imaginary_part_gpu(dealias):
+def test_realfourier_complex_data_keeps_imaginary_part_gpu(dealias, rng):
     """GPU twin of the test above: the same branch of ``xp_transforms`` with CuPy (cuFFT)."""
     import cupy as cp
     b = RealFourier(CartesianCoordinates("x")["x"], 16, (0, 3), dealias=dealias)

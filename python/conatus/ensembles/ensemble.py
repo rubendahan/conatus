@@ -49,7 +49,17 @@ class Ensemble:
         """Parameter ensemble: member b uses ``solvers[member_of[b]]`` (default: one member per
         solver). The solvers must share the discretization, scheme, dt, start-up and backend."""
         self = cls.__new__(cls)
-        mo = np.arange(len(solvers)) if member_of is None else np.asarray(member_of, int)
+        if member_of is None:
+            mo = np.arange(len(solvers))
+        else:
+            raw = np.asarray(member_of)
+            mo = raw.astype(int)
+            # indices are never truncated (finding 66: 1.7 became 1)
+            if raw.dtype == bool or not np.array_equal(mo, raw) or raw.ndim != 1 \
+                    or (mo.size and (mo.min() < 0 or mo.max() >= len(solvers))):
+                raise OptionError(f"Ensemble.from_solvers: member_of={member_of!r} must be a 1-D "
+                                  f"sequence of integer indices in [0, {len(solvers)})",
+                                  fix="member_of=[0, 0, 1, 1], for example")
         self._setup(list(solvers), mo, rhs)
         return self
 
@@ -181,8 +191,9 @@ class Ensemble:
 
     # ------------------------------------------------------------------ output
     def states(self) -> np.ndarray:
-        """Host copy of the member states (B, n)."""
-        return self.X if self.xp is np else self.xp.asnumpy(self.X)
+        """Host copy of the member states (B, n): a copy on every backend (finding 68: on NumPy the live state array was returned, so writing to it changed the
+        ensemble)."""
+        return self.X.copy() if self.xp is np else self.xp.asnumpy(self.X)
 
     def explain(self) -> str:
         st = ("" if not self.order else f", startup={self.startup}"

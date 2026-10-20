@@ -111,20 +111,38 @@ DEFAULT_PATTERN = "checkpoint_*.h5"
 _NPZ_PATTERN = "checkpoint_*.npz"
 
 
-def checkpoint_iteration(p: Path) -> int | None:
-    """The iteration a checkpoint file holds, read from the file (HDF5 attribute or the ``meta``
-    of a ``.npz``); None for an unreadable or foreign file and for an unfinished ``.part``."""
+def checkpoint_meta(p: Path) -> dict | None:
+    """The ``meta`` record of a checkpoint file (either format), or None when the file is not a
+    complete Conatus checkpoint: an unfinished ``.part``, an unreadable file, an HDF5 file of
+    another format (an analysis file, a foreign file with an ``iteration`` attribute), a ``.npz``
+    without the state ``X`` (review finding 56: any file with an ``iteration`` was a candidate)."""
     if ".part" in p.name:
         return None
+    import json
     try:
         if p.suffix == ".npz":
-            import json
             with np.load(p) as d:
-                return int(json.loads(str(d["meta"]))["iteration"])
-        with open_h5(p, "r") as f:
-            return int(f.attrs["iteration"])
+                if "X" not in d.files or "meta" not in d.files:
+                    return None
+                meta = json.loads(str(d["meta"]))
+        else:
+            with open_h5(p, "r") as f:
+                fmt = f.attrs.get("format")
+                fmt = fmt.decode() if isinstance(fmt, bytes) else fmt
+                if fmt != FORMAT or "state/X" not in f:
+                    return None
+                meta = read_json_attr(f, "meta")
+        int(meta["iteration"])
+        return meta
     except (OSError, KeyError, ValueError, TypeError):    # unreadable or foreign file: skipped
         return None
+
+
+def checkpoint_iteration(p: Path) -> int | None:
+    """The iteration a checkpoint file holds, read from the file (HDF5 ``meta`` or the ``meta``
+    of a ``.npz``); None for a file that is not a complete checkpoint (:func:`checkpoint_meta`)."""
+    meta = checkpoint_meta(p)
+    return None if meta is None else int(meta["iteration"])
 
 
 def _candidates(d: Path, pattern: str) -> list[Path]:
@@ -185,7 +203,8 @@ class CheckpointSeries:
         self.solver, self.directory = solver, Path(directory)
         self.every = positive(every, "checkpoints()", "every")
         self.keep = positive(keep, "checkpoints()", "keep")
-        self.grids = bool(grids)
+        from ..errors import check_flag            # grids="no" was read as True (review, inputs)
+        self.grids = check_flag(grids, "grids", "checkpoints()")
         self.directory.mkdir(parents=True, exist_ok=True)
         self._prov = provenance(solver)                # once: hashing the code tree per write
         self.written: list[Path] = []                  # would cost more than the write
@@ -196,40 +215,83 @@ class CheckpointSeries:
         with the same names, ``cn.io.latest`` could then pick a file of the other run, and ``keep``
         never applied to the files of the previous job). Allowed only when this run continues
         from a checkpoint of this directory: its files up to the restart iteration are adopted
-        (``keep`` applies to them); any later file, or any file of another run, is refused."""
-        self._adopted = True
+        (``keep`` applies to them); any later file, or any file of another run, is refused.
+
+        Transactional (review findings 8 and 57): every file is validated before anything is
+        adopted, and the series is marked adopted only once all of them passed; a refusal leaves
+        the directory and the series as they were, so a second ``write()`` is refused again (it
+        used to bypass the guard and overwrite the other run's file)."""
         found = []
         for p in _candidates(self.directory, DEFAULT_PATTERN):   # .h5 and .npz (latest finds both)
             if p in self.written:
                 continue
-            it = checkpoint_iteration(p)
-            if it is None:                             # unreadable or foreign: never deleted,
+            meta = checkpoint_meta(p)
+            if meta is None:                           # unreadable or foreign: never deleted,
                 continue                               # never chosen by latest() either
-            found.append((it, p))
+            found.append((int(meta["iteration"]), p, meta))
         if not found:
+            self._adopted = True
             return
         src = getattr(self.solver, "_restart_path", None)
         here = src is not None and Path(src).resolve().parent == self.directory.resolve()
         if not here:
             raise OptionError(
                 f"checkpoints({str(self.directory)!r}): the directory already holds "
-                f"{len(found)} checkpoint(s) (iterations {', '.join(str(i) for i, _ in found)})",
+                f"{len(found)} checkpoint(s) (iterations {', '.join(str(i) for i, _, _ in found)})",
                 why="they belong to another run (this one did not restart from them): writing "
                     "here would replace some and let cn.io.latest pick the others",
                 fix=f"sim.restart(cn.io.latest({str(self.directory)!r})) to continue that run, "
                     "or an empty directory", doc=DOC)
         it0 = int(self.solver._restart_iteration)
-        later = [p.name for i, p in found if i > it0]
+        later = [p.name for i, p, _ in found if i > it0]
         if later:
             raise OptionError(
                 f"checkpoints({str(self.directory)!r}): restarted from iteration {it0} but the "
                 f"directory holds later checkpoints ({', '.join(later)})",
                 why="they would be replaced by this run, or chosen by cn.io.latest instead of it",
                 fix="restart from cn.io.latest(directory), or move those files away", doc=DOC)
-        self.written = [p for _, p in sorted(found)] + self.written
+        # every adopted file must be a state of the chain this run continues: the identity of
+        # the checkpoint it restarted from (model, layout, equations, parameters, given data)
+        foreign = self._foreign(src, found)
+        if foreign:
+            raise OptionError(
+                f"checkpoints({str(self.directory)!r}): the directory holds checkpoint(s) of "
+                f"another run: " + "; ".join(foreign),
+                why="adopting them would let keep= delete them, or cn.io.latest pick them, as if "
+                    "they were states of this run",
+                fix="move those files away (or write this run's checkpoints to another "
+                    "directory)", doc=DOC)
+        self.written = [p for _, p, _ in sorted(found, key=lambda x: (x[0], str(x[1])))] \
+            + self.written
+        self._adopted = True
+
+    @staticmethod
+    def _foreign(src: Path, found: list) -> list[str]:
+        """Files of ``found`` whose identity differs from the restart file ``src``'s (texts).
+        When the chain changed something deliberately (``restart_changes``), only what can
+        never change in a chain is compared: model, resolution and geometry."""
+        from ._identity import _differences
+        ref = checkpoint_meta(Path(src)) or {}
+        ref_id = ref.get("identity")
+        if ref_id is None:
+            return []                                  # a checkpoint older than the record
+        keys = ("model", "resolution", "geometry") if ref.get("restart_changes") else None
+        out = []
+        for _it, p, meta in found:
+            ident = meta.get("identity")
+            if ident is None:
+                if meta.get("problem") not in (None, ref.get("problem")):
+                    out.append(f"{p.name}: problem {meta.get('problem')!r}")
+                continue
+            diffs = [t for k, c, t in _differences(ident, ref_id, there=f"in {p.name}")
+                     if keys is None or c in keys]
+            if diffs:
+                out.append(f"{p.name}: " + ", ".join(diffs))
+        return out
 
     def write(self) -> Path:
-        """Write a checkpoint of the current state now, then delete beyond the ``keep`` newest."""
+        """Write a checkpoint of the current state now, then delete beyond the ``keep`` newest.
+        The files already in the directory are validated first (:meth:`_adopt`)."""
         if not getattr(self, "_adopted", False):
             self._adopt()
         if getattr(self.solver, "_finite_every", 0):     # never a NaN checkpoint

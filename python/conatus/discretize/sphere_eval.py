@@ -898,7 +898,12 @@ class SphereEvaluator:
         if isinstance(x, E.UnaryFunction):
             g = self._grid(self._ev(x.args[0], coeffs, params))
             if x.func not in ("exp", "log", "sin", "cos", "tanh", "sqrt", "abs", "sign"):
-                raise KeyError(x.func)
+                # a user function (m.function / pointwise) as on the disk and in Cartesian boxes
+                # (review finding 34: KeyError on the sphere)
+                if not E.is_user_function(x.func):
+                    raise KeyError(x.func)
+                xp = array_module(g.g)
+                return _G(xp.asarray(x.numpy_func(self._real_scalar(g.g, x))), x.domain, 0)
             f = getattr(array_module(g.g), x.func)     # numpy.exp or cupy.exp, ...
             return _G(f(self._real_scalar(g.g, x)), x.domain, 0)
         if isinstance(x, E.Component):

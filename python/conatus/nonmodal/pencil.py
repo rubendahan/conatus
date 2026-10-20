@@ -15,6 +15,16 @@ __all__ = ["reduce_pencil"]
 def reduce_pencil(M: np.ndarray, L: np.ndarray, cols: np.ndarray, F: np.ndarray, *,
                   infinite_tol: float):
     """(Ã, to_state, n_infinite, gap, cond R_e): see ``statespace.state_space``."""
+    import math
+    import numbers
+    # a finite number (review of the inputs audit: text was a bare TypeError of the
+    # comparison, True was read as 1)
+    if isinstance(infinite_tol, (bool, np.bool_)) or not isinstance(infinite_tol, numbers.Real) \
+            or not math.isfinite(float(infinite_tol)):
+        raise OptionError(f"infinite_tol={infinite_tol!r} must be a finite number > 0",
+                          fix="infinite_tol=1e-10, for example (it decides the finite/infinite "
+                              "split of the QZ pairs)")
+    infinite_tol = float(infinite_tol)
     if not infinite_tol > 0:
         raise OptionError("infinite_tol must be > 0 (mandatory: it decides the finite/infinite "
                           "split of the QZ pairs)")

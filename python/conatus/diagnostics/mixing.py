@@ -1,6 +1,6 @@
 """Mixing diagnostics (read-only, NumPy or CuPy): scalar variance, mix-norms, background and
 available potential energy by sorting, mixing rate and efficiency.
-Spec: §Mixing.
+
 
 * **Variance** ``<c^2> - <c>^2`` with the grid quadrature.
 * **Mix-norm** (Mathew, Mezić & Petzold 2005, Physica D 211, 23): the negative Sobolev norm

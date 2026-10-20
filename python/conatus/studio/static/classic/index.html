@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conatus Studio</title>
+<style>
+:root {
+  --bg:#f4f5f7; --panel:#ffffff; --ink:#15191f; --muted:#5d6673; --rule:#dde1e6;
+  --accent:#1f5f99; --ok:#2b7a4b; --warn:#a2640f; --bad:#b3322b; --grid:#e6e9ed;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#0f1318; --panel:#171c23; --ink:#e3e8ee; --muted:#95a0ad; --rule:#27303a;
+  --accent:#6fb0ea; --ok:#62c28b; --warn:#e3a94d; --bad:#ef7a70; --grid:#222a33; } }
+:root[data-theme="dark"] { --bg:#0f1318; --panel:#171c23; --ink:#e3e8ee; --muted:#95a0ad; --rule:#27303a;
+  --accent:#6fb0ea; --ok:#62c28b; --warn:#e3a94d; --bad:#ef7a70; --grid:#222a33; }
+* { box-sizing: border-box; }
+html, body { overflow-x:hidden; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 var(--sans); }
+header { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:10px 16px; border-bottom:1px solid var(--rule);
+  background:var(--panel); position:sticky; top:0; z-index:2; }
+header h1 { font-size:16px; margin:0; letter-spacing:.02em; }
+.pill { font:12px var(--mono); padding:2px 8px; border-radius:10px; border:1px solid var(--rule); }
+.pill.ok { color:var(--ok); border-color:var(--ok); } .pill.bad { color:var(--bad); border-color:var(--bad); }
+.pill.warn { color:var(--warn); border-color:var(--warn); }
+.muted { color:var(--muted); } .mono { font-family:var(--mono); font-size:12px; }
+.spacer { flex:1; }
+#spool { overflow-wrap:anywhere; min-width:0; }
+button { font:13px var(--sans); color:var(--ink); background:var(--panel); border:1px solid var(--rule);
+  border-radius:6px; padding:5px 10px; cursor:pointer; }
+button:hover { border-color:var(--accent); } button:focus-visible { outline:2px solid var(--accent); }
+button.danger { color:var(--bad); border-color:var(--bad); }
+main { display:grid; grid-template-columns: 290px minmax(0, 1fr); gap:16px; padding:16px; }
+@media (max-width: 860px) { main { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {                     /* phone: bigger touch targets, compact lists */
+  button { padding:9px 12px; font-size:14px; }
+  #runs { max-height:40vh; overflow-y:auto; }
+  #spool { flex-basis:100%; order:10; }
+}
+.panel { background:var(--panel); border:1px solid var(--rule); border-radius:8px; padding:12px 14px; }
+.panel h2 { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0 0 8px; }
+#runs { display:flex; flex-direction:column; gap:6px; }
+.run { border:1px solid var(--rule); border-radius:6px; padding:8px 10px; cursor:pointer; }
+.run.sel { border-color:var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.run .id { font:12px var(--mono); word-break:break-all; }
+.dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+.content { display:flex; flex-direction:column; gap:16px; min-width:0; }
+.charts { display:grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap:12px; }
+.chart { border:1px solid var(--rule); border-radius:6px; padding:6px 8px; min-width:0; }
+.chart .t { display:flex; flex-wrap:wrap; justify-content:space-between; gap:0 8px; font:12px var(--mono);
+  color:var(--muted); overflow-wrap:anywhere; }
+canvas { width:100%; display:block; }
+.frames { display:grid; grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap:12px; }
+.panel { min-width:0; } .tablewrap { overflow-x:auto; }   /* wide tables scroll inside, never the page */
+.kv span { overflow-wrap:anywhere; min-width:0; }
+.log { font:12px var(--mono); max-height:260px; overflow:auto; white-space:pre-wrap; }
+.log .warning { color:var(--warn); } .log .error { color:var(--bad); }
+table { border-collapse:collapse; width:100%; font:12px var(--mono); }
+td, th { text-align:left; padding:4px 8px; border-bottom:1px solid var(--rule); }
+.row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+input[type=text] { font:12px var(--mono); padding:5px 8px; border:1px solid var(--rule); border-radius:6px;
+  background:var(--bg); color:var(--ink); flex:1 1 200px; min-width:0; }
+.kv { display:grid; grid-template-columns: max-content 1fr; gap:2px 12px; font:12px var(--mono); }
+.empty { color:var(--muted); padding:20px 0; }
+/* S2: categorical series colours (fixed order, never cycled; validated palette, light / dark) */
+:root { --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; } }
+:root[data-theme="dark"] { --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; }
+.run .cmp { float:right; font-size:12px; }
+.legend { display:flex; flex-wrap:wrap; gap:4px 14px; font:12px var(--mono); margin:4px 0; }
+.legend i { display:inline-block; width:14px; height:3px; border-radius:2px; vertical-align:middle; margin-right:6px; }
+.chartwrap { position:relative; }
+.tip { position:absolute; pointer-events:none; background:var(--panel); border:1px solid var(--rule);
+  border-radius:6px; padding:4px 8px; font:12px var(--mono); white-space:nowrap; z-index:1; }
+.fields { display:grid; grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr)); gap:8px 12px; }
+.fields label { display:flex; flex-direction:column; gap:2px; font-size:12px; color:var(--muted); min-width:0; }
+.fields input, .fields select, select.in { font:13px var(--mono); padding:5px 8px; border:1px solid var(--rule);
+  border-radius:6px; background:var(--bg); color:var(--ink); min-width:0; width:100%; }
+.fields label.changed input, .fields label.changed select { border-color:var(--warn); }
+pre.code { font:12px var(--mono); background:var(--bg); border:1px solid var(--rule); border-radius:6px;
+  padding:8px; max-height:320px; overflow:auto; white-space:pre; margin:6px 0; }
+.note { font-size:12px; color:var(--muted); margin-top:6px; }
+.warnbox { font-size:12px; color:var(--warn); margin-top:6px; }
+button.primary { color:#fff; background:var(--accent); border-color:var(--accent); }
+button:disabled { opacity:.5; cursor:not-allowed; }
+tr.clickable { cursor:pointer; } tr.clickable:hover td { background:var(--bg); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conatus Studio</h1>
+  <span id="conn" class="pill bad">disconnected</span>
+  <span id="spool" class="muted mono"></span>
+  <span class="spacer"></span>
+  <label class="muted"><input type="checkbox" id="xiter"> x = iteration</label>
+  <button id="newjob" title="Prepare a new run from an example (S2)">New job</button>
+  <button id="regbtn" title="Run registry (conatus.runs): recorded runs, filter, compare">Registry</button>
+  <span id="who" class="muted mono" hidden></span>
+  <button id="logout" hidden>Sign out</button>
+  <button id="theme" title="Toggle theme">Theme</button>
+</header>
+<main>
+  <aside class="panel">
+    <h2>Runs</h2>
+    <div id="runs"><div class="empty">No run in the spool yet.</div></div>
+  </aside>
+  <section class="content">
+    <div class="panel" id="runhead"><div class="empty">Select a run.</div></div>
+    <div class="panel" id="launchPanel" hidden></div>
+    <div class="panel" id="comparePanel" hidden><h2>Compare runs</h2><div id="compareBody"></div></div>
+    <div class="panel" id="registryPanel" hidden><h2>Run registry</h2><div id="registryBody"></div></div>
+    <div class="panel"><h2>Scalars</h2><div class="charts" id="charts"></div></div>
+    <div class="panel" id="newtonPanel" hidden><h2>Newton–Krylov</h2><div class="charts" id="newtonCharts"></div></div>
+    <div class="panel"><h2>Fields (lossy view)</h2><div class="frames" id="frames"></div></div>
+    <div class="panel" id="view3dPanel" hidden><h2>3D view (lossy: strided, 8-bit)</h2><div id="view3d"></div></div>
+    <div class="panel" id="mixPanel" hidden><h2>Mixing</h2><div class="charts" id="mixCharts"></div></div>
+    <div class="panel"><h2>Logs and events</h2><div class="log" id="logs"></div></div>
+    <div class="panel"><h2>Jobs submitted from the Studio</h2><div id="jobs" class="muted">—</div></div>
+    <div class="panel"><h2>Slurm</h2><div id="slurm" class="muted">—</div></div>
+  </section>
+</main>
+<script src="view3d.js"></script>
+<script>
+"use strict";
+// ---------------------------------------------------------------- state
+const S = { runs: {}, sel: null, slurm: null, spool: "", relays: {}, cmp: [], seek: {}, jobs: [], catalog: null };
+const MAXPTS = 20000;
+function run(id) {
+  if (!S.runs[id]) S.runs[id] = { id, header: null, status: null, scalars: [], newton: [], logs: [],
+                                  events: [], frames: {}, last_wall: 0 };
+  return S.runs[id];
+}
+function ingest(r) {
+  const R = run(r.run_id);
+  R.last_wall = Math.max(R.last_wall, r.wall || 0);
+  switch (r.kind) {
+    case "header": R.header = r; break;
+    case "scalars": R.scalars.push(r); if (R.scalars.length > MAXPTS) R.scalars.shift(); break;
+    case "newton": R.newton.push(r); break;
+    case "log": R.logs.push(r); if (R.logs.length > 2000) R.logs.shift(); break;
+    case "event": R.events.push(r); if (R.events.length > 2000) R.events.shift();
+      // "seek a solution near here": the checkpoint we asked for has arrived -> open the Newton form
+      if (r.name === "checkpoint_written" && S.seek[r.run_id] && r.wall >= S.seek[r.run_id] - 5) {
+        delete S.seek[r.run_id]; openNewton(r.run_id, r); }
+      break;
+    case "status": R.status = r; break;
+    case "frame": case "frame3d": case "points3d": case "vec2d": R.frames[r.name] = r; break;
+  }
+}
+// ---------------------------------------------------------------- socket
+let ws, dirty = true;
+function connect() {
+  ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws");
+  ws.onopen = () => setConn(true);
+  ws.onclose = async () => { setConn(false);
+    try { const r = await fetch("/api/runs"); if (r.status === 401) { location.href = "/login"; return; } }
+    catch (e) { /* server unreachable: keep retrying */ }
+    setTimeout(connect, 2000); };
+  ws.onmessage = (ev) => {
+    const m = JSON.parse(ev.data);
+    if (m.type === "snapshot") {
+      S.runs = {}; S.spool = m.spool; S.slurm = m.slurm; S.relays = m.relays || {}; setMode(m);
+      for (const [id, snap] of Object.entries(m.runs)) {
+        const R = run(id); const sm = snap.summary;
+        R.header = sm.header; R.status = sm.status; R.last_wall = sm.last_wall;
+        R.scalars = snap.scalars; R.newton = snap.newton; R.logs = snap.logs; R.events = snap.events;
+        R.frames = snap.frames;
+      }
+      if (!S.sel || !S.runs[S.sel]) S.sel = latestRun();
+    } else if (m.type === "items") { m.items.forEach(ingest); if (!S.sel) S.sel = latestRun(); }
+    else if (m.type === "slurm") S.slurm = m.slurm;
+    else if (m.type === "job_submitted") { addNote(`job submitted: ${m.job.run_id} (Slurm ${m.job.jobid})`); loadJobs(); }
+    else if (m.type === "relays") S.relays = m.relays, S.spool = "hub · relays: " + (Object.entries(m.relays)
+      .map(([n, v]) => `${n} (${v.connected ? "up" : "down"})`).join(", ") || "none yet");
+    else if (m.type === "control_sent") addNote(`command sent: ${m.line.cmd} (seq ${m.line.seq})`);
+    dirty = true;
+  };
+}
+// hub mode (remote access): who is signed in, sign-out; the local server sends no mode
+function setMode(m) {
+  S.hub = m.mode === "hub";
+  const who = document.getElementById("who"), out = document.getElementById("logout");
+  who.hidden = out.hidden = !S.hub; if (S.hub) who.textContent = m.user || "";
+}
+function setConn(ok) { const c = document.getElementById("conn");
+  c.textContent = ok ? "live" : "disconnected"; c.className = "pill " + (ok ? "ok" : "bad"); }
+function latestRun() { let best = null;
+  for (const R of Object.values(S.runs)) if (!best || R.last_wall > best.last_wall) best = R;
+  return best ? best.id : null; }
+let notes = [];
+function addNote(t) { notes.push({ wall: Date.now() / 1000, message: t, level: "info" }); dirty = true; }
+// ---------------------------------------------------------------- helpers
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt = (v) => typeof v !== "number" ? String(v) :
+  (v === 0 ? "0" : (Math.abs(v) >= 1e4 || Math.abs(v) < 1e-3) ? v.toExponential(3) : v.toPrecision(5));
+function runState(R) {
+  const age = Date.now() / 1000 - R.last_wall;
+  if (R.status && R.status.final) return ["finished", "var(--muted)"];
+  if (R.status && R.status.paused) return ["paused", "var(--warn)"];
+  if (age < 15) return ["live", "var(--ok)"];
+  return [`idle ${Math.round(age)} s`, "var(--warn)"];
+}
+// HTML text of a value: every telemetry or server value interpolated into innerHTML goes through
+// esc() or fmtH() (a run's header, status or frame fields are data, not markup).
+const fmtH = (v) => esc(fmt(v));
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+// ---------------------------------------------------------------- chart (canvas, one scale)
+function lineChart(canvas, xs, ys, { logy = false, color }) {
+  const dpr = window.devicePixelRatio || 1, W = canvas.clientWidth, H = 150;
+  canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.height = H + "px";
+  const g = canvas.getContext("2d"); g.scale(dpr, dpr); g.clearRect(0, 0, W, H);
+  const P = { l: 58, r: 8, t: 8, b: 22 };
+  const pts = [];
+  for (let i = 0; i < xs.length; i++) { const y = ys[i];
+    if (typeof y === "number" && isFinite(y) && (!logy || y > 0)) pts.push([xs[i], logy ? Math.log10(y) : y]); }
+  g.font = "11px " + css("--mono"); g.fillStyle = css("--muted");
+  if (pts.length < 1) { g.fillText("no finite values", P.l, H / 2); return; }
+  let x0 = Math.min(...pts.map(p => p[0])), x1 = Math.max(...pts.map(p => p[0]));
+  let y0 = Math.min(...pts.map(p => p[1])), y1 = Math.max(...pts.map(p => p[1]));
+  if (x1 === x0) x1 = x0 + 1; if (y1 === y0) { y1 += 0.5; y0 -= 0.5; }
+  const pad = 0.05 * (y1 - y0); y0 -= pad; y1 += pad;
+  const X = x => P.l + (x - x0) / (x1 - x0) * (W - P.l - P.r);
+  const Y = y => H - P.b - (y - y0) / (y1 - y0) * (H - P.t - P.b);
+  g.strokeStyle = css("--grid"); g.lineWidth = 1;
+  for (let k = 0; k <= 4; k++) { const yy = y0 + k * (y1 - y0) / 4; g.beginPath(); g.moveTo(P.l, Y(yy));
+    g.lineTo(W - P.r, Y(yy)); g.stroke(); g.fillText(logy ? "1e" + yy.toFixed(1) : fmt(yy), 4, Y(yy) + 4); }
+  g.fillText(fmt(x0), P.l, H - 6); const lx = fmt(x1); g.fillText(lx, W - P.r - g.measureText(lx).width, H - 6);
+  g.strokeStyle = color || css("--accent"); g.lineWidth = 1.6; g.beginPath();
+  pts.forEach((p, i) => i ? g.lineTo(X(p[0]), Y(p[1])) : g.moveTo(X(p[0]), Y(p[1]))); g.stroke();
+  const last = pts[pts.length - 1]; g.fillStyle = color || css("--accent");
+  g.beginPath(); g.arc(X(last[0]), Y(last[1]), 3, 0, 7); g.fill();
+}
+// ---------------------------------------------------------------- frames (8-bit, declared lossy)
+const CMAP = [[48,18,59],[70,107,227],[40,187,236],[50,241,152],[164,252,60],[237,208,58],[251,128,34],[210,48,5],[122,4,3]];
+function cmap(t) { const x = Math.max(0, Math.min(1, t)) * (CMAP.length - 1), i = Math.min(CMAP.length - 2, Math.floor(x)),
+  f = x - i, a = CMAP[i], b = CMAP[i + 1]; return [0,1,2].map(k => Math.round(a[k] + f * (b[k] - a[k]))); }
+function drawFrame(canvas, fr) {
+  const [nx, ny] = fr.shape, raw = atob(fr.data);
+  const img = new ImageData(nx, ny);            // x horizontal, second axis vertical (bottom = first)
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+    const q = raw.charCodeAt(i * ny + j) / 255, [r, g, b] = cmap(q), p = 4 * ((ny - 1 - j) * nx + i);
+    img.data[p] = r; img.data[p + 1] = g; img.data[p + 2] = b; img.data[p + 3] = 255; }
+  const off = document.createElement("canvas"); off.width = nx; off.height = ny;
+  off.getContext("2d").putImageData(img, 0, 0);
+  const W = canvas.clientWidth, H = Math.max(80, Math.min(360, Math.round(W * ny / nx))), dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.height = H + "px";
+  const g = canvas.getContext("2d"); g.imageSmoothingEnabled = true; g.drawImage(off, 0, 0, W * dpr, H * dpr);
+}
+// ---------------------------------------------------------------- render
+function render() {
+  if (!dirty) return; dirty = false;
+  document.getElementById("spool").textContent = S.spool ? "spool " + S.spool : "";
+  const ids = Object.keys(S.runs).sort((a, b) => S.runs[b].last_wall - S.runs[a].last_wall);
+  const box = document.getElementById("runs");
+  box.innerHTML = ids.length ? "" : '<div class="empty">No run in the spool yet.</div>';
+  for (const id of ids) {
+    const R = S.runs[id], [st, col] = runState(R), last = R.scalars[R.scalars.length - 1] || {};
+    const drop = R.status ? `${esc(R.status.dropped_records || 0)} rec / ${esc(R.status.dropped_frames || 0)} fr dropped` : "";
+    const d = document.createElement("div"); d.className = "run" + (id === S.sel ? " sel" : "");
+    const ci = S.cmp.indexOf(id);
+    d.innerHTML = `<label class="cmp muted" title="compare on one curve"><input type="checkbox" ${ci >= 0 ? "checked" : ""}>
+      ${ci >= 0 ? `<i style="display:inline-block;width:10px;height:3px;background:var(--s${ci + 1})"></i>` : "cmp"}</label>
+      <div class="id"><span class="dot" style="background:${col}"></span>${esc(id)}</div>
+      <div class="muted mono">${st} · t=${fmtH(last.t ?? "–")} · it ${esc(last.iteration ?? "–")}</div>
+      <div class="muted mono">${drop}</div>`;
+    d.onclick = () => { S.sel = id; dirty = true; render(); };
+    const cb = d.querySelector(".cmp input");
+    cb.onclick = (ev) => ev.stopPropagation();
+    cb.onchange = () => toggleCompare(id, cb.checked);
+    box.appendChild(d);
+  }
+  const R = S.sel ? S.runs[S.sel] : null;
+  renderHead(R); renderCharts(R); renderNewton(R); renderFrames(R); renderLogs(R); renderSlurm();
+  if (window.View3D) View3D.update(R);          // 3D view, LIC, mixing panel (view3d.js)
+}
+function renderHead(R) {
+  const el = document.getElementById("runhead");
+  if (!R) { el.innerHTML = '<div class="empty">Select a run.</div>'; return; }
+  const h = R.header || {}, s = R.status || {}, set = h.settings || {};
+  // the head is rebuilt at each refresh: keep what the user is typing in the fork box
+  const old = document.getElementById("forkp");
+  const forkVal = old ? old.value : "", forkFocus = old && document.activeElement === old;
+  el.innerHTML = `<h2>Run</h2><div class="kv">
+    <span class="muted">run</span><span>${esc(R.id)}</span>
+    <span class="muted">host / job</span><span>${esc(h.host || "?")} · ${esc(h.slurm_job || "no Slurm job")}</span>
+    <span class="muted">telemetry</span><span>queue ${esc(set.capacity ?? "?")}, frames ≥ ${esc(set.frame_interval ?? "?")} s, ≤ ${esc(set.max_px ?? "?")} px (8-bit)</span>
+    <span class="muted">written / dropped</span><span>${esc(s.written ?? "?")} records · ${esc(s.dropped_records ?? 0)} records, ${esc(s.dropped_frames ?? 0)} frames dropped${s.error ? " · ERROR " + esc(s.error) : ""}</span>
+    ${h.meta && Object.keys(h.meta).length ? `<span class="muted">meta</span><span>${esc(JSON.stringify(h.meta))}</span>` : ""}
+    <span class="muted">registry</span><span id="reglink">${regLinkHtml(R.id)}</span>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button data-c="pause">Pause</button><button data-c="resume">Resume</button>
+    <button data-c="checkpoint">Checkpoint</button>
+    <input type="text" id="forkp" placeholder='fork params, e.g. {"Ra": 2e6}'><button data-c="fork">Fork (new run)</button>
+    <button data-c="stop" class="danger" id="stopb">Stop</button>
+  </div>
+  <div class="muted" style="margin-top:6px;font-size:12px">Commands are read by the run at its next telemetry call. Fork records a checkpoint and the new parameters; it never changes the running computation.</div>
+  <div class="row" style="margin-top:10px">
+    <button id="seekb" title="checkpoint now, then prepare a Newton–Krylov job seeded by that state">Seek equilibrium / orbit near here</button>
+    ${S.seek[R.id] ? '<span class="pill warn">waiting for the checkpoint…</span>' : ""}
+  </div>
+  ${checkpointsHtml(R)}`;
+  document.getElementById("seekb").onclick = () => seek(R.id);
+  el.querySelectorAll("button[data-ck]").forEach(b => { b.onclick = () => {
+    const ev = R.events.filter(e => /_written$/.test(e.name))[+b.dataset.ck];
+    if (b.dataset.act === "newton") openNewton(R.id, ev); else openDerived(R.id, ev, b.dataset.act); }; });
+  el.querySelectorAll("button[data-c]").forEach(b => { b.onclick = () => send(R.id, b.dataset.c, b);
+    if (arm[b.dataset.c] && Date.now() - arm[b.dataset.c] < 4000) b.textContent = "Confirm " + b.dataset.c; });
+  const inp = document.getElementById("forkp"); inp.value = forkVal;
+  if (forkFocus) { inp.focus(); inp.setSelectionRange(forkVal.length, forkVal.length); }
+}
+// ---------------------------------------------------------------- S2: checkpoints of a run
+function checkpointsHtml(R) {
+  const cks = R.events.map((e, i) => [e, i]).filter(([e]) => /_written$/.test(e.name));
+  if (!cks.length) return "";
+  const rows = cks.slice(-5).reverse().map(([e]) => { const k = cks.findIndex(([x]) => x === e);
+    const nrec = e.recurrence ? (e.recurrence.candidates || []).length : 0;
+    return `<tr><td>${esc(e.name.replace("_written", ""))}</td><td>${fmtH(e.t ?? "–")}</td><td>${esc(e.iteration ?? "–")}</td>
+      <td>${nrec ? nrec + " period guesses" : "—"}</td><td><div class="row">
+      <button data-ck="${k}" data-act="newton">Newton seed</button><button data-ck="${k}" data-act="resume">Resume</button>
+      ${e.name === "fork_written" ? `<button data-ck="${k}" data-act="fork">Launch fork</button>` : ""}</div></td></tr>`; }).join("");
+  return `<h2 style="margin-top:12px">Checkpoints</h2><div class="tablewrap"><table>
+    <tr><th>kind</th><th>t</th><th>it</th><th>near-recurrences</th><th>use it</th></tr>${rows}</table></div>`;
+}
+async function seek(id) {
+  S.seek[id] = Date.now() / 1000; dirty = true;
+  const r = await fetch("/api/control/" + encodeURIComponent(id), { method: "POST",
+    headers: { "Content-Type": "application/json" }, body: JSON.stringify({ cmd: "checkpoint", params: null, confirm: false }) });
+  if (!r.ok) { delete S.seek[id]; const j = await r.json().catch(() => ({})); addNote("checkpoint refused: " + (j.error || r.status)); }
+  else addNote("checkpoint requested; the Newton form opens when the run has written it");
+}
+// stop and fork: first press arms, a second press within 4 s confirms (the hub also requires it)
+const arm = {};
+async function send(id, cmd, btn) {
+  let confirm = false;
+  if (cmd === "stop" || cmd === "fork") {
+    if (!arm[cmd] || Date.now() - arm[cmd] > 4000) { arm[cmd] = Date.now();
+      btn.textContent = "Confirm " + cmd; setTimeout(() => { dirty = true; }, 4100);
+      return; }
+    arm[cmd] = 0; confirm = true;
+  }
+  let params = null;
+  if (cmd === "fork") { try { params = JSON.parse(document.getElementById("forkp").value || "{}"); }
+    catch (e) { addNote("fork params: invalid JSON"); render(); return; } }
+  const r = await fetch("/api/control/" + encodeURIComponent(id), { method: "POST",
+    headers: { "Content-Type": "application/json" }, body: JSON.stringify({ cmd, params, confirm }) });
+  if (r.status === 401) { location.href = "/login"; return; }
+  const j = await r.json().catch(() => ({ error: "HTTP " + r.status }));
+  if (!r.ok) addNote("refused: " + j.error); dirty = true;
+}
+function renderCharts(R) {
+  const box = document.getElementById("charts"); box.innerHTML = "";
+  if (!R || !R.scalars.length) { box.innerHTML = '<div class="empty">No scalar yet.</div>'; return; }
+  const xiter = document.getElementById("xiter").checked;
+  const keys = new Set(); R.scalars.forEach(r => Object.keys(r).forEach(k => keys.add(k)));
+  ["v", "kind", "run_id", "wall", "t", "iteration", "relay"].forEach(k => keys.delete(k));
+  if (window.View3D) [...keys].filter(k => k.startsWith("mix_")).forEach(k => keys.delete(k));   // Mixing panel
+  const xs = R.scalars.map(r => xiter ? r.iteration : r.t);
+  for (const k of [...keys].sort()) {
+    const ys = R.scalars.map(r => r[k]);
+    const pos = ys.filter(y => typeof y === "number" && y > 0), nonnum = ys.filter(y => typeof y === "string").length;
+    const logy = pos.length > 1 && Math.max(...pos) / Math.min(...pos) > 1e3 && pos.length === ys.filter(y => typeof y === "number").length;
+    const last = ys[ys.length - 1];
+    const d = document.createElement("div"); d.className = "chart";
+    d.innerHTML = `<div class="t"><span>${esc(k)}${logy ? " (log)" : ""}</span><span>${fmtH(last)}${nonnum ? ` · ${nonnum} non-numeric` : ""}</span></div><canvas></canvas>`;
+    box.appendChild(d); lineChart(d.querySelector("canvas"), xs, ys, { logy });
+  }
+}
+function renderNewton(R) {
+  const panel = document.getElementById("newtonPanel"), box = document.getElementById("newtonCharts");
+  if (!R || !R.newton.length) { panel.hidden = true; return; }
+  panel.hidden = false; box.innerHTML = "";
+  const xs = R.newton.map((r, i) => i + 1);
+  for (const [k, logy] of [["res", true], ["gmres_iters", false], ["delta", true]]) {
+    const ys = R.newton.map(r => r[k]);
+    const d = document.createElement("div"); d.className = "chart";
+    d.innerHTML = `<div class="t"><span>${k}${logy ? " (log)" : ""}</span><span>${fmtH(ys[ys.length - 1])}</span></div><canvas></canvas>`;
+    box.appendChild(d); lineChart(d.querySelector("canvas"), xs, ys, { logy });
+  }
+}
+function renderFrames(R) {
+  const box = document.getElementById("frames"); box.innerHTML = "";
+  const f2 = R ? Object.entries(R.frames).filter(([, f]) => !f.kind || f.kind === "frame") : [];   // 3D kinds: view3d.js
+  if (!f2.length) { box.innerHTML = '<div class="empty">No 2D field frame yet.</div>'; return; }
+  for (const [name, fr] of f2.sort()) {
+    const d = document.createElement("div"); d.className = "chart";
+    d.innerHTML = `<div class="t"><span>${esc(name)} · t=${fmtH(fr.t ?? "–")} · it ${esc(fr.iteration ?? "–")}</span>
+      <span>[${fmtH(fr.min)}, ${fmtH(fr.max)}] · ${esc(fr.shape.join("×"))} of ${esc(fr.full_shape.join("×"))}</span></div><canvas></canvas>`;
+    box.appendChild(d); drawFrame(d.querySelector("canvas"), fr);
+  }
+}
+function renderLogs(R) {
+  const box = document.getElementById("logs");
+  const items = [...(R ? R.logs : []), ...(R ? R.events.map(e => ({ ...e, message: "event " + e.name + " " +
+    JSON.stringify(Object.fromEntries(Object.entries(e).filter(([k]) => !["v","kind","run_id","wall","name"].includes(k)))), level: "info" })) : []), ...notes]
+    .sort((a, b) => a.wall - b.wall).slice(-400);
+  box.innerHTML = items.map(l => `<div class="${esc(l.level || "")}">${new Date(l.wall * 1000).toLocaleTimeString()}  ${esc(l.message)}</div>`).join("") || '<span class="muted">—</span>';
+  box.scrollTop = box.scrollHeight;
+}
+function renderSlurm() {
+  const el = document.getElementById("slurm"), s = S.slurm;
+  if (!s || !s.when) { el.textContent = "not read yet (every ≥ 120 s)"; return; }
+  const when = new Date(s.when * 1000).toLocaleTimeString();
+  if (!s.jobs.length) { el.innerHTML = `no job · read at ${when}${s.error ? " · " + esc(s.error) : ""}`; return; }
+  el.innerHTML = `<div class="tablewrap"><table><tr><th>id</th><th>name</th><th>state</th><th>elapsed</th><th>left</th><th>partition</th><th>node / reason</th></tr>` +
+    s.jobs.map(j => `<tr><td>${esc(j.id)}</td><td>${esc(j.name)}</td><td>${esc(j.state)}</td><td>${esc(j.elapsed)}</td><td>${esc(j.left)}</td><td>${esc(j.partition)}</td><td>${esc(j.nodes || j.reason)}</td></tr>`).join("") +
+    `</table></div><div class="muted" style="margin-top:4px">read at ${when}</div>`;
+}
+// ================================================================ S2: jobs (python/conatus/studio/launch.py)
+// Every job goes through slurm/submit.sh on the cluster side, only for a catalogue template, with
+// every parameter declared (an empty field is *absent*, and the server refuses a missing one: no
+// hidden default). Two steps: Prepare (exact script + command shown, digest) then Submit (second
+// press confirms; the server also requires confirm: true and the digest of what was shown).
+async function jobApi(op, body, relay) {
+  const b = { ...(body || {}) };
+  if (S.hub && relay) b.relay = relay;
+  const r = await fetch("/api/jobs/" + op, { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(b) });
+  if (r.status === 401) { location.href = "/login"; throw new Error("signed out"); }
+  const j = await r.json().catch(() => ({ error: "HTTP " + r.status }));
+  if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
+  return j;
+}
+function relayOf(runKey) { return S.hub && runKey ? runKey.split(":")[0] : null; }
+function defaultRelay() { const up = Object.entries(S.relays || {}).filter(([, v]) => v.connected).map(([k]) => k);
+  return up.length ? up[0] : null; }
+async function catalog(relay) {
+  if (!S.catalog) S.catalog = await jobApi("catalog", {}, relay);
+  return S.catalog;
+}
+// F = the open form: {template, name, values, parent: {label, params}, relay, note, prepared, cands, dt}
+let F = null;
+async function openForm(init) {
+  const panel = document.getElementById("launchPanel");
+  panel.hidden = false; panel.innerHTML = '<div class="muted">loading the catalogue…</div>';
+  try { await catalog(init.relay); } catch (e) { panel.innerHTML = `<div class="warnbox">catalogue unavailable: ${esc(e.message)}</div>`; return; }
+  F = { name: "", values: {}, parent: null, note: "", cands: null, dt: null, ...init, prepared: null, armed: 0 };
+  drawForm(); panel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function spec() { return S.catalog.templates[F.template]; }
+function applies(p) { return !p.when || p.when[1].includes(F.values[p.when[0]]); }
+function coerce(p, raw) {                     // text field -> JSON value; "" = absent (never a default)
+  if (raw === "" || raw === undefined) return undefined;
+  if (p.kind === "int" || p.kind === "float") { const v = Number(raw); return isFinite(v) ? v : raw; }
+  return raw;
+}
+function currentParams() {
+  const out = {};
+  for (const p of spec().params) if (applies(p) && F.values[p.name] !== undefined) out[p.name] = F.values[p.name];
+  return out;
+}
+function diffOf(parent, child) {
+  const d = {}; if (!parent) return d;
+  for (const k of new Set([...Object.keys(parent), ...Object.keys(child)]))
+    if (JSON.stringify(parent[k]) !== JSON.stringify(child[k])) d[k] = [parent[k], child[k]];
+  return d;
+}
+function drawForm() {
+  const panel = document.getElementById("launchPanel"), cat = S.catalog.templates, t = spec();
+  const relays = Object.keys(S.relays || {});
+  const diff = F.parent ? diffOf(F.parent.params, currentParams()) : {};
+  const ex = Object.entries(t.examples || {});
+  panel.innerHTML = `<h2>${esc(F.title || "New job")}</h2>
+    <div class="row">
+      <label class="muted">template <select class="in" id="f_tpl">${Object.values(cat).map(c =>
+        `<option value="${esc(c.key)}" ${c.key === F.template ? "selected" : ""}>${esc(c.title)}</option>`).join("")}</select></label>
+      ${ex.length ? `<label class="muted">preset <select class="in" id="f_ex"><option value="">— fill from… —</option>${ex.map(([k]) =>
+        `<option value="${esc(k)}">${esc(k)}</option>`).join("")}</select></label>` : ""}
+      <label class="muted">job name <input type="text" id="f_name" value="${esc(F.name)}" placeholder="[a-z0-9_]+"></label>
+      ${S.hub ? `<label class="muted">relay <select class="in" id="f_relay">${relays.map(r =>
+        `<option ${r === F.relay ? "selected" : ""}>${esc(r)}</option>`).join("")}</select></label>` : ""}
+    </div>
+    <div class="note">${esc(t.doc)} Script: <span class="mono">${esc(t.script)}</span>.</div>
+    ${F.note ? `<div class="note">${F.note}</div>` : ""}
+    ${F.cands ? candsHtml() : ""}
+    <div class="fields" style="margin-top:10px">${t.params.filter(applies).map(p => {
+      const v = F.values[p.name], ch = p.name in diff ? "changed" : "";
+      const inp = p.kind === "choice"
+        ? `<select data-p="${esc(p.name)}"><option value="">—</option>${p.choices.map(c => `<option ${c === v ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>`
+        : `<input type="text" data-p="${esc(p.name)}" value="${v === undefined ? "" : esc(v)}" inputmode="${p.kind === "int" || p.kind === "float" ? "decimal" : "text"}"
+             placeholder="${p.required === false ? "optional" : "required"}${p.lo !== undefined ? ` [${esc(p.lo)}, ${esc(p.hi)}]` : ""}">`;
+      return `<label class="${ch}" title="${esc(p.doc)}">${esc(p.name)}${p.required === false ? " (optional)" : ""}${inp}</label>`; }).join("")}</div>
+    ${F.parent ? `<div class="note">Differences from the parent <span class="mono">${esc(F.parent.label)}</span>: ${Object.keys(diff).length ?
+      Object.entries(diff).map(([k, [a, b]]) => `<span class="mono">${esc(k)}: ${esc(a ?? "∅")} → ${esc(b ?? "∅")}</span>`).join(" · ") : "none"}</div>` : ""}
+    <div class="row" style="margin-top:10px">
+      <button class="primary" id="f_prep">Prepare (dry run)</button><button id="f_close">Close</button>
+    </div>
+    <div id="f_out"></div>`;
+  document.getElementById("f_tpl").onchange = (ev) => { F.template = ev.target.value; F.prepared = null; drawForm(); };
+  const exs = document.getElementById("f_ex");
+  if (exs) exs.onchange = (ev) => { const p = t.examples[ev.target.value];   // explicit, visible preset
+    if (p) { Object.assign(F.values, p); F.prepared = null; drawForm(); } };
+  document.getElementById("f_name").oninput = (ev) => { F.name = ev.target.value; F.prepared = null; drawOut(); };
+  const rs = document.getElementById("f_relay"); if (rs) rs.onchange = (ev) => { F.relay = ev.target.value; };
+  panel.querySelectorAll("[data-p]").forEach(el => {
+    const p = t.params.find(q => q.name === el.dataset.p);
+    el.onchange = () => { F.values[p.name] = coerce(p, el.value); F.prepared = null;
+      if (el.tagName === "SELECT") drawForm(); else { refreshDiff(); drawOut(); } };
+  });
+  panel.querySelectorAll("tr[data-cand]").forEach(tr => tr.onclick = () => pickCand(+tr.dataset.cand));
+  document.getElementById("f_prep").onclick = prepare;
+  document.getElementById("f_close").onclick = () => { F = null; panel.hidden = true; };
+  drawOut();
+}
+function refreshDiff() {                      // re-highlight changed fields without losing focus
+  if (!F.parent) return; const diff = diffOf(F.parent.params, currentParams());
+  document.querySelectorAll("#launchPanel .fields label").forEach(l => {
+    const el = l.querySelector("[data-p]"); l.classList.toggle("changed", !!el && el.dataset.p in diff); });
+}
+function candsHtml() {
+  const c = F.cands.candidates || [];
+  if (!c.length) return `<div class="warnbox">No near-recurrence found in the run's history (${esc(F.cands.n_states)} states,
+    T in [${fmtH(F.cands.Tmin)}, ${fmtH(F.cands.Tmax)}]); an orbit search needs a declared T0 anyway.</div>`;
+  return `<div class="note">Near-recurrences ending at this state, d = ${esc(F.cands.distance)}
+    (${esc(F.cands.n_states)} stored states, T in [${fmtH(F.cands.Tmin)}, ${fmtH(F.cands.Tmax)}], ${esc(F.cands.n_ell)} shifts). Tap one to use it.</div>
+    <div class="tablewrap"><table><tr><th>type</th><th>T</th><th>ℓ</th><th>d</th></tr>${c.map((x, i) =>
+      `<tr class="clickable" data-cand="${i}"><td>${x.reflect ? "ppo" : "rpo"}</td><td>${fmtH(x.T)}</td><td>${fmtH(x.ell)}</td><td>${fmtH(x.d)}</td></tr>`).join("")}</table></div>`;
+}
+function pickCand(i) {
+  const c = F.cands.candidates[i];
+  Object.assign(F.values, { solution: c.reflect ? "ppo" : "rpo", T0: c.T, ell0: c.ell });
+  if (F.dt) F.values.nsteps = Math.max(1, Math.round(c.T / F.dt));   // shown, editable: dt of the run
+  F.note = `Seed period from the near-recurrence (d = ${fmtH(c.d)}).` + (F.dt ? ` nsteps = round(T0 / dt) with the run's dt = ${fmtH(F.dt)}; change it if you want another step.` : "");
+  F.prepared = null; drawForm();
+}
+function drawOut() {
+  const out = document.getElementById("f_out"); if (!out) return;
+  const P = F.prepared;
+  if (!P) { out.innerHTML = ""; return; }
+  if (P.error) { out.innerHTML = `<div class="warnbox">refused: ${esc(P.error)}</div>`; return; }
+  const armed = F.armed && Date.now() - F.armed < 6000;
+  out.innerHTML = `<h2 style="margin-top:12px">Exact job to submit</h2>
+    <div class="note">Command (run on the cluster, in the repository):</div>
+    <pre class="code">${esc(P.command.join(" "))}</pre>
+    <div class="note">Script <span class="mono">${esc(P.script_path)}</span> (the file sbatch will run):</div>
+    <pre class="code">${esc(P.script)}</pre>
+    <div class="note">submit.sh --dry-run:</div><pre class="code">${esc(P.dry_run)}</pre>
+    ${Object.keys(P.diff || {}).length ? `<div class="note">Changed vs parent: ${Object.entries(P.diff).map(([k, [a, b]]) =>
+      `<span class="mono">${esc(k)}: ${esc(a ?? "∅")} → ${esc(b ?? "∅")}</span>`).join(" · ")}</div>` : ""}
+    <div class="note mono">digest ${esc(P.digest)}</div>
+    <div class="row" style="margin-top:8px">
+      <button class="${armed ? "danger" : "primary"}" id="f_sub" ${P.allow_submit ? "" : "disabled"}>${armed ? "Confirm: submit this job" : "Submit…"}</button>
+      ${P.allow_submit ? "" : '<span class="warnbox">submission is disabled here (start the hub --local or the relay with --allow-submit; studio/server.py never submits)</span>'}
+    </div><div id="f_res"></div>`;
+  document.getElementById("f_sub").onclick = submitJob;
+}
+async function prepare() {
+  const body = { template: F.template, name: F.name, params: currentParams(),
+                 parent_params: F.parent ? F.parent.params : null };
+  try { F.prepared = await jobApi("prepare", body, F.relay); F.prepared.request = body; }
+  catch (e) { F.prepared = { error: e.message }; }
+  F.armed = 0; drawOut();
+}
+async function submitJob() {
+  const P = F.prepared;
+  if (!F.armed || Date.now() - F.armed > 6000) {           // first press arms, second confirms
+    F.armed = Date.now(); drawOut(); setTimeout(() => { if (F && F.prepared === P) drawOut(); }, 6100); return; }
+  F.armed = 0;
+  const res = document.getElementById("f_res"); res.innerHTML = '<div class="muted">submitting…</div>';
+  try {
+    const r = await jobApi("submit", { ...P.request, digest: P.digest, confirm: true }, F.relay);
+    res.innerHTML = `<div class="note">Submitted: run <span class="mono">${esc(r.run_id)}</span>, Slurm job ${esc(r.jobid)}. It appears in the run list when it starts.</div>`;
+    loadJobs();
+  } catch (e) { res.innerHTML = `<div class="warnbox">not submitted: ${esc(e.message)}</div>`; }
+}
+// the parameters a run was launched with (Studio launches record them in the telemetry header)
+function launchOf(R) { const m = (R.header || {}).meta || {}; return m.launch || null; }
+function openNewton(runKey, ev) {
+  const R = S.runs[runKey] || {}, model = ev.model || {}, meta = (R.header || {}).meta || {};
+  const src = { ...meta, ...model };
+  const values = { checkpoint: ev.path, parent: runKey };
+  for (const k of ["L", "N", "dealias", "scheme"]) if (src[k] !== undefined) values[k] = src[k];
+  const known = src.model === "ks" || /Kuramoto/.test(src.case || "");
+  openForm({ template: "studio_newton", title: `Newton–Krylov seed from ${runKey} (t = ${fmt(ev.t ?? "?")})`,
+    name: "newton_seed", values, relay: relayOf(runKey) || defaultRelay(), cands: ev.recurrence || null,
+    dt: model.dt ?? src.dt ?? null,
+    note: (known ? "Model parameters copied from the run (they must match the checkpoint; the job checks). "
+                 : "<b>This run does not declare a KS model</b>: Newton seeds support one periodic direction (KS) only. ") +
+          "Tolerances, radii and budgets are required: fill them, or pick the explicit preset <span class='mono'>j1_gate_tolerances</span>." });
+}
+function openDerived(runKey, ev, act) {
+  const R = S.runs[runKey] || {}, L = launchOf(R);
+  const parentParams = L ? { ...L.params } : null;
+  const values = { ...(parentParams || {}), ...(act === "fork" ? (ev.params || {}) : {}), restart: ev.path, parent: runKey };
+  openForm({ template: L ? L.template : "studio_ks", name: (act === "fork" ? "fork" : "resume"),
+    title: `${act === "fork" ? "Fork" : "Resume"} ${runKey} from t = ${fmt(ev.t ?? "?")}`, values,
+    parent: parentParams ? { label: runKey, params: parentParams } : null, relay: relayOf(runKey) || defaultRelay(),
+    note: L ? (act === "fork" ? "Parent parameters with the fork's new values; changed fields are outlined." :
+              "Parent parameters; the run restarts from the checkpoint (numerics must match).")
+            : "<b>This run was not launched from the Studio</b>: its parameters are unknown, fill them all." });
+}
+// ---------------------------------------------------------------- S2: jobs list and logs
+async function loadJobs() {
+  try { S.jobs = (await jobApi("list", {}, defaultRelay())).jobs; S.jobsErr = null; }
+  catch (e) { S.jobsErr = e.message; }
+  drawJobs();
+}
+function drawJobs() {
+  const el = document.getElementById("jobs");
+  if (S.jobsErr) { el.innerHTML = `<span class="warnbox">${esc(S.jobsErr)}</span> <button id="jref">Refresh</button>`; }
+  else if (!S.jobs.length) el.innerHTML = 'none yet · <button id="jref">Refresh</button>';
+  else el.innerHTML = `<div class="tablewrap"><table><tr><th>submitted</th><th>run</th><th>template</th><th>state</th><th>log</th></tr>` +
+    S.jobs.map((j, i) => { const key = S.hub ? `${defaultRelay()}:${j.run_id}` : j.run_id;
+      return `<tr><td>${new Date(j.wall * 1000).toLocaleString()}</td>
+      <td>${S.runs[key] ? `<a href="#" data-run="${esc(key)}">${esc(j.run_id)}</a>` : esc(j.run_id)}<div class="muted">job ${esc(j.jobid)} · ${esc(j.user)}${j.parent ? " · from " + esc(j.parent) : ""}</div></td>
+      <td>${esc(j.template)}</td><td>${esc(j.state)}</td>
+      <td><div class="row"><button data-log="${i}" data-s="out">out</button><button data-log="${i}" data-s="err">err</button></div></td></tr>`; }).join("") +
+    `</table></div><div class="row" style="margin-top:6px"><button id="jref">Refresh</button></div><pre class="code" id="jlog" hidden></pre>`;
+  document.getElementById("jref").onclick = loadJobs;
+  el.querySelectorAll("a[data-run]").forEach(a => a.onclick = (ev) => { ev.preventDefault(); S.sel = a.dataset.run; dirty = true; render(); window.scrollTo(0, 0); });
+  el.querySelectorAll("button[data-log]").forEach(b => b.onclick = async () => {
+    const pre = document.getElementById("jlog"); pre.hidden = false; pre.textContent = "loading…";
+    try { const r = await jobApi("log", { run_id: S.jobs[+b.dataset.log].run_id, stream: b.dataset.s }, defaultRelay());
+      pre.textContent = (r.file ? `${r.file} (${r.size} B${r.truncated ? ", last 16 KiB" : ""})\n` : (r.note || "")) + "\n" + r.text;
+      pre.scrollTop = pre.scrollHeight; }
+    catch (e) { pre.textContent = "log unavailable: " + e.message; } });
+}
+// ---------------------------------------------------------------- S2: several runs on one curve
+const MAXCMP = 6;
+function toggleCompare(id, on) {
+  S.cmp = S.cmp.filter(x => x !== id);
+  if (on) { if (S.cmp.length >= MAXCMP) { addNote(`at most ${MAXCMP} runs on one curve`); } else S.cmp.push(id); }
+  dirty = true; loadCompare();
+}
+let cmpData = null, cmpKey = null;
+async function loadCompare() {
+  const panel = document.getElementById("comparePanel");
+  if (S.cmp.length < 2) { panel.hidden = true; cmpData = null; return; }
+  panel.hidden = false;
+  const keys = new Set();
+  S.cmp.forEach(id => (S.runs[id] ? S.runs[id].scalars : []).forEach(r => Object.keys(r).forEach(k => keys.add(k))));
+  ["v", "kind", "run_id", "wall", "t", "iteration", "relay"].forEach(k => keys.delete(k));
+  const ks = [...keys].sort();
+  if (!ks.includes(cmpKey)) cmpKey = ks.includes("energy") ? "energy" : ks[0];
+  const x = document.getElementById("xiter").checked ? "iteration" : "t";
+  if (!cmpKey) { document.getElementById("compareBody").innerHTML = '<div class="empty">No common scalar yet.</div>'; return; }
+  try {
+    const r = await fetch(`/api/compare?runs=${encodeURIComponent(S.cmp.join(","))}&key=${encodeURIComponent(cmpKey)}&x=${x}&max_points=2000`);
+    cmpData = await r.json(); if (!r.ok) throw new Error(cmpData.error);
+  } catch (e) { cmpData = { error: e.message }; }
+  drawCompare(ks);
+}
+function drawCompare(ks) {
+  const body = document.getElementById("compareBody"), D = cmpData;
+  if (!D) return;
+  if (D.error) { body.innerHTML = `<div class="warnbox">${esc(D.error)}</div>`; return; }
+  const ids = D.runs.filter(id => D.series[id]);
+  body.innerHTML = `<div class="row"><label class="muted">scalar <select class="in" id="cmpkey">${ks.map(k =>
+      `<option ${k === D.key ? "selected" : ""}>${esc(k)}</option>`).join("")}</select></label>
+      <span class="muted mono">x = ${esc(D.x)}</span></div>
+    <div class="legend">${ids.map(id => `<span><i style="background:var(--s${S.cmp.indexOf(id) + 1})"></i>${esc(id)}</span>`).join("")}</div>
+    <div class="chartwrap"><canvas id="cmpc"></canvas><div class="tip" id="cmptip" hidden></div></div>
+    <div class="note">${esc(D.note)}${D.missing.length ? " · no " + esc(D.key) + " in: " + D.missing.map(esc).join(", ") : ""}</div>
+    ${ids.slice(1).map(id => { const d = D.series[id].diff_vs_first; const e = Object.entries(d);
+      return `<div class="note"><span class="mono">${esc(id)}</span> vs <span class="mono">${esc(ids[0])}</span>: ${e.length ?
+        e.map(([k, [a, b]]) => `<span class="mono">${esc(k)}: ${esc(a ?? "∅")} → ${esc(b ?? "∅")}</span>`).join(" · ") : "same declared parameters"}</div>`; }).join("")}`;
+  document.getElementById("cmpkey").onchange = (ev) => { cmpKey = ev.target.value; loadCompare(); };
+  multiChart(document.getElementById("cmpc"), document.getElementById("cmptip"),
+             ids.map(id => ({ label: id, color: css(`--s${S.cmp.indexOf(id) + 1}`), xs: D.series[id].x, ys: D.series[id].y })));
+}
+// one y scale, one x scale, 2 px lines; crosshair + tooltip with every run's nearest value
+function multiChart(canvas, tip, series) {
+  const dpr = window.devicePixelRatio || 1, W = canvas.clientWidth, H = 220;
+  canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.height = H + "px";
+  const P = { l: 58, r: 10, t: 8, b: 22 };
+  const all = series.flatMap(s => s.xs.map((x, i) => [x, s.ys[i]])).filter(([x, y]) => x !== null && y !== null);
+  const pos = all.filter(p => p[1] > 0);
+  const logy = pos.length === all.length && pos.length > 1 && Math.max(...pos.map(p => p[1])) / Math.min(...pos.map(p => p[1])) > 1e3;
+  const ty = y => logy ? Math.log10(y) : y;
+  const draw = (hx) => {
+    const g = canvas.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    g.font = "11px " + css("--mono"); g.fillStyle = css("--muted");
+    if (!all.length) { g.fillText("no finite values", P.l, H / 2); return null; }
+    let x0 = Math.min(...all.map(p => p[0])), x1 = Math.max(...all.map(p => p[0]));
+    let y0 = Math.min(...all.map(p => ty(p[1]))), y1 = Math.max(...all.map(p => ty(p[1])));
+    if (x1 === x0) x1 = x0 + 1; if (y1 === y0) { y1 += 0.5; y0 -= 0.5; }
+    const pad = 0.05 * (y1 - y0); y0 -= pad; y1 += pad;
+    const X = x => P.l + (x - x0) / (x1 - x0) * (W - P.l - P.r), Y = y => H - P.b - (y - y0) / (y1 - y0) * (H - P.t - P.b);
+    g.strokeStyle = css("--grid"); g.lineWidth = 1;
+    for (let k = 0; k <= 4; k++) { const yy = y0 + k * (y1 - y0) / 4; g.beginPath(); g.moveTo(P.l, Y(yy)); g.lineTo(W - P.r, Y(yy)); g.stroke();
+      g.fillText(logy ? "1e" + yy.toFixed(1) : fmt(yy), 4, Y(yy) + 4); }
+    g.fillText(fmt(x0), P.l, H - 6); const lx = fmt(x1); g.fillText(lx, W - P.r - g.measureText(lx).width, H - 6);
+    for (const s of series) { g.strokeStyle = s.color; g.lineWidth = 2; g.beginPath(); let on = false;
+      s.xs.forEach((x, i) => { const y = s.ys[i]; if (x === null || y === null || (logy && y <= 0)) { on = false; return; }
+        on ? g.lineTo(X(x), Y(ty(y))) : g.moveTo(X(x), Y(ty(y))); on = true; }); g.stroke(); }
+    if (hx === undefined) return null;
+    const xv = x0 + (hx - P.l) / (W - P.l - P.r) * (x1 - x0);
+    g.strokeStyle = css("--muted"); g.lineWidth = 1; g.beginPath(); g.moveTo(hx, P.t); g.lineTo(hx, H - P.b); g.stroke();
+    const rows = series.map(s => { let bi = -1, bd = Infinity;
+      s.xs.forEach((x, i) => { if (x !== null && s.ys[i] !== null && Math.abs(x - xv) < bd) { bd = Math.abs(x - xv); bi = i; } });
+      if (bi < 0) return null; const px = X(s.xs[bi]), py = Y(ty(s.ys[bi]));
+      g.fillStyle = css("--panel"); g.beginPath(); g.arc(px, py, 6, 0, 7); g.fill();   // 2 px surface ring
+      g.fillStyle = s.color; g.beginPath(); g.arc(px, py, 4, 0, 7); g.fill();
+      return [s, bi]; }).filter(Boolean);
+    return { xv, rows };
+  };
+  draw();
+  const move = (clientX) => { const rc = canvas.getBoundingClientRect(), hx = Math.max(P.l, Math.min(W - P.r, clientX - rc.left));
+    const h = draw(hx); if (!h) return; tip.hidden = false;
+    tip.innerHTML = `${fmtH(h.xv)}<br>` + h.rows.map(([s, i]) => `<i style="display:inline-block;width:10px;height:3px;background:${s.color};margin-right:6px"></i>${fmtH(s.ys[i])} <span class="muted">${esc(s.label)}</span>`).join("<br>");
+    tip.style.left = Math.min(Math.max(0, hx + 12), Math.max(0, W - tip.offsetWidth)) + "px"; tip.style.top = "8px"; };
+  canvas.onmousemove = (ev) => move(ev.clientX);
+  canvas.ontouchmove = (ev) => { move(ev.touches[0].clientX); };
+  canvas.onmouseleave = () => { tip.hidden = true; draw(); };
+}
+// ---------------------------------------------------------------- run registry (read-only)
+// Registry runs recorded with track(..., telemetry=tel) carry the live run id: one lookup per
+// live run (cached), shown in the run head. The registry panel lists / filters / compares records.
+const REG = { link: {}, rows: [], sel: [], err: null };
+function regLinkHtml(id) {
+  if (!(id in REG.link)) {
+    REG.link[id] = null;
+    fetch("/api/registry?telemetry_id=" + encodeURIComponent(id))
+      .then(r => (r.headers.get("Content-Type") || "").includes("json") ? r.json() : { error: "no registry (HTTP " + r.status + ")" }).then(d => {
+      REG.link[id] = d.error ? { error: d.error } : (d.runs || []); dirty = true; })
+      .catch(e => { REG.link[id] = { error: String(e) }; });
+  }
+  const v = REG.link[id];
+  if (v === null) return "…";
+  if (v.error) return `<span class="muted">${esc(v.error)}</span>`;
+  if (!v.length) return '<span class="muted">not recorded (use cn.runs.track(..., telemetry=tel))</span>';
+  return v.map(r => `<a href="#" data-regrun="${esc(r.id)}">${esc(r.id)}</a> (${esc(r.status)})`).join(", ");
+}
+async function loadRegistry() {
+  const q = new URLSearchParams();
+  for (const k of ["status", "tag", "name"]) { const el = document.getElementById("rg_" + k);
+    if (el && el.value) q.set(k, el.value); }
+  try { const r = await fetch("/api/registry?" + q.toString()); const d = await r.json();
+    REG.err = d.error || null; REG.rows = d.runs || []; REG.root = d.root; }
+  catch (e) { REG.err = String(e); REG.rows = []; }
+  renderRegistry();
+}
+function renderRegistry(detail) {
+  const body = document.getElementById("registryBody");
+  const val = k => { const el = document.getElementById("rg_" + k); return el ? el.value : ""; };
+  const f = { status: val("status"), tag: val("tag"), name: val("name") };
+  body.innerHTML = `<div class="row">
+      <label class="muted">status <select class="in" id="rg_status">${["", "provisional", "certified", "retracted"].map(s =>
+        `<option ${s === f.status ? "selected" : ""}>${s}</option>`).join("")}</select></label>
+      <label class="muted">tag <input type="text" id="rg_tag" value="${esc(f.tag)}"></label>
+      <label class="muted">name <input type="text" id="rg_name" value="${esc(f.name)}"></label>
+      <button id="rg_go">Filter</button><button id="rg_cmp" ${REG.sel.length === 2 ? "" : "disabled"}>Compare the 2 selected</button>
+      <span class="muted mono">${esc(REG.root || "")}</span></div>
+    ${REG.err ? `<span class="warnbox">${esc(REG.err)}</span>` : `<div class="tablewrap"><table>
+      <tr><th></th><th>run</th><th>state</th><th>status</th><th>params</th><th>results</th></tr>${REG.rows.map(r =>
+      `<tr><td><input type="checkbox" data-regsel="${esc(r.id)}" ${REG.sel.includes(r.id) ? "checked" : ""}></td>
+       <td><a href="#" data-regrun="${esc(r.id)}">${esc(r.id)}</a></td><td>${esc(r.state)}</td><td>${esc(r.status)}</td>
+       <td class="mono">${esc(JSON.stringify(r.params).slice(0, 160))}</td><td class="mono">${esc(JSON.stringify(r.results).slice(0, 160))}</td></tr>`).join("")}
+    </table></div>`}
+    ${detail ? `<pre class="code">${esc(detail)}</pre>` : ""}`;
+  document.getElementById("rg_go").onclick = loadRegistry;
+  document.getElementById("rg_cmp").onclick = async () => {
+    const r = await fetch(`/api/registry/compare?a=${encodeURIComponent(REG.sel[0])}&b=${encodeURIComponent(REG.sel[1])}`);
+    const d = await r.json(); renderRegistry(d.error || d.explain); };
+  body.querySelectorAll("input[data-regsel]").forEach(c => { c.onchange = () => {
+    const id = c.dataset.regsel; REG.sel = c.checked ? [...REG.sel.filter(x => x !== id), id].slice(-2) : REG.sel.filter(x => x !== id);
+    renderRegistry(); }; });
+}
+async function showRegRun(id) {
+  const panel = document.getElementById("registryPanel"); panel.hidden = false;
+  if (!REG.rows.length) await loadRegistry();
+  const r = await fetch("/api/registry/run/" + encodeURIComponent(id)); const d = await r.json();
+  renderRegistry(d.error || (d.explain + "\n\nlineage:\n" + d.lineage));
+  panel.scrollIntoView({ behavior: "smooth" });
+}
+document.addEventListener("click", ev => { const a = ev.target.closest && ev.target.closest("a[data-regrun]");
+  if (a) { ev.preventDefault(); showRegRun(a.dataset.regrun); } });
+document.getElementById("regbtn").onclick = () => { const p = document.getElementById("registryPanel");
+  p.hidden = !p.hidden; if (!p.hidden) loadRegistry(); };
+// ---------------------------------------------------------------- boot
+document.getElementById("theme").onclick = () => { const r = document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark ? "light" : "dark"; dirty = true; };
+document.getElementById("logout").onclick = async () => {
+  await fetch("/logout", { method: "POST" }); location.href = "/login"; };
+document.getElementById("xiter").onchange = () => { dirty = true; loadCompare(); };
+window.addEventListener("resize", () => { dirty = true; if (cmpData && !cmpData.error) loadCompare(); });
+document.getElementById("newjob").onclick = () => openForm({ template: "studio_ks", name: "",
+  relay: defaultRelay(), note: "Pick a preset (explicit values, all shown) or fill every field." });
+setInterval(() => { if (S.cmp.length >= 2 && !document.hidden) loadCompare(); }, 3000);   // live curves
+setInterval(() => { if (!document.hidden) loadJobs(); }, 30000);                        // cheap: registry file
+setTimeout(loadJobs, 1500);
+setInterval(render, 500);
+setInterval(() => { dirty = true; }, 5000);       // refresh "idle" ages
+connect();
+</script>
+</body>
+</html>

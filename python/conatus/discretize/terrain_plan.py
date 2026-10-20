@@ -48,7 +48,8 @@ import scipy.sparse as sp
 import scipy.sparse.linalg as spla
 from scipy.sparse.csgraph import structural_rank
 
-from ..errors import DiscretizationError, OptionError, RankError, ResolutionError, UnsupportedError
+from ..errors import (DiscretizationError, DtypeError, InputTypeError, OptionError, RankError,
+                      ResolutionError, UnsupportedError)
 from ..ir import expr as E
 from ..ir.bases import RealFourier
 from ..ir.domain import Domain
@@ -58,7 +59,7 @@ from ..tolerances import NCC_ROUNDING, NCC_TAIL_TOL
 from . import ultraspherical as us
 from .compiler import _comps, eigen_split
 from .param_keys import check_param_keys
-from .plan import GroupMatrices
+from .plan import GroupMatrices, _same_data, data_snapshot, rebind_for_data
 
 __all__ = ["TerrainPlan", "TerrainSolution", "TerrainSimulation", "has_terrain"]
 
@@ -197,6 +198,8 @@ class TerrainPlan:
             # the flat, polar and spherical plans
             check_param_keys(params, {p.name for p in self._parameters()},
                              where="discretize (mapped domain)")
+            from .param_keys import check_param_values
+            check_param_values(params, where="discretize (mapped domain)")
             self.params.update(params)
         self.eigenvalue = problem.eigenvalue if isinstance(problem, EVP) else None
         # data of the given fields; data for a field the problem does not use is refused (same rule)
@@ -207,7 +210,9 @@ class TerrainPlan:
             raise DiscretizationError(
                 f"ncc given for field(s) not used by the problem: {', '.join(stray)}",
                 fix="remove them from ncc= (or check the field names)", doc=_DOC)
-        self._ncc_src = dict(ncc or {})
+        self._ncc_src = data_snapshot(ncc)
+        # constructor options kept to rebuild the plan when solve(data) changes a coefficient
+        self._plan_kw = dict(ncc_cutoff=ncc_cutoff, assembly=assembly, ncc_tail_tol=ncc_tail_tol)
         # metric (check at this resolution)
         try:
             self.metric, self.metric_reports = self.terrain.metric_coeffs(
@@ -557,6 +562,11 @@ class TerrainPlan:
             g = np.asarray(val[c] if c else val)
             if not np.all(np.isfinite(g)):
                 raise DiscretizationError(f"data of {f.name} has non-finite values on the grid")
+            if f.dtype.kind != "c" and np.iscomplexobj(g) and np.any(g.imag != 0):
+                # a real coefficient given complex data: refused, never cast (finding 36)
+                raise DtypeError(f"data of {f.name}: complex values (max |imag| = "
+                                 f"{float(np.abs(g.imag).max()):.3e}) for a real field",
+                                 fix="pass real data, or declare the field complex", doc=_DOC)
             if lam is None and not fd:
                 out[c] = _scalar(complex(g.reshape(-1)[0]))
                 continue
@@ -1070,6 +1080,23 @@ class TerrainPlan:
                 b[r0:r0 + v.size] += v
         return b
 
+    def _with_rhs_data(self, data: Mapping[E.Field, Any]) -> TerrainPlan:
+        """A view of this plan with new data for right-hand-side fields only (numerics review):
+        it shares the operator (compiled left-hand-side forms, matrices), which does not read
+        these fields (they appear on no left-hand side), and has its own data caches; this plan is unchanged. Rebuilding the whole
+        plan for new right-hand-side data cost one assembly per solve (about 5x the solve at
+        32 x 32)."""
+        import copy
+        view = copy.copy(self)
+        view._ncc_src = {**self._ncc_src, **data_snapshot(data)}
+        view._dcache = {}
+        view._ncc_ops = {}          # products of data may be keyed by the data expression
+        view._nyquist = dict(self._nyquist)
+        view.ncc_reports = dict(self.ncc_reports)
+        view._state = None
+        view.__dict__.pop("_rebound", None)
+        return view
+
     # ------------------------------------------------------------------ LBVP
     def solve(self, data: Mapping[E.Field, Any] | None = None,
               reduced: bool | None = None) -> TerrainSolution:
@@ -1078,9 +1105,15 @@ class TerrainPlan:
                                       "eigenvalues(plan))")
         if reduced:
             raise UnsupportedError("symmetry subspaces on a mapped domain", doc=_DOC)
-        if data:
-            self._ncc_src.update(data)
-            self._dcache.clear()
+        # new data: a fresh plan (review finding 4). Updating _ncc_src and clearing the data cache
+        # only left the compiled operator (_ccache, _ncc_ops, _gm) on the old coefficient, so
+        # q*u = q solved 2u = 4 with residual 0 after q: 2 -> 4; the plan itself stays unchanged
+        fresh = rebind_for_data(self, data)          # a new operator coefficient (memoized)
+        if fresh is not None:
+            return fresh.solve(data, reduced)
+        if data and not all(_same_data(self._ncc_src.get(f), d) for f, d in data.items()):
+            # right-hand-side data only: same operator, a view with its own data caches
+            return self._with_rhs_data(data).solve(data, reduced)
         self.check()
         gm = self.matrices()
         b = self.rhs_vector()
@@ -1162,7 +1195,9 @@ class TerrainSolution:
 
     @property
     def max_residual(self) -> float:
-        return max((r for _, r in self.residuals), default=0.0)
+        # np.max keeps a NaN group residual; Python's max hid one after a finite group
+        # (max(1e-16, nan) is 1e-16: audit "assurances")
+        return float(np.max([r for _, r in self.residuals])) if self.residuals else 0.0
 
     def grid(self, name: str) -> np.ndarray:
         """Values of a variable on the N-point grid (x_j, xi_l), physical position
@@ -1177,7 +1212,8 @@ class TerrainSolution:
         return self.plan.physical_grid(False)[names.index(name)]
 
     def explain(self) -> str:
-        worst = max(self.residuals, key=lambda r: r[1]) if self.residuals else ("-", 0.0)
+        worst = (max(self.residuals, key=lambda r: (bool(np.isnan(r[1])), r[1]))   # NaN first
+                 if self.residuals else ("-", 0.0))
         return (f"LBVP solution on a mapped domain: one coupled system, relative residual "
                 f"{worst[1]:.2e} (sparse LU, scipy SuperLU)")
 
@@ -1193,6 +1229,34 @@ class TerrainSimulation:
     (``bc_time="stage"`` convention). One sparse LU per distinct implicit coefficient."""
 
     SCHEMES = ("SBDF1", "SBDF2", "SBDF3", "SBDF4", "RK111", "RK222", "RK443")
+
+
+    # checkpoints (critic review of the invariance audit: these were AttributeErrors)
+    def _no_checkpoint(self, what: str):
+        from ..errors import UnsupportedError
+        raise UnsupportedError(f"{what} on a mapped domain: the mapped-box stepper has no "
+                               "checkpoint format yet",
+                               why="its state and multistep history are not written by "
+                                   "cn.io (an exact restart needs both)",
+                               fix="run the mapped case in one job, or record the fields you "
+                                   "need with sim.grid(...) / cn.runs.track(...).save_field",
+                               doc="docs/site/guide/mapped.md")
+
+    def save(self, *args, **kw):
+        """Refused: no checkpoint format for the mapped-box stepper (UnsupportedError)."""
+        self._no_checkpoint("save()")
+
+    def restart(self, *args, **kw):
+        """Refused: no checkpoint format for the mapped-box stepper (UnsupportedError)."""
+        self._no_checkpoint("restart()")
+
+    def checkpoints(self, *args, **kw):
+        """Refused: no checkpoint format for the mapped-box stepper (UnsupportedError)."""
+        self._no_checkpoint("checkpoints()")
+
+    def resume_or_start(self, *args, **kw):
+        """Refused: no checkpoint format for the mapped-box stepper (UnsupportedError)."""
+        self._no_checkpoint("resume_or_start()")
 
     def __init__(self, comp: Any, *, scheme: str, dt: float, backend: str = "cpu",
                  **kw: Any) -> None:
@@ -1227,8 +1291,9 @@ class TerrainSimulation:
         if extra:
             raise OptionError(f"simulate(): option(s) {sorted(extra)} not supported on a mapped "
                               "domain", doc=_DOC)
-        if not (isinstance(dt, numbers.Real) and dt > 0):
-            raise OptionError(f"dt={dt!r}: a positive number is required", doc=_DOC)
+        # finite: dt=inf passed "dt > 0" (review finding 37)
+        if isinstance(dt, bool) or not (isinstance(dt, numbers.Real) and math.isfinite(dt) and dt > 0):
+            raise OptionError(f"dt={dt!r}: a finite positive number is required", doc=_DOC)
         self.compiled = comp
         self.problem = comp.problem
         reg = getattr(comp.model, "_register", None)
@@ -1270,6 +1335,23 @@ class TerrainSimulation:
 
     # -- state ------------------------------------------------------------------------------
     @property
+    def effective_order(self) -> int:
+        """Global order of this run (audit invariance; review finding 17 on the flat
+        solvers): the scheme's order, capped at 2 for SBDF3/SBDF4 (the start-up is always
+        lower-order here) and for RK443 with time-dependent boundary data (imposed at the stage
+        times: its stage order 2). Measured on the manufactured mapped diffusion problem of
+        tests/model/test_mapped_box.py: SBDF3 2.01, SBDF4 2.03, RK443 1.97."""
+        from ..timestep.integrator import _SCHEME_INFO
+        p = _SCHEME_INFO[self.scheme][3]
+        if self.scheme.startswith("SBDF"):
+            p = min(p, 2)
+        if self.scheme == "RK443" and self._tname is not None and any(
+                self._tname in {q.name for q in E.as_expr(self.problem.equations[i].rhs)
+                                .free_parameters()} for i in self.static):
+            p = min(p, 2)
+        return p
+
+    @property
     def t(self) -> float:
         """Current simulation time."""
         return self._t
@@ -1298,6 +1380,15 @@ class TerrainSimulation:
             fn = (_on_all_grids(v, _coord_args(v, names, f"initial {k}"), names) if callable(v)
                   else (lambda val0: (lambda *g: np.full(grids[0].shape, val0)))(v))
             val = np.asarray(fn(*grids))
+            # refused rather than cast or hidden (review finding 36: a deliberate small imaginary
+            # part of real data was dropped by grid(); non-finite data as everywhere else)
+            if not np.all(np.isfinite(val)):
+                raise InputTypeError(f"initial({k}=...): non-finite values on the grid", doc=_DOC)
+            if f.dtype.kind != "c" and np.iscomplexobj(val) and np.any(val.imag != 0):
+                raise DtypeError(f"initial({k}=...): complex values (max |imag| = "
+                                 f"{float(np.abs(val.imag).max()):.3e}) for the real unknown {k}",
+                                 fix="pass real data (the unknowns of a native model are real)",
+                                 doc=_DOC)
             for c in _comps(f.tensorsig):
                 g = np.broadcast_to(val[c] if c else val, grids[0].shape)
                 o = P.var_off[(f, c)]
@@ -1307,8 +1398,10 @@ class TerrainSimulation:
         return self
 
     def coeffs(self, name: str) -> dict:
-        """Coefficients of unknown ``name``: {component: vector of the coupled layout}."""
-        return self.plan.split(self.X)[name]
+        """Coefficients of unknown ``name``: {component: vector of the coupled layout}, copies
+        (``plan.split`` gives views of the state: an in-place change of the returned arrays
+        used to change the simulation's state, audit state)."""
+        return {c: v.copy() for c, v in self.plan.split(self.X)[name].items()}
 
     def grid(self, name: str) -> np.ndarray:
         """Values of unknown ``name`` on the N-point grid (x_j, xi_l)."""
@@ -1429,6 +1522,16 @@ class TerrainSimulation:
             check_state_finite(self, "TerrainSimulation.run (end of the call)")
         return self
 
+    def _order_text(self) -> str:
+        """The global order said where it is below the scheme's (audit invariance)."""
+        from ..timestep.integrator import _SCHEME_INFO
+        p, eff = _SCHEME_INFO[self.scheme][3], self.effective_order
+        if eff >= p:
+            return f"; global order {p}"
+        why = ("the lower-order start-up" if self.scheme.startswith("SBDF") else
+               "time-dependent boundary data imposed at the stage times")
+        return f"; formal order {p}, effective global order {eff} ({why})"
+
     def explain(self) -> str:
         return (f"TerrainSimulation: {self.scheme}, dt = {self._dt:g}, t = {self._t:g} "
                 f"({self._it} steps); implicit: the coupled operator (metric terms implicit), "
@@ -1437,6 +1540,7 @@ class TerrainSimulation:
                 + self._bc_note + ")"
                 + ("; SBDF startup lower_order (orders 1..q-1 for the first q-1 steps)"
                    if self.scheme.startswith("SBDF") else "")
+                + self._order_text()
                 + (f"; finite-state check every {self._finite_every} steps and at the end of "
                    "each run call (check_finite=False turns it off)" if self._finite_every
                    else "; finite-state check off (check_finite=False)")

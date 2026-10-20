@@ -1,4 +1,4 @@
-// Device / pinned memory spaces and a simple caching pool for device allocations (spec §56–58).
+// Device / pinned memory spaces and a simple caching pool for device allocations.
 #include <cuda_runtime.h>
 
 #include <cstring>

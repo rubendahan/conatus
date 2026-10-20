@@ -12,7 +12,7 @@ import numpy as np
 import scipy.linalg as sla
 import scipy.optimize as so
 
-from ..errors import OptionError
+from ..errors import ConvergenceError, OptionError
 from .statespace import StateSpace
 from .._deprecation import renames
 
@@ -51,14 +51,31 @@ MAX_GROWTH_N_SCAN = 64
 def max_growth(ss: StateSpace, t_bounds: tuple[float, float], *, xtol: float,
                n_scan: int = MAX_GROWTH_N_SCAN) -> tuple[float, float]:
     """(G_max, t_max) over t in ``t_bounds``: scan of ``n_scan`` points (declared default
-    :data:`MAX_GROWTH_N_SCAN` = 64), then bounded Brent to ``xtol`` (required)."""
-    ts = np.linspace(*t_bounds, n_scan)
-    g = [energy_growth(ss, t) for t in ts]
+    :data:`MAX_GROWTH_N_SCAN` = 64), then bounded Brent to ``xtol`` (required) around the best
+    scan point. The answer is the best of the two interval ends, the best scan point and the
+    refined candidate (finding 15: a maximum at t = 0, G = 1, was missed
+    because only the Brent result was returned); an optimiser failure raises."""
+    t0, t1 = (float(t) for t in t_bounds)
+    if not (np.isfinite(t0) and np.isfinite(t1) and 0 <= t0 < t1):
+        raise OptionError(f"max_growth: t_bounds = {t_bounds!r} must satisfy 0 <= t0 < t1 < inf",
+                          fix="t_bounds=(0.0, 10.0)")
+    if isinstance(n_scan, bool) or not isinstance(n_scan, (int, np.integer)) or n_scan < 3:
+        raise OptionError(f"max_growth: n_scan = {n_scan!r} must be an integer >= 3",
+                          fix=f"n_scan={MAX_GROWTH_N_SCAN}")
+    ts = np.linspace(t0, t1, int(n_scan))
+    g = np.array([energy_growth(ss, t) for t in ts])
     i = int(np.argmax(g))
     lo, hi = ts[max(i - 1, 0)], ts[min(i + 1, n_scan - 1)]
     r = so.minimize_scalar(lambda t: -energy_growth(ss, t), bounds=(lo, hi), method="bounded",
                            options={"xatol": xtol})
-    return float(-r.fun), float(r.x)
+    if not r.success:
+        raise ConvergenceError(f"max_growth: bounded Brent failed on [{lo:g}, {hi:g}]: {r.message}",
+                               fix="raise n_scan or loosen xtol")
+    # candidates: both ends (already in the scan), the best scan point, the refined point
+    cands = [(float(g[0]), float(ts[0])), (float(g[-1]), float(ts[-1])),
+             (float(g[i]), float(ts[i])), (float(-r.fun), float(r.x))]
+    best = max(cands, key=lambda c: c[0])
+    return best
 
 
 def numerical_abscissa(ss: StateSpace) -> float:

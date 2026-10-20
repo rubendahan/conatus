@@ -1,0 +1,48 @@
+# Matplotlib style of the tutorial figures (docs/site/tutorial_media.py).
+# Transparent background and a mid-tone ink, so that one PNG reads on the light (paper) and the
+# dark (laboratory) theme of the documentation; series colours from the brand tokens
+# (docs/brand/tokens.css): rubric red, raw glass, brass, smoke grey, and a slate blue.
+figure.facecolor: none
+axes.facecolor: none
+savefig.facecolor: none
+savefig.transparent: True
+savefig.bbox: tight
+savefig.pad_inches: 0.06
+figure.dpi: 100
+savefig.dpi: 170
+
+font.family: sans-serif
+font.sans-serif: IBM Plex Sans, DejaVu Sans, Arial
+font.size: 11
+axes.titlesize: 11
+axes.titleweight: normal
+axes.titlelocation: left
+axes.labelsize: 11
+xtick.labelsize: 10
+ytick.labelsize: 10
+legend.fontsize: 10
+mathtext.fontset: dejavusans
+
+text.color: 77736B
+axes.labelcolor: 77736B
+axes.edgecolor: 77736B
+xtick.color: 77736B
+ytick.color: 77736B
+axes.titlecolor: 77736B
+axes.linewidth: 0.8
+xtick.major.width: 0.8
+ytick.major.width: 0.8
+axes.spines.top: False
+axes.spines.right: False
+axes.grid: False
+grid.color: 77736B
+grid.alpha: 0.25
+grid.linewidth: 0.6
+
+axes.prop_cycle: cycler('color', ['C8463A', '4F8A68', 'A8864F', '6C7FA8', '8A8A86'])
+lines.linewidth: 1.6
+lines.markersize: 5
+patch.edgecolor: none
+legend.frameon: False
+legend.handlelength: 1.6
+image.cmap: gray

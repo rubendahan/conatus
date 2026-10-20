@@ -27,6 +27,7 @@ from dataclasses import field as dc_field
 from typing import Any
 
 import numpy as np
+import scipy.sparse as sp
 import scipy.sparse.linalg as spla
 
 from ..discretize.compiler import _comps
@@ -49,7 +50,9 @@ def _real_part(a: np.ndarray, name: str) -> np.ndarray:
     a = np.asarray(a)
     if np.iscomplexobj(a):
         im, re = float(np.abs(a.imag).max(initial=0.0)), float(np.abs(a.real).max(initial=0.0))
-        if im > 1e3 * np.finfo(float).eps * max(re, 1.0):
+        # relative to the iterate's own size (critic review of the invariance audit: max(re, 1)
+        # let a genuine imaginary part of an iterate of amplitude 1e-12 be dropped)
+        if im > 1e3 * np.finfo(float).eps * re or (re == 0.0 and im > 0.0):
             raise OptionError(f"iterate {name} has an imaginary part {im:.1e} on a real layout",
                               fix="give a real initial guess, or declare the problem complex")
         return a.real
@@ -76,7 +79,8 @@ NEWTON_TRIVIAL_FRACTION = 1e-8
 class NewtonIteration:
     k: int
     residual: float          # max |F_h(x_k)|
-    rel_residual: float      # residual / max(|A_k x_k|, |b_k|)
+    rel_residual: float      # max_i |F_h|_i / r_i over max_i max(|A_k x_k|_i, |b_k|_i) / r_i,
+    #                          r_i = max_j |A_k|_ij: each row in its own unit (audit invariance)
     step: float | None       # max |x_{k+1} - x_k| (None for the last iterate)
 
     def explain(self) -> str:
@@ -191,7 +195,7 @@ pack_group, unpack_group = _pack, _unpack   # public names (continuation adapter
 
 
 class NewtonSolver:
-    """Newton for an NLBVP. Tolerance, damping and iteration budget are required (no defaults).
+    """Newton for an NLBVP. The tolerance ``tol`` is required; damping and iteration budget have declared defaults.
 
     ``ncc`` / ``data``: fixed coefficient fields of the problem (e.g. the coordinate r used as a
     weight), passed as ``FieldData`` or callables of the grids, exactly as for ``discretize``.
@@ -334,7 +338,7 @@ class NewtonSolver:
             gdata = {f: plan._as_grid(f, d) for f, d in ncc.items()}
             rhs = plan._rhs_coeffs(gdata)
             new = {n: a.copy() for n, a in coeffs.items()}
-            res = scale = 0.0
+            res = scale = raw = 0.0
             targets = []
             for g in plan.groups:
                 gm = plan._assemble(g)
@@ -343,11 +347,20 @@ class NewtonSolver:
                 b = plan._group_rhs(g, rhs, gm)
                 x = _pack(plan, g, coeffs, np.result_type(b, gm.L.dtype, dtype))
                 Ax = gm.L @ x
-                res = max(res, float(np.max(np.abs(Ax - b))))
-                scale = max(scale, float(np.max(np.abs(Ax))), float(np.max(np.abs(b))))
+                # each row in units of its own largest coefficient (audit invariance,
+                #): the relative residual of c F(u) = 0 is that of F(u) = 0 whatever
+                # c and whichever equation it multiplies; with one global scale an equation
+                # written times 1e-8 was measured against its O(1) boundary rows and Newton
+                # never reached tol (stalled at 6e-11, reported not converged)
+                rn = np.asarray(abs(gm.L).max(axis=1).todense()).ravel() if sp.issparse(gm.L) \
+                    else np.abs(gm.L).max(axis=1)
+                rn = np.where(rn > 0, rn, 1.0)
+                raw = max(raw, float(np.max(np.abs(Ax - b))))
+                res = max(res, float(np.max(np.abs(Ax - b) / rn)))
+                scale = max(scale, float(np.max(np.abs(Ax) / rn)), float(np.max(np.abs(b) / rn)))
                 targets.append((g, gm, b, x))
             rel = res / max(scale, 1e-300)
-            iterations.append(NewtonIteration(k, res, rel, None))
+            iterations.append(NewtonIteration(k, raw, rel, None))
             if rel <= self.tolerance:
                 converged = True
                 break
@@ -411,8 +424,9 @@ class NewtonSolver:
                  f"  terms: {self.linear_terms} linear (kept, cancel on the RHS), "
                  f"{self.nonlinear_terms} nonlinear/constant (exact Fréchet derivative of the IR)",
                  "  update: x <- x + damping (X - x), with F'(U) X = F'(U) U - F(U)",
-                 f"  tolerance (max |F_h| / scale) = {self.tolerance:g}, damping = {self.damping:g} "
-                 f"(fixed, never adapted), max_iterations = {self.max_iterations}",
+                 f"  tolerance (max |F_h| / scale, rows in their own unit) = {self.tolerance:g}, "
+                 f"damping = {self.damping:g} (fixed, never adapted), "
+                 f"max_iterations = {self.max_iterations}",
                  "  linear-only unknowns (taus...) start at 0: Newton solves for them exactly",
                  "  Newton system per iteration:"]
         lines += ["    " + s for s in self.newton.explain().splitlines()]

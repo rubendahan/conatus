@@ -1,4 +1,4 @@
-"""Numerical-uncertainty report of a scalar result (spec §75–81): resolution and time-step
+"""Numerical-uncertainty report of a scalar result: resolution and time-step
 studies, observed orders, Richardson extrapolation, an error estimate with its assumptions.
 
 ::
@@ -21,12 +21,14 @@ What is computed (every number in the report, nothing hidden):
   studies; |q_R - q3| alone is an estimate, not a bound, and falls short of the true error about
   half the time); with the formal
   order ``scheme_order`` when given, p is compared to it: an observed order off by more than
-  ``ORDER_TOL`` means the asymptotic range is not reached and the estimate is flagged);
-* **spatial study** at the finest dt: q(N_1), q(N_2), q(N_3) (spectral: geometric decrease of the
-  successive differences expected); spatial error estimate e_s = F_s |q(N_3) - q(N_2)|
-  rho / (1 - rho), rho = |d_2| / |d_1| (d_i successive differences): the geometric tail of the
-  next differences, times the same F_s; flagged when the differences do not decrease (rho >= 1) or
-  sit at round-off;
+  ``ORDER_TOL`` means the asymptotic range is not reached and the estimate is flagged; without
+  ``scheme_order`` the study is flagged as unchecked);
+* **spatial study** at the finest dt: q(N_1), q(N_2), q(N_3) (spectral: q(N) = q_inf + C e^{-a N}
+  at the actual N); a from rho = |d_2| / |d_1| = e^{-a h_1} (1 - e^{-a h_2}) / (1 - e^{-a h_1})
+  (h_i the increments of N, d_i the successive differences), and e_s = F_s |d_2| / (e^{a h_2} - 1)
+  (with equal increments: F_s |d_2| rho / (1 - rho), the geometric tail of the next differences);
+  flagged when the differences do not decrease geometrically (rho >= h_2 / h_1) or when tuple
+  resolutions are refined in different proportions;
 * **total**: value q3 (finest N and dt; the Richardson value is reported, never substituted),
   error = e_t + e_s (a sum: independent sources, no quadrature assumed), interval = value +- error.
 
@@ -48,6 +50,10 @@ ORDER_TOL = 0.3          # |observed - formal| above this: not in the asymptotic
 ROUNDOFF_REL = 1e-13     # successive differences below this (relative to |q|): round-off plateau
 SAFETY = 1.25            # F_s of Roache's GCI (three-level studies); Roache, J. Fluids Eng. 116 (1994)
 _DOC = "docs/site/guide/uncertainty.md"
+# increments of tuple resolutions are "in the same proportion" to this relative rounding
+_SPACING_RTOL = 1e-12
+# decay rate per mode beyond which the spatial fit gives up (e^-1e6: no remaining error at all)
+_DECAY_RATE_MAX = 1e6
 
 
 @dataclass
@@ -91,7 +97,9 @@ class UncertaintyReport:
 
     @property
     def trusted(self) -> bool:
-        """No study flagged (asymptotic range reached, differences above round-off)."""
+        """Every hypothesis checked: no study flagged (asymptotic range reached against the
+        formal order, differences above round-off, a resolution study the model applies to).
+        Without ``scheme_order`` the asymptotic range is not checked, so never trusted."""
         return not (self.temporal.flags or self.spatial.flags)
 
     def explain(self) -> str:
@@ -129,6 +137,9 @@ def _temporal(values: list[float], dts: list[float], formal: int | None) -> _Stu
         return st
     p = math.log(abs(d1) / abs(d2)) / math.log(r1)
     st.order = p
+    if formal is None:
+        st.flags.append("no scheme_order given: the asymptotic range is not checked (pass the "
+                        "formal order of the time scheme)")
     if formal is not None and abs(p - formal) > ORDER_TOL:
         st.flags.append(f"observed order {p:.2f} differs from the formal order {formal} by more than "
                         f"{ORDER_TOL}: not in the asymptotic range, the estimate is unreliable")
@@ -141,7 +152,40 @@ def _temporal(values: list[float], dts: list[float], formal: int | None) -> _Stu
     return st
 
 
-def _spatial(values: list[float], Ns: list[int]) -> _Study:
+def _spacing(Ns: list) -> tuple[float, float] | None:
+    """Increments (h1, h2) of the resolutions along one representative entry, or None when the
+    entries of tuple resolutions are refined in different proportions (no single N to model)."""
+    sz = [tuple(n) if isinstance(n, (tuple, list)) else (n,) for n in Ns]
+    h1 = [b - a for a, b in zip(sz[0], sz[1], strict=True)]
+    h2 = [b - a for a, b in zip(sz[1], sz[2], strict=True)]
+    k = next((i for i, h in enumerate(h1) if h > 0), None)
+    if k is None or h2[k] <= 0:
+        return None
+    ratio = h2[k] / h1[k]
+    if any(not math.isclose(b, ratio * a, rel_tol=_SPACING_RTOL, abs_tol=0) for a, b in zip(h1, h2, strict=True)):
+        return None
+    return float(h1[k]), float(h2[k])
+
+
+def _decay_rate(rho: float, h1: float, h2: float) -> float | None:
+    """a > 0 with |d2|/|d1| = e^{-a h1} (1 - e^{-a h2}) / (1 - e^{-a h1}) (model q(N) = q_inf +
+    C e^{-a N} at the actual N; equal steps give rho = e^{-a h}); None if rho is not reachable
+    (rho >= h2 / h1, the limit a -> 0: no geometric decrease)."""
+    if not 0 < rho < h2 / h1:
+        return None
+
+    def f(a: float) -> float:
+        return (math.exp(-a * h1) * -math.expm1(-a * h2) / -math.expm1(-a * h1)) - rho
+    lo, hi = 1e-12 / max(h1, h2), 1.0
+    while f(hi) > 0:                     # f decreases from h2/h1 (a -> 0) to 0 (a -> inf)
+        hi *= 2.0
+        if hi > _DECAY_RATE_MAX:
+            return None
+    from scipy.optimize import brentq
+    return float(brentq(f, lo, hi, xtol=1e-14, rtol=1e-12))
+
+
+def _spatial(values: list[float], Ns: list) -> _Study:
     st = _Study("spatial", Ns, values)
     d1, d2 = values[1] - values[0], values[2] - values[1]
     scale = max(abs(v) for v in values) or 1.0
@@ -153,11 +197,27 @@ def _spatial(values: list[float], Ns: list[int]) -> _Study:
         return st
     rho = abs(d2) / abs(d1) if d1 else math.inf
     st.ratio = rho
-    if rho >= 1:
-        st.flags.append(f"successive differences do not decrease (rho = {rho:.3g}): not resolved")
+    spacing = _spacing(Ns)
+    if spacing is None:
+        # finding 12: the tail formula assumes the actual increments of N;
+        # entries refined in different proportions leave no single N to model it with
+        st.flags.append("tuple resolutions refined in different proportions: the geometric "
+                        "model of the spatial error cannot be applied (refine every entry in the "
+                        "same proportion)")
         st.estimate = abs(d2)
         return st
-    st.estimate = SAFETY * abs(d2) * rho / (1 - rho)  # geometric tail sum of the next differences
+    h1, h2 = spacing
+    a = _decay_rate(rho, h1, h2)
+    if a is None:
+        st.flags.append(f"successive differences do not decrease (rho = {rho:.3g}"
+                        + (f", steps in N {h1:g} then {h2:g}" if h1 != h2 else "")
+                        + "): not resolved")
+        st.estimate = abs(d2)
+        return st
+    # remaining error after the finest N under q(N) = q_inf + C e^{-a N} at the actual N
+    # (review finding 12: N = [1, 4, 5] was modelled as equally spaced, error 13.6x too small);
+    # equal steps give |d2| rho / (1 - rho), the geometric tail sum of the next differences
+    st.estimate = SAFETY * abs(d2) / math.expm1(a * h2)
     return st
 
 
@@ -169,7 +229,13 @@ def uncertainty(quantity: Callable[..., Any], *, N: Sequence[int], dt: Sequence[
     tuple per run, passed as given; the last one is the finest); ``dt``: decreasing steps with a
     constant ratio; ``scheme_order``: formal order of the time scheme (checks the asymptotic
     range). Nothing is chosen for you: no default list, no adaptive refinement."""
-    Ns, dts = list(N), [float(h) for h in dt]
+    from ..errors import check_real
+    if isinstance(N, str) or isinstance(dt, str) or not (hasattr(N, "__iter__")
+                                                         and hasattr(dt, "__iter__")):
+        raise InputTypeError(f"uncertainty(N={N!r}, dt={dt!r}): two lists of three values",
+                             fix="N=[32, 48, 64], dt=[4e-3, 2e-3, 1e-3]", doc=_DOC)
+    # each step a finite real number > 0, never parsed from text (audit inputs)
+    Ns, dts = list(N), [check_real(h, "dt", "uncertainty()", positive=True) for h in dt]
     if len(Ns) != 3 or len(dts) != 3:
         raise InputTypeError(f"uncertainty(N={Ns}, dt={dts}): three resolutions and three time steps",
                              why="an observed order and a geometric contraction need three values each",
@@ -191,6 +257,11 @@ def uncertainty(quantity: Callable[..., Any], *, N: Sequence[int], dt: Sequence[
                              fix="N=[32, 48, 64] (or tuples growing in every entry)", doc=_DOC)
     if not callable(quantity):
         raise InputTypeError("uncertainty(quantity, ...): a function quantity(N=..., dt=...)", doc=_DOC)
+    if scheme_order is not None:
+        # checked before the five runs (audit inputs: scheme_order="2" failed with a
+        # bare TypeError after them, 0 or 2.5 were accepted as a formal order)
+        from ..errors import check_count
+        check_count(scheme_order, "scheme_order", "uncertainty()")
 
     def q(n, h) -> float:
         v = quantity(N=n, dt=h)

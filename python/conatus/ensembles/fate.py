@@ -26,8 +26,14 @@ __all__ = ["ensemble_fate", "EnsembleFate", "proportion_ci"]
 
 def proportion_ci(k: int, m: int, z: float = 1.959963984540054) -> tuple[float, float, float]:
     """(p, low, high): proportion k/m with its Wilson score interval (default 95 %)."""
-    if m <= 0:
-        raise OptionError("proportion_ci: m must be > 0")
+    # counts 0 <= k <= m, m > 0, and z > 0 (audit inputs: k > m gave NaN bounds
+    # clipped to [0, 1], k = 1.5 and z < 0 an interval without a word)
+    from ..errors import check_count, check_real
+    m = check_count(m, "m", "proportion_ci()")
+    k = check_count(k, "k", "proportion_ci()", minimum=0)
+    z = check_real(z, "z", "proportion_ci()", positive=True)
+    if k > m:
+        raise OptionError(f"proportion_ci(k={k}, m={m}): k successes out of m trials, k <= m")
     p = k / m
     den = 1 + z * z / m
     c = (p + z * z / (2 * m)) / den
@@ -61,20 +67,33 @@ def ensemble_fate(ens, classify: Callable, *, check_every: int, min_steps: int, 
     """Run ``ens`` until every member is decided or ``max_steps``; see the module docstring.
     ``classify(ens) -> int array (B,)`` (0 = undecided); ``classifier``: its description (thresholds),
     stored in the result; ``record(ens) -> dict`` optional per-check record."""
-    if check_every < 1 or max_steps < check_every or min_steps < 0:
-        raise OptionError("ensemble_fate: need check_every >= 1, max_steps >= check_every, "
-                          "min_steps >= 0")
+    from ..errors import check_count
+    # counts are integers, never truncated (finding 66)
+    check_every = check_count(check_every, "check_every", "ensemble_fate")
+    max_steps = check_count(max_steps, "max_steps", "ensemble_fate")
+    min_steps = check_count(min_steps, "min_steps", "ensemble_fate", minimum=0)
+    if max_steps < check_every:
+        raise OptionError("ensemble_fate: need max_steps >= check_every",
+                          fix=f"max_steps={check_every} or more")
     B = ens.B
     labels = np.zeros(B, int)
     tdec = np.full(B, np.nan)
     hist = []
     steps = 0
     while steps < max_steps:
-        ens.run(check_every)
-        steps += check_every
-        lab = np.asarray(classify(ens)).astype(int)
-        if lab.shape != (B,):
-            raise OptionError(f"classify must return {B} labels, got shape {lab.shape}")
+        # the last chunk stops at the horizon (finding 67: check_every=4,
+        # max_steps=10 ran to step 12); the final check happens at max_steps exactly
+        chunk = min(check_every, max_steps - steps)
+        ens.run(chunk)
+        steps += chunk
+        raw = np.asarray(classify(ens))
+        if raw.shape != (B,):
+            raise OptionError(f"classify must return {B} labels, got shape {raw.shape}")
+        lab = raw.astype(int)
+        if not np.array_equal(lab, raw):
+            raise OptionError("classify must return integer labels (0 = undecided); got "
+                              f"non-integer values {raw[lab != raw][:3]!r}",
+                              why="a label is never truncated (finding 66)")
         if record is not None:
             hist.append(record(ens))
         if steps >= min_steps:

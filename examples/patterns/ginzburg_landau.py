@@ -74,6 +74,7 @@ if __name__ == "__main__":
         c3k = bfn_threshold(k, c1)
         print(f"  k = {k:5.3f}: c3_threshold = {c3k:.12f}, 1 + c1 c3 = {1 + c1 * c3k:.3e}"
               f"  (exact 2x2: -(2 + k^2 (1 + c1^2)) / (2 c1) = {-(2 + k * k * (1 + c1 * c1)) / (2 * c1):.12f})")
+        assert abs(c3k + (2 + k * k * (1 + c1 * c1)) / (2 * c1)) < 1e-12, (k, c3k)   # -> -1/c1 (Newell 1974)
     for c3 in (-0.4, -0.6):
         g, r = growth(0.05, c1, c3, 0.0)
         print(f"  c3 = {c3}: 1 + c1 c3 = {1 + c1 * c3:+.1f}, max Re(sigma) at k=0.05 = {g:+.3e} (residual {r:.1e})")
@@ -83,4 +84,5 @@ if __name__ == "__main__":
         for k in (0.02, 0.01):
             q = eckhaus_threshold(k, c1, c3)
             print(f"  c1={c1}, c3={c3}, k={k}: q^2 = {q * q:.10f}  (theory {qE2:.10f}, gap {q * q - qE2:.2e})")
+        assert abs(q * q - qE2) < 1e-4, (c1, c3, q * q, qE2)        # Eckhaus, at k = 0.01
     print(cgle(0.05, 2.0, -0.6, 0.0).explain())

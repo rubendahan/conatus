@@ -70,16 +70,18 @@ class EVPMode:
                                  fix="unknowns: " + ", ".join(self._grids), doc=_DOC)
 
     def grid(self, name: str) -> np.ndarray:
-        """Complex grid values of unknown ``name`` (components first for a vector)."""
+        """Complex grid values of unknown ``name`` (components first for a vector); like every
+        accessor of the mode, the caller's own array (review of the state audit: the mode's
+        arrays were handed out, and the coordinates are shared by the modes of one result)."""
         self._check(name)
-        return self._grids[name]
+        return self._grids[name].copy()
 
     __getitem__ = grid
 
     def coeffs(self, name: str) -> np.ndarray:
         """Spectral coefficients of unknown ``name`` (the plan's layout, same normalisation)."""
         self._check(name)
-        return self._coeffs[name]
+        return self._coeffs[name].copy()
 
     def coordinate(self, name: str) -> np.ndarray:
         """Grid points of coordinate ``name`` matching :meth:`grid`."""
@@ -87,7 +89,7 @@ class EVPMode:
             raise InputTypeError(f"mode.coordinate({name!r}): not a coordinate with a basis."
                                  + did_you_mean(name, self._coords),
                                  fix="coordinates: " + ", ".join(self._coords), doc=_DOC)
-        return self._coords[name]
+        return np.array(self._coords[name], copy=True)
 
     def at(self, name: str, **points: Any) -> np.ndarray:
         """Values of unknown ``name`` at chosen points of the non-periodic coordinate, by exact

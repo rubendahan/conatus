@@ -35,10 +35,12 @@ Run:  python examples/patterns/swift_hohenberg.py
 """
 import numpy as np
 
-from conatus.expert import (IVP, NLBVP, CartesianCoordinates, Chebyshev, ContinuationSettings, Domain, Field,
-                            IVPSolver, NewtonSolver, NLBVPContinuation, Parameter, ParametricEVP,
-                            PeriodicNewtonSolver, PhaseCondition, RealFourier, Zero, critical, diff,
+from conatus.expert import (IVP, NLBVP, CartesianCoordinates, Chebyshev, ContinuationSettings,
+                            Domain, Field, IVPSolver, NewtonSolver, NLBVPContinuation, Parameter,
+                            ParametricEVP, PeriodicNewtonSolver, RealFourier, critical, diff,
                             discretize, dt, integ, interp, lap, linearize)
+from conatus.ir import Zero
+from conatus.solvers import PhaseCondition
 
 
 def swift_hohenberg_ivp(domain, lap_):
@@ -102,7 +104,7 @@ def rolls_periodic(N: int, r: float):
 
     pb = NLBVP([u], name="Swift-Hohenberg rolls (periodic)")
     pb.add_equation((rr * u - one_plus_lap(one_plus_lap(u)) - u * u * u, 0))
-    solver = PeriodicNewtonSolver(pb, tolerance=1e-13, damping=1.0, max_iterations=20,
+    solver = PeriodicNewtonSolver(pb, tol=1e-13, damping=1.0, max_iterations=20,
                                   phase=PhaseCondition(u, x, kind="sin1"))
     return solver.solve({u: lambda X: np.sqrt(4 * r / 3) * np.cos(X)}), x
 
@@ -110,7 +112,7 @@ def rolls_periodic(N: int, r: float):
 def roll_solver(N: int, r: float):
     """Newton for the rolls at r, started from the leading-order amplitude sqrt(4 r / 3)."""
     pb, u, ncc = rolls(N)
-    solver = NewtonSolver(pb, tolerance=1e-13, damping=1.0, max_iterations=30, params={"r": r}, ncc=ncc)
+    solver = NewtonSolver(pb, tol=1e-13, damping=1.0, max_iterations=30, params={"r": r}, ncc=ncc)
     return solver, solver.solve({u: lambda X: np.sqrt(4 * r / 3) * np.sin(X)})
 
 
@@ -147,6 +149,7 @@ def rolls_2d(N: int, r: float, timestep: float, steps: int):
 if __name__ == "__main__":
     q_c, r_c = onset()
     print(f"(a) onset: q_c = {q_c:.8f}, r_c = {r_c:.2e}  (theory: q_c = 1, r_c = 0)")
+    assert abs(q_c - 1) < 1e-4 and abs(r_c) < 1e-8, (q_c, r_c)    # Swift & Hohenberg (1977)
     P, evp = growth_pencil()
     print(evp.explain())
     print(P.explain())
@@ -154,15 +157,19 @@ if __name__ == "__main__":
     for N in (16, 20, 24, 32):
         _, sol = roll_solver(N, 0.1)
         print(f"  N = {N}: A = {sol.value('A'):.15f}, Newton residual {sol.residual:.1e}")
+    A = sol.value("A")                                             # N = 32, converged in N
     sol, x = rolls_periodic(16, 0.1)
     print(f"  periodic NLBVP (N = 16, phase msin_1 = 0): A = {sol.harmonic('u', x, 1):.15f}")
+    assert abs(sol.harmonic("u", x, 1) - A) < 1e-12               # periodic NLBVP = odd subspace
     print(sol.explain())
     pts, branch = roll_branch(24, 0.02, 0.5, 0.05)
     print(branch.explain())
     print("  r         A              A^2 - 4r/3     (A^2 - 4r/3)/r^2  (theory 1/144 = 0.006944)")
-    for r, A, res in pts:
-        gap = A * A - 4 * r / 3
-        print(f"  {r:.5f}  {A:.12f}  {gap:.3e}      {gap / r ** 2:.6f}   residual {res:.1e}")
+    for r, A_r, res in pts:
+        gap = A_r * A_r - 4 * r / 3
+        print(f"  {r:.5f}  {A_r:.12f}  {gap:.3e}      {gap / r ** 2:.6f}   residual {res:.1e}")
+        assert abs(gap) < 0.01 * r ** 2, (r, gap)                 # A^2 = 4r/3 + O(r^2) (Cross & Hohenberg 1993)
     A_x, A_y, rate, s = rolls_2d(16, 0.1, 0.5, 800)
     print(f"(c) 2D IVP at r = 0.1, t = {s.t}: A_x = {A_x:.12f}, A_y = {A_y:.1e}, |du/dt| = {rate:.1e}")
+    assert rate < 1e-8 and A_y < 1e-6 and abs(A_x - A) < 1e-9, (rate, A_y, A_x, A)   # 2D IVP = 1D rolls
     print(s.explain())

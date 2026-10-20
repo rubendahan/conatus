@@ -295,7 +295,13 @@ class Grid:
 
     # ------------------------------------------------------------------ quadrature
     def weights(self, axis: int):
-        """1D quadrature weights of ``axis`` (sum = length)."""
+        """1D quadrature weights of ``axis`` (sum = length): a new array (the grid keeps its
+        own copy: an in-place change of the returned array used to change every later
+        ``integrate``, ``mean`` and ``cell_volumes`` of this grid, audit state)."""
+        return self._weights(axis).copy()
+
+    def _weights(self, axis: int):
+        """The cached weights of ``axis`` (never handed out: :meth:`weights` copies them)."""
         ax = self.axes[axis]
         key = ("w", axis)
         w = self._cache.get(key)
@@ -312,7 +318,7 @@ class Grid:
         """Integral of a scalar field over the domain (0-d array on the field's device)."""
         out = f
         for axis in range(self.ndim - 1, -1, -1):
-            out = self.xp.tensordot(out, self.weights(axis), axes=([axis], [0]))
+            out = self.xp.tensordot(out, self._weights(axis), axes=([axis], [0]))
         return out
 
     def mean(self, f):
@@ -322,7 +328,7 @@ class Grid:
     def cell_volumes(self):
         """Quadrature weight of every node (outer product of the 1D weights), shape ``shape``.
         Used as the volume of each sample when sorting (background potential energy)."""
-        w = self.weights(0)
+        w = self.weights(0)                     # a copy: the 1D result is the caller's own
         for axis in range(1, self.ndim):
-            w = w[..., None] * _bshape(self.weights(axis), axis + 1, axis)
+            w = w[..., None] * _bshape(self._weights(axis), axis + 1, axis)
         return w

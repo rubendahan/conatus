@@ -47,6 +47,14 @@ class POD:
     orthonormality: float           # ‖Φᴴ W Φ − I‖_max
     reconstruction: float           # ‖F (X' − Φ A)‖_F / ‖F X'‖_F with the kept rank
     notes: list[str] = field(default_factory=list)
+    total_energy: float = float("nan")  # ‖F X'‖_F² / m: the energy of all the snapshots
+
+    @property
+    def energy_fraction(self) -> float:
+        """Fraction of the snapshots' total energy captured by the kept modes, Σ_k λ_k / E_total
+        (finding 92: explain() used to normalise on the kept modes, so it
+        always printed 1)."""
+        return float(self.energies.sum() / self.total_energy) if self.total_energy > 0 else 1.0
 
     @property
     def rank(self) -> int:
@@ -59,12 +67,11 @@ class POD:
         return to_host(self.inner_product.inner(self.modes, Xc))
 
     def explain(self) -> str:
-        frac = self.energies / max(self.energies.sum(), 1e-300)
         return (f"POD ({self.method}, mean: {self.mean_policy}, {self.inner_product.kind} product) "
                 f"rank {self.rank}: energies λ_k = σ_k²/m = "
                 + ", ".join(f"{e:.6g}" for e in self.energies[:6])
                 + (" …" if self.rank > 6 else "")
-                + f"; kept fraction of the energy {frac.sum():.6g} of the kept modes; "
+                + f"; kept fraction of the total snapshot energy {self.energy_fraction:.6g}; "
                 f"orthonormality defect {self.orthonormality:.1e}; relative reconstruction "
                 f"residual {self.reconstruction:.1e}. " + " ".join(self.notes))
 
@@ -82,6 +89,8 @@ def pod(X, *, inner_product: DataInnerProduct, rank: int, method: str, mean: str
         raise OptionError(f"rank = {rank}: expected an integer 1 <= rank <= min(n, m) = {min(n, m)}")
     mu = X.mean(axis=1) if mean == "subtract" else xp.zeros(n, dtype=X.dtype)
     Xc = X - mu[:, None]
+    from .norms import check_data
+    check_data(inner_product, X)       # audit inputs: NaN was a bare LinAlgError
     FX = inner_product.half(Xc)
     notes = []
     if method == "svd":
@@ -108,5 +117,7 @@ def pod(X, *, inner_product: DataInnerProduct, rank: int, method: str, mean: str
     G = to_host(inner_product.inner(modes, modes))
     ortho = float(np.abs(G - np.eye(rank)).max())
     R = FX - inner_product.half(modes) @ xp.asarray(coeffs)
-    rec = float(to_host(xp.linalg.norm(R)) / max(float(to_host(xp.linalg.norm(FX))), 1e-300))
-    return POD(s ** 2 / m, s, modes, coeffs, mu, inner_product, method, mean, ortho, rec, notes)
+    nFX = float(to_host(xp.linalg.norm(FX)))
+    rec = float(to_host(xp.linalg.norm(R)) / max(nFX, 1e-300))
+    return POD(s ** 2 / m, s, modes, coeffs, mu, inner_product, method, mean, ortho, rec, notes,
+               total_energy=nFX ** 2 / m)

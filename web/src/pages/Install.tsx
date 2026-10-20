@@ -1,25 +1,27 @@
-// Install page (public 0.1.0): the wheels first (CPU on PyPI, CUDA 12 beta on the GitHub release), then the
+// Install page (public release; every command pinned to SITE.version, the package version): the wheels first (CPU on PyPI, CUDA 12 beta on the GitHub release), then the
 // builds from source, extras, how to check an installation.
 // Sources: pyproject.toml (build options, extras) and docs/site/install.md.
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Code, PageHead, Section } from "../components/ui";
+import { SITE } from "../content/site";
 import "../styles/info.css";
 
+const V = SITE.version;
 const PIP_CPU = `$ python3.12 -m venv venv && . venv/bin/activate
-$ pip install "conatus[tutorials]"           # CPU wheel from PyPI + matplotlib for the tutorials
+$ pip install "conatus[tutorials]==${V}"     # CPU wheel from PyPI + matplotlib, xarray for the tutorials
 $ python -m conatus doctor                   # what this machine can run`;
 
-const PIP_GPU = `# download the conatus-0.1.0+cu12-cp3XX-…whl of your Python from the GitHub release, then
+const PIP_GPU = `# the CUDA wheel of the GitHub release (here for Python 3.12; cp311 and cp313 exist too)
 $ python3.12 -m venv venv && . venv/bin/activate
-$ pip install "./conatus-0.1.0+cu12-cp312-cp312-<platform>.whl[gpu,tutorials]"
+$ pip install "conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v${V}/conatus-${V}+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
 $ python -m conatus doctor                   # on a GPU node: "GPU (backend='cuda')": ok`;
 
 const CPU_ENV = `# LAPACK and BLAS come from the active conda env only (no system fallback)
 $ micromamba create -n conatus -c conda-forge python=3.12 gxx_linux-64=13 liblapack libblas
 $ micromamba activate conatus`;
 
-const CPU_INSTALL = `$ git clone https://github.com/rubendahan/conatus && cd conatus
+const CPU_INSTALL = `$ git clone --branch v${V} https://github.com/rubendahan/conatus && cd conatus
 $ pip install ".[tutorials]"                      # CPU (the default) + matplotlib for the tutorials`;
 
 const GPU_ENV = `# in the same env: nvcc, cuFFT, cuBLAS and CuPy from conda-forge (CUDA 12.9 tested)
@@ -138,9 +140,9 @@ export default function Install() {
   return (
     <>
       <PageHead eyebrow="Install" title="Install">
-        <p>Conatus 0.1.0 installs with pip from a binary wheel, with its compiled core inside: no compiler needed. The CPU
+        <p>Conatus {V} installs with pip from a binary wheel, with its compiled core inside: no compiler needed. The CPU
           wheel is on PyPI; a CUDA 12 wheel for NVIDIA GPUs, in beta, is attached to the{" "}
-          <a href="https://github.com/rubendahan/conatus/releases/tag/v0.1.0">GitHub release</a>. It also builds from source.</p>
+          <a href={`https://github.com/rubendahan/conatus/releases/tag/v${V}`}>GitHub release</a>. It also builds from source.</p>
       </PageHead>
 
       <Section id="requirements" title="Requirements">

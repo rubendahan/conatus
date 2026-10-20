@@ -1,8 +1,11 @@
 // Validation: the one page of the site with numbers. Every verification result of the release,
-// grouped by topic: value obtained, reference, deviation.
+// grouped by topic: value obtained, reference, deviation; each row says where it comes from (the
+// table of the Conatus paper, how its deviation was obtained) and, when there is one, the script of
+// this repository that reproduces it. The run records stay in the development repository: the page
+// says so instead of linking to them (external review 0.1.0, finding 70).
 // Data: src/generated/ledger.json (scripts/gen-data.mjs).
 // Self-contained: no other page imports anything from here, so it can be removed with its route.
-import { PageHead } from "../components/ui";
+import { PageHead, RepoPath } from "../components/ui";
 import { Rich } from "../components/Rich";
 import { ledger, type LedgerEntry } from "../data";
 import "../styles/ledger.css";
@@ -29,6 +32,13 @@ function Row({ e }: { e: LedgerEntry }) {
     <tr id={`t-${e.id}`}>
       <th scope="row" className="v-test">
         <Rich text={e.rich.test} />
+        <details className="v-more">
+          <summary>Source</summary>
+          <p>
+            {e.section} table of the Conatus paper{e.deviationNote ? <>; deviation: {e.deviationNote}</> : null}
+            {e.script && <> · reproduced by <RepoPath path={e.script}>{e.script}</RepoPath></>}
+          </p>
+        </details>
       </th>
       <td className="v-value" data-label="Value"><span><Rich text={e.rich.value} /></span></td>
       <td className="v-ref" data-label="Reference"><span>{e.reference.trim() && !/^[—–-]+$/.test(e.reference.trim()) ? <Rich text={e.rich.reference} /> : "—"}</span></td>
@@ -75,8 +85,11 @@ export default function Validation() {
         })}
         <section className="v-note" aria-labelledby="how-h">
           <h2 id="how-h">How these numbers are produced</h2>
-          <p>Values are taken from the validation record of the release at every build of this site, never typed by hand.
-            A dash in the deviation column means the row states the agreement in words rather than as one number.</p>
+          <p>Values are taken from the validation record of Conatus {ledger.version ?? ""} (the Verification table of the
+            Conatus paper) at every build of this site, never typed by hand. A deviation is the relative error of a recorded
+            measurement or the one deviation the row states; a dash means the row states the agreement in words rather
+            than as one number. Each number was produced by a recorded run; the run records (inputs, code version, log)
+            are kept with the development repository, not in this one.</p>
         </section>
       </div>
     </>

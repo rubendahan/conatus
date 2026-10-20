@@ -50,7 +50,7 @@ const PARTS: Part[] = [
     id: "trust", label: "Keep track", title: "Observable and reproducible",
     intro: "A computation you can find again afterwards.",
     caps: [
-      { title: "Every run recorded", text: "Parameters, code version and results are kept for each run; find, compare and reproduce them later." },
+      { title: "Runs recorded on request", text: "With record=True or cn.runs.track, the parameters, code version and results of a run are kept; find, compare and reproduce them later. Nothing is recorded unless you ask." },
       { title: "Files any tool can read", text: "Snapshots and checkpoints in HDF5, with the provenance of the run inside; a run split over several jobs continues exactly as if it had never stopped.", more: ["docs:guide/io.html", "Input and output"] },
       { title: "A number with its error bar", text: "From the resolutions and time steps you declare, a computed quantity is reported with an error estimate and the checks behind it; time averages come with their statistical error.", more: ["docs:guide/uncertainty.html", "Numerical uncertainty"] },
       { title: "A Methods paragraph, written for you", text: "Each computation can describe itself: the discretisation, the scheme and the references, ready for a paper." },

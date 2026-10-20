@@ -13,6 +13,7 @@ Orr–Sommerfeld) are only removed by an explicit resolution-drift test
 """
 from __future__ import annotations
 
+import numbers
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from dataclasses import field as dc_field
@@ -34,9 +35,34 @@ INF_TOL = 1e3 * np.finfo(float).eps     # |beta| <= INF_TOL |alpha| (scaled) -> 
 # strictest; every returned mode carries its residual (conatus.tolerances.DECLARED).
 ARNOLDI_TOL = 0.0
 DRIFT_WHY = ("the drift tolerance decides which modes are kept: a mode is returned only if it "
-             "reappears at the finer resolution within it (relative to max(|sigma|, 1)); 1e-6 "
+             "reappears at the finer resolution within it (relative to |sigma|, floored at "
+             "DRIFT_FLOOR times the median |sigma| of the finer spectrum); 1e-6 "
              "keeps resolved modes and removes spurious tau modes in the usual cases, a tighter "
              "value also removes marginally resolved physical modes")
+
+
+#: Floor of the drift ratio, as a fraction of the median |sigma| of the finer spectrum (audit
+#: invariance). The ratio was |dsigma| / max(|sigma|, 1): the 1 is in the unit of the
+#: eigenvalue, so the same modes written in another time unit (sigma / 1e4) were judged on an
+#: absolute drift and 9 under-resolved Orr-Sommerfeld modes passed instead of 1. The median of
+#: the finer spectrum is in the unit of sigma (a handful of spurious modes do not move it); a mode
+#: below DRIFT_FLOOR of it is "near zero" for this spectrum and its drift is measured against
+#: that floor (a neutral mode computed as rounding noise at both resolutions stays kept).
+DRIFT_FLOOR = 1e-3
+
+
+def drift_ratios(lo: np.ndarray, hi: np.ndarray) -> np.ndarray:
+    """|sigma_lo - nearest sigma_hi| / max(|sigma_lo|, DRIFT_FLOOR median |sigma_hi|) for each
+    eigenvalue of ``lo``: invariant under a change of unit of sigma and under any scaling of the
+    equations (audit invariance)."""
+    from .._scales import spectral_scale
+    lo, hi = np.asarray(lo), np.asarray(hi)
+    # the scale of the finer spectrum: the median of its nonzero moduli (critic review: the plain
+    # median is 0 when most eigenvalues are 0, and the rounding-noise neutral modes, compared with
+    # a floor of 0, were dropped as drifting); the largest when fewer than half are nonzero
+    floor = DRIFT_FLOOR * spectral_scale(hi) if hi.size else 0.0
+    return np.array([np.min(np.abs(hi - s)) / max(abs(s), floor, np.finfo(float).tiny)
+                     for s in lo])
 
 
 def check_drift_tol(tol: Any, where: str, name: str = "drift_tol") -> float:
@@ -206,7 +232,9 @@ class EVPResult:
         """Counts (finite, infinite, filtered), the filters that removed modes, the growth
         convention and the ``n`` first modes with residuals. ``full=True``: the whole log
         (pencil regularity, infinite-eigenvalue test, solver tolerances)."""
-        kept = " kept by the filters below" if any(s.startswith("kept ") for s in self.log) else ""
+        from ..errors import check_count
+        n = check_count(n, "n", "EVPResult.explain()", minimum=0)  # audit inputs: n=-3 sliced
+        kept =" kept by the filters below" if any(s.startswith("kept ") for s in self.log) else ""
         lines = [f"EVP result [{self.label}] ({self.method}): {self.values.size} finite modes{kept}, "
                  f"{self.n_infinite} infinite (M singular on tau/boundary rows)"]
         if self.filter_note is not None and self.drift is None:
@@ -260,25 +288,49 @@ def _residuals(L, M, w, V) -> np.ndarray:
     return np.linalg.norm(R, axis=0) / (scale * np.linalg.norm(V, axis=0))
 
 
-def _require_mass(M) -> None:
-    """M = 0 means the eigenvalue never enters the problem: refuse rather than return []."""
+def _require_mass(M, L=None) -> None:
+    """M = 0 means the eigenvalue never enters the problem: refuse rather than return []. With
+    ``L``: both square, of one shape, and finite (audit inputs: a shape mismatch or a
+    NaN entry was a bare ValueError of SciPy)."""
+    from ..errors import EquationError, InputTypeError
+    if L is not None:
+        if L.ndim != 2 or L.shape != M.shape or L.shape[0] != L.shape[1]:
+            raise InputTypeError(f"pencil (L, M): shapes {L.shape} and {M.shape}, two square "
+                                 "matrices of one shape are needed",
+                                 fix="L and M of the same group (plan.matrices(group))")
+        data = [A.data if sp.issparse(A) else np.asarray(A) for A in (L, M)]
+        if not all(np.all(np.isfinite(d)) for d in data):
+            raise InputTypeError("pencil (L, M): non-finite entries (NaN or inf)",
+                                 why="eigenvalues of a NaN matrix mean nothing",
+                                 fix="check the parameters and coefficients the matrices were "
+                                     "built with")
     if _norm1(M) == 0.0:
-        raise ValueError("M is identically zero: the eigenvalue appears in no equation "
-                         "(see EVP.check())")
+        raise EquationError("M is identically zero: the eigenvalue appears in no equation "
+                            "(see EVP.check())")
 
 
 def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
     """All eigenvalues by the QZ algorithm (scipy.linalg.eig), infinite ones counted and removed."""
-    _require_mass(M)
     Ld = L.toarray() if sp.issparse(L) else np.asarray(L)
     Md = M.toarray() if sp.issparse(M) else np.asarray(M)
-    out = sl.eig(-Ld, Md, left=left, right=True, homogeneous_eigvals=True)
+    _require_mass(Md, Ld)
+    # Row equilibration (audit invariance): D (L + s M) has the eigenvalues and right
+    # vectors of L + s M for any diagonal D, but QZ is backward stable in the norm of the whole
+    # pencil, so a row 1e-8 times smaller than the others (an equation multiplied by a constant,
+    # the 1/Re in front of D^4 next to O(1) boundary rows) lost 8 digits: the Orr-Sommerfeld
+    # equation written times 1e-8 had no mode left after the drift test. Each row is divided by
+    # its largest entry in L or M; the infinite/finite split below is then invariant too.
+    r = np.maximum(np.abs(Ld).max(axis=1, initial=0.0), np.abs(Md).max(axis=1, initial=0.0))
+    r = np.where(r > 0, r, 1.0)[:, None]
+    Le, Me = Ld / r, Md / r
+    out = sl.eig(-Le, Me, left=left, right=True, homogeneous_eigvals=True)
     (a, b), *vecs = out
     if left:
         VL, VR = vecs
+        VL = VL / r            # y^H (L + s M) = 0  <=>  (D^-1 y)^H D (L + s M) = 0, D = 1/r
     else:
         VL, VR = None, vecs[0]
-    scale = max(_norm1(Ld), 1e-300) / max(_norm1(Md), 1e-300)
+    scale = max(_norm1(Le), 1e-300) / max(_norm1(Me), 1e-300)
     finite = np.abs(b) * scale > INF_TOL * np.abs(a)
     w = a[finite] / b[finite]
     V = VR[:, finite]
@@ -286,8 +338,23 @@ def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
     r = EVPResult(w, V, res, "dense QZ (scipy.linalg.eig)", label, int((~finite).sum()),
                   VL[:, finite] if left else None)
     r.log.append(f"{int((~finite).sum())} infinite eigenvalues removed (|beta| <= {INF_TOL:.1e} "
-                 "|alpha| after scaling by ||L||/||M||)")
+                 "|alpha| after scaling by ||L||/||M||, rows equilibrated)")
     return r
+
+
+def check_target(target: Any) -> None:
+    """The shift of shift-invert: a finite (real or complex) number, never text or a flag (audit
+    inputs: target=nan factorised a NaN matrix, "0.2" was a bare UFuncTypeError)."""
+    from ..errors import OptionError
+    if isinstance(target, np.ndarray) and target.ndim == 0:      # one number (np.array(0.2j))
+        target = target[()]
+    ok = isinstance(target, numbers.Number) and not isinstance(target, (bool, np.bool_))
+    if ok:
+        z = complex(target)
+        ok = np.isfinite(z.real) and np.isfinite(z.imag)
+    if not ok:
+        raise OptionError(f"shift-invert: target={target!r} must be a finite number",
+                          fix="target=0.1+0.2j (the eigenvalues nearest it are returned)")
 
 
 @renames("conatus.solvers.evp:solve_sparse")
@@ -299,13 +366,23 @@ def solve_sparse(L, M, target: complex, n_modes: int = 6, *, label: str = "",
     Works for singular, non-symmetric M (no M-inner product assumed): the
     standard problem  -(L + s M)^{-1} M x = nu x  has nu = 1 / (sigma - s).
     """
-    _require_mass(M)
+    from ..errors import OptionError, check_count
     L = sp.csc_matrix(L, dtype=complex)
     M = sp.csc_matrix(M, dtype=complex)
-    lu = spla.splu(L + target * M)
+    _require_mass(M, L)
     n = L.shape[0]
+    # target: a finite number; n_modes: an integer the Arnoldi method can return (audit inputs,
+    # target=nan factorised a NaN matrix, "0.2" was a bare UFuncTypeError, and
+    # n_modes was clipped to n - 2 while the log said the requested count)
+    check_target(target)
+    check_count(n_modes, "n_modes", "shift-invert")
+    if n_modes > n - 2:
+        raise OptionError(f"shift-invert: n_modes={n_modes} > {n - 2} (= size - 2, the most the "
+                          f"Arnoldi method returns for a pencil of size {n})",
+                          fix=f"n_modes <= {n - 2}, or method='dense' for every mode")
+    lu = spla.splu(L + target * M)
     op = spla.LinearOperator((n, n), matvec=lambda x: -lu.solve(M @ x), dtype=complex)
-    nu, V = spla.eigs(op, k=min(n_modes, n - 2), which="LM", tol=tol)
+    nu, V = spla.eigs(op, k=n_modes, which="LM", tol=tol)
     # nu = 0 <=> sigma = infinity (M singular): counted, never returned as a finite mode.
     scale = max(np.abs(nu).max(initial=0.0), 1e-300)
     keep = np.abs(nu) > INF_TOL * scale
@@ -326,13 +403,14 @@ def drift_filter(lo: EVPResult, hi: EVPResult, tol: float = REQUIRED) -> EVPResu
 
     ``tol`` has no default: it decides which modes are returned.
 
-    Drift ratio = |sigma_lo - nearest sigma_hi| / max(|sigma_lo|, 1). Spurious tau modes move by
+    Drift ratio = |sigma_lo - nearest sigma_hi| / max(|sigma_lo|, DRIFT_FLOOR median |sigma_hi|)
+    (:func:`drift_ratios`: no unit of sigma enters). Spurious tau modes move by
     orders of magnitude between resolutions; resolved physical modes do not.
     """
     tol = check_drift_tol(tol, "drift_filter()", "tol")      # given and in range
     if hi.values.size == 0:
         raise ValueError("drift test needs a non-empty high-resolution spectrum")
-    d = np.array([np.min(np.abs(hi.values - s)) / max(abs(s), 1.0) for s in lo.values])
+    d = drift_ratios(lo.values, hi.values)
     keep = np.nonzero(d <= tol)[0]
     out = lo.select(keep, f"resolution drift <= {tol:.0e} against {hi.values.size} modes at the "
                           f"finer resolution; {lo.values.size - keep.size} unresolved or spurious "

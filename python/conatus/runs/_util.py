@@ -20,13 +20,26 @@ import numpy as np
 #: arrays up to this many elements are stored inline in ``run.json`` (as lists); larger arrays in
 #: parameters are replaced by a tagged summary {"array": {shape, dtype, sha256}} (declared)
 INLINE_ARRAY_MAX = 64
+#: strings that stand for non-finite floats in the JSON record: a *string* with one of these
+#: values is stored tagged, {"str": ...}, so that it reads back as a string (review finding 50)
+_FLOAT_WORDS = ("nan", "inf", "-inf")
+#: key sets of the tagged encodings: a user dict with one of these key sets is stored wrapped,
+#: {"dict": {...}}, so that it reads back as a dict (not as a complex number or an array)
+#: dtypes of the inline arrays jsonable writes (numbers and booleans; never object)
+_INLINE_DTYPES = {"bool", "int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64",
+                  "float16", "float32", "float64", "complex64", "complex128"}
+_TAGS = ({"complex"}, {"ndarray", "shape", "dtype"}, {"array"}, {"repr"}, {"str"}, {"dict"})
 
 
 def jsonable(v: Any) -> Any:
     """JSON-safe copy of ``v``, exact for numbers (floats kept as Python floats: JSON round-trips
     them exactly via repr). Non-finite floats become the strings "nan", "inf", "-inf"; complex
-    numbers {"complex": [re, im]}; big arrays a hashed summary; unknown objects {"repr": ...}."""
-    if v is None or isinstance(v, (bool, str)):
+    numbers {"complex": [re, im]}; big arrays a hashed summary; unknown objects {"repr": ...}.
+    A string "nan", "inf" or "-inf" is stored {"str": ...} and a dict whose keys are those of a
+    tag {"dict": ...}, so that :func:`from_jsonable` gives back the same type."""
+    if isinstance(v, str):
+        return {"str": v} if v in _FLOAT_WORDS else v
+    if v is None or isinstance(v, bool):
         return v
     if isinstance(v, (int, np.integer)) and not isinstance(v, bool):
         return int(v)
@@ -44,7 +57,8 @@ def jsonable(v: Any) -> Any:
                     "dtype": str(v.dtype)}
         return {"array": {"shape": list(v.shape), "dtype": str(v.dtype), "sha256": array_sha256(v)}}
     if isinstance(v, Mapping):
-        return {str(k): jsonable(x) for k, x in v.items()}
+        d = {str(k): jsonable(x) for k, x in v.items()}
+        return {"dict": d} if set(d) in _TAGS else d
     if isinstance(v, (list, tuple)):
         return [jsonable(x) for x in v]
     if isinstance(v, Path):
@@ -59,12 +73,27 @@ def from_jsonable(v: Any) -> Any:
     if isinstance(v, list):
         return [from_jsonable(x) for x in v]
     if isinstance(v, dict):
+        if set(v) == {"str"} and isinstance(v["str"], str):
+            return v["str"]
+        if set(v) == {"dict"} and isinstance(v["dict"], dict):
+            return {k: from_jsonable(x) for k, x in v["dict"].items()}
         if set(v) == {"complex"}:
             re_, im = (from_jsonable(x) for x in v["complex"])
             return complex(re_, im)
         if set(v) == {"ndarray", "shape", "dtype"}:
-            flat = [from_jsonable(x) for x in v["ndarray"]]
-            return np.array(flat, dtype=v["dtype"]).reshape(v["shape"])
+            # a record is data another account may have written (security):
+            # the shape must be that of the values, and an inline array is never longer than
+            # what jsonable writes (INLINE_ARRAY_MAX); anything else is refused, not built
+            shape, vals = v["shape"], v["ndarray"]
+            if (not isinstance(shape, list) or not isinstance(vals, list)
+                    or not all(isinstance(n, int) and not isinstance(n, bool) and 0 <= n for n in shape)
+                    or len(vals) > INLINE_ARRAY_MAX or int(np.prod(shape, dtype=np.int64)) != len(vals)
+                    or str(v["dtype"]) not in _INLINE_DTYPES):
+                raise ValueError(f"inline array of shape {shape!r} and dtype {v['dtype']!r} with "
+                                 f"{len(vals) if isinstance(vals, list) else '?'} values: not "
+                                 "an array this library writes")
+            flat = [from_jsonable(x) for x in vals]
+            return np.array(flat, dtype=v["dtype"]).reshape(shape)
         return {k: from_jsonable(x) for k, x in v.items()}
     return v
 
@@ -76,6 +105,8 @@ def is_exact(v: Any) -> bool:
 
     def ok(x: Any) -> bool:
         if isinstance(x, dict):
+            if set(x) == {"dict"} and isinstance(x["dict"], dict):   # a wrapped user dict
+                return all(ok(y) for y in x["dict"].values())
             if "repr" in x and len(x) == 1 or "array" in x and len(x) == 1:
                 return False
             return all(ok(y) for y in x.values())
@@ -169,7 +200,8 @@ def flatten(d: Mapping[str, Any], prefix: str = "") -> dict[str, Any]:
     out: dict[str, Any] = {}
     for k, v in d.items():
         key = f"{prefix}{k}"
-        if isinstance(v, Mapping) and v and not ({"complex"} == set(v) or "ndarray" in v):
+        if isinstance(v, Mapping) and v and not ({"complex"} == set(v) or "ndarray" in v
+                                                 or {"str"} == set(v)):
             out.update(flatten(v, key + "."))
         else:
             out[key] = v

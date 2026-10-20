@@ -86,17 +86,23 @@ for (const r of allRoutes) {
   fs.writeFileSync(file, out);
   pages++;
 
-  // Search index: one document per <h2>/<h3> section of <main>, plus the page lead.
+  // Search index: one document per <h2>/<h3> section of <main>, plus the page lead. The anchor of a
+  // section is an id the rendered page really has: the anchor span inside the heading (Section), else
+  // the heading's own id; a heading without one opens the page at its top. (External review 0.1.0,
+  // finding 69: "#s7" was made up from the position of the section and matched no element.) Every
+  // anchor is checked against the ids of the page below.
   if (r.path === "/404") continue;
   const main = (html.match(/<main[^>]*>([\s\S]*)<\/main>/) || [, html])[1];
-  const parts = main.split(/(?=<h[23][^>]*>)/);
+  const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
+  const parts = main.split(/(?=<h[23][\s>])/);
   parts.forEach((part, i) => {
-    const hm = part.match(/^<h([23])[^>]*>([\s\S]*?)<\/h\1>/);
-    const idm = hm && hm[2].match(/id="([^"]+)"/);
-    const heading = hm ? textOf(hm[2]) : r.nav ?? r.title;
+    const hm = part.match(/^<h([23])([^>]*)>([\s\S]*?)<\/h\1>/);
+    const anchor = hm ? ((hm[3].match(/\sid="([^"]+)"/) || hm[2].match(/\sid="([^"]+)"/) || [])[1] ?? null) : null;
+    if (anchor && !ids.has(anchor)) throw new Error(`prerender: search anchor #${anchor} of ${r.path} is not an id of the page`);
+    const heading = hm ? textOf(hm[3]) : r.nav ?? r.title;
     const text = textOf(hm ? part.slice(hm[0].length) : part);
     if (!text && !hm) return;
-    searchDocs.push({ id: `${r.path}#${idm ? idm[1] : "s" + i}`, path: r.path, page: r.nav ?? r.title, heading, text: text.slice(0, 4000) });
+    searchDocs.push({ id: anchor ? `${r.path}#${anchor}` : `${r.path}@${i}`, path: r.path, page: r.nav ?? r.title, heading, text: text.slice(0, 4000) });
   });
 }
 // The documentation in the same index (W1: the site search found 0 of the Sphinx pages). With

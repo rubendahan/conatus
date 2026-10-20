@@ -58,5 +58,6 @@ if __name__ == "__main__":
         bth, kth = (1 + a * np.sqrt(Du / Dv)) ** 2, np.sqrt(a / np.sqrt(Du * Dv))
         print(f"a={a}, Du={Du}, Dv={Dv}: b_c = {bc:.12f} (theory {bth:.12f}, gap {bc - bth:.1e}), "
               f"k_c = {kc:.8f} (theory {kth:.8f}), sigma = {cp.mode.sigma:.1e}, residual {cp.mode.residual:.1e}")
+        assert abs(bc - bth) < 1e-12 and abs(kc - kth) < 1e-6, (a, bc, bth, kc, kth)   # closed form
     print(cp.explain())
     print(brusselator(kc, a, Du, Dv, bc)[1].explain())

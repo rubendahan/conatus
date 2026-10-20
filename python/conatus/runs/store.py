@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sqlite3
 from collections.abc import Iterable, Mapping
 from pathlib import Path
@@ -108,8 +109,19 @@ def _num_text(v: Any) -> tuple[float | None, str | None]:
         if v in ("nan", "inf", "-inf"):
             return float(v), None
         return None, v
+    if isinstance(v, dict) and set(v) == {"str"} and isinstance(v["str"], str):
+        return None, v["str"]                  # a string stored tagged (runs._util.jsonable)
     return None, None
 
+
+def _check_record(rec: Any, rid: str) -> None:
+    """Refuse a ``run.json`` that is not a run record of its directory (ValueError)."""
+    if not isinstance(rec, dict) or rec.get("id") != rid:
+        raise ValueError("not a run record of this directory (no matching 'id')")
+
+
+#: what a run id may be: one path component (Registry.run_dir)
+_RUN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,200}")
 
 class Registry:
     """A registry root: run directories + index. Cheap to create (nothing is opened until used)."""
@@ -167,12 +179,20 @@ class Registry:
 
     # ------------------------------------------------------------------ run files
     def run_dir(self, run_id: str) -> Path:
-        return self.runs_dir / run_id
+        """The directory of run ``run_id`` (one path component: no separator, never "." or
+        "..", no NUL; security get("../../x") left the registry)."""
+        rid = str(run_id)
+        if not _RUN_ID.fullmatch(rid) or rid in (".", ".."):
+            from ..errors import OptionError
+            raise OptionError(f"conatus.runs: {run_id!r} is not a run id",
+                              why="a run id names one directory of the registry",
+                              fix="an id as find() lists them (letters, digits, '_', '-', '.')")
+        return self.runs_dir / rid
 
     def _ids_on_disk(self) -> list[str]:
         try:
-            return sorted(p.name for p in self.runs_dir.iterdir()
-                          if p.is_dir() and not p.name.startswith("."))
+            return sorted(p.name for p in self.runs_dir.iterdir()       # names run_dir accepts
+                          if p.is_dir() and _RUN_ID.fullmatch(p.name))
         except OSError:
             return []
 
@@ -234,10 +254,14 @@ class Registry:
                 for rid in stale:
                     try:
                         rec = self.load(rid)
-                    except (OSError, ValueError) as err:
-                        skipped.append(f"{rid}: {err}")
+                        _check_record(rec, rid)
+                        self._upsert(con, rec, on_disk[rid])
+                    except (OSError, ValueError, KeyError, TypeError, AttributeError,
+                            sqlite3.Error) as err:
+                        # one malformed run.json ({} or a list) is skipped and reported, never
+                        # breaks the search of the others (review finding 48: KeyError 'id')
+                        skipped.append(f"{rid}: {type(err).__name__}: {err}")
                         continue
-                    self._upsert(con, rec, on_disk[rid])
                     added += 1
                 for rid in gone:
                     for t, col in (("runs", "id"), ("params", "run_id"), ("results", "run_id"),

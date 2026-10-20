@@ -141,7 +141,11 @@ print(report.explain())               # bit-for-bit identical?  code identical?
 
 The solver must have the same problem hash, parameter values and numerics; any difference is
 refused with the list, never adapted. The recorded start state is loaded, the same number of steps
-is taken in a new run (`relation="reproduce"`), and the end state is compared bit for bit. If the
+is taken in a new run (`relation="reproduce"`), and the whole end state (the state, every multistep
+history array, the time and the iteration) is compared bit for bit: same dtype and same bytes, so
+`-0.0` differs from `0.0`. A run recorded by 0.1.0 does not hold the given-field data, the user
+functions and six numerical choices that 0.1.1 records: an `IdentityWarning` names them (they are
+not compared) and the end state is still compared bit for bit. If the
 executed code changed since the run, a `CodeChangedWarning` says how (`require_same_code=True`
 makes it an error). A decorated function is re-imported and called with the recorded arguments.
 
@@ -172,14 +176,28 @@ print(again.cache_report["hit"])
 
 With `cache=True`, an identical computation already in the registry is read instead of computed,
 and a `CacheReuseWarning` says which run was reused and what was read (`run.cache_report` has the
-key and its parts). Identical means the same problem hash, parameter values, numerics, exact start
-state (and multistep history), number of steps, and executed code (tree and compiled core hashes,
-Python/NumPy/SciPy versions, architecture). The cache is off by default; it needs `record=`; it is
-refused with a callback (a hit would never call it); retracted runs are never reused; a function
-argument without an exact content hash makes the call uncachable (said, then computed).
+key and its parts). Identical means the same identity of the computation (the one the checkpoint
+guards and the HDF5 append also compare: problem hash, parameter values, the data of every given
+field by content, user functions by code, every numerical choice including `time_parameter`,
+`bc_time` and `f_backend`), exact start state (and multistep history), number of steps, the
+`series` functions and `series_every` (a hit returns the source run's series), and executed
+code (tree and compiled core hashes, Python/NumPy/SciPy versions, architecture). For a decorated
+function, identical also covers what it reads besides its arguments: its closure values and the
+module globals its code names (by content; library modules, functions and classes by name and
+version; the attributes it names of a user module or a user class, such as `cfg.A` or `Cfg.A`, by
+content), followed into the user functions it calls, so two closures `make(1)` and `make(2)` of
+one factory, or one function under `@scale(2)` and `@scale(3)`, are two computations (your own
+decorators under `@track` are part of what is called and of the key). The cache is off by default; it needs `record=`; it is refused
+with a callback (a hit would never call it); retracted runs are never reused; an argument, or a
+value read by the function or by a user pointwise function, without a content hash makes the
+call uncachable (said with a `CacheReuseWarning` naming it, then computed). A hit returns values of
+the recorded type (a NumPy scalar keeps its dtype, the string `"nan"` stays a string), and its
+series and fields are read from the source run through the new run (`run.series(...)`).
 
-## Export
+## Studio and export
 
+- The {doc}`studio` lists, filters and compares registry runs (read-only), and a live run links to
+  its registry record when it was recorded with `cn.runs.track(..., telemetry=tel)`.
 - `cn.runs.export(dir)` writes runs as small JSON files (filters as in `find`); `cn.runs.export_mlflow(runs)`
   copies runs to MLflow if you have it (never installed by Conatus).
 

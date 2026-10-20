@@ -72,6 +72,9 @@ class CollocationMesh:
     @classmethod
     def uniform(cls, ntst: int, ncol: int) -> CollocationMesh:
         """Uniform mesh of ``ntst`` intervals with ``ncol`` collocation points each."""
+        from ..errors import check_count       # audit inputs: 4.5 was a bare TypeError of linspace
+        ntst = check_count(ntst, "ntst", "CollocationMesh.uniform()")
+        ncol = check_count(ncol, "ncol", "CollocationMesh.uniform()")
         if ntst < 2 or not 2 <= ncol <= 7:
             raise OptionError("collocation: ntst >= 2 and 2 <= ncol <= 7 required")
         return cls(ntst, ncol, np.linspace(0.0, 1.0, ntst + 1))

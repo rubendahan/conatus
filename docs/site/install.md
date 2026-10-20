@@ -1,8 +1,8 @@
 # Installation
 
-Conatus 0.1.0 is installed **from a binary wheel** (no compiler needed) or **from source**. The CPU
+Conatus 0.1.1 is installed **from a binary wheel** (no compiler needed) or **from source**. The CPU
 wheel is on PyPI (`pip install conatus`); the CUDA 12 wheel (beta) is a file attached to the
-[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.1.0). The compiled C++ core, inside
+[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.1.1). The compiled C++ core, inside
 both wheels, is required for time integration; the GPU backend is optional.
 
 
@@ -14,7 +14,8 @@ both wheels, is required for time integration; the GPU backend is optional.
   it is tested). 3.12 is recommended.
 - NumPy, SciPy, SymPy and h5py (the pip dependencies; h5py writes the outputs and checkpoints).
   With these the IR and the eigenvalue, boundary-value, Newton and continuation solvers work.
-- For the tutorials: matplotlib (the `tutorials` extra, below). The optional Dedalus check of tutorial 14 (`t14b_dedalus_check.py`) needs Dedalus.
+- For the tutorials: matplotlib and xarray (the `tutorials` extra, below). The optional Dedalus check of tutorial 14 (`t14b_dedalus_check.py`) needs Dedalus.
+- For the Studio (watch and pilot a run from a browser): tornado (`pip install "conatus[studio]"`).
 - **The compiled C++20 core** (`conatus._core`: inside the binary wheels; from source, built with
   CMake + nanobind, a C++20 compiler, GCC ≥ 13, and LAPACK and BLAS from the conda environment):
   **required for time integration**
@@ -38,7 +39,7 @@ In a fresh virtual environment (no conda, no compiler):
 
 ```bash
 python3.12 -m venv venv && . venv/bin/activate
-pip install "conatus[tutorials]"
+pip install "conatus[tutorials]==0.1.1"
 python -m conatus --version     # conatus, compiled core and Python versions
 python -m conatus doctor        # what this machine can run, and what is missing
 ```
@@ -48,7 +49,7 @@ PyPI) the install took under 30 s.
 
 The CUDA wheel pulls the NVIDIA runtime wheels (CUDA runtime, cuFFT, cuBLAS: about 700 MB) and,
 with the `gpu` extra, CuPy: see [GPU (CUDA) install](#gpu-cuda-install). `pip show conatus` says
-which flavour is installed (`0.1.0` from PyPI, `0.1.0+cu12` for the CUDA wheel).
+which flavour is installed (`0.1.1` from PyPI, `0.1.1+cu12` for the CUDA wheel).
 
 **Threads.** NumPy, SciPy and the core each load their own OpenBLAS, and each starts by default
 one thread per CPU, so the three compete for the same CPUs. On a node where the process could use
@@ -64,10 +65,10 @@ The same recipe as the README: a conda environment for the compilers and librari
 what the tutorials need (matplotlib). About two minutes on a cluster node with a warm package cache.
 
 ```bash
-git clone https://github.com/rubendahan/conatus && cd conatus
+git clone --branch v0.1.1 https://github.com/rubendahan/conatus && cd conatus
 micromamba create -n conatus -c conda-forge python=3.12 gxx_linux-64=13 liblapack libblas
 micromamba activate conatus
-pip install ".[tutorials]"      # CPU core + matplotlib (the GPU build: next section)
+pip install ".[tutorials]"      # CPU core + matplotlib, xarray (the GPU build: next section)
 python -m conatus doctor        # what this machine can run, and what is missing
 ```
 
@@ -109,12 +110,13 @@ Do not add the `gpu` extra here: it would install a second CuPy from pip next to
 
 Recipe 0, the CUDA binary wheel (beta; no compiler, no CUDA toolkit; the driver must support
 CUDA 12.9, i.e. driver ≥ 575 or an older 12.x driver through CUDA minor-version compatibility).
-Download the `conatus-0.1.0+cu12-cp3XX-…whl` file of your Python from the
-[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.1.0), then:
+The wheels are attached to the
+[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.1.1), one per Python
+(`cp311`, `cp312`, `cp313`); for Python 3.12:
 
 ```bash
 python3.12 -m venv venv && . venv/bin/activate
-pip install "./conatus-0.1.0+cu12-cp312-cp312-<platform>.whl[gpu,tutorials]"   # the file you downloaded
+pip install "conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.1.1/conatus-0.1.1+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
 ```
 
 Recipe 2, a wheel for a plain virtual environment (the CUDA libraries then come as pip

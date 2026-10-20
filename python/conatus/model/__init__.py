@@ -24,19 +24,18 @@ Stress-free walls: ``m.at("walls", u=cn.free_slip)``; sine/cosine wall axis:
 Channel between two surfaces (wavy wall, bump): ``cn.MappedBox(x=cn.periodic(L),
 z=cn.between(bottom=lambda x: a*np.cos(x), top=1.0))`` (terrain-following map).
 """
-from .axes import HalfLine, Line, half_line, line
-from .compiler import Compiled, TauRecord, compile_model
-from .conditions import NavierSlip, WallCondition, free_slip, navier_slip, no_slip
-from .geometry import (DEFAULT_DEALIAS, Annulus, Ball, Box, Channel, Cylinder, Disk, Geometry, Periodic,
-                       Pipe, Shell, Sphere, TaylorCouette, Walls, periodic, walls)
-from .model import Given, Model, Unknown
+from .axes import HalfLine, Line, half_line, line  # noqa: F401 -- importable here, not in __all__ (M5)
+from .compiler import Compiled, TauRecord, compile_model  # noqa: F401 -- importable here, not in __all__ (M5)
+from .conditions import NavierSlip, WallCondition, free_slip, navier_slip, no_slip  # noqa: F401 -- importable here, not in __all__ (M5)
+from .geometry import (DEFAULT_DEALIAS, Annulus, Ball, Box, Channel, Cylinder, Disk, Geometry, Periodic,  # noqa: F401 -- importable here, not in __all__ (M5)
+                       Pipe, Shell, Sphere, TaylorCouette, Walls, periodic, walls)  # noqa: F401 -- importable here, not in __all__ (M5)
+from .model import Given, Model, Unknown  # noqa: F401 -- importable here, not in __all__ (M5)
 from .run import Linearization, Simulation
-from .terrain import Between, MappedBox, between
-from .watch import Stat, View, Watch, profile, series, spectrum, view
+from .terrain import Between, MappedBox, between  # noqa: F401 -- importable here, not in __all__ (M5)
+from .watch import Stat, View, Watch, profile, series, spectrum, view  # noqa: F401 -- importable here, not in __all__ (M5)
 
-__all__ = ["Box", "Channel", "Disk", "Annulus", "Pipe", "Cylinder", "TaylorCouette", "Sphere", "Ball", "Shell",
-           "periodic", "walls", "Periodic", "Walls", "Geometry", "DEFAULT_DEALIAS", "Model",
-           "Unknown", "Given", "Simulation", "Linearization", "Compiled", "TauRecord",
-           "compile_model", "free_slip", "no_slip", "navier_slip", "NavierSlip", "WallCondition", "line", "half_line", "Line",
-           "HalfLine", "view", "spectrum", "profile", "series", "View", "Stat", "Watch",
-           "MappedBox", "between", "Between"]
+# Documented names only (M5, 0.2); the others stay importable from this module.
+__all__ = ["Box", "Channel", "Disk", "Annulus", "Pipe", "Cylinder", "TaylorCouette", "Sphere",
+           "Ball", "Shell", "periodic", "walls", "Periodic", "Geometry", "Model", "Unknown",
+           "Simulation", "Linearization", "Compiled", "free_slip", "no_slip", "navier_slip", "line",
+           "half_line", "view", "spectrum", "profile", "series", "MappedBox", "between"]

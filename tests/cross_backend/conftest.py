@@ -1,12 +1,12 @@
 """GPU tests: collected everywhere, skipped with a reason when no CUDA device is visible."""
 import pytest
 
-try:
-    from conatus.runtime import cuda as _cuda
-    _AVAILABLE = _cuda.available()
-    _WHY = "no CUDA device visible" if not _AVAILABLE else ""
-except ImportError as exc:  # C++ core not built
-    _AVAILABLE, _WHY = False, f"C++ core not built: {exc}"
+# the C++ core itself is required (never a skip reason, review finding 98): an import error here
+# fails the collection; only the absence of a CUDA build or of a device skips, with that reason
+from conatus.runtime import cuda as _cuda
+
+_AVAILABLE = _cuda.available()
+_WHY = _cuda.unavailable_reason()
 
 
 def pytest_collection_modifyitems(config, items):

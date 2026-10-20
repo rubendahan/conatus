@@ -169,31 +169,34 @@ def test_parameter_values_enter_the_record_and_the_cache_key():
         a.reproduce(heat(0.4))                                 # other kappa: refused
 
 
-CALLS = {"n": 0}
-
-
 def least_stable(Re: float, N: int) -> dict:
     """A decorated computation (module level: importable by reproduce())."""
-    CALLS["n"] += 1
     x = np.linspace(0, 1, N)
     return {"sigma": -1.0 / Re, "profile": np.sin(np.pi * x) / Re, "note": "toy"}
+
+
+def _computed(name: str) -> int:
+    """Calls of ``name`` that ran the function (the registry's runs that reuse nothing). Not a
+    counter read by least_stable: the values a function reads, module globals and class
+    attributes alike, are part of its cache key (0.1.1, review finding 49 and the identity
+    review), so a counter it reads would change the key at every call."""
+    return sum(r.rec["reused_from"] is None for r in R.find(name=name))
 
 
 def test_decorator_records_calls_and_caches_only_when_asked():
     plain = R.track("toy")(least_stable)
     cached = R.track("toy", cache=True, compression="gzip")(least_stable)
-    CALLS["n"] = 0
     v1 = plain(100.0, 16)
     plain(100.0, 16)                                           # cache off: computed again
-    assert CALLS["n"] == 2
+    assert _computed("toy") == 2
     with pytest.warns(R.CacheReuseWarning, match="not called"):
         v3 = cached(100.0, N=16)
-    assert CALLS["n"] == 2 and v3.keys() == v1.keys()
+    assert _computed("toy") == 2 and v3.keys() == v1.keys()
     assert v3["sigma"] == v1["sigma"] and np.array_equal(v3["profile"], v1["profile"])
     with warnings.catch_warnings():
         warnings.simplefilter("error", R.CacheReuseWarning)
         cached(200.0, 16)                                      # other argument: computed
-    assert CALLS["n"] == 3
+    assert _computed("toy") == 3
     runs = R.find(name="toy", Re=100.0)
     assert len(runs) == 3 and sum(r.rec["reused_from"] is not None for r in runs) == 1
 

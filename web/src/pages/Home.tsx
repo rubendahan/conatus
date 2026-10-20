@@ -29,7 +29,7 @@ const DOES: { k: string; title: string; text: ReactNode }[] = [
   { k: "Simulate", title: "On a CPU or a GPU", text: "The same model runs on your laptop or on a GPU with one keyword. Resolution, scheme and time step are always yours to choose." },
   { k: "Analyse", title: "Where a flow becomes unstable", text: "Eigenvalues with their residuals, critical parameters, exact adjoints, transient growth and Floquet analysis of time-periodic flows." },
   { k: "Discover", title: "Orbits and bifurcations", text: "Equilibria, travelling waves and periodic orbits by Newton–Krylov; branches followed through folds, pitchforks and Hopf points." },
-  { k: "Keep track", title: "Every run, recorded", text: "Parameters, code version and results are kept for each run, so you can find it, compare it and reproduce it later." },
+  { k: "Keep track", title: "Runs you choose to record", text: "Ask for it (record=True, or cn.runs.track) and the parameters, code version and results of a run are kept, so you can find it, compare it and reproduce it later." },
 ];
 
 export default function Home() {
@@ -37,7 +37,7 @@ export default function Home() {
     <>
       <section className="hero" aria-labelledby="hero-title">
         <div className="hero-sim">
-          <FluidHero interactive label="Live Kelvin–Helmholtz simulation" />
+          <FluidHero interactive label="Kelvin–Helmholtz illustration, computed in your browser by a WebGL grid scheme, not by the Conatus solver" />
         </div>
         <div className="hero-veil" aria-hidden="true" />
         <div className="wrap hero-content">
@@ -61,7 +61,8 @@ export default function Home() {
           </p>
         </div>
         <p className="hero-caption wrap">
-          A Kelvin–Helmholtz shear layer rolling up, computed live in your browser.
+          A Kelvin–Helmholtz shear layer rolling up: an illustration computed in your browser by a simple WebGL grid
+          scheme, not by the Conatus spectral solver. The films below are Conatus runs.
         </p>
       </section>
 
@@ -72,8 +73,8 @@ export default function Home() {
             <div className="section-head">
               <p className="eyebrow">In motion</p>
               <h2 id="films-h">Computed with Conatus</h2>
-              <p className="section-intro">Each film is a Conatus run, frame by frame: a shear layer rolling up, and a
-                Rossby wave travelling round the rotating sphere.</p>
+              <p className="section-intro">Each film is a Conatus run, frame by frame: a shear layer rolling up, and heavy
+                fluid falling into light fluid.</p>
             </div>
             <ul className="films">
               {films.map((f) => <li key={f.slug}><Film f={f} /></li>)}
@@ -139,7 +140,7 @@ export default function Home() {
             <Link className="start-card" to="/tutorials"><span className="start-k">Learn</span><strong>Tutorials</strong><span>Executed tutorials, each ending on a published result: start with 0, getting started.</span></Link>
             <Link className="start-card" to="/documentation"><span className="start-k">Read</span><strong>Documentation</strong><span>The user guide, the API reference and the mathematics behind each method.</span></Link>
             <Link className="start-card" to="/citing"><span className="start-k">Cite</span><strong>Citing</strong><span>CITATION.cff and BibTeX. Licence: BSD-3-Clause.</span></Link>
-            <Link className="start-card" to="/coming-next"><span className="start-k">Next</span><strong>Coming next</strong><span>Multi-GPU runs, the Studio, an interface for AI agents and further stability tools: under development, not in 0.1.0.</span></Link>
+            <Link className="start-card" to="/coming-next"><span className="start-k">Next</span><strong>Coming next</strong><span>Multi-GPU runs, the Studio from anywhere and further stability tools: under development, not in this release.</span></Link>
           </div>
         </div>
       </section>

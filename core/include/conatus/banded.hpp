@@ -1,4 +1,4 @@
-// Bordered banded solves (technical spec §19–20, DEDALUS.md §4, pitfall P8).
+// Bordered banded solves.
 //
 // A tau/BC system is "almost banded": after moving the r boundary rows to the top, every other
 // row has its nonzeros inside a band [i-kl, i+ku]. We write P A = B + U V^T with
@@ -39,6 +39,24 @@
 #include "conatus/lapack.hpp"
 
 namespace conatus {
+
+// Every LAPACK call goes through this check (review finding 44): an info code < 0 is an
+// illegal argument (a layout bug: the right-hand side would come back untouched and be taken for
+// the solution); > 0 from a solve routine cannot happen, from a factorization it is handled by the
+// caller before this check (singular pivot, with its own message).
+inline void lapack_check(int info, const char* routine, const char* where) {
+    if (info < 0)
+        throw std::logic_error(std::string(where) + ": LAPACK " + routine + " rejected argument " +
+                               std::to_string(-info) + " (internal layout error, please report)");
+    if (info > 0)
+        throw std::runtime_error(std::string(where) + ": LAPACK " + routine + " returned info = " +
+                                 std::to_string(info));
+}
+
+template <class T>
+inline bool finite_entry(const T& v) {
+    return std::isfinite(std::real(v)) && std::isfinite(std::imag(v));
+}
 
 template <class T>
 struct Csr {
@@ -150,6 +168,14 @@ void measure_band(const Csr<T>& A, const std::vector<int>& border_rows, int& kl,
 template <class T>
 BorderedLayout<T> make_bordered_layout(const Csr<T>& A, const std::vector<int>& border_rows,
                                        int kl_min = 0, int ku_min = 0, bool col_border = false) {
+    // A NaN/Inf entry used to factor "fine" with cond_1 = 0 (finding 41): refused before any use,
+    // here because this layout is the single entry of the CPU and the GPU solvers.
+    for (int i = 0; i < A.n; ++i)
+        for (int p = A.indptr[i]; p < A.indptr[i + 1]; ++p)
+            if (!finite_entry(A.data[p]))
+                throw std::invalid_argument("BorderedBanded: non-finite matrix entry at (" +
+                                            std::to_string(i) + ", " + std::to_string(A.indices[p]) +
+                                            "): the operator must be finite");
     BorderedLayout<T> Lo;
     Lo.n = A.n;
     Lo.r = static_cast<int>(border_rows.size());
@@ -256,14 +282,16 @@ public:
                 for (int k = 0; k < r_; ++k)
                     for (int q = xptr_[k]; q < xptr_[k + 1]; ++q)
                         W_[static_cast<std::size_t>(k) * n_ + xrow_[q]] = xval_[q];
-                lapack::gbtrs('N', n_, kl_, ku_, r_, ab_.data(), ldab_, ipiv_.data(), W_.data(), n_);
+                lapack_check(lapack::gbtrs('N', n_, kl_, ku_, r_, ab_.data(), ldab_, ipiv_.data(), W_.data(), n_),
+                             "gbtrs", "BorderedBanded (column border)");
                 for (int k = 0; k < r_; ++k)
                     for (int i = 0; i < r_; ++i) W_[static_cast<std::size_t>(k) * n_ + i] = (i == k) ? T(-1) : T(0);
                 S_ = schur(W_);
             } else {
                 // W = B^{-1} U, U = first r unit vectors.
                 for (int k = 0; k < r_; ++k) W_[static_cast<std::size_t>(k) * n_ + k] = T(1);
-                lapack::gbtrs('N', n_, kl_, ku_, r_, ab_.data(), ldab_, ipiv_.data(), W_.data(), n_);
+                lapack_check(lapack::gbtrs('N', n_, kl_, ku_, r_, ab_.data(), ldab_, ipiv_.data(), W_.data(), n_),
+                             "gbtrs", "BorderedBanded (border)");
                 S_ = capacitance(Vt_, W_);
             }
             sipiv_.assign(r_, 0);
@@ -286,7 +314,8 @@ public:
         for (int c = 0; c < nrhs; ++c) {
             T* bc = b + static_cast<std::size_t>(c) * n_;
             for (int i = 0; i < n_; ++i) y[i] = bc[perm_[i]];
-            lapack::gbtrs('N', n_, kl_, ku_, 1, ab_.data(), ldab_, ipiv_.data(), y.data(), n_);
+            lapack_check(lapack::gbtrs('N', n_, kl_, ku_, 1, ab_.data(), ldab_, ipiv_.data(), y.data(), n_),
+                         "gbtrs", "BorderedBanded.solve");
             if (r_ > 0) {
                 for (int k = 0; k < r_; ++k) {
                     T s = T(0);
@@ -294,7 +323,8 @@ public:
                     for (int i = 0; i < n_; ++i) s += vk[i] * y[i];
                     z[k] = s;
                 }
-                lapack::getrs('N', r_, 1, S_.data(), sipiv_.data(), z.data());
+                lapack_check(lapack::getrs('N', r_, 1, S_.data(), sipiv_.data(), z.data()), "getrs",
+                             "BorderedBanded.solve");
                 if (col_border_) std::fill(y.begin(), y.begin() + r_, T(0));   // x0 = z (W top = -I)
                 for (int k = 0; k < r_; ++k) {
                     const T* wk = W_.data() + static_cast<std::size_t>(k) * n_;
@@ -314,11 +344,13 @@ public:
         for (int c = 0; c < nrhs; ++c) {
             T* bc = b + static_cast<std::size_t>(c) * n_;
             std::copy(bc, bc + n_, y.begin());
-            lapack::gbtrs('T', n_, kl_, ku_, 1, ab_.data(), ldab_, ipiv_.data(), y.data(), n_);
+            lapack_check(lapack::gbtrs('T', n_, kl_, ku_, 1, ab_.data(), ldab_, ipiv_.data(), y.data(), n_),
+                         "gbtrs", "BorderedBanded.solve_transpose");
             if (col_border_) colborder_transpose(xptr_, xrow_, xval_, sd_, y.data());
             if (r_ > 0) {
                 for (int k = 0; k < r_; ++k) z[k] = y[k];  // U^T y
-                lapack::getrs('N', r_, 1, St_.data(), stipiv_.data(), z.data());
+                lapack_check(lapack::getrs('N', r_, 1, St_.data(), stipiv_.data(), z.data()), "getrs",
+                             "BorderedBanded.solve_transpose");
                 if (col_border_) std::fill(y.begin(), y.begin() + r_, T(0));   // x0 = z (Wt top = -I)
                 for (int k = 0; k < r_; ++k) {
                     const T* wk = Wt_.data() + static_cast<std::size_t>(k) * n_;
@@ -365,7 +397,7 @@ private:
             for (int b = 0; b < r_; ++b) {
                 double s = 0.0;
                 for (int a = 0; a < r_; ++a) s += std::abs(X[static_cast<std::size_t>(b) * r_ + a]);
-                m = std::max(m, s);
+                if (!(s <= m)) m = s;      // std::max(m, NaN) kept m: a NaN norm read as 0 (finding 41)
             }
             return m;
         };
@@ -379,8 +411,14 @@ private:
                 "independent of the banded operator (ill-posed or rank-deficient BCs)");
         std::vector<T> inv(static_cast<std::size_t>(r_) * r_, T(0));
         for (int k = 0; k < r_; ++k) inv[static_cast<std::size_t>(k) * r_ + k] = T(1);
-        lapack::getrs('N', r_, r_, S.data(), piv.data(), inv.data());
-        return nS * norm1(inv);
+        lapack_check(lapack::getrs('N', r_, r_, S.data(), piv.data(), inv.data()), "getrs",
+                     "BorderedBanded (capacitance inverse)");
+        const double c = nS * norm1(inv);
+        // finite input (checked in make_bordered_layout) gives a finite or +inf condition (inf:
+        // singular to working precision, reported as such); NaN would be an internal error
+        if (std::isnan(c))
+            throw std::runtime_error("BorderedBanded: capacitance condition number is NaN");
+        return c;
     }
 
     void ensure_transpose() const {
@@ -393,7 +431,8 @@ private:
             for (int k = 0; k < r_; ++k)
                 for (int i = r_; i < n_; ++i)
                     Wt_[static_cast<std::size_t>(k) * n_ + i] = -Vt_[static_cast<std::size_t>(k) * n_ + i];
-            lapack::gbtrs('T', n_, kl_, ku_, r_, ab_.data(), ldab_, ipiv_.data(), Wt_.data(), n_);
+            lapack_check(lapack::gbtrs('T', n_, kl_, ku_, r_, ab_.data(), ldab_, ipiv_.data(), Wt_.data(), n_),
+                         "gbtrs", "BorderedBanded (transposed column border)");
             for (int k = 0; k < r_; ++k)
                 for (int i = 0; i < r_; ++i) Wt_[static_cast<std::size_t>(k) * n_ + i] = (i == k) ? T(-1) : T(0);
             const std::vector<T> S = schur(W_);
@@ -403,7 +442,8 @@ private:
         } else {
             // Wt = B^{-T} V  (V = Vt^T, stored as r columns of length n = rows of Vt).
             Wt_ = Vt_;
-            lapack::gbtrs('T', n_, kl_, ku_, r_, ab_.data(), ldab_, ipiv_.data(), Wt_.data(), n_);
+            lapack_check(lapack::gbtrs('T', n_, kl_, ku_, r_, ab_.data(), ldab_, ipiv_.data(), Wt_.data(), n_),
+                         "gbtrs", "BorderedBanded (transposed border)");
             // St = I + U^T Wt: (a, b) entry = Wt[b][a].
             for (int a = 0; a < r_; ++a)
                 for (int b = 0; b < r_; ++b)

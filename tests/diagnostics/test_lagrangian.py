@@ -279,3 +279,27 @@ def test_fractional_step_counts_are_refused():
         p.advance(0.01, 2.5)
     p.advance(0.01, 2)
     assert abs(p.t - 0.02) < 1e-15
+
+
+def test_review_v011_counts_and_snapshot_copies():
+    """Findings 66 and 68: counts are never truncated; a velocity snapshot
+    does not follow later in-place changes of the caller's array."""
+    import pytest as _pt
+
+    from conatus.diagnostics.lagrangian import AnalyticVelocity, Emitter, GridVelocity
+    from conatus.errors import OptionError as _OE
+    with _pt.raises(_OE, match="integer"):
+        AnalyticVelocity(lambda x, t: x, 2.5)
+    with _pt.raises(_OE, match="integer"):
+        Emitter(np.zeros((1, 1)), AnalyticVelocity(lambda x, t: 0 * x, 1), axes=None,
+                emit_every=1.5, capacity=4, scheme="rk4", boundary="raise", mode="streak")
+    gv = GridVelocity.__new__(GridVelocity)
+    gv.xp, gv.d, gv._snaps = np, 1, []
+
+    class _G:
+        shape = (4,)
+    gv.grid = _G()
+    u = np.ones((1, 4))
+    gv.set(u, 0.0)
+    u[...] = 5.0
+    assert np.all(gv._snaps[0][1] == 1.0)

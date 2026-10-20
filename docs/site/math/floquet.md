@@ -24,8 +24,12 @@ corresponding generalised problem near a shift. Block elimination along the harm
 cost linear in the number of harmonics.
 
 A root is never accepted on a residual alone (the residual of a nearly singular matrix is small
-everywhere); it is certified by the contrast between the two smallest singular values and by the
-argument principle (the winding of $\det M$ around the root).
+everywhere). `root.certify(residual_tol=..., convergence_tol=...)` marks it certified only if the
+secant converged, the residual is below the declared tolerance, and the root moves by less than
+`convergence_tol` between two resolutions. Two further checks are run on request and recorded
+when passed to `certify`: the contrast $\sigma_{\min}/\sigma_2$ of $M(\mu)$ (`contrast(mu)`, small
+problems) and the argument principle (`winding(center, radius, n_points)`, the winding of
+$\det M$ around the root); `root.explain()` lists which checks were run.
 
 ## References
 

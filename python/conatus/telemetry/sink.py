@@ -1,4 +1,4 @@
-"""Non-blocking telemetry emitter used inside a computation (spec §94–97).
+"""Non-blocking telemetry emitter used inside a computation.
 
 The computation only ever does ``queue.put_nowait`` (records) or swaps a reference (frames). A
 background thread writes the spool files. If the queue is full, the record is dropped and counted;
@@ -83,13 +83,13 @@ class Telemetry:
     max_points
         particles / polylines frames carry at most this many points
     film_max_bytes
-        budget of the film ``<run_id>.film.ndjson`` (frames kept for replay in a monitor);
+        budget of the film ``<run_id>.film.ndjson`` (frames kept for replay in the Studio);
         0 = no film. Thinning policy: :data:`FILM_POLICY`
     views, stats
-        what a monitor may show, declared in the header (protocol VIEW_KINDS, STAT_KINDS);
-        a monitor offers nothing else for this run
+        what the Studio may show, declared in the header (protocol VIEW_KINDS, STAT_KINDS);
+        the Studio offers nothing else for this run
     controls
-        parameters a monitor may change with the ``set`` command, declared in the
+        parameters the Studio (or an agent) may change with the ``set`` command, declared in the
         header: ``[{"name": "dt", "min": 1e-4, "max": 1e-2}]`` (protocol ``check_controls``);
         each needs a setter in :meth:`ivp_callback` (``setters=``). Nothing else can be set.
     """
@@ -109,18 +109,23 @@ class Telemetry:
                              f"refuse other ids; {', '.join(RESERVED_RUN_IDS)} is reserved), "
                              "e.g. 'kh_demo_2'")
         self.run_id = run_id
-        self.capacity, self.frame_interval, self.max_px = int(capacity), float(frame_interval), int(max_px)
+        from ..errors import check_count
+        # counts are integers, never truncated (finding 66)
+        self.capacity = check_count(capacity, "capacity", "Telemetry")
+        self.max_px = check_count(max_px, "max_px", "Telemetry")
+        self.frame_interval = float(frame_interval)
         self.scalar_interval = float(scalar_interval)
-        self.max_px3d, self.max_points = int(max_px3d), int(max_points)
+        self.max_px3d = check_count(max_px3d, "max_px3d", "Telemetry")
+        self.max_points = check_count(max_points, "max_points", "Telemetry")
         self.views, self.stats = _check_views(views), _check_stats(stats)
         self.settable = check_controls(controls)     # declared settable parameters (or None)
         clash = {v["name"] for v in self.views or []} & {v["name"] for v in self.stats or []}
         if clash:          # frames, curves and the film share one namespace per run
             raise ValueError(f"names {sorted(clash)} are both a view and a statistic: frames and "
                              "curves of one run share their names; rename one of them")
-        self.film_max_bytes = int(film_max_bytes)
-        if self.film_max_bytes < 0:
+        if isinstance(film_max_bytes, int) and film_max_bytes < 0:
             raise ValueError(f"film_max_bytes must be >= 0 (0 = no film), got {film_max_bytes}")
+        self.film_max_bytes = check_count(film_max_bytes, "film_max_bytes", "Telemetry", minimum=0)
         # film state, touched by the writer thread only (counters read by explain/status)
         self.film_bytes = 0
         self.film_level = 0
@@ -325,7 +330,7 @@ class Telemetry:
             self._frames[name] = fr
 
     def controls(self) -> list[dict]:
-        """New commands by a monitor (throttled to control_interval). Unknown ones are logged."""
+        """New commands from the Studio (throttled to control_interval). Unknown ones are logged."""
         now = time.monotonic()
         if now - self._control_last < self.control_interval:
             return []
@@ -366,7 +371,7 @@ class Telemetry:
     def close(self, timeout: float = 30.0) -> None:
         """Send the final status, stop the writer thread and wait up to ``timeout`` s. If the
         writer is still busy then (a slow shared file system), say so on stderr: the last
-        records (the final status among them) may never reach the spool, and a monitor will
+        records (the final status among them) may never reach the spool, and the Studio will
         show the run as stale rather than ended (lost silently with the former 5 s)."""
         self.status(final=True)
         try:
@@ -377,7 +382,7 @@ class Telemetry:
         if self._thread.is_alive():
             print(f"telemetry {self.run_id!r}: the spool writer did not finish within {timeout:g} s "
                   f"({self._q.qsize()} record(s) still queued, the final status among them): the "
-                  "monitor may show this run as stale", file=sys.stderr, flush=True)
+                  "Studio may show this run as stale", file=sys.stderr, flush=True)
 
     def status(self, **extra: Any) -> None:
         """Queue a status record (counters, paused, error, plus ``extra``)."""
@@ -400,10 +405,10 @@ class Telemetry:
         """Callback for ``IVPSolver.run(nsteps, callback=cb, every=k)`` (or to call after each
         ``run_graph`` block). Always sends t, iteration, dt, wall time per step and GPU memory;
         user scalars and frames are **declared** callables of the solver (no implicit physics).
-        Handles monitor commands: pause/resume, checkpoint (needs checkpoint_dir), stop (raises
+        Handles Studio commands: pause/resume, checkpoint (needs checkpoint_dir), stop (raises
         :class:`StopRun`), fork (recorded with a checkpoint; never changes the running run).
         ``on_checkpoint(solver, path)`` (optional, explicit) runs after each checkpoint written by
-        a monitor command; the small JSON dict it returns is added to the ``checkpoint_written`` /
+        a Studio command; the small JSON dict it returns is added to the ``checkpoint_written`` /
         ``fork_written`` event (e.g. near-recurrence period guesses for a Newton seed).
         If it raises, the checkpoint event is still sent and the error is logged.
         ``frames3d = {name: (f, opts)}``: ``f(solver)`` returns a 3D array (NumPy or CuPy),
@@ -494,7 +499,7 @@ class Telemetry:
     def _handle_controls(self, solver: Any, checkpoint_dir: str | Path | None,
                          on_checkpoint: Callable[[Any, Path], Mapping[str, Any] | None] | None = None,
                          setters: Mapping[str, Callable] | None = None) -> None:
-        """Apply the new monitor commands in order. While paused, the run waits here; checkpoint,
+        """Apply the new Studio commands in order. While paused, the run waits here; checkpoint,
         fork and set received meanwhile are applied at once (they used to be dropped
         silently while paused), resume ends the wait, stop raises :class:`StopRun`."""
         pending = deque(self.controls())
@@ -520,13 +525,13 @@ class Telemetry:
                         self.paused = False         # what follows is handled after resuming
                     elif n == "stop":
                         self.paused = False
-                        raise StopRun("stopped by a monitor while paused")
+                        raise StopRun("stopped from the Studio while paused")
                     elif n != "pause":              # already paused otherwise
                         self._apply(nxt, solver, checkpoint_dir, on_checkpoint, setters)
                 self.event("resumed")
                 self.status()
             elif c == "stop":
-                raise StopRun("stopped by a monitor")
+                raise StopRun("stopped from the Studio")
             elif c == "resume":
                 self.log("resume received while running: nothing to do", level="info")
             else:
@@ -679,7 +684,7 @@ class _NewtonWithTelemetry:
 
 
 class StopRun(RuntimeError):
-    """Raised inside the computation's callback when a monitor asks to stop the run."""
+    """Raised inside the computation's callback when the Studio asks to stop the run."""
 
 
 def _jsonable(v: Any) -> Any:

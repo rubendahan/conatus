@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 import scipy.sparse as sp
@@ -20,7 +21,7 @@ DEFAULT_N_MODES = 6
 
 
 def pencil_rank(gm) -> str:
-    """Rank report of the pencil L + s M (spec §14 for EVPs), refusing singular pencils.
+    """Rank report of the pencil L + s M (for EVPs), refusing singular pencils.
 
     L alone is singular whenever 0 is an eigenvalue (e.g. exactly at onset), so
     the test is on the pencil at a generic shift s: a pencil singular for every s
@@ -96,10 +97,10 @@ def _matching_group(plan, group, hp):
 
 
 @renames("conatus.solvers.plan_evp:eigenvalues")
-def eigenvalues(plan: Plan, group=None, *, reduced: bool | None = None, method: str = "dense",
+def eigenvalues(plan: Plan, group=None, *, reduced: bool | None = None, method: str | None = None,
                 target: complex | None = None, n_modes: int | None = None, left: bool = False,
                 drift_plan: Plan | Callable[[], Plan] | None = None,
-                drift_tol: float = REQUIRED, spurious: str = "tail") -> EVPResult:
+                drift_tol: float = REQUIRED, spurious: str = "tail", region=None) -> EVPResult:
     """Eigenvalues sigma of (L + sigma M) x = 0 in one group of ``plan``.
 
     The rank report runs first (refuses ill-posed systems). ``method`` is 'dense'
@@ -114,9 +115,21 @@ def eigenvalues(plan: Plan, group=None, *, reduced: bool | None = None, method: 
     energy in the last wall-normal coefficients (spurious tau modes; declared tolerances
     ``conatus.tolerances.SPURIOUS_TAIL_TOL``): they are kept, listed by ``explain()`` and ranked
     last by ``order()``; ``"none"`` switches the flag off (said by the result).
+
+    ``region``: a ``cn.box(re=(a, b), im=(c, d))`` of the eigenvalue plane:
+    every eigenvalue of the group in it, counted by the argument principle and computed by
+    Beyn's contour-integral method, each certified by its residual
+    (:class:`conatus.contour.RegionEVPResult`: ``count``, ``count_method``, ``multiplicity``);
+    ``method`` is then ``"contour"``. ``method=None`` (the default) means ``"dense"`` without a region
+    and ``"contour"`` with one; any other method given with ``region=`` (``"dense"`` too: it would
+    have been replaced without a word) is refused, as are ``target`` and ``left=True``.
     """
+    from ..errors import check_flag
     from .spurious import check_spurious
     check_spurious(spurious, "eigenvalues")
+    left = check_flag(left, "left", "eigenvalues()")      # audit inputs: "no" reached LAPACK
+    check_eig_method(method, target, region)          # before any assembly (review, inputs)
+    method = _region_method(region, method, target, left)
     if n_modes is not None and method != "shift-invert":
         # it used to be ignored without a word: said, refused in v0.2
         from ..errors import _warn_user       # the user's line (a fixed level hid it)
@@ -135,6 +148,12 @@ def eigenvalues(plan: Plan, group=None, *, reduced: bool | None = None, method: 
     plan.problem.check()
     if drift_plan is not None:            # checked before any solve
         check_drift_tol(drift_tol, "eigenvalues(drift_plan=...)")      # given, in range
+    if group is not None and not any(_same_group(group, g) for g in plan.groups):
+        # audit inputs: a foreign group was a bare ValueError of zip() in the assembly
+        from ..errors import OptionError
+        raise OptionError(f"eigenvalues(group={group!r}): not a group of this plan",
+                          fix="a member of plan.groups (or plan.group(k=...) / m=... on the "
+                              "native layer)")
     group = plan.groups[0] if group is None else group
     gm = plan.matrices(group, reduced)
     check = pencil_rank(gm)
@@ -142,6 +161,9 @@ def eigenvalues(plan: Plan, group=None, *, reduced: bool | None = None, method: 
     def run(gm_):
         if method == "dense":
             return solve_dense(gm_.L, gm_.M, left=left, label=gm_.label)
+        if method == "contour":
+            from ..contour.evp import region_eigenvalues
+            return region_eigenvalues(gm_.L, gm_.M, region, label=gm_.label)
         if method == "shift-invert":
             if target is None:
                 from ..errors import OptionError
@@ -150,9 +172,9 @@ def eigenvalues(plan: Plan, group=None, *, reduced: bool | None = None, method: 
             return solve_sparse(gm_.L, gm_.M, target, n_modes, label=gm_.label)
         from ..errors import OptionError, did_you_mean
         raise OptionError(f"eigenvalues(method={method!r})",
-                          fix="method='dense' (all modes) or 'shift-invert' (n_modes modes near "
-                              "target)"
-                              + did_you_mean(str(method), ("dense", "shift-invert")))
+                          fix="method='dense' (all modes), 'shift-invert' (n_modes modes near "
+                              "target) or 'contour' (every mode in region=cn.box(...))"
+                              + did_you_mean(str(method), ("dense", "shift-invert", "contour")))
 
     res = run(gm)
     res.log.insert(0, check)
@@ -205,6 +227,66 @@ def eigenvalues(plan: Plan, group=None, *, reduced: bool | None = None, method: 
     return res
 
 
+#: The methods of :func:`eigenvalues` (``None``: "dense", or "contour" with ``region=``).
+EIG_METHODS = ("dense", "shift-invert", "contour")
+
+
+def check_eig_method(method: Any, target: Any = None, region: Any = None,
+                     where: str = "eigenvalues") -> None:
+    """``method`` one of :data:`EIG_METHODS` (or None), and a finite ``target`` with
+    ``method="shift-invert"`` (unless ``region=`` is given, which refuses both later with its own
+    message), checked before anything is compiled or assembled (review of the inputs audit: a typo of the method, or a shift-invert call without target, was refused only after
+    the group had been assembled and its rank report computed, and on the native layer after the
+    model had been compiled and discretized)."""
+    from ..errors import OptionError, did_you_mean
+    if method is not None and (not isinstance(method, str) or method not in EIG_METHODS):
+        raise OptionError(f"{where}(method={method!r})",
+                          fix="method='dense' (all modes), 'shift-invert' (n_modes modes near "
+                              "target) or 'contour' (every mode in region=cn.box(...))"
+                              + did_you_mean(str(method), EIG_METHODS))
+    if method == "shift-invert" and region is None:
+        if target is None:
+            raise OptionError(f"{where}(method='shift-invert') needs a target",
+                              fix="target=0.1+0.2j (the eigenvalues nearest it are returned)")
+        from .evp import check_target
+        check_target(target)
+
+
+def _region_method(region, method: str | None, target, left: bool) -> str:
+    """The method of a call: ``None`` is ``"dense"`` without ``region=`` and ``"contour"`` with it;
+    a method that cannot go with ``region=`` is refused, never replaced (``method="dense"`` with a
+    region used to be switched to the contour method without a word: critic review of L10)."""
+    from ..errors import OptionError
+    doc = "docs/site/guide/dynamics/contour.md"
+    if region is None:
+        if method == "contour":
+            raise OptionError("eigenvalues(method='contour') needs region=cn.box(re=..., im=...)",
+                              why="a contour method computes the eigenvalues inside a region",
+                              fix="region=cn.box(re=(a, b), im=(c, d)) in the eigenvalue plane",
+                              doc=doc)
+        return "dense" if method is None else method
+    from ..contour.region import ContourBox
+    if not isinstance(region, ContourBox):
+        raise OptionError(f"eigenvalues(region={region!r}): a cn.box(re=(a, b), im=(c, d))",
+                          fix="region=cn.box(re=(0.0, 0.5), im=(-0.1, 0.1))", doc=doc)
+    if method not in (None, "contour"):
+        raise OptionError(f"eigenvalues(region=..., method={method!r})",
+                          why="region= computes every eigenvalue in the box by the contour method "
+                              "(argument-principle count + Beyn); the dense solver computes the "
+                              "whole spectrum and shift-invert the modes near a target, so "
+                              f"method={method!r} contradicts region=",
+                          fix="drop method= (or method='contour') to keep region=; or drop "
+                              f"region= for method={method!r}", doc=doc)
+    if target is not None or left:
+        raise OptionError("eigenvalues(region=...) with " + ("target=" if target is not None
+                                                             else "left=True"),
+                          why="the region decides which modes are computed; left eigenvectors "
+                              "are not computed by the contour method",
+                          fix="drop target= / left=; left eigenvectors: the dense method",
+                          doc=doc)
+    return "contour"
+
+
 #: Said by an unfiltered result of a problem with taus: once, in
 #: explain() and the one-line summary, never as a warning.
 NO_FILTER_NOTE = ("no spurious-mode filter: tau modes may appear among these eigenvalues; use "
@@ -228,3 +310,14 @@ def _annotate(res: EVPResult, plan: Plan, filtered: bool) -> None:
     if taus:
         res.filter_note = ("spurious-mode filter: resolution drift (see below)" if filtered
                            else NO_FILTER_NOTE)
+
+
+def _same_group(a: object, b: object) -> bool:
+    """``a`` is the group ``b`` of a plan (groups compare by value; an array-valued comparison
+    or an incomparable object is not a match)."""
+    if a is b:
+        return True
+    try:
+        return bool(a == b)
+    except (TypeError, ValueError):
+        return False

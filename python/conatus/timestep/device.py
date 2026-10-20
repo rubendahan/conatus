@@ -188,7 +188,7 @@ class DeviceSystem:
                     "compact_factors=True: the compiled core has no transposed level-scheduled "
                     "solves (BandedBatch.build_transpose_schedule)",
                     where="DeviceSystem.compact_factors",
-                    why="the core was built before",
+                    why="the compiled core predates the transposed level-scheduled solves",
                     fix="rebuild the core of this tree (pip install ., or the CMake build of the install "
                         "page), or keep compact_factors=False")
             if not self.level_schedule:

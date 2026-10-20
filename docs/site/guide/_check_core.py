@@ -1,7 +1,7 @@
 """Check the prose claims of the user guide (docs/site/guide/*.md, except dynamics/) and the docs
 index, at small sizes, against the current library: the texts of explain() and the values the
 pages quote. The python blocks of the pages themselves are executed as written, each alone, by
-tests/docs/test_guide_blocks.py; this file does not re-type them.
+the documentation tests of the repository; this file does not re-type them.
 
 One function per snippet group, named after its page. Each prints a short line and asserts what
 the page says; a failure is reported and the script ends with exit code 1. Snippets that need

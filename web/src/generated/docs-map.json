@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-13T06:43:17.632Z",
+ "generated": "2026-10-20T23:09:22.591Z",
  "source": "",
  "guide": [
   {
@@ -76,6 +76,21 @@
      "href": "guide/io.html"
     },
     {
+     "title": "The Studio",
+     "text": "The Studio shows a running simulation as a film, from a browser or a phone, and lets you pause, checkpoint, stop or fork it; watching never changes a bit of the computation.",
+     "href": "guide/studio.html"
+    },
+    {
+     "title": "Pilot a run from a script or an agent",
+     "text": "Everything the Studio shows about a run, a script can read as JSON, and the commands of the Controls sheet, a script can send (experimental, like the Studio: experimental).",
+     "href": "guide/studio_agents.html"
+    },
+    {
+     "title": "For AI agents",
+     "text": "What an AI coding agent reads before using Conatus, and the JSON interface it uses while it works.",
+     "href": "guide/agents.html"
+    },
+    {
      "title": "Notebooks",
      "text": "In Jupyter, Conatus objects display as formatted tables and cards.",
      "href": "guide/notebook.html"
@@ -124,6 +139,11 @@
      "title": "Errors and what they mean",
      "text": "Every error says what is wrong, where, why it is refused, and what to write instead.",
      "href": "guide/errors.html"
+    },
+    {
+     "title": "Experimental features",
+     "text": "Most of Conatus is supported: its API changes only through a declared deprecation, and what the guide says about it is measured.",
+     "href": "guide/experimental.html"
     }
    ]
   },
@@ -193,6 +213,11 @@
    "title": "Floquet analysis",
    "text": "Stability of time-periodic flows by the Hill method: the Floquet exponents are eigenvalues of one large, structured problem.",
    "href": "guide/dynamics/floquet.html"
+  },
+  {
+   "title": "Eigenvalues in a region",
+   "text": "Every eigenvalue inside a box of the complex plane, with a count you can trust: how many there are, and which they are.",
+   "href": "guide/dynamics/contour.html"
   },
   {
    "title": "Chaos and ensembles",

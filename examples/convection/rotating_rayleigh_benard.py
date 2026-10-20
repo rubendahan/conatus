@@ -83,6 +83,7 @@ if __name__ == "__main__":
             cp, P = onset(N, Ta, "free", (0.8 * kx, 1.25 * kx), (0.8 * ex, 1.25 * ex))
             print(f"  Ta={Ta:8.0f} N={N}: Ra_c = {cp.value:.10f} (exact {ex:.10f}, rel. {cp.value / ex - 1:+.1e}), "
                   f"k_c = {cp.over['k']:.6f} (exact {kx:.6f}), sigma = {cp.mode.sigma:.1e}, residual {cp.mode.residual:.1e}")
+            assert abs(cp.value / ex - 1) < 1e-10 and abs(cp.over["k"] - kx) < 1e-5, (Ta, N, cp.value, ex)
     print(cp.explain())
     print("Rigid walls (no closed form; to compare with Chandrasekhar's table), convergence in N:")
     for Ta in (0.0, 1e2, 1e3, 1e4, 1e5):
@@ -91,3 +92,7 @@ if __name__ == "__main__":
         for N in (24, 32, 48):
             cp, _ = onset(N, Ta, "rigid", (0.7 * kb, 1.3 * kb), (0.5 * ex, 3.0 * ex))
             print(f"  Ta={Ta:8.0f} N={N}: Ra_c = {cp.value:.8f}, k_c = {cp.over['k']:.6f}, residual {cp.mode.residual:.1e}")
+        if Ta == 0.0:                               # Reid & Harris (1958), rigid walls
+            assert abs(cp.value - 1707.762) < 1e-3, cp.value
+        if Ta == 1e3:                               # Chandrasekhar (1961), Table VIII: 2151.3
+            assert abs(cp.value - 2151.34119768) < 1e-6, cp.value

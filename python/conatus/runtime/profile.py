@@ -1,5 +1,5 @@
 """``solver.profile(steps)``: time per phase with explicit GPU synchronisation, and a simple roofline
-(spec §61–§62).
+.
 
 **Measured.** Every phase of :mod:`conatus.runtime.phases` is bracketed by two CUDA events recorded
 on the current stream (GPU) or by ``time.perf_counter`` (CPU). After the timed steps the device is

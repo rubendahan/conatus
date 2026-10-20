@@ -1,4 +1,4 @@
-// IMEX timesteppers executed in C++ (spec §17, §106: no timestep loop in Python).
+// IMEX timesteppers executed in C++ (no timestep loop in Python).
 // Problem: M dX/dt + L X = F(X, t). Same schemes and conventions as Dedalus 3:
 //  - multistep SBDF1..4 (constant dt): a0 M X^n + L X^n = sum_j c_j F^{n-j} - sum_{j>=1} a_j M X^{n-j}
 //    (a_j include 1/dt); iteration i uses order min(i+1, q) (startup).
@@ -8,6 +8,7 @@
 // factorization serves every stage; L X_0 is skipped when H[:,0] = 0 (P2).
 #pragma once
 
+#include <cstring>
 #include <deque>
 #include <functional>
 #include <map>
@@ -90,23 +91,55 @@ public:
     ImexIntegrator(const ImexIntegrator&) = delete;
     ImexIntegrator& operator=(const ImexIntegrator&) = delete;
 
-    void set_rhs(Rhs f) { F_ = std::move(f); }
+    void set_rhs(Rhs f) { F_ = std::move(f); }   // an empty Rhs means F = 0
     int n() const { return n_; }
     int n_factorizations() const { return static_cast<int>(factors_.size()); }
     long iteration() const { return iteration_; }
     const std::string& scheme() const { return scheme_; }
 
     // Advance x (length n) in place by nsteps; returns the final time.
+    // SBDF keeps the M X and F history of the previous steps: a second run() continues that
+    // trajectory, so it must start from the state and time the previous run() returned (checked
+    // bit for bit); a new trajectory needs reset() first. Reusing the integrator on another state
+    // used to mix the old history into the new run silently (review finding 42).
     double run(T* x, double t, long nsteps) {
+        if (nsteps < 0) throw std::invalid_argument("ImexIntegrator.run: nsteps must be >= 0");
+        if (!MXh_.empty() && !continues(x, t))
+            throw std::invalid_argument(
+                "ImexIntegrator.run: " + scheme_ + " holds the history of a previous run, and (x0, t0) "
+                "is not the state and time that run returned; call reset() to start a new "
+                "trajectory (lower-order startup again), or pass the returned (x, t) to continue");
         for (long s = 0; s < nsteps; ++s) {
             if (order_) step_sbdf(x, t); else step_rk(x, t);
             t += dt_;
             ++iteration_;
         }
+        if (order_) {
+            last_x_.assign(x, x + n_);
+            last_t_ = t;
+        }
         return t;
     }
 
+    // Forget the multistep history and the iteration count (the factorizations are kept: they
+    // depend on M, L, dt and the scheme only). The next run() starts a new trajectory.
+    void reset() {
+        MXh_.clear();
+        Fh_.clear();
+        last_x_.clear();
+        last_t_ = 0.0;
+        iteration_ = 0;
+    }
+
+    // Number of stored history levels (SBDF; 0 for RK, which keeps none).
+    int history_length() const { return static_cast<int>(MXh_.size()); }
+
 private:
+    bool continues(const T* x, double t) const {
+        return t == last_t_ && last_x_.size() == static_cast<std::size_t>(n_) &&
+               std::memcmp(x, last_x_.data(), sizeof(T) * n_) == 0;
+    }
+
     const BorderedBanded<T>& factor(double alpha, double beta) {
         auto key = std::make_pair(alpha, beta);
         auto it = factors_.find(key);
@@ -180,6 +213,8 @@ private:
     Rhs F_;
     long iteration_ = 0;
     std::deque<std::vector<T>> MXh_, Fh_;
+    std::vector<T> last_x_;      // state and time returned by the last run() (SBDF continuation)
+    double last_t_ = 0.0;
     std::map<std::pair<double, double>, std::unique_ptr<BorderedBanded<T>>> factors_;
 };
 

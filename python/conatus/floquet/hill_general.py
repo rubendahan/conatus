@@ -22,13 +22,14 @@ validation: section "Generalisation".
 """
 from __future__ import annotations
 
+import warnings
 from collections.abc import Callable, Mapping
 from typing import Any
 
 import numpy as np
 import scipy.linalg as sla
 
-from ..errors import OptionError
+from ..errors import NumericalError, OptionError
 from .roots import (SECANT_MAX_ITERATIONS, SECANT_STEP, SecantRoot, check_allow_unconverged,
                     check_count, determinant_secant, unconverged)
 from .._deprecation import renames
@@ -91,8 +92,16 @@ class HillBlocks:
         return out
 
     # ------------------------------------------------------------------ factorization
-    def factor(self, mu: complex) -> HillFactorization:
-        """Block-Thomas on super-blocks: S_k = D_k - L_k S_{k-1}⁻¹ U_{k-1} (partial-pivot LU)."""
+    def factor(self, mu: complex) -> HillFactorization | BandedHillFactorization:
+        """Block-Thomas on super-blocks: S_k = D_k - L_k S_{k-1}⁻¹ U_{k-1} (partial-pivot LU
+        inside each super-block, no pivoting across them).
+
+        Block-Thomas needs every intermediate Schur complement S_k (k < last) to be well
+        conditioned: a regular Hill matrix can have a singular S_k (finding 11: det -2j, cond 4.98, and slogdet / solve came back NaN). When the reciprocal
+        condition of an intermediate S_k is below ``THOMAS_RCOND_MIN``, the whole matrix is
+        factored instead by a banded LU with partial pivoting across super-blocks (LAPACK
+        gbtrf, still linear in Nh); ``factorization.method`` says which one ran. The last S_k
+        may be singular: then M(μ) is (μ is an exponent)."""
         sup = self._super()
         lus, lows, ups = [], [], []
         prev = None
@@ -102,17 +111,74 @@ class HillBlocks:
                 Lk = self._block(mu, rows, sup[k - 1])
                 D = D - Lk @ sla.lu_solve(prev, ups[-1], check_finite=False)
                 lows.append(Lk)
-            prev = sla.lu_factor(D, check_finite=False)
+            if not np.isfinite(D).all():
+                return self._banded(mu)
+            with warnings.catch_warnings():     # a singular block is handled just below
+                warnings.simplefilter("ignore", sla.LinAlgWarning)
+                prev = sla.lu_factor(D, check_finite=False)
+            if k < len(sup) - 1 and _rcond(prev, D) < THOMAS_RCOND_MIN:
+                return self._banded(mu)
             lus.append(prev)
             if k < len(sup) - 1:
                 ups.append(self._block(mu, rows, sup[k + 1]))
         return HillFactorization(mu, sup, self.size, lus, lows, ups)
 
+    def _banded(self, mu: complex) -> BandedHillFactorization:
+        """M(μ) in LAPACK band storage, LU with partial pivoting (zgbtrf)."""
+        s, h = self.size, self.harmonics
+        n = len(h) * s
+        kl = ku = (self.Mhalf + 1) * s - 1            # scalar half-bandwidth of the block band
+        ab = np.zeros((2 * kl + ku + 1, n), complex)
+        for i, row in enumerate(h):
+            lo, hi = max(0, i - self.Mhalf), min(len(h), i + self.Mhalf + 1)
+            blk = self._block(mu, [row], h[lo:hi])            # (s, (hi-lo) s)
+            r0 = i * s
+            for jj in range(blk.shape[1]):
+                c = lo * s + jj
+                rows = np.arange(r0, r0 + s)
+                ab[kl + ku + rows - c, c] = blk[:, jj]
+        lu, piv, info = sla.lapack.zgbtrf(ab, kl, ku)
+        if info < 0:
+            raise RuntimeError(f"zgbtrf: illegal argument {-info}")   # internal error
+        return BandedHillFactorization(mu, lu, piv, kl, ku, s)
+
     def slogdet(self, mu: complex) -> tuple[complex, float]:
         return self.factor(mu).slogdet()
 
     def solve(self, mu: complex, rhs: np.ndarray) -> np.ndarray:
-        return self.factor(mu).solve(rhs)
+        """M(μ) x = rhs with its normwise backward error checked: above
+        ``SOLVE_BACKWARD_ERROR_MAX`` the banded pivoted LU is tried, then NumericalError
+        (never a NaN or an inaccurate solution passed on)."""
+        rhs = np.asarray(rhs, complex)
+        F = self.factor(mu)
+        x = F.solve(rhs)
+        eta = self.backward_error(mu, x, rhs)
+        if not eta <= SOLVE_BACKWARD_ERROR_MAX and isinstance(F, HillFactorization):
+            x = self._banded(mu).solve(rhs)
+            eta = self.backward_error(mu, x, rhs)
+        if not eta <= SOLVE_BACKWARD_ERROR_MAX:
+            raise NumericalError(
+                f"Hill solve at μ = {complex(mu):.6g}: backward error {eta:.2e} > "
+                f"{SOLVE_BACKWARD_ERROR_MAX:g} (non-finite or singular to working precision)",
+                fix="move μ off the exponent (a shift), or check the blocks for NaN/Inf")
+        return x
+
+    def backward_error(self, mu: complex, x: np.ndarray, rhs: np.ndarray) -> float:
+        """‖M x - b‖∞ / (‖M‖∞ ‖x‖∞ + ‖b‖∞) (normwise backward error; NaN -> inf)."""
+        r = self.matvec(mu, x) - rhs
+        h, s = self.harmonics, self.size
+        norm_m = 0.0
+        for i, n in enumerate(h):
+            row = np.abs(self.diag(mu, n)).sum(axis=1)
+            for m, C in self.C.items():
+                if 0 <= i - m < len(h):
+                    row = row + np.abs(C).sum(axis=1)
+            norm_m = max(norm_m, float(row.max()) if s else 0.0)
+        den = norm_m * float(np.abs(x).max(initial=0.0)) + float(np.abs(rhs).max(initial=0.0))
+        num = float(np.abs(r).max(initial=0.0))
+        if not np.isfinite(num) or not np.isfinite(den):
+            return float("inf")
+        return num / den if den > 0 else (0.0 if num == 0 else float("inf"))
 
     def matvec(self, mu: complex, x: np.ndarray) -> np.ndarray:
         """M(μ) x for x of shape (2Nh+1, size)."""
@@ -134,17 +200,20 @@ class HillBlocks:
         return self._block(mu, self.harmonics, self.harmonics)
 
     def winding(self, center: complex, radius: float, n_points: int) -> float:
-        """Winding number of det M on |μ - center| = radius; non-integer = contour under-resolved."""
-        th = np.linspace(0.0, 2 * np.pi, n_points + 1)
-        ph = [np.angle(self.slogdet(center + radius * np.exp(1j * t))[0]) for t in th]
-        return float((np.unwrap(ph)[-1] - np.unwrap(ph)[0]) / (2 * np.pi))
+        """Winding number of det M on |μ - center| = radius (an integer, certified by the
+        adaptive walk of :func:`conatus.floquet.roots.adaptive_winding`; ConvergenceError when
+        the walk cannot certify it). ``n_points``: initial points on the circle."""
+        from .roots import adaptive_winding
+        return adaptive_winding(self.slogdet, center, radius, n_points)
 
     def explain(self) -> str:
         k = len(self.harmonics)
         return (f"Floquet–Hill ({self.label}): harmonics n = -{self.Nh}..{self.Nh} (ω = {self.omega:g}), "
                 f"base-flow couplings m ∈ {sorted(self.C)} (half-width {self.Mhalf}); block size "
                 f"{self.size}, Hill size {k * self.size}; block-Thomas on {len(self._super())} "
-                f"super-blocks of {max(self.Mhalf, 1)} harmonics (partial-pivot LU, FP64); "
+                f"super-blocks of {max(self.Mhalf, 1)} harmonics (partial-pivot LU, FP64; banded "
+                f"LU pivoting across super-blocks when a Schur complement has rcond < "
+                f"{THOMAS_RCOND_MIN:g}); solve checks its backward error; "
                 f"slogdet accumulated as Σ log|pivot| (no overflow of det)."
                 + (" " + " ".join(self.notes) if self.notes else ""))
 
@@ -176,15 +245,68 @@ class HillFactorization:
             x[k] = g[k] - sla.lu_solve(self.lus[k], self.ups[k] @ x[k + 1], check_finite=False)
         return np.concatenate(x).reshape(-1, self.size)
 
+    method = "block-Thomas"
+
     def slogdet(self) -> tuple[complex, float]:
-        """(phase, log|det|) from the pivots of every super-block Schur complement."""
-        phase, logabs = 1.0 + 0j, 0.0
+        """(phase, log|det|) from the pivots of every super-block Schur complement; (0, -inf)
+        for an exactly singular matrix (as numpy.linalg.slogdet), never NaN."""
+        pivots, swaps = [], 0
         for lu, piv in self.lus:
-            d = np.diag(lu)
-            swaps = np.count_nonzero(piv != np.arange(piv.size))
-            phase *= (-1.0) ** swaps * np.prod(d / np.abs(d))
-            logabs += float(np.sum(np.log(np.abs(d))))
-        return phase, logabs
+            pivots.append(np.diag(lu))
+            swaps += np.count_nonzero(piv != np.arange(piv.size))
+        return _slogdet_from_pivots(np.concatenate(pivots), swaps)
+
+
+class BandedHillFactorization:
+    """LU with partial pivoting of the banded M(μ) (LAPACK zgbtrf): the fallback of
+    :meth:`HillBlocks.factor` when block-Thomas meets an ill-conditioned Schur complement."""
+
+    method = "banded LU, partial pivoting"
+
+    def __init__(self, mu, lu, piv, kl, ku, size):
+        self.mu, self.lu, self.piv, self.kl, self.ku, self.size = mu, lu, piv, kl, ku, size
+
+    def solve(self, rhs: np.ndarray) -> np.ndarray:
+        """M(μ) x = rhs, rhs of shape (2Nh+1, size)."""
+        b = np.asarray(rhs, complex).reshape(-1, 1)
+        x, info = sla.lapack.zgbtrs(self.lu, self.kl, self.ku, b, self.piv)
+        if info != 0:
+            raise RuntimeError(f"zgbtrs: illegal argument {-info}")   # internal error
+        return x.reshape(-1, self.size)
+
+    def slogdet(self) -> tuple[complex, float]:
+        """(phase, log|det|) from the pivots of the banded LU; (0, -inf) if singular, never NaN."""
+        d = self.lu[self.kl + self.ku]                    # diagonal of U in band storage
+        swaps = np.count_nonzero(self.piv != np.arange(self.piv.size))
+        return _slogdet_from_pivots(d, swaps)
+
+
+# Normwise backward error accepted by HillBlocks.solve (a backward-stable LU gives ~1e-15).
+SOLVE_BACKWARD_ERROR_MAX = 1e-10
+
+# Reciprocal 1-norm condition below which an intermediate block-Thomas Schur complement is
+# not trusted (review finding 11): the banded pivoted LU is used instead. 1e-10 leaves ~6 of
+# the 16 digits of FP64 in the worst case of the unpivoted elimination step.
+THOMAS_RCOND_MIN = 1e-10
+
+
+def _rcond(lu_piv, D: np.ndarray) -> float:
+    """Reciprocal 1-norm condition number of D from its LU (LAPACK zgecon); 0 if singular."""
+    lu, _ = lu_piv
+    if not np.all(np.diag(lu)):
+        return 0.0
+    anorm = float(np.abs(D).sum(axis=0).max())
+    if anorm == 0.0:
+        return 0.0
+    rc, info = sla.lapack.zgecon(lu.astype(complex), anorm, norm="1")
+    return float(rc) if info == 0 else 0.0
+
+
+def _slogdet_from_pivots(d: np.ndarray, swaps: int) -> tuple[complex, float]:
+    if not np.all(d):
+        return 0j, float("-inf")
+    phase = (-1.0) ** swaps * np.prod(d / np.abs(d))
+    return complex(phase), float(np.sum(np.log(np.abs(d))))
 
 
 # ---------------------------------------------------------------------- builder from the IR plan

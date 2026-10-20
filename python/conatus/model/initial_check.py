@@ -139,7 +139,16 @@ def check_callable(sim: Any, name: str, fn: Any, field: Any,
             # the grid first (np.asarray of the tuple raised a bare ValueError)
             raw = [np.broadcast_to(np.asarray(r), shape) for r in raw]
         v = np.asarray(raw)
-        return np.broadcast_to(v, comps + shape).copy()
+        try:
+            return np.broadcast_to(v, comps + shape).copy()
+        except ValueError:
+            # a shape that is not the grid's (audit inputs: a bare ValueError)
+            raise InputTypeError(
+                f"initial({name}=<callable>): it returned shape {v.shape}, not that of the grid "
+                f"{comps + shape}", why="the callable is evaluated on the coordinate grids "
+                "(arrays shaped for broadcasting) and must return their broadcast shape",
+                fix=f"write it with the coordinates: lambda {', '.join(c.name for c in coords)}: ... (e.g. "
+                    "np.sin(x) + 0*z)") from None
 
     v0 = sample()
     bad = ~np.isfinite(v0)

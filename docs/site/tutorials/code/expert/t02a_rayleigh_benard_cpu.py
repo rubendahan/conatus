@@ -13,10 +13,11 @@ Run: python t02a_rayleigh_benard_cpu.py   (about 10 s of CPU)
 # [imports]
 import numpy as np
 
-from conatus.expert import (CFL, IVP, EmbeddedError, CartesianCoordinates, Chebyshev, Domain,
-                            Field, IVPSolver, Parameter, RealFourier, VectorField, Zero, discretize,
-                            div, dot, dt, eigenvalues, grad, integ, interp, lap, lift, linearize,
-                            methods, unit_vector)
+from conatus.expert import (CFL, IVP, EmbeddedError, CartesianCoordinates, Chebyshev, Domain, Field,
+                            IVPSolver, Parameter, RealFourier, VectorField, discretize, div, dot, dt,
+                            eigenvalues, grad, integ, interp, lap, lift, linearize, methods,
+                            unit_vector)
+from conatus.ir import Zero
 # [/imports]
 
 # [problem]

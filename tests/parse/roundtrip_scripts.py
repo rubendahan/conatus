@@ -7,7 +7,9 @@ equation accepted by ``add_equation`` and, at exit, the final equations of every
 (including the tau lifts that ``add_bc`` writes into the bulk equations) are converted with
 ``conatus.ir.parse.to_string`` and parsed back in the namespace of the problem's variables, the
 equation's parameters and its lift bases; the result must be structurally equal. The script
-itself runs normally (its checks are its own); a timeout only stops it after the equations
+itself runs normally (its checks are its own). A script that fails or times out fails the round
+trip (exit 1), even when every equation it declared before stopping round-trips: its later
+equations were never checked (review finding 100: such a run counted as passed).
 """
 from __future__ import annotations
 
@@ -98,14 +100,15 @@ def main(argv: list[str]) -> int:
             status = "completed" if p.returncode == 0 else f"exit {p.returncode}"
             tail = (p.stderr or "").strip().splitlines()[-3:]
         except subprocess.TimeoutExpired:
-            status, tail = f"timeout after {timeout:.0f} s (equations declared so far checked)", []
+            status, tail = f"timeout after {timeout:.0f} s (only the equations declared so far checked)", []
         runs.append({"script": script, "status": status, "seconds": round(time.time() - t0, 1),
                      "stderr_tail": tail})
         print(f"{os.path.basename(script)}: {status}", flush=True)
     recs = [json.loads(line) for line in open(lines)] if os.path.exists(lines) else []
+    incomplete = [r for r in runs if r["status"] != "completed"]
     summary = {"equations": len(recs), "ok": sum(r["ok"] for r in recs),
                "failed": [r for r in recs if not r["ok"]], "runs": runs,
-               "per_script": {}}
+               "scripts_incomplete": incomplete, "per_script": {}}
     for r in recs:
         d = summary["per_script"].setdefault(os.path.basename(r["script"]), {"n": 0, "ok": 0})
         d["n"] += 1
@@ -116,7 +119,9 @@ def main(argv: list[str]) -> int:
     for r in summary["failed"]:
         print("FAILED", os.path.basename(r["script"]), r.get("string"), r.get("error"),
               r.get("back"))
-    return 0 if summary["ok"] == summary["equations"] and recs else 1
+    for r in incomplete:
+        print("SCRIPT NOT COMPLETED", os.path.basename(r["script"]), r["status"], *r["stderr_tail"])
+    return 0 if summary["ok"] == summary["equations"] and recs and not incomplete else 1
 
 
 if __name__ == "__main__":

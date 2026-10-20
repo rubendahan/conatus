@@ -13,7 +13,8 @@ import numbers
 import re
 import warnings
 import weakref
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Any
 
@@ -172,8 +173,9 @@ def _check_value(name: str, value: Any, declared: Any = None) -> float | complex
                              why="a NaN or infinite parameter makes every result NaN or "
                                  "meaningless, found only steps later",
                              fix=f"a finite number for {name}", doc=_DOC)
-    is_complex = isinstance(value, complex) or (hasattr(value, "imag") and not
-                                                 isinstance(value, numbers.Real))
+    # complex only for a complex number: a Decimal has .imag but is real (audit inputs,
+    # Ra=Decimal("2") was stored as 2+0j and compiled a complex problem)
+    is_complex = isinstance(value, numbers.Complex) and not isinstance(value, numbers.Real)
     if is_complex and declared is not None and not isinstance(declared, complex):
         raise InputTypeError(f"parameter {name}={value!r}: {name} was declared real "
                              f"({name} = {declared:g})",
@@ -185,10 +187,41 @@ def _check_value(name: str, value: Any, declared: Any = None) -> float | complex
 
 
 
+def _check_boundary_value(boundary: str, name: str, v: Any) -> None:
+    """A boundary value of ``m.at(boundary, name=v)``: a wall condition (``cn.no_slip``), an
+    expression as text, a callable of the coordinates (and t), a tuple of finite numbers (a
+    Cartesian vector) or a finite number (audit inputs: ``u=nan``, ``u=inf``,
+    ``u=True`` and ``u=None`` reached the right-hand side as they were: a NaN boundary row)."""
+    from .conditions import WallCondition
+    if isinstance(v, (WallCondition, str)) or callable(v):
+        return
+    items = list(v) if isinstance(v, (tuple, list)) else [v]
+    for c in items:
+        ok = isinstance(c, numbers.Number) and not isinstance(c, bool)
+        if ok:
+            z = complex(c)
+            ok = math.isfinite(z.real) and math.isfinite(z.imag)
+        if not ok:
+            raise BoundaryConditionError(
+                f"at({boundary!r}, {name}={v!r}): not a boundary value",
+                why="a boundary value is a finite number, a tuple of them (a vector), an "
+                    "expression as text, a function of the coordinates or a wall condition; "
+                    "NaN, infinity or a flag would become a boundary row of the system",
+                fix=f"at({boundary!r}, {name}=0.0), {name}='sin(t)', {name}=lambda x: ... or "
+                    f"{name}=cn.no_slip", doc=_DOC)
+
+
+#: Keywords of ``Model.discretize`` / ``Model.solve`` besides the declared parameters (audit
+#: inputs: an unknown one was a bare TypeError of conatus.discretize).
+_DISCRETIZE_OPTIONS = ("ncc_cutoff", "ncc_tail_tol", "assembly", "params")
+#: Keywords of ``Model.parametric`` passed to ``ParametricEVP`` (the same audit).
+_PARAMETRIC_OPTIONS = ("group", "reduced", "fixed", "ncc_cutoff", "ncc_tail_tol", "derived",
+                       "wavenumbers", "spurious")
+
 #: Keywords accepted by the native eigenvalue calls besides the declared parameters (U1:
 #: an unknown keyword, ``eigenvalues(re=5000)``, was a bare TypeError of the expert function).
 _EIG_OPTIONS = ("method", "target", "left", "reduced", "spurious", "drift_tol", "ncc_cutoff",
-                "ncc_tail_tol")
+                "ncc_tail_tol", "region")
 
 
 def check_call_options(model: Any, kw: dict, accepted: tuple, where: str) -> None:
@@ -223,10 +256,13 @@ def _k_map(k: Any, fourier: list[str]) -> dict[str, float]:
             raise ResolutionError(f"k={dict(k)!r} for the periodic coordinates {fourier}",
                                   fix="one wavenumber per periodic coordinate: k={"
                                       + ", ".join(f"'{c}': ..." for c in fourier) + "}", doc=_DOC)
-        return {c: float(k[c]) for c in fourier}
-    ks = (k,) if isinstance(k, numbers.Number) else tuple(k)
+        ks = tuple(k[c] for c in fourier)
+    else:
+        ks = (k,) if isinstance(k, numbers.Number) or not hasattr(k, "__iter__") else tuple(k)
+    # finite real wavenumbers (audit inputs: a dict value 1+1j was a bare TypeError,
+    # True was read as 1, NaN searched for a group)
     if len(ks) != len(fourier) or not all(isinstance(v, numbers.Real) and not isinstance(v, bool)
-                                          for v in ks):
+                                          and math.isfinite(v) for v in ks):
         raise ResolutionError(f"k={k!r} for the periodic coordinates {fourier}",
                               fix=f"{len(fourier)} real wavenumber(s), in the order {fourier}",
                               doc=_DOC)
@@ -372,9 +408,27 @@ class ParameterValues(dict):
                           UserWarning, stacklevel=3)
 
     def update(self, *args: Any, **kw: Any) -> None:  # type: ignore[override]
-        """Validated update (every key must be declared, every value a number)."""
-        for k, v in dict(*args, **kw).items():
+        """Validated update (every key must be declared, every value a number); all values are
+        checked before any is written (a failing update changes nothing)."""
+        new = dict(*args, **kw)
+        for k, v in new.items():
+            if k not in self:
+                self[k] = v                 # refused with the declared names
+            _check_value(k, v, dict.__getitem__(self, k))
+        for k, v in new.items():
             self[k] = v
+
+    def __ior__(self, other: Any) -> ParameterValues:  # type: ignore[override,misc]
+        """``m.params |= {...}``: the validated update (review finding 28: dict.__ior__ wrote
+        NaN and undeclared names without any check). All values are checked before any is
+        written."""
+        new = dict(other)
+        for k, v in new.items():
+            if k not in self:
+                self[k] = v                 # refused with the declared names
+            _check_value(k, v, dict.__getitem__(self, k))
+        self.update(new)
+        return self
 
     def setdefault(self, key: str, default: Any = None) -> Any:  # type: ignore[override]
         """Declared parameters always have a value: returns it (an unknown name is refused)."""
@@ -422,6 +476,18 @@ def ncc_options(kw: dict) -> dict:
     return {k: kw.pop(k) for k in ("ncc_cutoff", "ncc_tail_tol") if k in kw}
 
 
+def _transactional(method: Any) -> Any:
+    """A declaration of :class:`Model` run in ``Model._transaction``: on failure, the model is
+    unchanged (signature and docstring kept for help() and the API surface)."""
+    import functools
+
+    @functools.wraps(method)
+    def wrapper(self: Model, *args: Any, **kw: Any) -> Any:
+        with self._transaction():
+            return method(self, *args, **kw)
+    return wrapper
+
+
 class Model:
     """A PDE model on a geometry, declared as on paper.
 
@@ -436,6 +502,9 @@ class Model:
             raise InputTypeError(f"Model needs a geometry (cn.Box, cn.Channel, cn.Disk, ...), got "
                                  f"{type(geometry).__name__}", fix="cn.Model(cn.Box(x=cn.periodic(2),"
                                  " z=cn.walls(-0.5, 0.5)), Ra=2500)", doc=_DOC)
+        if not isinstance(name, str):              # a label of ids, files and messages
+            raise InputTypeError(f"Model(name={name!r}): the name is a string",
+                                 fix="cn.Model(geometry, name='convection', ...)", doc=_DOC)
         self.geometry = geometry
         self.name = name
         self.params: ParameterValues = ParameterValues()
@@ -451,6 +520,7 @@ class Model:
         self.eig: str | None = None
         self.eig_growth: Any = None                # growth convention of the eigenvalue
         self._degree: Any = None                   # highest nonlinear degree (set by _probe)
+        self._unknown_degree: Any = None           # the same in the unknowns only (set by _probe)
         self._sealed = True                        # from here on, __setattr__ checks the names
 
     # --- parameters as attributes ------------------------------------------
@@ -487,6 +557,31 @@ class Model:
                           doc=_DOC)
 
     # --- declarations --------------------------------------------------------------------
+    @contextmanager
+    def _transaction(self) -> Iterator[None]:
+        """Validate, then mutate (review findings 27, 61): a declaration that fails leaves the
+        model exactly as it was. ``equations("dt(u) = typo")`` used to keep the bad line, so the
+        corrected call failed too (a notebook could not recover without rebuilding the model)."""
+        d = self.__dict__
+        lists = ("unknowns", "givens", "macros", "eqs", "conditions")
+        saved = {k: list(d[k]) for k in lists}
+        functions = dict(d["functions"])
+        scalars = {k: d.get(k) for k in ("eig", "eig_growth", "_degree", "_unknown_degree")}
+        dyes = dict(d["_dyes"]) if "_dyes" in d else None
+        try:
+            yield
+        except BaseException:
+            for k in lists:
+                d[k][:] = saved[k]
+            d["functions"].clear()
+            d["functions"].update(functions)
+            d.update(scalars)
+            if dyes is None:
+                d.pop("_dyes", None)
+            else:
+                d["_dyes"] = dyes
+            raise
+
     def _names(self) -> set[str]:
         return (set(self.params) | {u.name for u in self.unknowns} | {g.name for g in self.givens}
                 | {m[0] for m in self.macros} | set(getattr(self, "functions", {}))
@@ -537,6 +632,7 @@ class Model:
         a div constraint); checked at compilation, never assumed."""
         return self._unknown(name, 0, "pressure")
 
+    @_transactional
     def dye(self, name: str, *, velocity: str, kappa: Any) -> Unknown:
         """A numerical dye: the passive scalar ``name`` advected by the vector
         unknown ``velocity``, with its own diffusivity ``kappa`` (a number >= 0 or the name of
@@ -549,22 +645,37 @@ class Model:
         from .dye import declare_dye
         return declare_dye(self, name, velocity=velocity, kappa=kappa)
 
+    @_transactional
     def given(self, name: str | None = None, value: Any = None, *, rank: int = 0,
               **named: Any) -> Given | tuple[Given, ...]:
         """Known fields: ``m.given(U=lambda y: 1 - y**2)`` (argument names = coordinates it depends
         on); ``rank=1`` for a vector (the callable returns the components)."""
         items = ([(name, value)] if name is not None else []) + list(named.items())
+        # rank 0 (scalar) or 1 (vector), never a float, a flag or another rank (audit inputs,
+        # rank=1.5, True, -1 and 3 were stored and compiled as a scalar)
+        if isinstance(rank, bool) or rank not in (0, 1) or not isinstance(rank, numbers.Integral):
+            raise InputTypeError(f"given(..., rank={rank!r}): 0 (a scalar) or 1 (a vector)",
+                                 fix="rank=0 (default) or rank=1", doc=_DOC)
         out = []
         for n, v in items:
             self._check_name(n, "given field")
-            if not (callable(v) or isinstance(v, numbers.Number)):
+            if not (callable(v) or (isinstance(v, numbers.Number) and not isinstance(v, bool))):
                 raise InputTypeError(f"given {n}={v!r}: a callable of coordinates or a number",
                                      doc=_DOC)
+            if not callable(v) and not (math.isfinite(complex(v).real)
+                                        and math.isfinite(complex(v).imag)):
+                raise InputTypeError(f"given {n}={v!r}: not a finite number",
+                                     why="a NaN or infinite coefficient makes every result NaN",
+                                     fix=f"a finite value for {n}", doc=_DOC)
+            if callable(v):                   # its arguments name coordinates: checked now
+                from .compiler import _coord_args
+                _coord_args(v, tuple(self.geometry.coord_names), f"given {n}")
             g = Given(n, v, rank)
             self.givens.append(g)
             out.append(g)
         return out[0] if len(out) == 1 else tuple(out)
 
+    @_transactional
     def function(self, name: str, f: Any, *, derivative: Any = None, parity: str = "none") -> Any:
         """A pointwise function of a scalar field usable in the equations by its name
         (``m.function("g", np.tanh, derivative=lambda u: 1 - np.tanh(u)**2)``, then
@@ -581,6 +692,7 @@ class Model:
         self.functions[name] = g
         return g
 
+    @_transactional
     def define(self, text: str) -> None:
         """A named operator used in the equations: ``m.define("L2(f) = dy(dy(f)) - alpha**2*f")``
         (the body is parsed at each use with its arguments bound: pure substitution)."""
@@ -590,8 +702,20 @@ class Model:
                                 fix='m.define("L2(f) = dy(dy(f)) - alpha**2*f")', doc=_DOC)
         name, args, body = mt.group(1), tuple(a.strip() for a in mt.group(2).split(",") if a.strip()), mt.group(3)
         self._check_name(name, "operator")
+        # arguments: distinct identifiers (review finding 31: "pick(a, a) = a" was accepted and
+        # bound the last value silently)
+        bad = [a for a in args if not _NAME.match(a)]
+        if bad:
+            raise EquationError(f"define({text!r}): argument(s) {bad} are not identifiers",
+                                fix='m.define("L2(f) = dy(dy(f)) - alpha**2*f")', doc=_DOC)
+        dup = sorted({a for a in args if args.count(a) > 1})
+        if dup:
+            raise EquationError(f"define({text!r}): argument(s) {dup} repeated",
+                                why="each argument names one value of the call",
+                                fix="give every argument its own name", doc=_DOC)
         self.macros.append((name, args, body, text))
 
+    @_transactional
     def eigenvalue(self, name: str = "s", *, growth: Any = None) -> str:
         """Declare the model an eigenvalue problem in ``name`` (complex); returns the name.
 
@@ -628,11 +752,16 @@ class Model:
         self.eig_growth = growth
         return name
 
+    @_transactional
     def equations(self, *texts: str, **named: str) -> Model:
         """Equations as on paper, one per line or one per argument (or ``label=...`` keywords, or
         ``label: ...`` prefixes). Terms may sit on either side: the split is automatic
         (explain())."""
         items: list[tuple[str | None, str]] = []
+        bad = [t for t in list(texts) + list(named.values()) if not isinstance(t, str)]
+        if bad:                                   # audit inputs: a bare AttributeError before
+            raise EquationError(f"equations({bad[0]!r}): an equation is text",
+                                fix='m.equations("dt(u) - lap(u) = 0")', doc=_DOC)
         for text in texts:
             for line in _split_lines(text):
                 mt = _LABEL.match(line)
@@ -650,6 +779,7 @@ class Model:
         self._probe()
         return self
 
+    @_transactional
     def at(self, boundary: str, *conditions: str, into: Any = None, **values: Any) -> Model:
         """Boundary conditions at a named boundary: ``m.at("bottom", u=0, T=0.5)``, or as text
         ``m.at("walls", "v = 0", "dy(v) = 0")`` (texts first, then keywords, in order).
@@ -667,6 +797,7 @@ class Model:
                 raise BoundaryConditionError(f"at({boundary!r}, {k}=...): {k} is not an unknown",
                                              fix="unknowns: " + ", ".join(u.name for u in self.unknowns),
                                              doc=_DOC)
+            _check_boundary_value(boundary, k, v)
             self.conditions.append(_Condition(boundary, None, k, v, into))
         return self
 
@@ -686,6 +817,7 @@ class Model:
             comp = compile_model(self, self._probe_N(), DEFAULT_DEALIAS, check_conditions=False)
             # highest polynomial degree of the equations: the default dealiasing factor
             self._degree = comp.degree
+            self._unknown_degree = comp.unknown_degree     # weighted-axis floor (Hermite/Laguerre)
         finally:
             self.conditions = saved
 
@@ -713,6 +845,7 @@ class Model:
         """``conatus.discretize`` of the compiled problem (expert: the Plan, its matrices); a
         keyword naming a declared parameter (``Re=3000``) is its value for this call only."""
         over = split_overrides(self, kw)
+        check_call_options(self, kw, _DISCRETIZE_OPTIONS, "discretize")   # audit inputs: bare TypeError
         return self.compile(N, dealias, params=over).discretize(**kw)
 
     def explain(self, N: Any = None, dealias: Any = None, *, full: bool = False) -> str:
@@ -840,6 +973,7 @@ class Model:
         resolution ``N``: the ``LBVPSolution`` of ``discretize(N).solve()``, given fields as data
         (``sol.grid("u")``, ``sol.explain()`` with the residual of each group)."""
         over = split_overrides(self, kw)              # a declared parameter: this call only
+        check_call_options(self, kw, _DISCRETIZE_OPTIONS, "solve")   # audit inputs: bare TypeError
         comp = self.compile(N, dealias, params=over)
         if comp.kind != "LBVP":
             raise OptionError(f"solve(): the model is an {comp.kind}, not a linear boundary-value "
@@ -894,6 +1028,8 @@ class Model:
             kw["n_modes"], n_modes = n_modes, None
         check_call_options(self, kw, _EIG_OPTIONS + (("n",) if self.geometry.sincos_coord
                                                      else ()), "eigenvalues")
+        from ..solvers.plan_evp import check_eig_method   # before compiling (review, inputs)
+        check_eig_method(kw.get("method"), kw.get("target"), kw.get("region"))
         dkw = ncc_options(kw)
         dkw.update(split_overrides(self, kw))      # a declared parameter (Re=...): this call only
         fourier = _fourier_coords(self.geometry)
@@ -939,6 +1075,21 @@ class Model:
         from ..tolerances import REQUIRED
         if isinstance(over, str):
             over = (over,)
+        # names, at least one, each once (audit inputs: over=3 was a bare TypeError,
+        # over=() and over=("Re", "Re") built a pencil)
+        if not hasattr(over, "__iter__") or not over or any(not isinstance(n, str) for n in over) \
+                or len(set(over)) != len(tuple(over)):
+            raise OptionError(f"parametric(over={over!r}): one or more distinct parameter names",
+                              fix="over='Re' or over=('Re', 'alpha'); declared parameters: "
+                                  + (", ".join(self.params) or "none"), doc=_DOC)
+        over = tuple(over)
+        bad = [k for k in kw if k not in _PARAMETRIC_OPTIONS]
+        if bad:
+            raise OptionError(f"parametric(..., {bad[0]}=...): unknown keyword."
+                              + did_you_mean(bad[0], _PARAMETRIC_OPTIONS),
+                              why="the parameters of the pencil are named by over=; the other "
+                                  "keywords are options of the pencil",
+                              fix="options: " + ", ".join(_PARAMETRIC_OPTIONS), doc=_DOC)
         unknown = [n for n in over if n not in self.params]
         if unknown:
             raise OptionError(f"parametric(over={tuple(over)!r}): {unknown} not declared "

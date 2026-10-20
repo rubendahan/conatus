@@ -34,8 +34,8 @@ from .patterns import kolmogorov, kuramoto_sivashinsky, swift_hohenberg
 from .shear import channel, channel_evp, plane_couette, plane_couette_evp
 from . import native  # noqa: E402  (native-layer versions: cn.problems.native.<name>)
 
+# Documented names only (M5, 0.2); the others stay importable from this module.
 __all__ = ["Ready", "native", "channel", "channel_evp", "plane_couette", "plane_couette_evp",
-           "rayleigh_benard", "rayleigh_benard_evp", "taylor_couette", "taylor_couette_evp",
-           "pipe", "pipe_evp", "kuramoto_sivashinsky",
-           "kolmogorov", "swift_hohenberg", "rotating_shell_convection",
+           "rayleigh_benard", "rayleigh_benard_evp", "taylor_couette", "taylor_couette_evp", "pipe",
+           "pipe_evp", "kuramoto_sivashinsky", "kolmogorov", "swift_hohenberg", "rotating_shell_convection",
            "rotating_shell_convection_evp", ]

@@ -1,8 +1,10 @@
-"""``python -m conatus <command>``: command-line entry points (``doctor``, ``docs``).
+"""``python -m conatus <command>``: command-line entry points (``doctor``, ``studio``).
 
     python -m conatus --version       # conatus, compiled core and Python versions (a bug report)
     python -m conatus doctor          # what this machine can run; exit 1 if something required is missing
     python -m conatus doctor --json   # same report as JSON
+    python -m conatus studio status kh_demo     # follow / pilot a run (JSON; conatus.studio.cli)
+    python -m conatus agent check run.py        # JSON interface for AI agents (conatus.agent)
     python -m conatus docs guide/errors         # where to read a guide page named by an error
 """
 from __future__ import annotations
@@ -43,21 +45,21 @@ def main(argv: list[str] | None = None) -> int:
     """Dispatch the subcommand; returns the process exit code."""
     argv = sys.argv[1:] if argv is None else list(argv)
     if argv[:1] == ["studio"]:                     # its own parser (many subcommands)
-        from . import __version__
-        print("conatus: the 'studio' command is not part of this release (Conatus "
-              f"{__version__}); see the documentation for what is included.", file=sys.stderr)
-        return 2
+        from .studio.cli import main as studio_main
+        return studio_main(argv[1:])
     if argv[:1] == ["agent"]:                      # JSON interface for AI agents (its own parser)
-        from . import __version__
-        print("conatus: the 'agent' command is not part of this release (Conatus "
-              f"{__version__}); see the documentation for what is included.", file=sys.stderr)
-        return 2
+        from .agent import main as agent_main
+        return agent_main(argv[1:])
     p = argparse.ArgumentParser(prog="python -m conatus", description="Conatus command line.")
     p.add_argument("--version", action=_Version)
     sub = p.add_subparsers(dest="command", required=True)
     d = sub.add_parser("doctor", help="check Python, the compiled core, GPU, MPI, storage "
                                       "(read-only); exit 0 if nothing required is missing")
     d.add_argument("--json", action="store_true", help="print the report as JSON")
+    sub.add_parser("studio", help="follow and pilot Studio runs from a terminal or an agent "
+                                  "(python -m conatus studio --help)")
+    sub.add_parser("agent", help="JSON interface for AI agents: info, explain <name>, "
+                                 "check <script.py> (python -m conatus agent --help)")
     g = sub.add_parser("docs", help="where to read a page of the user guide (the name printed "
                                     "on the 'docs:' line of an error, e.g. guide/errors)")
     g.add_argument("page", nargs="?", default="index", help="guide page, e.g. guide/errors")

@@ -8,8 +8,8 @@ matrices in Olver–Townsend coefficient spaces:
 
 The matrices, the boundary rows and the tau columns are public
 (``plan.matrices(group)``), so a propagator, a monodromy or an adjoint never
-requires reverse engineering (DEDALUS.md §4). Before any factorization, the
-rank report (spec §14) refuses non-square or structurally singular systems,
+requires reverse engineering. Before any factorization, the
+rank report refuses non-square or structurally singular systems,
 and small blocks get a numerical null-space check (missing gauge).
 """
 from __future__ import annotations
@@ -35,7 +35,8 @@ from . import ultraspherical as us
 from .compiler import Compiler, DiscretizationError, _comps
 from .layout import GroupItem, Layout, ObjLayout
 from ..tolerances import NCC_ROUNDING, NCC_TAIL_TOL  # declared defaults
-from .param_keys import check_param_keys, problem_parameter_names
+from .param_keys import (PlanParams, check_assembled_params, check_param_keys,
+                         check_param_values, problem_parameter_names)
 from .._repr import compact_repr
 
 __all__ = ["discretize", "Plan", "GroupMatrices", "GroupRank", "RankError", "LBVPSolution"]
@@ -86,7 +87,7 @@ class GroupMatrices:
 
 @dataclass
 class GroupRank:
-    """Rank report of one group (spec §14): unknowns and equations by kind, structural rank and
+    """Rank report of one group: unknowns and equations by kind, structural rank and
     the dense numerical rank of small blocks; ``ok`` is the verdict, ``explain()`` the table."""
 
     label: str
@@ -210,7 +211,9 @@ class LBVPSolution:
     @property
     def max_residual(self) -> float:
         """Largest relative residual over the groups."""
-        return max((r for _, r in self.residuals), default=0.0)
+        # np.max keeps a NaN group residual; Python's max hid one after a finite group
+        # (max(1e-16, nan) is 1e-16: audit "assurances")
+        return float(np.max([r for _, r in self.residuals])) if self.residuals else 0.0
 
     def grid(self, name: str) -> np.ndarray:
         """Values of a variable on its (non-dealiased) collocation grid."""
@@ -226,7 +229,8 @@ class LBVPSolution:
     def explain(self) -> str:
         """Space solved in, number of groups and the worst residual."""
         from ..tolerances import ncc_floor_text
-        worst = max(self.residuals, key=lambda r: r[1]) if self.residuals else ("-", 0.0)
+        worst = (max(self.residuals, key=lambda r: (bool(np.isnan(r[1])), r[1]))   # NaN first
+                 if self.residuals else ("-", 0.0))
         text = (f"LBVP solution ({'symmetry subspace' if self.reduced else 'full space'}): "
                 f"{len(self.residuals)} group(s), max relative residual {worst[1]:.2e} "
                 f"[{worst[0]}] (sparse LU, scipy SuperLU)")
@@ -239,6 +243,70 @@ def _ncomp(tensorsig) -> int:
     for cs in tensorsig:
         n *= cs.dim
     return n
+
+
+def operator_fields(problem: Problem) -> frozenset:
+    """Given (non-unknown) fields that appear on a left-hand side: coefficients of the operator,
+    built into the matrices when the plan is made."""
+    V = frozenset(problem.variables)
+    return frozenset(f for eq in problem.equations for f in eq.lhs.free_fields()) - V
+
+
+def data_snapshot(ncc: Mapping | None) -> dict:
+    """The constructor data of a plan, arrays copied: data changed in place by the caller after
+    discretization is then seen as new data by ``rebind_for_data`` (numerics review)."""
+    import dataclasses
+
+    def copy(d: Any) -> Any:
+        if isinstance(d, np.ndarray):
+            return d.copy()
+        if isinstance(d, FieldData) and isinstance(d.data, np.ndarray):
+            return dataclasses.replace(d, data=d.data.copy())
+        return d
+    return {f: copy(d) for f, d in (ncc or {}).items()}
+
+
+def _same_data(old: Any, new: Any) -> bool:
+    """True when ``new`` is the data ``old`` already bound: the same object (a callable, a
+    number), or a NumPy array (bare or in a ``FieldData`` of the same layout) of the same dtype,
+    shape and values."""
+    if old is new:
+        return True
+    if isinstance(old, FieldData) and isinstance(new, FieldData):
+        return (old.field == new.field and old.layout == new.layout
+                and _same_data(old.data, new.data))
+    if isinstance(old, np.ndarray) and isinstance(new, np.ndarray):
+        return old.dtype == new.dtype and old.shape == new.shape and bool(np.array_equal(old, new))
+    return False
+
+
+def rebind_for_data(plan: Any, data: Mapping[E.Field, Any] | None,
+                    fields: frozenset | None = None) -> Any:
+    """A fresh plan of the same class when ``data`` (``solve(data)``) changes a coefficient of the
+    operator, else None (review finding 4). ``fields``: the fields whose new data needs a new plan
+    (default: the coefficients of the operator, ``operator_fields``).
+
+    ``solve(data)`` used to feed the new data to the right-hand side only, while the matrices kept
+    the coefficient bound at discretization: ``q*u = q`` solved ``2u = 4`` with residual 0 after
+    q: 2 -> 4. Every cache of a plan (group matrices, NCC operators, factorizations) depends on
+    its coefficients, so the plan is rebuilt with the new data (the plan itself is unchanged: it
+    may be shared by a cache) and the residual is that of the updated problem. Data equal to the
+    bound data (the same object, or an array of the same values: ``data_snapshot``) needs no
+    rebuild. The last rebuilt plan is kept (one slot): calling ``solve`` again with the same new
+    coefficient reuses its matrices and factorizations instead of assembling them again."""
+    if not data:
+        return None
+    keys = operator_fields(plan.problem) if fields is None else fields
+    src = plan._ncc_src
+    if all(_same_data(src.get(f), d) for f, d in data.items() if f in keys):
+        return None
+    memo = getattr(plan, "_rebound", None)
+    if memo is not None and all(_same_data(memo._ncc_src.get(f), d)
+                                for f, d in data.items() if f in keys):
+        return memo
+    fresh = type(plan)(plan.problem, ncc={**src, **data}, params=plan.params, **plan._plan_kw)
+    plan._rebound = fresh
+    return fresh
 
 
 class Plan:
@@ -261,6 +329,9 @@ class Plan:
                                       "domain: use discretize(problem) (TerrainPlan, metric "
                                       "terms included)")
         self.problem = problem
+        # constructor data kept to rebuild the plan when solve(data) changes a coefficient
+        self._ncc_src = data_snapshot(ncc)
+        self._plan_kw = dict(ncc_cutoff=ncc_cutoff, assembly=assembly, ncc_tail_tol=ncc_tail_tol)
         # "direct": every group compiled from the IR. "wavenumber_interpolation": the group
         # matrices are polynomials in the Fourier wavenumbers (degree = differential order along
         # each periodic direction), so each class of groups is compiled at (d+1)^m nodes and
@@ -268,7 +339,7 @@ class Plan:
         self.assembly = assembly
         self._interp: dict = {}
         self.params = dict(params or {})
-        self.ncc_cutoff = ncc_cutoff
+        self.ncc_cutoff = us.check_cutoff(ncc_cutoff)
         # any NCC whose sampled Chebyshev tail exceeds ncc_tail_tol (or the
         # declared ncc_cutoff if larger) is refused (DiscretizationError when the group is assembled).
         self.ncc_tail_tol = us.check_tail_tol(ncc_tail_tol)
@@ -305,6 +376,10 @@ class Plan:
         # same rule for parameter values: a key that names no Parameter of the
         # problem used to be ignored, and the value declared on the Parameter used instead
         check_param_keys(self.params, problem_parameter_names(problem), where="discretize")
+        check_param_values(self.params, where="discretize")
+        # later writes checked too (review of the inputs audit: a plain dict took NaN or a typo)
+        self.params = PlanParams(self.params, problem_parameter_names(problem), "plan.params")
+        self._params_assembled: dict = {}   # the values of the first assembly (param_keys)
         self._ncc_data = {f: self._as_grid(f, d) for f, d in (ncc or {}).items()}
         # coefficient data of a field is an exact polynomial (not a grid sample): no tail to judge
         # when it multiplies an unknown as is (e.g. the Newton iterate of an NLBVP)
@@ -501,6 +576,7 @@ class Plan:
 
     # ------------------------------------------------------------------ assembly
     def _assemble(self, group) -> GroupMatrices:
+        check_assembled_params(self)          # cached groups hold the first values
         key = ("full", group)
         if key in self._cache:
             return self._cache[key]
@@ -772,7 +848,7 @@ class Plan:
         group = self.groups[0] if group is None else group
         return np.asarray(x_full)[self.matrices(group, reduced=True).col_index]
 
-    # ------------------------------------------------------------------ rank (spec §14)
+    # ------------------------------------------------------------------ rank
     def rank_report(self, group=None, reduced: bool | None = None,
                     operator: str = "L") -> GroupRank:
         """Rank report of one group (default: the first) for ``operator`` "L" or "M"."""
@@ -791,13 +867,22 @@ class Plan:
         elif A.shape[0] == A.shape[1] and srank == A.shape[0]:
             if A.shape[0] <= NUMERICAL_RANK_MAX:
                 Ad = A.toarray()
+                # two sweeps of row/column equilibration, as pencil_rank (audit invariance,
+                #): the rank of D1 A D2 is the rank of A, but the singular values of
+                # A are not; an equation multiplied by 1e8 made the O(1) boundary rows look
+                # like a null space ("missing gauge") and the system was refused
+                cs = np.ones(Ad.shape[1])
+                for _ in range(2):
+                    Ad = Ad / np.maximum(np.abs(Ad).max(axis=1, keepdims=True), 1e-300)
+                    c = np.maximum(np.abs(Ad).max(axis=0), 1e-300)
+                    Ad, cs = Ad / c, cs / c
                 s = np.linalg.svd(Ad, compute_uv=False)
                 tol = s[0] * max(A.shape) * 1e-13 if s.size else 0
                 k = int(np.sum(s <= tol))
                 if k:
                     numerical = f"deficient ({k})"
                     _, _, vh = np.linalg.svd(Ad)
-                    null = vh[-1]
+                    null = cs * vh[-1]            # null vector of A (columns scaled back)
                     names = sorted({gm.cols[j][0] for j in np.nonzero(abs(null) > 1e-6 * abs(null).max())[0]})
                     hint = (f"dimension {k}, involves {', '.join(names)}: missing gauge condition "
                             "(pure Neumann, pressure level) or a parameter sitting on an eigenvalue")
@@ -862,6 +947,9 @@ class Plan:
         if not isinstance(self.problem, LBVP):
             raise DiscretizationError("solve() is for LBVPs; use IVPSolver(plan, ...) for an IVP and "
                                       "conatus.solvers.eigenvalues(plan, ...) for an EVP")
+        fresh = rebind_for_data(self, data)       # a new operator coefficient: rebuilt plan
+        if fresh is not None:
+            return fresh.solve(data, reduced)
         if reduced is None:
             reduced = self.problem.symmetry is not None
         gdata = {f: self._as_grid(f, d) for f, d in (data or {}).items()}

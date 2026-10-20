@@ -24,6 +24,7 @@ Every choice is an argument (no defaults for lengths, vector count, inner produc
 """
 from __future__ import annotations
 
+import zlib
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -43,7 +44,15 @@ def kaplan_yorke(exponents) -> float:
     """D_KY = j + (λ_1 + … + λ_j) / |λ_{j+1}|, j the largest index with a non-negative partial
     sum (exponents sorted in decreasing order). Refused (ConvergenceError) if every partial sum of
     the given exponents is non-negative: more exponents are needed, never extrapolated."""
-    lam = np.sort(np.asarray(exponents, float))[::-1]
+    lam = np.asarray(exponents, float)
+    if lam.ndim != 1 or lam.size == 0 or not np.all(np.isfinite(lam)):
+        # audit inputs: a NaN exponent was sorted last and ended in a bare IndexError,
+        # a 2D array was sorted along its last axis only
+        from ..errors import InputTypeError
+        raise InputTypeError(f"kaplan_yorke: a 1D array of finite exponents, got shape {lam.shape}"
+                             + ("" if lam.ndim != 1 or lam.size == 0 else " with NaN/inf"),
+                             fix="the exponents of a LyapunovResult (res.exponents)")
+    lam = np.sort(lam)[::-1]
     S = np.cumsum(lam)
     if S[-1] >= 0:
         raise ConvergenceError(
@@ -367,6 +376,8 @@ def lyapunov_spectrum(solver, x0, *, n_vectors: int, transient_steps: int,
     ``n_vectors``: k tangent vectors per trajectory (the k leading exponents).
     ``transient_steps``: trajectory only; ``tangent_transient_steps``: trajectory + tangent, no
     averaging (aligns the vectors); ``steps``: averaging (multiple of ``reortho_every``).
+    ``seed``: the initial tangent vectors of each trajectory are drawn from (seed, its start
+    state): a trajectory's exponents do not depend on its place in the batch.
     ``inner``: ``"euclidean"`` (on the coefficient vector) or a positive diagonal weight (n,);
     the exponents do not depend on it, the finite-time values and the CLV angles do.
     ``project``: optional callable V -> P V (tangent vectors restricted to an invariant subspace,
@@ -427,8 +438,12 @@ def lyapunov_spectrum(solver, x0, *, n_vectors: int, transient_steps: int,
     ens.set_states(x0)
     dt, tab = ens.dt, ens._rk
     ens.run(transient_steps)
-    rng = np.random.default_rng(seed)
-    V = xp.asarray(rng.standard_normal((B, k, n)))
+    # the initial tangent vectors of a trajectory come from (seed, its start state), not from its
+    # place in the batch (audit invariance): one stream of B*k draws gave a trajectory
+    # other finite-time exponents when the starts were reordered or when it was run alone
+    rngs = [np.random.default_rng([int(seed), zlib.crc32(np.ascontiguousarray(x0[b]).tobytes())])
+            for b in range(B)]
+    V = xp.asarray(np.stack([r.standard_normal((k, n)) for r in rngs]))
     if project is not None:
         V = project(V)
     V, _ = _qr(xp, V, sq)
@@ -524,7 +539,7 @@ def lyapunov_spectrum(solver, x0, *, n_vectors: int, transient_steps: int,
                               f"Q_j recomputed at a time: {mem / 2**20:.3g} MiB instead of "
                               f"{full / 2**20:.3g} MiB, for one extra forward pass over the "
                               f"{nstore} stored intervals")
-        _ginelli(xp, res, items, nstore, clv_backward_transient, clv_keep_every, rng, interval_t,
+        _ginelli(xp, res, items, nstore, clv_backward_transient, clv_keep_every, rngs, interval_t,
                  t_first, B, k)
         if seg:
             res.clv_recompute_deviation = dev[0]
@@ -605,7 +620,7 @@ def _sine(xp, a, b, axis: int):
     return xp.linalg.norm(ah - (ah * bh).sum(axis=axis, keepdims=True) * bh, axis=axis)
 
 
-def _ginelli(xp, res: LyapunovResult, items, nstore: int, nback: int, every: int, rng,
+def _ginelli(xp, res: LyapunovResult, items, nstore: int, nback: int, every: int, rngs,
              interval: float, t_first: float, B: int, k: int) -> None:
     """Backward pass of Ginelli et al. over the stored intervals, given in reverse order as
     (j, Q_j, X_j, R_{j+1}). Also records the per-interval log growth of every CLV
@@ -617,7 +632,7 @@ def _ginelli(xp, res: LyapunovResult, items, nstore: int, nback: int, every: int
     ``res.clv_backward_convergence`` (k,): the error left by the backward transient. (The
     covariance residual cannot see it: every backward iterate is exactly covariant.)"""
     def start():
-        C = np.triu(rng.standard_normal((B, k, k)))
+        C = np.triu(np.stack([r.standard_normal((k, k)) for r in rngs]))   # per trajectory
         return xp.asarray(C / np.linalg.norm(C, axis=1, keepdims=True))
     C, C2 = start(), start()
     kept, states, times, growth = [], [], [], []

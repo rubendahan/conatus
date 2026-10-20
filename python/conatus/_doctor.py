@@ -41,7 +41,7 @@ __all__ = ["doctor", "DoctorReport", "Check", "MIN_PYTHON", "RUNS_FREE_WARN_GB",
 MIN_PYTHON = (3, 11)              # pyproject.toml: requires-python = ">=3.11,<3.14"
 MAX_PYTHON = (3, 14)              # first minor NOT tested (exclusive bound of requires-python)
 # The tutorials' extra dependency and h5py: the exact lines that install them (pyproject).
-TUTORIALS_FIX = 'pip install "matplotlib>=3.7"   (from the source tree: pip install ".[tutorials]")'
+TUTORIALS_FIX = 'pip install "matplotlib>=3.7" "xarray>=2023.1"   (or the tutorials extra: pip install ".[tutorials]")'
 H5PY_FIX = 'pip install "h5py>=3.8"   (or: conda install -c conda-forge h5py)'
 NOTEBOOK_FIX = 'pip install "ipywidgets>=8"   (from the source tree: pip install ".[notebook]")'
 RUNS_FREE_WARN_GB = 10.0          # warn when the runs root / CN_TMP has less free space (GiB)
@@ -217,8 +217,8 @@ def _install() -> list[Check]:
 def _module(label: str, name: str, required: bool, purpose: str, fix: str,
             note: str = "", absent: str = "optional") -> list[Check]:
     """Presence + version of a Python package (module = distribution ``name``), found without
-    importing it. A missing optional package has the status ``absent`` (``"optional"``; the
-    tutorials' matplotlib passes ``"warning"``: the tutorials stop without it)."""
+    importing it. A missing optional package has the status ``absent`` (``"optional"``: the
+    tutorials' matplotlib too, an optional extra, external review 0.1.0 acceptance F102)."""
     found = importlib.util.find_spec(name) is not None
     ver = _dist_version(name) or ("installed (version unknown)" if found else "-")
     if found:
@@ -516,7 +516,7 @@ def doctor(file: TextIO | None = None) -> DoctorReport:
         H5PY_FIX), True)
     checks += _safe("matplotlib (tutorials)", lambda: _module(
         "matplotlib (tutorials)", "matplotlib", False, "figures of the tutorials", TUTORIALS_FIX,
-        note=": the tutorials stop at their first plot without it", absent="warning"))
+        note=": the tutorials stop at their first plot without it"))     # an optional extra: never a warning
     checks += _safe("ipywidgets", lambda: _module("ipywidgets", "ipywidgets", False,
                                                   "notebook widgets (conatus.notebook)",
                                                   NOTEBOOK_FIX))

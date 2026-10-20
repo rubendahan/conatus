@@ -1,4 +1,4 @@
-// IMEX timesteppers on the device, batched over modes (spec §17, §49).
+// IMEX timesteppers on the device, batched over modes.
 // Same schemes, coefficients and factor caching as the host integrator (conatus/imex.hpp):
 // SBDF1..4 (constant dt, startup orders 1..q) and RK111 / RK222 / RK443 (one factorization for
 // RK443, trap P1; L X_0 skipped when H[:,0] = 0, trap P2). The state stays on the device; only the

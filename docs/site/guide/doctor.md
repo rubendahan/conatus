@@ -18,9 +18,9 @@ is used for and, when something is missing, **what to do**. Each probe is short,
 subprocess with a timeout where needed, and turns any failure into a report line. The whole report
 takes about 2 s. Required: Python 3.11–3.13 (a newer, untested Python is a warning), NumPy, SciPy,
 h5py (outputs and checkpoints) and the CPU part of the compiled core. The tutorials also need
-matplotlib: a missing one is a warning with the exact line that installs it
-(`pip install "matplotlib>=3.7"`, or `pip install "conatus[tutorials]"`).
-Everything else is optional.
+matplotlib and xarray (the optional `tutorials` extra): a missing matplotlib is reported
+`[optional]` with the exact line that installs them (`pip install "matplotlib>=3.7" "xarray>=2023.1"`,
+or `pip install "conatus[tutorials]"`). Everything else is optional.
 
 The **first line** says how Conatus is installed. In a *development checkout* (the repository's
 `python/`) the advice is the developer's (`source env/env.sh`, `bash core/build.sh`) and `CN_TMP` is

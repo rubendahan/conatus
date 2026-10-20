@@ -70,6 +70,13 @@ eigenvalues come from the linearised flow at the equilibrium.
 The speed $c$ is an unknown of the Newton system, with a phase condition that removes the translation
 degeneracy.
 
+```{figure} media/t05_solutions.png
+:alt: Three periodic profiles over x from 0 to 22: the equilibria E1 and E2 and the travelling wave TW1.
+:width: 100%
+
+The two equilibria and the travelling wave found by Newton-Krylov-hookstep from the page's seeds.
+```
+
 ## The shortest pre-periodic orbit and its Floquet exponents
 
 ```{literalinclude} code/t05_ks_orbits.py
@@ -84,6 +91,21 @@ The seed is a state stored by an earlier search (near-recurrence of a long run, 
 computed. The Floquet multipliers come from the dense monodromy matrix; the time step is halved
 relative to the stored seed because $\mu_1$ moves by $2\times10^{-6}$ between $dt \approx 0.04$ and
 $0.02$ (time-discretisation error).
+
+<figure class="cn-film">
+<video class="cn-film" muted loop playsinline preload="none" poster="../_static/tutorial_films/t05_orbit.webp" width="720" height="480" aria-label="A yellow-green curve u(x) wriggles in the upper part of the frame while, below, its history fills a red and green space-time map from the bottom up over two periods of the orbit.">
+<source src="../_static/tutorial_films/t05_orbit.webm" type="video/webm">
+<source src="../_static/tutorial_films/t05_orbit.mp4" type="video/mp4">
+</video>
+<figcaption>The pre-periodic orbit over two periods: the state u(x) (top) and its space-time map filling up (bottom). Every frame is a time step of the orbit's flow map.</figcaption>
+</figure>
+
+```{figure} media/t05_stability.png
+:alt: Left: Floquet multipliers of the orbit with the unit circle; a red pair lies just outside it. Right: the leading eigenvalues of E1, two red complex pairs with positive real part.
+:width: 100%
+
+Stability of the solutions. Left: the multipliers of the orbit; the red pair outside the unit circle is the unstable direction, μ₁ = log|Λ|/T. Right: the leading eigenvalues of E1.
+```
 
 ## Check against the references
 

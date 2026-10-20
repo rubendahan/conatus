@@ -6,8 +6,8 @@ type: software
 authors:
   - family-names: Dahan
     given-names: Ruben
-version: 0.1.0
-date-released: 2026-10-12
+version: 0.1.1
+date-released: 2026-10-20
 license: BSD-3-Clause
 repository-code: "https://github.com/rubendahan/conatus"
 url: "https://rubendahan.github.io/conatus/"

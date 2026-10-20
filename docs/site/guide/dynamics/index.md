@@ -16,6 +16,7 @@ carries the residual that validates it and an `explain()` that lists the choices
 | {doc}`invariant_solutions` | Which equilibria, travelling waves and periodic orbits exist? |
 | {doc}`continuation` | How do they change with a parameter? Where are the folds and bifurcations? |
 | {doc}`floquet` | Is a time-periodic flow stable? |
+| {doc}`contour` | Which eigenvalues lie in this region of the complex plane, and are there any others? |
 | {doc}`chaos` | How chaotic is the flow? Where do trajectories end up? |
 | {doc}`manifolds` | How are invariant solutions connected? How to remove a continuous symmetry? |
 | {doc}`symmetry` | How to compute in a symmetry subspace, and what that hides |
@@ -36,6 +37,7 @@ nonmodal
 invariant_solutions
 continuation
 floquet
+contour
 chaos
 manifolds
 symmetry

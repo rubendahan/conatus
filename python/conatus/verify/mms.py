@@ -1,4 +1,4 @@
-"""Method of manufactured solutions, driven by the IR (spec §72, level D).
+"""Method of manufactured solutions, driven by the IR (level D).
 
 ``to_sympy`` translates an IR expression into a sympy expression given sympy
 expressions for its fields; ``manufacture`` applies each equation's LHS to a

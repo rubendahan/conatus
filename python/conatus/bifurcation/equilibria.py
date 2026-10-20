@@ -28,19 +28,41 @@ from .._deprecation import renames
 
 __all__ = ["continue_equilibria", "newton_equilibrium", "generalized_eigenvalues", "INF_EIG"]
 
-INF_EIG = 1e10     # |λ| above INF_EIG · (1 + ‖J‖) is an infinite eigenvalue of (J, M) (DAE rows)
+INF_EIG = 1e10     # |λ| ‖M‖ / ‖J‖ above INF_EIG: an infinite eigenvalue of (J, M) (DAE rows)
 
 
 def generalized_eigenvalues(J: np.ndarray, M, *, vectors: bool = False, left: bool = False):
     """Finite eigenvalues of J v = λ M v, sorted by decreasing real part (infinite ones, from
-    singular rows of M, removed with the declared threshold INF_EIG)."""
-    Md = np.asarray(M.toarray() if hasattr(M, "toarray") else M, float)
+    singular rows of M, removed with the declared threshold INF_EIG).
+
+    The classification uses the homogeneous pair (α, β), λ = α/β, of the QZ decomposition:
+    infinite when |β| ‖J‖ ≤ |α| ‖M‖ / INF_EIG, i.e. |λ| ≥ INF_EIG ‖J‖/‖M‖ (max-norms). It is
+    invariant under any scaling of J, of M or of both (finding 13: the former
+    bound INF_EIG (1 + ‖J‖) kept two eigenvalues 1e12 of (1e12 I, I) and dropped them for
+    (I, 1e-12 I)). A pair with α = β = 0 (singular pencil) is dropped as well."""
+    # M as given (audit inputs: a complex M was cast to float, its imaginary part
+    # dropped with a ComplexWarning); square matrices of one shape, finite (bare SciPy errors)
+    Jd = np.asarray(J.toarray() if hasattr(J, "toarray") else J)
+    Md = np.asarray(M.toarray() if hasattr(M, "toarray") else M)
+    Md = Md.astype(complex if np.iscomplexobj(Md) else float)
+    if Jd.ndim != 2 or Jd.shape != Md.shape or Jd.shape[0] != Jd.shape[1]:
+        from ..errors import InputTypeError
+        raise InputTypeError(f"generalized_eigenvalues: J {Jd.shape} and M {Md.shape} must be "
+                             "square matrices of one shape", fix="M of the size of J (identity: "
+                                                                 "np.eye(n))")
+    if not (np.all(np.isfinite(Jd)) and np.all(np.isfinite(Md))):
+        from ..errors import InputTypeError
+        raise InputTypeError("generalized_eigenvalues: non-finite entries in J or M",
+                             fix="check the state and parameters the Jacobian was built at")
     if vectors:
-        w, vl, vr = sla.eig(J, Md, left=True, right=True)
+        ab, vl, vr = sla.eig(Jd, Md, left=True, right=True, homogeneous_eigvals=True)
     else:
-        w = sla.eigvals(J, Md)
-    bound = INF_EIG * (1.0 + np.abs(J).max())
-    keep = np.isfinite(w) & (np.abs(w) < bound)
+        ab = sla.eigvals(Jd, Md, homogeneous_eigvals=True)
+    alpha, beta = ab[0], ab[1]
+    nJ, nM = float(np.abs(Jd).max(initial=0.0)), float(np.abs(Md).max(initial=0.0))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        w = alpha / beta
+    keep = (beta != 0) & (np.abs(beta) * nJ >= np.abs(alpha) * nM / INF_EIG) & np.isfinite(w)
     idx = np.flatnonzero(keep)
     idx = idx[np.argsort(-w[idx].real, kind="stable")]
     if vectors:
@@ -155,9 +177,11 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
         pair = lam[[i, j]]
         # the declared threshold of the split, in the result
         ev.data["classification"] = (f"Hopf if |Im λ| > hopf_imag_tol = {settings.hopf_imag_tol:g}"
-                                     " x max(1, |λ|) for the pair of sum closest to 0, else "
-                                     "neutral saddle")
-        if np.all(np.abs(pair.imag) > settings.hopf_imag_tol * max(1.0, np.abs(pair).max())):
+                                     " x max(|λ|, 1e-3 x the median |λ| of the spectrum) for the "
+                                     "pair of sum closest to 0, else neutral saddle")
+        from .._scales import spectral_floor
+        if np.all(np.abs(pair.imag) > settings.hopf_imag_tol * max(np.abs(pair).max(),
+                                                                     spectral_floor(lam))):
             ev.data.update(omega=float(abs(pair[0].imag)), pair=pair)
             ev.detail = f"λ = {pair[0].real:+.2e} ± {abs(pair[0].imag):.12g} i"
             return "hopf", None

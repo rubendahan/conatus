@@ -75,6 +75,8 @@ if __name__ == "__main__":
         print(f"  L={L:2d} N={N:3d}: alpha_max = {a:.6f}, omega_i = {a * m.sigma.imag:.8f}, "
               f"c = {m.sigma:.2e}, residual {m.residual:.1e}")
     print(f"  Michalke (1964): alpha_max = {MICHALKE['alpha']}, omega_i = {MICHALKE['omega_i']}")
+    # Michalke's 4 printed digits, at the largest L and N (L = 20, N = 384)
+    assert abs(a * m.sigma.imag - MICHALKE["omega_i"]) < 5e-5 and abs(a - MICHALKE["alpha"]) < 5e-4, (a, m.sigma)
     print(pb.explain())
     print(verify(P, m).explain())
     print("Viscous (Orr–Sommerfeld), L=15, N=256: omega_i -> inviscid value as Re -> infinity")

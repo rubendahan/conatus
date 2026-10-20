@@ -1,8 +1,8 @@
-"""Spectral bases (spec §10, §11).
+"""Spectral bases.
 
 Every basis carries its coordinate, interval, size, coefficient space and an
 **explicit** dealiasing factor. There is no default dealias: omitting it is an
-error, so no one inherits a silent 3/2 (spec §4.2, Dedalus pitfall P6).
+error, so no one inherits a silent 3/2.
 """
 from __future__ import annotations
 
@@ -49,9 +49,16 @@ def _check_dealias(dealias: Any, cls: str) -> float:
             why="the dealiasing factor is a numerical choice (grid size = factor x N), never "
                 "hidden behind a flag",
             fix="dealias=3/2 for quadratic nonlinearities (2 for cubic), dealias=1 for none")
+    if not isinstance(dealias, numbers.Real):
+        # text, None, a complex number (audit inputs: "1.5" was parsed, None and
+        # 1.5+0j raised a bare TypeError of float())
+        raise InputTypeError(f"{cls}: dealias={dealias!r} is not a number",
+                             fix="dealias=1 (no padding) or dealias=3/2 (quadratic products)",
+                             doc="docs/site/guide/bases.md")
     d = float(dealias)
-    if d < 1:
-        raise OptionError(f"{cls}: dealias factor must be >= 1, got {d}",
+    # not (d >= 1): NaN fails every comparison and passed "d < 1" (review finding 33)
+    if not (math.isfinite(d) and d >= 1):
+        raise OptionError(f"{cls}: dealias factor must be a finite number >= 1, got {d}",
                           fix="dealias=1 (none) or dealias=3/2 (quadratic products)", doc="docs/site/guide/bases.md")
     return d
 
@@ -75,9 +82,18 @@ class Basis:
             raise InputTypeError(f"basis coordinate must be a Coordinate, got {coord!r}",
                                  fix="cs = CartesianCoordinates('x', 'z'); Chebyshev(cs['z'], ...)",
                                  doc="docs/site/guide/bases.md")
-        if int(size) != size or size < 1:
+        # an integer (audit inputs: NaN and None were bare errors of int(), 16.0 and
+        # True were taken as sizes): the package-wide count rule, never truncated
+        if isinstance(size, bool) or not isinstance(size, numbers.Integral) or size < 1:
             raise ResolutionError(f"size must be a positive integer, got {size!r}",
                                   fix="an integer number of modes, e.g. 64", doc="docs/site/guide/bases.md")
+        # bounds: one pair of real numbers (a third entry was ignored, text parsed, a short or
+        # missing pair a bare IndexError/TypeError)
+        if (isinstance(bounds, (str, bytes)) or not hasattr(bounds, "__len__") or len(bounds) != 2
+                or not all(isinstance(v, numbers.Real) and not isinstance(v, bool) for v in bounds)):
+            raise CoordinateError(f"bounds must be a pair (a, b) of real numbers, got {bounds!r}",
+                                  fix="bounds=(a, b) with a < b, e.g. (0, 2*np.pi)",
+                                  doc="docs/site/guide/bases.md")
         a, b = (float(bounds[0]), float(bounds[1]))
         if not b > a:
             raise CoordinateError(f"bounds must satisfy a < b, got {bounds!r}",
@@ -327,7 +343,7 @@ class _Radial(Basis):
                                   f"({coord.system.names[1]}), got {coord.name}",
                                   fix=f"{type(self).__name__}(cs[{coord.system.names[1]!r}], ...)",
                                   doc="docs/site/guide/bases.md")
-        if int(size) < 4:
+        if isinstance(size, numbers.Integral) and not isinstance(size, bool) and size < 4:
             raise ResolutionError(f"{type(self).__name__}: size must be >= 4, got {size!r}",
                                   fix="a radial size of at least 4 (tau rows need modes)", doc="docs/site/guide/bases.md")
         super().__init__(coord, size, bounds, dealias)
@@ -456,7 +472,7 @@ class _SphericalRadial(Basis):
                                   f"({coord.system.names[2]}), got {coord.name}",
                                   fix=f"{type(self).__name__}(cs[{coord.system.names[2]!r}], ...)",
                                   doc="docs/site/guide/bases.md")
-        if int(size) < 4:
+        if isinstance(size, numbers.Integral) and not isinstance(size, bool) and size < 4:
             raise ResolutionError(f"{type(self).__name__}: size must be >= 4, got {size!r}",
                                   fix="a radial size of at least 4 (tau rows need modes)", doc="docs/site/guide/bases.md")
         super().__init__(coord, size, bounds, dealias)

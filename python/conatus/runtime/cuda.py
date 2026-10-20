@@ -1,7 +1,7 @@
 """CUDA backend: device arrays, transforms, batched bordered banded solves and IMEX on the GPU.
 
 Everything stays on the device between calls. Host <-> device copies are explicit and only happen in
-``to_device`` / ``DeviceArray.to_host`` (spec §57): no operation here copies implicitly.
+``to_device`` / ``DeviceArray.to_host``: no operation here copies implicitly.
 ``available()`` is False when the module was built without CUDA or no device is visible.
 """
 from __future__ import annotations
@@ -14,7 +14,7 @@ import scipy.sparse as sp
 from ..ir.bases import Basis, Chebyshev, ComplexFourier, RealFourier
 from ..reference.transforms import grid_size
 from . import _core
-from .banded import csr_args
+from .banded import _factor_dtype, csr_args, solve_operand
 
 __all__ = ["available", "device_name", "synchronize", "to_device", "forward", "backward",
            "BandedBatch", "Imex", "pool_stats", "pool_trim"]
@@ -135,8 +135,8 @@ class BandedBatch:
     def __init__(self, mats: Sequence, border_rows: Sequence[int], pivot: bool = True, dtype=None,
                  level_schedule: bool = True, level_merge: bool = True, col_border: bool = False):
         cu = _need()
-        dtype = dtype or sp.csr_matrix(mats[0]).dtype
-        self.dtype = np.complex128 if _is_complex(dtype) else np.float64
+        mats = [sp.csr_matrix(A) for A in mats]
+        self.dtype = _factor_dtype(mats, dtype)       # every matrix counts (review finding 38)
         cls = cu.BandedBatchZ if self.dtype == np.complex128 else cu.BandedBatchD
         self.border_rows = [int(i) for i in border_rows]
         self._s = cls([csr_args(A, self.dtype) for A in mats], self.border_rows, bool(pivot),
@@ -250,8 +250,8 @@ class Imex:
         self.scheme, self.dt = scheme, float(dt)
         self._s = cls([csr_args(A, self.dtype) for A in Ms], [csr_args(A, self.dtype) for A in Ls],
                       [int(i) for i in border_rows], scheme, self.dt, bool(pivot))
-        def conv(a):
-            return None if a is None else np.ascontiguousarray(a, dtype=self.dtype).ravel()
+        def conv(a):    # a complex g/h into a real integrator is refused, not cut (finding 39)
+            return None if a is None else solve_operand(a, self.dtype, "cuda.Imex (g, h)").ravel()
         self._pointwise = g is not None or h is not None
         self._s.set_pointwise_rhs(conv(g), conv(h))
 

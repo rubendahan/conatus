@@ -13,10 +13,11 @@ Run: python examples/manifolds/phase_space_geometry.py
 import numpy as np
 import scipy.optimize as so
 
-from conatus.expert import (DynamicalSystem, FirstFourierModeSlice, ODEIntegrator, PoincareSection,
-                            RotationOps, Trajectory, find_connection, find_rpo_in_slice, ir_system,
-                            ode_problem, poincare_crossings, two_mode_callables, unstable_left_basis,
-                            unstable_manifold)
+from conatus.expert import (FirstFourierModeSlice, PoincareSection, find_connection,
+                            find_rpo_in_slice, ir_system, ode_problem, unstable_manifold)
+from conatus.bifurcation import DynamicalSystem
+from conatus.manifolds import ODEIntegrator, Trajectory, poincare_crossings, unstable_left_basis
+from conatus.slices import RotationOps, two_mode_callables
 
 
 def two_mode_rpo():
@@ -78,5 +79,9 @@ def lorenz_homoclinic():
 
 
 if __name__ == "__main__":
-    two_mode_rpo()
-    lorenz_homoclinic()
+    rpo = two_mode_rpo()
+    con = lorenz_homoclinic()
+    # Budanur, Borrero-Echeverry & Cvitanovic, Table I: T = 3.64151221 (8 digits printed);
+    # Sparrow (1982): homoclinic orbit at r = 13.926 (3 decimals printed)
+    assert rpo is not None and abs(rpo.T - 3.64151221) < 5e-7 and rpo.residual < 1e-10, rpo
+    assert abs(con.unknowns[0] - 13.926) < 1e-3, con.unknowns

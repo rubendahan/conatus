@@ -23,8 +23,9 @@ Every source line gets a status in the report:
 
 The result, :class:`DedalusTranslation`, holds the Conatus ``problem``, the declared time stepping
 (``scheme``, ``timestep``, ``stop_sim_time``), the initial / given data as grid functions
-(``data``), the report, ``explain()``, ``_repr_html_()`` and ``to_script()`` (a readable Conatus
-script with the report as comments).
+(``data``), the report, ``explain()``, ``_repr_html_()`` and ``to_script()`` (a runnable Conatus
+program that replays the translation and solves the problem, with the Conatus form of each
+statement and the report as comments).
 
 Layout (pure split; every name importable from here as before): ``dedalus_objects`` (report
 lines, stand-ins of the Dedalus objects, helpers), ``dedalus_public`` (the ``d3.<name>`` map),
@@ -147,4 +148,5 @@ def from_dedalus(script: str | os.PathLike, *, entry: tuple[str, dict] | None = 
                               scheme, tr.timestep, tr.stop_sim_time, tr.stop_iteration,
                               time_param, data, tr.report,
                               {k: v for k, v in scope.items() if not k.startswith("__")},
-                              tr.evp_requests, tr.code)
+                              tr.evp_requests, tr.code, source=source,
+                              overrides=dict(overrides) if overrides else None, entry=entry)

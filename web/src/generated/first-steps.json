@@ -1,0 +1,450 @@
+{
+ "generated": "2026-10-20T23:09:22.591Z",
+ "source": "",
+ "title": "Getting started in ten minutes",
+ "blocks": [
+  {
+   "t": "p",
+   "inl": [
+    {
+     "k": "t",
+     "v": "One equation, one plot, one physical number. You write the viscous Burgers equation as on paper, simulate it, draw the solution and measure its kinetic energy, which the script checks against the exact solution. Then four small changes show what Conatus decides for you, and what it never does. The longer path through one problem, from stability to a simulation of convection rolls, is "
+    },
+    {
+     "k": "doc",
+     "to": "tutorials/00_getting_started.html",
+     "v": "Getting started: convection between two plates"
+    },
+    {
+     "k": "t",
+     "v": "."
+    }
+   ]
+  },
+  {
+   "t": "p",
+   "inl": [
+    {
+     "k": "b",
+     "v": "Time:"
+    },
+    {
+     "k": "t",
+     "v": " ten minutes; the script runs in a few seconds. "
+    },
+    {
+     "k": "b",
+     "v": "Script:"
+    },
+    {
+     "k": "t",
+     "v": " "
+    },
+    {
+     "k": "repo",
+     "path": "docs/site/tutorials/code/t00_first_steps.py",
+     "v": "t00_first_steps.py"
+    },
+    {
+     "k": "t",
+     "v": "."
+    }
+   ]
+  },
+  {
+   "t": "h2",
+   "id": "install",
+   "text": "Install"
+  },
+  {
+   "t": "fence",
+   "lang": "bash",
+   "text": "python3.12 -m venv venv && . venv/bin/activate\npip install \"conatus[tutorials]\"\npython -m conatus doctor"
+  },
+  {
+   "t": "p",
+   "inl": [
+    {
+     "k": "t",
+     "v": "The last line says what this machine can run; "
+    },
+    {
+     "k": "doc",
+     "to": "install.html",
+     "v": "Installation"
+    },
+    {
+     "k": "t",
+     "v": " has the other ways to install."
+    }
+   ]
+  },
+  {
+   "t": "h2",
+   "id": "the-equation",
+   "text": "The equation"
+  },
+  {
+   "t": "p",
+   "inl": [
+    {
+     "k": "t",
+     "v": "A wave "
+    },
+    {
+     "k": "m",
+     "v": "u(x,t)"
+    },
+    {
+     "k": "t",
+     "v": " on a periodic line of length "
+    },
+    {
+     "k": "m",
+     "v": "2π"
+    },
+    {
+     "k": "t",
+     "v": " steepens under its own advection and is held back by viscosity "
+    },
+    {
+     "k": "m",
+     "v": "ν"
+    },
+    {
+     "k": "t",
+     "v": ":"
+    }
+   ]
+  },
+  {
+   "t": "math",
+   "rich": "∂_{t}u+u ∂_{x}u = ν ∂_{x}²u, u(x,0) = sinx."
+  },
+  {
+   "t": "code",
+   "script": "t00_first_steps",
+   "region": "model"
+  },
+  {
+   "t": "p",
+   "inl": [
+    {
+     "k": "t",
+     "v": "The domain, the unknown, the parameter and the equation are all you write. "
+    },
+    {
+     "k": "code",
+     "v": "m.explain()"
+    },
+    {
+     "k": "t",
+     "v": " prints what Conatus decided from them: the linear term is treated implicitly, the product "
+    },
+    {
+     "k": "code",
+     "v": "u*dx(u)"
+    },
+    {
+     "k": "t",
+     "v": " explicitly, and the product is dealiased by the 3/2 rule."
+    }
+   ]
+  },
+  {
+   "t": "out",
+   "script": "t00_first_steps",
+   "startAt": "Time stepping:",
+   "endAt": "Dealiasing:"
+  },
+  {
+   "t": "h2",
+   "id": "simulate-and-plot",
+   "text": "Simulate and plot"
+  },
+  {
+   "t": "code",
+   "script": "t00_first_steps",
+   "region": "simulate"
+  },
+  {
+   "t": "p",
+   "inl": [
+    {
+     "k": "t",
+     "v": "A simulation needs a resolution, a scheme and a time step: three arguments, never defaults. "
+    },
+    {
+     "k": "code",
+     "v": "run(until=t)"
+    },
+    {
+     "k": "t",
+     "v": " advances to "
+    },
+    {
+     "k": "m",
+     "v": "t"
+    },
+    {
+     "k": "t",
+     "v": ", which must be a whole number of steps: the step is never changed for you."
+    }
+   ]
+  },
+  {
+   "t": "code",
+   "script": "t00_first_steps",
+   "region": "plot"
+  },
+  {
+   "t": "img",
+   "file": "t00_first_steps_burgers.png",
+   "alt": "Five profiles of u against x from t = 0 to 2: the sine wave tilts forward and its front at x = pi becomes steep."
+  },
+  {
+   "t": "h2",
+   "id": "one-physical-number",
+   "text": "One physical number"
+  },
+  {
+   "t": "p",
+   "inl": [
+    {
+     "k": "t",
+     "v": "The kinetic energy "
+    },
+    {
+     "k": "m",
+     "v": "E = 1/2∫u² dx"
+    },
+    {
+     "k": "t",
+     "v": " starts at "
+    },
+    {
+     "k": "m",
+     "v": "π/2"
+    },
+    {
+     "k": "t",
+     "v": " and decreases as viscosity dissipates the steepening front."
+    }
+   ]
+  },
+  {
+   "t": "code",
+   "script": "t00_first_steps",
+   "region": "energy"
+  },
+  {
+   "t": "p",
+   "inl": [
+    {
+     "k": "t",
+     "v": "The Cole–Hopf transformation turns the Burgers equation into the heat equation, so the exact solution is known (Cole 1951; Hopf 1950). The script ends by comparing the energy with it:"
+    }
+   ]
+  },
+  {
+   "t": "out",
+   "script": "t00_first_steps",
+   "startAt": "kinetic energy at t",
+   "endAt": "OK:"
+  },
+  {
+   "t": "h2",
+   "id": "four-changes-to-try",
+   "text": "Four changes to try"
+  },
+  {
+   "t": "p",
+   "inl": [
+    {
+     "k": "t",
+     "v": "Change one line of the script, run it again and read what happens."
+    }
+   ]
+  },
+  {
+   "t": "ol",
+   "items": [
+    [
+     {
+      "k": "b",
+      "v": "Less viscosity."
+     },
+     {
+      "k": "t",
+      "v": " "
+     },
+     {
+      "k": "code",
+      "v": "cn.Model(..., nu=0.05)"
+     },
+     {
+      "k": "t",
+      "v": " makes the front twice as steep. The energy still matches the exact solution (change the "
+     },
+     {
+      "k": "code",
+      "v": "0.1"
+     },
+     {
+      "k": "t",
+      "v": " of "
+     },
+     {
+      "k": "code",
+      "v": "cole_hopf_energy"
+     },
+     {
+      "k": "t",
+      "v": " too), to "
+     },
+     {
+      "k": "m",
+      "v": "2×10⁻¹⁰"
+     },
+     {
+      "k": "t",
+      "v": "."
+     }
+    ],
+    [
+     {
+      "k": "b",
+      "v": "Too few modes."
+     },
+     {
+      "k": "t",
+      "v": " "
+     },
+     {
+      "k": "code",
+      "v": "m.simulate(N=32, ...)"
+     },
+     {
+      "k": "t",
+      "v": " cannot resolve the front. Conatus does not raise the resolution for you: it warns, once, with an "
+     },
+     {
+      "k": "code",
+      "v": "UnderResolvedWarning"
+     },
+     {
+      "k": "t",
+      "v": " that names the unknown, the direction and the spectral tail, and the energy is then only right to about "
+     },
+     {
+      "k": "m",
+      "v": "4×10⁻⁶"
+     },
+     {
+      "k": "t",
+      "v": "."
+     }
+    ],
+    [
+     {
+      "k": "b",
+      "v": "A larger time step."
+     },
+     {
+      "k": "t",
+      "v": " "
+     },
+     {
+      "k": "code",
+      "v": "dt=0.05"
+     },
+     {
+      "k": "t",
+      "v": " takes 40 steps instead of 2000. The scheme is third order in time, so the energy error grows to about "
+     },
+     {
+      "k": "m",
+      "v": "4×10⁻⁶"
+     },
+     {
+      "k": "t",
+      "v": "; "
+     },
+     {
+      "k": "code",
+      "v": "sim.cfl(safety=0.5)"
+     },
+     {
+      "k": "t",
+      "v": " tells you a stable step, it never imposes one."
+     }
+    ],
+    [
+     {
+      "k": "b",
+      "v": "Another equation."
+     },
+     {
+      "k": "t",
+      "v": " Drop the nonlinear term: "
+     },
+     {
+      "k": "code",
+      "v": "m.equations(\"dt(u) - nu*lap(u) = 0\")"
+     },
+     {
+      "k": "t",
+      "v": " is the heat equation, and the energy decays exactly as "
+     },
+     {
+      "k": "m",
+      "v": "E(t) = π/2e^{−2νt}"
+     },
+     {
+      "k": "t",
+      "v": "."
+     }
+    ]
+   ]
+  },
+  {
+   "t": "h2",
+   "id": "next",
+   "text": "Next"
+  },
+  {
+   "t": "p",
+   "inl": [
+    {
+     "k": "doc",
+     "to": "tutorials/00_getting_started.html",
+     "v": "Getting started: convection between two plates"
+    },
+    {
+     "k": "t",
+     "v": " takes one problem, convection between two plates, from its equations to its stability, its onset and a simulation; then each tutorial of "
+    },
+    {
+     "k": "doc",
+     "to": "tutorials/index.html",
+     "v": "Tutorials"
+    },
+    {
+     "k": "t",
+     "v": " ends on a published value."
+    }
+   ]
+  },
+  {
+   "t": "h2",
+   "id": "output",
+   "text": "Output"
+  },
+  {
+   "t": "out",
+   "script": "t00_first_steps",
+   "startAt": null,
+   "endAt": null
+  }
+ ]
+}

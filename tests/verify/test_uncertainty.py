@@ -80,3 +80,28 @@ def test_resolutions_in_the_wrong_order_refused():
     assert calls == []                                          # refused before any run
     rep = cn.uncertainty(lambda N, dt: 1.0, N=[(8, 4), (12, 6), (16, 8)], dt=[0.04, 0.02, 0.01])
     assert rep.value == 1.0
+
+
+def test_unequal_resolution_steps_are_modelled():
+    """Finding 12: N = [1, 4, 5] was modelled as equally spaced, the error
+    was underestimated 13.6x and the report still said trusted."""
+    import math
+    r = cn.uncertainty(lambda N, dt: 1 + math.exp(-N) + dt ** 2, N=[1, 4, 5],
+                       dt=[4e-4, 2e-4, 1e-4], scheme_order=2)
+    assert r.interval[0] <= 1 <= r.interval[1]
+    assert abs(r.value - 1) <= r.error <= 2 * abs(r.value - 1)
+    # equal steps: the same estimate as the closed form |d2| rho / (1 - rho)
+    r2 = cn.uncertainty(lambda N, dt: 1 + math.exp(-N), N=[2, 4, 6], dt=[4, 2, 1],
+                        scheme_order=2)
+    d1, d2 = math.exp(-4) - math.exp(-2), math.exp(-6) - math.exp(-4)
+    rho = abs(d2 / d1)
+    assert math.isclose(r2.spatial.estimate, 1.25 * abs(d2) * rho / (1 - rho), rel_tol=1e-9)
+
+
+def test_untrusted_without_checked_hypotheses():
+    import math
+    r = cn.uncertainty(lambda N, dt: 1 + math.exp(-N) + dt ** 2, N=[2, 4, 6], dt=[4e-1, 2e-1, 1e-1])
+    assert not r.trusted and any("scheme_order" in f for f in r.temporal.flags)
+    r = cn.uncertainty(lambda N, dt: 1 + math.exp(-N[0]) + dt ** 2, N=[(2, 2), (4, 6), (6, 8)],
+                       dt=[4e-1, 2e-1, 1e-1], scheme_order=2)
+    assert not r.trusted and any("different proportions" in f for f in r.spatial.flags)

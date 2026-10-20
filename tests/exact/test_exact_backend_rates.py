@@ -7,7 +7,7 @@ the device), the same inside a product c * (dt(u) + u) (nested form family), Che
 Dirichlet with lifts (bordered-banded device solve), the reflection subspace (reduced system),
 an NCC in the mass matrix. RK443 and SBDF2 for each. Every LHS keeps a *bare* unknown ``+ u``
 with the coefficient a declared as a Parameter (u + 0.4 u would fold into 1.4 u), so each
-test fails when is reintroduced (checked by mutation, docs/AUDIT_J2a.md section 5).
+test fails when is reintroduced (checked by mutation).
 """
 import numpy as np
 import pytest

@@ -1,4 +1,4 @@
-"""Step-size information, kept separate by design (spec §18: CFL ≠ error control).
+"""Step-size information, kept separate by design (CFL ≠ error control).
 
 - ``CFL``: advective *stability* indicator from a velocity field. It never estimates an error.
 - ``EmbeddedError``: *temporal error* estimate from a companion scheme of lower order
@@ -13,10 +13,12 @@ only; SBDF coefficients are constant-step).
 """
 from __future__ import annotations
 
+import numbers
+
 import numpy as np
 
 from ..reference import transforms as T
-from ..errors import OptionError
+from ..errors import ConvergenceError, OptionError
 from .integrator import IVPSolver, require_family, rk_tableau, sbdf_coefficients
 
 _DOC = "docs/site/guide/timesteppers.md"
@@ -24,6 +26,9 @@ _DOC = "docs/site/guide/timesteppers.md"
 # the step changes by a factor in [DT_FACTOR_MIN, DT_FACTOR_MAX] per step, whatever the estimate
 DT_FACTOR_MIN = 0.2
 DT_FACTOR_MAX = 2.0
+# adaptive mode: a step whose estimate exceeds tol is rejected (state restored) and retried with
+# a smaller dt, at most MAX_REJECTIONS times in a row (then ConvergenceError: never accepted)
+MAX_REJECTIONS = 20
 
 __all__ = ["CFL", "EmbeddedError", "TauWatch"]
 
@@ -34,12 +39,57 @@ _COMPANION = {"RK443": ("RK222", 2), "RK222": ("RK111", 1), "RKSMR": ("RK111", 1
 
 
 class CFL:
-    """dt_cfl = safety / max_x sum_i |u_i(x)| / dx_i(x) on the collocation grid."""
+    """dt_cfl = safety / max_x sum_i |u_i(x)| / dx_i(x) on the collocation grid.
+
+    Geometric contract (review finding 65): Cartesian coordinates only. ``u_i`` are the
+    components of the velocity along the coordinate axes (lengths per time) and ``dx_i`` the
+    distance between neighbouring collocation nodes of axis i (L/N on a periodic axis, the node
+    spacing on the others), both in the same length unit. On a curvilinear geometry (disk,
+    annulus, pipe, sphere, ball, shell) a coordinate is an angle and the physical spacing is
+    r dphi or r sin(theta) dphi: not implemented, refused rather than returned in mixed units."""
 
     def __init__(self, solver: IVPSolver, velocity: str, safety: float) -> None:
+        # safety a finite real number (audit inputs: float("0.5") parsed text)
+        from ..errors import _scalar_of
+        safety = _scalar_of(safety)              # np.array(0.5): one number
+        if isinstance(safety, (bool, np.bool_)) or not isinstance(safety, numbers.Real):
+            raise OptionError(f"CFL: safety={safety!r} must be a finite positive number",
+                              fix="safety=0.5", doc=_DOC)
         self.solver, self.velocity, self.safety = solver, velocity, float(safety)
         plan = solver.plan
-        self.coords = plan.domain.coordsys.coords
+        cs = plan.domain.coordsys
+        # the velocity is a vector unknown of the problem, or the scalar unknown of a 1D problem
+        # (Burgers) (audit inputs: an unknown name was a bare ValueError, and a scalar
+        # was indexed as a vector: u[0], its FIRST GRID VALUE, was taken for the velocity of the
+        # whole 1D domain, and a scalar on a 2D grid gave its first rows as components)
+        names = getattr(plan, "variables", None)
+        var = None if names is None else next((v for v in names if v.name == velocity), None)
+        rank = None if var is None else len(getattr(var, "tensorsig", ()))
+        dim = len(cs.coords)
+        if names is not None and not (rank == 1 or (rank == 0 and dim == 1)):
+            from ..errors import InputTypeError, did_you_mean
+            vectors = [v.name for v in names if len(getattr(v, "tensorsig", ())) == 1]
+            raise InputTypeError(
+                f"CFL: {velocity!r} is not a vector unknown of the problem"
+                + did_you_mean(str(velocity), vectors),
+                why="the CFL step reads the velocity components u_i along each axis",
+                fix="the name of the velocity: " + (", ".join(vectors) or "no vector unknown "
+                                                    "here (the CFL step needs a velocity)"),
+                doc=_DOC)
+        if getattr(cs, "curvilinear", False):
+            from ..errors import UnsupportedError
+            raise UnsupportedError(
+                f"CFL on the curvilinear coordinates {tuple(c.name for c in cs.coords)}",
+                why="the CFL step needs the physical node spacing (r dphi, r sin(theta) dphi); the "
+                    "spacing of an angle in radians would mix units with the velocity",
+                fix="estimate the advective step from the grid yourself (e.g. min over the grid "
+                    "of r dphi / |u_phi| and dr / |u_r|), or check the step with EmbeddedError",
+                doc=_DOC)
+        self._scalar = rank == 0
+        if not np.isfinite(self.safety) or self.safety <= 0:
+            raise OptionError(f"CFL: safety must be a finite positive number, got {safety!r}",
+                              fix="safety=0.5", doc=_DOC)
+        self.coords = cs.coords
         self.spacing = []
         for i, c in enumerate(self.coords):
             b = plan.domain.basis(c)
@@ -58,6 +108,8 @@ class CFL:
     def compute(self) -> float:
         """The CFL step of the current state (inf for a fluid at rest)."""
         u = self.solver.grid(self.velocity)
+        if self._scalar:                         # 1D: the scalar is the velocity component
+            u = np.asarray(u)[None]
         rate = 0
         for i in range(len(self.coords)):
             rate = rate + np.abs(u[i]) / self.spacing[i]
@@ -118,12 +170,63 @@ class EmbeddedError:
                                   "steps)", doc=_DOC)
         if safety is not None and not 0 < safety <= 1:
             raise OptionError(f"EmbeddedError: safety must be in (0, 1], got {safety!r}", doc=_DOC)
+        # validated before any step (review finding 10)
+        if tol is not None and not (np.isfinite(tol) and tol > 0):
+            raise OptionError(f"EmbeddedError: tol must be a finite positive number, got {tol!r}",
+                              fix="tol=1e-6 (the per-step relative error you accept)", doc=_DOC)
+        if not (np.isfinite(dt_min) and dt_min >= 0) or not dt_max > dt_min:
+            raise OptionError(f"EmbeddedError: need 0 <= dt_min < dt_max, got dt_min={dt_min!r}, "
+                              f"dt_max={dt_max!r}", fix="dt_min=0.0, dt_max=np.inf (no bound)",
+                              doc=_DOC)
         self.adapt, self.tol, self.safety = adapt, tol, safety
-        self.dt_min, self.dt_max = dt_min, dt_max
+        self.dt_min, self.dt_max = float(dt_min), float(dt_max)
         self.last = np.nan
+        self.rejected = 0             # adaptive mode: steps rejected (and retried) so far
 
     def step(self) -> float:
-        """Advance one step with the main scheme; return ||X - X_low|| / ||X|| (max norm)."""
+        """Advance one step with the main scheme; return ||X - X_low|| / ||X|| (max norm).
+
+        ``adapt=True``: a step whose estimate exceeds ``tol`` is rejected, the state (X, t,
+        iteration) restored and the step retried with a smaller dt (review finding 10: the step
+        used to be kept whatever its error, only the next dt changed); the accepted estimate is
+        returned and the next dt proposed from it. ``ConvergenceError`` if ``tol`` cannot be met
+        at ``dt_min`` or after ``MAX_REJECTIONS`` retries."""
+        if not self.adapt:
+            return self._attempt()
+        sv = self.solver
+        X0, t0, it0 = sv.X.copy(), sv.t, sv.iteration
+        for _ in range(MAX_REJECTIONS + 1):
+            err = self._attempt()
+            # a non-finite estimate (the step blew up) is a rejection with the smallest factor
+            fac = (self.safety * (self.tol / max(err, 1e-300)) ** (1.0 / (self.p_low + 1))
+                   if np.isfinite(err) else 0.0)
+            if err <= self.tol:
+                new = min(max(sv.dt * min(DT_FACTOR_MAX, max(DT_FACTOR_MIN, fac)), self.dt_min),
+                          self.dt_max)
+                if new != sv.dt:
+                    sv.set_dt(new)
+                return err
+            # rejected: back to the start of the step, retry with a smaller dt
+            self.rejected += 1
+            sv.X, sv.t, sv.iteration = X0.copy(), t0, it0
+            if sv.dt <= self.dt_min:
+                sv.set_dt(sv.dt)                   # clock origin back at t0
+                raise ConvergenceError(
+                    f"EmbeddedError: estimate {err:.3e} > tol = {self.tol:g} at dt = dt_min = "
+                    f"{self.dt_min:g}", where=f"t = {t0:g}",
+                    why="the step cannot be made accurate enough within the declared bounds; it "
+                        "is never accepted above tol",
+                    fix="lower dt_min, raise tol, or check the state (a blow-up?)", doc=_DOC)
+            new = max(sv.dt * max(DT_FACTOR_MIN, min(fac, 1.0)), self.dt_min)
+            sv.set_dt(new)
+        raise ConvergenceError(
+            f"EmbeddedError: {MAX_REJECTIONS} rejections in a row at t = {t0:g} (last estimate "
+            f"{err:.3e} > tol = {self.tol:g}, dt = {sv.dt:g})",
+            why="the estimate does not decrease with dt (tol below round-off, or a non-smooth "
+                "right-hand side)", fix="raise tol or check the state", doc=_DOC)
+
+    def _attempt(self) -> float:
+        """One step with the main scheme and its estimate (no adaptation)."""
         sv = self.solver
         if sv.order:
             sv.step()
@@ -156,11 +259,6 @@ class EmbeddedError:
             # adaptation and the steps went on); a NaN estimate triggers it at once, for free
             from .integrator import solver_finite_check
             solver_finite_check(sv, "EmbeddedError.step")
-        if self.adapt and np.isfinite(self.last):
-            fac = self.safety * (self.tol / max(self.last, 1e-300)) ** (1.0 / (self.p_low + 1))
-            new = min(max(sv.dt * min(DT_FACTOR_MAX, max(DT_FACTOR_MIN, fac)), self.dt_min), self.dt_max)
-            if new != sv.dt:
-                sv.set_dt(new)
         return self.last
 
     def _repr_html_(self) -> str:       # Jupyter display (conatus.notebook)
@@ -171,7 +269,9 @@ class EmbeddedError:
         """Main scheme, companion and whether dt is adapted."""
         mode = (f"adaptive (tol={self.tol:g}, safety={self.safety:g}, dt in [{self.dt_min:g}, "
                 f"{self.dt_max:g}], change per step in [DT_FACTOR_MIN, DT_FACTOR_MAX] = "
-                f"[{DT_FACTOR_MIN:g}, {DT_FACTOR_MAX:g}])" if self.adapt else "report only, dt unchanged")
+                f"[{DT_FACTOR_MIN:g}, {DT_FACTOR_MAX:g}]; a step above tol is rejected and "
+                f"retried with a smaller dt, {self.rejected} rejected so far)"
+                if self.adapt else "report only, dt unchanged")
         return (f"EmbeddedError({self.solver.scheme} vs {self.companion}): relative max-norm "
                 f"difference of one step, {mode}; a temporal error estimate, unrelated to CFL")
 

@@ -3,7 +3,8 @@ import numpy as np
 import pytest
 
 from conatus.expert import (CartesianCoordinates, ComplexFourier, Domain, Field, IVP, Parameter,
-                            ParametricEVP, Zero, critical, diff, dt, linearize)
+                            ParametricEVP, critical, diff, dt, linearize)
+from conatus.ir import Zero
 
 
 def sh_pencil(q):

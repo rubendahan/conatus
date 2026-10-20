@@ -354,24 +354,36 @@ class OptimalGain:
                 "study.\n" + op.explain())
 
 
-@renames("conatus.growth.periodic:operator_gain")
-def operator_gain(op: PeriodicOperator, t0: float, T: float, steps: int, scheme: str,
-                  backend: str = "cpu", *, n_modes: int = 4) -> OptimalGain:
-    """Optimal gain of a :class:`PeriodicOperator` (see :func:`optimal_gain`); ``n_modes``: the
-    number of leading gains kept in ``.gains`` (``k=``: deprecated former name)."""
+def check_gain_args(t0: Any, T: Any, steps: Any, backend: Any) -> None:
+    """Times, step count and backend of an optimal gain, checked before the operator is built
+    (review of the inputs audit: ``isinstance(T, (int, float))`` took ``T=True`` as
+    a horizon of 1 and refused ``np.float32`` and ``Fraction`` times)."""
+    from ..errors import check_real
     for nm, v in (("t0", t0), ("T", T)):
-        if not (isinstance(v, (int, float)) and math.isfinite(v)):
+        if isinstance(v, (bool, np.bool_)):
             raise OptionError(f"{nm} = {v!r} is not a finite time", doc=_DOC)
+        try:
+            check_real(v, nm, "optimal_gain")
+        except OptionError:
+            raise OptionError(f"{nm} = {v!r} is not a finite time", doc=_DOC) from None
     if isinstance(steps, bool) or not isinstance(steps, (int, np.integer)) or steps < 1:
         raise OptionError(f"steps = {steps!r}", why="dt = T / steps exactly: an integer >= 1",
                           fix="a whole number of time steps over the horizon, e.g. steps=400",
                           doc=_DOC)
-    if not T > 0:
+    if not float(T) > 0:
         raise OptionError(f"T = {T!r}", why="the horizon must be > 0", doc=_DOC)
     if backend not in ("cpu", "cuda"):
         from ..timestep.integrator import backend_hint
         raise OptionError(f"backend = {backend!r}", fix="'cpu' or 'cuda'." + backend_hint(backend),
                           doc=_DOC)
+
+
+@renames("conatus.growth.periodic:operator_gain")
+def operator_gain(op: PeriodicOperator, t0: float, T: float, steps: int, scheme: str,
+                  backend: str = "cpu", *, n_modes: int = 4) -> OptimalGain:
+    """Optimal gain of a :class:`PeriodicOperator` (see :func:`optimal_gain`); ``n_modes``: the
+    number of leading gains kept in ``.gains`` (``k=``: deprecated former name)."""
+    check_gain_args(t0, T, steps, backend)
     t = time.perf_counter()
     try:
         Phi = propagator(op, float(t0), float(T), int(steps), scheme, backend)

@@ -41,7 +41,7 @@ Things to notice:
 - `m.at("walls", "v = 0", "dy(v) = 0")` gives four conditions; each tau is placed by a fixed rule
   (in the equation where $v$ has its highest order, modes $N-1, \dots, N-4$) and
   `m.explain(full=True)` prints them (`m.explain()` is the short summary). The matrices are **bit-identical** to the hand-written IR version
-  ([`expert/t01_orr_sommerfeld.py`](code/expert/t01_orr_sommerfeld.py), `add_bc`), checked by
+  ([`expert/t01_orr_sommerfeld.py`](code/expert/t01_orr_sommerfeld.py), `add_bc`), which the test suite checks.
 
 ## Solve and reject spurious modes
 
@@ -55,6 +55,13 @@ The tau method produces spurious eigenvalues with huge $|c|$. Conatus never hide
 threshold: `drift=96` (i.e. `drift_plan=`) solves the same problem at a finer resolution and keeps only modes that
 reappear within `drift_tol`. `res.explain()` says how many modes were removed and why, and every
 kept mode carries its backward residual $\|(L + cM)x\|$ and its drift.
+
+```{figure} media/t01_spectrum.png
+:alt: A few eigenvalues in the plane of phase speed and growth, all below the zero line except one red point just above it near Re c = 0.24.
+:width: 100%
+
+The modes kept by the drift test of the page (found again at N = 96), in the plane of phase speed and growth. Only one lies above the dashed line: the Tollmien-Schlichting wave, unstable at Re = 10⁴.
+```
 
 ## Plot the eigenfunction
 
@@ -71,9 +78,11 @@ defined up to a complex factor, so the normalisation is declared and printed by 
 the first unknown has $\max|v| = 1$, real and positive where $|v|$ is largest (here the centre of
 the channel). The physical perturbation is $\operatorname{Re}[v(y)\,e^{i\alpha(x - ct)}]$.
 
-```{image} outputs/t01_orr_sommerfeld_mode.png
-:alt: Real part, imaginary part and modulus of the least stable Orr-Sommerfeld eigenfunction v(y)
-:width: 80%
+```{figure} media/t01_coefficients.png
+:alt: The magnitudes of the 64 Chebyshev coefficients of the mode on a log scale: one sequence falls steadily from 1 to about 1e-12, the other stays near 1e-12.
+:width: 100%
+
+The Chebyshev coefficients of the mode (mode.coeffs("v")). The even ones fall to about 10⁻¹² by the last index, the level of the odd ones, which v, even in y, does not need: 64 modes resolve it.
 ```
 
 ## Critical Reynolds number, sensitivity, verification
@@ -96,6 +105,13 @@ leaves out a parameter of the pencil uses the value declared in the model (logge
 differences). `verify` then *reports* residuals, the spectral tail of the eigenvector (is $N = 64$
 enough?) and Taylor tests of the exact derivatives. A bracket in which the growth does not change
 sign is refused with the growth at both ends and a suggested bracket.
+
+```{figure} media/t01_neutral_curve.png
+:alt: The neutral curve of plane Poiseuille flow: a red tongue opening to the right in the plane of Reynolds number (log scale) and wavenumber, its nose marked at Re about 5772 and alpha about 1.02.
+:width: 100%
+
+Im c of the least stable mode on a grid of (Re, α), from the parametric pencil of the page. Inside the red line the flow is unstable; its nose is the critical point the script finds.
+```
 
 ## Check against the reference
 

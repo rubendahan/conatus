@@ -48,6 +48,14 @@ class Snapshots:
 def snapshots_from_arrays(arrays: dict, times: Sequence[float]) -> Snapshots:
     """``{field: array (m, *shape)}`` with the snapshot index first -> Snapshots."""
     names = list(arrays)
+    t = np.asarray(times, float)
+    known = t[np.isfinite(t)] if t.ndim == 1 else t
+    # one time per snapshot, increasing where known (NaN = unknown, declared by uniform_dt);
+    # audit inputs: decreasing times were kept and gave dt < 0 downstream
+    if t.ndim != 1 or np.isinf(t).any() or np.any(np.diff(known) <= 0):
+        raise OptionError(f"snapshots_from_arrays: times must be a 1D increasing sequence "
+                          f"(NaN for unknown), got shape {t.shape}",
+                          fix="times=[t0, t1, ...] in the order of the snapshots")
     m = len(times)
     for f in names:
         if arrays[f].shape[0] != m:
@@ -90,12 +98,21 @@ def snapshots_from_run(run, fields: Sequence[str], *, start: int = 0,
 def uniform_dt(times: np.ndarray, *, rtol: float) -> float:
     """The common Δt of ``times``; refused if any step differs by more than ``rtol`` (declared)."""
     t = np.asarray(times, float)
+    # audit inputs: a 2D array of times was flattened through np.diff, decreasing
+    # times returned dt < 0 (frequencies of the wrong sign downstream), rtol < 0 refused nothing
+    from ..errors import check_real
+    rtol = check_real(rtol, "rtol", "uniform_dt()", nonnegative=True)
+    if t.ndim != 1:
+        raise OptionError(f"uniform_dt: times of shape {t.shape}, one time per snapshot (1D)")
     if np.isnan(t).any():
         raise OptionError("some snapshot times are unknown (NaN): declare dt explicitly")
     if t.size < 2:                  # np.diff would be empty: no step to measure
         raise OptionError(f"{t.size} snapshot time(s): a time step needs at least two snapshots",
                           fix="give two or more snapshots, or declare dt explicitly")
     d = np.diff(t)
+    if not np.all(d > 0):
+        raise OptionError("uniform_dt: the snapshot times must increase",
+                          fix="snapshots in time order")
     dt = float(d.mean())
     if np.abs(d - dt).max() > rtol * abs(dt):
         raise OptionError(f"non-uniform sampling (steps {d.min():.6g} … {d.max():.6g}); DMD/SPOD "

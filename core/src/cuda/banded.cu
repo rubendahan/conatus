@@ -1,4 +1,4 @@
-// Batched bordered banded solves on the device (spec §19–20).
+// Batched bordered banded solves on the device.
 // Same decomposition as the host solver (conatus::BorderedBanded, shared BorderedLayout):
 //   P A = B + U V^T,  B banded (LAPACK band storage), U = first r unit vectors.
 // One thread block (one warp) per mode:

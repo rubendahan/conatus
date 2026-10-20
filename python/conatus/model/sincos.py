@@ -33,7 +33,7 @@ from ..ir.symmetry import SymmetryBreakingError, SymmetryError, component_parity
 from .conditions import WallCondition, free_slip, no_slip
 
 __all__ = ["reflection", "place_parity", "data_parity", "series_name", "extend_to_period",
-           "physical_slice"]
+           "physical_slice", "physical_length", "physical_evaluator"]
 
 _DOC = "docs/site/guide/bases.md"   # public guide page (never an internal design note)
 _CHEB = ("walls(a, b) (Chebyshev, tau method: any condition)")
@@ -191,6 +191,82 @@ def _analyse(comp, cond, side: str, ns, R) -> dict:
                 f"condition of a sine/cosine axis; no-slip walls: {wall}=walls({a:g}, {b:g}) "
                 "(Chebyshev)", doc=_DOC)
     return dict(f=f, parity=need.pop(), kind="vector", where=where, text=text)
+
+
+# ------------------------------------------------------------------------------------------------
+# integrals over the physical interval (review finding 7)
+# ------------------------------------------------------------------------------------------------
+# The series lives on the doubled period [a, 2b - a): an integral of the discretized field over
+# that period is twice the physical one for a cosine (even) integrand and zero for a sine (odd)
+# one, whose physical integral is not zero (sin(pi z) on [0, 1]: 2/pi). Equations: an even
+# scalar integrand gets the factor 1/2 (exact); an odd one or a vector one is refused (its
+# physical integral couples every odd sine mode, not representable mode by mode). Diagnostics
+# (Simulation.evaluate, dye mass and variance): physical_evaluator, exact for both parities.
+
+def _physical_integrals(e, coord, R, look, label: str):
+    """``e`` with every integral along the sine/cosine ``coord`` taken over [a, b]."""
+    from ..ir import Integrate
+    if not e.args:
+        return e
+    args = [_physical_integrals(a, coord, R, look, label) for a in e.args]
+    if all(x is y for x, y in zip(args, e.args, strict=True)):
+        new = e
+    else:
+        new = e.rebuild(args)
+    if not isinstance(new, Integrate) or coord not in new.coords:
+        return new
+    operand = new.args[0]
+    p = parity_of(operand, R, look)
+    if operand.rank == 0 and p in (EVEN, None):
+        return as_expr(0.5) * new
+    raise UnsupportedError(
+        f"{label}: {new} integrates a "
+        + ("sine series (odd)" if operand.rank == 0 else "vector")
+        + f" along the sine/cosine axis {coord.name}",
+        why="on the doubled period the integral of a sine series is zero while its integral over "
+            "the physical interval is not; it couples every odd sine mode and is not "
+            "representable in the reduced system",
+        fix=f"integrate a cosine (even) scalar, or use {coord.name}=walls(a, b) (Chebyshev)",
+        doc=_DOC)
+
+
+def physical_length(comp, name: str) -> float:
+    """Length of coordinate ``name`` in the physical domain (half the doubled period on the
+    sine/cosine axis)."""
+    L = float(comp.bases[name].length)
+    return L / 2 if name == comp.model.geometry.sincos_coord else L
+
+
+def physical_evaluator(comp, solver):
+    """A spectral evaluator of the solver's domain whose integrals along the sine/cosine axis
+    are over [a, b], exact for both parities: on the doubled-period real Fourier layout
+    (cos(k_j s), -sin(k_j s)), s = z - a, k_j = j pi / L, the weights are int_0^L cos(k_j s) ds
+    = L delta_j0 and int_0^L -sin(k_j s) ds = -2L/(j pi) for odd j, 0 for even j."""
+    from ..timestep.spectral import SpectralEvaluator
+    geo = comp.model.geometry
+    wcoord = comp.coordsys[geo.sincos_coord]
+    a, b = geo._axes[geo.sincos_coord].bounds
+    L = float(b - a)
+
+    class _PhysicalIntegrals(SpectralEvaluator):
+        def _integrate(self, c, coord, rank: int):
+            if coord != wcoord:
+                return super()._integrate(c, coord, rank)
+            ax = self._axis(rank, coord)
+            if c.ndim <= ax or c.shape[ax] == 1:
+                return c * L                      # constant along the axis: value x length
+            n = c.shape[ax]
+            j = np.arange(n // 2)
+            w = np.zeros(n)
+            w[0] = L
+            odd = j % 2 == 1
+            w[1::2][odd] = -2.0 * L / (np.pi * j[odd])
+            xp = self.xp
+            val = xp.tensordot(xp.asarray(w), xp.moveaxis(c, ax, 0), axes=(0, 0))
+            return xp.expand_dims(val, ax)
+
+    xp = None if getattr(solver, "backend", "cpu") == "cpu" else solver.xp
+    return _PhysicalIntegrals(solver.plan.domain, xp=xp)
 
 
 def _equivariance_error(eqs, sub: SymmetrySubspace, R, labels) -> str | None:
@@ -376,7 +452,11 @@ def place_parity(comp, eqs, unknowns, V, ns):
                        "time stepping and eigenvalues; symmetry-breaking states do not exist here "
                        "(they would violate the wall conditions).")
     variables = list(unknowns) + [tq for tq, _ in gauges]
-    equations = list(eqs)
+    # integrals written in the equations are over the physical interval [a, b] (review finding 7)
+    look = _sub(R, parity).lookup()
+    equations = [(_physical_integrals(lhs, coord, R, look, labels[i]),
+                  _physical_integrals(as_expr(rhs), coord, R, look, labels[i]))
+                 for i, (lhs, rhs) in enumerate(eqs)]
     for tq, q in gauges:
         equations.append((integ(q), 0))
         comp.labels.append(f"integ({q.name}) = 0 (gauge)")

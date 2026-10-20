@@ -6,8 +6,9 @@ import pytest
 import scipy.optimize as so
 
 from conatus.expert import (EVP, IVP, CartesianCoordinates, ComplexFourier, Domain, Field, Parameter,
-                            ParametricEVP, ProblemError, Zero, channel, critical, diff, dt, interp,
+                            ParametricEVP, ProblemError, channel, critical, diff, dt, interp,
                             linearize, sqrt)
+from conatus.ir import Zero
 
 
 def sh_pencil(N=8):

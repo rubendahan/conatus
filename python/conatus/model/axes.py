@@ -72,7 +72,7 @@ def _scale(scale, where: str) -> float:
 def line(center: float = 0.0, *, scale: float | None = None) -> Line:
     """The whole line, discretized with Hermite functions psi_n((x - center)/scale) (no boundary,
     no condition: the functions decay like a Gaussian). ``scale`` is required."""
-    if not isinstance(center, numbers.Real) or not math.isfinite(center):
+    if isinstance(center, bool) or not isinstance(center, numbers.Real) or not math.isfinite(center):
         raise InputTypeError(f"line(center={center!r}): the center must be a finite number",
                              fix="line(0.0, scale=1.0)", doc=_DOC)
     return Line(float(center), _scale(scale, "line(...)"))
@@ -82,7 +82,7 @@ def half_line(start: float = 0.0, *, scale: float | None = None) -> HalfLine:
     """The half line x >= start, discretized with Laguerre functions of (x - start)/scale; the wall
     at ``start`` takes boundary conditions (named "wall", "x=start" and "bottom"). ``scale`` is
     required."""
-    if not isinstance(start, numbers.Real) or not math.isfinite(start):
+    if isinstance(start, bool) or not isinstance(start, numbers.Real) or not math.isfinite(start):
         raise InputTypeError(f"half_line(start={start!r}): the start must be a finite number",
                              fix="half_line(0.0, scale=1.0)", doc=_DOC)
     return HalfLine(float(start), _scale(scale, "half_line(...)"))

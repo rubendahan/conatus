@@ -240,7 +240,7 @@ class _Interpreter:
                 elif mod == "scipy.special" and a.name in _SCIPY_SPECIAL:
                     scope[alias] = _NpFunc("scipy.special", a.name)
                 elif mod == "dedalus.public":
-                    scope[alias] = getattr(self.d3, a.name)
+                    scope[alias] = self.d3_name(a.name)
                 else:
                     scope[alias] = _Module(f"ignored:{mod}.{a.name}")
             names.append(mod)
@@ -408,7 +408,7 @@ class _Interpreter:
         pb = decl.problem
         if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
             text = arg.value
-            ns = self._namespace(scope)
+            ns = self._namespace(decl.namespace if decl.namespace is not None else scope)
             eq = parse_equation(text, ns)
             self._notes += ns.notes
             if ns.shadowed:
@@ -483,9 +483,91 @@ class _Interpreter:
             reason = self.timestep.reason
             self.timestep = None
             return self._record(st, "unsupported", f"time step {ast.unparse(dt_expr)}: {reason}")
+        effects = self._loop_effects(st.body, scope)
+        if effects:
+            # the loop body changes the state or the stop rule: solver.run(n) would compute
+            # something else (finding 54: u['g'] += 1 in the loop was ignored
+            # and the loop still reported as translated)
+            return self._record(st, "unsupported",
+                                "the time loop body changes the simulation, which solver.run(n) "
+                                "would not do: " + "; ".join(effects)
+                                + " (write that step by step around solver.step / solver.run)")
         self._record(st, "translated", f"time loop -> solver.run(n) with a fixed dt = "
                                        f"{self.timestep!r} (no Python loop); the loop body "
                                        "(logging, analysis) is not translated")
+
+    # methods that only read or report (time loop body): anything else on a field, the solver
+    # or a problem is taken as a change of the simulation
+    _LOOP_READ_ONLY = {"step", "log_stats", "print_subproblem_ranks", "evaluate_handlers_now",
+                       "change_scales", "require_scales", "require_grid_space",
+                       "require_coeff_space", "copy", "allgather_data", "gather_data",
+                       "evaluate", "max", "min", "grid_average", "volume_average",
+                       "compute_timestep"}
+
+    def _loop_effects(self, body: list[ast.stmt], scope: dict) -> list[str]:
+        """Statements of a time-loop body that change the simulation (field data, the solver,
+        a problem, the stop rule), as ``line N: source`` strings; reads, logging, plots and the
+        dt assignment are not effects. Conservative: an unknown write target that resolves to a
+        translated object is an effect."""
+        out: list[str] = []
+
+        def where(n: ast.AST) -> str:
+            src = (ast.get_source_segment(self.source, n) or "").strip().splitlines()
+            return f"line {n.lineno}: {src[0][:60] if src else ''}"
+
+        def root(t: ast.AST) -> Any:
+            while isinstance(t, (ast.Subscript, ast.Attribute)):
+                t = t.value
+            if isinstance(t, ast.Name):
+                v = scope.get(t.id, self.g.get(t.id))
+                return v
+            return None
+
+        def physical(v: Any) -> bool:
+            return isinstance(v, (E.Expr, _SolverDecl, _ProblemDecl, Basis, CoordinateSystem))
+
+        def target_effect(t: ast.AST) -> bool:
+            if isinstance(t, (ast.Tuple, ast.List)):
+                return any(target_effect(e) for e in t.elts)
+            if isinstance(t, ast.Starred):
+                return target_effect(t.value)
+            if isinstance(t, ast.Name):
+                return False                     # a local name (dt, a diagnostic value)
+            return _is_field_data(t) or physical(root(t))
+
+        def visit(stmts: list[ast.stmt]) -> None:
+            for n in stmts:
+                if isinstance(n, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
+                    tgts = n.targets if isinstance(n, ast.Assign) else [n.target]
+                    if any(target_effect(t) for t in tgts):
+                        out.append(where(n))
+                        continue
+                elif isinstance(n, ast.Break):
+                    out.append(where(n) + " (stops the loop early on a condition)")
+                    continue
+                elif isinstance(n, ast.Delete):
+                    out.append(where(n))
+                    continue
+                # calls anywhere in the statement: a mutating method of a physical object, an
+                # in-place NumPy write (np.copyto, out=)
+                for c in ast.walk(n) if not isinstance(n, (ast.If, ast.For, ast.While, ast.Try,
+                                                            ast.With)) else ():
+                    if not isinstance(c, ast.Call):
+                        continue
+                    f = c.func
+                    if isinstance(f, ast.Attribute):
+                        if f.attr == "copyto" or any(k.arg == "out" for k in c.keywords):
+                            out.append(where(n))
+                            break
+                        if physical(root(f.value)) and f.attr not in self._LOOP_READ_ONLY:
+                            out.append(where(n))
+                            break
+                for field_name in ("body", "orelse", "finalbody"):
+                    visit(getattr(n, field_name, []) or [])
+                for h in getattr(n, "handlers", []) or []:
+                    visit(h.body)
+        visit(body)
+        return out
 
     def field_data(self, st, tgt, op: str, scope: dict) -> None:
         f, comp = _field_data_target(tgt, self, scope)
@@ -502,34 +584,44 @@ class _Interpreter:
                                        + ": initial condition / given field (tr.data)")
 
     # problems ----------------------------------------------------------------------------------
-    def make_problem(self, kind: str, variables, time=None, eigenvalue=None) -> _ProblemDecl:
+    def make_problem(self, kind: str, variables, time=None, eigenvalue=None,
+                     namespace=None) -> _ProblemDecl:
         vs = list(variables)
         for v in vs:
             if not isinstance(v, Field):
                 raise _Unsupported(f"problem variable {v!r} is not a translated field")
+        if namespace is not None:
+            if not (isinstance(namespace, dict) and all(isinstance(k, str) for k in namespace)):
+                raise _Unsupported("problem namespace that is neither locals() nor a mapping of "
+                                   "names")
+            namespace = dict(namespace)
+            self.note("equations of this problem read with its own namespace "
+                      f"({', '.join(sorted(namespace)) or 'empty'}), not the script's names")
+        extra = (namespace,) if namespace is not None else ()
         if kind == "EVP":
-            s = self._to_parameter(eigenvalue, complex)
+            s = self._to_parameter(eigenvalue, complex, extra)
             pb = EVP(vs, eigenvalue=s)
         elif kind == "IVP":
             pb = IVP(vs)
             if time is not None:
-                self._to_parameter(time, float)
+                self._to_parameter(time, float, extra)
                 self.note(f"time field '{time.name}' -> Parameter, "
                           f"IVPSolver(..., time_parameter='{time.name}')")
         else:
             pb = {"LBVP": LBVP, "NLBVP": NLBVP}[kind](vs)
-        decl = _ProblemDecl(pb, kind, time)
+        decl = _ProblemDecl(pb, kind, time, namespace)
         self.problems.append(decl)
         return decl
 
-    def _to_parameter(self, f: Any, dtype) -> Parameter:
-        """A 0-dimensional Dedalus field used as eigenvalue / time -> a Parameter, everywhere."""
+    def _to_parameter(self, f: Any, dtype, extra: tuple = ()) -> Parameter:
+        """A 0-dimensional Dedalus field used as eigenvalue / time -> a Parameter, everywhere
+        (the script's scopes and ``extra``: a problem's own namespace)."""
         if isinstance(f, Parameter):
             return f
         if not isinstance(f, Field) or f.domain.bases:
             raise _Unsupported("eigenvalue / time must be a field without bases")
         p = Parameter(f.name, dtype=dtype)
-        for scope in (self.g,) + tuple(self._scopes):
+        for scope in (self.g,) + tuple(self._scopes) + tuple(extra):
             for k, v in list(scope.items()):
                 if v is f:
                     scope[k] = p
@@ -564,6 +656,15 @@ class _Interpreter:
             raise _Unsupported("IVP solver without a time stepper")
         self.solver = _SolverDecl(decl, scheme, self.line)
         return self.solver
+
+    def d3_name(self, name: str) -> Any:
+        """A public name of ``dedalus.public``. Private and dunder names are refused (security
+       ): ``d3.__dict__``, ``d3.tr`` or ``d3.__reduce_ex__(1)`` handed the script
+        the translator's own interpreter and ``copyreg`` callables, a door out of the sandbox."""
+        if name.startswith("_") or name == "tr":
+            raise _Unsupported(f"dedalus.public.{name}: not a public name of Dedalus (private and "
+                               "dunder attributes are never resolved by the translator)")
+        return getattr(self.d3, name)
 
     # expressions ------------------------------------------------------------------------------
     def eval(self, node: ast.AST, scope: dict) -> Any:
@@ -663,7 +764,7 @@ class _Interpreter:
         obj = self.eval(n.value, scope)
         a = n.attr
         if isinstance(obj, _D3):
-            return getattr(obj, a)
+            return self.d3_name(a)
         if isinstance(obj, _Module):
             if obj.name == "numpy":
                 if a not in _NP_ALLOWED:
@@ -700,6 +801,8 @@ class _Interpreter:
                 raise _Skip("output grid")
             raise _Unsupported(f"coordinate system attribute .{a}")
         if isinstance(obj, _Dist):
+            if a not in _DIST_METHODS:       # refused here, not only when called
+                raise _Unsupported(f"dist.{a}")
             return _DistMethod(self, obj, a)
         if isinstance(obj, _ProblemDecl):
             if a == "build_solver":
@@ -712,7 +815,7 @@ class _Interpreter:
                 raise _Skip("results read after the solve (post-processing)")
             if a == "evaluator":
                 raise _Unsupported("analysis output (file handlers, tasks): use "
-                                   "conatus.runs.track / solver.run(record=...) and the "
+                                   "conatus.runs.track / solver.run(record=...) and Studio "
                                    "telemetry")
             if a in ("subproblems", "subproblems_by_group"):
                 raise _Unsupported("Dedalus subproblems: select a Conatus group with "
@@ -736,7 +839,7 @@ class _Interpreter:
                 args.extend(self.eval(a.value, scope))
             else:
                 args.append(self.eval(a, scope))
-        kw = {k.arg: self.eval(k.value, scope) for k in n.keywords if k.arg is not None}
+        kw = self._keywords(n.keywords, scope)
         if isinstance(f, _Module):
             raise _Skip("output only")
         if isinstance(f, _Opaque):
@@ -746,6 +849,26 @@ class _Interpreter:
         # every callable here was created by the translator (or given by the caller in
         # overrides): d3 names, whitelisted NumPy/SciPy, script lambdas (interpreted), methods
         return f(*args, **kw)
+
+    def _keywords(self, keywords: list[ast.keyword], scope: dict) -> dict:
+        """Keyword arguments of a call, ``**mapping`` expanded (finding 6:
+        ``**opts`` used to be dropped without a word, so ``RealFourier(..., **{'dealias': 1.5})``
+        came back with dealias=1). A ``**`` value that is not a mapping of names is refused."""
+        kw: dict = {}
+        for k in keywords:
+            val = self.eval(k.value, scope)
+            if k.arg is not None:
+                items = [(k.arg, val)]
+            elif isinstance(val, dict) and all(isinstance(x, str) for x in val):
+                items = list(val.items())
+            else:
+                raise _Unsupported(f"'**{ast.unparse(k.value)}' is not a mapping of argument "
+                                   "names the translator can read")
+            for name, v in items:
+                if name in kw:
+                    raise _Unsupported(f"keyword argument '{name}' given twice")
+                kw[name] = v
+        return kw
 
     def _e_JoinedStr(self, n, scope):
         raise _Skip("formatted string")
@@ -786,6 +909,10 @@ class _NpFunc:
                 *args, **kw)
         import scipy.special as sp
         return getattr(sp, self.name)(*args, **kw)
+
+
+#: the Distributor methods the translator knows (dist.<other> is unsupported)
+_DIST_METHODS = ("Field", "VectorField", "TensorField", "local_grid", "local_grids")
 
 
 class _DistMethod:

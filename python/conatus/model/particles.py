@@ -16,7 +16,8 @@ Passive tracers dx/dt = u(x, t) advected by the spectral velocity of the simulat
   error). In an unsteady flow the tracers see the flow states u_n, which carry the time error of
   the flow scheme (RK443: third order), and the first step of each run interpolates the midpoint
   linearly between two states (one local error of order dt^3; the second step, three states,
-  dt^4): order 3 with RK443. In decaying Taylor-Green both parts are of order 3; with the start
+  dt^4): order 3 with RK443. A run split into several ``sim.run`` calls continues the same
+  history (it is reset only when the state changed between the calls). In decaying Taylor-Green both parts are of order 3; with the start
   given exact past states the error drops (3.4-4.7x) but the order stays 3, that of the flow
   (tests/model/test_particles_dye.py). The flow stepper is unchanged.
 * **Periodic axes**: positions are kept unwrapped (the dispersion is read from them) and also
@@ -34,6 +35,10 @@ Not covered, refused with the reason: curved or mapped geometries, sine/cosine w
 and lines (Laguerre, Hermite), compound intervals, complex-valued problems. The particle positions
 are not part of the simulation's checkpoints: a restarted run declares new particles (from the
 last row of the file if it should continue them).
+
+This is the **in-simulation** interface; :class:`conatus.diagnostics.Particles` is the standalone
+one (any velocity, caller's dt and scheme, boundary "clip"/"raise", no file). The two contracts
+are compared in :mod:`conatus.diagnostics.lagrangian` (finding 63).
 """
 from __future__ import annotations
 
@@ -252,9 +257,18 @@ class Tracers:
 
     # ---------------------------------------------------------------- stepping
     def begin_run(self) -> None:
-        """The velocity at the start of a run (``Simulation.run`` calls it): the state may have
-        changed since the last run (``sim.initial``, ``sim.restart``)."""
-        self._hist = [(self.sim.t, self.probe.coefficients())]
+        """The velocity at the start of a run (``Simulation.run`` calls it). The past flow
+        states are kept when the run continues the last one (same time, same velocity
+        coefficients): splitting a run into one-step calls used to reset them every call and
+        drop the convergence order from 3 to 2 (finding 14). They are
+        dropped only when the state really changed (``sim.initial``, ``sim.restart``)."""
+        c = self.probe.coefficients()
+        if self._hist:
+            t_last, c_last = self._hist[-1]
+            xp = self.xp
+            if t_last == self.sim.t and c_last.shape == c.shape and bool(xp.array_equal(c_last, c)):
+                return
+        self._hist = [(self.sim.t, c)]
 
     def _vel(self, c, x):
         return self.probe.evaluate(c, x).T          # (P, d)

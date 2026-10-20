@@ -9,6 +9,7 @@
 
 #include <complex>
 #include <cstring>
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
@@ -35,11 +36,32 @@ template <class T>
 using Arr1 = nb::ndarray<const T, nb::ndim<1>, nb::c_contig, nb::device::cpu>;
 using IArr1 = nb::ndarray<const int32_t, nb::ndim<1>, nb::c_contig, nb::device::cpu>;
 
+// Product of array dimensions times the element size, checked for overflow before any allocation
+// (review, CUDA risks: the products were formed unchecked; a wrapped size allocates a small buffer
+// that the copies then overrun).
+inline size_t checked_count(std::initializer_list<size_t> dims, size_t elem_size) {
+    size_t n = 1;
+    for (auto d : dims) {
+        if (d != 0 && n > std::numeric_limits<size_t>::max() / d)
+            throw std::overflow_error("array dimensions overflow size_t");
+        n *= d;
+    }
+    if (elem_size != 0 && n > std::numeric_limits<size_t>::max() / elem_size)
+        throw std::overflow_error("array size in bytes overflows size_t");
+    return n;
+}
+
+// An element count passed to the C++ solvers as int (LAPACK 32-bit integers).
+inline int checked_int(size_t v, const char* what) {
+    if (v > size_t(std::numeric_limits<int>::max()))
+        throw std::overflow_error(std::string(what) + " exceeds the 32-bit LAPACK range");
+    return int(v);
+}
+
 // Fresh owned numpy array.
 template <class T>
 nb::ndarray<nb::numpy, T> new_array(std::initializer_list<size_t> shape) {
-    size_t n = 1;
-    for (auto s : shape) n *= s;
+    const size_t n = checked_count(shape, sizeof(T));
     T* p = new T[n ? n : 1]();
     nb::capsule owner(p, [](void* q) noexcept { delete[] static_cast<T*>(q); });
     return nb::ndarray<nb::numpy, T>(p, shape, owner);
@@ -71,6 +93,36 @@ conatus::Csr<T> to_csr(int n, IArr1 indptr, IArr1 indices, Arr1<T> data) {
     return A;
 }
 
+// The host IMEX integrator plus the owning reference to its Python right-hand side (see
+// bind_linalg, finding 43). tp_traverse reports that reference to the garbage collector,
+// tp_clear drops it (and the borrowing std::function first) when a cycle is collected.
+template <class T>
+struct ImexPy : conatus::ImexIntegrator<T> {
+    using conatus::ImexIntegrator<T>::ImexIntegrator;
+    nb::object py_rhs;
+
+    static int tp_traverse(PyObject* self, visitproc visit, void* arg) {
+#if PY_VERSION_HEX >= 0x03090000
+        Py_VISIT(Py_TYPE(self));
+#endif
+        if (!nb::inst_ready(self)) return 0;
+        ImexPy* p = nb::inst_ptr<ImexPy>(self);
+        Py_VISIT(p->py_rhs.ptr());
+        return 0;
+    }
+    static int tp_clear(PyObject* self) {
+        ImexPy* p = nb::inst_ptr<ImexPy>(self);
+        p->set_rhs({});                              // nothing borrows the callable any more
+        p->py_rhs.reset();
+        return 0;
+    }
+    static PyType_Slot slots[];
+};
+template <class T>
+PyType_Slot ImexPy<T>::slots[] = {{Py_tp_traverse, (void*)ImexPy<T>::tp_traverse},
+                                  {Py_tp_clear, (void*)ImexPy<T>::tp_clear},
+                                  {0, nullptr}};
+
 template <class T>
 void bind_linalg(nb::module_& m, const char* suffix) {
     using BB = conatus::BorderedBanded<T>;
@@ -92,9 +144,10 @@ void bind_linalg(nb::module_& m, const char* suffix) {
             // b: (nrhs, n) row-major = n x nrhs column-major.
             size_t nr = b.shape(0), n = b.shape(1);
             if (n != size_t(s.n())) throw std::invalid_argument("rhs length != n");
+            const int nrhs = checked_int(nr, "number of right-hand sides");
             auto x = new_array<T>({nr, n});
             std::memcpy(x.data(), b.data(), sizeof(T) * nr * n);
-            if (transpose) s.solve_transpose(x.data(), int(nr)); else s.solve(x.data(), int(nr));
+            if (transpose) s.solve_transpose(x.data(), nrhs); else s.solve(x.data(), nrhs);
             return x;
         }, nb::arg("b"), nb::arg("transpose") = false);
 
@@ -139,24 +192,40 @@ void bind_linalg(nb::module_& m, const char* suffix) {
             return x;
         }, nb::arg("b"), nb::arg("transpose") = false);
 
-    using IM = conatus::ImexIntegrator<T>;
+    // The Python callback F is owned by the bound object (ImexPy::py_rhs), not by the C++
+    // std::function (which only borrows it): the type then exposes it to the garbage collector
+    // (tp_traverse / tp_clear below), so a callback that refers to its integrator is a cycle the
+    // collector sees and frees (review finding 43; it leaked before).
+    using IM = ImexPy<T>;
     std::string im = std::string("Imex") + suffix;
-    nb::class_<IM>(m, im.c_str())
+    nb::class_<IM>(m, im.c_str(), nb::type_slots(ImexPy<T>::slots))
         .def("__init__", [](IM* self, int n, IArr1 mp, IArr1 mi, Arr1<T> md, IArr1 lp, IArr1 li,
                             Arr1<T> ld, std::vector<int> border, std::string scheme, double dt) {
             new (self) IM(to_csr<T>(n, mp, mi, md), to_csr<T>(n, lp, li, ld), border, scheme, dt);
         })
-        .def("set_rhs", [](IM& s, nb::callable f) {
+        .def("set_rhs", [](IM& s, nb::object f) {
+            if (f.is_none()) {                       // F = 0
+                s.set_rhs({});
+                s.py_rhs.reset();
+                return;
+            }
+            if (!PyCallable_Check(f.ptr())) throw nb::type_error("set_rhs: a callable F(x, t) or None");
             int n = s.n();
-            s.set_rhs([f, n](const T* x, double t, T* out) {
+            s.py_rhs = f;                            // the owning reference, visible to the GC
+            PyObject* fp = f.ptr();                  // borrowed: valid while py_rhs holds it
+            s.set_rhs([fp, n](const T* x, double t, T* out) {
                 size_t shape[1] = {size_t(n)};
                 nb::ndarray<nb::numpy, const T> xv(x, 1, shape, nb::handle());
-                nb::object r = f(xv, t);
+                nb::object r = nb::borrow<nb::object>(fp)(xv, t);
                 auto ra = nb::cast<nb::ndarray<const T, nb::ndim<1>, nb::c_contig>>(r);
                 if (ra.shape(0) != size_t(n)) throw std::invalid_argument("rhs callback: wrong length");
                 std::memcpy(out, ra.data(), sizeof(T) * n);
             });
-        })
+        }, nb::arg("f").none())
+        .def("reset", [](IM& s) { s.reset(); },
+             "Forget the multistep history and the iteration count (factorizations kept); the "
+             "next run() starts a new trajectory.")
+        .def_prop_ro("history_length", [](const IM& s) { return s.history_length(); })
         .def("run", [](IM& s, Arr1<T> x0, double t0, long nsteps) {
             size_t n = x0.shape(0);
             if (n != size_t(s.n())) throw std::invalid_argument("state length != n");
@@ -165,9 +234,9 @@ void bind_linalg(nb::module_& m, const char* suffix) {
             double t = s.run(x.data(), t0, nsteps);
             return nb::make_tuple(x, t);
         }, nb::arg("x0"), nb::arg("t0"), nb::arg("nsteps"))
-        .def_prop_ro("n_factorizations", &IM::n_factorizations)
-        .def_prop_ro("iteration", &IM::iteration)
-        .def_prop_ro("scheme", &IM::scheme);
+        .def_prop_ro("n_factorizations", [](const IM& s) { return s.n_factorizations(); })
+        .def_prop_ro("iteration", [](const IM& s) { return s.iteration(); })
+        .def_prop_ro("scheme", [](const IM& s) { return s.scheme(); });
 }
 
 
@@ -179,7 +248,8 @@ template <class T>
 struct DeviceArray {
     conatus::Buffer<T> buf;
     size_t rows = 0, cols = 0;
-    DeviceArray(size_t r, size_t c) : buf(r * c, conatus::MemorySpace::CUDA_DEVICE), rows(r), cols(c) {}
+    DeviceArray(size_t r, size_t c)
+        : buf(checked_count({r, c}, sizeof(T)), conatus::MemorySpace::CUDA_DEVICE), rows(r), cols(c) {}
 };
 
 template <class T>
@@ -332,7 +402,7 @@ void bind_cuda_linalg(nb::module_& m, const char* suffix) {
         }, nb::arg("M"), nb::arg("L"), nb::arg("border_rows"), nb::arg("scheme"), nb::arg("dt"),
            nb::arg("pivot") = true)
         .def("set_pointwise_rhs", [](IM& s, nb::object g, nb::object h) {
-            size_t N = size_t(s.n()) * s.batch();
+            size_t N = checked_count({size_t(s.n()), size_t(s.batch())}, sizeof(T));
             std::vector<T> gv, hv;
             auto grab = [&](nb::object o, std::vector<T>& v) {
                 if (o.is_none()) return false;

@@ -29,6 +29,20 @@ accurate in time (RK443), and because the first step of a run has only two state
 between; in a steady flow neither matters and the order is that of RK4, 4. With the velocity frozen
 over a step it would be 1.
 
+```{figure} media/t16_tracers.png
+:alt: Square cells of grey streamlines with red tracer paths sliding along them, from open circles to red dots.
+:width: 100%
+
+The 32 tracers of the page in the decaying Taylor-Green vortices, t = 0 to 2 (dt = 0.025): each moves along a streamline of ψ = sin x sin y (grey) and slows down as the flow decays.
+```
+
+```{figure} media/t16_order.png
+:alt: The tracer error against the time step on log axes, three red points along a dashed line of slope 3.
+:width: 100%
+
+The tracer error against the reference path integrated to 10⁻¹³: third order in time, as stated for an unsteady flow.
+```
+
 ## A dye in plane Couette flow
 
 ```{literalinclude} code/t16_particles_dye.py
@@ -42,6 +56,14 @@ over a step it would be 1.
 its mass, variance, extrema and spectral tail; `sim.particles(..., path=, every=)` writes positions
 (wrapped and unwrapped), velocities and wall clips, with the dimensions `t`, `particle`,
 `component`.
+
+<figure class="cn-film">
+<video class="cn-film" muted loop playsinline preload="none" poster="../_static/tutorial_films/t16_dye.webp" width="720" height="400" aria-label="A round grey dye blob in a channel is sheared into a long tilted streak while five yellow-green tracers glide left and right at their own heights, those on the walls moving with them.">
+<source src="../_static/tutorial_films/t16_dye.webm" type="video/webm">
+<source src="../_static/tutorial_films/t16_dye.mp4" type="video/mp4">
+</video>
+<figcaption>The Couette block of the page from t = 0 to 3: the dye field and the five tracers, every two time steps. The film closes its loop with a 0.5 s cross-fade: a display transition, not part of the run.</figcaption>
+</figure>
 
 ## Check
 

@@ -1,4 +1,4 @@
-"""Immutable, structurally hashed expression tree (spec §6, §8, §25).
+"""Immutable, structurally hashed expression tree.
 
 Every node knows, symbolically:
   * its tensor signature, domain and dtype;

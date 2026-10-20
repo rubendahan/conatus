@@ -1,4 +1,4 @@
-"""Liveness memory planner of an IVP time step (spec §56–§59).
+"""Liveness memory planner of an IVP time step.
 
 From the *compiled* objects of an ``IVPSolver`` (stacked system, buckets, fused RHS, scheme) — no
 GPU and no step needed — the planner writes the **program of device allocations** that the CUDA

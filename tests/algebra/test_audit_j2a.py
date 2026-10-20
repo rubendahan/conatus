@@ -1,4 +1,4 @@
-"""Audit (docs/AUDIT_J2a.md): silent substitutions found mid-one regression test each.
+"""Audit: silent substitutions found mid-one regression test each.
 
 Each test was written before its fix and failed on the code of the day (message in the docstring).
 The exact-rate tests that guard against-type defects are in tests/discretize/test_exact_rates.py.
@@ -51,7 +51,7 @@ def test_core_realfourier_backward_keeps_imaginary_part():
 
 
 # ----------------------------------------------------------------------------------------------
-# InnerProduct (linearize/inner_product.py): the product defines the adjoint (spec §4)
+# InnerProduct (linearize/inner_product.py): the product defines the adjoint
 # ----------------------------------------------------------------------------------------------
 
 def _two_field_plan(mapped=False):

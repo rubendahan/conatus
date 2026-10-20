@@ -17,8 +17,6 @@ from conatus.timestep import IVPSolver
 from ens_cases import lorenz_problem, run_single
 from ivp_cases import burgers_1d, ks_1d, rayleigh_benard_2d
 
-rng = np.random.default_rng(11)
-
 
 def _members(ens_kind, solvers, X0, nsteps, rhs):
     e = (Ensemble(solvers[0], len(X0), rhs=rhs) if ens_kind == "ic"
@@ -35,7 +33,7 @@ def _rel(a, b):
 @pytest.mark.parametrize("scheme,kw", [("RK443", {}), ("RK222", {}),
                                        ("SBDF3", dict(startup="rk443")),
                                        ("SBDF2", dict(startup="lower_order"))])
-def test_ks_initial_condition_ensemble(scheme, kw):
+def test_ks_initial_condition_ensemble(scheme, kw, rng):
     plan, u = ks_1d(N=32, L=22.0)
     s = IVPSolver(plan, scheme, 0.02, **kw)
     X0 = 0.3 * rng.standard_normal((4, s.system.n))
@@ -49,7 +47,7 @@ def test_ks_initial_condition_ensemble(scheme, kw):
     assert "polynomial form" in bat.explain()
 
 
-def test_rb2d_chebyshev_tau_rows():
+def test_rb2d_chebyshev_tau_rows(rng):
     """Chebyshev direction, tau rows, constant boundary rows, C^(lam) conversion of the RHS."""
     plan, _ = rayleigh_benard_2d(8, 8, 2e3)
     s = IVPSolver(plan, "RK443", 1e-3)
@@ -74,7 +72,7 @@ def test_lorenz_parameter_ensemble_in_F():
     assert "1 with per-member coefficients" in bat.rhs.explain()
 
 
-def test_burgers_parameter_in_L_own_factors():
+def test_burgers_parameter_in_L_own_factors(rng):
     nus = [0.05, 0.1, 0.2]
     ss = [IVPSolver(burgers_1d(N=32, nu=nu)[0], "RK443", 1e-2) for nu in nus]
     X0 = 0.4 * rng.standard_normal((3, ss[0].system.n))
@@ -108,7 +106,6 @@ def test_refusals():
         Ensemble(s, 2, rhs="batched")
 
 
-
 def test_changing_plan_params_after_construction_is_refused():
     """Audit A23: the members of an ensemble do not pass through IVPSolver.step, so the
     refusal of a plan.params change after construction did not cover them: the change was
@@ -122,7 +119,7 @@ def test_changing_plan_params_after_construction_is_refused():
         e.step()
 
 @pytest.mark.slow                   # 7.8 s in the fast suite (qual_durations0)
-def test_fate_basins_lorenz_and_wilson_interval():
+def test_fate_basins_lorenz_and_wilson_interval(rng):
     """Lorenz r = 15 (C+ and C- stable, no chaos): every member ends near C+ or C-; the verdict of
     a member equals that of its single run; Wilson interval of a known proportion."""
     from conatus.ensembles import ensemble_fate, proportion_ci
@@ -152,7 +149,7 @@ def test_fate_basins_lorenz_and_wilson_interval():
 
 @pytest.mark.parametrize("f_backend", ["evaluator", "fused"])
 @pytest.mark.slow                   # 3.3 s in the fast suite (qual_durations0)
-def test_couette_general_form_and_reynolds_ensemble(f_backend):
+def test_couette_general_form_and_reynolds_ensemble(f_backend, rng):
     """Plane Couette, poloidal-toroidal form: the RHS is a divergence of products, so the
     batched RHS uses the general form (products of linear forms, post-operators); Re enters L, so
     a Reynolds-number ensemble has one factorization per member. Reference: single runs with the

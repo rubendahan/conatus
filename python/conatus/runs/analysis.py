@@ -1,7 +1,7 @@
 """Reading several runs: lists, tables, comparisons, lineage.
 
 Nothing is interpolated, aligned or averaged: a comparison shows each run's own values (series keep
-their own abscissae, as in a monitor's multi-run curves), and a difference is reported with both
+their own abscissae, as in the Studio's multi-run curves), and a difference is reported with both
 values next to it.
 """
 from __future__ import annotations

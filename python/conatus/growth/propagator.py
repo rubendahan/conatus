@@ -232,14 +232,14 @@ class GainResult:
     G: float
     sigmas: np.ndarray
     v_opt: np.ndarray          # optimal initial state (coefficients)
-    u_resp: np.ndarray         # response at t0 + T (coefficients)
+    u_resp: np.ndarray         # response Φ v_opt at t0 + T (coefficients; energy G)
 
     def explain(self) -> str:
         """The gain, the next singular values and what the structures are."""
         nxt = ", ".join(f"{s ** 2:.6g}" for s in np.asarray(self.sigmas)[1:4])
         return (f"optimal gain G = sigma_1^2 = {self.G:.10g} over the admissible inputs (next "
-                f"squared singular values {nxt or 'none'}); v_opt: optimal initial state, u_resp: "
-                f"its response ({np.size(self.v_opt)} coefficients each)")
+                f"squared singular values {nxt or 'none'}); v_opt: optimal initial state (unit "
+                f"energy), u_resp: its response Φ v_opt (energy G) ({np.size(self.v_opt)} coefficients each)")
 
 
 def gain(Phi: np.ndarray, F: np.ndarray, Z: np.ndarray | None) -> GainResult:
@@ -261,5 +261,7 @@ def gain(Phi: np.ndarray, F: np.ndarray, Z: np.ndarray | None) -> GainResult:
         U, s, Vh = np.linalg.svd(A)
     except np.linalg.LinAlgError:
         U, s, Vh = sla.svd(A, lapack_driver="gesvd")
-    Finv = np.linalg.pinv(F)
-    return GainResult(float(s[0] ** 2), s, Z @ Rinv @ Vh[0].conj(), Finv @ U[:, 0])
+    v_opt = Z @ Rinv @ Vh[0].conj()                  # unit energy: ‖F v_opt‖ = 1
+    # the response is the propagated optimal state Φ v_opt (energy σ_1² = G), not a unit-energy
+    # vector along it (finding 93: F⁻¹ u_1 was returned, normalised)
+    return GainResult(float(s[0] ** 2), s, v_opt, Phi @ v_opt)

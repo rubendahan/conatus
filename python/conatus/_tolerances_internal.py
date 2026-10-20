@@ -255,6 +255,94 @@ _ENTRIES = (
              "region), never accepted as converged",
              ("conatus.ecs.newton:NewtonKrylovHookstep.solve",
               "conatus.floquet.roots:determinant_secant")),
+    Internal("WINDING_INTEGER", 1e-6, "refusal",
+             "the argument-principle winding (the sum of the phase increments of det T along the "
+             "boundary, closed on the first point evaluated again) is an integer up to rounding by "
+             "construction (about 1e-13); further than 1e-6 from one, det T does not return the "
+             "same value at the same point and the count is refused",
+             ("conatus.contour.count:count",)),
+    Internal("WALK_MIN_STEP", 1e-12, "refusal",
+             "a boundary step shorter than 1e-12 of the perimeter whose phase still jumps: a zero "
+             "on the boundary within rounding or a discontinuous determinant; the count is refused "
+             "",
+             ("conatus.contour.count:_walk",)),
+    Internal("HANKEL_RANK", 1e-10, "rank",
+             "Beyn's method: singular values of the block Hankel moment matrix above 1e-10 of the "
+             "largest are its numerical rank (the Gauss-Legendre moments are accurate to about "
+             "1e-12..1e-14 with eigenvalues clear of the edges); every Ritz value of that rank is "
+             "polished and certified, so a noise direction kept costs time, never a wrong root "
+             "",
+             ("conatus.contour.beyn:_rounds",)),
+    # --- invariance battery (tests/invariance, audit invariance): the bounds of the
+    # metamorphic relations. They decide no library result; each says why an equivalent
+    # computation may differ from the original by that much and no more. The infra test checks
+    # that every function named here reads the entry by name.
+    Internal("INVARIANCE_ORDER", 0.3, "invariance test",
+             "observed global order log2(e(dt) / e(dt/2)) against the stated order: three step "
+             "sizes in the asymptotic range of a smooth problem, the pre-asymptotic drift of the "
+             "ratio is below 0.2 for the problems of the battery; an order off by one (a start-up "
+             "or a boundary convention) is 3 times this bound", (
+                 "tests.invariance.test_inv_time_order:test_logistic_observed_order_is_the_stated_order",
+                 "tests.invariance.test_inv_time_order:test_moving_walls_observed_order_is_the_stated_order",
+                 "tests.invariance.test_inv_time_order:test_moving_walls_stated_order_is_achieved",
+                 "tests.invariance.test_inv_time_order:test_mapped_box_observed_order_is_the_stated_order",
+             )),
+    Internal("INVARIANCE_ROUNDING", 1e-11, "invariance test",
+             "relative difference of two computations equal in exact arithmetic that execute "
+             "different floating-point operations (an equation multiplied by a constant, a "
+             "rescaled unit, a reordered batch): about 1e3 eps of accumulated rounding over a "
+             "few hundred steps or one conditioned solve; a numerical difference of method is "
+             "orders of magnitude above it", (
+                 "tests.invariance.test_inv_dynamics:test_lyapunov_reorthonormalisation_and_blocks",
+                 "tests.invariance.test_inv_dynamics:test_lyapunov_trajectory_independent_of_batch_place",
+                 "tests.invariance.test_inv_dynamics:test_pod_relations",
+                 "tests.invariance.test_inv_scaling:test_ivp_equation_scaling",
+                 "tests.invariance.test_inv_scaling:test_ivp_amplitude_scaling",
+                 "tests.invariance.test_inv_scaling:test_nlbvp_equation_scaling",
+                 "tests.invariance.test_inv_scaling:test_units_heat_space_time",
+                 "tests.invariance.test_inv_solver_paths:test_ivp_paths_rb2d",
+                 "tests.invariance.test_inv_symmetry:test_ks_translation_and_reflection",
+                 "tests.invariance.test_inv_symmetry:test_rb_reflection_x",
+                 "tests.invariance.test_inv_symmetry:test_disk_rotation",
+             )),
+    Internal("INVARIANCE_EIGENVALUE", 1e-9, "invariance test",
+             "relative difference of eigenvalues of two equivalent pencils (scaled rows, rescaled "
+             "eigenvalue, another solver path): backward error 1e-15 times the eigenvalue "
+             "condition number of the non-normal Orr-Sommerfeld operator (1e4..1e5 at Re = 1e4, "
+             "tests/evp/test_orr_sommerfeld.py)", (
+                 "tests.invariance.test_inv_dynamics:test_dmd_relations",
+                 "tests.invariance.test_inv_dynamics:test_floquet_phase_and_paths",
+                 "tests.invariance.test_inv_scaling:test_evp_equation_scaling",
+                 "tests.invariance.test_inv_scaling:test_evp_eigenvalue_unit",
+                 "tests.invariance.test_inv_scaling:test_generalized_eigenvalues_scaling",
+                 "tests.invariance.test_inv_solver_paths:test_evp_dense_shift_invert_contour",
+                 "tests.invariance.test_inv_solver_paths:test_polar_dense_vs_shift_invert",
+             )),
+    Internal("INVARIANCE_ROW_SCALING", 1e-7, "invariance test",
+             "relative difference (grid values of T and u against max |T|) of a 2-D "
+             "Rayleigh-Benard run with its momentum equation multiplied by 1e-2..1e5: the "
+             "bordered banded solve does not equilibrate the rows of the system, so their "
+             "relative scale enters the rounding (measured 3.0e-8 for 1e-2 and 7.5e-10 for "
+             "1e2..1e5 after 40 steps); a fragile spot of docs/audits/invariance.md, not a "
+             "tolerance of the library", (
+                 "tests.invariance.test_inv_scaling:test_ivp_equation_scaling_rb2d",
+             )),
+    Internal("INVARIANCE_ADJOINT", 1e-9, "invariance test",
+             "relative defect of <J V, W> = <V, J^T W> and of two transposes of one map (matrix-"
+             "free and dense oracle): both sides are sums of products over 7..9 steps of a "
+             "2-D map with 64 unknowns, measured up to 3e-10 (CNAB2 with the RK443 start-up, "
+             "time-dependent data; tests/adjoint use 1e-11..1e-9); a wrong term of the transpose "
+             "is O(1)", (
+                 "tests.invariance.test_inv_adjoint:test_flowmap_identities_every_scheme",
+                 "tests.invariance.test_inv_adjoint:test_flowmap_time_dependent_from_t0",
+                 "tests.invariance.test_inv_adjoint:test_flowmap_polynomial_vs_dense_transpose",
+             )),
+    Internal("INVARIANCE_TAYLOR_ORDER", 1.8, "invariance test",
+             "Taylor remainder |Phi(X + e V) - Phi(X) - e J V| halves twice: observed order "
+             "above 1.8 (exactly 2 for an exact tangent; a wrong tangent gives 1)", (
+                 "tests.invariance.test_inv_adjoint:test_flowmap_identities_every_scheme",
+                 "tests.invariance.test_inv_adjoint:test_flowmap_time_dependent_from_t0",
+             )),
     Internal("INFINITE_EIGENVALUE", 1e14, "detection",
              "eigenvalues of a tau pencil above it in modulus are its infinite eigenvalues "
              "(beta ~ 0), not tau modes to report",

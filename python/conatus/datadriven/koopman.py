@@ -59,6 +59,9 @@ class Dictionary:
 
 def monomials(d: int, degree: int) -> Dictionary:
     """All monomials x^α, |α| ≤ degree, in d variables (constant first, then by degree)."""
+    from ..errors import check_count                    # audit inputs: degree=-1 gave a
+    d = check_count(d, "d", "monomials()")              # dictionary with no function, d=2.5
+    degree = check_count(degree, "degree", "monomials()", minimum=0)   # a bare TypeError
     exps = [a for k in range(degree + 1) for a in itertools.product(range(k + 1), repeat=d)
             if sum(a) == k]
     exps = sorted(set(exps), key=lambda a: (sum(a), tuple(-v for v in a)))
@@ -74,7 +77,13 @@ def monomials(d: int, degree: int) -> Dictionary:
 
 def rbf(centers: np.ndarray, epsilon: float) -> Dictionary:
     """[1, x_1 … x_d, exp(−ε² ‖x − c_k‖²) for each center] (declared centers and shape ε)."""
+    from ..errors import InputTypeError, check_real
+    # a finite shape > 0 (exp(-eps^2 r^2) is even in eps: a negative or NaN one was accepted,
+    # audit inputs) and centers of shape (K, d)
+    epsilon = check_real(epsilon, "epsilon", "rbf()", positive=True)
     C = np.asarray(centers, float)
+    if C.ndim != 2 or not np.all(np.isfinite(C)):
+        raise InputTypeError(f"rbf(centers): an array (K, d) of finite points, got shape {C.shape}")
     d = C.shape[1]
 
     def ev(x):

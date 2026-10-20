@@ -191,7 +191,8 @@ def normal_form(system: DynamicalSystem, x0: np.ndarray, *, kind: str,
     (default Euclidean on the discrete vector, declared). ``symmetry``: optional linear map S
     (matrix or callable) with S G(x) = G(S x); the kernel parity S q = ±q is reported and a
     pitchfork is then *required* to have a2 = 0 up to ``kernel_tol`` (else refused).
-    ``kernel_tol``: the critical eigenvalue must satisfy |λ| (zero) or |Re λ| (Hopf) <= kernel_tol·(1+‖J‖).
+    ``kernel_tol``: the critical eigenvalue must satisfy |λ| (zero) or |Re λ| (Hopf) <= kernel_tol·(1+‖J‖),
+    and x0 must be an equilibrium, max|G(x0)| <= kernel_tol·max(1, ‖J‖)·max(1, ‖x0‖) (else refused).
     """
     if kind not in ("zero", "hopf"):
         raise OptionError(f"normal_form: kind must be 'zero' or 'hopf', got {kind!r}")
@@ -201,6 +202,15 @@ def normal_form(system: DynamicalSystem, x0: np.ndarray, *, kind: str,
     M = _dense(system.M).astype(float)
     nJ = max(1.0, np.abs(J).max())
     res_eq = float(np.max(np.abs(system.G(x0, q_par))))
+    # a normal form only exists at an equilibrium: x0 off the branch (
+    # finding 91: u' = p + u^2 at p = 1, u = 0, G = 1, was classified a fold) is refused, with
+    # the same relative tolerance as the critical eigenvalue
+    eq_tol = kernel_tol * nJ * max(1.0, float(np.max(np.abs(x0), initial=0.0)))
+    if not res_eq <= eq_tol:
+        raise ConvergenceError(f"normal_form: x0 is not an equilibrium (max|G(x0)| = {res_eq:.2e} > "
+                               f"kernel_tol·‖J‖·max(1, ‖x0‖) = {eq_tol:.2e})",
+                               fix="converge x0 first (newton_equilibrium, or the located "
+                                   "continue_equilibria event)")
     lam, vr, vl = generalized_eigenvalues(J, M, vectors=True)
     if kind == "zero":
         i = int(np.argmin(np.abs(lam)))

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from ..errors import OptionError
 from ..errors import check_count  # noqa: F401  (moved to conatus.errors, shared; re-exported here)
 
 __all__ = ["fold_floquet", "CertifiedRoot", "SecantRoot", "SecantRun", "determinant_secant",
@@ -180,6 +181,12 @@ def fold_floquet(mu: complex) -> tuple[complex, str]:
     return m, note
 
 
+#: Distance to the nearest integer under which a sampled winding number counts as that integer
+#: in :meth:`CertifiedRoot.certify` (a contour sampled finely enough lands within 1e-3; 0.05
+#: leaves room for a coarse contour while far from the half-integers of an under-sampled one).
+WINDING_INTEGER_TOL = 0.05
+
+
 @dataclass
 class CertifiedRoot:
     """A Floquet exponent with the evidence that it is one."""
@@ -198,10 +205,42 @@ class CertifiedRoot:
     def folded(self) -> complex:
         return fold_floquet(self.mu)[0]
 
-    def certify(self, *, residual_tol: float, convergence_tol: float) -> CertifiedRoot:
-        """Set the status from explicit tolerances (no default: the caller declares them)."""
+    def certify(self, *, residual_tol: float, convergence_tol: float,
+                contrast: float | None = None, contrast_max: float | None = None,
+                winding: float | None = None) -> CertifiedRoot:
+        """Set the status from explicit tolerances (no default: the caller declares them).
+
+        Certified requires: the secant converged (finding 21: an unconverged
+        root kept with ``allow_unconverged=True`` used to come out "certified"), the residual
+        below ``residual_tol`` and a resolution study (>= 2 resolutions) whose spread is below
+        ``convergence_tol``. Optional evidence, checked when given (finding 20: the docs named
+        these checks without the code running them): ``contrast`` = σ_min/σ_2 of M(μ)
+        must be below ``contrast_max``; ``winding`` = winding
+        number of det M on a small circle around μ (``winding``) must be a positive integer to
+        ``WINDING_INTEGER_TOL`` (``winding()`` returns the integer its adaptive walk certified, or
+        raises). What was checked is listed in ``reasons`` / ``explain()``."""
         self.reasons = []
         ok = True
+        if not self.converged:
+            ok = False
+            self.reasons.append("secant not converged (allow_unconverged=True)")
+        if contrast is not None:
+            if contrast_max is None:
+                raise OptionError("certify(contrast=...) needs contrast_max",
+                                  fix="contrast_max=1e-6 (σ_min/σ_2 at an isolated simple root)")
+            if not contrast < contrast_max:
+                ok = False
+                self.reasons.append(f"singular-value contrast {contrast:.2e} >= {contrast_max:.1e}")
+            else:
+                self.reasons.append(f"checked: singular-value contrast {contrast:.2e} < "
+                                    f"{contrast_max:.1e}")
+        if winding is not None:
+            if not (abs(winding - round(winding)) < WINDING_INTEGER_TOL and round(winding) >= 1):
+                ok = False
+                self.reasons.append(f"winding number {winding:.3f} is not a positive integer "
+                                    f"(to {WINDING_INTEGER_TOL:g})")
+            else:
+                self.reasons.append(f"checked: winding number {winding:.3f}")
         if not self.residual < residual_tol:
             ok = False
             self.reasons.append(f"residual {self.residual:.2e} >= {residual_tol:.1e}")
@@ -215,6 +254,9 @@ class CertifiedRoot:
                 ok = False
                 self.reasons.append(f"resolution spread {spread:.2e} >= {convergence_tol:.1e}")
         self.status = "certified" if ok else "provisional"
+        if ok and contrast is None and winding is None:
+            self.reasons.append("certified on residual and resolution study only (no contrast "
+                                "or winding evidence passed)")
         return self
 
     def retract(self, why: str) -> None:
@@ -229,3 +271,40 @@ class CertifiedRoot:
                 f"(folded {f.real:.12f}{f.imag:+.12f}i, {note}); status {self.status}; "
                 f"residual {self.residual:.2e}; {self.iterations} iterations; "
                 f"resolution study [{conv}]" + (f"; reasons: {'; '.join(self.reasons)}" if self.reasons else ""))
+
+
+def adaptive_winding(slogdet, center: complex, radius: float, n_points: int) -> float:
+    """Winding number of det M on the circle |mu - center| = radius, by the adaptive walk of
+    :mod:`conatus.contour.count` (principal phase increment <= pi/4 per step and per half step,
+    log det resolved by every step; ``n_points`` initial points, refined where needed).
+
+    ``slogdet(mu) -> (phase, log|det|)``. A sampled winding closed on its first point is an
+    integer by construction, so "a non-integer value means under-resolved" never fired: a
+    coarse sampling returned a clean but wrong integer (critic-science). The
+    walk returns the integer it certified, or raises ConvergenceError (a root on the circle, a
+    determinant that jumps)."""
+    import math
+
+    from ..contour.count import PHASE_STEP_MAX, MAX_EVALUATIONS, _walk
+    from ..contour.operators import SingularPoint
+
+    class _Circle:
+        def point(self, s):
+            import numpy as np
+            return center + radius * np.exp(0.5j * math.pi * np.asarray(s))
+
+        def describe(self) -> str:
+            return f"the circle |mu - ({complex(center):.6g})| = {radius:g}"
+
+    class _Det:
+        def slogdet(self, z):
+            ph, la = slogdet(z)
+            if not (math.isfinite(la) and abs(ph) > 0):
+                raise SingularPoint(z)
+            return complex(ph), float(la)
+
+    if not (isinstance(n_points, int) and n_points >= 4):
+        raise OptionError(f"winding(n_points={n_points!r}): an integer >= 4 (initial points; "
+                          "the walk refines where the phase needs it)")
+    w = _walk(_Det(), _Circle(), PHASE_STEP_MAX, max(2, -(-n_points // 4) + 1), MAX_EVALUATIONS)
+    return float(round(w["winding"]))

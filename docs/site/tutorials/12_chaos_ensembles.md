@@ -48,6 +48,13 @@ block means and the lag-1 correlation of those blocks (if it is large the blocks
 The sum is not exactly $-13.667$: it is the mean $\log|\det J|$ of the RK443 **map**, whose
 truncation at $dt = 0.01$ is $7.7\times10^{-3}$ ($9.2\times10^{-4}$ at $dt/2$: third order).
 
+```{figure} media/t12_lyapunov.png
+:alt: Three panels, one per Lyapunov exponent: grey running estimates of 32 trajectories converge with time onto their red mean and the dashed published value.
+:width: 100%
+
+Running estimates of the three exponents for the 32 starts of the page (grey), their mean (red) and the published values 0.906, 0 and −14.572 (dashed).
+```
+
 ## Covariant vectors
 
 ```{literalinclude} code/t12_chaos_ensembles.py
@@ -72,6 +79,13 @@ The section $g = xy - bz = 0$ (a maximum of $z$) is located on the scheme: a sub
 same Runge–Kutta method with $g(\Phi_{\tau^*}(X_n)) = 0$ to the declared tolerance. No interpolant is
 assumed; a crossing that is not located is refused.
 
+```{figure} media/t12_lorenz_map.png
+:alt: Successive maxima of z plotted against each other: the dots lie on a thin tent-shaped curve above a dotted diagonal.
+:width: 100%
+
+The Poincaré section dz/dt = 0 of the page: each maximum of z against the next falls on a one-dimensional cusp map, as in Lorenz's Fig. 4 of 1963.
+```
+
 ## Basins of attraction from one ensemble
 
 ```{literalinclude} code/t12_chaos_ensembles.py
@@ -82,6 +96,13 @@ assumed; a crossing that is not located is refused.
 
 `ensemble_fate` asks the classifier every `check_every` steps and latches each member's verdict;
 members still undecided at the horizon stay 0 and are reported, never assigned.
+
+```{figure} media/t12_basins.png
+:alt: A square map of starting points coloured red or green by the equilibrium they end on, forming interleaved spiral bands, with C+ and C- marked.
+:width: 100%
+
+Basins of C+ (red) and C− (green) at r = 20 for the 2304 starts of the ensemble (z₀ = 19); the rare starts still undecided at the horizon are black. The map is symmetric under (x, y) → (−x, −y).
+```
 
 ## Check against the references
 

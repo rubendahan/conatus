@@ -22,11 +22,16 @@
 .tu-eqs-bc { font-size: 0.95rem; color: var(--cn-muted); margin-top: 0.6rem !important; }
 .tu-fig { margin: 1.5rem 0; }
 .tu-fig img { width: 100%; border-radius: var(--cn-radius); background: var(--cn-lab); }
+.tu-fig-plot img { background: none; border-radius: 0; height: auto; }   /* transparent plots (tutorial_media.py) */
 .tu-fig figcaption { margin-top: 0.6rem; color: var(--cn-muted); font-size: var(--cn-size-caption); max-width: 42rem; }
 .tu-methods { font-family: var(--cn-font-display); font-style: italic; font-size: 1.05rem; line-height: 1.55; padding-left: 0.9rem; border-left: 1px solid var(--cn-rule); margin: 1rem 0; }
 .tu-more { padding-left: 1.4rem; display: grid; gap: 0.35rem; }
 .tu-more-l { color: var(--cn-muted); font-size: 0.92rem; }
 .tu-cta { margin-top: 1.5rem; }
+.tu-steps { padding-left: 1.4rem; display: grid; gap: 0.6rem; max-width: 42rem; }
+.tu-math { font-family: Georgia, "Noto Serif", "Times New Roman", serif; font-style: italic; }
+.tu-source { margin-top: 3rem; color: var(--cn-muted); font-size: var(--cn-size-caption); }
+.tu-body .code { margin: 1.1rem 0; }
 @media (max-width: 900px) {
   .tu-layout { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   .tu-toc { position: static; border-bottom: 1px solid var(--cn-rule); padding-bottom: 1rem; }

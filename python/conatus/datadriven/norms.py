@@ -61,8 +61,14 @@ class DataInnerProduct:
     # ------------------------------------------------------------------ constructors
     @classmethod
     def quadrature(cls, w, *, note: str = "") -> DataInnerProduct:
-        w = np.asarray(to_host(w), dtype=float).ravel()
-        if not np.all(w > 0):
+        w = np.asarray(to_host(w))
+        if w.ndim != 1 or np.iscomplexobj(w):
+            # audit inputs: a 2D array was flattened, complex weights cast to float
+            raise OptionError(f"quadrature weights: a 1D real array, got shape {w.shape}, dtype "
+                              f"{w.dtype}", fix="one weight per entry of a snapshot: w.ravel() "
+                                                  "of the grid weights, in snapshot order")
+        w = w.astype(float)
+        if not np.all(w > 0) or not np.all(np.isfinite(w)):
             raise OptionError("quadrature weights must all be > 0 (a zero weight makes W singular:"
                               " drop those entries from the snapshots instead, explicitly)")
         return cls("quadrature", w.size, w=w, note=note)
@@ -83,7 +89,9 @@ class DataInnerProduct:
 
     @classmethod
     def euclidean(cls, n: int) -> DataInnerProduct:
-        return cls("euclidean", int(n), note="W = I (declared)")
+        from ..errors import check_count               # audit inputs: int(3.5) = 3, n = 0
+        return cls("euclidean", check_count(n, "n", "DataInnerProduct.euclidean()"),
+                   note="W = I (declared)")
 
     @classmethod
     def from_grid(cls, grid, *, components: Sequence[str], weights: dict) -> DataInnerProduct:
@@ -101,6 +109,11 @@ class DataInnerProduct:
 
     # ------------------------------------------------------------------ maps
     def check(self, X) -> None:
+        # snapshots: a finite 2D array (audit inputs: NaN snapshots ended in a bare
+        # LinAlgError of the POD/DMD decomposition)
+        if getattr(X, "ndim", None) != 2:
+            raise OptionError(f"snapshots: a 2D array (entries x snapshots), got shape "
+                              f"{getattr(X, 'shape', None)}")
         if X.shape[0] != self.n:
             raise OptionError(f"snapshots have {X.shape[0]} entries, the inner product {self.n}")
 
@@ -136,3 +149,13 @@ class DataInnerProduct:
         what = {"quadrature": "diagonal quadrature weights", "gram": "Hermitian positive-definite "
                 "Gram matrix (Cholesky factor)", "euclidean": "Euclidean (declared)"}[self.kind]
         return f"DataInnerProduct: ⟨a, b⟩ = aᴴ W b, W = {what}, n = {self.n}. {self.note}"
+
+
+def check_data(ip: DataInnerProduct, X: Any) -> None:
+    """``ip.check(X)`` plus finite values: the user's snapshots at the entry of POD and DMD
+    (audit inputs: NaN snapshots ended in a bare LinAlgError of the decomposition)."""
+    ip.check(X)
+    xp = array_module(X)
+    if not bool(xp.all(xp.isfinite(X))):
+        raise OptionError("snapshots: non-finite values (NaN or inf)",
+                          fix="drop or repair the snapshots that hold them, explicitly")

@@ -1,4 +1,4 @@
-"""Statistical error of a time average (spec §83): mean of a correlated series with its
+"""Statistical error of a time average: mean of a correlated series with its
 standard error, from the integrated autocorrelation time.
 
 ::
@@ -13,8 +13,10 @@ smallest W with W >= C tau(W), C = ``SOKAL_C`` = 5 (Sokal 1997, "Monte Carlo met
 statistical mechanics", in Functional Integration, NATO ASI Series 361, sect. 3). The standard
 error of the mean is sqrt(2 tau var / n) (n samples, var the sample variance), i.e. n / (2 tau)
 effectively independent samples. A batch-means estimate (``BATCHES`` = 20 batches) is reported
-beside it as a check; a series shorter than ``MIN_TAU_MULTIPLE`` = 50 tau is flagged (the error
-estimate itself is then unreliable), as is a window that never closes.
+beside it as a check, and the report is flagged when it exceeds ``BATCH_RATIO_MAX`` = 2 times
+the autocorrelation estimate (a correlation longer than the Sokal window saw: a slow oscillation
+or drift under fast noise); a series shorter than ``MIN_TAU_MULTIPLE`` = 50 tau is flagged (the
+error estimate itself is then unreliable), as is a window that never closes.
 """
 from __future__ import annotations
 
@@ -26,11 +28,17 @@ import numpy as np
 
 from ..errors import InputTypeError
 
-__all__ = ["time_average", "TimeAverageReport", "SOKAL_C", "BATCHES", "MIN_TAU_MULTIPLE"]
+__all__ = ["time_average", "TimeAverageReport", "SOKAL_C", "BATCHES", "MIN_TAU_MULTIPLE",
+           "BATCH_RATIO_MAX"]
 
 SOKAL_C = 5.0
 BATCHES = 20
 MIN_TAU_MULTIPLE = 50.0
+# batch-means standard error above this many autocorrelation standard errors: flagged (audit
+# "assurances": the batch means were printed as "check" and never compared; white
+# noise plus a slow sine gave a 3.1x larger batch error and a "trusted" mean 2.7 errors off).
+# For a correctly estimated tau the ratio scatters by about 1/sqrt(2 (BATCHES - 1)) = 16 %.
+BATCH_RATIO_MAX = 2.0
 _DOC = "docs/site/guide/uncertainty.md"
 
 
@@ -87,7 +95,25 @@ def time_average(series: Any, *, dt: float | None = None, discard: int, name: st
     """Mean and standard error of a stationary, correlated series (one value per sample;
     ``dt``, optional, only converts tau to time units). ``discard``: number of initial samples
     dropped (a transient), required: 0 is a choice too."""
-    x = np.asarray(series, dtype=float).ravel()
+    # one real value per sample, as given (audit inputs: ravel() made a (samples,
+    # quantities) array one interleaved series, a complex series lost its imaginary part with a
+    # ComplexWarning, and the text "1234" was read as one sample 1234.0)
+    raw = series if isinstance(series, np.ndarray) else (
+        None if isinstance(series, (str, bytes)) or series is None else np.asarray(series))
+    if raw is None or raw.dtype.kind not in "biuf" or raw.dtype.kind == "b" or raw.ndim != 1:
+        what = ("text" if isinstance(series, (str, bytes)) else "None" if series is None else
+                f"an array of dtype {raw.dtype} and shape {raw.shape}")
+        raise InputTypeError(f"time_average: the series is {what}",
+                             why="a series is one real number per sample (a 1D array); several "
+                                 "quantities, complex values or text are never flattened or "
+                                 "converted for you",
+                             fix="time_average(q, discard=...) with q of shape (n,): one call per "
+                                 "quantity (q[:, j]), or the real part/modulus taken explicitly",
+                             doc=_DOC)
+    x = raw.astype(float)
+    if dt is not None:
+        from ..errors import check_real
+        dt = check_real(dt, "dt", "time_average()", positive=True)
     if isinstance(discard, bool) or not isinstance(discard, (int, np.integer)) or discard < 0:
         raise InputTypeError(f"time_average(discard={discard!r}): a number of samples >= 0",
                              why="the transient is not detected for you", doc=_DOC)
@@ -120,4 +146,9 @@ def time_average(series: Any, *, dt: float | None = None, discard: int, name: st
     m = n // BATCHES
     bm = x[: m * BATCHES].reshape(BATCHES, m).mean(axis=1)
     bse = float(bm.std(ddof=1) / math.sqrt(BATCHES))
+    if bse > BATCH_RATIO_MAX * se:
+        flags.append(f"the batch-means check gives a standard error {bse / se:.2g} times larger "
+                     f"(> BATCH_RATIO_MAX = {BATCH_RATIO_MAX:g}): a correlation longer than the "
+                     "Sokal window (slow oscillation or drift); the error estimate is too small "
+                     "(run longer, or discard the transient)")
     return TimeAverageReport(float(x.mean()), se, float(tau), int(W), n, int(discard), dt, bse, flags, name)

@@ -9,10 +9,8 @@ import scipy.sparse as sp
 
 from conatus.runtime import BorderedBanded, BorderedBandedBatch
 
-rng = np.random.default_rng(7)
 
-
-def bordered_with_dense_columns(n, kl, ku, r, dtype, dense_cols=None):
+def bordered_with_dense_columns(rng, n, kl, ku, r, dtype, dense_cols=None):
     """Banded core (diagonally dominant), r dense border rows, and dense entries in the first r
     columns over the whole bulk (``dense_cols`` of them; default all r)."""
     cplx = np.dtype(dtype).kind == "c"
@@ -37,9 +35,9 @@ def rel(a, b):
 
 @pytest.mark.parametrize("dtype", [float, complex])
 @pytest.mark.parametrize("r", [1, 3, 9])
-def test_colborder_matches_dense_and_row_border(dtype, r):
+def test_colborder_matches_dense_and_row_border(dtype, r, rng):
     n, kl, ku = 160, 6, 9
-    A = bordered_with_dense_columns(n, kl, ku, r, dtype)
+    A = bordered_with_dense_columns(rng, n, kl, ku, r, dtype)
     border = list(range(r))
     s_col = BorderedBanded(sp.csr_matrix(A), border, col_border=True)
     s_row = BorderedBanded(sp.csr_matrix(A), border)            # dense columns kept in the band
@@ -56,12 +54,12 @@ def test_colborder_matches_dense_and_row_border(dtype, r):
     assert "column border" in s_col.explain()
 
 
-def test_colborder_partial_columns_and_identity_without_dense():
+def test_colborder_partial_columns_and_identity_without_dense(rng):
     """Only some of the r pinned columns dense; and a matrix without any dense column gives the
     row-border result to rounding (the column border then only holds in-band pinned entries)."""
     n, r = 120, 4
     for dense in (2, 0):
-        A = bordered_with_dense_columns(n, 3, 5, r, float, dense_cols=dense)
+        A = bordered_with_dense_columns(rng, n, 3, 5, r, float, dense_cols=dense)
         s = BorderedBanded(sp.csr_matrix(A), list(range(r)), col_border=True)
         b = rng.standard_normal(n)
         assert rel(s.solve(b), np.linalg.solve(A, b)) < 1e-12
@@ -69,9 +67,9 @@ def test_colborder_partial_columns_and_identity_without_dense():
 
 
 @pytest.mark.parametrize("dtype", [float, complex])
-def test_colborder_batch(dtype):
+def test_colborder_batch(dtype, rng):
     n, r, batch = 90, 5, 6
-    mats = [bordered_with_dense_columns(n, 4, 7, r, dtype) for _ in range(batch)]
+    mats = [bordered_with_dense_columns(rng, n, 4, 7, r, dtype) for _ in range(batch)]
     bb = BorderedBandedBatch([sp.csr_matrix(A) for A in mats], list(range(r)), col_border=True)
     assert bb.col_border and bb.kl <= 4 and bb.ku <= 7
     b = rng.standard_normal((batch, n)).astype(dtype)
@@ -83,13 +81,13 @@ def test_colborder_batch(dtype):
 
 
 @pytest.mark.parametrize("dtype", [float, complex])
-def test_colborder_heterogeneous_batch(dtype):
+def test_colborder_heterogeneous_batch(dtype, rng):
     """Modes of one batch with different column borders (none, one dense column, all) and
     different bands: per-mode offsets of X and the common band (B2 review)."""
     n, r = 70, 4
-    mats = [bordered_with_dense_columns(n, 2, 3, r, dtype, dense_cols=0),
-            bordered_with_dense_columns(n, 6, 2, r, dtype, dense_cols=1),
-            bordered_with_dense_columns(n, 3, 8, r, dtype)]
+    mats = [bordered_with_dense_columns(rng, n, 2, 3, r, dtype, dense_cols=0),
+            bordered_with_dense_columns(rng, n, 6, 2, r, dtype, dense_cols=1),
+            bordered_with_dense_columns(rng, n, 3, 8, r, dtype)]
     bb = BorderedBandedBatch([sp.csr_matrix(A) for A in mats], list(range(r)), col_border=True)
     assert bb.kl <= 6 and bb.ku <= 8
     b = rng.standard_normal((3, n)) + (1j * rng.standard_normal((3, n)) if dtype is complex else 0)

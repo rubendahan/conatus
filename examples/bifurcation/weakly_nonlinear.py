@@ -92,3 +92,6 @@ if __name__ == "__main__":
         slope, nf = nusselt_slope(8, 16, Pr)
         print(f"stress-free RB, Pr = {Pr}: dNu/dε = {slope:.10f} (Malkus & Veronis 1958: 2), "
               f"Ra_c = {nf.params['Ra']:.10f}, |λ0| = {nf.checks['|λ_0|']:.1e}")
+        # the script checks its references: Rayleigh (1916) Ra_c = 27 pi^4 / 4, Malkus & Veronis (1958) slope 2
+        assert abs(nf.params["Ra"] - 27 * np.pi ** 4 / 4) < 1e-9 and abs(slope - 2) < 1e-8, (Pr, slope)
+    assert abs(le.amplitude(0.1) ** 2 - 4 * 0.1 / 3) < 1e-13         # Cross & Hohenberg (1993): A^2 = 4r/3

@@ -150,3 +150,15 @@ def test_curvilinear_plan_refused():
     plan = discretize(pb)
     with pytest.raises(UnsupportedError, match="Cartesian Plan only"):
         R.resolution_report(plan, {})
+
+
+def test_constant_on_few_fourier_modes_is_not_judged():
+    """F101 (-10-16), same rule as the run-time tail check: with N = 4 Fourier modes
+    (M = 2 mode numbers) the tail window held the mean, so a constant was "under-resolved,
+    tail 1.0"; it is now "too few modes" (not judged, not resolved)."""
+    c, b = _fourier_coeffs(lambda x: 1.0 + 0 * x, 4)
+    d = R._analyse("u", c, 0, b, R.TAIL_TARGET, R.TAIL_MARGINAL)
+    assert d.verdict == "too few modes" and np.isnan(d.tail)
+    assert "not judged" in d.recommendation()
+    c, b = _fourier_coeffs(lambda x: 1.0 + 0 * x, 16)
+    assert R._analyse("u", c, 0, b, R.TAIL_TARGET, R.TAIL_MARGINAL).verdict == "resolved"

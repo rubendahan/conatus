@@ -32,15 +32,14 @@ import numpy as np
 from ._describe import COMPONENT, read_dims
 from ._h5 import DOC, open_h5, read_json_attr
 from .analysis import FORMAT as ANALYSIS_FORMAT
-from .analysis import AnalysisFile
+from .analysis import AnalysisFile  # noqa: F401 -- importable here, not in __all__ (M5)
 from .checkpoint import FORMAT as CHECKPOINT_FORMAT
-from .checkpoint import CheckpointSeries, latest, read_checkpoint, write_checkpoint
+from .checkpoint import CheckpointSeries, latest, read_checkpoint, write_checkpoint  # noqa: F401 -- importable here, not in __all__ (M5)
 from .xdmf import write_xdmf
 from .._repr import compact_repr
 
-__all__ = ["read", "latest", "AnalysisFile", "CheckpointSeries", "AnalysisData", "CheckpointData",
-           "read_checkpoint", "write_checkpoint", "write_xdmf", "ANALYSIS_FORMAT",
-           "CHECKPOINT_FORMAT", "explain"]
+# Documented names only (M5, 0.2); the others stay importable from this module.
+__all__ = ["read", "latest", "write_xdmf", "explain"]
 
 
 def _xarray():

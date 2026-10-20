@@ -1,4 +1,4 @@
-"""Automatic verification report of an eigenmode / critical point (spec §75–76, §86).
+"""Automatic verification report of an eigenmode / critical point.
 
 Every check is measured and printed with its threshold; the report never says "correct".
 A failed check is a step the user must investigate by hand, so ``manual_steps`` counts them.
@@ -65,16 +65,22 @@ class VerificationReport:
 
 
 def _tail(pevp, x: np.ndarray, k: int = 4) -> float:
-    """max over variables of |last k coefficients| / max |coefficients| (a-posteriori resolution)."""
+    """max over the components of every unknown of |last k coefficients| / max |coefficients|
+    (a-posteriori resolution); NaN when no component has more than ``k`` coefficients.
+
+    Per (variable, component) (audit "assurances"): the columns of a vector unknown
+    hold its components one after the other, so the last k entries of the whole variable were the
+    top coefficients of its LAST component only, and an unresolved first component passed; a
+    pencil with no measurable component returned 0, a PASS on nothing measured."""
     cols = pevp.gm0.cols
-    worst = 0.0
-    for name in {c[0] for c in cols if c[2] != "tau"}:
-        idx = [i for i, c in enumerate(cols) if c[0] == name and c[2] != "tau"]
+    tails = []
+    for key in dict.fromkeys((c[0], c[1]) for c in cols if c[2] != "tau"):
+        idx = [i for i, c in enumerate(cols) if (c[0], c[1]) == key and c[2] != "tau"]
         if len(idx) <= k:
             continue
         a = np.abs(x[idx])
-        worst = max(worst, float(a[-k:].max() / max(a.max(), 1e-300)))
-    return worst
+        tails.append(float(a[-k:].max() / max(a.max(), 1e-300)))
+    return float(np.max(tails)) if tails else float("nan")     # np.max keeps a NaN
 
 
 def verify(pevp, mode, critical=None, *, rel_h: float = 1e-4) -> VerificationReport:
@@ -91,7 +97,8 @@ def verify(pevp, mode, critical=None, *, rel_h: float = 1e-4) -> VerificationRep
                    / ((np.linalg.norm(L, 1) + abs(mode.sigma) * np.linalg.norm(M, 1)) * np.linalg.norm(mode.y)))
         r.checks.append(Check("left residual", yr, RESIDUAL_TOL, "||y^H (L + sigma M)|| backward error"))
     r.checks.append(Check("spectral tail", _tail(pevp, mode.x), TAIL_TOL,
-                          "last 4 Chebyshev coefficients / max (mode resolved in N)"))
+                          "last 4 Chebyshev coefficients / max, per component of each unknown "
+                          "(mode resolved in N; NaN: no component long enough, not measured)"))
     for p in pevp.params:
         if mode.y is None:
             break

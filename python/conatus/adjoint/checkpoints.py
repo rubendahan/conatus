@@ -324,6 +324,18 @@ class Journal:
                               fix="pass the same X0, W and FlowMap as the suspended call, or another "
                                   "journal directory (or delete this one knowingly)", doc=_DOC)
         self.fp = old                          # keeps the digest of W when resumed with W=None
+        # the names come from a file: each must be a generation file of this directory (security
+        # "../x" or an absolute path made the resume read, hard-link and later
+        # delete files elsewhere)
+        names = list(st.get("bars") or []) + list(st.get("work") or [])
+        for v in (st.get("checkpoints") or {}).values():
+            names += list(v or [])
+        bad = [n for n in names if n is not None and not (isinstance(n, str) and _GEN_FILE.match(n))]
+        if bad:
+            raise OptionError(f"journal {self.state_path} names files that are not its own: "
+                              f"{bad[:3]}", why="a journal only references its generation files",
+                              fix="inspect it; remove the journal directory knowingly to restart "
+                                  "the sweep from scratch", doc=_DOC)
         return st
 
     def read_arrays(self, names: list) -> list:

@@ -1,4 +1,4 @@
-"""Watching a native simulation in a monitor: ``sim.watch(...)``.
+"""Watching a native simulation in the Studio: ``sim.watch(...)``.
 
     import conatus as cn
     sim = m.simulate(N=(256, 128), scheme="RK443", dt=2e-3)
@@ -12,7 +12,7 @@
     print(w.explain())             # everything that will be sent, losses included
     sim.run(until=20.0)            # the run is watched; numbers identical to an unwatched run
 
-What a monitor shows is **only what is declared here** (no hidden physics): a view is an unknown
+What the Studio shows is **only what is declared here** (no hidden physics): a view is an unknown
 (``"T"``), a component of a vector unknown (``"u.x"``), or a function of the simulation you write;
 a statistic is a function returning a number, or one of the two declared reductions
 :func:`spectrum` and :func:`profile`, whose formulas :meth:`Watch.explain` prints. Every lossy step
@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import atexit
 import math
+import numbers
 import weakref
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
@@ -36,7 +37,7 @@ from .._deprecation import renames
 from ..errors import InputTypeError, OptionError
 
 _DOC = "docs/site/tutorials/09_studio.md"
-# What a ``set`` command may change on a native run (with bounds declared by the user).
+# What a Studio ``set`` command may change on a native run (with bounds declared by the user).
 SETTABLE = {"dt": "time step"}
 MODES_3D = ("isosurface", "volume", "slices")
 SCALES = ("smoke", "signed", "dye")
@@ -61,7 +62,7 @@ class View:
         return f"cn.view({_source_name(self.source)}, scale={self.scale!r}{extra})"
 
     def explain(self) -> str:
-        """What a monitor shows for this view."""
+        """What the Studio shows for this view."""
         what = (f"the field {self.source}" if isinstance(self.source, str)
                 else f"the grid values returned by {_source_name(self.source)}(sim)")
         how = {"smoke": "sequential colour scale", "signed": "signed colour scale (zero black)",
@@ -82,7 +83,7 @@ def view(source: str | Callable[[Any], Any], *, scale: str = "smoke", label: str
     2D slice of a 3D field at the grid node nearest to y = 0 (declared). ``mode``:
     ``"isosurface"``, ``"volume"`` or ``"slices"`` makes it a 3D view of a 3D field."""
     if scale not in SCALES:
-        raise OptionError(f"view(scale={scale!r}): a monitor scales are {SCALES}",
+        raise OptionError(f"view(scale={scale!r}): the Studio scales are {SCALES}",
                           fix='scale="signed" for a field of both signs, "dye" for a tracer',
                           doc=_DOC)
     if mode is not None and mode not in MODES_3D:
@@ -92,6 +93,15 @@ def view(source: str | Callable[[Any], Any], *, scale: str = "smoke", label: str
     if not (isinstance(source, str) or callable(source)):
         raise InputTypeError(f"view({source!r}): an unknown name, 'u.x', or a function of sim",
                              doc=_DOC)
+    _check_label(label, "view")
+    if at is not None:
+        # {coordinate name: finite position} (audit inputs: at="y=0" was a bare
+        # ValueError of dict(), at={"y": nan} sliced at an undefined node)
+        if not isinstance(at, Mapping) or not all(
+                isinstance(c, str) and isinstance(v, numbers.Real) and not isinstance(v, bool)
+                and math.isfinite(v) for c, v in at.items()):
+            raise InputTypeError(f"view(at={at!r}): a dict {{coordinate: position}} of finite "
+                                 "numbers", fix='at={"y": 0.0}', doc=_DOC)
     return View(source, scale, label, dict(at) if at else None, mode)
 
 
@@ -117,7 +127,7 @@ class Stat:
         return f"Stat({self.kind!r}, {_source_name(self.source)}, axis={self.axis!r}{lab})"
 
     def explain(self) -> str:
-        """What a monitor plots for this statistic."""
+        """What the Studio plots for this statistic."""
         src = (self.source if isinstance(self.source, str)
                else f"{_source_name(self.source)}(sim)")
         if self.kind == "series":
@@ -148,6 +158,8 @@ def spectrum(source: str, axis: str, *, label: str | None = None) -> Stat:
     ``2 pi k / L`` on log-log axes; ``k = 0`` (the mean) is left out of the curve."""
     if not isinstance(source, str):
         raise InputTypeError("spectrum(): the field is a name ('T', 'u.x')", doc=_DOC)
+    _check_axis(axis, "spectrum")
+    _check_label(label, "spectrum")
     return Stat("spectrum", source, axis, label, True)
 
 
@@ -156,7 +168,23 @@ def profile(source: str, along: str, *, label: str | None = None) -> Stat:
     (their true positions, Chebyshev nodes included). On a 1D domain: the field itself."""
     if not isinstance(source, str):
         raise InputTypeError("profile(): the field is a name ('T', 'u.x')", doc=_DOC)
+    _check_axis(along, "profile")
+    _check_label(label, "profile")
     return Stat("profile", source, along, label, False)
+
+
+def _check_axis(axis: Any, where: str) -> None:
+    """A coordinate is named by its name (audit inputs: an index 0 was stored)."""
+    if not isinstance(axis, str):
+        raise InputTypeError(f"{where}(..., {axis!r}): the coordinate is a name ('x', 'z')",
+                             doc=_DOC)
+
+
+def _check_label(label: Any, where: str) -> None:
+    """A label is text or None (audit inputs: label=3 was stored)."""
+    if label is not None and not isinstance(label, str):
+        raise InputTypeError(f"{where}(label={label!r}): a label is text", fix="label='energy'",
+                             doc=_DOC)
 
 
 def series(f: Callable[[Any], float], *, label: str | None = None, logy: bool = False) -> Stat:
@@ -164,7 +192,9 @@ def series(f: Callable[[Any], float], *, label: str | None = None, logy: bool = 
     A plain function in ``stats={...}`` means ``series(f)``."""
     if not callable(f):
         raise InputTypeError("series(f): f is a function of the simulation", doc=_DOC)
-    return Stat("series", f, None, label, bool(logy))
+    _check_label(label, "series")
+    from ..errors import check_flag            # logy="no" was read as True (audit inputs)
+    return Stat("series", f, None, label, check_flag(logy, "logy", "series()"))
 
 
 # ------------------------------------------------------------------------------ the watch
@@ -182,12 +212,16 @@ class Watch:
                  settable: Mapping[str, Any] | None = None) -> None:
         from ..telemetry import Telemetry, default_spool
         from ..telemetry.protocol import RUN_ID_RE
-        if int(poll) < 1:
-            raise OptionError(f"watch(poll={poll}): the callback runs every poll >= 1 steps",
-                              doc=_DOC)
-        if not every_s > 0 or not scalars_every_s > 0:
-            raise OptionError("watch(): every_s and scalars_every_s are positive wall times (s)",
-                              doc=_DOC)
+        # counts and wall times, never truncated or parsed (review of the inputs audit,
+        # int(poll), int(max_px) truncated 10.5 to 10, float(film_mb) parsed text,
+        # every_s="0.5" was a bare TypeError of the comparison)
+        from ..errors import check_count, check_real
+        for nm, v in (("poll", poll), ("max_px", max_px), ("max_px3d", max_px3d)):
+            check_count(v, nm, "watch()", minimum=1 if nm == "poll" else 2)
+        for nm, v in (("every_s", every_s), ("scalars_every_s", scalars_every_s),
+                      ("film_mb", film_mb)):
+            check_real(v, nm, "watch()", positive=True)
+        check_real(controls_every_s, "controls_every_s", "watch()", nonnegative=True)
         self.sim, self.run_id, self.poll = sim, run_id, int(poll)
         self.every, self.scalars_every = float(every_s), float(scalars_every_s)
         comp = sim.compiled
@@ -210,9 +244,6 @@ class Watch:
         self.checkpoint_dir = Path(checkpoint_dir)
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
         self.film_mb = float(film_mb)
-        if int(max_px) < 2 or int(max_px3d) < 2:
-            raise OptionError(f"watch(max_px={max_px}, max_px3d={max_px3d}): at least 2 points "
-                              "per axis", doc=_DOC)
         self.max_px, self.max_px3d = int(max_px), int(max_px3d)
         self.settable = self._parse_settable(settable)
         views, stats = self._declare()
@@ -246,13 +277,13 @@ class Watch:
 
     # ------------------------------------------------------------------ parsing
     def _parse_settable(self, settable: Mapping[str, Any] | None) -> dict[str, tuple[float, float]]:
-        """``settable={"dt": (lo, hi)}``: what a ``set`` command may change, with explicit
+        """``settable={"dt": (lo, hi)}``: what a Studio ``set`` command may change, with explicit
         bounds. Only the time step for now, and only for a scheme whose step can change."""
         out: dict[str, tuple[float, float]] = {}
         for name, b in dict(settable or {}).items():
             if name not in SETTABLE:
                 raise OptionError(f"watch(settable={{{name!r}: ...}}): only {sorted(SETTABLE)} can be "
-                                  "changed by a monitor",
+                                  "changed from the Studio",
                                   why="a parameter of the equations is compiled into the operators; "
                                       "changing it is a new run (fork from a checkpoint)",
                                   fix='settable={"dt": (1e-4, 1e-2)}', doc=_DOC)
@@ -358,7 +389,7 @@ class Watch:
             if isinstance(s, str):
                 raise InputTypeError(
                     f"watch(stats): {name!r} = {s!r} is a name, not a declared quantity",
-                    why="a monitor never computes physics you did not declare",
+                    why="the Studio never computes physics you did not declare",
                     fix=f'stats={{"{name}": lambda sim: ...}} (a number), or cn.spectrum("{s}", '
                         f'axis=...) / cn.profile("{s}", along=...)', doc=_DOC)
             if callable(s) and not isinstance(s, Stat):
@@ -563,11 +594,11 @@ class Watch:
                              f"than {s.axis}, at the grid nodes of {s.axis}")
         lines.append(f"  film: up to {self.film_mb:g} MiB, thinned geometrically (every 4^level-th "
                      "frame; the level goes up each time half of the remaining budget is used)")
-        lines.append(f"  monitor commands, read at most every {self.controls_every:g} s: pause/resume "
+        lines.append(f"  Studio commands, read at most every {self.controls_every:g} s: pause/resume "
                      f"(the run waits), checkpoint/fork (to {self.checkpoint_dir}), stop (raises "
                      "StopRun out of sim.run)")
         for n, (lo, hi) in self.settable.items():
-            lines.append(f"  settable by a monitor: {n} in [{lo:g}, {hi:g}] (command 'set', "
+            lines.append(f"  settable from the Studio: {n} in [{lo:g}, {hi:g}] (command 'set', "
                          "applied between two steps, recorded as an event param_set; with "
                          "run(until=T) the time left must stay a whole number of steps, else "
                          "refused with the nearest valid value; with run(steps=n) n is kept)")
@@ -579,7 +610,7 @@ class Watch:
 
     # ------------------------------------------------------------------ running
     def callback(self, solver: Any) -> None:
-        """The callback the simulation calls every ``poll`` steps (telemetry + monitor commands)."""
+        """The callback the simulation calls every ``poll`` steps (telemetry + Studio commands)."""
         self._cb(solver)
 
     def close(self) -> None:

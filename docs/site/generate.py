@@ -46,10 +46,10 @@ def gallery(site: Path, root: Path) -> None:
         head, _, body = doc.partition("\n\n")
         title = " ".join(head.split())
         row = rows.get(rel)
-        test = root / "tests" / "gallery" / f"test_{script.stem}.py"
+        # the script asserts its reference itself (its last lines); the regression tests of the
+        # gallery are not part of the published tree, so the page does not name them
         lines = [f"# {title.rstrip('.')}", "",
-                 f"*Family:* `{script.parent.name}` · *Script:* `examples/{rel}`"
-                 + (f" · *Regression test:* `tests/gallery/{test.name}`" if test.exists() else ""), ""]
+                 f"*Family:* `{script.parent.name}` · *Script:* `examples/{rel}`", ""]
         if row:
             lines += ["```{list-table}", ":widths: 20 80", "",
                       "* - Obtained", f"  - {row[2]}", "* - Reference", f"  - {row[3]}", "```", ""]
@@ -63,8 +63,35 @@ def gallery(site: Path, root: Path) -> None:
     _write(out / "table.md", "\n".join(table) + "\n")
 
 
+def _user_page_objects(page: Path) -> set[int]:
+    """ids of the objects the user-layer page (api/user.md) documents with autosummary.
+
+    The expert layer re-exports some of them (the contour result classes are ``cn.contour.*`` and
+    ``conatus.expert.*``): documented twice, Sphinx reports a duplicate object description (strict
+    build). Their expert pages are written without an index entry; the user page stays canonical."""
+    ids, module, in_table = set(), "conatus", False
+    for line in page.read_text().splitlines() if page.exists() else []:
+        s = line.strip()
+        if s.startswith(".. currentmodule::"):
+            module = s.split("::", 1)[1].strip()
+        elif s.startswith(".. autosummary::"):
+            in_table = True
+        elif s.startswith("```"):
+            in_table = False
+        elif in_table and s and not s.startswith(":") and re.fullmatch(r"[\w.]+", s):
+            obj = importlib.import_module(module)
+            try:
+                for part in s.split("."):
+                    obj = getattr(obj, part)
+            except AttributeError:
+                continue                        # a name the page lists but this build lacks
+            ids.add(id(obj))
+    return ids
+
+
 def api_tables(site: Path, root: Path) -> None:
     api = importlib.import_module("conatus.expert")
+    on_user_page = _user_page_objects(site / "api" / "user.md")
     seen = set()
     lines = ["# Expert layer by module", "",
              "Every public object re-exported by `conatus.expert`, grouped by the module that defines",
@@ -78,9 +105,16 @@ def api_tables(site: Path, root: Path) -> None:
             continue
         seen.update(names)
         summary = ((m.__doc__ or "").strip().split("\n\n")[0]).replace("\n", " ")
+        own = [n for n in names if id(getattr(api, n)) not in on_user_page]
+        shared = [n for n in names if n not in own]
         lines += [f"## `conatus.{mod}`", "", summary, "", "```{eval-rst}",
-                  ".. currentmodule:: conatus.expert", "", ".. autosummary::", "   :toctree: _stubs",
-                  "", *[f"   {n}" for n in names], "```", ""]
+                  ".. currentmodule:: conatus.expert", ""]
+        if own:
+            lines += [".. autosummary::", "   :toctree: _stubs", "", *[f"   {n}" for n in own], ""]
+        if shared:                              # indexed on the user page (_user_page_objects)
+            lines += [".. autosummary::", "   :toctree: _stubs", "   :template: autosummary/noindex.rst",
+                      "", *[f"   {n}" for n in shared], ""]
+        lines += ["```", ""]
     _write(site / "api" / "_generated" / "reference.md", "\n".join(lines))
 
 

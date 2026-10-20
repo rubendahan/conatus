@@ -15,11 +15,11 @@ discretisation, then lets you simulate the model or take apart its dynamics.
 ![Platform](https://img.shields.io/badge/Linux-x86--64-FCC624?logo=linux&logoColor=black)
 ![CUDA](https://img.shields.io/badge/CUDA%2012-beta-76B900?logo=nvidia&logoColor=white)
 ![License](https://img.shields.io/badge/license-BSD--3-success)
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Version](https://img.shields.io/badge/version-0.1.1-blue)
 
 <img src="https://raw.githubusercontent.com/rubendahan/conatus/main/web/public/gallery/kelvin-helmholtz-dye.webp" alt="Kelvin-Helmholtz billows in a shear layer, dye field computed with Conatus" width="85%"/>
 
-*Kelvin-Helmholtz billows rolling up in a shear layer, with a passive dye (`examples/shear/kelvin_helmholtz.py`).*
+*Kelvin-Helmholtz billows rolling up in a shear layer, with a passive dye, computed with Conatus (`web/gallery/kelvin_helmholtz.py`; the linear stability of the same layer: `examples/shear/kelvin_helmholtz.py`).*
 
 </div>
 
@@ -100,21 +100,40 @@ plates.
 ## 📦 Install
 
 ```bash
-pip install conatus          # CPU wheel, compiled core included, no compiler needed
+pip install conatus==0.1.1   # CPU wheel, compiled core included, no compiler needed
 python -m conatus doctor     # what this machine can run, and what is missing
 ```
 
 **GPU (beta).** For an NVIDIA A100 or L40S class card with a driver that supports CUDA 12.9.
-The CUDA wheel is not on PyPI: grab the one matching your Python from the
-[v0.1.0 release](https://github.com/rubendahan/conatus/releases/tag/v0.1.0) and install it with CuPy:
+The CUDA wheel is not on PyPI: it is attached to the
+[v0.1.1 release](https://github.com/rubendahan/conatus/releases/tag/v0.1.1), one per Python; for CPython 3.12,
+with CuPy:
 
 ```bash
-pip install "$(echo ./conatus-0.1.0+cu12-cp312-*.whl)[gpu]"   # the file you downloaded (CPython 3.12 here)
+pip install "conatus[gpu] @ https://github.com/rubendahan/conatus/releases/download/v0.1.1/conatus-0.1.1+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
 python -m conatus doctor                                      # says whether the CUDA core sees a GPU
 ```
 
 **From source.** `pip install .` with LAPACK and BLAS available. Details on the
 [install page](https://rubendahan.github.io/conatus/install/).
+
+## 🎬 Studio and AI agents (experimental)
+
+Watch a run live in your browser: declare what to show with `sim.watch("my_run", film={"T": cn.view("T")})`,
+then start the local Studio, which reads the same spool directory:
+
+```bash
+pip install "conatus[studio]"
+python -m conatus.studio.hub serve --local --port 8765   # open http://localhost:8765/login
+```
+
+The one-session login token goes to a private file whose path is printed. On a cluster, run it
+in a batch job and open an ssh tunnel (see the
+[Studio guide](https://rubendahan.github.io/conatus/docs/guide/studio.html)).
+
+For AI coding agents, `python -m conatus agent` answers in JSON (versions, devices, the names of
+the API), `python -m conatus agent check run.py` dry-runs a script, and
+[`AGENTS.md`](https://github.com/rubendahan/conatus/blob/main/AGENTS.md) is the page to give them.
 
 ## 📚 Learn more
 
@@ -128,7 +147,7 @@ python -m conatus doctor                                      # says whether the
 - **CPU speed.** The CPU path is a NumPy reference implementation. It is great for eigenvalue
   problems, small grids and setting a run up, but slower than established CPU codes on large
   grids. The speed comes from the GPU path, which is still in beta.
-- **One GPU.** 0.1.0 runs a simulation on one CPU process or one GPU. No multi-GPU or MPI yet.
+- **One GPU.** 0.1.1 runs a simulation on one CPU process or one GPU. No multi-GPU or MPI yet.
 - **Young API.** The 0.1 interface can still change. Any change comes with a deprecation warning
   and a line in the [changelog](https://github.com/rubendahan/conatus/blob/main/CHANGELOG.md).
 

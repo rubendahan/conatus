@@ -10,7 +10,8 @@ import numpy as np
 from ..ir import (EVP, IVP, CartesianCoordinates, Chebyshev, ComplexFourier, Domain, Field, Parameter,
                   RealFourier, ShellBasis, SphereBasis, SphericalCoordinates, VectorField, cross, diff, div,
                   dot, dt, grad, integ, interp, lap, lift, outer, unit_vector)
-from .._deprecation import renames
+from .._deprecation import renames as _renames   # not a public name of this module (V5)
+from .._deprecation import former_names as _former_names
 from ._ready import Ready, ready
 
 __all__ = ["rayleigh_benard", "rayleigh_benard_evp", "rotating_shell_convection",
@@ -122,7 +123,7 @@ def _christensen_initial_theta(ri: float, ro: float) -> Callable:
     return theta0
 
 
-@renames("conatus.problems.convection:rotating_shell_convection")
+@_renames("conatus.problems.convection:rotating_shell_convection")
 def rotating_shell_convection(*, Nphi: int, Ntheta: int, Nr: int, eta: float,
                               Ra: float, E: float, Pr: float, dealias: float) -> Ready:
     """Rotating Boussinesq convection in a spherical shell (Christensen et al. 2001 geometry and
@@ -191,7 +192,7 @@ def rotating_shell_convection(*, Nphi: int, Ntheta: int, Nr: int, eta: float,
                  extras={"initial_theta": _christensen_initial_theta(ri, ro), "ri": ri, "ro": ro})
 
 
-@renames("conatus.problems.convection:rotating_shell_convection_evp")
+@_renames("conatus.problems.convection:rotating_shell_convection_evp")
 def rotating_shell_convection_evp(*, Nr: int, Lmax: int, m: int, eta: float,
                                   Ra: float, E: float, Pr: float) -> Ready:
     """Linear onset of rotating shell convection: normal modes exp(i m phi + s t) about the
@@ -246,3 +247,7 @@ def rotating_shell_convection_evp(*, Nr: int, Lmax: int, m: int, eta: float,
                  reference="0.35, E = 1e-3, Pr = 1: m_c = 4, Ra_c = 55.904299, omega_c = "
                            "-0.0230918 Omega (Skene & Tobias 2024; Barik et al. 2023).",
                  extras={"m": m, "ri": ri, "ro": ro})
+
+
+# 0.1 showed the decorator as `renames`: it still resolves, with a DeprecationWarning (L8).
+__getattr__ = _former_names(__name__, {"renames": ("conatus._deprecation.renames", _renames)})

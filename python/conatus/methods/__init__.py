@@ -1,4 +1,4 @@
-"""``plan.methods()``: a "Methods" paragraph generated from the plan (spec §116).
+"""``plan.methods()``: a "Methods" paragraph generated from the plan.
 
 The text is built only from what the objects hold (bases, sizes, dealias, tau/lift layout,
 symmetry subspace, NCC reports, scheme, dt, startup, backend, dtype, commit); nothing is
@@ -317,6 +317,12 @@ def methods(plan: Plan, solver: Any = None, *, eigen_solver: str | None = None,
                     cites.append("ascher1997")
             elif st == "lower_order":
                 s.append("The first step uses CNAB1; the global order remains two.")
+        from ..timestep.integrator import _SCHEME_INFO
+        cap = getattr(solver, "_bc_order_cap", lambda: 99)()
+        if cap < _SCHEME_INFO.get(sch, (0, 0, 0, 99))[3]:   # audit invariance: the boundary data
+            mode = solver._bc_resolve()[0]
+            s.append(f"The time-dependent boundary data are imposed with the '{mode}' convention, "
+                     f"which limits the global order to {['', 'one', 'two', 'three'][cap]}.")
         system = getattr(solver, "system", None)
         dtype = np.dtype(getattr(system, "dtype", np.float64))
         dev = "on a GPU (CUDA)" if getattr(solver, "backend", "cpu") == "cuda" else "on CPU"

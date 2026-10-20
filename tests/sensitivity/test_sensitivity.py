@@ -207,5 +207,6 @@ def test_api_exports_both_j3_toolkits_without_clash():
     import conatus.sensitivity as sens
     for mod in (sens, dd):
         for n in mod.__all__:
-            assert getattr(api, n) is getattr(mod, n), n
             assert n not in api.SHADOWED, n
+            if n in api.__all__:                  # the documented ones (M5)
+                assert getattr(api, n) is getattr(mod, n), n

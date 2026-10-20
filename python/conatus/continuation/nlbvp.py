@@ -10,11 +10,12 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 
 import numpy as np
+import scipy.sparse as sp
 
 from .._deprecation import renames
 from ..errors import InputTypeError, OptionError, UnsupportedError
 from ..solvers.nlbvp import NewtonSolver, unpack_group
-from .core import Branch, ContinuationSettings, PseudoArclength
+from .core import Branch, ContinuationSettings, PseudoArclength, fd_step
 
 __all__ = ["NLBVPContinuation"]
 
@@ -58,6 +59,7 @@ class NLBVPContinuation:
         self._eigen_user = eigen
         self._template: dict[str, np.ndarray] | None = None
         self._plan0 = None
+        self._rows = None                     # row scales (audit invariance): set by run()
         self._group = None
         self._cache = None
         self.core = PseudoArclength(self._G, self._J, settings, scale=self._scale,
@@ -101,16 +103,41 @@ class NLBVPContinuation:
         (_, A, b, _), = systems
         return A, b
 
+    def _row_scale(self, A) -> np.ndarray:
+        """1 / (largest coefficient of each row of A at the start point), fixed for the run (audit
+        invariance): G, J and the residual are those of D (A x - b) with this
+        constant diagonal D, the same branch and the same Newton iterates in exact arithmetic,
+        but a relative residual that no longer depends on the scale of an equation (Bratu's
+        equation written times 1e-6 was measured against its O(1) boundary rows: no fold)."""
+        if self._rows is None:
+            r = np.asarray(abs(A).max(axis=1).todense()).ravel() if sp.issparse(A) \
+                else np.abs(A).max(axis=1)
+            self._rows = 1.0 / np.where(r > 0, r, 1.0)
+        return self._rows
+
     def _G(self, x: np.ndarray, p: float) -> np.ndarray:
         A, b = self._system(x, p)
-        return A @ x - b
+        return self._row_scale(A) * (A @ x - b)
 
     def _J(self, x: np.ndarray, p: float):
-        return self._system(x, p)[0]
+        A = self._system(x, p)[0]
+        d = self._row_scale(A)
+        return sp.diags(d) @ A if sp.issparse(A) else d[:, None] * A
 
     def _scale(self, x: np.ndarray, p: float) -> float:
+        """Residual scale max(|A x|, |b|, |p G_p|) (∞-norms; G_p by the declared central
+        difference). At the fold of a uniform state A x = 0 and b = 0 as assembled vectors (the
+        terms cancel), and the former scale max(|A x|, |b|) vanished: the corrector could not
+        converge there (finding 96). |p G_p| is the size of the
+        parameter's own terms, which do not cancel; a norm ‖A‖ |x| would instead be dominated by
+        the high derivative rows of a spectral matrix and loosen every other point."""
         A, b = self._system(x, p)
-        return max(float(np.max(np.abs(A @ x))), float(np.max(np.abs(b))), 1e-300)
+        d = self._row_scale(A)
+        base = max(float(np.max(np.abs(d * (A @ x)))), float(np.max(np.abs(d * b))))
+        h = fd_step(self.settings.dp_fd, p)
+        gp = (self._G(x, p + h) - self._G(x, p - h)) / (2.0 * h)
+        self._system(x, p)                    # leave the cache on (x, p) for the corrector
+        return max(base, abs(p) * float(np.max(np.abs(gp))), 1e-300)
 
     def _eig(self, x: np.ndarray, p: float) -> np.ndarray:
         """Growth rates of the branch point from the user callback (coefficients, parameter)."""
@@ -121,6 +148,8 @@ class NLBVPContinuation:
             p_bounds: tuple[float, float] | None = None) -> Branch:
         """Continue from the converged coefficients ``start`` at p0 (see PseudoArclength.run)."""
         x0 = self.vector_of(start, p0)
+        self._rows = None                     # row scales of this run: taken at (x0, p0)
+        self._row_scale(self._system(x0, p0)[0])
         return self.core.run(x0, p0, direction, p_bounds)
 
     def explain(self) -> str:
@@ -129,7 +158,8 @@ class NLBVPContinuation:
             f"NLBVP continuation of '{self.solver.problem.name}' in parameter '{self.param}'",
             "  residual: Newton system F_h(x; p) = A(x; p) x - b(x; p) (IR Fréchet Jacobian)",
             "  G_p: central finite difference (declared step), norm: unweighted coefficients",
-            "  relative residual: max|G| / max(|A x|, |b|)",
+            "  relative residual: max|G| / max(|A x|, |b|, |p G_p|) (∞-norms), each row divided by"
+            " its largest coefficient at the start point (no equation's scale enters)",
             "  stability: " + ("user growth-rate callback (coeffs, p)" if self._eigen_user
                                is not None else "none"),
             "  rank report of A skipped along the branch (A is singular at folds); the start point"

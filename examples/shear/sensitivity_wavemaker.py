@@ -7,8 +7,8 @@ import os
 
 import numpy as np
 
-from conatus.expert import (Y, base_flow_sensitivity, parallel_shear_flow,
-                            steady_forcing_sensitivity, structural_sensitivity)
+from conatus.expert import Y, base_flow_sensitivity, parallel_shear_flow, structural_sensitivity
+from conatus.sensitivity import steady_forcing_sensitivity
 
 RE = 1e4
 
@@ -38,8 +38,9 @@ try:
     ax[0].plot(st.wavemaker(y), y)
     ax[0].set_title("wavemaker S(y)")
     G = bfs.gradient(y)
-    ax[1].plot(G.real, y, label="Re")
-    ax[1].plot(G.imag, y, label="Im (growth)")
+    # sigma = -i omega (target -1j * c): Re sigma is the growth rate, Im sigma minus the frequency
+    ax[1].plot(G.real, y, label="Re (growth)")
+    ax[1].plot(G.imag, y, label="Im (frequency)")
     ax[1].set_title(r"$\delta\sigma/\delta U$")
     ax[1].legend()
     H = fs.gradient(y)

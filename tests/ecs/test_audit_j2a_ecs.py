@@ -1,6 +1,6 @@
 """Audit–R7: translation mode, frame speed, truncation and thresholds in ecs/.
 
-Written before the fixes; each failed on the code it guards (docs/AUDIT_J2a.md §3).
+Written before the fixes; each failed on the code it guards.
 """
 import inspect
 import warnings

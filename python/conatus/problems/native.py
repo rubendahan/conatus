@@ -27,7 +27,8 @@ import math
 
 import numpy as np
 
-from .._deprecation import renames
+from .._deprecation import renames as _renames   # not a public name of this module (V5)
+from .._deprecation import former_names as _former_names
 
 from ..model import Box, Linearization, Model, Pipe, Shell, TaylorCouette, periodic, walls
 from ..model.conditions import free_slip
@@ -236,7 +237,7 @@ def _shell(eta: float, Ra: float, E: float, Pr: float) -> Model:
     return m
 
 
-@renames("conatus.problems.native:rotating_shell_convection")
+@_renames("conatus.problems.native:rotating_shell_convection")
 def rotating_shell_convection(*, eta: float, Ra: float, E: float, Pr: float) -> Model:
     """Rotating Boussinesq convection in a spherical shell (Christensen et al. 2001 geometry and
     units, non-magnetic): temperature perturbation T about the conduction profile
@@ -257,7 +258,7 @@ def rotating_shell_convection(*, eta: float, Ra: float, E: float, Pr: float) -> 
     return _shell(eta, Ra, E, Pr)
 
 
-@renames("conatus.problems.native:rotating_shell_convection_evp")
+@_renames("conatus.problems.native:rotating_shell_convection_evp")
 def rotating_shell_convection_evp(*, eta: float, Ra: float, E: float,
                                   Pr: float) -> Linearization:
     """Onset of rotating shell convection: linearization of :func:`rotating_shell_convection`
@@ -298,7 +299,7 @@ def rayleigh_benard_evp(*, k: float, Ra: float, Pr: float) -> Linearization:
     return m.linearize(about={"u": 0, "T": lambda z: -z})
 
 
-@renames("conatus.problems.native:pipe_evp")
+@_renames("conatus.problems.native:pipe_evp")
 def pipe_evp(*, k: float, Re: float) -> Linearization:
     """Linear stability of Hagen–Poiseuille flow U0 = (1 - r^2) e_z: linearization of
     :func:`pipe` (length 2 pi/k, pressure gradient 4/Re, so that the laminar flow has
@@ -320,3 +321,7 @@ def taylor_couette_evp(*, eta: float, mu: float, k: float, Re: float) -> Lineari
     does not: both converge to the same spectrum). Validation: eta = 0.5, mu = 0: Re_c = 68.19 at
     k_c = 3.16 (Recktenwald, Luecke & Mueller 1993)."""
     return taylor_couette(eta=eta, mu=mu, length=2 * np.pi / k, Re=Re).linearize(about={"u": 0})
+
+
+# 0.1 showed the decorator as `renames`: it still resolves, with a DeprecationWarning (L8).
+__getattr__ = _former_names(__name__, {"renames": ("conatus._deprecation.renames", _renames)})

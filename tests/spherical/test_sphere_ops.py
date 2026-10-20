@@ -5,6 +5,7 @@ import pytest
 from rounding_bounds import product_identity_bound
 
 import conatus.expert as C
+from conatus.ir import Laplacian
 from conatus.discretize.compiler import DiscretizationError
 from conatus.discretize.sphere_eval import SphereEvaluator, SphereSpace
 from conatus.discretize.sphere_ops import BallOps, SphereHarmonics, regularity_Q
@@ -149,7 +150,7 @@ def test_3d_evaluator_closed_forms(kind):
     tol = 1e-12 if kind == "shell" else 3e-12
     for e, ref, rank in checks:
         got = S.backward(ev.evaluate(e, co, {}), D, rank, True)
-        t = tol * (100 if isinstance(e, C.Laplacian) else 1)
+        t = tol * (100 if isinstance(e, Laplacian) else 1)
         assert np.abs(got - ref).max() < t * max(1, np.abs(ref).max()), str(e)
 
 

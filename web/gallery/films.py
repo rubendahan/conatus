@@ -49,10 +49,12 @@ import brand_cmaps as C  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 PUBLIC = ROOT / "web" / "public" / "films"
 SLUGS = {"kh": "kelvin-helmholtz-film", "rb": "rayleigh-benard-film", "sh": "swift-hohenberg-film",
-         "rh": "rossby-haurwitz-film"}
+         "rh": "rossby-haurwitz-film", "rt": "rayleigh-taylor-film", "tu": "turbulence-2d-film",
+         "td": "turbulence-dye-film"}
 # Films published on the site, in display order. Not shown, cases kept runnable: Rayleigh-Benard at
-# Ra = 1e6 (too soft at this resolution), Swift-Hohenberg (too little visible change at site size).
-PUBLISHED = ("kelvin-helmholtz-film", "rossby-haurwitz-film")
+# Ra = 1e6 (too soft at this resolution), Swift-Hohenberg (too little visible change at site size),
+# Rossby-Haurwitz and the 2D turbulence films (not chosen).
+PUBLISHED = ("kelvin-helmholtz-film", "rayleigh-taylor-film")
 MAX_VIDEO_BYTES = 1_500_000          # per file (WebM and MP4), checked
 FPS = 24
 FADE_S = 0.5                         # loop cross-fade (last frame -> first frame)
@@ -77,6 +79,17 @@ def loop_frames(frames: list[np.ndarray]) -> list[np.ndarray]:
     fade = [np.clip(np.rint((1 - w) * a + w * b), 0, 255).astype(np.uint8)
             for w in (np.arange(1, n + 1) / (n + 1))]
     return frames + fade
+
+
+def fade_black(frames: list[np.ndarray], n: int) -> list[np.ndarray]:
+    """Fade in from black over the first n frames and out to black over the last n: an honest
+    restart for a film whose end state differs from its start (no cross-fade between them)."""
+    w = np.ones(len(frames))
+    ramp = np.arange(1, n + 1) / (n + 1)
+    w[:n], w[-n:] = ramp, ramp[::-1]
+    lab = C._rgb(C.LAB)
+    return [np.clip(np.rint(lab + wi * (f.astype(float) - lab)), 0, 255).astype(np.uint8)
+            for f, wi in zip(frames, w, strict=True)]
 
 
 def encode(frames: list[np.ndarray], slug: str, out: Path, poster: np.ndarray) -> dict:
@@ -176,7 +189,7 @@ def kelvin_helmholtz(a, out: Path) -> None:
         "caption": f"Passive dye between two shear layers rolling up, Re = {a.kh_Re:g}, t = "
                    f"{times[0]:g} to {times[-1]:.2f}. {a.kh_Nx} × {a.kh_Nz} Fourier modes, RK443, "
                    f"dt = {a.kh_dt:g}, CPU.",
-        "script": "web/gallery/films.py", "example_script": "examples/shear/kelvin_helmholtz.py",
+        "script": "web/gallery/films.py", "example_script": "web/gallery/kelvin_helmholtz.py",
         "domain": "shear", "colormap": "smoke",
         "parameters": {"Lx": a.kh_Lx, "Lz": Lz, "delta": a.kh_delta, "Re": a.kh_Re, "Sc": a.kh_Sc,
                        "n_mode": a.kh_n_mode, "alpha_delta": kx * a.kh_delta, "seed": 34},
@@ -430,9 +443,165 @@ def rossby_haurwitz(a, out: Path) -> None:
              f"growing small-scale ripples differ)")
 
 
+# ---- Rayleigh-Taylor: heavy fluid over light ------------------------------------------------------------
+def rayleigh_taylor(a, out: Path) -> None:
+    """Heavy (cold, T = -1/2) fluid over light (T = +1/2) across a thin tanh interface with a seeded
+    multimode ripple, in the Boussinesq equations and walls of web/gallery/rayleigh_benard.py
+    (thermal units, walls held at the far-field values). The film starts when the fastest
+    plume reaches 5 % of the free-fall speed and spans --rt-span free-fall times."""
+    import rayleigh_benard as RB
+    from conatus.expert import IVPSolver
+
+    plan, T = RB.rayleigh_benard(a.rt_Nx, a.rt_Nz, a.rt_Ra, 1.0, a.rt_Lx, 1.5)
+    s = IVPSolver(plan, "RK443", a.rt_dt, backend="cpu", f_backend="fused")
+    rng = np.random.default_rng(34)
+    modes = [(2 * np.pi * j / a.rt_Lx, rng.uniform(0, 2 * np.pi), rng.normal()) for j in range(6, 41)]
+
+    def T_init(X, Z):             # interface z = eta(x), a sum of 35 seeded modes
+        eta = a.rt_amp * sum(c * np.cos(k * X + ph) for k, ph, c in modes) / np.sqrt(len(modes))
+        return -0.5 * np.tanh((Z - eta) / a.rt_delta)
+    s.set_state({T: T_init})
+    print(s.explain(), flush=True)
+    Zg = plan._as_grid(T, lambda X, Z: Z + 0 * X)[0]
+    order = np.argsort(Zg)
+    zg = Zg[order]
+    xg = np.arange(a.rt_Nx) * a.rt_Lx / a.rt_Nx
+    uff = np.sqrt(a.rt_Ra)                                  # free-fall speed (thermal units, Pr = 1)
+    t0 = time.perf_counter()
+    while True:                                             # linear phase: not filmed
+        s.run(50)
+        ug = s.grid("u")
+        check_finite(ug, t=s.t)
+        if np.abs(ug).max() > 0.05 * uff:
+            break
+        if s.t > 0.05:
+            raise RuntimeError("no Rayleigh-Taylor growth by t = 0.05")
+    t_start = float(s.t)
+    every = max(1, int(round(a.rt_span / uff / a.frames / a.rt_dt)))
+    fields, times, umax = [], [], 0.0
+    for _ in range(a.frames):
+        Tg = s.grid("T")
+        check_finite(Tg, t=s.t)
+        fields.append(Tg[:, order].copy())
+        times.append(float(s.t))
+        s.run(every)
+        umax = max(umax, float(np.abs(s.grid("u")).max()))
+    wall = time.perf_counter() - t0
+    W, H = a.width, int(round(a.width / a.rt_Lx))
+    frames = []
+    for g in fields:
+        px = C.resample(g.T, xg, zg, W, H, periodic_x=a.rt_Lx, y_range=(-0.5, 0.5))
+        frames.append(C.field_image(px, "smoke", grain_sigma=0, vmin=-0.5, vmax=0.5)[0])
+    poster = frames[len(frames) // 2]
+    nf = int(round(0.3 * FPS))
+    finish(SLUGS["rt"], out, fade_black(frames, nf), poster, {
+        "title": "Rayleigh–Taylor instability",
+        "alt": "Dark heavy fluid falls into pale light fluid in mushroom-shaped fingers that roll up and "
+               "mix, while pale plumes rise.",
+        "caption": f"Heavy fluid falling into light fluid, Ra {a.rt_Ra:.0e}".replace("e+0", "e")
+                   + ", computed with Conatus.",
+        "details": f"Boussinesq, Pr = 1, from a rippled interface; {(times[-1] - times[0]) * uff:.1f} "
+                   f"free-fall times. {a.rt_Nx} × {a.rt_Nz} Fourier × Chebyshev, RK443, dt = "
+                   f"{a.rt_dt:g}, CPU.",
+        "script": "web/gallery/films.py",
+        "example_script": "docs/site/tutorials/code/t02b_rayleigh_benard_gpu.py",
+        "domain": "convection", "colormap": "smoke",
+        "parameters": {"Ra": a.rt_Ra, "Pr": 1.0, "Lx": a.rt_Lx, "delta": a.rt_delta, "amp": a.rt_amp,
+                       "seed": 34},
+        "numerics": {"Nx": a.rt_Nx, "Nz": a.rt_Nz, "dealias": 1.5, "scheme": "RK443", "dt": a.rt_dt,
+                     "backend": "cpu", "steps": s.iteration, "wall_s": wall,
+                     "cfl_max": umax * a.rt_dt / (a.rt_Lx / a.rt_Nx)},
+        "times": [t_start, times[-1], every * a.rt_dt]},
+        loop=f"fade from black over the first {nf} frames and to black over the last {nf} (the "
+             "mixed end state is not the start state)")
+
+
+# ---- 2D turbulence: vorticity, and a dye released in it -----------------------------------------------------
+def turbulence(a, out: Path) -> None:
+    """Decaying 2D Navier-Stokes turbulence in a doubly periodic 2:1 box (the streamfunction form of
+    web/gallery/kelvin_helmholtz.py, no base flow): random vorticity peaked at |k| = --tu-k0 with
+    r.m.s. 1, run to --tu-t0 so that coherent vortices form, then filmed to --tu-t1 while they
+    merge. At --tu-t0 a passive dye (Schmidt 1) is released in horizontal bands: the second film."""
+    import kelvin_helmholtz as KH
+    from conatus.expert import IVPSolver
+
+    Lx, Lz, Nx, Nz = 4.0, 2.0, a.tu_Nx, a.tu_Nx // 2
+    plan, psi, c = KH.build(Nx, Nz, Lx, 0.0, a.tu_nu, a.tu_nu, 1.5)
+    rng = np.random.default_rng(34)
+    kx = 2 * np.pi * np.fft.fftfreq(Nx, Lx / Nx)[:, None]
+    kz = 2 * np.pi * np.fft.fftfreq(Nz, Lz / Nz)[None, :]
+    k2 = kx ** 2 + kz ** 2
+    kk = np.sqrt(k2)
+    spec = kk * np.exp(-(kk / a.tu_k0) ** 2)                 # vorticity amplitude, peak near k0
+    q = np.real(np.fft.ifft2(spec * np.exp(2j * np.pi * rng.random((Nx, Nz)))))
+    q = (q - q.mean()) / q.std()                             # r.m.s. vorticity 1
+    Q = np.fft.fft2(q)
+    psi_g = np.real(np.fft.ifft2(np.where(k2 > 0, -Q / np.where(k2 > 0, k2, 1), 0)))
+    u0 = np.real(np.fft.ifft2(1j * kz * np.fft.fft2(psi_g)))
+    w0 = np.real(np.fft.ifft2(-1j * kx * np.fft.fft2(psi_g)))
+    dx = Lx / Nx
+    dt_ = a.tu_cfl * dx / float(np.sqrt(u0 ** 2 + w0 ** 2).max())   # declared: CFL of the initial field
+    s = IVPSolver(plan, "RK443", dt_, backend="cpu", f_backend="fused")
+    s.set_state({psi: lambda X, Z: psi_g})
+    print(s.explain(), flush=True)
+    print(f"dt = {dt_:.4g} (CFL {a.tu_cfl:g} of the initial max |u|)", flush=True)
+    t0 = time.perf_counter()
+    s.run(int(round(a.tu_t0 / dt_)))
+    P = s.grid("psi")
+    check_finite(P, t=s.t)
+
+    def dye(X, Z):                                           # four pale bands, released now
+        return 0.5 * (1 + np.tanh(3 * np.sin(4 * np.pi * Z / Lz))) + 0 * X
+    s.set_state({psi: lambda X, Z: P, c: dye}, t=s.t)                     # same flow; RK443 has no history
+    every = max(1, int(round((a.tu_t1 - a.tu_t0) / a.frames / dt_)))
+    om, cs_, times, umax = [], [], [], 0.0
+    for _ in range(a.frames):
+        P = s.grid("psi")
+        check_finite(P, t=s.t)
+        o, uu, ww = KH.spectral_fields(P, Lx, Lz)
+        om.append(-o)                                        # spectral_fields returns -lap(psi)
+        cs_.append(s.grid("c").copy())
+        times.append(float(s.t))
+        umax = max(umax, float(np.sqrt(uu ** 2 + ww ** 2).max()))
+        s.run(every)
+    wall = time.perf_counter() - t0
+    xg = np.arange(Nx) * Lx / Nx
+    zg = -1 + np.arange(Nz) * Lz / Nz
+    W, H = a.width, a.width // 2
+    A = float(np.percentile(np.abs(np.stack(om[:10])), 99.5))
+    fv, fd = [], []
+    for o, cg in zip(om, cs_, strict=True):
+        px = C.resample(o.T, xg, zg, W, H, periodic_x=Lx, periodic_y=Lz, y_range=(-1, 1))
+        fv.append(C.field_image(px, "signed", grain_sigma=0, vmax=A)[0])
+        pc = C.resample(cg.T, xg, zg, W, H, periodic_x=Lx, periodic_y=Lz, y_range=(-1, 1))
+        rgb, _ = C.field_image(pc, "smoke", grain_sigma=0, vmin=0.0, vmax=1.0)
+        fd.append(C.overlay_line(rgb, C.contour_mask(pc, 0.5, 1.2), alpha=0.85))
+    common = {"script": "web/gallery/films.py", "example_script": "examples/shear/kelvin_helmholtz.py",
+              "domain": "turbulence",
+              "parameters": {"Lx": Lx, "Lz": Lz, "nu": a.tu_nu, "k0": a.tu_k0, "seed": 34,
+                             "t0": a.tu_t0, "t1": a.tu_t1},
+              "numerics": {"Nx": Nx, "Nz": Nz, "dealias": 1.5, "scheme": "RK443", "dt": dt_,
+                           "backend": "cpu", "steps": s.iteration, "wall_s": wall,
+                           "cfl_max": umax * dt_ / dx},
+              "times": [times[0], times[-1], every * dt_]}
+    res = f"{Nx} × {Nz} Fourier modes, RK443, dt = {dt_:.3g}, CPU."
+    finish(SLUGS["tu"], out, fv, fv[len(fv) // 2], dict(common, colormap="signed",
+        title="Two-dimensional turbulence",
+        alt="Red and green vortices of both signs swirl on black, pair up and merge into fewer, "
+            "larger ones, trailing thin filaments.",
+        caption=f"Vorticity of decaying 2D turbulence in a periodic box, ν = {a.tu_nu:g}, t = "
+                f"{times[0]:g} to {times[-1]:.0f} (in units of the initial r.m.s. vorticity). {res}"))
+    finish(SLUGS["td"], out, fd, fd[len(fd) // 2], dict(common, colormap="smoke",
+        title="Dye in two-dimensional turbulence",
+        alt="Pale bands of dye are wound into spirals and thin filaments by swirling vortices, "
+            "outlined by a thin yellow-green line.",
+        caption=f"A passive dye released in bands at t = {times[0]:g} in the same decaying 2D "
+                f"turbulence, stirred to t = {times[-1]:.0f}; the line is the half-concentration. {res}"))
+
+
 # ---- collect into the site ---------------------------------------------------------------------------
 FIELDS = ("slug", "title", "alt", "caption", "video_webm", "video_mp4", "poster", "width", "height",
-          "duration_s", "run_id", "script", "example_script", "domain")
+          "duration_s", "run_id", "script", "example_script", "domain", "loop")   # loop: said in the caption
 
 
 def collect(run_ids: list[str]) -> None:
@@ -499,15 +668,33 @@ def main() -> None:
     ap.add_argument("--rh-view-lat", type=float, default=35.0)
     ap.add_argument("--rh-radius", type=float, default=0.6, help="globe radius / film height")
     ap.add_argument("--rh-t0-days", type=float, default=4.0, help="days run before the first frame")
+    # Rayleigh-Taylor
+    ap.add_argument("--rt-Ra", type=float, default=1e7)
+    ap.add_argument("--rt-Lx", type=float, default=2.0)
+    ap.add_argument("--rt-Nx", type=int, default=512)
+    ap.add_argument("--rt-Nz", type=int, default=256)
+    ap.add_argument("--rt-dt", type=float, default=7.5e-7)
+    ap.add_argument("--rt-delta", type=float, default=0.02, help="interface half-thickness")
+    ap.add_argument("--rt-amp", type=float, default=0.01, help="r.m.s. interface ripple")
+    ap.add_argument("--rt-span", type=float, default=6.0, help="free-fall times filmed")
+    # 2D turbulence
+    ap.add_argument("--tu-Nx", type=int, default=512, help="modes in x (Nz = Nx/2, box 4 x 2)")
+    ap.add_argument("--tu-nu", type=float, default=5e-6)
+    ap.add_argument("--tu-k0", type=float, default=30.0)
+    ap.add_argument("--tu-cfl", type=float, default=0.25)
+    ap.add_argument("--tu-t0", type=float, default=20.0)
+    ap.add_argument("--tu-t1", type=float, default=65.0)
     a = ap.parse_args()
     if a.collect:
         return collect(a.collect)
+    if a.case == "td":
+        ap.error("the dye film is made by --case tu")
     if not a.case:
         ap.error("--case or --collect")
     out = Path(os.environ.get("CN_OUT", "."))
     out.mkdir(parents=True, exist_ok=True)
     {"kh": kelvin_helmholtz, "rb": rayleigh_benard, "sh": swift_hohenberg,
-     "rh": rossby_haurwitz}[a.case](a, out)
+     "rh": rossby_haurwitz, "rt": rayleigh_taylor, "tu": turbulence}[a.case](a, out)
 
 
 if __name__ == "__main__":

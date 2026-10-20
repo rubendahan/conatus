@@ -298,7 +298,9 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
             i, j = np.unravel_index(np.argmin(s), s.shape)
             pair = lam_[[i, j]]
             # same rule as the Hopf/real-crossing classification of equilibria and orbits (B8)
-            if not np.all(np.abs(pair.imag) > settings.hopf_imag_tol * max(1.0, np.abs(pair).max())):
+            from .._scales import spectral_floor
+            if not np.all(np.abs(pair.imag) > settings.hopf_imag_tol * max(np.abs(pair).max(),
+                                                                            spectral_floor(lam_))):
                 return None, f"neutral saddle (real pair {pair[0].real:.4g}, {pair[1].real:.4g})"
             ev.detail = f"second pair ±{abs(pair[0].imag):.10g} i"
         if name == "gh" and ev.point is not None:

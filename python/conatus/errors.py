@@ -51,19 +51,20 @@ from __future__ import annotations
 
 import difflib
 from collections.abc import Iterable
+from typing import Any
 
+# Documented names only (M5, 0.2); the others stay importable from this module. Every
+# exception class is documented by the error catalogue of the guide (docs/site/guide/errors.md).
 __all__ = ["ConatusError", "EquationError", "ProblemError", "NonlinearLHSError",
            "UndeclaredVariableError", "ParameterError", "BoundaryConditionError",
-           "EquationSyntaxError",
-           "DiscretizationError", "RankError", "SpectralError", "ResolutionError",
-           "CoordinateError", "OptionError", "SymmetryError", "SymmetryBreakingError",
-           "InputTypeError", "DtypeError", "TensorError", "ConvergenceError", "NewtonNotConverged",
-           "NumericalError", "UnderResolvedWarning", "IllPosedWarning", "InitialDataWarning",
-           "BackendError", "MissingDependencyError", "MissingFileError",
-           "UnsupportedError", "AmbiguousNameError",
-           "ResolutionWarning", "CorrectnessWarning", "BaseStateWarning", "GroupWarning",
-           "DefaultChoiceWarning", "did_you_mean", "doc_reference",
-           "require_cupy", "explain", "catalogue"]
+           "EquationSyntaxError", "DiscretizationError", "RankError", "SpectralError",
+           "ResolutionError", "CoordinateError", "OptionError", "SymmetryError",
+           "SymmetryBreakingError", "InputTypeError", "DtypeError", "TensorError",
+           "ConvergenceError", "NewtonNotConverged", "NumericalError", "UnderResolvedWarning",
+           "IllPosedWarning", "InitialDataWarning", "BackendError", "MissingDependencyError",
+           "MissingFileError", "UnsupportedError", "AmbiguousNameError", "ResolutionWarning",
+           "CorrectnessWarning", "BaseStateWarning", "GroupWarning", "DefaultChoiceWarning",
+           "ExperimentalWarning", "explain"]
 
 # Relative documentation root. The site (Sphinx, docs/site/) is written separately; every class
 # points to one anchor of the error guide so the links can be remapped in one place.
@@ -355,6 +356,14 @@ class DefaultChoiceWarning(CorrectnessWarning):
     top condition of ``this case`` (no-slip). Declare it; required from v0.2."""
 
 
+class ExperimentalWarning(UserWarning):
+    """A feature of the experimental list was used (once per feature and process): it is shipped and
+    tested, but not promised: its API and defaults may change in a minor release without a
+    deprecation cycle, and some of its claims rest on fewer measurements. The list:
+    ``conatus._experimental.EXPERIMENTAL`` and the guide page "Experimental features". Silence it
+    with ``warnings.filterwarnings("ignore", category=cn.errors.ExperimentalWarning)``."""
+
+
 # -- helpers ----------------------------------------------------------------------------------
 #: Where the GPU install is described: the fix of every "no CuPy" / "no CUDA"
 #: message points there instead of one recipe. `pip install ".[gpu]"` is right for a pip wheel and
@@ -381,16 +390,72 @@ def require_cupy(what: str):
     return cupy
 
 
+def _scalar_of(value: Any) -> Any:
+    """The Python scalar of a 0-d NumPy array (``np.array(0.5)``, ``x.sum()`` of a CuPy array
+    after ``.get()``, an element read with ``a[()]``), else ``value`` unchanged. A 0-d array is
+    one number, not a container: the checks below accept it as that number (review of the
+    inputs audit: ``run(until=np.array(1.0))`` and ``safety=np.array(0.5)`` were
+    accepted before the audit and refused after it)."""
+    import numpy as np
+    if isinstance(value, np.ndarray) and value.ndim == 0 and value.dtype.kind in "biuf":
+        return value[()]
+    return value
+
+
 def check_count(value, name: str, where: str, minimum: int = 1) -> int:
     """An integer >= ``minimum``, the one count check of the package (a float or a bool is
     refused, never truncated: ``Nh=10.5`` used to pass a range check and fail later in
     ``range()``/``arange``)."""
     import numbers
+    value = _scalar_of(value)
     if isinstance(value, bool) or not isinstance(value, numbers.Integral) or value < minimum:
         raise OptionError(f"{where}: {name}={value!r} must be an integer >= {minimum}",
                           why="sizes and iteration budgets are never rounded for you",
                           fix=f"{name}={max(minimum, 8)}, for example")
     return int(value)
+
+
+def check_flag(value, name: str, where: str) -> bool:
+    """A switch is ``True`` or ``False`` (a NumPy bool too), the one flag check of the package
+    (audit inputs: ``bool(flag)`` read ``complex="no"``, ``reduced="no"`` or
+    ``logy="no"`` as True, the opposite of what was written)."""
+    import numbers
+
+    import numpy as np
+    value = _scalar_of(value)
+    if isinstance(value, numbers.Integral) and not isinstance(value, (bool, np.bool_)) \
+            and value in (0, 1):
+        return bool(value)        # 0 / 1: unambiguous (accepted before the audit; review)
+    if not isinstance(value, (bool, np.bool_)):
+        raise OptionError(f"{where}: {name}={value!r} is not True or False",
+                          why="a switch is never read from the truth value of another object "
+                              "(the string 'no' is true)",
+                          fix=f"{name}=True or {name}=False")
+    return bool(value)
+
+
+def check_real(value, name: str, where: str, *, positive: bool = False,
+               nonnegative: bool = False) -> float:
+    """A finite real number (not a bool, a string or a complex number), optionally > 0 or >= 0
+    (audit inputs: NaN, inf, ``"0.1"`` or ``1+0j`` reached arithmetic deep inside, or
+    were accepted)."""
+    import decimal
+    import math
+    import numbers
+    value = _scalar_of(value)
+    # a Decimal is a real number (not registered as numbers.Real): accepted like a Fraction
+    ok = (isinstance(value, (numbers.Real, decimal.Decimal)) and not isinstance(value, bool)
+          and type(value).__name__ != "bool_" and math.isfinite(float(value)))
+    if ok and positive:
+        ok = float(value) > 0
+    if ok and nonnegative:
+        ok = float(value) >= 0
+    if not ok:
+        need = "> 0" if positive else ">= 0" if nonnegative else ""
+        raise OptionError(f"{where}: {name}={value!r} must be a finite real number {need}".rstrip(),
+                          why="a numerical setting is never converted, clipped or guessed for you",
+                          fix=f"a finite float for {name}" + (f" {need}" if need else ""))
+    return float(value)
 
 
 def _warn_user(message: str, category: type[Warning]) -> None:

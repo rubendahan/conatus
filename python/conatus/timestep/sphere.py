@@ -23,7 +23,7 @@ from .integrator import IVPSolver, check_dt_backend, check_substeps, finite_cade
 from .polar import PolarGlobalSystem, PolarIVPSolver
 from .real_projection import m0_projection, m0_projection_text
 from .colborder import BORDER_MODES, plan_column_border
-from .system import ORDERINGS, GlobalSystem, GroupSlot
+from .system import ORDERINGS, FactorCache, GlobalSystem, GroupSlot
 
 __all__ = ["SphereGlobalSystem", "SphereIVPSolver"]
 
@@ -44,11 +44,15 @@ class SphereGlobalSystem(PolarGlobalSystem):
             raise OptionError(f"ordering must be one of {ORDERINGS}, got {ordering!r}",
                               fix="ordering='interleaved' (default)" + did_you_mean(str(ordering), ORDERINGS),
                               doc="docs/site/guide/timesteppers.md")
+        # a switch, never the truth value of another object (review of audit inputs:
+        # bool(reduced) read reduced="no" as True on the polar and spherical systems)
+        from ..errors import check_flag
+        reduced = check_flag(reduced, "reduced", "SphereGlobalSystem")
         if reduced and plan.subspace is None:
             raise OptionError("reduced=True needs a symmetry subspace declared on the problem",
                               fix="declare symmetry=SymmetrySubspace(...) on the problem, or drop "
                                   "reduced=", doc="docs/site/guide/timesteppers.md")
-        self.plan, self.ordering, self.reduced, self.complexify = plan, ordering, bool(reduced), False
+        self.plan, self.ordering, self.reduced, self.complexify = plan, ordering, reduced, False
         S = plan.space
         pb = plan.problem
         self.variables = plan.variables
@@ -117,7 +121,7 @@ class SphereGlobalSystem(PolarGlobalSystem):
             sl = [self.slots[i] for i in idx]
             self._buckets.append((idx, np.stack([s.offset + s.rperm for s in sl]),
                                   np.stack([s.offset + s.cperm for s in sl])))
-        self._factors: dict = {}
+        self._factors = FactorCache()      # bounded LRU (audit state)
 
     def _column_border(self) -> list[tuple[str, int, str]]:
         """Column border per sparsity bucket (timestep/colborder.py): where a group
@@ -200,6 +204,8 @@ class SphereIVPSolver(PolarIVPSolver):
                                    "complex", fix="drop complexify=")
         if reduced is None:
             reduced = plan.problem.symmetry is not None     # declared subspace: run in it (explain)
+        from ..errors import check_flag      # reduced="no" read as True (audit inputs review)
+        reduced = check_flag(reduced, "reduced", "SphereIVPSolver")
         if reduced and plan.problem.symmetry is None:
             raise OptionError("reduced=True needs a symmetry subspace declared on the problem",
                               fix="declare symmetry=SymmetrySubspace(...) on the problem, or drop "
@@ -211,9 +217,14 @@ class SphereIVPSolver(PolarIVPSolver):
                                      "bc_time, border, project_m0, check_finite")
         self.plan = plan
         self._params0 = dict(plan.params)   # matrices built with these (check_params_unchanged)
+        if plan.space.shell:                      # beyond the tested shell grid: experimental
+            from .._experimental import check_shell_size
+            check_shell_size(plan.space.sizes(False))
         self.scheme, self.dt = scheme, float(dt)
         self.startup = startup
         self.startup_substeps = check_substeps(startup_substeps, "SphereIVPSolver")
+        from .integrator import check_time_parameter    # a name the equations use (audit inputs)
+        check_time_parameter(plan, time_parameter, "SphereIVPSolver")
         self.time_parameter = time_parameter
         self.backend, self.f_backend, self.xp = "cpu", "evaluator", np
         # border='auto': column border where groups have dense tau columns (timestep/colborder.py);

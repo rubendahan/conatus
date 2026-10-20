@@ -1,4 +1,4 @@
-# t10_bifurcations: PASS (exit 0) in 4.3 s | 2026-10-09
+# t10_bifurcations: PASS (exit 0) in 28.7 s | 2026-10-20 | script sha256 1aeaf6f6d8fb15f0
 DynamicalSystem: M dx/dt = G(x; p), n = 3, origin: IR: Lorenz (0-D: one constant Fourier mode)
   parameters: r = 0.5
   mass matrix: identity

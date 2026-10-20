@@ -11,7 +11,8 @@ import numpy as np
 from ..ir import (EVP, IVP, AnnulusBasis, ComplexFourier, CylindricalCoordinates, DiskBasis, Domain, Field,
                   Parameter, RealFourier, VectorField, div, dot, dt, grad, integ, interp, lap, lift,
                   unit_vector)
-from .._deprecation import renames
+from .._deprecation import renames as _renames   # not a public name of this module (V5)
+from .._deprecation import former_names as _former_names
 from ._ready import Ready, ready
 
 __all__ = ["pipe", "pipe_evp", "taylor_couette", "taylor_couette_evp"]
@@ -66,7 +67,7 @@ def pipe(*, Nphi: int, Nr: int, Nz: int, Lz: float, Re: float, pressure_gradient
                  reference=_MT2003)
 
 
-@renames("conatus.problems.cylinders:pipe_evp")
+@_renames("conatus.problems.cylinders:pipe_evp")
 def pipe_evp(*, N: int, Re: float, m: int, k: float) -> Ready:
     """Linear stability of Hagen–Poiseuille flow U0 = (1 - r^2) e_z, primitive variables.
 
@@ -219,3 +220,7 @@ def taylor_couette_evp(*, N: int, Re: float, eta: float, mu: float, m: int, k: f
     return ready(pb, [Re_], [bphi, br, bz], {U0: base},
                  notes=f"Use plan.group({m}, {k}). r_i = {ri:.6g}, r_o = {ro:.6g}.",
                  reference=_TC_REF, extras={"m": m, "k": k, "ri": ri, "ro": ro, "A": A, "B": B})
+
+
+# 0.1 showed the decorator as `renames`: it still resolves, with a DeprecationWarning (L8).
+__getattr__ = _former_names(__name__, {"renames": ("conatus._deprecation.renames", _renames)})

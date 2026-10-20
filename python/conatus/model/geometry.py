@@ -132,14 +132,22 @@ def periodic(length: float | tuple[float, float], *more: Any, complex: bool = Fa
                              fix="periodic(2.0) for [0, 2)", doc=_DOC)
     if isinstance(length, numbers.Real):
         a, b = 0.0, float(length)
+    elif (hasattr(length, "__len__") and not isinstance(length, (str, bytes))
+          and len(length) == 2):
+        a, b = (_num(v, f"periodic({length!r})") for v in length)
     else:
-        a, b = (float(v) for v in length)
+        # a string, None, a complex number or a sequence of another length (audit inputs,
+        # bare ValueError/TypeError from the unpacking)
+        raise InputTypeError(f"periodic({length!r}): one length or one (a, b) pair",
+                             fix="periodic(2.0) for [0, 2), or periodic((a, b)) with a < b",
+                             doc=_DOC)
     # finite bounds (periodic(inf) built a grid of NaN)
     if not (b > a and math.isfinite(a) and math.isfinite(b)):
         raise InputTypeError(f"periodic({length!r}): the length must be finite and positive",
                              fix="periodic(2.0) for [0, 2), or periodic((a, b)) with a < b",
                              doc=_DOC)
-    return Periodic((a, b), bool(complex))
+    from ..errors import check_flag            # complex="no" was read as True (audit inputs)
+    return Periodic((a, b), check_flag(complex, "complex", "periodic()"))
 
 
 def walls(a: float, b: float, *more: float, basis: str = "chebyshev") -> Walls:
@@ -156,7 +164,7 @@ def walls(a: float, b: float, *more: float, basis: str = "chebyshev") -> Walls:
     interface the value and the derivatives up to the order of each equation minus one are
     continuous: those conditions and their taus are written automatically and listed by
     explain(). Use it to refine a thin interior layer or a region near one wall."""
-    pts = tuple(float(v) for v in (a, b) + tuple(more))
+    pts = tuple(_num(v, "walls(...)") for v in (a, b) + tuple(more))
     if more:
         if basis != "chebyshev":
             raise InputTypeError(f"walls{pts} with basis={basis!r}: a compound interval is "
@@ -178,6 +186,23 @@ def walls(a: float, b: float, *more: float, basis: str = "chebyshev") -> Walls:
                                  "(homogeneous parity conditions: f = 0, dz(f) = 0, free-slip)",
                              doc=_DOC)
     return Walls((a, b), basis)
+
+
+def _num(v: Any, what: str) -> float:
+    """A length or a position given as a real number (audit inputs: ``float(v)``
+    parsed ``walls("0", "1")`` and ``Disk("1")`` from text, read ``True`` as 1, and raised a bare
+    TypeError for None or a complex number)."""
+    import decimal
+
+    from ..errors import _scalar_of
+    v = _scalar_of(v)                 # a 0-d array is one number; a Decimal is real
+    if isinstance(v, bool) or type(v).__name__ == "bool_" \
+            or not isinstance(v, (numbers.Real, decimal.Decimal)):
+        raise InputTypeError(f"{what}: {v!r} is not a real number",
+                             why="lengths and positions are numbers; text, flags and complex "
+                                 "values are never converted for you",
+                             fix=f"{what} as a float, e.g. 1.0", doc=_DOC)
+    return float(v)
 
 
 def _check_finite(pts: tuple[float, ...], what: str) -> None:
@@ -345,6 +370,12 @@ class Geometry:
             return {c: DEFAULT_DEALIAS for c in names}
         if isinstance(dealias, Mapping):
             missing = [c for c in names if c not in dealias]
+            # a key that names no coordinate (a typo) was ignored (review finding 29)
+            stray = [c for c in dealias if c not in names]
+            if stray:
+                raise ResolutionError(f"dealias={dict(dealias)!r}: {stray} not coordinate(s) of the "
+                                      f"geometry {tuple(names)}",
+                                      fix="one entry per coordinate: " + ", ".join(names), doc=_DOC)
             if missing:
                 raise ResolutionError(f"dealias={dict(dealias)!r} misses {missing}",
                                       fix="give every coordinate, or one number for all", doc=_DOC)
@@ -611,6 +642,7 @@ class Disk(_Radial):
     def __init__(self, radius: float = 1.0) -> None:
         super().__init__()
         self._axes = {"phi": None, "r": None}
+        radius = _num(radius, "Disk(radius)")
         _check_radii("Disk", (float(radius),), "cn.Disk(1.0)")
         self._radii = (0.0, float(radius))
 
@@ -640,6 +672,7 @@ class Annulus(Disk):
     def __init__(self, inner: float, outer: float) -> None:
         Geometry.__init__(self)
         self._axes = {"phi": None, "r": None}
+        inner, outer = _num(inner, "Annulus(inner)"), _num(outer, "Annulus(outer)")
         _check_radii("Annulus", (float(inner), float(outer)),
                      "cn.Annulus(0.5, 1.0); cn.Disk(radius) for a full disk (no inner wall)")
         self._radii = (float(inner), float(outer))
@@ -666,6 +699,7 @@ class Pipe(Disk):
     def __init__(self, radius: float = 1.0, length: float = 2 * math.pi) -> None:
         Geometry.__init__(self)
         self._axes = {"phi": None, "r": None, "z": None}
+        radius, length = _num(radius, "Pipe(radius)"), _num(length, "Pipe(length)")
         _check_radii("Pipe", (float(radius),), "cn.Pipe(radius=1.0, length=2*np.pi)")
         _check_finite((0.0, float(length)), "Pipe length")
         if not float(length) > 0:
@@ -705,6 +739,14 @@ class TaylorCouette(Annulus):
     kind, recipe = "Taylor-Couette annular cylinder", "annulus"
 
     def __init__(self, inner: float, outer: float, length: float = 2 * math.pi) -> None:
+        inner, outer = _num(inner, "TaylorCouette(inner)"), _num(outer, "TaylorCouette(outer)")
+        length = _num(length, "TaylorCouette(length)")
+        # the axial period is checked like Pipe's (audit inputs: length=0 or nan was
+        # accepted and gave a grid of NaN at the first resolution)
+        _check_finite((0.0, length), "TaylorCouette length")
+        if not length > 0:
+            raise InputTypeError(f"TaylorCouette(length={length!r}): the axial period must be > 0",
+                                 fix="cn.TaylorCouette(inner, outer, length=2*np.pi)", doc=_DOC)
         if not 0 < float(inner) < float(outer):
             from ..errors import CoordinateError
             raise CoordinateError(f"TaylorCouette(inner={inner}, outer={outer}): need 0 < inner < outer",
@@ -752,6 +794,7 @@ class Sphere(Geometry):
     def __init__(self, radius: float = 1.0) -> None:
         super().__init__()
         self._axes = {"phi": None, "theta": None}
+        radius = _num(radius, "Sphere(radius)")
         _check_radii("Sphere", (float(radius),), "cn.Sphere(1.0)")
         self.radius = float(radius)
 
@@ -781,6 +824,7 @@ class Ball(_Radial):
     def __init__(self, radius: float = 1.0) -> None:
         super().__init__()
         self._axes = {"phi": None, "theta": None, "r": None}
+        radius = _num(radius, "Ball(radius)")
         _check_radii("Ball", (float(radius),), "cn.Ball(1.0)")
         self._radii = (0.0, float(radius))
 
@@ -816,6 +860,7 @@ class Shell(Ball):
     def __init__(self, inner: float, outer: float) -> None:
         Geometry.__init__(self)
         self._axes = {"phi": None, "theta": None, "r": None}
+        inner, outer = _num(inner, "Shell(inner)"), _num(outer, "Shell(outer)")
         _check_radii("Shell", (float(inner), float(outer)),
                      "cn.Shell(0.35, 1.0); cn.Ball(radius) for a full ball (no inner wall)")
         self._radii = (float(inner), float(outer))

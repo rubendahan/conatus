@@ -1,4 +1,4 @@
-# t14_from_dedalus: PASS (exit 0) in 2.8 s | 2026-10-10
+# t14_from_dedalus: PASS (exit 0) in 10.8 s | 2026-10-20 | script sha256 fe7119efa6854020
 native model: t = 0.020, max|u| = 4.225e-02
 Dedalus -> Conatus: rb_cell_dedalus.py
   39 translated, 0 approximated, 0 unsupported, 0 skipped (output only)

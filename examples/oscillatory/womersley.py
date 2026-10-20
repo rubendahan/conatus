@@ -102,14 +102,17 @@ if __name__ == "__main__":
         Y, U, res = harmonic_lbvp(N, Wo)
         ex = -1j * (1 - np.cosh(np.sqrt(1j) * Wo * Y) / np.cosh(np.sqrt(1j) * Wo))
         print(f"   N={N}: max|U - U_exact| = {np.abs(U - ex).max():.1e}, residual {res:.1e}")
+    assert np.abs(U - ex).max() < 5e-15 and res < 1e-14         # Womersley (1955), closed form
     print("   IVP over one period from the exact state (N = 32): error vs steps")
     for scheme in ("RK443", "SBDF2"):
         errs = [one_period_error(32, Wo, scheme, n) for n in (100, 200, 400)]
         orders = np.log2(np.array(errs[:-1]) / errs[1:])
         print(f"   {scheme}: " + ", ".join(f"{e:.2e}" for e in errs) + f"  observed orders {np.round(orders, 2)}")
+        assert orders[-1] > {"RK443": 2.6, "SBDF2": 1.75}[scheme], (scheme, orders)   # 2.85, 1.95 observed
     print("2. Pulsatile Poiseuille, Floquet (Re = 1e4, alpha = 1, omega = 0.1):")
     mu0, H = floquet_exponent(0.0)
     print(f"   eps = 0: mu = {mu0:.10f}, c = i mu / alpha = {1j * mu0:.8f} (Orszag {ORSZAG_C})")
+    assert abs(1j * mu0 - ORSZAG_C) < 1e-8, mu0                   # Orszag (1971), his 8 digits
     for eps in (0.0125, 0.025, 0.05):
         mu, _ = floquet_exponent(eps)
         print(f"   eps = {eps}: mu = {mu:.10f}, |mu - mu0| / eps^2 = {abs(mu - mu0) / eps ** 2:.4e}")

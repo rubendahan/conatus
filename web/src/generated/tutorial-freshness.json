@@ -1,19 +1,24 @@
 {
- "generated": "2026-10-13T06:43:17.632Z",
+ "generated": "2026-10-20T23:09:22.591Z",
  "tutorials": {
+  "t00_first_steps": {
+   "fresh": true,
+   "by": "script hash",
+   "reason": null
+  },
   "t00_getting_started": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t01_orr_sommerfeld": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t02a_rayleigh_benard_cpu": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t02b_rayleigh_benard_gpu": {
@@ -23,62 +28,62 @@
   },
   "t03_symmetries": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t04_bratu": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t05_ks_orbits": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t08_polar": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t10_bifurcations": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t11_runs": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t12_chaos_ensembles": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t13_sensitivity_data": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t14_from_dedalus": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t14b_dedalus_check": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t15_ks_covariant": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   },
   "t16_particles_dye": {
    "fresh": true,
-   "by": "commit",
+   "by": "script hash",
    "reason": null
   }
  }

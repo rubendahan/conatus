@@ -5,6 +5,7 @@ export interface FilmItem {
   video_webm: string; video_mp4: string; poster: string;
   width: number; height: number; duration_s: number;
   run_id?: string; script: string; example_script: string | null; domain: string;   // run_id: private builds only
+  loop?: string | null;                              // how the loop closes (display only, said in the caption)
 }
 
 const found = import.meta.glob<FilmItem[]>("../../public/films/manifest.json", { eager: true, import: "default" });

@@ -10,8 +10,8 @@
     "given-names": "Ruben"
    }
   ],
-  "version": "0.1.0",
-  "date-released": "2026-10-12",
+  "version": "0.1.1",
+  "date-released": "2026-10-20",
   "license": "BSD-3-Clause",
   "repository-code": "https://github.com/rubendahan/conatus",
   "url": "https://rubendahan.github.io/conatus/",
@@ -24,7 +24,7 @@
   ]
  },
  "bibtex": {
-  "software": "@software{dahan2026conatus,\n  author  = {Dahan, Ruben},\n  title   = {{Conatus: spectral PDEs and dynamical systems}},\n  year    = {2026},\n  version = {0.1.0},\n  license = {BSD-3-Clause},\n  url     = {https://github.com/rubendahan/conatus},\n}",
+  "software": "@software{dahan2026conatus,\n  author  = {Dahan, Ruben},\n  title   = {{Conatus: spectral PDEs and dynamical systems}},\n  year    = {2026},\n  version = {0.1.1},\n  license = {BSD-3-Clause},\n  url     = {https://github.com/rubendahan/conatus},\n}",
   "paper": null
  },
  "source": ""

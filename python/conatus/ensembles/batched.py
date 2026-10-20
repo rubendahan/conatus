@@ -479,7 +479,8 @@ class BatchedSystem:
                 from ..timestep.device import DeviceCsr
                 M, L = DeviceCsr(M, self.dtype), DeviceCsr(L, self.dtype)
             self._M, self._L = M, L
-        self._factors: dict = {}
+        from ..timestep.system import FactorCache
+        self._factors = FactorCache()      # bounded LRU (audit state)
 
     @staticmethod
     def _same(a, b) -> bool:

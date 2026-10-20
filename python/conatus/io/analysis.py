@@ -6,7 +6,9 @@ scripts carry over::
     /                  attrs: format, problem, scheme, dt, every, tasks (JSON: name -> source),
                               provenance (JSON: code, environment, numerics), conatus_version,
                               parameters (JSON), coordinates (JSON, grid order), geometry, model,
-                              cartesian
+                              cartesian, identity (JSON: the canonical identity of
+                              the computation, ``conatus.io._identity``), task_identity (JSON:
+                              name -> the source text or the code of the task function)
     /scales/sim_time   (W,)   simulation time of each write (dimension scale "t")
     /scales/iteration  (W,)   step number of each write
     /scales/write_number (W,) 1, 2, ... (continued by mode="a")
@@ -23,6 +25,12 @@ the arrays with their coordinates; files written before keep reading.
 
 The file is opened and closed at each write: a job killed between two writes leaves a valid
 file with every completed row (and only those: the row counter is written last).
+
+One file holds **one computation** (0.1.1, review finding 5): ``mode="a"`` and ``mode="resume"``
+compare the computation appending with the one the file records (model, equations, parameters,
+given data, resolution, geometry, scheme, dt, cadence, and every task's source) and refuse any
+difference, naming it; before, a run at nu = 0.4 writing dx(u) was appended under the metadata of
+a run at nu = 0.05 writing u.
 """
 from __future__ import annotations
 
@@ -35,6 +43,7 @@ import numpy as np
 from ..errors import InputTypeError, OptionError
 from . import _describe as dsc
 from ._h5 import DOC, json_attr, open_h5, positive, provenance, read_json_attr
+from ._identity import checkpoint_identity
 
 FORMAT = "conatus.analysis/1"
 MODES = ("w", "a", "resume")
@@ -180,6 +189,8 @@ class AnalysisFile:
             f.attrs["every"] = int(self.every)
             f.attrs["tasks"] = json_attr({k: self._describe(v) for k, v in self.tasks.items()})
             f.attrs["provenance"] = json_attr(provenance(self.solver))
+            f.attrs["identity"] = json_attr(checkpoint_identity(self.solver))
+            f.attrs["task_identity"] = json_attr(self._task_identity())
             f.attrs["writes"] = 0
             sc = f.create_group("scales")
             for k, dtype in (("sim_time", float), ("iteration", np.int64), ("write_number", np.int64)):
@@ -208,6 +219,7 @@ class AnalysisFile:
             if float(f.attrs["dt"]) != float(self.solver.dt) or int(f.attrs["every"]) != self.every:
                 raise OptionError("output(mode='a'): dt or every differs from the file's",
                                   why="one file holds one cadence", fix="a new file", doc=DOC)
+            self._check_same_computation(f, old, new)
             self.writes = int(f.attrs["writes"])
             its = f["scales/iteration"][:self.writes]
             last = f["scales/sim_time"][self.writes - 1] if self.writes else None
@@ -229,6 +241,80 @@ class AnalysisFile:
                     d.resize(keep, axis=0)
             self.dropped, self.writes = self.writes - keep, keep
             self._resumed_at = int(self.solver.iteration)
+
+    def _task_identity(self) -> dict:
+        """name -> identity of each task's source: the text of a name or an expression, the
+        code (and what it reads, :func:`conatus.io._identity.callable_identity`) of a function.
+        A function reading a value without a content hash is identified by its code only
+        (``"undeclared"`` says why; declared by explain() after an append)."""
+        from ._identity import Undeclared, _code_digest, callable_identity
+        out = {}
+        for k, src in self.tasks.items():
+            if isinstance(src, str):
+                out[k] = {"source": src}
+                continue
+            try:
+                out[k] = callable_identity(src, f"task {k}")
+            except Undeclared as why:
+                code = getattr(src, "__code__", None)
+                out[k] = {"function": getattr(src, "__qualname__", type(src).__name__),
+                          "code_sha256": None if code is None else _code_digest(code),
+                          "undeclared": str(why)}
+        return out
+
+    def _check_same_computation(self, f: Any, old_tasks: dict, new_tasks: dict) -> None:
+        """Refuse an append by another computation (review finding 5), naming every difference;
+        a file written before the identity record is compared on what it holds (problem name,
+        parameters, scheme, task sources) with an :class:`IdentityWarning`."""
+        from ._identity import IdentityWarning, _differences, unrecorded
+        here = f"in {self.path.name}"
+        diffs = []
+        mine = checkpoint_identity(self.solver)
+        old = read_json_attr(f, "identity")
+        if old is None:
+            old = {"model": _attr_text(f, "problem")}
+            params = read_json_attr(f, "parameters")
+            if params is not None:
+                old["parameters"] = params
+        diffs += [t for _k, _c, t in _differences(old, mine, there=here)]
+        if _attr_text(f, "scheme") != str(self.solver.scheme):
+            diffs.append(f"scheme: {_attr_text(f, 'scheme')!r} {here}, {self.solver.scheme!r} now")
+        for k in sorted(new_tasks):
+            if old_tasks.get(k) != new_tasks[k]:
+                diffs.append(f"task {k}: {old_tasks.get(k)} {here}, {new_tasks[k]} now")
+        old_ti = read_json_attr(f, "task_identity")
+        self.task_notes = []
+        if old_ti is not None:
+            for k, ti in self._task_identity().items():
+                a = old_ti.get(k) or {}
+                if "undeclared" in a or "undeclared" in ti:
+                    same = (a.get("code_sha256"), a.get("function")) == \
+                        (ti.get("code_sha256"), ti.get("function"))
+                    self.task_notes.append(
+                        f"task {k}: compared by its code only ("
+                        f"{ti.get('undeclared') or a.get('undeclared')})")
+                else:
+                    same = a == ti
+                if not same and old_tasks.get(k) == new_tasks.get(k):
+                    diffs.append(f"task {k}: the function {new_tasks[k][9:]} has other code or "
+                                 "reads other values than the one that wrote the file")
+        if diffs:
+            raise OptionError(
+                f"output(mode={self.mode!r}): {self.path} records another computation: "
+                + "; ".join(diffs),
+                why="one file holds one computation: rows appended by another model, other "
+                    "equations, parameters, data or tasks would be read under the file's "
+                    "metadata",
+                fix="write this run to a new file (or mode='w' to replace this one)", doc=DOC)
+        missing = unrecorded(old, mine) + [k for k in ("equations", "resolution", "geometry")
+                                           if k not in old]
+        if missing:
+            import warnings
+            warnings.warn(
+                f"output(mode={self.mode!r}): {self.path} was written before analysis files "
+                "recorded the identity of their computation: " + ", ".join(sorted(set(missing)))
+                + " could not be compared (the model name, parameters, scheme, dt and tasks "
+                "were).", IdentityWarning, stacklevel=4)
 
     def write(self) -> None:
         """Write one row now (the current state), whatever the iteration."""
@@ -347,6 +433,7 @@ class AnalysisFile:
                      + "; every array labelled with its dimensions (HDF5 dimension scales)")
         if getattr(self, "xdmf_note", None):
             lines.append("  " + self.xdmf_note)
+        lines += ["  " + n for n in getattr(self, "task_notes", [])]
         return "\n".join(lines)
 
     __str__ = explain
@@ -370,3 +457,11 @@ def _combine(pairs: Sequence[tuple[Callable[[Any], None], int]]) -> tuple[Callab
             if solver.iteration % e == 0:
                 f(solver)
     return all_, g
+
+
+def _attr_text(f: Any, key: str) -> str | None:
+    """A text attribute of an HDF5 file (bytes decoded), None if absent."""
+    v = f.attrs.get(key)
+    if v is None:
+        return None
+    return v.decode() if isinstance(v, bytes) else str(v)

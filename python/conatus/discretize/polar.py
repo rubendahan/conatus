@@ -3,7 +3,7 @@
 Each azimuthal Fourier mode m is treated separately (the azimuth is exactly separable).
 
 Disk of radius R (axis included). Regularity at r = 0 is built into the representation, never
-imposed by 1/(r+eps) (spec §13; Vasil, Burns, Lecoanet, Olver, Brown & Oishi, J. Comput. Phys. 325
+imposed by 1/(r+eps) (Vasil, Burns, Lecoanet, Olver, Brown & Oishi, J. Comput. Phys. 325
 (2016) 53–73): with rho = r/R and z = 2 rho^2 - 1 in [-1, 1],
     scalar  f     = rho^|m| w(z)                          e^{i m phi}
     vector  u_+   = u_r + i u_phi = rho^|m+1| a(z)        e^{i m phi}

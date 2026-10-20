@@ -89,7 +89,7 @@ def neutral_J(P, alpha: float, start: float = 0.15):
 if __name__ == "__main__":
     study = "--study" in sys.argv
     Ns = (64, 96, 128, 160, 192) if study else (64, 96)
-    print(taylor_goldstein(48, 0.5).problem.explain())
+    print(taylor_goldstein(Ns[0], 0.5).problem.explain())       # N = 48 under-resolves dy(dy(U))
     print("c_i(J) at alpha = 1/2 (tanh map L = 4, contour 0.4), drift between the last two N:")
     for J in (0.0, 0.1, 0.2, 0.24):
         row = [growth(taylor_goldstein(N, 0.5), J, 0.5) for N in Ns[-2:]]
@@ -101,6 +101,8 @@ if __name__ == "__main__":
             cp = neutral_J(taylor_goldstein(N, alpha), alpha)
             print(f"  N = {N:3d}: J_n = {cp.value:.13f}, error {cp.value - alpha * (1 - alpha):+.1e}, "
                   f"c = {cp.mode.sigma:.1e}, residual {cp.mode.residual:.0e}", flush=True)
+        if alpha == 0.5:                            # Miles (1961), Howard (1961): J_c = 1/4
+            assert abs(cp.value - 0.25) < (2e-7 if N >= 96 else 1e-5), (N, cp.value)
     if study:
         print("Map scale L and contour delta at alpha = 1/2, N = 160 (path independence):")
         for L, delta in ((4.0, 0.3), (4.0, 0.5), (8.0, 0.4), (3.0, 0.4)):

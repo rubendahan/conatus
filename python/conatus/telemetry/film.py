@@ -65,7 +65,7 @@ class FilmIndex:
 
     def poll_file(self) -> list[dict]:
         """File mode: index the complete new lines of the film file; returns the new entries
-        as ``{"name", "i", "t", "iteration"}`` (what a monitor broadcasts)."""
+        as ``{"name", "i", "t", "iteration"}`` (what the Studio broadcasts)."""
         if self.path is None:
             raise ValueError("poll_file() needs a film file (memory-mode index)")
         try:

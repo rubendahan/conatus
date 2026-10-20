@@ -1,4 +1,4 @@
-"""Equations and problem declarations (spec §14, §17, §22).
+"""Equations and problem declarations.
 
  declares and *counts*; it does not discretize. The LHS/RHS split is
 checked: the LHS must be homogeneous linear in the problem variables (it is
@@ -95,7 +95,7 @@ class DirectionReport:
 
 @dataclass
 class RankReport:
-    """IR-level count of a problem (spec §14): unknown and equation components, gauges and one
+    """IR-level count of a problem: unknown and equation components, gauges and one
     :class:`DirectionReport` per non-periodic coordinate; ``status`` and ``explain()``."""
 
     variable_components: int

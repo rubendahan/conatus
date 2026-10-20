@@ -2,6 +2,268 @@
 
 All notable changes to Conatus.
 
+## [0.1.1] - 2026-10-20
+
+A correction release: every finding of an external review of 0.1.0, and of our own audits of
+security, input validation, shared state, invariance and assurances (checks that
+reported success without measuring it), is fixed, each with a test. Upgrading is
+recommended: some results of 0.1.0 were wrong (see Correctness). Changes that can alter a result
+you computed with 0.1.0: the default dealiasing grid of some models, complex fields, the modes
+kept by the eigenvalue filter, and the random draws of Lyapunov spectra (all below).
+
+### Added
+
+- **Conatus Studio, local**: `python -m conatus studio` serves live runs, telemetry and controls on
+  your machine (`pip install "conatus[studio]"`; on a cluster, a batch job and an ssh tunnel). It
+  is experimental (see below); a hosted hub is not part of this release.
+- **An interface for AI agents**: `python -m conatus agent` (`info`, `explain <name>`,
+  `check <script.py>`), with `AGENTS.md` at the root of the repository.
+- **Eigenvalues in a region of the complex plane**:
+  `m.eigenvalues(N, ..., region=cn.box(re=(a, b), im=(c, d)))` returns every eigenvalue of the
+  discretised problem in the box, with `res.count` certified by the argument principle (computed
+  from the sparse LU, never the determinant itself) and the eigenvalues from Beyn's
+  contour-integral method, each validated by its residual. `cn.contour.count` and
+  `cn.contour.beyn` do the same for a pencil, a Floquet-Hill operator or a function `z -> T(z)`
+  (nonlinear eigenproblems).
+- **Experimental features are marked**: `cn.errors.ExperimentalWarning`, once per process, on the
+  first use of a feature that is shipped and tested but not promised (the Studio,
+  a spherical shell larger than 64 × 48 × 48, `ShootingRPO`, `PipeTravellingWave`); the guide
+  page "Experimental features" lists them.
+- One-line `repr` of simulations, solvers and `NewtonKrylovHookstep`; the under-resolved warning
+  of an eigenvalue states the accuracy to expect (about sqrt(tail) relative, an order of
+  magnitude, not a bound).
+
+### Deprecated
+
+- `conatus.expert` exports only the names the guide documents. Any other name written as
+  `conatus.expert.<name>` still works, with a `DeprecationWarning` naming the module to import it
+  from, and stops working in 0.3. The Studio protocol moved to `conatus.telemetry`, the BibTeX
+  strings to `conatus.methods.BIBTEX`.
+- The `__all__` of the public modules lists documented names only; the other names stay
+  importable at the same path.
+
+### Security
+
+- `run.reproduce()` of a decorated call no longer imports and calls the `module:function` named by
+  a run record that another account can write (the record, its run directory or `runs/` not owned
+  by you, or writable by group or others): a typed `OptionError` names the two ways out (`fn=`,
+  `chmod go-w`). New run directories are created without group/other write whatever the umask, so
+  your own records are never refused; a deliberately group-writable shared registry needs `fn=`.
+- `from_dedalus` refuses private and dunder names of `dedalus.public` (`d3.__dict__`, `d3.tr`,
+  `d3.__reduce_ex__`) and attributes of the distributor outside a whitelist: they handed the
+  script the translator's own interpreter.
+- Run records redact the value of credential-like command-line options (`--token X`,
+  `--api-key=X`) in `invocation.argv`.
+- File names in the run registry (`Registry.run_dir`, `Run.file_path`, `save_file`) cannot leave
+  the run directory; a forged inline array in a record (shape not matching its values, too long,
+  negative dimension, non-numeric dtype) is refused; temporary `.npz` names are random
+  (`mkstemp`); the adjoint journal refuses file names that are not its own generation files.
+
+### Correctness (wrong results now fixed)
+
+Simulation and models:
+- A field declared complex is solved in a complex system (its imaginary part was dropped).
+- The default dealiasing factor counts spatially varying given fields as factors of a product
+  (`U*u*u` is cubic: factor 2, not 3/2), and a function of given fields alone (`exp(G)`, `1/G`) as
+  one factor (`exp(G)*u**3`: 5/2); `explain()` states the condition (fields truncated at N modes)
+  instead of a universal "exact (alias-free)". **This changes the default grid** of a model whose
+  equations multiply given fields with a total degree of 3 or more (printed by `explain()`); pass
+  `dealias=3/2` to keep the 0.1.0 grid.
+- `plan.solve(data)` with new data for a coefficient of the operator (`q` in `q*u = f`) rebuilds
+  the operator instead of changing only the right-hand side, and the residual is that of the
+  updated problem (mapped, Cartesian, polar and spherical plans). Data are compared by value (an
+  array changed in place is new data); the last rebuilt plan is reused when the same coefficient
+  is passed again.
+- Integrals on a sine/cosine axis (`walls(a, b, basis="sincos")`) are over the physical interval
+  [a, b], exact for both parities, in `evaluate()`, the dye diagnostics and equations (they were
+  over the doubled period).
+- `EmbeddedError(adapt=True)` rejects a step whose error estimate exceeds `tol` and retries it with
+  a smaller `dt` (the step used to be kept, only the next `dt` changed); `ConvergenceError` when
+  `tol` cannot be met at `dt_min`.
+- SBDF3 and SBDF4 with the default `startup="lower_order"` converge at order 2, and now say so:
+  `solver.effective_order` and `explain()` give the effective order,
+  `scheme_description(name, effective=)` gives the formal and the effective order;
+  `startup="rk443"` keeps the nominal order.
+- A failing model declaration (`equations`, `at`, `given`, `dye`, `define`, `function`,
+  `eigenvalue`) leaves the model unchanged, so the corrected call works.
+- User functions (`m.function`) work on the sphere; tensor boundary conditions keep their rows
+  whatever their scale.
+- A user function name belongs to its model: another model, or a re-run notebook cell, can declare
+  its own `g`.
+- No false "under-resolved" warning for a field exactly represented on very few modes.
+- `sim.particles`: splitting a run into several `run()` calls no longer lowers the order.
+- Ensembles stop exactly at `max_steps`; counts, indices and labels are never truncated;
+  `Ensemble.states()` and velocity snapshots are copies.
+- Checks that reported success without having measured it now say what they found: NaN or
+  infinite data make `resolution_report` and `estimate_modes` say "non-finite" (an all-NaN field
+  was "all resolved") and give a NaN or infinite CFL; `verify()` measures the tail of every
+  component of a vector unknown and fails a tail it could not measure; `critical(over=)` says
+  when the minimum sits at an end of `over`; `time_average` flags an unreliable batch-means error;
+  NaN residuals are kept, never shown as small.
+
+Analysis:
+- Floquet–Hill operators: a singular intermediate block no longer gives NaN (a pivoted banded LU
+  takes over), and `solve` checks its backward error.
+- Generalized eigenvalue filtering is invariant under a scaling of the equations.
+- `uncertainty()`: the spatial error uses the actual resolution increments; `trusted` requires
+  `scheme_order` and a consistent refinement.
+- `max_growth()` compares the ends of the interval; a `CertifiedRoot` is never certified when
+  unconverged.
+- POD reports the fraction of the total energy; the low-level optimal response is the propagated
+  state.
+- Continuation of boundary-value problems converges at the fold of a uniform state (the residual
+  scale includes the parameter terms).
+- `from_dedalus`: `**options` in calls are expanded, a problem's own `namespace={...}` resolves its
+  equations, NumPy keywords in initial data are kept, and `complete` is true only without
+  unsupported or approximated lines. `DedalusTranslation.to_script()` writes a runnable program (it
+  replays the translation and runs it).
+
+Results that changed silently with unchecked inputs (now refused with a typed error naming the fix):
+- `ncc_cutoff=nan` reduced every non-constant coefficient to its mean; `P.least_stable(re=...)` on
+  a pencil in `Re` used the declared Re; `time_parameter=` naming no parameter froze the forcing;
+  the CFL step of a 1D scalar velocity was computed from its first grid value; a complex `M` in
+  `generalized_eigenvalues` was cast to float; switches given as text were truthy
+  (`complex="no"` was True); 2D or complex series in `cn.time_average` were flattened or cast;
+  decreasing snapshot times gave a negative `dt`; `Decimal` parameter values compiled as complex;
+  a shift-invert `n_modes` above the pencil size was clipped.
+- `plan.params` writes are checked, and a change after the group matrices were assembled is
+  refused (the cached groups kept the old value).
+- A model that declares `t` itself and uses it in a time-dependent model gets a
+  `DefaultChoiceWarning` (its `sin(t)` is constant).
+
+State shared between calls:
+- A solver keeps at most `FACTOR_CACHE_SIZE` (16) factorizations, least recently used dropped
+  first: an adaptive step (`EmbeddedError(adapt=True)`) or a search over the period kept one more
+  set per step until memory ran out (CPU Cartesian, polar, spherical and batched solvers).
+- Package sources (or the compiled core) changed after `import conatus` are declared by
+  `provenance.code_state()` (`changed_since_import`, not reproducible, "restart the interpreter"),
+  and such a run is never a cache source or a cache hit: the hashes named the files on disk, not
+  the code that ran. The change is judged by the content of the modules the process imported
+  (sha256 recorded at import), not by modification times: an immediate edit or a deleted module is
+  seen, a `touch` or a checkout back to the same text is not a change.
+- `diagnostics.Grid.weights()` and `cell_volumes()`, `sim.coordinate("theta")` on the sphere,
+  `sim.coeffs()` on a mapped domain, `EVPMode.grid/coeffs/coordinate` and
+  `PipeTravellingWave.phi` return the caller's own arrays (an in-place edit changed later
+  integrals, coordinates or the simulation's state); the sphere's cached grid and the cached Jacobi
+  operators are read-only.
+- `sim.flowmap(T)(X0)` leaves the simulation where it was (state, time, iteration, multistep
+  history); it used to move it to the map's end point.
+- A user pointwise function redeclared with another `value_at_zero` no longer overwrites the value
+  of the first declaration; user pointwise functions nothing uses any more are released (a cell
+  run again with a new lambda kept every earlier closure alive).
+- The parallel group assembly (`CONATUS_BUILD_WORKERS`) no longer goes through a module global (two
+  concurrent builds could exchange their groups).
+
+Equivalent computations give the same answer:
+- `solver.effective_order` and `explain()` include the boundary-data convention:
+  RK222/RK443/RKSMR/CNAB2/CNLF2 with time-dependent wall data under `bc_time="step"` are first
+  order, RK443 under `"stage"` second order (they said "global order 3"); the mapped-box stepper
+  states its order (SBDF3/SBDF4 and RK443 with moving walls: 2).
+- The spurious-mode drift test is relative to the eigenvalue, floored at a fraction of the
+  spectrum's median, instead of max(|sigma|, 1): the modes kept no longer depend on the unit of
+  the eigenvalue.
+- Dense eigenvalue solves equilibrate the rows of the pencil: an equation multiplied by a constant
+  no longer loses digits (Orr-Sommerfeld times 1e-8 lost every mode).
+- The rank check of a system equilibrates rows and columns: a well-posed equation written times
+  1e8 is no longer refused as singular.
+- Newton (boundary-value problems) and its continuation measure the relative residual of each
+  row in its own unit: an equation multiplied by a constant converges as the original.
+- Lyapunov spectra draw each trajectory's tangent vectors from the seed and its start: a
+  trajectory's exponents no longer depend on its place in the batch (random draws differ from
+  0.1.0).
+
+Low-level solvers (`conatus.runtime`):
+- `BorderedBandedBatch` takes its dtype from every matrix, not the first.
+- `ImexIntegrator` (SBDF) no longer mixes the history of a previous run into a new one: `run`
+  continues from the returned (x, t) or refuses; new `reset()`. A callback that refers to its
+  integrator is collected by the garbage collector (it leaked).
+
+Identity of a computation (cache, checkpoints, provenance, run registry, HDF5):
+- The cache key, checkpoint restart, checkpoint directory guard, provenance record and HDF5 append
+  share one identity of the computation, which includes the data of every given field by content
+  and user functions by their code: two forcings no longer share a cache key or restart into each
+  other; `allow=("f",)` names a deliberate change of a given field.
+- The provenance record includes `time_parameter`, `bc_time`, `f_backend`, complexify/decouple and
+  pivoting. `reproduce()` compares bits (dtype, sign of zero) and the whole end state (history and
+  clock), and keeps positional-only arguments. A record written by 0.1.0 lacks these keys:
+  `reproduce()` names them in an `IdentityWarning` and still compares the end state bit for bit.
+- Cache of decorated functions: closure values and the globals read are part of the key, with the
+  attributes read from a user module or a user class; the user's own decorators under `@track` are
+  called (they were skipped) and keyed. A cache hit returns the recorded types, and its series are
+  readable from the new run.
+- Simulation cache: the `series` functions and `series_every` are part of the key (a hit with other
+  series returned the source run's).
+- Run registry: series are streamed to disk during the run; `close(timeout=)` is one deadline; a
+  malformed `run.json` no longer breaks `find()`.
+
+### Refusals (silent before, loud now)
+
+- Complex coefficients or initial data on fields declared real: `DtypeError` (they were cast).
+- About 40 public entry points refuse NaN, infinity, text, flags, wrong shapes and unknown
+  names or keywords with a `conatus.errors` class (each a subclass of the built-in type raised
+  before); 0-d arrays, `Decimal`/`Fraction` values and 0/1 switches are accepted.
+- `sim.save("x.hdf")` (or `.nc`, ...) is refused instead of writing a NumPy file `x.hdf.npz`; a
+  Revolve budget of `checkpoints=0` is refused (it was the schedule of 1 and stored a state); the
+  polar and spherical solvers check `time_parameter=` and `reduced=` like the Cartesian one;
+  `eigenvalues(method=...)` and the shift-invert target are checked before anything is assembled;
+  `optimal_gain` checks its arguments before building the operator.
+- `m.params |= {...}` with NaN or undeclared names; an unknown axis in `dealias={...}`;
+  `dealias=nan` or `inf`; non-finite scalar initial data; repeated macro arguments; keyword-only
+  data functions; complex or non-finite initial data, and `dt=inf`, on a mapped domain.
+- `EmbeddedError`: `tol`, `dt_min` and `dt_max` are validated first.
+- The integral of a sine series inside an equation.
+- `sim.dye()` checks what it can compute before creating its file (refused on curvilinear
+  geometries); `sim.cfl()` and `CFL` state their Cartesian contract and refuse curvilinear
+  coordinates.
+- `output(..., mode="a")` refuses to append another computation (other parameters, data,
+  tasks...).
+- Checkpoints: a refused write is refused again on retry; foreign files in a checkpoint chain
+  directory are refused before anything is deleted; `cn.io.latest` ignores files that are not
+  Conatus checkpoints.
+- Cache of decorated functions: a value without a content hash, or a container that contains
+  itself, disables the cache for that call, with a warning.
+- Run registry: a bad gzip `level` is refused at the call.
+- `from_dedalus`: a time loop that changes the simulation is reported unsupported;
+  `to_script()` refuses untranslated lines.
+- `normal_form` refuses a point that is not an equilibrium; DMD refuses zero or non-finite data
+  early.
+- Low-level solvers: complex data is refused, never cut to its real part, by real factors and by a
+  real `ImexIntegrator` (matrices, `x0`, `F(x, t)`); a right-hand side of the wrong shape is refused
+  instead of reshaped; a matrix with NaN or Inf is refused (it reported a condition number of 0).
+- C++ core: every LAPACK return code is checked, and array sizes are checked for overflow.
+
+### Documentation and website
+
+- A ten-minute getting-started page (one equation, one plot, one physical number, four guided
+  changes); the website shows the same page as the documentation.
+- Claims corrected: run recording and the resolution check are on request; a table says which GPU
+  paths have run on GPU hardware; the licences of the bundled GCC runtimes are stated exactly;
+  digits are given as absolute and relative differences; the spin convention of tutorial 8; stale
+  limits removed.
+- Tutorial 11 no longer touches the working directory; the `tutorials` extra includes xarray.
+- Tutorial outputs and figures re-executed with this release.
+- Every gallery script asserts its published value; the user API page lists every public name.
+- Install commands pinned to the release and copyable; films can be paused; the home-page
+  animation is labelled as a browser illustration; search links open real sections and say when
+  results are capped.
+- The acceptance scripts of the review ship in `acceptance/findings/`: run them against an
+  installed wheel with `python acceptance/findings/run_all.py --installed`.
+
+### Known limitations
+
+- Unchanged from 0.1.0: the CPU path is a NumPy reference implementation (slower than established
+  CPU codes on large grids); the GPU path and the CUDA 12 wheel are in beta (the wheel needs a
+  driver supporting CUDA 12.9); one CPU process or one GPU per simulation; set `OMP_NUM_THREADS`
+  as `python -m conatus doctor` advises; the 0.1 API may still change, through a
+  `DeprecationWarning`.
+- SBDF3 and SBDF4 reach their nominal order only with `startup="rk443"`.
+- Time-dependent wall data: RK222, RK443, RKSMR, CNAB2 and CNLF2 are first order under
+  `bc_time="step"`; RK443 is second order under `bc_time="stage"` (`solver.effective_order`
+  says which).
+- `sim.cfl()`, `CFL` and `sim.dye()` are Cartesian only.
+- Records written by 0.1.0 are reproduced with a warning: the keys 0.1.0 did not record are not
+  compared.
+
 ## [0.1.0] - 2026-10-12
 
 First public release. Linux x86-64, CPython 3.11–3.13. BSD-3-Clause.

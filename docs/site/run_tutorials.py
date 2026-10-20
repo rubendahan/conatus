@@ -4,7 +4,9 @@ Each tutorial is a plain script in ``docs/site/tutorials/code/tNN_*.py`` that en
 checks against a published or closed-form value (``assert``). This runner executes them one by one
 in the *conatus* environment (never the docs environment), in a scratch directory, and writes
 
-  <out>/<name>.txt     header (run_id, commit, host, elapsed, exit code) + stdout/stderr
+  <out>/<name>.txt     header (run_id, commit, host, elapsed, exit code, sha256 of the script that
+                       ran) + stdout/stderr; the website shows an output only next to the script
+                       whose hash it records (web/scripts/gen-data.mjs, external review 0.1.0, 72)
   <out>/<name>/        files the script wrote (figures), via CN_TUTORIAL_OUT
   <out>/TUTORIALS.json one entry per tutorial: PASS | FAIL | SKIP (+ reason)  (not STATUS.json:
 
@@ -23,6 +25,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import getpass
+import hashlib
 import json
 import os
 import re
@@ -100,6 +103,7 @@ def main() -> int:
             continue
         figdir = out / name
         figdir.mkdir(exist_ok=True)
+        sha = hashlib.sha256(s.read_bytes()).hexdigest()[:16]      # the script as it is executed
         env = dict(os.environ, MPLBACKEND="Agg", CN_TUTORIAL_OUT=str(figdir), PYTHONUNBUFFERED="1")
         t0 = time.perf_counter()
         try:
@@ -113,10 +117,10 @@ def main() -> int:
         dt = time.perf_counter() - t0
         verdict = "PASS" if code == 0 else "FAIL"
         header = (f"# {name}: {verdict} (exit {code}) in {dt:.1f} s | run_id {run_id} | commit {commit}"
-                  f" | {host} | {datetime.date.today().isoformat()}\n")
+                  f" | {host} | {datetime.date.today().isoformat()} | script sha256 {sha}\n")
         (out / f"{name}.txt").write_text(_scrub(header + text))
         status[name] = {"status": verdict, "exit": code, "elapsed_s": round(dt, 1), "run_id": run_id,
-                        "commit": commit, "host": host, "stderr": bool(err)}
+                        "commit": commit, "host": host, "stderr": bool(err), "script_sha256": sha}
         print(f"{verdict} {name} ({dt:.1f} s){'  [wrote to stderr]' if err else ''}", flush=True)
         if args.sync and verdict == "PASS":
             SYNC.mkdir(exist_ok=True)

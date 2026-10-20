@@ -51,6 +51,18 @@ def _frozen(*arrays: np.ndarray) -> tuple[np.ndarray, ...]:
     return arrays
 
 
+def _frozen_sparse(M: sp.csr_matrix) -> sp.csr_matrix:
+    """A sparse matrix returned by an ``lru_cache`` is shared by every later caller: canonical
+    (sorted, no duplicates, so no SciPy call needs to reorder it in place) and read-only, so an
+    in-place ``M *= c`` or ``M.data[...] = v`` raises instead of changing every later operator
+    (review of the state audit, F1)."""
+    M.sum_duplicates()
+    M.sort_indices()
+    for a in (M.data, M.indices, M.indptr):
+        a.setflags(write=False)
+    return M
+
+
 def _abc(N: int, a: float, b: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Three-term coefficients t P_n = A_n P_{n+1} + B_n P_n + C_n P_{n-1}, n < N."""
     A, B, C = np.zeros(N), np.zeros(N), np.zeros(N)
@@ -67,7 +79,7 @@ def _abc(N: int, a: float, b: float) -> tuple[np.ndarray, np.ndarray, np.ndarray
 def _J(N: int, a: float, b: float) -> sp.csr_matrix:
     """Multiplication by t on P^(a,b) coefficients (N x N truncation of the tridiagonal)."""
     A, B, C = _abc(N, a, b)
-    return sp.diags([A[:-1], B, C[1:]], [-1, 0, 1], shape=(N, N), format="csr")
+    return _frozen_sparse(sp.diags([A[:-1], B, C[1:]], [-1, 0, 1], shape=(N, N), format="csr"))
 
 
 @lru_cache(maxsize=128)
@@ -83,14 +95,14 @@ def _S(N: int, a: float, b: float) -> sp.csr_matrix:
         return sp.diags([diag, sup], [0, 1], shape=(N, N), format="csr")
     Sa = step(a, b, -1.0, "a")                           # (a, b) -> (a+1, b)
     Sb = step(a + 1, b, +1.0, "b")                       # (a+1, b) -> (a+1, b+1)
-    return (Sb @ Sa).tocsr()
+    return _frozen_sparse((Sb @ Sa).tocsr())
 
 
 @lru_cache(maxsize=128)
 def _D(N: int, a: float, b: float) -> sp.csr_matrix:
     """d/dt: P^(a,b) -> P^(a+1,b+1), single superdiagonal."""
     n = np.arange(1, N, dtype=float)
-    return sp.diags([(n + a + b + 1) / 2], [1], shape=(N, N), format="csr")
+    return _frozen_sparse(sp.diags([(n + a + b + 1) / 2], [1], shape=(N, N), format="csr"))
 
 
 _LD = np.longdouble

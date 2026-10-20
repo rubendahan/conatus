@@ -419,8 +419,9 @@ def ir_system(problem, parameters: Sequence[str | E.Parameter], *,
         s = build(chk).system
         Lc, Mc = _lm(lhs_coef, lhs_params, p0, chk)
         scale = max(abs(L0).max(), abs(M0).max(), 1e-300)
-        err = max(abs(Lc - s.L).max(), abs(Mc - s.M).max()) / scale
-        if err > RECON_TOL:
+        # NaN-safe (review of the audit "assurances"): a NaN entry is no pass
+        err = float(np.max([abs(Lc - s.L).max(), abs(Mc - s.M).max()]) / scale)
+        if not err <= RECON_TOL:
             raise UnsupportedError(f"ir_system: L(p), M(p) reconstruction error {err:.1e} > {RECON_TOL:.0e}")
         notes.append(f"LHS parameters {lhs_params}: L(p), M(p) exact Laurent reconstruction "
                      f"(exponents {exps}, {len(samples)} plans, check error {err:.1e})")

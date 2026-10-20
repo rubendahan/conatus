@@ -1,5 +1,10 @@
 """Conatus: a high-performance mathematical laboratory for PDEs and dynamical systems."""
-__version__ = "0.1.0"  # single source of the version (pyproject reads it)
+__version__ = "0.1.1"  # single source of the version (pyproject reads it)
+# The content of every conatus module this process imports is recorded (sha256 of its source):
+# a module edited on disk afterwards is not the code that runs (conatus.provenance.code_state,
+# changed_since_import, audit state).
+from . import _import_record  # noqa: E402
+_import_record.install(__file__, _import_record.__file__)
 
 
 # Two layers: ``import conatus as cn`` is the user layer (native models
@@ -18,9 +23,9 @@ _NATIVE = ("Box", "Channel", "Disk", "Annulus", "Pipe", "Cylinder", "TaylorCouet
 _LAZY = {"from_dedalus": "conatus.translate", "doctor": "conatus._doctor",
          "parse_equation": "conatus.ir.parse", "parse_expr": "conatus.ir.parse",
          "StopRun": "conatus.telemetry", "uncertainty": "conatus.verify.uncertainty",
-         "time_average": "conatus.verify.statistics"}
+         "time_average": "conatus.verify.statistics", "box": "conatus.contour"}
 _MODULES = ("expert", "runs", "problems", "notebook", "translate", "resolution", "model", "io",
-            "tolerances", "errors", "discretize", "linearize", "methods", "verify")
+            "tolerances", "errors", "discretize", "linearize", "methods", "verify", "contour")
 __all__ = sorted(["__version__", *_NATIVE, *_LAZY, *_MODULES])
 
 
@@ -43,9 +48,11 @@ def __getattr__(name: str):
     ``cn.uncertainty`` (numerical-uncertainty report, conatus.verify.uncertainty),
     ``cn.time_average`` (mean and statistical error of a correlated series, conatus.verify.statistics),
     ``cn.tolerances`` (which tolerances are required, the declared defaults: ``cn.tolerances.explain()``).
+    ``cn.box(re=, im=)`` (a region of the complex plane: ``m.eigenvalues(..., region=)``) and
+    ``cn.contour`` (eigenvalue counts by the argument principle, Beyn's method).
     Native layer: ``cn.Box``, ``cn.Channel``, ``cn.Disk``, ..., ``cn.Model`` (conatus.model);
-    watching a run live: ``cn.view``, ``cn.spectrum``, ``cn.profile``, ``cn.series``
-    (``sim.watch``), ``cn.StopRun`` (a stop sent by a monitor)."""
+    watching a run in the Studio: ``cn.view``, ``cn.spectrum``, ``cn.profile``, ``cn.series``
+    (``sim.watch``), ``cn.StopRun`` (a stop sent from the Studio)."""
     import importlib
     if name in _MODULES or name == "api":
         return importlib.import_module(f"conatus.{name}")

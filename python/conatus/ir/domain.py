@@ -1,4 +1,4 @@
-"""Product domains (spec §8, §10).
+"""Product domains.
 
 A domain is a coordinate system together with a basis for *some* of its
 coordinates. A coordinate without a basis means "constant along it" (e.g. a tau

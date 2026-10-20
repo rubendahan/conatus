@@ -11,6 +11,7 @@ from __future__ import annotations
 import datetime
 import hashlib
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -40,7 +41,10 @@ project = "Conatus"
 author = "Ruben Dahan and contributors"
 _YEAR = datetime.date.today().year
 copyright = f"2026{'' if _YEAR == 2026 else f'–{_YEAR}'}, {author}"   # not "2026–2026"
-release = version = "0.1.0"
+# The version of the package documented (single source: python/conatus/__init__.py), read as text so
+# that the docs never import a stale installed copy; shown by the sidebar status line.
+release = version = re.search(r'^__version__ = "([^"]+)"', (ROOT / "python" / "conatus" / "__init__.py")
+                              .read_text(), re.M).group(1)
 
 # -- Extensions --------------------------------------------------------------------------------
 extensions = [
@@ -83,8 +87,8 @@ copybutton_prompt_is_regexp = True
 # MathJax: self-hosted (after the critique-pass-3 fix S8 that pinned the CDN copy with an
 # SRI hash). The CDN copy then fetched its font chunks and speech-rule maps from jsdelivr at run time
 # without integrity; now every file comes from _static/vendor (exact version and sha512 in
-# vendor/lock.json), so the docs load nothing from another origin (tests/infra/
-# test_third_party_scripts.py; docs/site/check_origins.py scans the built HTML).
+# vendor/lock.json), so the docs load nothing from another origin (checked on the built HTML by the
+# development tooling).
 # Performance (Lighthouse 41-72 on the getting-started tutorial; MathJax typesetting a long page in one
 # main-thread task): mathjax_config.js turns the speech-rule enrichment off by default (the menu turns it
 # on), keeps the assistive MathML, and typesets one formula per task in idle time. The font loader
@@ -106,6 +110,9 @@ html_theme = "furo"
 html_title = "Conatus"
 html_static_path = ["_static", str(ROOT / "docs" / "brand" / "tokens.css"), str(VENDOR)]
 html_css_files = ["vendor/fonts/fonts.css", "tokens.css", "conatus.css"]
+# Tutorial films (tutorials/*.md, made by tutorial_media.py): play only while visible, never under
+# prefers-reduced-motion (the poster stays), as the films of the website.
+html_js_files = [("tutorial_films.js", {"defer": "defer"})]
 # Sidebar: Furo's, plus the way back to the website and the status line.
 html_sidebars = {"**": ["sidebar/brand.html", "sidebar/site.html", "sidebar/search.html",
                         "sidebar/scroll-start.html", "sidebar/navigation.html",

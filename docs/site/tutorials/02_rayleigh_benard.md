@@ -89,6 +89,13 @@ $k = \pi$ (declared: the matrices of one wavenumber do not depend on the others)
 sizes, tau method, dealiasing, scheme, step), with the citations it relies on, and states what the
 native layer decided.
 
+```{figure} media/t02_growth.png
+:alt: The roll amplitude on a log scale against time: after a short shaded start the dots follow a straight red line.
+:width: 100%
+
+The initial-value problem against the eigenvalue problem. After t = 0.3 the amplitude grows at σ = 5.5425080, the EVP's 5.5425059: a relative difference of 4×10⁻⁷, within the 10⁻⁵ the script checks.
+```
+
 ## A run over several jobs
 
 A cluster job has a time limit, so a long run is a chain of jobs, and each job runs the same
@@ -112,6 +119,13 @@ the formats).
 
 **Check.** EVP: $\sigma = 5.5425059231$ (the streamfunction formulation gives $5.542505923$); IVP from a
 $10^{-6}$ perturbation: $\sigma = 5.5425080$ over $t \in [0.3, 0.8]$, i.e. $4\times10^{-7}$ relative.
+
+```{figure} media/t02_chain.png
+:alt: Kinetic energy against time on a log scale, black circles up to t = 0.3 and red squares after, continuing the same straight line.
+:width: 100%
+
+The kinetic energy written to rb.h5 by the two jobs of the chain: the second starts from the checkpoint of the first and continues the same file. One run, bit for bit.
+```
 
 ```{literalinclude} code/t02a_rayleigh_benard_cpu.py
 :language: python

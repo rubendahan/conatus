@@ -1,4 +1,4 @@
-# t05_ks_orbits: PASS (exit 0) in 41.3 s | 2026-10-09
+# t05_ks_orbits: PASS (exit 0) in 68.7 s | 2026-10-20 | script sha256 1481734c97ed43b4
 equilibrium: space=antisymmetric subspace R u = u (cos components frozen at 0), mean frozen
   relative residual 1.385e-16 (7 Newton iterations), energy E = 0.260873, status provisional
   note: residual = ‖v(u)‖/‖u‖ with v = M⁻¹(F − L u), evaluated in the full space

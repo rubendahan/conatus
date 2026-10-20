@@ -24,8 +24,12 @@ _DOC = "docs/site/guide/dynamics/chaos.md"
 def _whole(sim: Any, T: float, what: str, unit: float, unit_name: str, *, zero: bool) -> int:
     """Number of units in the duration ``T`` (refused unless whole; 0 only when ``zero``)."""
     from ..timestep.integrator import is_whole
-    if isinstance(T, bool) or not isinstance(T, (int, float, np.integer, np.floating)):
-        raise InputTypeError(f"lyapunov({what}={T!r}): a duration (a number)", doc=_DOC)
+    import math
+    # a finite number (review of the inputs audit: T=nan was a bare ValueError of
+    # int(round(nan)), inf an OverflowError)
+    if isinstance(T, bool) or not isinstance(T, (int, float, np.integer, np.floating)) \
+            or not math.isfinite(float(T)):
+        raise InputTypeError(f"lyapunov({what}={T!r}): a duration (a finite number)", doc=_DOC)
     n = float(T) / unit
     k = int(round(n))
     if k < (0 if zero else 1) or not is_whole(n):
@@ -155,6 +159,9 @@ def simulation_lyapunov(sim: Any, n_vectors: int, *, transient: float, align: fl
     dt = sim.dt
     from ..errors import check_count
     reortho_every = check_count(reortho_every, "reortho_every", "lyapunov")
+    # the seed of the random tangent vectors: an integer >= 0 (review of the inputs audit:
+    # seed=0.5 was a bare TypeError of NumPy's SeedSequence)
+    check_count(seed, "seed", "lyapunov", minimum=0)
     unit = reortho_every * dt
     transient_steps = _whole(sim, transient, "transient", dt, "steps", zero=True)
     align_steps = _whole(sim, align, "align", dt, "steps", zero=True)

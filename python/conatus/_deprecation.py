@@ -268,3 +268,20 @@ def given(where: str, name: str, value: Any) -> Any:
         raise OptionError(f"{where}: {name} must be given explicitly (no default)",
                           fix=f"{where}(..., {name}=...)")
     return value
+
+
+def former_names(module: str, names: dict[str, tuple[str, Any]]):
+    """A module ``__getattr__`` (PEP 562) for names a module showed in 0.1 and no longer does
+    (release 0.2, L8): ``names`` maps the former name to (its canonical path, the object). The
+    name resolves to the same object with a DeprecationWarning at the user's line; anything else
+    raises AttributeError as usual. Example: ``renames`` of the problem modules, imported there as
+    ``_renames`` since 0.2 (V5)."""
+    def __getattr__(name: str) -> Any:
+        if name in names:
+            from .errors import _warn_user
+            path, obj = names[name]
+            _warn_user(f"{module}.{name} is not a public name of this module since 0.2: use "
+                       f"{path}, the same object", DeprecationWarning)
+            return obj
+        raise AttributeError(f"module {module!r} has no attribute {name!r}")
+    return __getattr__

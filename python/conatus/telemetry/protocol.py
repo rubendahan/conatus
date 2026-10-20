@@ -1,21 +1,21 @@
 """Conatus telemetry protocol, version 1 (spec).
 
-Two planes only (spec §95): the **telemetry plane** (small JSON records: scalars, events, logs,
+Two planes only: the **telemetry plane** (small JSON records: scalars, events, logs,
 status) and the **visualization plane** (lossy 2D frames, latest value only). The scientific data
 plane (checkpoints, snapshots) never goes through here.
 
 Transport v1 is a *spool directory* on the shared file system, written by the computation and read
-by a monitor (see :mod:`conatus.telemetry.reader`):
+by the Studio server (see :mod:`conatus.telemetry.reader`):
 
 * ``<run_id>.jsonl``            — one JSON record per line, appended (telemetry plane);
 * ``<run_id>.frame.<name>.json`` — latest frame of ``name``, replaced atomically (visualization plane;
   kinds ``frame`` (2D), and since ``frame3d``, ``points3d``, ``vec2d``: see FRAME_KINDS);
-* ``<run_id>.control.jsonl``    — commands written by a monitor, read by the computation;
+* ``<run_id>.control.jsonl``    — commands written by the Studio, read by the computation;
 * ``<run_id>.film.ndjson``      — the film: frames kept for replay, compact encoding, bounded
   budget (see :func:`film_record`; the name does not match ``*.jsonl`` on purpose: older
   readers and relays never mistake it for the record file).
 
-Files decouple the two sides completely: a monitor that is slow, absent or crashed has no effect on
+Files decouple the two sides completely: a Studio that is slow, absent or crashed has no effect on
 the run, and a run can be followed from any node that mounts the spool.
 """
 from __future__ import annotations
@@ -30,10 +30,26 @@ from typing import Any
 
 import numpy as np
 
+try:
+    from ..errors import OptionError, check_count
+except ImportError:      # the Studio hub image ships the protocol without conatus.errors
+    class OptionError(ValueError):  # type: ignore[no-redef]
+        """Stand-in of conatus.errors.OptionError (same base class, message only)."""
+
+        def __init__(self, message: str = "", **_kw: Any) -> None:
+            super().__init__(message)
+
+    def check_count(value: Any, name: str, where: str, minimum: int = 1) -> int:  # type: ignore[misc]
+        """Stand-in of conatus.errors.check_count."""
+        import numbers
+        if isinstance(value, bool) or not isinstance(value, numbers.Integral) or value < minimum:
+            raise OptionError(f"{where}: {name}={value!r} must be an integer >= {minimum}")
+        return int(value)
+
 PROTOCOL_VERSION = 1
 # run ids: file names in the spool, keys on the relay and the hub (one rule for all of them)
 RUN_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$")
-# The spool audit file (written by the spool clients of a monitor) also ends in
+# The spool audit of the agent channel (``conatus.studio.client.SpoolClient``) also ends in
 # ``.jsonl``: it is not a run file, and its stem is not a valid run id.
 SPOOL_AUDIT = "studio_audit.jsonl"
 RESERVED_RUN_IDS = (SPOOL_AUDIT[:-len(".jsonl")],)
@@ -55,19 +71,19 @@ def run_file_id(name: str) -> str | None:
 KINDS = ("header", "scalars", "event", "log", "status", "newton")
 # Frame kinds of the visualization plane (one file per name, latest value only). "frame" is the
 # 2D frame of v1; frame3d, points3d, vec2d were added for (3D view) and ``curve`` (1D: spectra,
-# profiles) for a monitor rebuild; older clients ignore the kinds they do not know.
+# profiles) for the Studio rebuild; older clients ignore the kinds they do not know.
 FRAME_KINDS = ("frame", "frame3d", "points3d", "vec2d", "curve")
 # Declared display scales of a 3D frame (brand charter, section III "Data").
 SCALES = ("smoke", "signed", "dye")
 POINT_MODES = ("particles", "pathlines", "streaklines", "timelines")
 # Views and statistics a run declares in its header (``Telemetry(views=..., stats=...)``, the native
-# ``Simulation.watch``): a monitor offers only what is declared (no hidden physics).
+# ``Simulation.watch``): the Studio offers only what is declared (no hidden physics).
 VIEW_KINDS = ("film2d", "volume3d", "particles", "flow2d")
 STAT_KINDS = ("series", "spectrum", "profile")
 # Film encoding of the 8-bit frames: PNG-style "Up" filter (row minus previous row, mod 256) along
 # the last axis, then zlib deflate (RFC 1950, what a browser's DecompressionStream("deflate") reads).
 FILM_ENCODING = "uint8-minmax-up-deflate-base64"
-# Commands of the control file (monitor -> computation). "fork" is recorded, never applied in place.
+# Commands of the control file (Studio -> computation). "fork" is recorded, never applied in place.
 # "set" changes one parameter the run *declared* settable (header ``controls``), within its declared
 # bounds; any other name or value is refused by the hub, the relay and the run itself.
 COMMANDS = ("pause", "resume", "checkpoint", "stop", "fork", "set")
@@ -88,17 +104,17 @@ def check_controls(controls: Any) -> list[dict] | None:
         c = dict(c)
         name = c.get("name")
         if not isinstance(name, str) or not _CONTROL_NAME.match(name):
-            raise ValueError(f"control {name!r}: a name of letters, digits, '_' or '.' (e.g. 'dt')")
+            raise OptionError(f"control {name!r}: a name of letters, digits, '_' or '.' (e.g. 'dt')")
         if name in seen:
-            raise ValueError(f"control {name!r} declared twice")
+            raise OptionError(f"control {name!r} declared twice")
         if c.get("kind", "number") not in CONTROL_KINDS:
-            raise ValueError(f"control {name!r}: kind must be one of {CONTROL_KINDS}")
+            raise OptionError(f"control {name!r}: kind must be one of {CONTROL_KINDS}")
         try:
             lo, hi = float(c["min"]), float(c["max"])
         except (KeyError, TypeError, ValueError):
-            raise ValueError(f"control {name!r}: declare its bounds, min and max (numbers)") from None
+            raise OptionError(f"control {name!r}: declare its bounds, min and max (numbers)") from None
         if not (np.isfinite(lo) and np.isfinite(hi) and lo < hi):
-            raise ValueError(f"control {name!r}: bounds must be finite with min < max, got "
+            raise OptionError(f"control {name!r}: bounds must be finite with min < max, got "
                              f"[{lo}, {hi}]")
         seen.add(name)
         out.append({**{k: str(v) for k, v in c.items() if k in ("label", "unit", "doc")},
@@ -111,11 +127,11 @@ def check_set(controls: Any, params: Any) -> tuple[str, float]:
     ``{"name": declared name, "value": finite number in [min, max]}``. Returns (name, value);
     ValueError with a message for the sender otherwise (nothing is ever clipped or rounded)."""
     if not isinstance(params, dict) or set(params) - {"name", "value"}:
-        raise ValueError('set needs params {"name": <declared control>, "value": <number>}')
+        raise OptionError('set needs params {"name": <declared control>, "value": <number>}')
     decl = {c.get("name"): c for c in (controls or []) if isinstance(c, dict)}
     name = params.get("name")
     if name not in decl:
-        raise ValueError(f"{name!r} is not declared settable by this run (settable: "
+        raise OptionError(f"{name!r} is not declared settable by this run (settable: "
                          f"{sorted(decl) or 'none'})")
     v = params.get("value")
     try:                    # a JSON integer of 400 digits overflows float(): refused like inf
@@ -123,10 +139,10 @@ def check_set(controls: Any, params: Any) -> tuple[str, float]:
     except OverflowError:
         finite = False
     if not finite:
-        raise ValueError(f"set {name}: the value must be a finite number, got {str(v)[:40]}")
+        raise OptionError(f"set {name}: the value must be a finite number, got {str(v)[:40]}")
     lo, hi = float(decl[name]["min"]), float(decl[name]["max"])
     if not lo <= float(v) <= hi:
-        raise ValueError(f"set {name}={v!r}: outside the declared bounds [{lo:g}, {hi:g}] "
+        raise OptionError(f"set {name}={v!r}: outside the declared bounds [{lo:g}, {hi:g}] "
                          "(never clipped)")
     return str(name), float(v)
 
@@ -155,7 +171,7 @@ def control_file_problem(st: os.stat_result) -> str | None:
 def record(kind: str, run_id: str, **payload: Any) -> dict:
     """One telemetry-plane record. Unknown kinds are refused (no silent protocol drift)."""
     if kind not in KINDS:
-        raise ValueError(f"unknown telemetry record kind {kind!r}; protocol v{PROTOCOL_VERSION} "
+        raise OptionError(f"unknown telemetry record kind {kind!r}; protocol v{PROTOCOL_VERSION} "
                          f"knows {KINDS}")
     return {"v": PROTOCOL_VERSION, "kind": kind, "run_id": run_id, "wall": time.time(), **payload}
 
@@ -169,13 +185,19 @@ def encode_frame(run_id: str, name: str, data: np.ndarray, *, max_px: int, t: fl
     ``scale`` (optional, ``smoke`` | ``signed`` | ``dye``) is the declared display scale;
     ``resample`` (optional text) declares a resampling done by the caller before encoding."""
     if scale is not None and scale not in SCALES:
-        raise ValueError(f"frame {name!r}: scale must be one of {SCALES}, got {scale!r}")
+        raise OptionError(f"frame {name!r}: scale must be one of {SCALES}, got {scale!r}")
+    # audit inputs: max_px=0 was a ZeroDivisionError, 4.5 accepted; complex data lost
+    # their imaginary part (np.asarray(..., float)); every protocol refusal is now typed
+    max_px = check_count(max_px, "max_px", f"frame {name!r}")
+    if np.iscomplexobj(data):
+        raise OptionError(f"frame {name!r}: complex values (a picture is of real values)",
+                          fix="send np.real(...), np.abs(...) or np.angle(...) explicitly")
     a = np.asarray(data, dtype=float)
     if a.ndim != 2:
-        raise ValueError(f"frame {name!r}: a 2D array is required, got shape {a.shape}")
+        raise OptionError(f"frame {name!r}: a 2D array is required, got shape {a.shape}")
     if not np.all(np.isfinite(a)):
         n_bad = int(np.size(a) - np.count_nonzero(np.isfinite(a)))
-        raise ValueError(f"frame {name!r}: {n_bad} non-finite values (not sent as a picture)")
+        raise OptionError(f"frame {name!r}: {n_bad} non-finite values (not sent as a picture)")
     sx = max(1, int(np.ceil(a.shape[0] / max_px)))
     sy = max(1, int(np.ceil(a.shape[1] / max_px)))
     b = a[::sx, ::sy]
@@ -198,7 +220,7 @@ def encode_frame(run_id: str, name: str, data: np.ndarray, *, max_px: int, t: fl
 def decode_frame(frame: dict) -> np.ndarray:
     """Inverse of :func:`encode_frame` (up to the declared 8-bit quantization)."""
     if frame.get("encoding") != "uint8-minmax-base64":
-        raise ValueError(f"unknown frame encoding {frame.get('encoding')!r}")
+        raise OptionError(f"unknown frame encoding {frame.get('encoding')!r}")
     q = np.frombuffer(base64.b64decode(frame["data"]), np.uint8).reshape(frame["shape"])
     lo, hi = frame["min"], frame["max"]
     return lo + (hi - lo) * q.astype(float) / 255.0
@@ -236,20 +258,20 @@ def encode_frame3d(run_id: str, name: str, data: Any, *, max_px: int, extent: An
     a frame always says where its samples are. ``scale``: declared display scale
     (``smoke`` | ``signed`` | ``dye``)."""
     if scale not in SCALES:
-        raise ValueError(f"frame3d {name!r}: scale must be one of {SCALES}, got {scale!r}")
+        raise OptionError(f"frame3d {name!r}: scale must be one of {SCALES}, got {scale!r}")
     if resample not in ("stride", "given"):
-        raise ValueError(f"frame3d {name!r}: resample must be 'stride' or 'given'")
+        raise OptionError(f"frame3d {name!r}: resample must be 'stride' or 'given'")
     shape = tuple(int(n) for n in getattr(data, "shape", ()))
     if len(shape) != 3:
-        raise ValueError(f"frame3d {name!r}: a 3D array is required, got shape {shape}")
+        raise OptionError(f"frame3d {name!r}: a 3D array is required, got shape {shape}")
     ext = [[float(lo), float(hi)] for lo, hi in extent]
     if len(ext) != 3:
-        raise ValueError(f"frame3d {name!r}: extent needs 3 [lo, hi] pairs")
+        raise OptionError(f"frame3d {name!r}: extent needs 3 [lo, hi] pairs")
     st = [max(1, int(np.ceil(n / max_px))) for n in shape]
     b = _host(data[::st[0], ::st[1], ::st[2]])     # stride on the device, copy the small array
     if not np.all(np.isfinite(b)):
         n_bad = int(b.size - np.count_nonzero(np.isfinite(b)))
-        raise ValueError(f"frame3d {name!r}: {n_bad} non-finite values (not sent as a picture)")
+        raise OptionError(f"frame3d {name!r}: {n_bad} non-finite values (not sent as a picture)")
     q, lo, hi = _quant8(b)
     fr = {"v": PROTOCOL_VERSION, "kind": "frame3d", "run_id": run_id, "name": name,
           "wall": time.time(), "t": t, "iteration": iteration, "shape": list(b.shape),
@@ -262,7 +284,7 @@ def encode_frame3d(run_id: str, name: str, data: Any, *, max_px: int, extent: An
     if coords is not None:
         cs = [np.asarray(_host(c)).reshape(-1) for c in coords]
         if len(cs) != 3 or any(len(c) != n for c, n in zip(cs, shape, strict=True)):
-            raise ValueError(f"frame3d {name!r}: coords must give {shape} positions per axis")
+            raise OptionError(f"frame3d {name!r}: coords must give {shape} positions per axis")
         fr["coords"] = [c[::s].tolist() for c, s in zip(cs, st, strict=True)]
         fr["nodes"] = "given"
     else:                                          # declared default: periodic-style nodes
@@ -275,7 +297,7 @@ def encode_frame3d(run_id: str, name: str, data: Any, *, max_px: int, extent: An
 def decode_frame3d(frame: dict) -> np.ndarray:
     """Inverse of :func:`encode_frame3d` (up to the 8-bit quantization, error <= (max-min)/510)."""
     if frame.get("encoding") != "uint8-minmax-base64":
-        raise ValueError(f"unknown frame3d encoding {frame.get('encoding')!r}")
+        raise OptionError(f"unknown frame3d encoding {frame.get('encoding')!r}")
     q = np.frombuffer(base64.b64decode(frame["data"]), np.uint8).reshape(frame["shape"])
     return frame["min"] + (frame["max"] - frame["min"]) * q.astype(float) / 255.0
 
@@ -289,17 +311,18 @@ def encode_points(run_id: str, name: str, pts: Any, *, max_points: int, extent: 
     (step (hi - lo)/65534; 65535 = missing); a point outside the extent is clipped **and
     counted** (``clipped``). ``values`` (same leading shape, optional): 8-bit per point."""
     if mode not in POINT_MODES:
-        raise ValueError(f"points3d {name!r}: mode must be one of {POINT_MODES}, got {mode!r}")
+        raise OptionError(f"points3d {name!r}: mode must be one of {POINT_MODES}, got {mode!r}")
+    max_points = check_count(max_points, "max_points", f"points3d {name!r}")
     a = _host(pts)
     if a.ndim == 2:
         a = a[:, None, :]
     if a.ndim != 3 or a.shape[2] not in (2, 3):
-        raise ValueError(f"points3d {name!r}: (n, d) or (n_lines, n_pts, d) with d = 2 or 3, "
+        raise OptionError(f"points3d {name!r}: (n, d) or (n_lines, n_pts, d) with d = 2 or 3, "
                          f"got shape {a.shape}")
     d = a.shape[2]
     ext = np.array([[float(lo), float(hi)] for lo, hi in extent])
     if ext.shape != (d, 2) or np.any(ext[:, 1] <= ext[:, 0]):
-        raise ValueError(f"points3d {name!r}: extent needs {d} increasing [lo, hi] pairs")
+        raise OptionError(f"points3d {name!r}: extent needs {d} increasing [lo, hi] pairs")
     n_lines, n_pts = a.shape[:2]
     full = [n_lines, n_pts]
     sl = max(1, int(np.ceil(n_lines * n_pts / max_points))) if n_pts == 1 else \
@@ -316,7 +339,7 @@ def encode_points(run_id: str, name: str, pts: Any, *, max_points: int, extent: 
         if sp > 1:
             v = v[:, idx]
         if v.shape != a.shape[:2]:
-            raise ValueError(f"points3d {name!r}: values shape {v.shape} != {a.shape[:2]}")
+            raise OptionError(f"points3d {name!r}: values shape {v.shape} != {a.shape[:2]}")
     missing = ~np.all(np.isfinite(a), axis=2)
     u = (a - ext[:, 0]) / (ext[:, 1] - ext[:, 0])
     u = np.where(np.isfinite(u), u, 0.0)
@@ -341,7 +364,7 @@ def encode_points(run_id: str, name: str, pts: Any, *, max_points: int, extent: 
 def decode_points(frame: dict) -> np.ndarray:
     """(n_lines, n_pts, d) positions, NaN where missing (inverse of :func:`encode_points`)."""
     if frame.get("encoding") != "uint16-extent-base64":
-        raise ValueError(f"unknown points3d encoding {frame.get('encoding')!r}")
+        raise OptionError(f"unknown points3d encoding {frame.get('encoding')!r}")
     n, m = frame["shape"]
     d = frame["dim"]
     q = np.frombuffer(base64.b64decode(frame["data"]), "<u2").reshape(n, m, d)
@@ -353,16 +376,16 @@ def decode_points(frame: dict) -> np.ndarray:
 
 def encode_vec2d(run_id: str, name: str, u: Any, v: Any, *, max_px: int, extent: Any,
                  t: float | None = None, iteration: int | None = None) -> dict:
-    """Lossy 2D vector field (for LIC and streamlines in a monitor): both components strided
+    """Lossy 2D vector field (for LIC and streamlines in the Studio): both components strided
     to at most ``max_px`` per axis and quantized to 8 bits on one symmetric scale
     ``amp = max(|u|, |v|)``: q = round(127.5 (1 + c / amp)), c = amp (q - 127.5) / 127.5."""
     a, b = getattr(u, "shape", ()), getattr(v, "shape", ())
     if len(a) != 2 or tuple(a) != tuple(b):
-        raise ValueError(f"vec2d {name!r}: two 2D arrays of one shape required, got {a} and {b}")
+        raise OptionError(f"vec2d {name!r}: two 2D arrays of one shape required, got {a} and {b}")
     s = [max(1, int(np.ceil(n / max_px))) for n in a]
     uu, vv = _host(u[::s[0], ::s[1]]), _host(v[::s[0], ::s[1]])
     if not (np.all(np.isfinite(uu)) and np.all(np.isfinite(vv))):
-        raise ValueError(f"vec2d {name!r}: non-finite values (not sent)")
+        raise OptionError(f"vec2d {name!r}: non-finite values (not sent)")
     amp = float(max(np.abs(uu).max(), np.abs(vv).max()))
     sc = amp if amp > 0 else 1.0
     q = np.round(127.5 * (1 + np.stack([uu, vv]) / sc)).astype(np.uint8)
@@ -378,7 +401,7 @@ def encode_vec2d(run_id: str, name: str, u: Any, v: Any, *, max_px: int, extent:
 def decode_vec2d(frame: dict) -> tuple[np.ndarray, np.ndarray]:
     """(u, v) of a :func:`encode_vec2d` frame (error <= amp / 255)."""
     if frame.get("encoding") != "uint8-signed-amp-base64":
-        raise ValueError(f"unknown vec2d encoding {frame.get('encoding')!r}")
+        raise OptionError(f"unknown vec2d encoding {frame.get('encoding')!r}")
     q = np.frombuffer(base64.b64decode(frame["data"]), np.uint8).reshape(2, *frame["shape"])
     c = frame["amp"] * (q.astype(float) - 127.5) / 127.5
     return c[0], c[1]
@@ -391,13 +414,14 @@ def encode_curve(run_id: str, name: str, x: Any, y: Any, *, max_points: int = 40
     """A 1D curve (a spectrum, a profile): x and y sent as JSON floats, strided to at most
     ``max_points`` points (the stride is declared; the last point is always kept). Non-finite
     values are refused (the curve is not sent, the caller logs why): a picture never hides a NaN."""
+    max_points = check_count(max_points, "max_points", f"curve {name!r}", minimum=2)
     xx, yy = _host(x).reshape(-1), _host(y).reshape(-1)
     if xx.shape != yy.shape or xx.size == 0:
-        raise ValueError(f"curve {name!r}: x and y need one non-empty shape, got {xx.shape} and "
+        raise OptionError(f"curve {name!r}: x and y need one non-empty shape, got {xx.shape} and "
                          f"{yy.shape}")
     bad = int(np.count_nonzero(~np.isfinite(xx)) + np.count_nonzero(~np.isfinite(yy)))
     if bad:
-        raise ValueError(f"curve {name!r}: {bad} non-finite values (not sent)")
+        raise OptionError(f"curve {name!r}: {bad} non-finite values (not sent)")
     st = max(1, int(np.ceil(xx.size / max_points)))
     idx = np.unique(np.r_[np.arange(0, xx.size, st), xx.size - 1])
     return {"v": PROTOCOL_VERSION, "kind": "curve", "run_id": run_id, "name": name,
@@ -434,7 +458,8 @@ def film_record(frame: dict, *, i: int, level: int, compress_level: int = 6) -> 
     film when it was kept (every ``4**level``-th frame of that name). 8-bit frames (``frame``,
     ``frame3d``) are re-encoded **losslessly** with :data:`FILM_ENCODING` (same bytes as the
     frame, about 3 to 10 times smaller on smooth fields); the other kinds keep their encoding."""
-    rec = {**frame, "i": int(i), "level": int(level)}
+    rec = {**frame, "i": check_count(i, "i", "film_record()", minimum=0),
+           "level": check_count(level, "level", "film_record()", minimum=0)}
     if frame.get("kind") in ("frame", "frame3d") and frame.get("encoding") == "uint8-minmax-base64":
         q = np.frombuffer(base64.b64decode(frame["data"]), np.uint8)
         row = int(frame["shape"][-1])

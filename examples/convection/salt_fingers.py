@@ -61,4 +61,5 @@ if __name__ == "__main__":
             print(f"  R_T={R_T:8.0f} tau={tau:.3f} N={N}: R_S,c = {cp.value:.8f} (exact {ex:.8f}, "
                   f"rel. {cp.value / ex - 1:+.1e}), k_c = {cp.over['k']:.6f} "
                   f"(exact {np.pi / np.sqrt(2):.6f}), residual {cp.mode.residual:.1e}")
+            assert abs(cp.value / ex - 1) < 1e-10 and abs(cp.over["k"] - np.pi / np.sqrt(2)) < 1e-5, (R_T, tau, N)
     print(cp.explain())

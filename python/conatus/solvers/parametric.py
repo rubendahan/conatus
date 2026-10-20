@@ -19,6 +19,7 @@ exact matrix derivatives d/dp for sensitivities. ``critical`` finds a neutral pa
 from __future__ import annotations
 
 import itertools
+import math
 import numbers
 import warnings
 from collections.abc import Callable, Mapping, Sequence
@@ -38,7 +39,7 @@ from ..errors import ConvergenceError, OptionError, ParameterError, did_you_mean
 from ..ir import expr as E
 from ..ir.problem import EVP, ProblemError
 from ..tolerances import NCC_TAIL_TOL, REQUIRED, require
-from .evp import EVPResult, solve_dense
+from .evp import EVPResult, drift_ratios, solve_dense
 from .plan_evp import pencil_rank
 
 __all__ = ["laurent_exponents", "ParametricEVP", "TrackedMode", "CriticalPoint", "critical"]
@@ -52,6 +53,7 @@ MULTIPLICITY_TOL = 1e-8         # singular values <= this x scale: multiple eige
 MODE_SWITCH_TOL = 1e-8          # critical(): another mode more unstable by more than this: refused
 CRITICAL_MAX_ITERATIONS = 50    # critical(): Newton cap on the neutral parameter (raises when hit)
 BRACKET_SCAN_POINTS = 8         # critical(): interior points scanned to name sub-brackets of a refused bracket
+OVER_EDGE_FRACTION = 1e-6       # critical(over=): a minimum this close (x width) to an end of over is at the edge
 
 
 def laurent_exponents(x: E.Expr, p: E.Parameter) -> frozenset[int] | None:
@@ -335,8 +337,11 @@ class ParametricEVP:
         check = {p.name: p.value * (1.0 + 0.137 * (i + 1)) for i, p in enumerate(self.params)}
         gm = self._plan_mats(self._internal(check))
         L, M = self.matrices(**check)
-        err = max(np.abs(L - gm.L.toarray()).max(), np.abs(M - gm.M.toarray()).max()) / scale
-        if err > RECON_TOL:
+        # np.max and "not <=": a NaN entry of L(p) or M(p) is no pass (review of the audit
+        # "assurances": Python's max(1e-17, nan) and nan > tol both hid it)
+        err = float(np.max([np.abs(L - gm.L.toarray()).max(), np.abs(M - gm.M.toarray()).max()])
+                    / scale)
+        if not err <= RECON_TOL:
             raise ProblemError(f"parametric pencil reconstruction error {err:.1e} > {RECON_TOL:.0e}")
         self.recon_error, self.n_terms, self.n_dropped = err, len(self._coef), dropped
         self.rank_check = pencil_rank(gm)
@@ -355,6 +360,27 @@ class ParametricEVP:
                     + ", ".join(f"{p.name}=..." for p in self.params)
                     + did_you_mean(next(iter(set(values) - {p.name for p in self.params}), ""),
                                    [p.name for p in self.params]))
+        # a name that is not a pencil parameter was ignored, and with the native layer the
+        # declared value was used instead (audit inputs: P.least_stable(re=5000)
+        # solved at Re = 1e4); values are finite numbers (NaN reached LAPACK, "5000" a bare
+        # TypeError)
+        names = [p.name for p in self.params]
+        stray = [k for k in values if k not in names]
+        if stray:
+            raise ParameterError(f"{stray[0]!r} is not a parameter of this pencil."
+                                 + did_you_mean(str(stray[0]), names),
+                                 why="a value given under another name would be ignored and "
+                                     "another value used",
+                                 fix="pencil parameters: " + ", ".join(names))
+        for k in names:
+            v = values[k]
+            ok = isinstance(v, numbers.Number) and not isinstance(v, bool)
+            if ok:
+                z = complex(v)
+                ok = math.isfinite(z.real) and math.isfinite(z.imag)
+            if not ok:
+                raise ParameterError(f"{k}={v!r} is not a finite number",
+                                     fix=f"a finite value for {k}")
         out = {p.name: values[p.name] for p in self.params}
         for g, d in self.derived.items():
             out[g] = _eval_param_expr(d, out)
@@ -446,6 +472,12 @@ class ParametricEVP:
         L, M = self.matrices(**values)
         L, M = L.astype(complex), M.astype(complex)
         n = L.shape[0]
+        # the floor of the relative stop test and of the multiplicity scale stays 1 in the unit of
+        # the eigenvalue (critic review of the invariance audit: a floor from the pencil, eps
+        # ||L|| / ||M||, or from the tracked eigenvalue, made the stop test unattainable near a
+        # neutral mode, sigma -> 0, and critical() failed on four gallery cases; the attainable
+        # accuracy of sigma is condition-dependent: recorded as a remaining fragile item)
+        unit = 1.0
         w = np.asarray(x, complex) / np.vdot(x, x)
         x = np.asarray(x, complex) / np.vdot(w, x)
         s = complex(sigma)
@@ -467,14 +499,14 @@ class ParametricEVP:
                         warnings.simplefilter("error", sl.LinAlgWarning)
                         d = sl.solve(J, rhs)
                 except (sl.LinAlgWarning, np.linalg.LinAlgError):
-                    scale = np.linalg.norm(L, 1) + max(abs(s), 1.0) * np.linalg.norm(M, 1)
+                    scale = np.linalg.norm(L, 1) + max(abs(s), unit) * np.linalg.norm(M, 1)
                     extra, note = self._eigenspace_rows(A, x, scale)
                     continue
             x = x + d[:n]
             s = s + d[n]
-            if abs(d[n]) <= tol * max(abs(s), 1.0) and np.linalg.norm(d[:n]) <= 1e3 * tol * np.linalg.norm(x):
+            if abs(d[n]) <= tol * max(abs(s), unit) and np.linalg.norm(d[:n]) <= 1e3 * tol * np.linalg.norm(x):
                 break
-            if abs(d[n]) <= tol * max(abs(s), 1.0) and not extra.shape[0]:
+            if abs(d[n]) <= tol * max(abs(s), unit) and not extra.shape[0]:
                 break
         else:
             raise ConvergenceError(
@@ -500,7 +532,7 @@ class ParametricEVP:
             except (sl.LinAlgWarning, np.linalg.LinAlgError):
                 # Newton converged in one linear step without meeting the singular border: the
                 # multiplicity shows up here (same detection and declared choice as above)
-                scale = np.linalg.norm(L, 1) + max(abs(s), 1.0) * np.linalg.norm(M, 1)
+                scale = np.linalg.norm(L, 1) + max(abs(s), unit) * np.linalg.norm(M, 1)
                 extra, note = self._eigenspace_rows(A, x, scale)
         if left and extra.shape[0]:
             # left eigenspace Y (last left singular vectors); y in it with y^H M [x, X2] = e1^T
@@ -539,8 +571,8 @@ class ParametricEVP:
     def set_drift(self, fine: ParametricEVP, *, drift_tol: float = REQUIRED) -> ParametricEVP:
         """Spurious-mode rejection by resolution drift: a mode is admissible
         only if the pencil ``fine`` (same problem and parameters, finer resolution) has an
-        eigenvalue within ``drift_tol`` x max(|sigma|, 1) at the same parameter values, as
-        ``eigenvalues(drift=)``. Used by :meth:`least_stable` and :func:`critical` in place of a
+        eigenvalue within ``drift_tol`` x max(|sigma|, DRIFT_FLOOR median |sigma_fine|) at the same
+        parameter values, as ``eigenvalues(drift=)``. Used by :meth:`least_stable` and :func:`critical` in place of a
         hand-written ``select`` bound. Returns self."""
         from .evp import check_drift_tol
         drift_tol = check_drift_tol(drift_tol, "ParametricEVP.set_drift()")   # given and in range
@@ -616,7 +648,7 @@ class ParametricEVP:
             fine, tol = self.drift
             hi = fine.solve(**values).values
             if hi.size:
-                d = np.array([np.min(np.abs(hi - s)) / max(abs(s), 1.0) for s in r.values])
+                d = drift_ratios(r.values, hi)       # unit-free (audit invariance)
                 ok = d <= tol
             else:
                 ok = np.zeros(r.values.size, bool)
@@ -743,6 +775,9 @@ class CriticalPoint:
     # resolution of the critical mode: "" or the warning
     # sentence (its tail exceeds UNRESOLVED_TAIL_TOL and no drift pencil checked it)
     unresolved_note: str = ""
+    # minimum over ``over`` at an end of its interval (audit "assurances"): "" or the
+    # warning sentence (a constrained minimum, not the critical value over every value of over)
+    edge_note: str = ""
 
     def __repr__(self) -> str:
         # one line (the dataclass repr printed every eigenvector)
@@ -750,11 +785,12 @@ class CriticalPoint:
         return (f"CriticalPoint({self.parameter}_c={self.value:.10g}{o}, growth "
                 f"{self.growth:.1e}, residual {self.mode.residual:.1e}, verified={self.verified}"
                 + (", CRITICAL MODE UNDER-RESOLVED" if self.unresolved_note else "")
+                + (", MINIMUM AT THE EDGE OF over" if self.edge_note else "")
                 + "; .explain() for the log)")
 
     def explain(self) -> str:
         o = ", ".join(f"{k}={v:.10g}" for k, v in self.over.items())
-        warn = [f"WARNING: {self.unresolved_note}"] if self.unresolved_note else []
+        warn = [f"WARNING: {n}" for n in (self.edge_note, self.unresolved_note) if n]
         return (f"CriticalPoint {self.parameter}_c = {self.value:.10g}" + (f" at {o}" if o else "")
                 + f" ({self.evaluations} neutral-curve evaluations)\n  "
                 + "\n  ".join(warn + self.log + [self.mode.explain()]))
@@ -922,16 +958,40 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
         pc, mode = neutral()
         ov_best = {}
     else:
+        xatol_over = xtol * max(abs(olo), abs(ohi))
         opt = so.minimize_scalar(lambda a: neutral(a)[0], bounds=(olo, ohi), method="bounded",
-                                 options={"xatol": xtol * max(abs(olo), abs(ohi))})
+                                 options={"xatol": xatol_over})
         pc, mode = neutral(opt.x)
         ov_best = {oname: float(opt.x)}
+        # a bounded minimizer that stops at an end of over found no interior minimum there (audit
+        # "assurances": Swift-Hohenberg over q in (1.2, 1.5) returned r_c = 0.1936 at
+        # q = 1.2 as the critical point, verified, for r_c = 0 at q = 1): said, never hidden
+        # The bounded Brent never evaluates an end: it stops within about its own tolerance
+        # (3 (xatol + sqrt(eps) |end|), scipy fminbound) of it, so the edge test includes that
+        # distance (review of the audit: with xtol = 1e-6 the minimum stopped 5.9e-7
+        # from q = 1.2, beyond 1e-6 x the width 0.3, and was not said)
+        x_ov, width = float(opt.x), float(ohi - olo)
+        end = olo if x_ov - olo <= ohi - x_ov else ohi
+        edge_tol = max(OVER_EDGE_FRACTION * width,
+                       3 * (xatol_over + np.sqrt(np.finfo(float).eps) * abs(end)))
+        if abs(x_ov - end) <= edge_tol:
+            edge_note = (f"the minimum over {oname} lies at the end {oname} = {end:.10g} of the "
+                         f"declared interval ({olo:.10g}, {ohi:.10g}) (within {edge_tol:.2g}: "
+                         f"OVER_EDGE_FRACTION = {OVER_EDGE_FRACTION:g} of its width, or the "
+                         f"minimizer's tolerance): a constrained minimum, not a minimum of "
+                         f"the neutral curve; the critical {parameter} over every {oname} may lie "
+                         f"outside: widen over= around {end:.6g}")
+            from ..errors import CorrectnessWarning, _warn_user
+            _warn_user(edge_note, CorrectnessWarning)
+        else:
+            edge_note = ""
     # verification: full QZ at the critical point, tracked mode must be the least stable one
     r = pevp.solve(**mode.values)
     keep, cnote = pevp.admissible(r, mode.values, select, growth=growth)
     g = np.array([growth(s) for s in r.values])
     gmax = float(np.max(np.where(keep, g, -np.inf)))
-    if gmax > growth(mode.sigma) + MODE_SWITCH_TOL * max(1.0, abs(mode.sigma)):
+    from .._scales import spectral_floor
+    if gmax > growth(mode.sigma) + MODE_SWITCH_TOL * max(abs(mode.sigma), spectral_floor(r.values)):
         raise RuntimeError(f"mode switch: another admissible mode has growth {gmax:.3e} > 0 at the "
                            f"critical point {mode.values}")
     if select is None and pevp.drift is None:
@@ -957,7 +1017,8 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
         log.append(f"spectral tail of the critical mode {mode.tail:.1e} (under-resolved above "
                    f"UNRESOLVED_TAIL_TOL = {UNRESOLVED_TAIL_TOL:g}; the residual does not show it)")
     return CriticalPoint(parameter, float(pc), ov_best, mode, count[0], [s for s in log if s],
-                         float(growth(mode.sigma)), True, mode.unresolved_note)
+                         float(growth(mode.sigma)), True, mode.unresolved_note,
+                         edge_note if oname is not None else "")
 
 
 def _bracket_error(parameter: str, lo: float, hi: float, g_lo: float, g_hi: float,

@@ -1,9 +1,11 @@
 """One run of the registry: live recorder (non-blocking writer thread) and read-only view.
 
 A live :class:`Run` never raises into the computation after its construction and never waits for
-the disk while the computation is running (spec §94–97, same rule as the telemetry):
+the disk while the computation is running (same rule as the telemetry):
 
-* scalars and series are appended to in-memory lists (no I/O);
+* scalars are kept in memory; series rows are buffered and handed to the writer thread every
+  :data:`SERIES_FLUSH_ROWS` rows (appended to ``.series.jsonl.part``, turned into ``data.h5`` at
+  close), so a long run's series do not grow in memory (review finding 45);
 * fields, files and solver states are *copied* in the calling thread (a copy is needed anyway: the
   computation will overwrite its arrays) and handed to a bounded queue drained by one background
   thread. A full queue drops the item and counts it (``dropped``); nothing waits;
@@ -23,10 +25,12 @@ import json
 import os
 import platform
 import queue
+import re
 import secrets
 import shutil
 import socket
 import sys
+import tempfile
 import threading
 import time
 import warnings
@@ -47,6 +51,10 @@ QUEUE_CAPACITY = 256
 CLOSE_TIMEOUT_S = 600.0
 #: HDF5 compressions a field may declare (all lossless); ``None`` = stored as is
 COMPRESSIONS = (None, "gzip", "lzf")
+#: series rows kept in memory before they are handed to the writer thread (streamed to disk)
+SERIES_FLUSH_ROWS = 4096
+#: name of the series stream in the run directory (removed once ``data.h5`` holds the series)
+_SERIES_STREAM = ".series.jsonl.part"
 
 _CURRENT: contextvars.ContextVar[Run | None] = contextvars.ContextVar("conatus_run", default=None)
 _STOP = object()
@@ -87,6 +95,31 @@ def _hardware() -> dict:
             "slurm_gpus": os.environ.get("SLURM_JOB_GPUS") or os.environ.get("SLURM_GPUS_ON_NODE")}
 
 
+#: ``--passes`` nor ``--keyframes``)
+_SECRET_OPTION = re.compile(r"TOKEN|SECRET|PASSW|PASSPHRASE|CREDENTIAL|(API|PRIVATE|ACCESS)[-_]?KEY|"
+                            r"AUTH|COOKIE|SESSION", re.I)
+
+
+def _argv() -> list[str]:
+    """``sys.argv`` with the value of every credential-like option (``--token X``,
+    ``--api-key=X``) replaced by ``<redacted>`` (security the run record, kept
+    on a shared store and shown by the Studio, held the command line verbatim)."""
+    out, hide = [], False
+    for a in sys.argv:
+        if hide and not a.startswith("-"):
+            out.append("<redacted>")
+            hide = False
+            continue
+        hide = False
+        if a.startswith("-") and _SECRET_OPTION.search(a.split("=", 1)[0]):
+            if "=" in a:
+                a = a.split("=", 1)[0] + "=<redacted>"
+            else:
+                hide = True
+        out.append(a)
+    return out
+
+
 def _slurm() -> dict:
     return {"job_id": os.environ.get("SLURM_JOB_ID"), "partition": os.environ.get("SLURM_JOB_PARTITION"),
             "array_task": os.environ.get("SLURM_ARRAY_TASK_ID"), "run_id": os.environ.get("CN_RUN_ID"),
@@ -124,7 +157,9 @@ class Run:
         self._lock = threading.Lock()
         self.errors: list[str] = []
         self.dropped = 0
-        self._rows: list[tuple[int, int | None, dict]] = []
+        self._rows: list[tuple[int, int | None, dict]] = []   # rows not yet handed to the writer
+        self._nrows = 0                                        # rows logged so far
+        self._series_summary: dict[str, dict] = {}             # name -> {n, last}
         self._thread: threading.Thread | None = None
         self._closed = _record is not None
         self._token: contextvars.Token | None = None
@@ -153,7 +188,7 @@ class Run:
             "params": {str(k): jsonable(v) for k, v in (params or {}).items()},
             "problem": None, "numerics": {}, "explain": {}, "code": None, "code_fingerprint": None,
             "environment": None, "hardware": _hardware(), "slurm": _slurm(),
-            "invocation": {"argv": list(sys.argv), "cwd": os.getcwd(), "pid": os.getpid(),
+            "invocation": {"argv": _argv(), "cwd": os.getcwd(), "pid": os.getpid(),
                            "python": sys.executable},
             "telemetry_id": getattr(telemetry, "run_id", telemetry),
             "cache_key": None, "cache": None, "inputs": None, "returns": None,
@@ -244,12 +279,15 @@ class Run:
                               why="a closed record is only changed by certify / retract (history kept)",
                               fix="record into a new run (relation='fork' or 'restart', parent=this run)")
 
-    def _put(self, item: tuple) -> bool:
+    def _put(self, item: tuple, count: bool = True) -> bool:
+        """Queue ``item`` for the writer without waiting; a full queue drops it (counted, unless
+        ``count`` is False: series rows are then kept and handed over later)."""
         try:
             self._q.put_nowait(item)
             return True
         except queue.Full:
-            self.dropped += 1
+            if count:
+                self.dropped += 1
             return False
 
     def attach(self, obj: Any) -> Run:
@@ -285,6 +323,9 @@ class Run:
                 else:
                     self.rec["problem"] = info
                     self.rec["numerics"] = num
+                    ident = _identity_of(obj)
+                    if ident is not None:          # the canonical identity (0.1.1, lot A)
+                        self.rec["identity"], self.rec["identity_sha256"] = ident
             self.rec["explain"].update(texts)
         return self
 
@@ -293,8 +334,15 @@ class Run:
         row number is always kept, so series logged together can be plotted against each other).
         In-memory only; written to ``data.h5`` at close."""
         self._live("log")
-        self._rows.append((len(self._rows), None if step is None else int(step),
-                           {k: jsonable(v) for k, v in scalars.items()}))
+        vals = {k: jsonable(v) for k, v in scalars.items()}
+        self._rows.append((self._nrows, None if step is None else int(step), vals))
+        self._nrows += 1
+        for k, v in vals.items():
+            d = self._series_summary.setdefault(k, {"n": 0, "last": None})
+            d["n"] += 1
+            d["last"] = v
+        if len(self._rows) >= SERIES_FLUSH_ROWS and self._put(("rows", self._rows), count=False):
+            self._rows = []                  # handed to the writer; kept if the queue is full
 
     def result(self, **values: Any) -> None:
         """Scalar results (numbers, strings, booleans, complex): stored in ``run.json`` and
@@ -314,6 +362,14 @@ class Run:
                               why="storage choices are declared, never chosen for you (all are lossless)")
         if level is not None and compression != "gzip":
             raise OptionError("save_field: level= applies to gzip only")
+        if level is not None and (isinstance(level, bool) or not isinstance(level, (int, np.integer))
+                                  or not 0 <= level <= 9):
+            # checked here, in the caller's thread (review finding 58): h5py refused it later in
+            # the writer thread, where the field was lost with a warning at close
+            raise OptionError(f"save_field: level={level!r}: gzip level is an integer 0-9",
+                              why="a bad level used to be refused by HDF5 in the writer thread, "
+                                  "after the call returned, and the field was lost",
+                              fix="level=4 (any integer from 0, fastest, to 9, smallest)")
         return self._put(("field", str(name), _to_host(array),
                           {"compression": compression, "level": level, "t": t, "step": step}))
 
@@ -321,23 +377,23 @@ class Run:
         """Queue a copy of a file into ``files/`` (sha256 recorded). The copy is taken by the
         writer thread: a file changed right after this call may be copied changed."""
         self._live("save_file")
-        return self._put(("file", Path(path), name or Path(path).name))
+        name = Path(path).name if name is None else name
+        if (not isinstance(name, str) or name in ("", ".", "..") or "/" in name or "\\" in name
+                or "\0" in name or Path(name).name != name):
+            # review finding 47: name="../../../outside.txt" was copied outside the run directory
+            raise OptionError(f"save_file: file name {name!r} is not a plain file name",
+                              why="attached files are copied into the run's files/ directory; a "
+                                  "path in the name would write elsewhere",
+                              fix="name='result.txt' (no directory part, not '.' or '..')")
+        return self._put(("file", Path(path), name))
 
     def _save_state(self, tag: str, solver: Any) -> None:
         """Queue a checkpoint of an IVPSolver in its own format (``state_<tag>.npz``, loadable by
-        ``solver.load_checkpoint``): same fields as ``IVPSolver.save_checkpoint``."""
-        meta = dict(scheme=solver.scheme, dt=solver.dt, startup=solver.startup,
-                    startup_substeps=solver.startup_substeps, n=solver.system.n,
-                    iteration=solver.iteration, t=solver.t, t_origin=solver._t0,
-                    it_origin=solver._it0, reduced=solver.system.reduced,
-                    ordering=solver.system.ordering, problem=solver.plan.problem.name,
-                    nhist=len(solver._MXh))
-        from ..io._identity import checkpoint_identity       # compared at restart
-        meta["identity"] = checkpoint_identity(solver)
-        arrays = {"X": _to_host(solver.X)}
-        for i, (mx, f) in enumerate(zip(solver._MXh, solver._Fh, strict=True)):
-            arrays[f"MX{i}"] = _to_host(mx)
-            arrays[f"F{i}"] = _to_host(f)
+        ``solver.load_checkpoint``): the payload of ``IVPSolver.save_checkpoint`` itself (state,
+        every history array including the L X history of the CN family, clock, bc_time and
+        the identity), copied now because the computation goes on."""
+        meta, arrays = solver._checkpoint_payload()
+        arrays = {k: _to_host(a) for k, a in arrays.items()}
         if self._put(("npz", f"state_{tag}.npz", meta, arrays)):
             with self._lock:
                 self.rec["outputs"][f"state_{tag}"] = f"state_{tag}.npz"
@@ -376,19 +432,26 @@ class Run:
             return self
         if state not in STATES:
             raise OptionError(f"conatus.runs: state {state!r} unknown; one of {STATES}")
+        # one deadline for the whole close (review finding 46: two queue puts and the join each
+        # waited up to ``timeout``)
+        deadline = time.monotonic() + float(timeout)
+
+        def left() -> float:
+            return max(0.0, deadline - time.monotonic())
         self._closed = True
         with self._lock:
             self.rec["state"] = state
             self.rec["error"] = error
             self.rec["ended_utc"] = _utc()
             self.rec["duration_s"] = round(time.perf_counter() - self._t0, 6)
+        rows, self._rows = self._rows, []
         try:
-            self._q.put(("finalize",), timeout=timeout)
-            self._q.put(_STOP, timeout=timeout)
+            self._q.put(("finalize", rows), timeout=left())
+            self._q.put(_STOP, timeout=left())
         except queue.Full:
             self.errors.append("writer queue still full at close: record not finalized")
         if self._thread is not None:
-            self._thread.join(timeout)
+            self._thread.join(left())
             if self._thread.is_alive():
                 self.errors.append(f"writer thread still busy after {timeout:g} s at close")
         if self.errors or self.dropped:
@@ -428,9 +491,17 @@ class Run:
                         self.rec["environment"] = jsonable(env)
                         self.rec["hardware"]["gpu"] = env.get("gpu")
                         self.rec["code_fingerprint"] = fp
-                        if self._key_parts is not None and self.rec["cache_key"] is None:
+                        # sources edited after import: the key would name code that did not
+                        # run, so the run is never a cache source (audit state)
+                        if (self._key_parts is not None and self.rec["cache_key"] is None
+                                and not fp.get("changed_since_import")):
                             self.rec["cache_key"] = finish_key(self._key_parts, fp)[0]
                     d.mkdir(parents=True, exist_ok=False)
+                    # writable by this user only, whatever the umask: the writer's temporary
+                    # names (data.h5.part, the series stream) and the files it replaces are then
+                    # out of reach of other accounts (no planted link), and reproduce() accepts
+                    # the record as the user's own (security)
+                    os.chmod(d, d.stat().st_mode & ~0o022)
                     atomic_write_json(d / "run.json", self._snapshot())
                     self._index()
                     continue
@@ -463,18 +534,26 @@ class Run:
                         self.rec["files"].append(entry)
                 elif kind == "npz":
                     _, fname, meta, arrays = item
-                    tmp = d / f".{fname}.part"
-                    with open(tmp, "wb") as fh:
-                        np.savez(fh, meta=json.dumps(meta), **arrays)
-                    os.replace(tmp, d / fname)
+                    fd, tmp = tempfile.mkstemp(dir=d, prefix=f".{fname}.", suffix=".part")
+                    try:
+                        with os.fdopen(fd, "wb") as fh:
+                            np.savez(fh, meta=json.dumps(meta), **arrays)
+                        os.replace(tmp, d / fname)
+                    except BaseException:
+                        Path(tmp).unlink(missing_ok=True)
+                        raise
+                elif kind == "rows":
+                    self._stream_rows(d, item[1])
                 elif kind == "finalize":
-                    if self._rows:
+                    self._stream_rows(d, item[1])
+                    if (d / _SERIES_STREAM).exists():
                         h5 = h5 or _h5_open(d / "data.h5.part")
-                        self._write_series(h5)
+                        self._write_series(h5, d / _SERIES_STREAM)
                     if h5 is not None:
                         h5.close()
                         h5 = None
                         os.replace(d / "data.h5.part", d / "data.h5")
+                        (d / _SERIES_STREAM).unlink(missing_ok=True)
                     atomic_write_json(d / "run.json", self._snapshot())
                     self._index()
             except Exception as err:  # noqa: BLE001 -- never raised into the computation; recorded
@@ -500,35 +579,68 @@ class Run:
                 self.rec.setdefault("index_note", f"index not updated at write ({err}); "
                                                   "reconciled by the next query")
 
-    def _write_series(self, h5: Any) -> None:
-        names: dict[str, list] = {}
-        for row, step, vals in self._rows:
+    @staticmethod
+    def _stream_rows(d: Path, rows: list) -> None:
+        """Append series rows to the run's stream file (one JSON line per row; writer thread)."""
+        if not rows:
+            return
+        with open(d / _SERIES_STREAM, "a") as fh:
+            for row, step, vals in rows:
+                fh.write(json.dumps([row, step, vals], separators=(",", ":")) + "\n")
+
+    def _write_series(self, h5: Any, stream: Path) -> None:
+        """Series of the stream file into ``data.h5`` (``series/<name>/{row, step, value}``), in
+        two passes so that memory stays bounded: count and type each series, then fill."""
+        def rows():
+            with open(stream) as fh:
+                for line in fh:
+                    yield json.loads(line)
+        count: dict[str, int] = {}
+        numeric: dict[str, bool] = {}
+        for _row, _step, vals in rows():
             for k, v in vals.items():
-                names.setdefault(k, []).append((row, -1 if step is None else step, v))
-        summary = {}
-        for k, pts in names.items():
-            rows = np.array([p[0] for p in pts], dtype=np.int64)
-            steps = np.array([p[1] for p in pts], dtype=np.int64)
-            vals = [p[2] for p in pts]
-            try:
-                data = np.array([from_jsonable(v) for v in vals], dtype=float)
-            except (TypeError, ValueError):
-                data = np.array([json.dumps(v) for v in vals], dtype=object)
+                count[k] = count.get(k, 0) + 1
+                x = from_jsonable(v)
+                numeric[k] = numeric.get(k, True) and isinstance(x, (bool, int, float))
+        import h5py
+        ds, pos, buf = {}, dict.fromkeys(count, 0), {k: ([], [], []) for k in count}
+
+        def flush(k: str) -> None:
+            r, st, v = buf[k]
+            if not r:
+                return
+            i, n = pos[k], len(r)
+            ds[k][0][i:i + n], ds[k][1][i:i + n], ds[k][2][i:i + n] = r, st, v
+            pos[k] = i + n
+            buf[k] = ([], [], [])
+        for k, n in count.items():
             g = h5.require_group(f"series/{k}")
-            g.create_dataset("row", data=rows)
-            g.create_dataset("step", data=steps)
-            if data.dtype == object:
-                import h5py
-                g.create_dataset("value", data=data.astype(str), dtype=h5py.string_dtype())
-            else:
-                g.create_dataset("value", data=data)
-            summary[k] = {"n": len(pts), "last": vals[-1]}
+            ds[k] = (g.create_dataset("row", shape=(n,), dtype=np.int64),
+                     g.create_dataset("step", shape=(n,), dtype=np.int64),
+                     g.create_dataset("value", shape=(n,), dtype=float) if numeric[k] else
+                     g.create_dataset("value", shape=(n,), dtype=h5py.string_dtype()))
+        for row, step, vals in rows():
+            for k, v in vals.items():
+                r, st, vv = buf[k]
+                r.append(row)
+                st.append(-1 if step is None else step)
+                vv.append(float(from_jsonable(v)) if numeric[k] else json.dumps(v))
+                if len(r) >= SERIES_FLUSH_ROWS:
+                    flush(k)
+        for k in count:
+            flush(k)
         with self._lock:
-            self.rec["series"] = summary
+            self.rec["series"] = {k: dict(v) for k, v in self._series_summary.items()}
 
     # ------------------------------------------------------------------ reading
     def _h5(self):
         p = self.path / "data.h5"
+        src = self.rec.get("reused_from")
+        if not p.exists() and src:
+            # a cache hit computed nothing: its series and fields are those of the source run,
+            # read through this run (review finding 52: the report said they were reused, but
+            # they could not be reached from the new run)
+            p = self.registry.run_dir(src) / "data.h5"
         if not p.exists():
             raise OptionError(f"conatus.runs: run {self.id} has no data.h5",
                               why="no series or field was recorded (or the run is still running)")
@@ -561,6 +673,12 @@ class Run:
             return g[keys[index]][()]
 
     def file_path(self, name: str) -> Path:
+        """The attached file ``name`` of this run (a plain file name: no directory part, never
+        "." or ".."; security name="../../x" read outside the run)."""
+        if (not isinstance(name, str) or name in ("", ".", "..") or "/" in name or "\\" in name
+                or "\0" in name or Path(name).name != name):
+            raise OptionError(f"conatus.runs: file name {name!r} is not a plain file name",
+                              fix="the name given to save_file (no directory part)")
         p = self.path / "files" / name
         if not p.exists():
             raise OptionError(f"conatus.runs: run {self.id} has no file {name!r}",
@@ -629,3 +747,17 @@ def _h5_open(path: Path, mode: str = "a"):
         return h5py.File(path, mode, locking=False)
     except TypeError:                                  # h5py built without the locking argument
         return h5py.File(path, mode)
+
+
+def _identity_of(obj: Any) -> tuple[dict, str] | None:
+    """(canonical identity, its sha256) of a solver or plan (``conatus.io._identity``), JSON-safe;
+    None for a bare problem (no discretization: nothing bound yet)."""
+    from ..io._identity import computation_identity, digest
+    target = obj if hasattr(obj, "plan") or hasattr(obj, "groups") else None
+    if target is None:
+        return None
+    try:
+        ident = jsonable(computation_identity(target))
+    except Exception as err:  # noqa: BLE001 -- the record never fails the computation; declared
+        return {"unreadable": f"{type(err).__name__}: {err}"}, ""
+    return ident, digest(ident)

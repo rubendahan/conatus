@@ -856,6 +856,8 @@ def parse_equation(text: str, namespace: Any = None):
 
 def parse_expr(text: str, namespace: Any = None) -> Expr:
     """Parse one expression (no '=') into an IR expression (a number stays a Constant)."""
+    if not isinstance(text, str):          # as parse_equation (audit inputs: a bare TypeError)
+        raise InputTypeError(f"parse_expr needs a string, got {type(text).__name__}")
     p = _Parser(text, _namespace(namespace))
     return p._as_expr(p.expression())
 

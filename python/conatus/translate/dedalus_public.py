@@ -261,17 +261,20 @@ class _D3:
         return f
 
     # problems, solvers, runtime objects -------------------------------------------------------
+    # ``namespace``: None (``namespace=locals()`` reads as the script's own scope) or the
+    # problem's own mapping, which then alone resolves the names of the equation strings, as in
+    # Dedalus (finding 6: it used to be ignored).
     def IVP(self, variables, time=None, namespace=None):
-        return self.tr.make_problem("IVP", variables, time=time)
+        return self.tr.make_problem("IVP", variables, time=time, namespace=namespace)
 
     def LBVP(self, variables, namespace=None):
-        return self.tr.make_problem("LBVP", variables)
+        return self.tr.make_problem("LBVP", variables, namespace=namespace)
 
     def EVP(self, variables, eigenvalue, namespace=None):
-        return self.tr.make_problem("EVP", variables, eigenvalue=eigenvalue)
+        return self.tr.make_problem("EVP", variables, eigenvalue=eigenvalue, namespace=namespace)
 
     def NLBVP(self, variables, namespace=None):
-        return self.tr.make_problem("NLBVP", variables)
+        return self.tr.make_problem("NLBVP", variables, namespace=namespace)
 
     def __getattr__(self, name: str):
         if name in _SCHEMES:
@@ -293,7 +296,7 @@ class _D3:
                    "(conatus.CFL(solver, 'u', safety=...) reports the CFL step as an indicator)",
             "GlobalFlowProperty": "runtime diagnostics: sim.properties(every=k, name=f) in the "
                                   "native layer (max/min/grid_average/volume_average), or "
-                                  "conatus.runs.track / telemetry",
+                                  "conatus.runs.track / Studio telemetry",
             "load_from_file": "checkpoints: sim.restart(path) / solver.load_checkpoint(path) "
                               "(cn.io, HDF5 or npz written by Conatus)",
         }

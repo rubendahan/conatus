@@ -71,9 +71,9 @@ def _native_sentence(comp: Compiled) -> str:
             f = _frac(dealias_factor(comp.degree))
             s += (f" The dealiasing factor {f} is the declared default of the native layer "
                   f"((p+1)/2 for the highest polynomial degree p = {comp.degree} of the "
-                  "equations, at least 3/2).")
+                  "equations in the unknowns and given fields, at least 3/2).")
         if weighted:
-            fw = _frac(dealias_factor(comp.degree, True))
+            fw = _frac(dealias_factor(comp.degree, True, comp.unknown_degree))
             s += (f" Along {', '.join(weighted)} (Hermite/Laguerre functions) the default "
                   f"dealiasing factor is {fw} (at least 2 for products of the unknowns, 3/2 for "
                   "a linear model); no factor makes products alias-free there: it reduces "
@@ -144,10 +144,19 @@ class Simulation:
         plan_cache.remember(comp, self.plan, cache_key)
         self.watching = None                       # a conatus.model.watch.Watch, or None
         self.outputs: list = []                    # AnalysisFile / CheckpointSeries (cn.io)
-        self.stopped: str | None = None            # reason of a stop command (run(on_stop="return"))
+        self.stopped: str | None = None            # reason of a Studio stop (run(on_stop="return"))
         reg = getattr(comp.model, "_register", None)
         if reg is not None:                        # sim.id; named by later parameter changes
             reg(self)
+
+    def __repr__(self) -> str:
+        """One line: problem, resolution, scheme, step, backend, where the run is."""
+        comp, sol = self.__dict__.get("compiled"), self.__dict__.get("solver")
+        if comp is None or sol is None:                # construction stopped half-way
+            return "Simulation(<not constructed>)"
+        n = ", ".join(f"{c}={k}" for c, k in comp.N.items())
+        return (f"Simulation({comp.problem.name!r}, N=({n}), scheme={sol.scheme!r}, dt={sol.dt:g}, "
+                f"backend={sol.backend!r}, t={sol.t:g}, iteration={sol.iteration}; .explain())")
 
     @property
     def t(self) -> float:
@@ -157,7 +166,7 @@ class Simulation:
     @property
     def dt(self) -> float:
         """Time step (fixed at ``simulate``; the run never changes it on its own: only an explicit
-        ``set`` on a step declared settable by ``watch(settable=...)``, recorded)."""
+        Studio ``set`` on a step declared settable by ``watch(settable=...)``, recorded)."""
         return self.solver.dt
 
     @property
@@ -242,12 +251,31 @@ class Simulation:
                     notes += more
                     warned += warn
             elif isinstance(v, numbers.Number):
+                # a non-finite number is refused like a non-finite array or callable value
+                # (review finding 30: initial(u=np.nan) started a NaN run)
+                if not np.isfinite(complex(v).real) or not np.isfinite(complex(v).imag):
+                    raise InputTypeError(f"initial({k}={v!r}): not a finite number",
+                                         why="the run would start from a NaN/inf state, stopped "
+                                             "only steps later by the finite-state check",
+                                         fix=f"a finite value for {k}", doc=_DOC)
                 data[f] = (lambda c: (lambda *g: np.asarray(c)))(v)
             elif isinstance(v, np.ndarray) or (hasattr(v, "shape") and hasattr(v, "dtype")
                                                 and not hasattr(v, "layout")):
                 data[f] = self._grid_array(k, f, v, layout)
                 continue
             else:
+                from ..reference.evaluate import FieldData
+                if not isinstance(v, FieldData):
+                    # text, a list, None... (audit inputs: a bare TypeError of the
+                    # solver; a list is not read as an array without its shape being checked)
+                    raise InputTypeError(
+                        f"initial({k}={v!r}): not initial data" if not isinstance(v, (list, tuple))
+                        else f"initial({k}=<{type(v).__name__}>): not initial data",
+                        why="initial data are a callable of the coordinates, a number, or an "
+                            "array of grid values of the shape of sim.grid(name)",
+                        fix=f"initial({k}=lambda {', '.join(names)}: ...), or "
+                            f"initial({k}=np.asarray(values)) with the shape of sim.grid({k!r})",
+                        doc=_DOC)
                 data[f] = v                        # FieldData (explicit layout)
                 continue
             sym = self.compiled.symmetry
@@ -338,13 +366,13 @@ class Simulation:
         by ``steps`` steps. ``callback(sim)`` runs every ``every`` steps (both or neither),
         with this Simulation as argument, like the functions of :meth:`watch` (the expert
         ``IVPSolver.run`` passes the solver). A watched simulation (:meth:`watch`) also calls
-        the watch every ``poll`` steps; a ``stop`` by a monitor raises ``StopRun`` out of
+        the watch every ``poll`` steps; a ``stop`` from the Studio raises ``StopRun`` out of
         here (the run ends where it is).
 
         ``record`` / ``cache``: the run registry, as ``IVPSolver.run`` (``conatus.runs``): with
         ``record`` given, the recorded run is returned; otherwise this Simulation (chaining).
 
-        ``on_stop``: what a ``stop`` command does: ``"raise"``
+        ``on_stop``: what a Studio ``stop`` does: ``"raise"``
         (default, v0.1) raises ``cn.StopRun`` out of here; ``"return"`` ends the run where it is
         and returns normally, so that the post-processing after ``run()`` still runs
         (``sim.stopped`` then holds the reason)."""
@@ -360,7 +388,7 @@ class Simulation:
                 return self.run(until, steps=steps, callback=callback, every=every,
                                 record=record, cache=cache)
             except StopRun as stop:
-                self.stopped = str(stop) or "stopped by a monitor"
+                self.stopped = str(stop) or "stopped from the Studio"
                 return self
         from ..timestep.integrator import check_callback, check_steps, is_whole
         check_callback(callback, every, "run()")   # callback used to reach IVPSolver.run
@@ -373,6 +401,10 @@ class Simulation:
                 fix=f"run(until={self.t + 100 * self.dt:.12g}) (t = {self.t:.12g} now, dt = "
                     f"{self.dt:.12g}) or run(steps=100)", doc=_DOC)
         if steps is None:
+            # a finite real time (audit inputs: nan and inf failed in int(round(...))
+            # with a bare ValueError/OverflowError, True was read as t = 1, "1" was a TypeError)
+            from ..errors import check_real
+            until = check_real(until, "until", "run()")
             n = (until - self.t) / self.dt
             steps = int(round(n))
             if steps < 0:                          # before the clock: no step count fixes it
@@ -409,7 +441,7 @@ class Simulation:
             callback, every = _combine_io([(callback, every)] + [(o, o.every) for o in self.outputs])
         if w is not None and not w.closed and w.settable:
             if record is not None or cache:
-                raise OptionError("run(record=...): this run's dt may be changed by a monitor "
+                raise OptionError("run(record=...): this run's dt may be changed from the Studio "
                                   "(watch(settable=...)); the registry records one constant dt",
                                   fix="drop record=/cache=, or watch without settable=", doc=_DOC)
             try:
@@ -466,21 +498,21 @@ class Simulation:
               spool: str | Path | None = None, checkpoint_dir: str | Path | None = None,
               meta: Mapping[str, Any] | None = None, controls_every_s: float = 1.0,
               settable: Mapping[str, Any] | None = None):
-        """Make the run visible live to a monitor (a process reading the telemetry spool; none ships with
-        this release), with its film.
+        """Make the run visible live in the Studio, with its film.
 
         ``film``: the views, a list of field names (``["T", "u.x"]``) or ``{name: source}``
         with a source = a field name, a function ``f(sim)`` or ``cn.view(...)`` (scale, slice,
         3D mode); the first is the default view. ``stats``: ``{name: f(sim) | cn.series(...) |
         cn.spectrum(...) | cn.profile(...)}``. ``every_s``: wall seconds between two frames of a
         view; ``scalars_every_s``: between two evaluations of the numbers; ``poll``: steps between
-        two calls of the watch; ``controls_every_s``: wall seconds between two reads of the
-        commands of a monitor. ``settable={"dt": (lo, hi)}``: the time step may be changed by a monitor (command ``set``, bounds checked, Runge-Kutta schemes only: a multistep scheme, SBDF* or CNAB*, is refused
+        two calls of the watch; ``controls_every_s``: wall seconds between two reads of the Studio
+        commands. ``settable={"dt": (lo, hi)}``: the time step may be changed from the Studio
+        or an agent (command ``set``, bounds checked, Runge-Kutta schemes only: a multistep scheme, SBDF* or CNAB*, is refused
         with ``settable`` because its history was built with one dt; recorded as an event).
         Note the units: ``every_s``, ``scalars_every_s`` and ``controls_every_s`` are wall-clock
         seconds, ``poll`` is in steps (``output(every=)`` and ``checkpoints(every=)`` count
-        steps). A monitor shows nothing else (no hidden physics); the numbers of
-        the run are unchanged. Defaults are declared by
+        steps). The Studio shows nothing else (no hidden physics); the numbers of
+        the run are unchanged (tests/studio/test_watch.py). Defaults are declared by
         ``explain()``. Returns the :class:`~conatus.model.watch.Watch`."""
         from .watch import Watch
         if self.watching is not None and not self.watching.closed:
@@ -592,7 +624,11 @@ class Simulation:
 
     def save(self, path: str | Path, *, grids: bool = False) -> Path:
         """Checkpoint now: state, multistep history and clock (``.h5``: HDF5 with provenance,
-        readable by ``cn.io.read``; ``.npz``: NumPy). A restart continues bit-for-bit."""
+        readable by ``cn.io.read``; ``.npz``: NumPy). A restart continues bit-for-bit. A suffix
+        naming another format (``.hdf``, ``.nc``, ...) is refused: it used to be written as a
+        NumPy file with ``.npz`` appended (review of the inputs audit)."""
+        from ..timestep.integrator import check_checkpoint_suffix
+        check_checkpoint_suffix(Path(path), "sim.save")
         return self.solver.save_checkpoint(path, grids=grids)
 
     def restart(self, path: str | Path | None, *, allow: Any = ()) -> Simulation:
@@ -685,7 +721,9 @@ class Simulation:
 
     def _steps_of(self, T: float, what: str) -> int:
         """Whole number of steps in the horizon T (refused otherwise: dt is never adjusted)."""
+        from ..errors import check_real
         from ..timestep.integrator import is_whole
+        T = check_real(T, "T", f"{what}()", positive=True)   # audit inputs: nan/inf/str were bare
         n = T / self.dt
         steps = int(round(n))
         if steps < 1 or not is_whole(n):
@@ -698,9 +736,14 @@ class Simulation:
         """Exact discrete tangent and adjoint of this simulation over the horizon ``T``
         (``conatus.adjoint.FlowMap``: ``jvp``, ``vjp``, Revolve with ``checkpoints`` slots;
         ``t0`` required when the equations depend on time). The state vectors are those of
-        ``sim.solver`` (``sim.solver.X``); the tau unknowns are carried, never shown."""
+        ``sim.solver`` (``sim.solver.X``); the tau unknowns are carried, never shown. Calling the
+        map, ``Φ(X0)``, leaves this simulation where it was (state, time, iteration, multistep
+        history): the map runs the solver and puts them back (review of the state audit, F6:
+        ``sim.flowmap(T)(X0)`` used to move the simulation to X_N at time t0 + T)."""
         from ..adjoint import FlowMap
-        return FlowMap(self.solver, self._steps_of(T, "flowmap"), t0=t0, checkpoints=checkpoints)
+        fm = FlowMap(self.solver, self._steps_of(T, "flowmap"), t0=t0, checkpoints=checkpoints)
+        fm.restore = True
+        return fm
 
     def nlop(self, *, T: float, E0: float, fields: tuple[str, ...] | None = None,
              t0: float | None = None, checkpoints: int | None = None, **kw: Any):
@@ -809,7 +852,14 @@ class Simulation:
             params[sv.time_parameter] = sv.t
         if tname is not None:
             params[tname] = sv.t
-        c = sv.evaluator.evaluate(e, data, params)
+        ev = sv.evaluator
+        if comp.symmetry is not None and comp.model.geometry.sincos_coord is not None:
+            # integrals over the physical interval [a, b], not the doubled period (finding 7)
+            ev = getattr(self, "_physical_ev", None)
+            if ev is None or ev.domain is not sv.plan.domain:
+                from .sincos import physical_evaluator
+                ev = self._physical_ev = physical_evaluator(comp, sv)
+        c = ev.evaluate(e, data, params)
         if sv.backend != "cpu":
             c = sv.xp.asnumpy(c)
         g, rank = np.asarray(c), e.rank
@@ -853,7 +903,9 @@ class Simulation:
         if space is not None and hasattr(space, "grids"):
             # curvilinear plans (the reference grids of the Cartesian bases
             # were used here, NotImplementedError for DiskBasis and the other curved bases)
-            return np.asarray(space.grids(False)[names.index(name)])
+            # a copy: the sphere's theta is the plan's cached grid (an in-place edit of the
+            # returned array changed every later coordinate(), audit state)
+            return np.array(space.grids(False)[names.index(name)], copy=True)
         from ..reference.transforms import grid as _grid
         g = np.asarray(_grid(self.compiled.bases[name], dealias=False))
         if name == self.compiled.model.geometry.sincos_coord:
@@ -1031,8 +1083,8 @@ class Linearization:
                         "number or a function of the coordinates)",
                     doc=_LIN_DOC)
             self.about[n] = v
-        if period is not None and not (isinstance(period, numbers.Real) and period > 0
-                                       and math.isfinite(period)):
+        if period is not None and (isinstance(period, bool) or not (    # True: period 1
+                isinstance(period, numbers.Real) and period > 0 and math.isfinite(period))):
             raise InputTypeError(f"period = {period!r}", why="the period of the base flow is a "
                                  "positive time", fix="period=1.0", doc=_LIN_DOC)
         self.period = None if period is None else float(period)
@@ -1485,12 +1537,11 @@ class Linearization:
 
     @staticmethod
     def _k_map(k: Any, fourier: list[str]) -> dict:
-        if isinstance(k, Mapping):
-            return {c: float(k[c]) for c in fourier}
-        ks = (k,) if isinstance(k, numbers.Number) else tuple(k)
-        if len(ks) != len(fourier):
-            raise ResolutionError(f"k={k!r} for the Fourier coordinates {fourier}", doc=_LIN_DOC)
-        return dict(zip(fourier, (float(v) for v in ks), strict=True))
+        # the one wavenumber check of the native layer (audit inputs: here a dict
+        # key that named no periodic coordinate was ignored, a complex value was a bare TypeError
+        # and True was read as 1)
+        from .model import _k_map
+        return _k_map(k, fourier)
 
     def discretize(self, N: Any, dealias: Any = None, k: Any = None, **kw: Any):
         """The Plan of the EVP (expert: its groups and matrices)."""
@@ -1548,6 +1599,8 @@ class Linearization:
                                   f"lin.parametric(N, over=({given[0]!r},)) to sweep it",
                               doc=_LIN_DOC)
         check_call_options(None, kw, _EIG_OPTIONS + ("n_modes",), "lin.eigenvalues")
+        from ..solvers.plan_evp import check_eig_method   # before the base state
+        check_eig_method(kw.get("method"), kw.get("target"), kw.get("region"), "lin.eigenvalues")
         if which and k is not None:
             # a curvilinear group is chosen by m=/kz=/ell=: k used to be ignored without a
             # word (the shell docstring passed k=4 meaning four shift-invert modes)
@@ -1761,7 +1814,8 @@ class Linearization:
         """Optimal energy gain max E(t0 + T)/E(t0) over admissible perturbations of wavenumber
         ``k`` (conatus.growth.OptimalGain: ``.G``, ``.seed``, ``.explain()``). The time stepper
         (IMEX Runge-Kutta: RK111, RK222, RK443) and dt = T/steps are yours, as in simulate()."""
-        from ..growth.periodic import operator_gain
+        from ..growth.periodic import check_gain_args, operator_gain
+        check_gain_args(t0, T, steps, backend)          # before the base (review, inputs)
         op = self.periodic_operator(N, k=k, dealias=dealias, fields=fields, **which)
         return operator_gain(op, t0, T, steps, scheme, backend)
 
@@ -1849,6 +1903,14 @@ def sincos_eigenvalues(plan, geo, want: Mapping, n: int | None = None, **kw: Any
     (eigenvectors dropped: their sizes differ per group; use the IR plan for them)."""
     from ..solvers.evp import EVPResult
     from ..solvers.plan_evp import eigenvalues
+    if kw.get("region") is not None:
+        # the gathered result has no single count; refused, not approximated
+        raise OptionError("eigenvalues(region=...) on a sine/cosine axis",
+                          why="the result gathers one group per vertical wavenumber; a certified "
+                              "region count is defined per group",
+                          fix="n=<one vertical wavenumber> with the expert call "
+                              "conatus.eigenvalues(plan, group, region=...), or no region=",
+                          doc="docs/site/guide/dynamics/contour.md")
     names = [d.coord.name for d in plan.layout.fdirs]
     w = geo.sincos_coord
     a, b = geo._axes[w].bounds

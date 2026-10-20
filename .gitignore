@@ -24,6 +24,8 @@ __pycache__/
 # Secrets
 .credentials.json
 .env
+# Studio hub state (auth.json, one-session tokens: 0600 secrets) of `hub serve` run here
+hub_state/
 wandb/
 
 # Build

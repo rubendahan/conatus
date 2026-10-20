@@ -1,4 +1,4 @@
-// Buffers and memory spaces (spec §56–57).
+// Buffers and memory spaces.
 // HOST buffers are allocated inline (64-byte aligned). PINNED and CUDA_DEVICE buffers go through the
 // CUDA backend (core/src/cuda/memory.cu, device allocations through a simple caching pool); without
 // the backend (CONATUS_CUDA=OFF) asking for them raises an explicit error.

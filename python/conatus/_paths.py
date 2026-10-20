@@ -23,7 +23,7 @@ The run registry (``cn.runs``) is data, not a cache: it keeps its own explicit r
 No third-party package (platformdirs) is needed: Conatus supports Linux only (pyproject
 classifiers), where the XDG variables are the convention. A default that would resolve inside
 the Python environment (``sys.prefix``) or the package directory is refused, never used.
-Standard library only (a monitor hub image copies this file without the rest of the library).
+Standard library only (the Studio hub image copies this file without the rest of the library).
 """
 from __future__ import annotations
 
@@ -80,7 +80,7 @@ def user_cache_dir() -> Path:
 
 
 def telemetry_spool() -> Path:
-    """Default telemetry spool (``Telemetry``, ``sim.watch``): ``$CN_TELEMETRY``,
+    """Default telemetry spool (``Telemetry``, ``sim.watch``, Studio, relay): ``$CN_TELEMETRY``,
     else ``$CN_TMP/telemetry``, else the checkout's ``scratch/telemetry``, else
     ``<user_cache_dir()>/telemetry``."""
     env = os.environ.get("CN_TELEMETRY")

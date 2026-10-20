@@ -79,7 +79,8 @@ m.simulate(N={"x": 64, "z": 32}, scheme="RK443", dt=1e-3)
 ```
 
 A missing size, or an integer for a geometry with several coordinates, is refused. The
-default dealiasing factor follows the degree p of the products of unknowns: max(3/2, (p+1)/2)
+default dealiasing factor follows the degree p of the products of unknowns and given fields
+(a given coefficient counts as one factor, so `U*u*u` has p = 3): max(3/2, (p+1)/2)
 (3/2 for quadratic terms, 2 for cubic ones), and max(2, (p+1)/2) along Hermite/Laguerre axes,
 where no factor is alias-free; give `dealias=` (a number, or a dict by coordinate) to choose it.
 The value and its reason are printed by `explain()` and written in the *Methods* paragraph.
@@ -88,7 +89,9 @@ The value and its reason are printed by `explain()` and written in the *Methods*
 
 - A `Box` has at most one bounded axis; two walled directions (a duct, a cavity) are refused with
   `UnsupportedError`.
-- Free-slip and other conditions that act on single components of a vector unknown are written in
-  the {doc}`expert layer <expert>`.
+- Free-slip, no-slip and Navier partial-slip walls are named conditions of the native layer
+  (`m.at("top", u=cn.free_slip)`, `cn.no_slip`, `cn.navier_slip(l)`, {doc}`boundary_conditions`);
+  other conditions on single components of a vector unknown are written in the
+  {doc}`expert layer <expert>`.
 - Every geometry runs on the CPU and on a GPU (`backend="cuda"`); the fused nonlinear kernels
   are for Cartesian geometries ({doc}`gpu`).

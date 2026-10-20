@@ -314,7 +314,7 @@ export default function FluidHero(props: { className?: string; label?: string; i
       {animated && live && (
         <div className="cn-fluid-ui">
           <div className="cn-fluid-row">
-            <button type="button" className="cn-fluid-btn" aria-pressed={paused} onClick={toggle}>
+            <button type="button" className="cn-fluid-btn" onClick={toggle}>
               <svg viewBox="0 0 10 10" aria-hidden="true">
                 {paused ? <path d="M2 1l7 4-7 4z" /> : <path d="M2 1h2v8H2zM6 1h2v8H6z" />}
               </svg>

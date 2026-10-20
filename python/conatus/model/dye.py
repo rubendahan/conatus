@@ -124,10 +124,21 @@ class DyeFile(AnalysisFile):
         if not isinstance(field, bool):
             raise OptionError(f"dye(field={field!r}): True (write the grid values) or False "
                               "(diagnostics only)", doc=_DOC)
+        # capabilities checked before any file is created or replaced (review finding 64: on the
+        # sphere the file was created, then the first diagnostic failed in evaluate())
+        if sim.compiled.coordsys.curvilinear:
+            raise UnsupportedError(
+                f"dye({name!r}) on {sim.compiled.model.geometry!r}",
+                why="the dye diagnostics (mass, variance) are integrals evaluated by "
+                    "sim.evaluate(), implemented on Cartesian layouts only",
+                fix=f"sim.output(path, tasks=[{name!r}], every=...) writes the field; integrate it "
+                    "yourself on the solver grid", doc=_DOC)
         self.dye_name = name
         self.declared = getattr(sim.compiled.model, "_dyes", {}).get(name)
         geo = sim.compiled.model.geometry
-        self.volume = float(np.prod([sim.compiled.bases[c].length for c in geo.coord_names]))
+        # physical volume (half the doubled period on a sine/cosine axis: review finding 7)
+        from .sincos import physical_length
+        self.volume = float(np.prod([physical_length(sim.compiled, c) for c in geo.coord_names]))
         c = name
         V = self.volume
         tasks: dict[str, Any] = {name: name} if field else {}
@@ -160,6 +171,8 @@ class DyeFile(AnalysisFile):
                              "maximum": f"max of the grid values of {c}",
                              "tail": "largest |coefficient| among the last two modes of each "
                                      "axis, relative to the largest"}
+        for diag in (mass, variance, minimum, maximum, tail):   # dry run: fail before the file
+            diag(sim)
         super().__init__(sim, path, tasks, every=every, mode=mode, initial=initial)
 
     def _describe(self, src: Any) -> str:

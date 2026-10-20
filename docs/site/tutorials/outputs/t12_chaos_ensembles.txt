@@ -1,13 +1,19 @@
-# t12_chaos_ensembles: PASS (exit 0) in 133.2 s | 2026-10-09
+# t12_chaos_ensembles: PASS (exit 0) in 165.3 s | 2026-10-20 | script sha256 3111592b18e09a94
 Lyapunov spectrum of the discrete map (RK443, dt = 0.01, backend = cpu): 3 vector(s), 32 trajectory(ies)
   transient 1000 steps, tangent transient 1000 steps, average over T = 100 per trajectory (1000 QR every 10 steps = 0.1)
   inner product: Euclidean on the coefficient vector; projection: none; seed 1
   error: standard error of 160 block means (5 per trajectory), max |lag-1 corr| = 0.43
   λ1   = +0.90848 ± 0.00681   (CLV growth +0.95967)
-  λ2   = -0.00041 ± 0.00332   (CLV growth +0.04044)
+  λ2   = -0.00041 ± 0.00332   (CLV growth +0.04043)
   λ3   = -14.58248 ± 0.00477   (CLV growth -14.64957)
   sum = -13.67441
   Kaplan–Yorke dimension = 2.0623 ± 0.0003
+  covariant vectors (Ginelli et al. 2007): 5 kept time(s) x 32 trajectory(ies), window 50 interval(s) after a backward transient of 150, kept every 10
+  memory: all 200 stored intervals kept in memory (Q_j, X_j, R_j+1): 1.03 MiB
+  backward convergence (sine of the angle between the CLVs of two independent random backward starts): max 3.45e-05 (worst vector 2); slow for nearly equal exponents (rate λ_i-1 - λ_i): lengthen clv_backward if it matters
+  subspace convergence per split j (span(γ_j+1..γ_k), two starts, largest sine; rate λ_j - λ_j+1): 3.5e-05, 7.2e-16
+  covariance residual (sine of the angle between J γ_i(t_j) and γ_i(t_j+1) over one interval; consistency of the stored factors with the tangent): max 5.00e-15 (vector 3); largest ratio to its rounding floor eps exp((λ_1 - λ_i) Δt): 4.78 (vector 3)
+  smallest principal angle between span(γ_1..γ_j) and the rest, j = 1..2: 0.0372, 0.267 rad
 neutral CLV vs f(x): min |cos| = 0.99999985 over 160 samples
 Poincaré section (g decreasing through 0), 8 member(s), 530 crossing(s) over 5000 steps of RK443 dt = 0.01
   location: τ* in (0, dt] with g(Φ_τ*(X_n)) = 0 on the scheme (Illinois regula falsi), |g| <= 1e-10, max 30 iterations; observed max |g| 8.2e-11, mean iterations 4.9

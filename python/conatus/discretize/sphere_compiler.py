@@ -503,6 +503,9 @@ class _SphereCompiler:
             raise DiscretizationError(f"'{x}': at a boundary, dot(coefficient, vector) needs a "
                                       "rank-2 coefficient and a vector")
         M = self.P.surface_tensor(C) @ self.S.G
+        # threshold relative to the tensor's largest entry (review finding 35: an absolute
+        # 1e-14 dropped every row of a tensor of size 1e-15)
+        scale = float(np.max(np.abs(M), initial=0.0))
         inner = self._trace(X, pos, d)
         ball = self.S.ball
         out = {}
@@ -513,11 +516,11 @@ class _SphereCompiler:
                     def f(ell, no, ni, i=co[0], j=ci[0]):
                         Q = self.P.Q(self.m, ell)
                         w = (Q.conj().T @ M @ Q)[i, j]
-                        return complex(w) if abs(w) > 1e-14 else None
+                        return complex(w) if abs(w) > 1e-14 * scale else None
                     A = self.bd(co, False, ci, False, f)
                     if A.nnz:
                         terms.append(e.map(A, comp=co))
-                elif abs(M[co[0], ci[0]]) > 1e-14:
+                elif abs(M[co[0], ci[0]]) > 1e-14 * scale:
                     terms.append(_relabel(e, co).scale(M[co[0], ci[0]]))
             if terms:
                 out[co] = _Ent(False, co, None, None, _sum_blocks(terms))

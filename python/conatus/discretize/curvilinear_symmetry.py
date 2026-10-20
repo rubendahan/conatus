@@ -415,7 +415,8 @@ class CurvilinearReduction:
             viol[zero] = np.abs(b[zero])
             ok = ~zero & inside
             viol[ok] = np.abs(b[ok] - fac[ok] * b[rep[ok] - lo])
-            worst = max(worst, float(viol.max() / scale) if viol.size else 0.0)
+            # np.max keeps a NaN violation (review of the audit "assurances")
+            worst = float(np.max([worst, float(viol.max() / scale) if viol.size else 0.0]))
         return worst
 
     # ------------------------------------------------------------------ whole coefficient arrays
@@ -486,7 +487,7 @@ def plan_matrices(plan, group, reduced: bool | None):
         else:
             full = plan._assemble(g)
             err = sub.check_equivariance(full, gi)
-            if err > EQUIVARIANCE_TOL:
+            if not err <= EQUIVARIANCE_TOL:             # NaN: no pass
                 raise DiscretizationError(
                     f"[{full.label}] the discrete operators are not equivariant under the declared "
                     f"symmetry (relative violation {err:.1e} > {EQUIVARIANCE_TOL:g}): a non-constant "
@@ -600,7 +601,7 @@ def symmetry_breaking_check(plan, group=None, *, method: str = "dense", target: 
             out[name] = np.zeros(0, complex)
             continue
         err = red.check_equivariance(full, gi)
-        if err > EQUIVARIANCE_TOL:
+        if not err <= EQUIVARIANCE_TOL:             # NaN: no pass
             raise DiscretizationError(f"[{full.label}] class {name}: operators not equivariant ({err:.1e})")
         if matrices is not None:
             L, M = matrices(red, gi)

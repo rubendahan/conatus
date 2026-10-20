@@ -37,6 +37,7 @@ if __name__ == "__main__":
         G, t = optimal_growth(N=N)
         print(f"N = {N}: G_max = {G:.6f} at t = {t:.4f}   (Butler & Farrell: "
               f"{BUTLER_FARRELL['G_max']} at t = {BUTLER_FARRELL['t_max']})")
+        assert abs(G - BUTLER_FARRELL["G_max"]) < 0.5 and abs(t - BUTLER_FARRELL["t_max"]) < 0.5, (N, G, t)
     system, ss = generator(5000.0, 0.0, 2.044, 64)
     print(ss.explain())
     print(f"largest growth rate {np.linalg.eigvals(ss.A).real.max():.3e} < 0: asymptotically stable")

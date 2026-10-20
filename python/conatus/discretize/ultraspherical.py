@@ -1,4 +1,4 @@
-"""Sparse Olver–Townsend operators on [-1, 1] (spec §10, §14–15).
+"""Sparse Olver–Townsend operators on [-1, 1].
 
 Coefficient spaces: lam = 0 is Chebyshev T; lam >= 1 (integer) is the
 ultraspherical/Gegenbauer basis C^(lam). Derivatives raise lam by one, conversions
@@ -12,7 +12,10 @@ d/dx = (2/L) d/dt.
 """
 from __future__ import annotations
 
+import math
+import numbers
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 import scipy.sparse as sp
@@ -87,7 +90,7 @@ def multiplication_by_t(N: int, lam: int) -> sp.csr_matrix:
 
 @dataclass(frozen=True)
 class NCCReport:
-    """What was done to a non-constant coefficient (never silent, spec §4.2)."""
+    """What was done to a non-constant coefficient (never silent)."""
 
     name: str
     n_coeffs: int            # Chebyshev coefficients of a kept (= bandwidth)
@@ -146,11 +149,34 @@ def check_tail_tol(tail_tol: float) -> float:
                 "under-resolved non-constant coefficient is now refused, never used silently",
             fix=f"drop ncc_tail_tol (default {NCC_TAIL_TOL:g}), raise the resolution, or declare "
                 "the accepted error: ncc_cutoff=1e-8 (truncation) or ncc_tail_tol=1e-8")
-    if isinstance(tail_tol, bool) or not (np.isfinite(tail_tol) and tail_tol > 0):
+    from ..errors import _scalar_of
+    tail_tol = _scalar_of(tail_tol)                 # a 0-d array is one number
+    if isinstance(tail_tol, (bool, np.bool_)) or not isinstance(tail_tol, numbers.Real) \
+            or not (math.isfinite(float(tail_tol)) and tail_tol > 0):      # text: a bare TypeError before
         from ..errors import OptionError
         raise OptionError(f"ncc_tail_tol={tail_tol!r} must be a finite number > 0",
                           fix=f"drop ncc_tail_tol (default {NCC_TAIL_TOL:g}) or e.g. ncc_tail_tol=1e-8")
     return float(tail_tol)
+
+
+def check_cutoff(cutoff: Any) -> float | None:
+    """Validate a declared ``ncc_cutoff``: None (nothing dropped) or a relative level in [0, 1)
+    (audit inputs: ``ncc_cutoff=nan`` kept only the first Chebyshev coefficient of
+    every non-constant coefficient, U = 1 - y^2 became its mean without a word, and ``inf`` also
+    switched off the under-resolution refusal; a negative cutoff was printed as declared)."""
+    if cutoff is None:
+        return None
+    from ..errors import _scalar_of
+    cutoff = _scalar_of(cutoff)                     # a 0-d array is one number
+    if isinstance(cutoff, (bool, np.bool_)) or not isinstance(cutoff, numbers.Real) \
+            or not (math.isfinite(float(cutoff)) and 0 <= cutoff < 1):
+        from ..errors import OptionError
+        raise OptionError(f"ncc_cutoff={cutoff!r} must be None or a finite number in [0, 1)",
+                          why="the cutoff is relative to the largest coefficient: coefficients "
+                              "below cutoff x max|a| are dropped (NaN or >= 1 would drop all but "
+                              "the first)",
+                          fix="drop ncc_cutoff (nothing dropped) or e.g. ncc_cutoff=1e-10")
+    return float(cutoff)
 
 
 def ncc_policy(tail_tol: float, cutoff: float | None) -> str:

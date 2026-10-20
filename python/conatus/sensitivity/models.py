@@ -123,8 +123,8 @@ def ginzburg_landau_exact(*, nu: complex, gamma: complex, mu_c: float, mu2: floa
     """Closed-form eigenpair n of ∂t q = −ν q' + γ q'' + (μ_c + μ₂ x²/2) q on the whole line."""
     if not mu2 < 0:
         raise OptionError(f"mu2 = {mu2}: the closed form needs μ₂ < 0 (confining potential)")
-    if n < 0:
-        raise OptionError(f"n = {n}: expected n >= 0")
+    from ..errors import check_count       # audit inputs: n = 2.5 was stored as 2, lambda at 2.5
+    n = check_count(n, "n", "ginzburg_landau_exact()", minimum=0)
     nu, gamma = complex(nu), complex(gamma)
     chi2 = np.sqrt(-mu2 / (2 * gamma) + 0j)           # principal root: Re χ² > 0 for Re γ > 0
     if not chi2.real > 0:

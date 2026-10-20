@@ -1,7 +1,7 @@
-# t13_sensitivity_data: PASS (exit 0) in 101.1 s | 2026-10-12
+# t13_sensitivity_data: PASS (exit 0) in 34.5 s | 2026-10-20 | script sha256 886d2f1f7f80650b
 Ginzburg-Landau (whole line) mode n = 0: λ = -0.0176886987015018-0.647820287354721j, χ = 0.239159529837+0.0475717882612j (Re χ² > 0); ν = (2+0.4j), γ = (1-1j), μ_c = 0.34, μ₂ = -0.01. Closed-form direct/adjoint modes, wavemaker, gradient w.r.t. μ(x) and dλ/d(ν, μ_c, μ₂) (Chomaz 2005; Bagheri et al. 2009).
-ModePair of 'linear Ginzburg-Landau: nu = (2+0.4j), gamma = (1-1j), mu = 0.34 - 0.005*y**2' (Chebyshev N = 140): σ = -0.0176886987015045-0.647820287354706j; pencil residuals right 1.4e-16, left 1.1e-16; physical adjoint = continuous adjoint (eigenvalue -0.0176886987015126+0.647820287354736j, residual 2.4e-17); product ⟨a,b⟩ = Σ w_i ∫ ā_i b_i dy, w = {'q': 1.0}; normalization ⟨u,u⟩ = 1, ⟨u†,u⟩ = 1; κ = 19.1473. nearest other finite eigenvalue at distance 1.682e-01
-wavemaker maximum S = 0.137574776291 at x = 4.00e-11
+ModePair of 'linear Ginzburg-Landau: nu = (2+0.4j), gamma = (1-1j), mu = 0.34 - 0.005*y**2' (Chebyshev N = 140): σ = -0.0176886987015045-0.647820287354706j; pencil residuals right 1.4e-16, left 1.1e-16; physical adjoint = continuous adjoint (eigenvalue -0.0176886987015126+0.647820287354736j, residual 2.8e-17); product ⟨a,b⟩ = Σ w_i ∫ ā_i b_i dy, w = {'q': 1.0}; normalization ⟨u,u⟩ = 1, ⟨u†,u⟩ = 1; κ = 19.1473. nearest other finite eigenvalue at distance 1.682e-01
+wavemaker maximum S = 0.137574776291 at x = 3.98e-11
 d lambda/d mu_2 = 3.884434935074-1.608985632263j (density)  3.884434935072-1.608985632266j (pencil)
 DMD (exact, rank 4, Δt = 0.5, amplitudes 'optimal', quadrature product): ω = -0.5576897846-0.6478195408j (|b| 1.41, res 1.2e-14); ω = -0.7130915004-0.5834606995j (|b| 0.707, res 8.2e-14); ω = -0.8686490565-0.5192373431j (|b| 0.424, res 2.4e-13); ω = -1.024295602-0.4562651356j (|b| 0.316, res 1.4e-13); misfit 3.5e-14; principal log (|Im ω| < π/Δt = 6.28319). 
 OK: wavemaker and d lambda/d mu_2 match the closed forms; DMD finds the four least stable eigenvalues

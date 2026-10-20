@@ -146,7 +146,11 @@ def mode_pair(system: ModalSystem, *, N: int, target: complex, adjoint: str,
     # nearest other finite eigenvalue: an ill-separated pair makes the choice ambiguous
     others = np.abs(lam[finite] - sigma)
     gap = float(np.sort(others)[1]) if others.size > 1 else np.inf
-    if gap <= 1e-8 * max(1.0, abs(sigma)):
+    # relative to sigma with a floor in the unit of the spectrum (critic review of the invariance
+    # audit: max(1, |sigma|) was absolute; the pencil's ||L||/||M|| is dominated by its spurious
+    # modes and is not a usable unit)
+    from .._scales import spectral_floor
+    if gap <= 1e-8 * max(abs(sigma), spectral_floor(lam[finite])):
         raise SpectralError(f"eigenvalue {sigma:.6g} is (nearly) multiple (gap {gap:.1e}): "
                             "first-order sensitivities are not defined for it")
 

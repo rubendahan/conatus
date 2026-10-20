@@ -42,8 +42,9 @@ class HillGPU:
             err = 0.0
             for probe in (1.0, 0.37 + 0.81j):
                 Dp = np.stack([hill.diag(probe, n) for n in h])
-                err = max(err, np.max(np.abs(Dp - D0 - probe * hill.mass[None])))
-            if err > affine_check_tol * max(1.0, np.max(np.abs(D0))):
+                # np.max keeps a NaN deviation (review of the audit "assurances")
+                err = float(np.max([err, np.max(np.abs(Dp - D0 - probe * hill.mass[None]))]))
+            if not err <= affine_check_tol * max(1.0, np.max(np.abs(D0))):
                 raise OptionError(f"diagonal blocks are not affine in μ (deviation {err:.1e}); "
                                   "pass patch= for μ-dependent rows",
                                   fix="pass patch= for the mu-dependent rows")

@@ -43,8 +43,10 @@ A cheaper test runs on every result, with or without `drift=`: the **spectral ta
 eigenvector. A spurious tau mode, or a mode the resolution does not hold, has its energy in the
 last coefficients of the wall-normal axis (for Orr–Sommerfeld at $N = 64$: a relative tail energy
 of 0.96–1.0 for the tau modes $c \approx 0.017 + 1470i$, $10^{-17}$ for the least stable physical
-mode). A mode whose tail energy in the last 10 % of the coefficients exceeds
-`cn.tolerances.SPURIOUS_TAIL_TOL` ($10^{-3}$, declared) is *flagged*: it stays in `res.values` and
+mode). A mode whose tail energy in the last 10 % of the coefficients
+(`cn.tolerances.SPURIOUS_TAIL_FRACTION` $= 0.1$; an unknown whose energy is below
+`cn.tolerances.SPURIOUS_SIGNIFICANT` $= 10^{-12}$ of the most excited one holds round-off and is not
+judged) exceeds `cn.tolerances.SPURIOUS_TAIL_TOL` ($10^{-3}$, declared) is *flagged*: it stays in `res.values` and
 `res.mode(i)`, is listed by `res.explain()` with its tail, its indices are `res.flagged`, and
 `res.order()` ranks it after every mode that passes, so `res.order()[0]` is the least stable mode
 that passes. `critical` and `least_stable` select only modes that pass. The flag removes nothing
@@ -58,7 +60,11 @@ result **selects** (`res.order()[0]`, `P.least_stable(...)`, the mode of `critic
 held to a second, stricter declared level, `cn.tolerances.UNRESOLVED_TAIL_TOL` ($10^{-10}$; measured:
 the tail is $10^{-8}$ at $N = 32$ with $c$ off by $4\times10^{-5}$, $10^{-12}$ at $N = 48$ with
 $9\times10^{-8}$). Without `drift=`, a selected mode above it gets the sentence "selected mode
-under-resolved: ... use drift= or a larger N" in `res.unresolved_note`, in `repr(res)` and
+under-resolved: ... use drift= or a larger N" in `res.unresolved_note`, with the accuracy to expect
+of its eigenvalue: the tail is an energy, so the truncated coefficients are about
+$\sqrt{\text{tail}}$ of the mode in amplitude, and so, to an order of magnitude, is the relative
+error of the eigenvalue ($\sqrt{10^{-8}} = 10^{-4}$ at $N = 32$, for an error of $4\times10^{-5}$;
+not a bound: the drift test measures it), in `repr(res)` and
 `res.explain()`, and one `cn.errors.ResolutionWarning`; `res.unresolved` lists every passing mode
 above the level. Nothing is removed or re-ranked. With `drift=` the drift test is the evidence and
 no tail warning is given. `critical()` without a drift pencil prints the tail of the critical mode

@@ -1,5 +1,5 @@
 """GPU (CUDA backend) vs CPU (NumPy reference transforms, C++ host solves): transforms, batched bordered banded solves,
-batched IMEX, determinism (spec §74: agreement within a stated error model, not bitwise)."""
+batched IMEX, determinism (agreement within a stated error model, not bitwise)."""
 import numpy as np
 import pytest
 import scipy.sparse as sp

@@ -5,10 +5,8 @@ import scipy.sparse as sp
 
 from conatus.runtime import BorderedBanded, BorderedBandedBatch
 
-rng = np.random.default_rng(2)
 
-
-def almost_banded(n, kl, ku, border, dtype):
+def almost_banded(rng, n, kl, ku, border, dtype):
     """Random well-conditioned banded matrix whose rows `border` are dense (BC-like)."""
     A = np.zeros((n, n), dtype=dtype)
     for i in range(n):
@@ -22,12 +20,12 @@ def almost_banded(n, kl, ku, border, dtype):
 
 @pytest.mark.parametrize("dtype", [float, complex])
 @pytest.mark.parametrize("r", [1, 2, 3, 4])
-def test_bordered_solve_matches_dense(dtype, r):
+def test_bordered_solve_matches_dense(dtype, r, rng):
     n, kl, ku = int(rng.integers(20, 80)), int(rng.integers(0, 4)), int(rng.integers(0, 4))
     border = sorted(rng.choice(n, size=r, replace=False).tolist())
     # A permuted so that the border rows are the ones removed from the band: build banded on the
     # permuted layout, then scatter back.
-    Ap = almost_banded(n, kl, ku, range(r), dtype)
+    Ap = almost_banded(rng, n, kl, ku, range(r), dtype)
     order = border + [i for i in range(n) if i not in border]
     A = np.empty_like(Ap)
     A[order] = Ap
@@ -41,7 +39,7 @@ def test_bordered_solve_matches_dense(dtype, r):
     assert "border rank" in s.explain()
 
 
-def test_tau_poisson_structure_from_plan():
+def test_tau_poisson_structure_from_plan(rng):
     from conatus.discretize import discretize
     from conatus.ir import LBVP, CartesianCoordinates, Chebyshev, Domain, Field, interp, lap, lift
     cs = CartesianCoordinates("x")
@@ -69,10 +67,10 @@ def test_singular_band_is_refused():
         BorderedBanded(sp.csr_matrix(A), [0])
 
 
-def test_batch_matches_individual():
+def test_batch_matches_individual(rng):
     n, mats, bs = 40, [], []
     for _ in range(6):
-        A = almost_banded(n, 2, 2, [0, 1], complex)
+        A = almost_banded(rng, n, 2, 2, [0, 1], complex)
         mats.append(sp.csr_matrix(A))
         bs.append(rng.standard_normal(n) + 1j * rng.standard_normal(n))
     batch = BorderedBandedBatch(mats, [0, 1])

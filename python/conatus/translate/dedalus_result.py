@@ -15,7 +15,7 @@ import numpy as np
 from ..errors import UnsupportedError
 from ..ir import (Field)
 from .dedalus_interpreter import _NpFunc
-from .dedalus_objects import (STATUSES, ReportLine, _code_of, _field_data_target, _FieldData, _Grid,
+from .dedalus_objects import (STATUSES, ReportLine, _field_data_target, _FieldData, _Grid,
                               _is_field_data, _is_num, _Opaque)
 
 if TYPE_CHECKING:
@@ -42,6 +42,10 @@ class DedalusTranslation:
     namespace: dict
     evp_requests: list[str]
     code: list[tuple[int, str]]
+    # the translated source and the call's arguments: to_script() replays them
+    source: str = ""
+    overrides: dict | None = None
+    entry: tuple | None = None
 
     # counts -----------------------------------------------------------------------------------
     def counts(self) -> dict[str, int]:
@@ -49,8 +53,11 @@ class DedalusTranslation:
 
     @property
     def complete(self) -> bool:
-        """True when nothing that defines the problem or its time stepping is unsupported."""
-        return self.problem is not None and self.counts()["unsupported"] == 0
+        """True when a problem was translated with no known semantic loss: no line unsupported
+        and none approximated (an approximated line is a declared difference of method, e.g.
+        a dropped Nyquist mode or another tau projection, finding 6)."""
+        c = self.counts()
+        return self.problem is not None and c["unsupported"] == 0 and c["approximated"] == 0
 
     def lines(self, status: str) -> list[ReportLine]:
         return [r for r in self.report if r.status == status]
@@ -161,40 +168,87 @@ class DedalusTranslation:
                 "</table></div>")
 
     def to_script(self) -> str:
-        """A readable Conatus script: translated statements as code, the report as comments."""
+        """A runnable Conatus program for this translation (finding 55: it
+        used to be a skeleton that did not run).
+
+        The program embeds the Dedalus source, replays ``conatus.from_dedalus`` on it (with the
+        same ``overrides`` / ``entry``; nothing of the script is executed by Python), refuses to
+        run if any line is unsupported, and then: IVP -> ``tr.ivp_solver()`` and
+        ``solver.run(tr.steps())``; LBVP -> ``tr.discretize().solve()`` with its residual;
+        EVP / NLBVP -> the discretized plan (choosing the eigenvalue group, or the Newton initial
+        guess, is the user's decision, stated in the program). The Conatus form of each
+        translated statement and the line-by-line report follow as comments, for reading."""
+        import pprint
+        for what, val in (("overrides", self.overrides), ("entry", self.entry)):
+            if val is None:
+                continue
+            try:
+                same = ast.literal_eval(repr(val)) == val
+            except (ValueError, SyntaxError):
+                same = False
+            if not same:
+                raise UnsupportedError(
+                    f"to_script(): the {what} {val!r} have no literal form a program can hold",
+                    fix=f"pass {what} made of numbers, strings, tuples, lists and dicts")
+        call = "SOURCE"
+        if self.overrides:
+            call += f", overrides={self.overrides!r}"
+        if self.entry is not None:
+            call += f", entry={self.entry!r}"
+        out = [f'"""Conatus program translated from {self.source_name} (conatus.from_dedalus).',
+               "",
+               "Runnable: the Dedalus source below is translated again (never executed) and the",
+               "translated problem is solved with the settings the script declares. The program",
+               "stops with UnsupportedError if a line of the script is not translated. The",
+               "commented block at the end shows the Conatus form of each statement.",
+               '"""',
+               "import conatus as cn",
+               "from conatus.errors import UnsupportedError",
+               "",
+               "SOURCE = " + pprint.pformat(self.source, width=96),
+               "",
+               f"tr = cn.from_dedalus({call})",
+               "print(tr.explain())",
+               "bad = tr.lines('unsupported')",
+               "if bad:",
+               "    raise UnsupportedError(",
+               "        f'{len(bad)} line(s) of the Dedalus script are not translated',",
+               "        where='; '.join(f'line {r.lineno}: {r.note}' for r in bad),",
+               "        fix='adapt these lines (tr.explain() gives the reason of each)')",
+               ""]
+        if self.kind == "IVP":
+            out += ["# time-dependent boundary data imposed as Dedalus does (bc_time='step'); "
+                    "pass bc_time='auto' for the Conatus default",
+                    "solver = tr.ivp_solver()",
+                    "steps = tr.steps()",
+                    "if steps is None:",
+                    "    raise UnsupportedError('the script declares no translatable number of "
+                    "steps', fix='call solver.run(n) with your n')",
+                    "solver.run(steps)",
+                    "print(f'IVP: {steps} steps, t = {solver.t}')"]
+        elif self.kind == "LBVP":
+            out += ["solution = tr.discretize().solve()",
+                    "print(f'LBVP solved: max residual {solution.max_residual:.3e}')"]
+        elif self.kind in ("EVP", "NLBVP"):
+            nxt = ("eigenvalues(plan, plan.group(...), ...) on the group of your choice"
+                   if self.kind == "EVP" else
+                   "a Newton solve from an initial guess of your choice")
+            out += ["plan = tr.discretize()",
+                    f"print('{self.kind} discretized: next step is {nxt} (the program stops "
+                    "here: Conatus never chooses it for you)')"]
+        out += ["", "# " + "-" * 94,
+                "# Translation, line by line (Conatus form of each statement; not executed):", ""]
         by_line: dict[int, list[str]] = {}
         for ln, text in self.code:
             by_line.setdefault(ln, []).append(text)
-        out = [f'"""Conatus translation of {self.source_name} (conatus.from_dedalus).',
-               "", "Review every line marked APPROXIMATED or UNSUPPORTED below.", '"""',
-               "import numpy as np", "",
-               "from conatus.expert import *  # noqa: F401,F403",
-               "from conatus.ir.parse import parse_expr  # noqa: F401", ""]
-        cs = None
-        if self.problem is not None and self.problem.variables:
-            cs = self.problem.variables[0].domain.coordsys
-            out += [f"cs = {_code_of(cs, 'cs')}", ""]
         for r in self.report:
             first = r.source.strip().splitlines()[0] if r.source.strip() else ""
-            tag = r.status.upper()
-            out.append(f"# [{r.lineno}] {tag}: {first}")
+            out.append(f"# [{r.lineno}] {r.status.upper()}: {first}")
             if r.note:
                 out.append(f"#     {r.note}")
-            for t in by_line.get(r.lineno, []):
-                if r.status in ("translated", "approximated"):
-                    out.append(t)
-        if self.problem is not None:
-            vs = ", ".join(v.name for v in self.problem.variables)
-            out += ["", "# problem declared above as:",
-                    f"# problem = {self.kind}([{vs}]"
-                    + (f", eigenvalue={self.problem.eigenvalue.name}" if self.kind == "EVP"
-                       else "") + ", namespace=locals())"]
-        if self.scheme:
-            out += [f"# solver = IVPSolver(discretize(problem), {self.scheme!r}, "
-                    f"{self.timestep!r}, bc_time='step')   # Dedalus convention for "
-                    "time-dependent boundary data"]
+            if r.status in ("translated", "approximated"):
+                out += [f"#   -> {t}" for t in by_line.get(r.lineno, [])]
         return "\n".join(out) + "\n"
-
 
 def _data_function(fd: _FieldData, field: Field, tr: _Interpreter, all_data: dict):
     """Grid function (one array per coordinate of the field's coordinate system, as Conatus
@@ -268,7 +322,25 @@ class _GridEval:
             f = self.tr.eval(node.func, self.scope)
             if not isinstance(f, _NpFunc):
                 raise UnsupportedError(f"call of {ast.unparse(node.func)} in field data")
-            return f(*[self.eval(a) for a in node.args])
+            # positional and keyword arguments, starred ones expanded: keywords used to be
+            # dropped (finding 53: np.linspace(0, 1, num=8) gave 50 points)
+            args: list = []
+            for a in node.args:
+                if isinstance(a, ast.Starred):
+                    args.extend(self.eval(a.value))
+                else:
+                    args.append(self.eval(a))
+            kw: dict = {}
+            for k in node.keywords:
+                val = self.eval(k.value)
+                if k.arg is None:
+                    if not (isinstance(val, dict) and all(isinstance(x, str) for x in val)):
+                        raise UnsupportedError(f"'**{ast.unparse(k.value)}' in field data is not "
+                                               "a mapping of argument names")
+                    kw.update(val)
+                else:
+                    kw[k.arg] = val
+            return f(*args, **kw)
         if isinstance(node, ast.Attribute):
             return self.tr.eval(node, self.scope)
         if isinstance(node, ast.Tuple):

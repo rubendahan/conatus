@@ -72,6 +72,15 @@ def _coord_args(fn: Callable, names: tuple[str, ...], what: str) -> tuple[str, .
     if any(p.kind in (p.VAR_POSITIONAL, p.VAR_KEYWORD) for p in params):
         raise InputTypeError(f"{what}: *args/**kwargs callables do not declare their coordinates",
                              fix=f"write lambda {', '.join(names)}: ...", doc=_DOC)
+    # the grids are passed by position (review finding 32: keyword-only arguments were accepted
+    # here, then the call failed with a TypeError far from the declaration)
+    kwonly = [p.name for p in params if p.kind is p.KEYWORD_ONLY]
+    if kwonly:
+        raise InputTypeError(f"{what}: keyword-only argument(s) {kwonly}",
+                             why="the coordinate grids are passed by position, in the order of "
+                                 "the arguments",
+                             fix=f"write lambda {', '.join(names)}: ... (no '*' before them)",
+                             doc=_DOC)
     args = tuple(p.name for p in params)
     bad = [a for a in args if a not in names]
     if bad:
@@ -130,8 +139,11 @@ class Compiled:
     gauge: list = dc_field(default_factory=list)
     notes: list = dc_field(default_factory=list)
     dealias_default: bool = True                        # dealias=None: the degree rule
-    degree: int = 1                 # highest polynomial degree of a term in the unknowns
-    nonpoly: list = dc_field(default_factory=list)      # terms not polynomial in the unknowns
+    degree: int = 1                 # highest product degree of a term (unknowns + given fields)
+    # highest polynomial degree in the unknowns only (Hermite/Laguerre floor); set by
+    # compile_model, unannotated so that it is not a constructor argument (frozen API surface)
+    unknown_degree = 1
+    nonpoly: list = dc_field(default_factory=list)      # terms not polynomial in unknowns/givens
     overrides: dict = dc_field(default_factory=dict)    # per-call parameter values (simulate(Ra=))
     parity: list = dc_field(default_factory=list)       # sine/cosine axis: parity of each unknown
     symmetry: Any = None                                # its SymmetrySubspace (None otherwise)
@@ -184,10 +196,10 @@ class Compiled:
         for n in self.notes:
             out.append(n)
         deal = ", ".join(f"{c}: {_frac(v)}" for c, v in self.dealias.items())
-        out.append(f"Dealiasing: {deal}" + (f" ({dealias_rule_text(self.degree, self.bases)}; override with "
+        out.append(f"Dealiasing: {deal}" + (f" ({dealias_rule_text(self.degree, self.bases, self.unknown_degree)}; override with "
                                              "dealias=)" if self.dealias_default else " (given)"))
         if self.nonpoly:
-            out.append("  not polynomial in the unknowns (no dealiasing factor removes their "
+            out.append("  not polynomial in the unknowns and given fields (no dealiasing factor removes their "
                        "aliasing; resolve them, check the spectral tails): "
                        + ", ".join(self.nonpoly[:4]) + (" ..." if len(self.nonpoly) > 4 else ""))
         if self.overrides:
@@ -240,7 +252,7 @@ class Compiled:
                                              f"{max(int(self.degree), 1)})"
                                              if self.dealias_default else " (given)"))
         weighted = _weighted_axes(self.bases)
-        if weighted and self.degree > 1:
+        if weighted and self.unknown_degree > 1:
             out.append(f"  approximate along {', '.join(weighted)}: products of Hermite/Laguerre "
                        "functions are not alias-free at any factor (resolve the fields, check the "
                        "spectral tails)" + ("; default there max(2, (p+1)/2), which lowers the "
@@ -248,7 +260,7 @@ class Compiled:
                                             if self.dealias_default else ""))
         out += [f"  warning: {t}" for t in self.illposed]
         if self.nonpoly:
-            out.append("  warning: not polynomial in the unknowns (no dealiasing factor removes "
+            out.append("  warning: not polynomial in the unknowns and given fields (no dealiasing factor removes "
                        "their aliasing): " + ", ".join(self.nonpoly[:4])
                        + (" ..." if len(self.nonpoly) > 4 else ""))
         if self.overrides:
@@ -344,7 +356,7 @@ def _macro(name: str, args: tuple[str, ...], body: str, ns_values: dict) -> Call
 # compilation
 # ------------------------------------------------------------------------------------------------
 
-def dealias_factor(degree: int, weighted: bool = False) -> float:
+def dealias_factor(degree: int, weighted: bool = False, unknown_degree: int | None = None) -> float:
     """Default dealiasing factor of the native layer for a highest polynomial degree ``degree``
     of the terms in the unknowns: (p + 1)/2, so that a product of p fields
     truncated at N modes is computed without aliasing on Fourier and polynomial bases (3/2 for
@@ -356,17 +368,22 @@ def dealias_factor(degree: int, weighted: bool = False) -> float:
     first modes); the factor reduces aliasing only. For products of the unknowns (p >= 2) the
     floor is then 2 (the aliasing error of a quadratic product drops from
     ~1e-1 to ~1e-2 for unit spectra and from ~1e-3 to ~1e-5 for decaying ones); a linear
-    model (p = 1) keeps 3/2 on every axis."""
+    model (p = 1) keeps 3/2 on every axis.
+
+    ``degree`` counts the spatially varying given fields as factors (review finding 3);
+    ``unknown_degree`` (default ``degree``) is the degree in the unknowns alone, which decides
+    the weighted-axis floor (a model linear in the unknowns keeps 3/2 there)."""
     p = max(int(degree), 1)
-    floor = WEIGHTED_DEALIAS if (weighted and p >= 2) else DEFAULT_DEALIAS
+    q = p if unknown_degree is None else max(int(unknown_degree), 1)
+    floor = WEIGHTED_DEALIAS if (weighted and q >= 2) else DEFAULT_DEALIAS
     return max(floor, (p + 1) / 2)
 
 
-def default_dealias_map(geometry, degree: int) -> dict[str, float]:
+def default_dealias_map(geometry, degree: int, unknown_degree: int | None = None) -> dict[str, float]:
     """Per-coordinate default factor (dealias=None): ``dealias_factor`` with the Hermite /
     Laguerre floor on the geometry's whole-line and half-line axes."""
     weighted = set(geometry._weighted_coords())
-    return {c: dealias_factor(degree, c in weighted) for c in geometry.coord_names}
+    return {c: dealias_factor(degree, c in weighted, unknown_degree) for c in geometry.coord_names}
 
 
 def _weighted_axes(bases: Mapping | None) -> list[str]:
@@ -378,40 +395,82 @@ def _weighted_axes(bases: Mapping | None) -> list[str]:
     return out
 
 
-def dealias_rule_text(degree: int, bases: Mapping | None = None) -> str:
+def dealias_rule_text(degree: int, bases: Mapping | None = None,
+                      unknown_degree: int | None = None) -> str:
     """The sentence explain() prints for a default dealiasing factor; ``bases`` (coordinate ->
     basis) names the Hermite/Laguerre axes, where it is approximate (and floored at 2 for
     products of the unknowns)."""
     f = _frac(dealias_factor(degree))
     p = max(int(degree), 1)
     text = (f"declared default {f} of the native layer: max(3/2, (p+1)/2) for the highest "
-            f"polynomial degree p = {p} of the equations in the unknowns, exact (alias-free) "
-            "products on Fourier and polynomial bases")
+            f"polynomial degree p = {p} of the equations in the unknowns and the given fields; "
+            "on Fourier and polynomial bases a product of p fields, each truncated at the N "
+            "modes of the resolution, is then computed without aliasing (a given field that is "
+            "not resolved at N modes is truncated first: check its spectral tail)")
     weighted = _weighted_axes(bases)
     if weighted:
-        fw = _frac(dealias_factor(degree, True))
+        fw = _frac(dealias_factor(degree, True, unknown_degree))
         text += (f"; approximate on the Hermite/Laguerre axis {', '.join(weighted)} (products of "
                  "Hermite or Laguerre functions are not alias-free at any factor: resolve the "
                  "fields and check the spectral tails)")
-        if p >= 2:
+        if (p if unknown_degree is None else unknown_degree) >= 2:
             text += (f"; there the default is {fw} = max(2, (p+1)/2), because the factor only "
                      "reduces aliasing on these axes and 2 instead of 3/2 lowers the error of a "
                      "quadratic product by one to two decades")
     return text
 
 
-def _max_degree(raw, V) -> tuple[int, list[str]]:
-    """(highest polynomial degree of a term in the unknowns, terms that are not polynomial)."""
-    p, nonpoly = 1, []
+def _max_degree(raw, V, G=frozenset()) -> tuple[int, int, list[str]]:
+    """(highest polynomial degree of a term in the unknowns and the spatially varying given
+    fields ``G``, the same in the unknowns alone, terms that are not polynomial in them).
+
+    A given field enters a pseudospectral product exactly like an unknown (its coefficients are
+    truncated at the same N modes), so U*u*u is a cubic product (review finding 3: counting the
+    unknowns only gave 3/2 and aliased cos(7x)^3 at N = 16). Counting every given field is
+    conservative. A non-polynomial function of given fields alone (exp(G), 1/G) is one more
+    factor, like a given field; a term not polynomial in the unknowns is listed."""
+    p, q, nonpoly = 1, 1, []
+    G = frozenset(G)
+    vars_ = frozenset(V) | G
     for eq in raw:
         for side in (eq.lhs, eq.rhs):
             for t in _terms(side):
-                for d in t.degrees(V):
+                t, stand_ins = _given_functions_as_factors(t, G)
+                for d in t.degrees(vars_ | stand_ins):
                     if d >= NONPOLY:
                         nonpoly.append(str(t))
                     else:
                         p = max(p, d)
-    return p, nonpoly
+                q = max([q] + [d for d in t.degrees(V) if d < NONPOLY])
+    return p, q, nonpoly
+
+
+def _given_functions_as_factors(e, G: frozenset):
+    """(``e`` with every non-polynomial function of given fields alone replaced by a stand-in
+    field, the stand-ins).
+
+    ``exp(G)``, ``sqrt(G)`` or ``1/G`` is a known coefficient like ``G`` itself: one factor of the
+    product, evaluated on the grid. Without this, ``exp(G)*u**3`` was "not polynomial" and lost the
+    degree 3 of its unknowns (default factor 3/2 instead of 2 on v0.1.0: numerics review); it
+    now counts as a product of four fields."""
+    if not G:
+        return e, frozenset()
+    mapping: dict = {}
+
+    def visit(x):
+        ff = x.free_fields()
+        if ff and ff <= G and max(x.degrees(G)) >= NONPOLY:
+            if x not in mapping:
+                f0 = min(ff, key=lambda f: f.name)
+                mapping[x] = Field(f"_given_function_{len(mapping)}", f0.domain, x.tensorsig)
+            return
+        for a in x.args:
+            visit(a)
+
+    visit(e)
+    if not mapping:
+        return e, frozenset()
+    return e.substitute(mapping), frozenset(mapping.values())
 
 
 def compile_model(model, N, dealias=None, *, check_conditions: bool = True,
@@ -425,7 +484,7 @@ def compile_model(model, N, dealias=None, *, check_conditions: bool = True,
     res = geo.resolution(N)
     degree = getattr(model, "_degree", None) or 1
     deal = (geo.dealias_map(dealias) if dealias is not None
-            else default_dealias_map(geo, degree))
+            else default_dealias_map(geo, degree, getattr(model, "_unknown_degree", None)))
     cs, bases, D = geo.build(res, deal)
     names = geo.coord_names
 
@@ -533,11 +592,14 @@ def compile_model(model, N, dealias=None, *, check_conditions: bool = True,
                             fix="write explicit(...) around a complete term (a product with its "
                                 "coefficients), e.g. -explicit(2*cross(ez, u))", doc=_DOC)
 
-    pdeg, nonpoly = _max_degree(raw, V)
+    # given fields that vary in space count as factors of a product (constants do not)
+    spatial_given = frozenset(f for f in ncc if f.domain is not None and f.domain.bases)
+    pdeg, qdeg, nonpoly = _max_degree(raw, V, spatial_given)
     comp = Compiled(model, res, deal, kind, None, ncc, fields, params, eig, cs, bases, D, labels,
                     split=split, dealias_default=dealias is None, degree=pdeg, nonpoly=nonpoly,
                     overrides=overrides)
     comp._time_candidate = tpar
+    comp.unknown_degree = qdeg
     if not check_conditions:
         return comp
     if kind == "IVP":                # backward diffusion / negative viscosity
@@ -561,6 +623,7 @@ def compile_model(model, N, dealias=None, *, check_conditions: bool = True,
         pb.add_equation((lhs, rhs))
     comp.problem = pb
     _check_time(comp, tpar)
+    _warn_constant_t(comp)
     traced = comp.__dict__.get("_traced", set())
     if traced:                      # a given used only through its wall trace (A22): no data
         used = {f for eq in pb.equations for side in (eq.lhs, as_expr(eq.rhs))
@@ -568,6 +631,33 @@ def compile_model(model, N, dealias=None, *, check_conditions: bool = True,
         for f in traced - used:
             comp.ncc.pop(f, None)
     return comp
+
+
+def _warn_constant_t(comp: Compiled) -> None:
+    """A time-dependent model that declares ``t`` itself, as a parameter or a given field, and
+    uses it in its equations or boundary values: ``t`` is then that constant, not the time (the native time is ``t`` only when the model does not use the name), so a forcing ``sin(t)``
+    stays frozen at its declared value for the whole run. Said with a DefaultChoiceWarning
+    naming the value (review of the inputs audit: it ran without a word)."""
+    if comp.kind != "IVP":
+        return
+    model = comp.model
+    what = None
+    if "t" in model.params:
+        what = f"the parameter t = {model.params['t']!r}"
+        used = any(p.name == "t" for eq in comp.problem.equations for side in (eq.lhs, eq.rhs)
+                   for p in as_expr(side).free_parameters())
+    elif any(g.name == "t" for g in model.givens):
+        what = "the given field t"
+        used = any(f.name == "t" for eq in comp.problem.equations for side in (eq.lhs, eq.rhs)
+                   for f in as_expr(side).free_fields())
+    if what is None or not used:
+        return
+    from ..errors import DefaultChoiceWarning, _warn_user
+    _warn_user(f"model {model.name!r}: 't' in the equations or boundary values is {what}, a "
+               "constant, not the time: a forcing such as sin(t) keeps its value for the whole "
+               "run. The time of a model is 't' only when the model does not declare the name "
+               "itself; rename the declaration (e.g. t0) to use the time, or keep it if a "
+               "constant was meant", DefaultChoiceWarning)
 
 
 def _check_time(comp: Compiled, tpar) -> None:

@@ -141,14 +141,23 @@ def flag(res: Any, layout: list | None, note: str) -> None:
         f"{SPURIOUS_TAIL_TOL:g}); they are kept and ranked last by order()")
 
 
+def expected_accuracy(tail: float) -> float:
+    """Relative accuracy to expect of an eigenvalue whose mode has the spectral tail ``tail``
+   : the tail is an *energy* fraction, so the truncated coefficients are
+    about sqrt(tail) of the mode in amplitude, and the eigenvalue error is of that order (an order
+    of magnitude, not a bound: Orr-Sommerfeld at N = 32, tail 1e-8, eigenvalue right to 4e-5)."""
+    return float(np.sqrt(max(tail, 0.0)))
+
+
 def unresolved_sentence(what: str, tail: float) -> str:
-    """The one sentence of an under-resolved selected mode."""
+    """The one sentence of an under-resolved selected mode (the expected accuracy)."""
     from ..tolerances import SPURIOUS_TAIL_FRACTION, UNRESOLVED_TAIL_TOL
     return (f"selected mode under-resolved: {what} has a spectral tail {tail:.1e} > "
             f"UNRESOLVED_TAIL_TOL = {UNRESOLVED_TAIL_TOL:g} (relative energy in the last "
             f"{SPURIOUS_TAIL_FRACTION:g} of its wall-normal coefficients), so its value is not "
-            "converged in N; use drift=N2, drift_tol=1e-6 (only modes found again at N2 are "
-            "kept) or a larger N")
+            f"converged in N: expect a relative eigenvalue accuracy of about sqrt(tail) = "
+            f"{expected_accuracy(tail):.0e} (an order of magnitude, not a bound); to measure it, use "
+            "drift=N2, drift_tol=1e-6 (only modes found again at N2 are kept) or a larger N")
 
 
 def check_selected(res: Any) -> None:

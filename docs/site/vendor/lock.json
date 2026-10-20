@@ -8,7 +8,7 @@
     "(https://registry.npmjs.org/<name>/<version> gives dist.tarball and dist.integrity).",
     "Every package names its licence (SPDX) and ships its licence text next to its files: 'LICENSE' in",
     "'copy', or, for a tarball without one, 'licence_from' (a vendored LICENSE of the same project, copied",
-    "to <dest>/LICENSE). THIRD_PARTY_NOTICES.md lists them all (tests/infra/test_licences.py)."
+    "to <dest>/LICENSE). THIRD_PARTY_NOTICES.md lists them all."
   ],
   "packages": {
     "mathjax": {

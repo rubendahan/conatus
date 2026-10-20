@@ -241,18 +241,16 @@ def test_crossing_located_when_the_secant_lands_on_it():
     assert hopf.kind == "hopf" and hopf.converged and abs(hopf.p) < 1e-12, br.explain()
 
 
-@pytest.mark.xfail(strict=True, reason=" (open): NLBVPContinuation's relative residual scale "
-                   "max(|A x|, |b|) vanishes at the fold of a uniform state (A x = 0 there): the "
-                   "fold is found (p to 1e-9) but its location never converges")
 def test_uniform_fold_relative_residual_scale_vanishes():
     """Same fold without the passive unknown: at r = -1/4 the state u = -1/2 spans the kernel of
-    A = 1 + 2u - D d^2, so A x = 0 and b = u^2 + r = 0 as assembled vectors; |G| ~ 1e-17 is
-    divided by a scale ~ 1e-8 and the corrector cannot reach its tolerance."""
+    A = 1 + 2u - D d^2, so A x = 0 and b = u^2 + r = 0 as assembled vectors. The former scale
+    max(|A x|, |b|) vanished there: the fold location stalled 1.8e-6 away (finding 96; the old xfail note said 1e-9) and was flagged not converged. The scale now
+    includes |p G_p| (the parameter's own terms, which do not cancel) and the fold converges."""
     st, _, o = _fold_problems(passive=False)
     newton = NewtonSolver(st, tolerance=1e-13, damping=1.0, max_iterations=30, params={"r": -0.2})
     sol = newton.solve({o["u"]: lambda Z: -0.2 + 0 * Z})
     br = NLBVPContinuation(newton, "r", _cfg(tolerance=1e-12, max_points=3, event_max_iterations=4)).run(
         sol.coeffs, -0.2, -1, p_bounds=(-0.3, 0.0))
     (fold,) = br.folds()
-    assert abs(fold.p + 0.25) < 1e-8                            # found ...
-    assert fold.converged, br.explain()                         # ... but flagged not converged
+    assert fold.converged, br.explain()
+    assert abs(fold.p + 0.25) < 1e-8, br.explain()

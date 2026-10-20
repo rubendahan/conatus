@@ -9,7 +9,9 @@ import { withBase } from "../lib/base";
 interface Doc { id: string; path: string; page: string; heading: string; text: string }
 interface Hit { id: string; path: string; page: string; heading: string; snippet: string }
 
-type Engine = { search: (q: string) => Hit[] };
+// At most MAX_HITS results are listed; the hint says how many matched in all (finding 78).
+const MAX_HITS = 12;
+type Engine = { search: (q: string) => { hits: Hit[]; total: number } };
 
 let enginePromise: Promise<Engine> | null = null;
 function loadEngine(): Promise<Engine> {
@@ -28,7 +30,8 @@ function loadEngine(): Promise<Engine> {
     return {
       search(q: string) {
         const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
-        return ms.search(q).slice(0, 12).map((r) => {
+        const all = ms.search(q);
+        const hits = all.slice(0, MAX_HITS).map((r) => {
           const text: string = (r as unknown as Doc).text;
           const low = text.toLowerCase();
           const at = Math.max(0, ...terms.map((t) => low.indexOf(t)).filter((i) => i >= 0).slice(0, 1));
@@ -37,6 +40,7 @@ function loadEngine(): Promise<Engine> {
           const d = r as unknown as Doc;
           return { id: String(r.id), path: d.path, page: d.page, heading: d.heading, snippet };
         });
+        return { hits, total: all.length };
       },
     };
   })();
@@ -56,6 +60,7 @@ export default function Search() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<Hit[]>([]);
+  const [total, setTotal] = useState(0);
   const [active, setActive] = useState(0);
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -97,9 +102,9 @@ export default function Search() {
   }, [open, status]);
 
   useEffect(() => {
-    if (status !== "ready" || !q.trim()) { setHits([]); return; }
+    if (status !== "ready" || !q.trim()) { setHits([]); setTotal(0); return; }
     let live = true;
-    loadEngine().then((e) => { if (live) { setHits(e.search(q.trim())); setActive(0); } });
+    loadEngine().then((e) => { if (live) { const r = e.search(q.trim()); setHits(r.hits); setTotal(r.total); setActive(0); } });
     return () => { live = false; };
   }, [q, status]);
 
@@ -117,7 +122,7 @@ export default function Search() {
     else if (e.key === "Enter" && hits[active]) { e.preventDefault(); go(hits[active]); }
   };
 
-  const hint = useMemo(() => (status === "loading" ? "Loading the index…" : status === "error" ? "The search index could not be loaded." : q ? `${hits.length} result${hits.length === 1 ? "" : "s"}` : "Try: Floquet, Orszag, checkpoints, resume_or_start, h5py"), [status, q, hits.length]);
+  const hint = useMemo(() => (status === "loading" ? "Loading the index…" : status === "error" ? "The search index could not be loaded." : q ? (total > hits.length ? `${total} results, the first ${hits.length} shown: add a word to narrow them` : `${total} result${total === 1 ? "" : "s"}`) : "Try: Floquet, Orszag, checkpoints, resume_or_start, h5py"), [status, q, hits.length, total]);
 
   return (
     <>

@@ -160,6 +160,8 @@ class ShootingRPO:
         if not dT_rel > 0:
             raise OptionError("dT_rel must be > 0 (declared central-difference step)",
                               fix="dT_rel=1e-5 (the relative central-difference step of the period derivative)")
+        from .._experimental import experimental
+        experimental("orbits")
         self.solver, self.group = solver, group
         self.nsteps, self.dT_rel, self.cache = int(nsteps), float(dT_rel), bool(cache_stages)
         self.idx = np.flatnonzero(group.mask)

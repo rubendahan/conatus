@@ -117,8 +117,10 @@ def dmd(X, *, dt: float, rank: int, inner_product: DataInnerProduct, amplitudes:
         raise OptionError(f"method='{method}': expected one of {DMD_METHODS}")
     if amplitudes not in AMPLITUDES:
         raise OptionError(f"amplitudes='{amplitudes}': expected one of {AMPLITUDES}")
-    if not dt > 0:
-        raise OptionError("dt must be > 0 (declared sampling interval)")
+    from ..errors import check_real
+    check_real(dt, "dt", "dmd()", positive=True)          # audit inputs: "0.1" a bare TypeError
+    if tol is not None:
+        check_real(tol, "tol", "dmd()", positive=True)    # audit inputs: tol < 0 was accepted
     xp = array_module(X)
     Xall = X
     pairs = Y is not None
@@ -126,6 +128,10 @@ def dmd(X, *, dt: float, rank: int, inner_product: DataInnerProduct, amplitudes:
         X, Y = Xall[:, :-1], Xall[:, 1:]
     elif method == "optimized":
         raise OptionError("optimized DMD fits a sequence: pass X only (no Y)")
+    elif getattr(Y, "shape", None) != getattr(X, "shape", None):
+        # pairs x_j -> y_j: one shape (audit inputs: a bare matmul ValueError)
+        raise OptionError(f"dmd(X, Y=...): X {getattr(X, 'shape', None)} and Y "
+                          f"{getattr(Y, 'shape', None)} must have one shape (pairs x_j -> y_j)")
     elif amplitudes == "optimal":
         # 'optimal' fits x_j = Φ diag(b) μ^j over a sequence; the columns of X given with Y are
         # pairs, not a sequence (they used to be taken as x_0 ... x_{m-1} without a word)
@@ -133,9 +139,18 @@ def dmd(X, *, dt: float, rank: int, inner_product: DataInnerProduct, amplitudes:
                           "amplitudes='first' (fit of X[:, 0]), or pass the sequence as X alone")
     if isinstance(rank, bool) or not isinstance(rank, (int, np.integer)) or not 1 <= rank <= min(X.shape):
         raise OptionError(f"rank = {rank}: expected an integer 1 <= rank <= {min(X.shape)}")
+    if not (bool(xp.isfinite(X).all()) and bool(xp.isfinite(Y).all())):
+        raise OptionError("DMD: the snapshots contain NaN or Inf", fix="clean the data first")
     FX, FY = inner_product.half(X), inner_product.half(Y)
     U, s, Vh = xp.linalg.svd(FX, full_matrices=False)
     s_all = to_host(s)
+    # finding 97: zero data used to fail late (NaN, then LinAlgError in eig)
+    if not s_all[0] > 0:
+        raise OptionError("DMD: the snapshots X are all zero (no dynamics to decompose)",
+                          fix="check the data (a field never written, a wrong variable)")
+    if not s_all[rank - 1] > 0:
+        raise OptionError(f"DMD: rank {rank} exceeds the rank of the snapshots (σ_{rank} = 0)",
+                          fix=f"rank <= {int(np.count_nonzero(s_all > 0))}")
     U, s, V = U[:, :rank], s_all[:rank], Vh[:rank].conj().T
     VS = V * xp.asarray(1.0 / s)[None, :]
     At = to_host(U.conj().T @ (FY @ VS))

@@ -113,6 +113,7 @@ class _ProblemDecl:
     problem: Any
     kind: str
     time: Any = None
+    namespace: dict | None = None    # the problem's own namespace (None: the script's scope)
 
 
 @dataclass

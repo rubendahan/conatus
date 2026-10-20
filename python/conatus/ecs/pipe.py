@@ -164,6 +164,8 @@ class PipeTravellingWave:
 
     def __init__(self, case: PipeCase, solver, *, T: float, fd_eps: float, method: str = "stokes",
                  stokes_a: float | None = None) -> None:
+        from .._experimental import experimental
+        experimental("orbits")
         if method not in ("stokes", "shooting"):
             raise OptionError(f"method must be 'stokes' or 'shooting', got {method!r}",
                               fix="method='stokes' (with stokes_a=) or method='shooting'")
@@ -235,15 +237,16 @@ class PipeTravellingWave:
         return s.X.copy()
 
     def phi(self, x) -> tuple[np.ndarray, object]:
-        """Time-T map of velocity vector x (cached for the last x): (real vector, full state)."""
-        key = x.tobytes()
+        """Time-T map of velocity vector x (cached for the last x): (real vector, full state),
+        the caller's own copies (review of the state audit, F4: the cached arrays were returned,
+        and the result of ``solve`` keeps the full state, so an in-place edit of ``result.X``
+        changed what a later ``phi`` of the same x returned)."""
+        key = np.asarray(x).tobytes()
         hit = self._cache.get("phi")
-        if hit is not None and hit[0] == key:
-            return hit[1], hit[2]
-        Y = self.advance(self.to_X(x), self.nsteps)
-        y = self.to_x(Y)
-        self._cache["phi"] = (key, y, Y)
-        return y, Y
+        if hit is None or hit[0] != key:
+            Y = self.advance(self.to_X(x), self.nsteps)
+            hit = self._cache["phi"] = (key, self.to_x(Y), Y)
+        return hit[1].copy(), hit[2].copy()
 
     def residual(self, z) -> np.ndarray:
         """Shooting residual (S_cT Phi_T(x) - x, phase condition) of z = (x, c)."""

@@ -24,7 +24,7 @@ from .._deprecation import renames
 from ..errors import InputTypeError, OptionError, SymmetryError, UnsupportedError, did_you_mean
 from .integrator import IVPSolver, check_dt_backend, check_substeps, finite_cadence, setup_scheme
 from .real_projection import m0_projection, m0_projection_text
-from .system import ORDERINGS, GlobalSystem, GroupSlot
+from .system import ORDERINGS, FactorCache, GlobalSystem, GroupSlot
 
 __all__ = ["PolarGlobalSystem", "PolarIVPSolver"]
 
@@ -81,11 +81,15 @@ class PolarGlobalSystem:
             raise OptionError(f"ordering must be one of {ORDERINGS}, got {ordering!r}",
                               fix="ordering='interleaved' (default)" + did_you_mean(str(ordering), ORDERINGS),
                               doc="docs/site/guide/timesteppers.md")
+        # a switch, never the truth value of another object (review of audit inputs:
+        # bool(reduced) read reduced="no" as True on the polar and spherical systems)
+        from ..errors import check_flag
+        reduced = check_flag(reduced, "reduced", "PolarGlobalSystem")
         if reduced and plan.subspace is None:
             raise OptionError("reduced=True needs a symmetry subspace declared on the problem",
                               fix="declare symmetry=SymmetrySubspace(...) on the problem, or drop "
                                   "reduced=", doc="docs/site/guide/timesteppers.md")
-        self.plan, self.ordering, self.reduced, self.complexify = plan, ordering, bool(reduced), False
+        self.plan, self.ordering, self.reduced, self.complexify = plan, ordering, reduced, False
         S = plan.space
         pb = plan.problem
         self.variables = plan.variables
@@ -161,7 +165,7 @@ class PolarGlobalSystem:
             sl = [self.slots[i] for i in idx]
             self._buckets.append((idx, np.stack([s.offset + s.rperm for s in sl]),
                                   np.stack([s.offset + s.cperm for s in sl])))
-        self._factors: dict = {}
+        self._factors = FactorCache()      # bounded LRU (audit state)
 
     def _meta(self, slots, domains, shapes, g) -> list[tuple]:
         """(object index, flat index in its coefficient array, radial index or None) per entry."""
@@ -178,7 +182,7 @@ class PolarGlobalSystem:
     def factor(self, a: float, b: float) -> list:
         """Batched factorizations of a M + b L per solver bucket (cached by (a, b))."""
         key = (float(a), float(b))
-        if key not in self._factors:
+        if self._factors.get(key) is None:       # get(): a hit is a use of the LRU store
             f = []
             for idx, _, _ in self._buckets:
                 mats = [(a * self.slots[i].M + b * self.slots[i].L).tocsr()[self.slots[i].rperm][:, self.slots[i].cperm]
@@ -245,7 +249,9 @@ class PolarGlobalSystem:
             # orbit member +- its representative) must reproduce the data
             for k, (a, back) in enumerate(zip(flat_in, self.scatter(X), strict=True)):
                 lost = np.abs(a - back.reshape(-1))
-                if lost.size and lost.max() > 1e-12 * max(1.0, np.abs(a).max()):
+                # relative to the data (critic review: max(1, |a|) silently dropped the
+                # unrepresented part of data of amplitude below 1)
+                if lost.size and lost.max() > 1e-12 * np.abs(a).max():
                     where = ("the symmetry subspace or the represented modes" if self.reduced
                              else "the represented modes (per-m radial truncation)")
                     raise SymmetryError(
@@ -305,6 +311,8 @@ class PolarIVPSolver(IVPSolver):
                                    "complex", fix="drop complexify=")
         if reduced is None:
             reduced = plan.problem.symmetry is not None     # declared subspace: run in it (explain)
+        from ..errors import check_flag      # reduced="no" read as True (audit inputs review)
+        reduced = check_flag(reduced, "reduced", "PolarIVPSolver")
         if reduced and plan.problem.symmetry is None:
             raise OptionError("reduced=True needs a symmetry subspace declared on the problem",
                               fix="declare symmetry=SymmetrySubspace(...) on the problem, or drop "
@@ -319,6 +327,8 @@ class PolarIVPSolver(IVPSolver):
         self.scheme, self.dt = scheme, float(dt)
         self.startup = startup
         self.startup_substeps = check_substeps(startup_substeps, "PolarIVPSolver")
+        from .integrator import check_time_parameter    # a name the equations use (audit inputs)
+        check_time_parameter(plan, time_parameter, "PolarIVPSolver")
         self.time_parameter = time_parameter
         self.backend, self.f_backend, self.xp = "cpu", "evaluator", np
         self.system = PolarGlobalSystem(plan, ordering=ordering, reduced=reduced)

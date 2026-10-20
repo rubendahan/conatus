@@ -2,7 +2,7 @@
 
 ``discretize(problem)`` dispatches here when the problem lives on ``PolarCoordinates``. The public
 face is the Cartesian ``Plan``'s: ``groups``, ``matrices(group)`` (``GroupMatrices``: L, M, rows,
-columns, boundary rows, tau columns), ``rank_report``/``check`` (spec §14, refused before any
+columns, boundary rows, tau columns), ``rank_report``/``check`` (refused before any
 factorization), ``solve`` (LBVP, residual reported), ``explain()``, ``methods()``; EVPs go through
 ``conatus.solvers.eigenvalues`` and IVPs through ``IVPSolver`` exactly as in Cartesian geometry.
 
@@ -43,7 +43,7 @@ from . import ultraspherical as us
 from .compiler import DiscretizationError
 from .curvilinear_symmetry import (CurvilinearReduction, plan_embed, plan_matrices, plan_project,
                                    reduced_lbvp_solve)
-from .plan import GroupMatrices, LBVPSolution, Plan
+from .plan import GroupMatrices, LBVPSolution, Plan, data_snapshot, rebind_for_data
 from .polar_eval import PH, PolarEvaluator, PolarSpace, _comps, spin_k
 
 __all__ = ["PolarPlan", "PolarGroup"]
@@ -375,10 +375,14 @@ class _PolarCompiler:
             raise DiscretizationError(f"'{x}': at a boundary, dot(coefficient, vector) needs a "
                                       "rank-2 coefficient and a vector")
         M = self.P.boundary_tensor(C) @ self.P.space.G
+        # entries below round-off *of this tensor* are dropped: a threshold relative to its
+        # largest entry (review finding 35: the absolute 1e-14 dropped every row of 1e-15 I)
+        scale = float(np.max(np.abs(M), initial=0.0))
         inner = self._trace(X, pos, d)
         out = {}
         for co in _comps(1, self.nc):
-            terms = [inner[ci].scale(M[co[0], ci[0]]) for ci in inner if abs(M[co[0], ci[0]]) > 1e-14]
+            terms = [inner[ci].scale(M[co[0], ci[0]]) for ci in inner
+                     if abs(M[co[0], ci[0]]) > 1e-14 * scale]
             if terms:
                 out[co] = _Ent(False, self.m + spin_k(co), None, None, _sum_blocks(terms))
         return out
@@ -527,7 +531,10 @@ class PolarPlan:
                               fix="assembly='direct' (the only assembly of curvilinear plans)")
         self.problem = problem
         self.params = dict(params or {})
-        self.ncc_cutoff = ncc_cutoff
+        # constructor data kept to rebuild the plan when solve(data) changes a coefficient
+        self._ncc_src = data_snapshot(ncc)
+        self._plan_kw = dict(ncc_cutoff=ncc_cutoff, assembly=assembly, ncc_tail_tol=ncc_tail_tol)
+        self.ncc_cutoff = us.check_cutoff(ncc_cutoff)
         # resolution of the non-constant coefficients (same semantics as the Cartesian plan:
         # a sampled tail above ncc_tail_tol, or the declared ncc_cutoff if larger, is refused)
         self.ncc_tail_tol = us.check_tail_tol(ncc_tail_tol)
@@ -564,10 +571,15 @@ class PolarPlan:
         pnames = {p.name for eq in problem.equations for side in (eq.lhs, eq.rhs)
                   for p in side.free_parameters()}
         stray_p = sorted(set(self.params) - pnames)
+        from .param_keys import check_param_values
+        check_param_values(self.params, where="discretize")
         if stray_p:
             raise DiscretizationError(
                 f"params given for parameter(s) not used by the problem: "
                 f"{', '.join(repr(n) for n in stray_p)} (used: {sorted(pnames)})")
+        from .param_keys import PlanParams     # later writes checked too (review, inputs)
+        self.params = PlanParams(self.params, pnames, "plan.params")
+        self._params_assembled: dict = {}   # the values of the first assembly (param_keys)
         self._ncc_coeffs = {f: self.coeffs_from_data(f, d) for f, d in (ncc or {}).items()}
         self._ncc_data = self._ncc_coeffs        # same role as Plan._ncc_data (presence test)
         self.ncc_reports: dict = {}
@@ -773,6 +785,8 @@ class PolarPlan:
 
     # ---------------------------------------------------------------- assembly
     def _assemble(self, group: PolarGroup) -> GroupMatrices:
+        from .param_keys import check_assembled_params
+        check_assembled_params(self)          # cached groups hold the first values
         key = ("full", group)
         if key in self._cache:
             return self._cache[key]
@@ -897,6 +911,9 @@ class PolarPlan:
         """LBVP: one sparse LU per group, relative residual of every solve reported."""
         if not isinstance(self.problem, LBVP):
             raise DiscretizationError("solve() is for LBVPs (EVP: solvers.eigenvalues, IVP: IVPSolver)")
+        fresh = rebind_for_data(self, data)       # a new operator coefficient: rebuilt plan
+        if fresh is not None:
+            return fresh.solve(data, reduced)
         if reduced is None:
             reduced = self.problem.symmetry is not None
         self.check(reduced)

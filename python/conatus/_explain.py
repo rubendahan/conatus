@@ -1,6 +1,6 @@
 """The complete ``explain()`` text of an object, for records and machine reports.
 
-Key objects print a short summary by default and the complete record with ``explain(full=True)``. Tools that keep the text (the run registry)
+Key objects print a short summary by default and the complete record with ``explain(full=True)``. Tools that keep the text (the run registry, ``python -m conatus agent check``)
 want the complete one; objects without the split have one text."""
 from __future__ import annotations
 

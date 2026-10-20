@@ -7,8 +7,9 @@ coefficient field.
 """
 import numpy as np
 
-from conatus.expert import (IVP, CartesianCoordinates, Chebyshev, Domain, Field, Parameter, cos, diff,
-                            dt, has_nonpolynomial, interp, sqrt, tanh)
+from conatus.expert import (IVP, CartesianCoordinates, Chebyshev, Domain, Field, Parameter, cos,
+                            diff, dt, interp, sqrt, tanh)
+from conatus.ir import has_nonpolynomial
 
 
 def _problem(rhs_of):

@@ -1,8 +1,9 @@
 # Gallery "fluids everywhere"
 
 Each example is a short, readable script, written as in the paper (equation, physical
-comments, `explain()`), and each checks its result against a
-published value or a closed form. No value without a residual or convergence in N.
+comments, `explain()`), and each ends with an `assert` against a published value or a closed
+form (it stops with an error if the value is not reproduced). No value without a residual or
+convergence in N.
 
 Run: `python examples/<family>/<case>.py` (with the `tutorials` extra installed).
 User lines = lines of code excluding docstrings, comments and blank lines (functions + `__main__` block).
@@ -22,7 +23,7 @@ User lines = lines of code excluding docstrings, comments and blank lines (funct
 | 3D Rayleigh–Bénard (onset) | `convection/rayleigh_benard_3d.py` | Ra = 1707.76178 at |k| = 3.1163, isotropic to 1e-10 | Reid & Harris 1958 | 43 + 9 |
 | Phase-space geometry: slice, Poincaré section, connection | `manifolds/phase_space_geometry.py` | two-mode model: RPO "1" in the slice, T = 3.6415119771, θ = 0.0809697054; Lorenz homoclinic orbit as a connection, r = 13.9265574075 | Budanur, Borrero-Echeverry & Cvitanović (arXiv:1411.3303), Table I: 3.64151221; Sparrow 1982: 13.926 | 56 + 3 |
 
-The API gaps encountered are in (entry "gallery, wave 1"); those that are
-closed are struck through there with their commit (2026-09-28: `discretize` in `conatus.expert`, (U − c)·L, conj() on the LHS,
-wavenumber as a parameter, √Ta declared, `critical()` start/xtol, double eigenvalue, aliasing alert,
-periodic NLBVP, mapped domains); the bugs found along the way are fixed ("gallery" entries).
+Writing the gallery found gaps in the library (`discretize` in `conatus.expert`, (U − c)·L,
+conj() on the left-hand side, the wavenumber as a parameter, √Ta declared, `critical()`
+start/xtol, double eigenvalues, the aliasing alert, periodic NLBVP, mapped domains), all closed
+since; none was worked around silently.

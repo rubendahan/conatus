@@ -92,7 +92,7 @@ FINITE_CHECK_EVERY = 100
 #: TAIL_MARGINAL) an UnderResolvedWarning is issued once per solver and explain() says it. An
 #: unknown whose largest coefficient is below RUN_TAIL_FLOOR times the largest of the state is
 #: round-off-sized (e.g. a component that stays zero) and is not judged.
-#: Level: 1e-3 in amplitude (about 3 % in energy), the
+#: Level: 1e-3 in amplitude (1e-6 in energy, per mode), the
 #: SPURIOUS_TAIL_TOL scale; the former 1e-4 warned on the resolved flagship KS run (L = 22,
 #: N = 32: tail 1.0e-4 at the top of its 10 % window). A direction whose tail window holds fewer
 #: than RUN_TAIL_MIN_MODES coefficients (a polynomial basis with N <= 20: two coefficients) is
@@ -215,15 +215,26 @@ def scheme_family(name: str) -> str:
                       fix="pick one of the listed schemes." + did_you_mean(name, SCHEMES))
 
 
-def scheme_description(name: str) -> str:
-    """One line: family, implicit / explicit parts, global order, reference."""
+def scheme_description(name: str, effective: int | None = None) -> str:
+    """One line: family, implicit / explicit parts, global order, reference. ``effective``: the
+    global order of the run when its start-up or its boundary data lower it (review finding 17,
+    audit invariance): the line then gives the formal order of the scheme and that effective
+    order (the next line of explain() says why)."""
+    if name not in _SCHEME_INFO:         # audit inputs: a bare KeyError
+        raise OptionError(f"scheme_description({name!r}): unknown scheme",
+                          fix="one of " + ", ".join(_SCHEME_INFO) + "."
+                              + did_you_mean(str(name), _SCHEME_INFO))
     fam, imp, exp, p, ref = _SCHEME_INFO[name]
-    return (f"{name}: IMEX {fam}, implicit {imp} on L, explicit {exp} on F; global order {p} "
-            f"({ref})")
+    order = (f"global order {p}" if effective is None or effective >= p else
+             f"formal order {p}, effective global order {effective}")
+    return f"{name}: IMEX {fam}, implicit {imp} on L, explicit {exp} on F; {order} ({ref})"
 
 
 def sbdf_coefficients(q: int) -> tuple[list[float], list[float]]:
     """(a, c) for constant-step SBDF-q: a0 M X^n + dt L X^n = dt sum c_j F - sum a_j M X^{n-j}."""
+    if isinstance(q, bool) or not isinstance(q, (int, np.integer)) or q not in (1, 2, 3, 4):
+        raise OptionError(f"sbdf_coefficients({q!r}): the SBDF order is 1, 2, 3 or 4",
+                          fix="sbdf_coefficients(2) for SBDF2")
     return {1: ([1, -1], [0, 1]),
             2: ([1.5, -2, 0.5], [0, 2, -1]),
             3: ([11 / 6, -3, 1.5, -1 / 3], [0, 3, -3, 1]),
@@ -354,6 +365,52 @@ def check_params_unchanged(solver: Any, where: str) -> None:
                           "restarting from the current state (solver.X)")
 
 
+#: Suffixes that name another file format: ``save("state.hdf")`` wrote ``state.hdf.npz`` (a NumPy
+#: archive under a name that reads as HDF5), ``save("state.nc")`` ``state.nc.npz`` (review of the
+#: audit "inputs"). Refused with the two formats a checkpoint has; any other suffix
+#: (``state_t1.5`` has the suffix ".5") keeps the historical rule: ``.npz`` appended.
+_OTHER_FORMATS = (".hdf", ".hd5", ".he5", ".h4", ".hdf4", ".nc", ".nc4", ".cdf", ".zarr", ".mat",
+                  ".npy", ".pkl", ".pickle", ".json", ".txt", ".csv", ".dat", ".bin", ".xmf",
+                  ".xdmf", ".vtk", ".vtu", ".vti")
+
+
+def check_checkpoint_suffix(path: Path, where: str) -> None:
+    """Refuse a checkpoint path whose suffix names a format other than HDF5 (``.h5``/``.hdf5``)
+    and NumPy (``.npz``): the file would be a NumPy archive with ``.npz`` appended."""
+    suf = path.suffix.lower()
+    if suf in _OTHER_FORMATS:
+        stem = path.name[: -len(path.suffix)]
+        hdf = suf in (".hdf", ".hd5", ".he5", ".h4", ".hdf4")
+        raise OptionError(
+            f"{where}({str(path)!r}): {path.suffix!r} is not a checkpoint format",
+            why="a checkpoint is HDF5 ('.h5' or '.hdf5', readable without Conatus) or NumPy "
+                f"('.npz'); this path would have been written as {path.name}.npz"
+                + (" (a NumPy file, not HDF5)" if hdf else ""),
+            fix=f"{where}('{stem}.h5') for HDF5, or {where}('{stem}.npz') for NumPy",
+            doc="docs/site/guide/io.md")
+
+
+def check_time_parameter(plan: Any, time_parameter: Any, where: str) -> None:
+    """``time_parameter`` is None or the name of a Parameter of the problem's equations, the one
+    check of every IVP solver (flat, polar, spherical, distributed). Audit inputs:
+    ``time_parameter="tt"`` was kept and never set, so a forcing in the real time parameter
+    stayed at its declared value without a word; the polar, spherical and distributed solvers
+    kept it too (review of the audit)."""
+    if time_parameter is None:
+        return
+    from ..discretize.param_keys import problem_parameter_names
+    used = problem_parameter_names(plan.problem)
+    if not isinstance(time_parameter, str) or time_parameter not in used:
+        raise OptionError(
+            f"{where}: time_parameter={time_parameter!r} is not a parameter of the problem."
+            + did_you_mean(str(time_parameter), sorted(used)),
+            why="the time parameter is set to the stage time at every evaluation of F; "
+                "a name the equations do not use would leave the forcing frozen",
+            fix="the name of the time Parameter of the equations (parameters: "
+                + (", ".join(sorted(used)) or "none") + "), or drop time_parameter=",
+            doc="docs/site/guide/timesteppers.md")
+
+
 def check_callback(callback: Any, every: Any, where: str) -> None:
     """``callback`` and ``every`` go together and are both explicit; ``every`` is an
     integer >= 1 (a float or a bool is refused, not truncated). Shared by every ``run``."""
@@ -371,6 +428,11 @@ def check_callback(callback: Any, every: Any, where: str) -> None:
                               or every < 1):
         raise OptionError(f"{where}: every={every!r} must be an integer >= 1",
                           fix="every=1 calls the callback after each step")
+    if callback is not None and not callable(callback):
+        # refused before the first step (audit inputs: a bare TypeError at the first
+        # call, after `every` steps had run)
+        raise OptionError(f"{where}: callback={callback!r} is not callable",
+                          fix="callback=lambda sim: ..., a function of the simulation")
 
 
 def setup_scheme(obj: Any, scheme: str, startup: str, *, where: str,
@@ -457,6 +519,7 @@ class IVPSolver:
         self._check_rotation_step()
         self.startup = startup
         self.startup_substeps = check_substeps(startup_substeps, f"IVPSolver(plan, {scheme!r}, ...)")
+        check_time_parameter(plan, time_parameter, f"IVPSolver(plan, {scheme!r}, ...)")
         self.time_parameter = time_parameter
         self.backend = backend
         # complexify=True: RealFourier (cos, -sin) pairs solved as complex half-size systems (
@@ -1019,7 +1082,10 @@ class IVPSolver:
         rate, term = rot
         x = rate * self.dt
         return (f"implicit rotation {term}: |W| = {rate:g}, |W| dt = {x:.3g} (stable at any dt; "
-                + ("its waves are resolved in time)" if x <= 1 else
+                # audit "assurances": "its waves are resolved in time" for any
+                # scheme at |W| dt <= 1, while SBDF1 there damps them by 29 % per step
+                + ("dt is below the rotation time 1/|W|; the scheme still damps and slows its "
+                   "waves by its own error, of order (|W| dt)^p: halve dt to measure it)" if x <= 1 else
                    "the implicit stages damp and slow its waves of frequency omega with omega dt > 1"
                    ": stability, not accuracy; dt < 1/|W| follows them)"))
 
@@ -1295,6 +1361,9 @@ class IVPSolver:
         (suffix added if missing, the historical format). Both are written to a temporary file
         then renamed, so a job killed while writing never leaves a truncated checkpoint."""
         path = Path(path)
+        check_checkpoint_suffix(path, "save_checkpoint")
+        from ..errors import check_flag
+        grids = check_flag(grids, "grids", "save_checkpoint()")
         if self._finite_every:                 # never write a NaN checkpoint
             self._check_finite(f"save_checkpoint({path.name})")
         meta, arrays = self._checkpoint_payload()
@@ -1315,13 +1384,14 @@ class IVPSolver:
     def load_checkpoint(self, path: str | Path, *, allow: Any = ()) -> None:
         """Restart from :meth:`save_checkpoint` (``.npz`` or ``.h5``): every numerical option
         must match the solver's (a restart never changes the numerics silently), and so must what
-        the state is a state of: model, equations, parameters, resolution and geometry (``conatus.io._identity``). ``allow`` names what may differ
-        deliberately: parameter names (``allow=("kappa",)``) or ``"parameters"``, ``"model"``,
-        ``"equations"``, ``"geometry"``; an allowed difference is printed by :meth:`explain` and
-        carried by every later checkpoint."""
-        from ..io._identity import check_allow, compare_identity
-        from ..io._describe import parameters_of
-        allow = check_allow(allow, parameters_of(self), "load_checkpoint")
+        the state is a state of: model, equations, parameters, resolution and geometry, and the data of every given field and the user functions (0.1.1;
+        ``conatus.io._identity``). ``allow`` names what may differ deliberately: parameter,
+        given-field or function names (``allow=("kappa",)``) or ``"parameters"``, ``"data"``,
+        ``"functions"``, ``"model"``, ``"equations"``, ``"geometry"``; an allowed difference is
+        printed by :meth:`explain` and carried by every later checkpoint."""
+        from ..io._identity import allowable_names, check_allow, compare_identity
+        # parameter, given-field and function names (0.1.1, lot A: given data are compared)
+        allow = check_allow(allow, allowable_names(self), "load_checkpoint")
         path = Path(path)
         if not path.exists() and path.with_suffix(".npz").exists():
             path = path.with_suffix(".npz")
@@ -1374,7 +1444,50 @@ class IVPSolver:
         from ..notebook import explain_html
         return explain_html(self)
 
+    def __repr__(self) -> str:
+        """One line: scheme, step, backend, size, where the run is. Safe on a solver
+        whose construction stopped half-way (it is printed in tracebacks)."""
+        def g(name: str):
+            return getattr(self, name, None)
+        n = getattr(g("system"), "n", "?")
+        t, dt = g("t"), g("dt")
+        return (f"{type(self).__name__}(scheme={g('scheme')!r}, "
+                f"dt={dt if dt is None else format(dt, 'g')}, backend={g('backend')!r}, unknowns={n}, "
+                f"t={t if t is None else format(t, 'g')}, iteration={g('iteration')}; .explain())")
+
     # ------------------------------------------------------------------ explain
+    @property
+    def effective_order(self) -> int:
+        """Global order of the run with its startup (review finding 17): the nominal order of
+        the scheme, except that ``startup='lower_order'`` starts a multistep scheme with a
+        first-order step (SBDF1, CNAB1), whose O(dt^2) local error caps the global order at 2
+        (SBDF3/SBDF4 converge at order 2, not 3/4); ``startup='rk443'`` keeps the nominal order."""
+        p = _SCHEME_INFO[self.scheme][3]
+        if getattr(self, "family", "rk") != "rk" and getattr(self, "startup", None) == "lower_order":
+            p = min(p, 2)
+        return min(p, self._bc_order_cap())
+
+    #: Global order of a scheme with time-dependent boundary data, per bc_time mode, where it is
+    #: below the scheme's (audit invariance; measured on u_t = u_yy / 2 with both walls
+    #: moving, dt = 1/40 .. 1/640, tests/invariance/test_inv_time_order.py): 'step' (Dedalus) carries g
+    #: with the explicit weights, first order for RK222/RK443/RKSMR (1.02 .. 1.24), and CNAB2 /
+    #: CNLF2 lose their second order without a clean rate (1.4 .. 2.3: stated 1, as the guide's
+    #: "about first order"); 'stage' gives RK443 its stage order 2. 'rk' keeps the nominal orders
+    #: (RK443: 2.73 .. 2.91, converging to 3).
+    _BC_ORDER = {"step": {"RK222": 1, "RK443": 1, "RKSMR": 1, "CNAB1": 1, "RK111": 1,
+                          "CNAB2": 1, "CNLF2": 1},
+                 "stage": {"RK443": 2}}
+
+    def _bc_order_cap(self) -> int:
+        """The order cap of the boundary-data convention (99 without time-dependent data)."""
+        if not getattr(self, "time_parameter", None) or self._bc_data() is None:
+            return 99
+        try:
+            mode = self._bc_resolve()[0]
+        except OptionError:                   # refused data: the refusal is the message
+            return 99
+        return self._BC_ORDER.get(mode, {}).get(self.scheme, 99)
+
     def _startup_text(self) -> str:
         """", startup=..." for a multistep scheme (what the first steps do), "" for RK."""
         if self.family == "rk":
@@ -1383,10 +1496,28 @@ class IVPSolver:
             return f", startup=rk443 ({self.startup_substeps} RK443 substeps)"
         if self.family == "cn" and self._nhist > 1:
             return ", startup=lower_order (first step CNAB1)"
+        if self.effective_order < _SCHEME_INFO[self.scheme][3]:
+            return (f", startup=lower_order (first steps SBDF1..SBDF{self.order - 1}: effective "
+                    f"global order {self.effective_order}, not {self.order}; startup='rk443' "
+                    "keeps it)")
         return f", startup={self.startup}"
 
     def _scheme_text(self) -> str:
-        return "\n  scheme: " + scheme_description(self.scheme)
+        eff = getattr(self, "effective_order", None) if self.scheme in _SCHEME_INFO else None
+        note = ("" if eff is None or eff >= _SCHEME_INFO[self.scheme][3] else
+                "\n  " + self._effective_order_text(eff))
+        return "\n  scheme: " + scheme_description(self.scheme, eff) + note
+
+    def _effective_order_text(self, eff: int) -> str:
+        """Why the global order is ``eff``, below the scheme's: the start-up or the boundary data."""
+        if self._bc_order_cap() <= eff:
+            mode = self._bc_resolve()[0]
+            return (f"effective global order {eff} with time-dependent boundary data under "
+                    f"bc_time='{mode}'" + (" (the Dedalus convention); bc_time='auto' imposes them "
+                                           "at the stage times" if mode == "step" else
+                                           "; bc_time='rk' keeps the nominal order"))
+        return (f"effective global order {eff} with startup='lower_order' (first step first "
+                "order); startup='rk443' gives the nominal order")
 
     def explain(self, *, full: bool = False) -> str:
         """Scheme, step, backend and the finite-state check, in a few lines;
@@ -1397,7 +1528,12 @@ class IVPSolver:
         if full:
             return text
         head = text.splitlines()[0]
-        lines = [head, "  scheme: " + scheme_description(self.scheme)]
+        eff = getattr(self, "effective_order", None) if self.scheme in _SCHEME_INFO else None
+        lines = [head, "  scheme: " + scheme_description(self.scheme, eff)]
+        if eff is not None and eff < _SCHEME_INFO[self.scheme][3]:
+            # the start-up or the boundary data cap the observed order (review finding 17, audit
+            # invariance): said where the order is
+            lines.append("  " + self._effective_order_text(eff))
         if getattr(self, "_fused", None) is not None or getattr(self, "_sfused", None) is not None:
             lines.append("  F: fused kernels (f_backend='fused')")
         # fallbacks and accuracy notes of F are warnings: kept in the short text (
@@ -1532,7 +1668,11 @@ class IVPSolver:
             emax = float(E.max()) if E.size else 0.0
             if not emax > RUN_TAIL_FLOOR * top:
                 continue
-            if int(np.count_nonzero(mnum >= M - _n_tail(M))) < RUN_TAIL_MIN_MODES:
+            # a tail window that covers every mode number holds the mean too: its "tail" is 1
+            # whatever the data (F101-10-16: a constant on N = 4 Fourier modes,
+            # M = 2, was "under-resolved, tail 1.0"): not judged, like a too-short window
+            if (M - _n_tail(M) < 1
+                    or int(np.count_nonzero(mnum >= M - _n_tail(M))) < RUN_TAIL_MIN_MODES):
                 short.append(f"{name} along {cname} (N = {b.size})")
                 continue
             tail = float(E[M - _n_tail(M)] / emax)
@@ -1548,7 +1688,9 @@ class IVPSolver:
             from ..errors import UnderResolvedWarning, _warn_user
             _warn_user(
                 f"the run is under-resolved at t = {self.t:.6g}: " + "; ".join(bad)
-                + f" (relative spectral tail above RUN_TAIL_TOL = {RUN_TAIL_TOL:g}); its "
+                + f" (relative spectral tail above RUN_TAIL_TOL = {RUN_TAIL_TOL:g}; an amplitude: "
+                "the largest of the last 10 % of the coefficients over the largest one, so the "
+                "fields are not resolved to better than about the tail itself); its "
                 "numbers are not converged in space: raise N along these directions "
                 "(resolution_report(sim.plan, sim.solver) estimates how many modes). Warned "
                 "once; recorded by explain().", UnderResolvedWarning)

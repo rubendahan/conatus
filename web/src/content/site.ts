@@ -2,7 +2,7 @@
 // data (src/generated/*.json, written by scripts/gen-data.mjs from the repository) or cite a source.
 export const SITE = {
   name: "Conatus",
-  version: "0.1.0",
+  version: __CN_VERSION__,               // python/conatus/__init__.py, read by vite.config.ts
   license: "BSD-3-Clause",
   year: 2026,
   // Canonical origin used in <link rel=canonical>, the sitemap and Open Graph tags. Set SITE_URL at

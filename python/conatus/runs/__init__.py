@@ -2,7 +2,7 @@
 
 No external service: SQLite (index) + one directory per run (JSON record, HDF5 series and fields,
 solver checkpoints) under a declared root (``$CN_RUNS``, else ``$CN_TMP/runs``, else
-``<repo>/scratch/runs``; never the home directory by default). Spec:.
+``<repo>/scratch/runs``; never the home directory by default).
 
 Recording (never blocks the computation, never raises into it; see :mod:`conatus.runs.run`)::
 
@@ -33,19 +33,17 @@ from .analysis import Comparison, Lineage, RunList
 from .analysis import compare as _compare
 from .analysis import lineage as _lineage
 from .analysis import to_dataframe as _to_dataframe
-from .integrations import (CacheReuseWarning, CodeChangedWarning, ReproduceReport, Tracker, export_mlflow,
-                           load_return, record, reproduce, track)
+from .integrations import (CacheReuseWarning, CodeChangedWarning, ReproduceReport, Tracker, export_mlflow,  # noqa: F401 -- importable here, not in __all__ (M5)
+                           load_return, record, reproduce, track)  # noqa: F401 -- importable here, not in __all__ (M5)
 from .integrations import export as _export
-from .keys import code_fingerprint
-from .run import CLOSE_TIMEOUT_S, COMPRESSIONS, QUEUE_CAPACITY, RegistryWriteWarning, Run, current
-from .store import BUSY_TIMEOUT_S, SCHEMA, STATES, STATUSES, Registry, default_root
+from .keys import code_fingerprint  # noqa: F401 -- importable here, not in __all__ (M5)
+from .run import CLOSE_TIMEOUT_S, COMPRESSIONS, QUEUE_CAPACITY, RegistryWriteWarning, Run, current  # noqa: F401 -- importable here, not in __all__ (M5)
+from .store import BUSY_TIMEOUT_S, SCHEMA, STATES, STATUSES, Registry, default_root  # noqa: F401 -- importable here, not in __all__ (M5)
 
+# Documented names only (M5, 0.2); the others stay importable from this module.
 __all__ = ["track", "record", "find", "get", "compare", "lineage", "to_dataframe", "reproduce",
-           "export", "export_mlflow", "reindex", "registry", "current", "load_return", "explain",
-           "Run", "RunList", "Registry", "Tracker", "Comparison", "Lineage", "ReproduceReport",
-           "CacheReuseWarning", "CodeChangedWarning", "RegistryWriteWarning", "default_root",
-           "code_fingerprint", "STATUSES", "STATES", "SCHEMA", "COMPRESSIONS", "QUEUE_CAPACITY",
-           "CLOSE_TIMEOUT_S", "BUSY_TIMEOUT_S"]
+           "export", "export_mlflow", "registry", "explain", "Run", "RunList", "Registry",
+           "CacheReuseWarning", "CodeChangedWarning", "RegistryWriteWarning"]
 
 
 def registry(root: Any = None) -> Registry:

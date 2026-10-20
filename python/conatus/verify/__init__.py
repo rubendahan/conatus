@@ -1,4 +1,4 @@
-"""Verification tools (spec §68–86): MMS, convergence studies, reports — never a CORRECT flag."""
+"""Verification tools: MMS, convergence studies, reports — never a CORRECT flag."""
 from .report import Check, VerificationReport, verify
 
 __all__ = [

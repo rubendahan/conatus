@@ -1,4 +1,4 @@
-// Batched grid <-> coefficient transforms on the device (cuFFT), spec §49–50.
+// Batched grid <-> coefficient transforms on the device (cuFFT).
 // Conventions are exactly those of the host backend (core/src/transforms/transforms.cpp) and of
 // python/conatus/reference/transforms.py; results agree to rounding (not bitwise: different FFTs).
 // Chebyshev DCT-II / DCT-III go through a real FFT of length 2M on the even extension (valid for any

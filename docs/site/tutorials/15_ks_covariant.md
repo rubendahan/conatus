@@ -46,6 +46,13 @@ degenerate pairs such as the two zero exponents, which converge slowly) and the 
 residual**: each vector advanced by the exact tangent over one interval must be parallel to the
 vector there, to its rounding floor.
 
+```{figure} media/t15_exponents.png
+:alt: Twelve Lyapunov exponents with error bars, close to zero for the first eight and dropping near -2 after, each on a red tick of the published values.
+:width: 100%
+
+The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors, on the published values. The first eight are the physical modes.
+```
+
 ## Tangencies and domination
 
 ```{literalinclude} code/t15_ks_covariant.py
@@ -59,6 +66,20 @@ whenever $\Lambda_i < \Lambda_j$ for $i < j$ the splitting is not dominated ther
 such violations form clusters; the leading cluster is the set of physical modes. The principal
 angles tell the same story: the split $8 \mid 9$ keeps a finite angle, the split $4 \mid 5$ inside the
 physical block has near-tangencies.
+
+```{figure} media/t15_angles.png
+:alt: Two histograms of angles on a log axis: the red one, inside the physical modes, reaches very small angles; the green one, at the split after eight modes, stays well away from zero.
+:width: 100%
+
+Angles between the span of the first j covariant vectors and the rest, at every sample. Inside the physical modes (j = 4) near-tangencies are frequent; at j = 8 the split never closes.
+```
+
+```{figure} media/t15_domination.png
+:alt: A triangular matrix of probabilities: red squares among the first eight indices, near white elsewhere.
+:width: 100%
+
+Domination of Oseledets splitting: how often the local exponent i falls below j over windows of 5 time units. Violations stay among the first eight modes: they form one entangled block.
+```
 
 ## Check
 

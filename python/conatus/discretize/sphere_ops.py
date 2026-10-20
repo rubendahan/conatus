@@ -104,7 +104,10 @@ class SphereHarmonics:
         if key not in self._cache:
             x, w = gauss_legendre(M)
             x, w = x[::-1].copy(), w[::-1].copy()
-            self._cache[key] = (np.arccos(x), x, w)
+            out = (np.arccos(x), x, w)
+            for a in out:              # shared by every later caller (sim.coordinate("theta"),
+                a.setflags(write=False)  # data callables): read-only (audit state)
+            self._cache[key] = out
         return self._cache[key]
 
     def backward(self, m: int, s: int, M: int) -> np.ndarray:

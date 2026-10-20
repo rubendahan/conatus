@@ -12,7 +12,8 @@ adjoint. **Conatus never changes one of these for you.** It may *suggest*; it ne
 Concretely:
 
 - **Dealiasing is declared.** Unless you give `dealias=`, a native model uses the factor
-  $(p+1)/2$ for the highest polynomial degree $p$ of its equations in the unknowns, never below 3/2
+  $(p+1)/2$ for the highest polynomial degree $p$ of its equations in the unknowns and the given
+  fields (each given coefficient counts as one factor), never below 3/2
   (3/2 for quadratic terms, 2 for cubic ones), and says so in `explain()` and in the *Methods*
   paragraph; a value you give always wins; an expert basis requires the factor. There
   is no opaque `dealias=True`, and `explain()` warns when a nonlinear term (`exp`, `tanh`…) is not
@@ -45,7 +46,7 @@ solver returns what is needed to judge it:
 
 | Object | What is reported |
 |---|---|
-| Eigenpair | backward residual $\|(L + \sigma M)x\|$, left residual, resolution drift against a finer plan, spectral tail of the eigenvector |
+| Eigenpair | backward residual $\|(L + \sigma M)x\|$; on request, the left residual (`left=`) and the drift against a finer plan (`drift=`); spectral tail of the eigenvector |
 | Sensitivity $\partial\sigma/\partial p$ | Taylor test of the exact derivative against a central difference |
 | Newton solution (NLBVP, equilibria, orbits) | residual history (quadratic convergence visible), spectral tail |
 | Time integration | observed order of convergence, manufactured solutions, exact decay rates of known modes |
@@ -61,8 +62,9 @@ drift test removed ({doc}`tutorials/01_orr_sommerfeld`).
 
 ## 3. Every capability is tied to a published value
 
-Each method enters the library with a test against a published table or a closed form (Orszag
-1971 for Orr–Sommerfeld, Reid & Harris (1958) for Rayleigh–Bénard onset, Cvitanović et al. A test that only compares two backends of Conatus can hide an error common to
+Each method enters the library with a test against a published table or a closed form: Orszag
+(1971) for Orr–Sommerfeld, Reid & Harris (1958) for Rayleigh–Bénard onset, Cvitanović, Davidchack
+& Siminos (2010) for the Kuramoto–Sivashinsky orbits, and so on for every method. A test that only compares two backends of Conatus can hide an error common to
 both: each compiler and problem class also checks a *non-zero* dynamical quantity against an exact
 value. The tutorials follow the same rule: each ends on an `assert` against its reference.
 

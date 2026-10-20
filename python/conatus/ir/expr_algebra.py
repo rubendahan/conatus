@@ -6,9 +6,11 @@ pointwise non-polynomial functions (``UnaryFunction``: exp, log, sin, cos, tanh,
 """
 from __future__ import annotations
 
+import math
 import numbers
+import weakref
 from typing import Any
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 import numpy as np
 
@@ -461,6 +463,12 @@ def power(base: Any, exponent: Any) -> Expr:
         from ..errors import InputTypeError
         raise InputTypeError(f"exponent must be a number, got {exponent!r}",
                              fix="u ** 2, u ** 0.5; a field exponent is exp(log(u) * v)", doc="docs/site/guide/operators.md")
+    if isinstance(exponent, bool) or not (math.isfinite(complex(exponent).real)
+                                          and math.isfinite(complex(exponent).imag)):
+        # audit inputs: u ** nan built a NaN term, u ** True was u
+        from ..errors import InputTypeError
+        raise InputTypeError(f"exponent must be a finite number, got {exponent!r}",
+                             fix="u ** 2, u ** 0.5", doc="docs/site/guide/operators.md")
     if exponent == 0:
         return Constant(1)
     if exponent == 1:
@@ -535,7 +543,7 @@ def _d_abs(u: Expr) -> Expr:
     return sign(u)
 
 
-_FUNCS: dict[str, tuple] = {
+_BUILTIN_TABLE: dict[str, tuple] = {
     "exp": (np.exp, "none", 1.0, _d_exp),
     "log": (np.log, "none", None, _d_log),
     "sin": (np.sin, "odd", 0.0, _d_sin),
@@ -545,7 +553,7 @@ _FUNCS: dict[str, tuple] = {
     "abs": (np.abs, "even", 0.0, _d_abs),
     "sign": (np.sign, "odd", 0.0, None),   # derivative 0 a.e., undefined at 0: not linearizable
 }
-_BUILTIN_FUNCS = frozenset(_FUNCS)
+_BUILTIN_FUNCS = frozenset(_BUILTIN_TABLE)
 #: Functions whose derivative is not continuous: refused by the tangent and adjoint maps
 #:; sign() is also refused by linearization.
 NONDIFFERENTIABLE = ("abs", "sign")
@@ -556,7 +564,115 @@ NONDIFFERENTIABLE_FIX = ("replace it by a smooth approximation whose derivative 
 #: Name of the marker left by the linearization of abs() about a zero base (refused by
 #: Expr.linearize when it survives the simplification).
 ABS_AT_ZERO = "abs'(0)"
-_USER_FUNCS: dict[str, Any] = {}       # name -> the user's callable (pointwise())
+_RENAMED: dict[str, str] = {}          # key -> name, for the keys that differ from the name (g__2)
+
+
+class _UserFunction:
+    """One :func:`pointwise` declaration (F105). The registry holds it
+    weakly; the builder that ``pointwise`` returns and every node ``g(u)`` hold it, so a
+    declaration lives exactly as long as something can still use it (review of the state audit,
+    F5: the registry kept every declaration, so a notebook cell run again with a new lambda added
+    an entry, and kept its closure and whatever it captured alive, for the life of the process).
+    Its key is never given to another declaration (``_USED_KEYS``), also after it is collected."""
+
+    __slots__ = ("key", "name", "f", "derivative", "parity", "value_at_zero", "deriv_rule",
+                 "deriv_record", "__weakref__")
+
+    def __init__(self, key: str, name: str, f: Any, derivative: Any, parity: str,
+                 value_at_zero: float | None) -> None:
+        self.key, self.name, self.f, self.derivative = key, name, f, derivative
+        self.parity, self.value_at_zero = parity, value_at_zero
+        self.deriv_rule = self.deriv_record = None
+
+    def __reduce__(self):
+        # pickled by key (a node pickled with its declaration would carry the user's closure):
+        # unpickled in the same process, the live declaration; elsewhere, None (the key is then
+        # unknown there, as it always was)
+        return (_live_declaration, (self.key,))
+
+
+def _live_declaration(key: str) -> _UserFunction | None:
+    return _USER_REG.get(key)
+
+
+_USER_REG: weakref.WeakValueDictionary = weakref.WeakValueDictionary()   # key -> _UserFunction
+_USED_KEYS: set[str] = set()           # every key given in this process (a key names one declaration)
+
+
+class _Table(Mapping):
+    """Read-only view key -> ``row(declaration)`` of the live user declarations (and of the
+    built-in functions for ``_FUNCS``): the former plain dicts, without their strong references."""
+
+    def __init__(self, row: Any, builtins: dict | None = None) -> None:
+        self._row, self._builtins = row, builtins or {}
+
+    def __getitem__(self, key: str) -> Any:
+        b = self._builtins.get(key)
+        if b is not None:
+            return b
+        r = _USER_REG.get(key)
+        if r is None:
+            raise KeyError(key)
+        return self._row(r)
+
+    def __iter__(self):
+        return iter([*self._builtins, *list(_USER_REG.keys())])
+
+    def __len__(self) -> int:
+        return len(self._builtins) + len(_USER_REG)
+
+
+#: key -> (f, parity, f(0), derivative rule): the built-in functions and the live user ones
+_FUNCS = _Table(lambda r: (r.f, r.parity, r.value_at_zero, r.deriv_rule), _BUILTIN_TABLE)
+#: key -> (f, derivative, parity) of the live user functions (pointwise())
+_USER_FUNCS = _Table(lambda r: (r.f, r.derivative, r.parity))
+#: key -> the user's name (printed): keys are unique per function
+_DISPLAY = _Table(lambda r: r.name)
+
+
+def _user_key(name: str, entry: tuple, value_at_zero: float | None = None) -> str:
+    """The registry key of user function ``entry`` named ``name`` (F105-10-19):
+    the name itself the first time, the same key again for the same function, else ``name__2``,
+    ``name__3``... A user name is scoped to the model that declares it: two models (or a notebook
+    cell run again with a new lambda) may each have their own ``g``; the nodes differ (their key
+    enters the hash), and every printed form shows ``g``. ``value_at_zero`` is part of the
+    identity: the same f declared again with another f(0) used to take the same key and
+    overwrite the f(0) that the symmetry checks of the first model read (audit state
+   )."""
+    key, i = name, 1
+    while key in _USED_KEYS or key in _BUILTIN_FUNCS:
+        r = _USER_REG.get(key)
+        if (r is not None and (r.f, r.derivative, r.parity) == entry and r.name == name
+                and _same_value(r.value_at_zero, value_at_zero)):
+            return key
+        i += 1
+        key = f"{name}__{i}"
+    return key
+
+
+def _declare(key: str, name: str, f: Any, derivative: Any, parity: str,
+             value_at_zero: float | None) -> _UserFunction:
+    """The live declaration of ``key`` (the existing one when ``_user_key`` found it)."""
+    r = _USER_REG.get(key)
+    if r is None:
+        r = _UserFunction(key, name, f, derivative, parity, value_at_zero)
+        _USER_REG[key] = r
+        _USED_KEYS.add(key)
+        if key != name:
+            _RENAMED[key] = name
+    return r
+
+
+def _same_value(a: float | None, b: float | None) -> bool:
+    """Two declared f(0) values are the same declaration (None and NaN compare as themselves)."""
+    if a is None or b is None:
+        return a is b
+    return a == b or (a != a and b != b)
+
+
+def display_name(func: str) -> str:
+    """The printed name of a pointwise function node (the user's name for a user function)."""
+    return _DISPLAY.get(func, func)
 
 
 def pointwise(name: str, f: Any, *, derivative: Any = None, parity: str = "none",
@@ -570,8 +686,9 @@ def pointwise(name: str, f: Any, *, derivative: Any = None, parity: str = "none"
     same form: with it, linearization, tangent and Newton work exactly (f'(u) v), without it they
     are refused. ``parity``: "odd", "even" or "none" (used by the symmetry checks). Like the
     built-in functions the node is evaluated on the dealiased grid and is not alias-free
-    (declared by explain()); non-finite values are refused at evaluation. A name means one thing:
-    registering a built-in name, or the same name with another function, is refused."""
+    (declared by explain()); non-finite values are refused at evaluation. A built-in name is
+    refused; the same name with another function is another node (a user name is scoped to the
+    model that declares it: F105-10-19)."""
     import re
     if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
         raise OptionError(f"pointwise({name!r}): the name must be an identifier",
@@ -580,35 +697,32 @@ def pointwise(name: str, f: Any, *, derivative: Any = None, parity: str = "none"
         raise OptionError(f"pointwise({name!r}): {name} is a built-in function",
                           fix="another name: built-in functions are already available")
     if not callable(f) or (derivative is not None and not callable(derivative)):
-        raise TypeError(f"pointwise({name!r}): f and derivative must be callables of arrays")
+        from ..errors import InputTypeError
+        raise InputTypeError(f"pointwise({name!r}): f and derivative must be callables of arrays")
     if parity not in ("odd", "even", "none"):
         raise OptionError(f"pointwise({name!r}, parity={parity!r}): 'odd', 'even' or 'none'",
                           fix="parity='odd', 'even' or 'none'")
-    old = _USER_FUNCS.get(name)
-    if old is not None and old != (f, derivative, parity):
-        raise OptionError(f"pointwise({name!r}): already registered with another function "
-                          "(a name means one thing; choose another name)",
-                          fix="register the function once, or use another name")
-    dname = f"{name}_prime"
-    deriv_rule = None
-    if derivative is not None:
-        # the derivative node "<name>_prime" used to overwrite a
-        # user function registered under that name, silently changing what it computes
-        oldd = _USER_FUNCS.get(dname)
-        if dname in _BUILTIN_FUNCS or (oldd is not None and oldd != (derivative, None, "none")):
-            raise OptionError(f"pointwise({name!r}, derivative=...): the name {dname!r} of its "
-                              "derivative already means another function (choose another name)",
-                              fix="name the derivative function with an identifier that is not built in")
-        _FUNCS[dname] = (derivative, "none", None, None)
-        _USER_FUNCS[dname] = (derivative, None, "none")
+    if value_at_zero is not None:
+        # audit inputs: value_at_zero=nan was stored and used by the linearization
+        from ..errors import check_real
+        value_at_zero = check_real(value_at_zero, "value_at_zero", f"pointwise({name!r})")
+    key = _user_key(name, (f, derivative, parity), value_at_zero)
+    rec = _declare(key, name, f, derivative, parity, value_at_zero)
+    if derivative is not None and rec.deriv_record is None:
+        # the derivative node has its own key: it can never overwrite another user function
+        # (unique keys since F105); the declaration
+        # holds it, so it lives as long as the function
+        dname = f"{name}_prime"
+        dkey = _user_key(dname, (derivative, None, "none"))
+        rec.deriv_record = _declare(dkey, dname, derivative, None, "none", None)
 
         def deriv_rule(u: Expr) -> Expr:
-            return _unary(dname, u)
-    _FUNCS[name] = (f, parity, value_at_zero, deriv_rule)
-    _USER_FUNCS[name] = (f, derivative, parity)
+            return _unary(dkey, u)
+        rec.deriv_rule = deriv_rule
 
     def builder(x: Any) -> Expr:
-        return _unary(name, x)
+        return _unary(key, x)
+    builder._declaration = rec             # the builder keeps its declaration alive (F5)
     builder.__name__ = name
     builder.__doc__ = f"User pointwise function {name}(u) (conatus.ir.pointwise)."
     return builder
@@ -639,7 +753,9 @@ class UnaryFunction(Expr):
             raise TypeError(f"{name}() is defined for scalars only")
         if name in ("abs", "sign") and operand.dtype.kind == "c":
             raise TypeError(f"{name}() of a complex quantity is not holomorphic: refused")
-        self._setup((operand,), (), operand.domain, operand.dtype, params=(name,), func=name)
+        # a user function's node holds its declaration (the registry holds it weakly, F5)
+        self._setup((operand,), (), operand.domain, operand.dtype, params=(name,), func=name,
+                    _declaration=_USER_REG.get(name))
 
     @property
     def numpy_func(self):
@@ -671,10 +787,10 @@ class UnaryFunction(Expr):
             # NotImplementedError, the historical type
             from ..errors import UnsupportedError
             if self.func in _USER_FUNCS:
-                raise UnsupportedError(f"{self.func}() was registered without derivative=: "
+                raise UnsupportedError(f"{display_name(self.func)}() was registered without derivative=: "
                                        "linearization refused",
                                        fix="pass derivative=f' to cn.pointwise(...)")
-            raise UnsupportedError(f"{self.func}({u}) is not differentiable: linearization refused",
+            raise UnsupportedError(f"{display_name(self.func)}({u}) is not differentiable: linearization refused",
                                    why=f"the derivative of {self.func} is 0 away from 0 and "
                                        "undefined (a jump) at 0: the linearized operator does "
                                        "not exist where the argument changes sign",
@@ -689,13 +805,13 @@ class UnaryFunction(Expr):
         return mul(deriv(base), du)
 
     def _tr(self, u: Field, w: Expr) -> tuple[Expr, Expr]:
-        raise NotImplementedError(f"{self.func}() is nonlinear: no transpose (linearize first)")
+        raise NotImplementedError(f"{display_name(self.func)}() is nonlinear: no transpose (linearize first)")
 
     def __str__(self) -> str:
-        return f"{self.func}({self.args[0]})"
+        return f"{display_name(self.func)}({self.args[0]})"
 
     def _tree_label(self) -> str:
-        return self.func
+        return display_name(self.func)
 
     @property
     def on_grid(self) -> bool:
@@ -706,9 +822,9 @@ class UnaryFunction(Expr):
 
     def _notes(self) -> list[str]:
         if not self.on_grid:
-            return [f"{self.func}() of parameters/constants only: a number, evaluated exactly "
+            return [f"{display_name(self.func)}() of parameters/constants only: a number, evaluated exactly "
                     "(no grid, no aliasing)"]
-        return [f"{self.func}() is non-polynomial: pseudospectral evaluation is not alias-free "
+        return [f"{display_name(self.func)}() is non-polynomial: pseudospectral evaluation is not alias-free "
                 "for any dealias factor (aliasing error nonzero, reported, not hidden)"]
 
 
@@ -770,4 +886,4 @@ def has_nonpolynomial(e: Expr) -> list[str]:
 
     A function of parameters only (cos(omega t), sqrt(1 - q^2)) is a number and is not listed: it
     was, and every such problem was wrongly declared "NOT alias-free" (gallery)."""
-    return sorted({x.func for x in e.walk() if isinstance(x, UnaryFunction) and x.on_grid})
+    return sorted({display_name(x.func) for x in e.walk() if isinstance(x, UnaryFunction) and x.on_grid})

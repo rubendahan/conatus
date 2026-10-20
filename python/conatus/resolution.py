@@ -22,7 +22,9 @@ Definitions (all declared; the thresholds are module constants printed in every 
   last ``FIT_FRACTION`` of the mode numbers whose ``E`` is above ``FIT_FLOOR * max(E)`` (the
   round-off plateau is excluded); needs ``MIN_FIT_POINTS`` points.
 * **verdict**: ``resolved`` if tail <= target (``TAIL_TARGET``), ``marginal`` if tail <=
-  ``TAIL_MARGINAL``, ``under-resolved`` above; ``zero`` for an identically zero field.
+  ``TAIL_MARGINAL``, ``under-resolved`` above; ``zero`` for an identically zero field;
+  ``too few modes`` (tail NaN, not judged, not resolved) when the tail window would cover every
+  mode number, the mean included.
 * **modes for a target** (the "how many modes?" assistant): smallest ``M'`` whose predicted tail,
   ``exp(a - sigma (M' - n_tail(M'))) / max(E)`` from the fitted line ``log E = a - sigma m``, is
   <= target; converted to a basis size (``N = M'`` for polynomials, ``N = 2 M'`` for Fourier).
@@ -48,9 +50,9 @@ import numpy as np
 from .errors import InputTypeError, OptionError, UnsupportedError
 from ._repr import compact_repr
 
-__all__ = ["resolution_report", "estimate_modes", "ResolutionReport", "DirectionResolution",
-           "ModeEstimate", "TAIL_FRACTION", "TAIL_MIN_MODES", "TAIL_TARGET", "TAIL_MARGINAL",
-           "FIT_FLOOR", "FIT_FRACTION", "MIN_FIT_POINTS", "CFL_REFERENCE"]
+# Documented names only (M5, 0.2); the others stay importable from this module.
+__all__ = ["resolution_report", "estimate_modes", "ResolutionReport", "TAIL_TARGET",
+           "TAIL_MARGINAL"]
 
 # ---------------------------------------------------------------- declared thresholds
 TAIL_FRACTION = 0.10       # the tail window is the last 10 % of the mode numbers ...
@@ -108,6 +110,11 @@ def _envelope(c: np.ndarray, axis: int, basis) -> np.ndarray:
     """Monotone envelope E[m] of |c| along ``axis`` (max over every other axis)."""
     a = np.moveaxis(np.abs(np.asarray(c)), axis, 0).reshape(c.shape[axis], -1).max(axis=1)
     mnum, M = _mode_numbers(basis)
+    if not np.all(np.isfinite(a)):
+        # a NaN/inf coefficient makes the whole envelope non-finite (audit "assurances",
+        # Python's max(0.0, nan) is 0.0, so an all-NaN field was "zero" and the report
+        # said "all resolved"; a NaN in the tail was dropped from the tail)
+        return np.full(M, np.nan)
     e = np.zeros(M)
     for i, m in enumerate(mnum):
         if m >= 0:
@@ -157,6 +164,8 @@ class DirectionResolution:
         a, sigma = self._fit
         emax = float(self.envelope.max())
         for M in range(max(TAIL_MIN_MODES, 1), MAX_MODES_ESTIMATE):
+            if M - _n_tail(M) < 1:            # a window holding the mean judges nothing
+                continue
             if math.exp(a - sigma * (M - _n_tail(M))) / emax <= target:
                 return M if self._family == "poly" else 2 * M
         return None
@@ -167,6 +176,12 @@ class DirectionResolution:
         name = f"N{self.coord}"
         if self.verdict == "zero":
             return f"{self.variable}/{self.coord}: identically zero, nothing to judge"
+        if self.verdict == "non-finite":
+            return (f"{self.variable}/{self.coord}: non-finite coefficients (NaN or inf): the state "
+                    "is not a number, its resolution cannot be judged")
+        if self.verdict == "too few modes":
+            return (f"{self.variable}/{self.coord}: {self.n_modes} mode number(s), no tail window "
+                    f"apart from the mean: not judged; increase {name} to judge the resolution")
         if self.tail <= target:
             return (f"{self.variable}/{self.coord}: keep {name}={self.N} "
                     f"(tail {self.tail:.1e} <= {target:.0e} target)")
@@ -197,15 +212,18 @@ def _analyse(variable: str, c: np.ndarray, axis: int, basis, target: float,
     nt = _n_tail(M)
     fit, sigma, npts = None, None, 0
     if emax > 0 and np.isfinite(emax):
-        tail = float(E[M - nt] / emax)
+        # a tail window that covers every mode number holds the mean (mode 0) too: its "tail"
+        # would be 1 whatever the data (F101-10-16: a constant on N = 4 Fourier
+        # modes was "under-resolved, tail 1.0"; same rule as the run-time check of lot B)
+        tail = float(E[M - nt] / emax) if M - nt >= 1 else float("nan")
         idx = np.nonzero(E > FIT_FLOOR * emax)[0]
         idx = idx[int(len(idx) * (1 - FIT_FRACTION)):] if len(idx) >= 2 * MIN_FIT_POINTS else idx
         npts = int(idx.size)
         if npts >= MIN_FIT_POINTS:
             slope, a = np.polyfit(idx.astype(float), np.log(E[idx]), 1)
             sigma, fit = float(-slope), (float(a), float(-slope))
-        verdict = ("resolved" if tail <= target else "marginal" if tail <= marginal
-                   else "under-resolved")
+        verdict = ("too few modes" if M - nt < 1 else "resolved" if tail <= target
+                   else "marginal" if tail <= marginal else "under-resolved")
     elif emax == 0:
         tail, verdict = 0.0, "zero"
     else:
@@ -281,7 +299,7 @@ class ResolutionReport:
         """Declared recommendation lines (one per entry needing more modes); nothing is changed."""
         t = self.target if target is None else float(target)
         return [e.recommendation(t) for e in self.entries
-                if e.verdict not in ("zero",) and e.tail > t]
+                if e.verdict not in ("zero",) and not e.tail <= t]   # a NaN tail is no pass
 
     def thresholds(self) -> str:
         return (f"tail = max |c| over the last max({TAIL_MIN_MODES}, ceil({TAIL_FRACTION:g} M)) "
@@ -451,6 +469,10 @@ def resolution_report(plan, state: Any, *, target: float = TAIL_TARGET,
                                   fix="pass dt=... (or an IVPSolver, whose dt is used)")
             dt, src = state.dt, " from solver.dt"
         dt_max = CFL(_GridView(plan, coeffs), velocity, 1.0).compute()
+        # a fluid at rest (dt_max = inf) has CFL 0; a NaN velocity gives a NaN CFL, never 0
+        # (audit "assurances": every non-finite dt_max used to print CFL 0)
+        # an infinite velocity has dt_max = 0: CFL inf (review: ZeroDivisionError)
         cfl = {"velocity": velocity, "dt": float(dt), "dt_source": src,
-               "cfl": 0.0 if not np.isfinite(dt_max) else float(dt) / dt_max}
+               "cfl": (0.0 if dt_max == np.inf else np.inf if dt_max == 0
+                       else float(dt) / float(dt_max))}
     return ResolutionReport(plan.problem.name, entries, skipped, float(target), float(marginal), cfl)

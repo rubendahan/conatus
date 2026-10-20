@@ -17,9 +17,10 @@ Run:  python examples/convection/rayleigh_benard_3d.py
 import numpy as np
 import scipy.optimize as so
 
-from conatus.expert import (IVP, CartesianCoordinates, Chebyshev, ComplexFourier, Domain, Field, Parameter,
-                            VectorField, Zero, div, dot, dt, eigenvalues, grad, integ, interp, lap, lift,
-                            discretize, linearize, unit_vector)
+from conatus.expert import (IVP, CartesianCoordinates, Chebyshev, ComplexFourier, Domain, Field,
+                            Parameter, VectorField, div, dot, dt, eigenvalues, grad, integ, interp,
+                            lap, lift, discretize, linearize, unit_vector)
+from conatus.ir import Zero
 
 RA_C, K_C = 1707.762, 3.1163           # rigid-rigid onset (Reid & Harris 1958)
 
@@ -72,10 +73,15 @@ def neutral_ra(kx: float, ky: float, Nz: int = 24) -> float:
 
 if __name__ == "__main__":
     K = K_C
+    ras = []
     for kx, ky in [(K, 0.0), (0.0, K), (K * np.cos(np.pi / 6), K * np.sin(np.pi / 6))]:
         Ra = neutral_ra(kx, ky)
         s, res = growth(kx, ky, Ra)
         print(f"  k = ({kx:.4f}, {ky:.4f}), |k| = {np.hypot(kx, ky):.4f}: neutral Ra = {Ra:.8f} "
               f"(2D reference {RA_C} at the minimum), sigma = {s:.1e}, residual {res:.1e}")
+        assert abs(s) < 1e-9 and res < 1e-14, (s, res)                # neutral, resolved
+        ras.append(Ra)
+    # Reid & Harris (1958) to 1e-3; isotropic: the same Ra for every direction of k to 1e-8
+    assert abs(ras[0] - RA_C) < 1e-3 and max(ras) - min(ras) < 1e-8 * ras[0], ras
     evp, _ = boussinesq_3d(K, 0.0, 24)
     print(evp.explain())

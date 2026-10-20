@@ -1,4 +1,4 @@
-"""Pseudo-arclength continuation of G(x, p) = 0 (spec §42).
+"""Pseudo-arclength continuation of G(x, p) = 0.
 
 Unknowns z = (x, p). From a converged point z_k with unit tangent t_k (in the declared weighted
 norm), the predictor is z_pred = z_k + ds t_k and the corrector is Newton on the bordered system
@@ -451,14 +451,16 @@ class PseudoArclength:
             br.events.append(Event(kind, (i, i + 1), p_c,
                                    f"#Re>0: {a.unstable} -> {b.unstable}; {loc}", conv, why,
                                    f"|Re λ| <= crossing_tol = {self.cfg.crossing_tol:g}"
-                                   f"{self.cfg._d('crossing_tol')} x max(1, |λ|); Hopf if "
+                                   f"{self.cfg._d('crossing_tol')} x max(|λ|, 1e-3 median |λ|); Hopf if "
                                    f"|Im λ| > hopf_imag_tol = {self.cfg.hopf_imag_tol:g}"
-                                   f"{self.cfg._d('hopf_imag_tol')} x max(1, |λ|)"))
+                                   f"{self.cfg._d('hopf_imag_tol')} x max(|λ|, 1e-3 median |λ|)"))
 
     def _complex_crossing(self, a: BranchPoint, b: BranchPoint) -> bool:
+        from .._scales import spectral_floor
         ev = np.asarray(self.eigen(b.x, b.p))
         near = ev[np.argsort(np.abs(ev.real))[:2]]
-        return bool(np.all(np.abs(near.imag) > self.cfg.hopf_imag_tol * max(1.0, np.max(np.abs(near)))))
+        return bool(np.all(np.abs(near.imag) > self.cfg.hopf_imag_tol
+                           * max(np.max(np.abs(near)), spectral_floor(ev))))
 
     def _n_marginal(self, x: np.ndarray, p: float) -> int:
         """Number of eigenvalues with |Re λ| <= marginal_tol (persistent marginal modes)."""
@@ -478,6 +480,8 @@ class PseudoArclength:
         marginal_tol) read a wrong value and the secant exhausted its budget;
         tests/exact/test_exact_continuation.py.)"""
         ev = np.asarray(self.eigen(x, p), dtype=complex)
+        from .._scales import spectral_floor
+        self._spectral_floor = spectral_floor(ev)       # the crossing test's floor (unit of λ)
         marg = np.abs(ev.real) <= self.marginal_tol
         if np.count_nonzero(marg) > n_marginal:
             # persistent marginal modes sit at round-off; the threshold one is the largest |Re λ|
@@ -520,7 +524,7 @@ class PseudoArclength:
                 break
             best = (float(z[-1]), abs(f2), lam)
             s0, f0, s1, f1 = s1, f1, s2, f2
-            if abs(f2) <= cfg.crossing_tol * max(1.0, abs(lam)):
+            if abs(f2) <= cfg.crossing_tol * max(abs(lam), self._spectral_floor):
                 conv, why = True, ""
                 break
         if best[0] is None:

@@ -10,6 +10,7 @@ base class needs them only at call time).
 from __future__ import annotations
 
 import hashlib
+import math
 import numbers
 from typing import Any
 from collections.abc import Iterable, Iterator, Mapping, Sequence
@@ -58,6 +59,17 @@ def _combine_degrees(a: frozenset, b: frozenset) -> frozenset:
 # --------------------------------------------------------------------------- base
 
 
+def _canonical_key(key: Any, renamed: Mapping[str, str]) -> Any:
+    """``key`` with the registry keys of renamed user functions replaced by their names."""
+    if not isinstance(key, tuple):
+        return key
+    if (len(key) == 4 and key[0] == "UnaryFunction" and isinstance(key[1], tuple) and key[1]
+            and key[1][0] in renamed):
+        return (key[0], (renamed[key[1][0]],) + key[1][1:], key[2],
+                tuple(_canonical_key(a, renamed) for a in key[3]))
+    return tuple(_canonical_key(k, renamed) for k in key)
+
+
 class Expr:
     """Base class of all IR nodes. Instances are immutable."""
 
@@ -99,8 +111,14 @@ class Expr:
 
     @property
     def structural_hash(self) -> str:
-        """Process-independent hash (sha256 of the structural key)."""
-        return hashlib.sha256(repr(self._key).encode()).hexdigest()[:16]
+        """Process-independent hash (sha256 of the structural key). A user function enters by
+        the user's name, not by its registry key (``g__2`` when another model of the process
+        declared its own ``g``, F105): the hash, the order of terms sorted by it and the identity
+        of a computation do not depend on what the process declared before (numerics review);
+        the function's code enters the identity separately (``io._identity.user_functions``)."""
+        from .expr_algebra import _RENAMED
+        key = _canonical_key(self._key, _RENAMED) if _RENAMED else self._key
+        return hashlib.sha256(repr(key).encode()).hexdigest()[:16]
 
     @property
     def rank(self) -> int:
@@ -286,7 +304,7 @@ class Expr:
 
         Returns A^T w and the boundary term B(u, w) such that
         ∫ (A u)·w dV = ∫ u·(A^T w) dV + B(u, w)  (bilinear, no conjugation;
-        the adjoint for an inner product W is W^{-1} conj(A^T) W, spec §30).
+        the adjoint for an inner product W is W^{-1} conj(A^T) W).
         """
         w = as_expr(w)
         if w.tensorsig != self.tensorsig:
@@ -396,6 +414,16 @@ class Field(Expr):
                 raise CoordinateError("tensor indices must live on the domain coordinate system",
                                       fix="build the tensor signature from the domain's own coordinate "
                                           "system (domain.coordsys)")
+        # a field is real (float64) or complex (complex128): an integer or a single-precision
+        # dtype was stored and every transform then cast it (audit inputs)
+        from ..errors import DtypeError
+        try:
+            dt_ = np.dtype(dtype)
+        except TypeError:
+            dt_ = None
+        if dt_ is None or dt_ not in (np.dtype(np.float64), np.dtype(np.complex128)):
+            raise DtypeError(f"Field({name!r}, ..., dtype={dtype!r}): a field is float64 or complex128",
+                             fix="dtype=float (default) or dtype=complex")
         sym = _normalize_field_symmetry(symmetry)
         for R, _ in sym:
             if R.coord.system != domain.coordsys:
@@ -450,6 +478,8 @@ def VectorField(name: str, domain: Domain, dtype: Any = np.float64,
 def TensorField(name: str, domain: Domain, rank: int, dtype: Any = np.float64,
                 symmetry: Mapping | None = None) -> Field:
     """Tensor field of the given rank on the domain's coordinate system."""
+    from ..errors import check_count
+    check_count(rank, "rank", f"TensorField({name!r}, ...)", minimum=0)   # audit inputs
     return Field(name, domain, (domain.coordsys,) * rank, dtype, symmetry)
 
 
@@ -482,11 +512,37 @@ class Parameter(Expr):
     """Named scalar parameter (Re, Ra, eigenvalue...). Its value is not part of the hash."""
 
     def __init__(self, name: str, value: Any = None, dtype: Any = np.float64) -> None:
+        # Name and value checked at declaration (audit inputs): Parameter("Re", nan),
+        # Parameter("Re", "1") and the problem presets built on them (cn.problems.channel_evp(
+        # Re=nan)) were accepted and failed, or gave NaN, deep inside the assembly.
+        from ..errors import DtypeError, InputTypeError
+        if not isinstance(name, str) or not name:
+            raise InputTypeError(f"Parameter({name!r}, ...): the name is a non-empty string",
+                                 fix="Parameter('Re', 1000.0)")
+        try:
+            kind = np.dtype(dtype).kind
+        except TypeError as err:
+            raise InputTypeError(f"Parameter({name!r}, dtype={dtype!r}): not a dtype ({err})",
+                                 fix="dtype=float (default) or dtype=complex") from None
+        if kind not in "fc":
+            raise DtypeError(f"Parameter({name!r}, dtype={dtype!r}): a parameter is real (float) "
+                             "or complex", fix="dtype=float (default) or dtype=complex")
+        if value is not None:
+            if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Number):
+                raise InputTypeError(f"Parameter({name!r}, {value!r}): the value is a number",
+                                     fix=f"Parameter({name!r}, 1.0)")
+            c = complex(value)
+            if not (math.isfinite(c.real) and math.isfinite(c.imag)):
+                raise InputTypeError(f"Parameter({name!r}, {value!r}): the value is not finite",
+                                     why="a NaN or infinite parameter makes every matrix and "
+                                         "result NaN or meaningless",
+                                     fix=f"a finite number for {name}")
         # The declared dtype enters the hash and explain(): a complex value must be declared.
         if (value is not None and np.iscomplexobj(value) and np.imag(value) != 0
-                and np.dtype(dtype).kind != "c"):
-            raise TypeError(f"Parameter '{name}' has complex value {value!r} but real dtype "
-                            f"{np.dtype(dtype)}; declare dtype=complex")
+                and kind != "c"):
+            raise DtypeError(f"Parameter '{name}' has complex value {value!r} but real dtype "
+                             f"{np.dtype(dtype)}; declare dtype=complex",
+                             fix=f"Parameter({name!r}, {value!r}, dtype=complex)")
         self._setup((), (), None, dtype, params=(name, np.dtype(dtype).str), name=name, value=value)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
@@ -506,11 +562,17 @@ class Constant(Expr):
     """Numeric constant. Non-scalar constants may only be zero."""
 
     def __init__(self, value: Any, tensorsig: TensorSig = ()) -> None:
-        if not isinstance(value, numbers.Number):
-            raise TypeError(f"Constant needs a number, got {value!r}")
+        from ..errors import InputTypeError
+        if not isinstance(value, numbers.Number) or isinstance(value, bool):
+            raise InputTypeError(f"Constant needs a number, got {value!r}")
         c = complex(value)
+        if not (math.isfinite(c.real) and math.isfinite(c.imag)):
+            # audit inputs: as_expr(nan) and power(u, nan) built NaN terms
+            raise InputTypeError(f"Constant({value!r}): not a finite number",
+                                 why="a NaN or infinite coefficient makes every result NaN",
+                                 fix="a finite number")
         if tensorsig and c != 0:
-            raise ValueError("only the zero constant may carry a tensor signature")
+            raise EquationError("only the zero constant may carry a tensor signature")
         dtype = np.complex128 if c.imag != 0 else np.float64
         v = c if c.imag != 0 else c.real
         self._setup((), tensorsig, None, dtype, params=_num_key(c), value=v)
