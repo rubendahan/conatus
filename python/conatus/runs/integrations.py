@@ -86,7 +86,7 @@ def ivp_run(solver: Any, nsteps: int, callback: Callable | None, every: int | No
     series, series_every = o.get("series"), o.get("series_every")
     if (series is None) != (series_every is None):
         raise OptionError("record=: 'series' and 'series_every' go together",
-                          why="how often series are evaluated is part of the run's cost, never chosen for you",
+                          why="how often series are evaluated is part of the run's cost",
                           fix="record=dict(series={'energy': f}, series_every=10)")
     if series_every is not None:        # a float used to be truncated for the callback period and
         check_count(series_every, "series_every", "record=")   # kept in the modulo (2.5: every 10 steps)
@@ -450,7 +450,7 @@ def record(obj: Any = None, *, name: str | None = None, params: Mapping[str, Any
             res.setdefault("residual_max", float(np.max(obj.residuals)))
     if arrays and compression is _REQUIRED:
         raise OptionError("record(): arrays to store but no compression= declared",
-                          why="storage choices are declared, never chosen for you",
+                          why="storage choices are declared explicitly",
                           fix="compression=None (as is), 'gzip' or 'lzf' (all lossless)")
     lengths = {k: len(v) for k, v in (series or {}).items()}
     if len(set(lengths.values())) > 1:
@@ -701,7 +701,7 @@ def _reproduce_ivp(run: Run, solver: Any, record: bool, rec_opts: dict, code_sam
         items = [f"{k}: {a} -> {b}" for k, (a, b) in d["changed"].items()] + \
                 [f"{k} missing now" for k in d["only_a"]] + [f"{k} new" for k in d["only_b"]]
         raise OptionError(f"reproduce({run.id}): numerics differ from the recorded run: "
-                          + "; ".join(items[:8]), why="reproduce never adapts the numerics",
+                          + "; ".join(items[:8]), why="reproduce uses the recorded numerical settings",
                           fix="build the solver with the recorded configuration (run.explain())")
     solver.load_checkpoint(start)
     new = ivp_run(solver, inputs["nsteps"], None, None, record=rec_opts, cache=False) if record \

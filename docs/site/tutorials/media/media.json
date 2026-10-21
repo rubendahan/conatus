@@ -3,92 +3,101 @@
   "file": "tutorials/media/t00_neutral_curve.png",
   "tutorial": "t00",
   "kind": "figure",
-  "alt": "The neutral curve in the plane of wavenumber and Rayleigh number: a U-shaped red line with its minimum marked at Ra about 1708 and k about 3.12; the region above it is shaded.",
-  "caption": "Growth rate of the least stable mode over a grid of (k, Ra), from the parametric pencil of the onset block. The red line is where it vanishes; its minimum is the critical point the script finds, Ra_c = 1707.762 at k_c = 3.1163."
+  "alt": "The neutral curve in the plane of wavenumber and Rayleigh number: a U-shaped red line with its minimum marked at Ra about 1708 and k about 3.12; the region above it, where modes grow, is shaded; two crosses at k = pi mark Ra = 1500 and 2500.",
+  "caption": "Rayleigh-Bénard onset between rigid plates, Pr = 1: growth rate of the least stable mode over a grid of (k, Ra), from the parametric pencil of the onset block. The red line is where it vanishes; modes grow in the shaded region. Its minimum is the critical point Ra_c = 1707.762 at k_c = 3.1163. The crosses are the two runs of the page, Ra = 1500 (stable) and 2500 (unstable) at k = π.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t00_growth_saturation.png",
   "tutorial": "t00",
   "kind": "figure",
   "alt": "Left: the roll amplitude on a log scale rises along a straight dashed line, then levels off. Right: the Nusselt number stays at 1, rises to a peak and settles to a constant.",
-  "caption": "The simulation of the page. Left: the rolls grow at the rate of the eigenvalue (dashed) until the nonlinear terms stop them. Right: the heat carried across the layer, in units of conduction, settles to a steady value."
+  "caption": "The simulation of the page at Ra = 2500, Pr = 1; time in thermal diffusion units d²/κ. Left: the roll amplitude grows at the rate σ = 5.543 of the leading eigenvalue (dashed line, drawn through the run at t = 0.3) until the nonlinear terms stop it. Right: the heat flux across the layer in units of conduction, Nu = 1.474 at t = 6 (it varies by 4×10⁻¹⁵ over the last time unit).",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t01_spectrum.png",
   "tutorial": "t01",
   "kind": "figure",
   "alt": "A few eigenvalues in the plane of phase speed and growth, all below the zero line except one red point just above it near Re c = 0.24.",
-  "caption": "The modes kept by the drift test of the page (found again at N = 96), in the plane of phase speed and growth. Only one lies above the dashed line: the Tollmien-Schlichting wave, unstable at Re = 10⁴."
+  "caption": "Plane Poiseuille flow at Re = 10⁴, α = 1: the 7 modes kept by the drift test of the page (found again at N = 96). A mode varies as exp(iα(x − ct)), so Re c is its phase speed and α Im c its growth rate. Only the Tollmien-Schlichting wave (red), c = 0.23753 + 0.00374i, lies above the dashed line Im c = 0.",
+  "width": "90%"
  },
  {
   "file": "tutorials/media/t01_coefficients.png",
   "tutorial": "t01",
   "kind": "figure",
-  "alt": "The magnitudes of the 64 Chebyshev coefficients of the mode on a log scale: one sequence falls steadily from 1 to about 1e-12, the other stays near 1e-12.",
-  "caption": "The Chebyshev coefficients of the mode (mode.coeffs(\"v\")). The even ones fall to about 10⁻¹² by the last index, the level of the odd ones, which v, even in y, does not need: 64 modes resolve it."
+  "alt": "The magnitudes of the 64 Chebyshev coefficients of the mode on a log scale, even indices as red dots and odd indices as open blue squares: the even ones fall from 1 to about 4×10⁻¹⁰; the odd ones stay near 3×10⁻¹⁶.",
+  "caption": "The Chebyshev coefficients of the mode (mode.coeffs(\"v\")), even and odd indices apart. v is even in y, so only the even coefficients carry it: they fall to 4×10⁻¹⁰ at the last even index. The odd ones stay at the rounding level, about 3×10⁻¹⁶. The largest of the last 10 % of the coefficients is 6×10⁻⁹ of the largest one, the spectral-tail measure that the eigenvalue result reports.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t01_neutral_curve.png",
   "tutorial": "t01",
   "kind": "figure",
   "alt": "The neutral curve of plane Poiseuille flow: a red tongue opening to the right in the plane of Reynolds number (log scale) and wavenumber, its nose marked at Re about 5772 and alpha about 1.02.",
-  "caption": "Im c of the least stable mode on a grid of (Re, α), from the parametric pencil of the page. Inside the red line the flow is unstable; its nose is the critical point the script finds."
+  "caption": "Im c of the least stable mode on a grid of (Re, α), from the parametric pencil of the page. Inside the red line the flow is unstable. Its nose is the critical point the script finds, Re_c = 5772.2 at α_c = 1.0205.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t02_growth.png",
   "tutorial": "t02",
   "kind": "figure",
-  "alt": "The roll amplitude on a log scale against time: after a short shaded start the dots follow a straight red line.",
-  "caption": "The initial-value problem against the eigenvalue problem. After t = 0.3 the amplitude grows at σ = 5.5425080, the EVP's 5.5425059: a relative difference of 4×10⁻⁷, within the 10⁻⁵ the script checks."
+  "alt": "The roll amplitude on a log scale against time: the dots bend during a short start, then follow a straight red line over the shaded interval.",
+  "caption": "The initial-value problem against the eigenvalue problem. Before t = 0.3 faster modes are still decaying; over the shaded interval the amplitude grows at σ = 5.5425080, the eigenvalue's 5.5425059: a relative difference of 4×10⁻⁷, within the 10⁻⁵ the script checks.",
+  "width": "100%"
  },
  {
-  "file": "tutorials/media/t02_chain.png",
+  "file": "tutorials/media/t02_restart.png",
   "tutorial": "t02",
   "kind": "figure",
-  "alt": "Kinetic energy against time on a log scale, black circles up to t = 0.3 and red squares after, continuing the same straight line.",
-  "caption": "The kinetic energy written to rb.h5 by the two jobs of the chain: the second starts from the checkpoint of the first and continues the same file. One run, bit for bit."
+  "alt": "Two horizontal bars over time: the upper one in two parts, job 1 then job 2, joined at a checkpoint marker at t = 0.3; the lower one a single uninterrupted run to the same end time.",
+  "caption": "The jobs block of the page: job 2 resumes from the checkpoint that job 1 wrote at iteration 600 (t = 0.3) and runs to t = 0.8 (iteration 1600). Its final state is identical to that of the uninterrupted run: np.array_equal is True over the 1531 coefficients, largest difference 0. The output file holds 17 rows, t = 0 included.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t03_spectra.png",
   "tutorial": "t03",
   "kind": "figure",
-  "alt": "Eigenvalues of the full problem as grey rings; each ring holds either a red dot (onset class) or a green cross (other class), and the rightmost, at zero, holds a red dot.",
-  "caption": "Every eigenvalue of the full space (rings) is found in exactly one of the two symmetry classes, each solved with half the unknowns. The neutral mode at the onset point belongs to the onset class."
+  "alt": "Three rows of eigenvalues along the growth-rate axis: open circles for the full space, red dots for the onset class, blue crosses for the other class; thin lines join each circle to the class row that holds it, and the rightmost circle, at zero, joins a red dot.",
+  "caption": "The 12 eigenvalues of the full space with σ > −160, each joined to the symmetry class that holds the same value (largest relative gap 3×10⁻¹³). All are real (largest |Im σ| 1×10⁻¹⁶). The neutral mode at the onset point, σ ≈ 0, is in the onset class.",
+  "width": "100%"
  },
  {
-  "file": "tutorials/media/t03_cost.png",
+  "file": "tutorials/media/t03_cost.md",
   "tutorial": "t03",
-  "kind": "figure",
-  "alt": "Two bar charts: the number of unknowns, 268 for the full space and 134 for each class; and the time of the dense eigenvalue solve, several times shorter for each class.",
-  "caption": "Size and cost of each eigenproblem as measured in this run. Halving the unknowns makes the dense QZ solve several times cheaper (it scales as n³)."
+  "kind": "table",
+  "caption": "Size of each eigenproblem and wall time of its dense QZ solve, 7 timings each (median and range), from one run on AMD EPYC 9654 96-Core Processor with 2 threads (NumPy 2.5.3, SciPy 1.17.1). Halving the unknowns made the solve 5.0 times faster here; the n³ operation count bounds the saving at 8."
  },
  {
   "file": "tutorials/media/t04_branch.png",
   "tutorial": "t04",
   "kind": "figure",
   "alt": "The solution branch of the Bratu problem: u(0) rises with lambda, turns back at a red fold near lambda = 0.878 and climbs on the upper branch, the dots lying on a thin closed-form curve.",
-  "caption": "The branch followed by pseudo-arclength continuation (the page's settings, run for more points), on the closed form u(0) = 2 ln cosh a. The fold is located by bisection on the tangent."
+  "caption": "The branch followed by pseudo-arclength continuation (the page's settings, run for more points), on the closed form u(0) = 2 ln cosh a. The fold, located by bisection on the tangent, is at λ_c = 0.8784576798.",
+  "width": "100%"
  },
  {
-  "file": "tutorials/media/t04_newton.png",
+  "file": "tutorials/media/t04_newton.md",
   "tutorial": "t04",
-  "kind": "figure",
-  "alt": "The relative residual of Newton's method on a log scale, dropping faster at each iteration below the dashed tolerance line.",
-  "caption": "Newton from u = 0 at λ = 0.3, as printed by sol.explain(): the number of correct digits doubles at each step (quadratic convergence) down to the declared tolerance."
+  "kind": "table",
+  "caption": "Newton from u = 0 at λ = 0.3, as printed by sol.explain(): the relative residual after each iteration, 3 iterations down to 3e-14, below the declared tolerance 1e-13. The observed order log(r(k+1)/r(k)) / log(r(k)/r(k−1)) is 1.99, 2.00 (2 for quadratic convergence)."
  },
  {
   "file": "tutorials/media/t05_solutions.png",
   "tutorial": "t05",
   "kind": "figure",
   "alt": "Three periodic profiles over x from 0 to 22: the equilibria E1 and E2 and the travelling wave TW1.",
-  "caption": "The two equilibria and the travelling wave found by Newton-Krylov-hookstep from the page's seeds."
+  "caption": "The two equilibria and the travelling wave found by Newton-Krylov-hookstep from the page's seeds.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t05_stability.png",
   "tutorial": "t05",
   "kind": "figure",
   "alt": "Left: Floquet multipliers of the orbit with the unit circle; a red pair lies just outside it. Right: the leading eigenvalues of E1, two red complex pairs with positive real part.",
-  "caption": "Stability of the solutions. Left: the multipliers of the orbit; the red pair outside the unit circle is the unstable direction, μ₁ = log|Λ|/T. Right: the leading eigenvalues of E1."
+  "caption": "Stability of the solutions. Left: the multipliers Λ of the orbit; the red pair outside the unit circle is the unstable direction, with Floquet exponent μ₁ = log|Λ|/T = 0.0332. Right: the eigenvalues λ of E1, modes growing as exp(λt); the red ones are the four with the largest real part.",
+  "width": "100%"
  },
  {
   "file": "_static/tutorial_films/t05_orbit.webm",
@@ -102,138 +111,147 @@
   "frames": 174,
   "duration_s": 7.25,
   "bytes": {
-   "webm": 107216,
-   "mp4": 114860
+   "webm": 107719,
+   "mp4": 114169
   },
   "loop": "the last frame returns to the first (the motion is periodic)",
-  "alt": "A yellow-green curve u(x) wriggles in the upper part of the frame while, below, its history fills a red and green space-time map from the bottom up over two periods of the orbit.",
+  "alt": "A yellow-green curve u(x) wriggles in the upper part of the frame while, below, its history fills a red and blue space-time map from the bottom up over two periods of the orbit.",
   "caption": "The pre-periodic orbit over two periods: the state u(x) (top) and its space-time map filling up (bottom). Every frame is a time step of the orbit's flow map."
  },
  {
   "file": "tutorials/media/t08_drum.png",
   "tutorial": "t08",
   "kind": "figure",
-  "alt": "Left: the computed eigenvalues of the drum for m = 0, 1, 2 as coloured dots, each on a black tick of the squared Bessel zeros. Right: their relative errors on a log scale, at rounding for the first modes and growing for the last ones.",
-  "caption": "The vibrating drum at N = 32 radial modes: the eight slowest modes of each azimuthal group against the closed form −j²ₘ,ₙ. The first ones agree to rounding; the error grows with n as the modes become finer than the grid."
+  "alt": "The computed eigenvalues of the drum for m = 0, 1, 2 as coloured markers, each on a black tick of the squared Bessel zeros, rising with the radial index.",
+  "caption": "The vibrating drum at N = 32 radial modes: the eight slowest modes of each azimuthal number m against the closed form −j²ₘ,ₙ (ticks). Over these 24 modes the largest relative error is 3×10⁻¹⁵, the level of rounding error.",
+  "width": "85%"
  },
  {
   "file": "tutorials/media/t08_pipe_spectrum.png",
   "tutorial": "t08",
   "kind": "figure",
-  "alt": "The spectrum of pipe flow at Re = 1000 for (m, k) = (1, 1): eigenvalues on three branches in the left half of the complex plane, the two rightmost marked red.",
-  "caption": "Hagen-Poiseuille flow, R = 1000, (m, k) = (1, 1): the spectrum of the pipe block. All modes decay; the two least stable (red) are the centre and wall modes of Meseguer and Trefethen."
+  "alt": "The spectrum of pipe flow at Re = 1000 for (m, k) = (1, 1): eigenvalues on three branches in the left half of the complex plane; the two rightmost are marked, a red dot and a blue square.",
+  "caption": "Hagen-Poiseuille flow, R = 1000, (m, k) = (1, 1): the spectrum of the pipe block, modes growing as exp(st). All modes decay. The two least stable are the centre mode, s = -0.0709 − 0.8467i, and the wall mode, s = -0.0911 − 0.4691i, of Meseguer and Trefethen (2003).",
+  "width": "100%"
+ },
+ {
+  "file": "tutorials/media/t10_bogdanov_takens.png",
+  "tutorial": "t10",
+  "kind": "figure",
+  "alt": "Two curves in the parameter plane: a red parabola of folds through the origin, and a green line of Hopf points at beta1 = 0 for beta2 < 0 that ends at the Bogdanov-Takens point at the origin.",
+  "caption": "Codimension two: the fold and Hopf curves of the Bogdanov-Takens normal form, continued in (β₁, β₂). The fold curve follows β₁ = β₂²/4 through the BT point; the Hopf curve β₁ = 0 exists for β₂ < 0 and ends at the BT point."
  },
  {
   "file": "tutorials/media/t10_lorenz.png",
   "tutorial": "t10",
   "kind": "figure",
   "alt": "Bifurcation diagram of the Lorenz system, x against r: a black line along x = 0 that turns dashed at r = 1, where two red branches split off; they turn dashed at the Hopf points near r = 24.7, from which brass lines of cycles bend back.",
-  "caption": "The equilibria of the Lorenz system and their stability, as continued by the page: the origin, the pitchfork at r = 1, the branches C± and their subcritical Hopf points, and the cycles born there."
+  "caption": "The equilibria of the Lorenz system and their stability, as continued by the page (solid: stable, dashed: unstable): the origin, the pitchfork at r = 1, the branches C± and their subcritical Hopf points at r = 24.736842, and the unstable cycles born there.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t10_cycles.png",
   "tutorial": "t10",
   "kind": "figure",
   "alt": "Nested closed loops in the (x, z) plane around the point C+, small ones near it and larger ones further out.",
-  "caption": "The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of degree 4) for r from 24.735 down to 22.335: born at the Hopf point around the equilibrium of the continued branch (cross), they grow as r decreases."
+  "caption": "The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of degree 4) for r from 24.735 down to 22.335 (colour bar): born at the Hopf point around the equilibrium of the continued branch (cross), they grow as r decreases.",
+  "width": "100%"
  },
  {
-  "file": "tutorials/media/t10_bogdanov_takens.png",
-  "tutorial": "t10",
-  "kind": "figure",
-  "alt": "Two curves in the parameter plane: a red parabola of folds and a green line of Hopf points at beta1 = 0, meeting at the Bogdanov-Takens point at the origin.",
-  "caption": "Codimension two: the fold and Hopf curves of the Bogdanov-Takens normal form, continued in (β₁, β₂). The fold curve follows β₁ = β₂²/4, the Hopf curve β₁ = 0; both end at the BT point."
- },
- {
-  "file": "tutorials/media/t11_decay.png",
+  "file": "tutorials/media/t11_registry.png",
   "tutorial": "t11",
   "kind": "figure",
-  "alt": "Three straight lines on a log scale, the decay of sin 3x for three diffusivities, the coloured dots on thin grey closed-form lines.",
-  "caption": "The three recorded runs, sampled every five steps: each decays as exp(−9κt) (grey), the closed form the registry's results are checked against."
+  "alt": "A diagram of the registry: three run cards on the left, two of them outlined in red as certified, with arrows to a query box; on the right, a reproduction box reporting an identical end state and a cache box reporting that nothing was computed.",
+  "caption": "The registry of the page when the script ends. Each run records its parameters and its measured error against the closed form exp(−9κt); the two certified ones (red) are what the query returns. reproduce() runs heat_k0.2 again and compares the end states: identical, largest difference 0. A repeated call with cache=True takes no step and reads the recorded state (200 steps in the original).",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t12_lyapunov.png",
   "tutorial": "t12",
   "kind": "figure",
-  "alt": "Three panels, one per Lyapunov exponent: grey running estimates of 32 trajectories converge with time onto their red mean and the dashed published value.",
-  "caption": "Running estimates of the three exponents for the 32 starts of the page (grey), their mean (red) and the published values 0.906, 0 and −14.572 (dashed)."
+  "alt": "Three panels, one per Lyapunov exponent: a grey band of running estimates over the starts narrows with time around a red mean that settles on the dashed published value.",
+  "caption": "Finite-time estimates of the three exponents, averaged from the start of the measurement, over the 32 starts of the page: the band holds the middle 80 % of the starts, the red line is their mean and the dashed lines are the published values 0.906, 0 and −14.572. The panel titles give the final mean and its standard error over the starts. Time is in the units of the Lorenz equations.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t12_lorenz_map.png",
   "tutorial": "t12",
   "kind": "figure",
   "alt": "Successive maxima of z plotted against each other: the dots lie on a thin tent-shaped curve above a dotted diagonal.",
-  "caption": "The Poincaré section dz/dt = 0 of the page: each maximum of z against the next falls on a one-dimensional cusp map, as in Lorenz's Fig. 4 of 1963."
+  "caption": "The Poincaré section dz/dt = 0 of the page: each maximum of z against the next falls on a one-dimensional cusp map, as in Lorenz's Fig. 4 of 1963.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t12_basins.png",
   "tutorial": "t12",
   "kind": "figure",
-  "alt": "A square map of starting points coloured red or green by the equilibrium they end on, forming interleaved spiral bands, with C+ and C- marked.",
-  "caption": "Basins of C+ (red) and C− (green) at r = 20 for the 2304 starts of the ensemble (z₀ = 19); the rare starts still undecided at the horizon are black. The map is symmetric under (x, y) → (−x, −y)."
+  "alt": "A square map of starting points coloured red or blue by the equilibrium they end on, forming interleaved spiral bands, with C+ and C- marked and a legend below.",
+  "caption": "Basins of C+ (red) and C− (blue) at r = 20 for the 2304 starts of the ensemble (z₀ = 19); the rare starts still undecided at the horizon are black. The map is symmetric under (x, y) → (−x, −y).",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t13_modes.png",
   "tutorial": "t13",
   "kind": "figure",
-  "alt": "Two bell-shaped curves: the direct global mode peaks downstream (right) and the adjoint mode upstream (left), barely overlapping.",
-  "caption": "The direct and adjoint global modes of the Ginzburg-Landau model of the page. Advection pushes the direct mode downstream and the adjoint upstream: the operator is far from normal."
- },
- {
-  "file": "tutorials/media/t13_wavemaker.png",
-  "tutorial": "t13",
-  "kind": "figure",
-  "alt": "A single bump centred at x = 0, the structural sensitivity, with its maximum marked in red.",
-  "caption": "The wavemaker S(x) = |q†(x)| |q(x)|, where the overlap of the two modes is largest: the region where a local change of the model moves the eigenvalue most. The maximum matches Chomaz's closed form."
+  "alt": "Top: two bell-shaped curves, the direct global mode peaking downstream (right) and the adjoint mode upstream (left), overlapping little. Bottom: their product, the wavemaker, a single bump centred at x = 0 with its maximum marked in red.",
+  "caption": "The direct and adjoint global modes of the Ginzburg-Landau model of the page (top) and the wavemaker S(x) = |q†(x)| |q(x)| (bottom). Advection pushes the direct mode downstream and the adjoint upstream; S is largest where they overlap, the region where a local change of the model moves the eigenvalue most. Its maximum, at |x| < 3×10⁻¹⁰, equals Chomaz's closed form |χ|/√π to a relative 7×10⁻¹².",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t13_dmd.png",
   "tutorial": "t13",
   "kind": "figure",
-  "alt": "Eigenvalues of the model in grey; four of them circled in red, each with a black cross from the decomposition of the data exactly at its centre.",
-  "caption": "Dynamic mode decomposition of a transient made of four global modes: the DMD eigenvalues (crosses) land on the model's (red circles) to 10⁻⁹, from the snapshots alone."
+  "alt": "Eigenvalues of the model in grey; four of them circled in red and numbered 1 to 4, each with a black cross from the decomposition of the data at its centre.",
+  "caption": "Dynamic mode decomposition of a transient made of four global modes (numbered by growth rate): the DMD eigenvalues (crosses), computed from the snapshots alone, against the model's (red circles). The distances, too small to see here, are 2×10⁻¹⁴, 4×10⁻¹³, 2×10⁻¹², 5×10⁻¹³ for modes 1 to 4.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t14_convergence.png",
   "tutorial": "t14",
   "kind": "figure",
-  "alt": "The relative difference between the native model and the translated Dedalus script on a log scale, falling steeply with the number of wall-normal modes down to rounding.",
-  "caption": "Native model against the translated Dedalus script after 40 SBDF2 steps: two tau formulations of the same equations, whose difference falls spectrally with nz down to rounding."
+  "alt": "The relative difference between the native model and the translated script on a log scale, falling steeply with the number of wall-normal modes down to rounding.",
+  "caption": "Relative difference between the native model and the translated script after 40 SBDF2 steps, against nz. The two tau formulations of the same equations differ by an amount that falls spectrally down to rounding.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t15_exponents.png",
   "tutorial": "t15",
   "kind": "figure",
-  "alt": "Twelve Lyapunov exponents with error bars, close to zero for the first eight and dropping near -2 after, each on a red tick of the published values.",
-  "caption": "The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors, on the published values. The first eight are the physical modes."
+  "alt": "Twelve Lyapunov exponents with error bars, close to zero for the first eight and dropping near -2 after; the first 10 sit on red ticks of the published values.",
+  "caption": "The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors. Red ticks mark the 10 published values (Cvitanović et al. 2010), so exponents 11 to 12 have no reference tick. The first eight are the entangled modes.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t15_angles.png",
   "tutorial": "t15",
   "kind": "figure",
-  "alt": "Two histograms of angles on a log axis: the red one, inside the physical modes, reaches very small angles; the green one, at the split after eight modes, stays well away from zero.",
-  "caption": "Angles between the span of the first j covariant vectors and the rest, at every sample. Inside the physical modes (j = 4) near-tangencies are frequent; at j = 8 the split never closes."
+  "alt": "Two histograms of angles on a log axis: the filled red one, inside the entangled modes, reaches very small angles; the blue outline, at the split after eight modes, stays well away from zero.",
+  "caption": "Angles between the span of the first j covariant vectors and the rest, at each sample. Inside the entangled modes (j = 4) near-tangencies are frequent; at j = 8 the smallest angle stays away from zero over this run.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t15_domination.png",
   "tutorial": "t15",
   "kind": "figure",
   "alt": "A triangular matrix of probabilities: red squares among the first eight indices, near white elsewhere.",
-  "caption": "Domination of Oseledets splitting: how often the local exponent i falls below j over windows of 5 time units. Violations stay among the first eight modes: they form one entangled block."
+  "caption": "Domination of Oseledets splitting: how often the local exponent i falls below j over windows of 5 time units. Violations stay among the first eight modes: they form one entangled block.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t16_tracers.png",
   "tutorial": "t16",
   "kind": "figure",
   "alt": "Square cells of grey streamlines with red tracer paths sliding along them, from open circles to red dots.",
-  "caption": "The 32 tracers of the page in the decaying Taylor-Green vortices, t = 0 to 2 (dt = 0.025): each moves along a streamline of ψ = sin x sin y (grey) and slows down as the flow decays."
+  "caption": "The 32 tracers of the page in the decaying Taylor-Green vortices, t = 0 to 2 (dt = 0.025): each moves along a streamline of ψ = sin x sin y (grey) and slows down as the flow decays.",
+  "width": "100%"
  },
  {
   "file": "tutorials/media/t16_order.png",
   "tutorial": "t16",
   "kind": "figure",
-  "alt": "The tracer error against the time step on log axes, three red points along a dashed line of slope 3.",
-  "caption": "The tracer error against the reference path integrated to 10⁻¹³: third order in time, as stated for an unsteady flow."
+  "alt": "The tracer error against the time step on log axes, three red points close to a dashed line of slope 3.",
+  "caption": "The largest tracer error against a reference path integrated to 10⁻¹³, for the three time steps of the page. Halving dt divides it by 7.7 then 7.8: observed orders 2.94 and 2.97, close to 3 in this unsteady flow.",
+  "width": "60%"
  },
  {
   "file": "_static/tutorial_films/t16_dye.webm",
@@ -248,7 +266,7 @@
   "duration_s": 6.79,
   "bytes": {
    "webm": 39711,
-   "mp4": 65917
+   "mp4": 65103
   },
   "loop": "run frames, then a 0.5 s cross-fade from the last frame to the first",
   "alt": "A round grey dye blob in a channel is sheared into a long tilted streak while five yellow-green tracers glide left and right at their own heights, those on the walls moving with them.",

@@ -26,7 +26,7 @@ def contour() -> None:
 
     box = cn.box(re=(0.1, 0.5), im=(-0.3, 0.05))       # a region of the c plane
     res = m.eigenvalues(N=64, region=box)
-    print(res.count, res.count_method)                  # certified number of eigenvalues inside
+    print(res.count, res.count_method)                  # number of eigenvalues inside, and how
     print(res.explain())                                # every mode inside, with its residual
     # [/ct-region]
     dense = m.eigenvalues(N=64)
@@ -36,6 +36,8 @@ def contour() -> None:
     assert res.residuals.max() < 1e-12
 
     # [ct-count]
+    import numpy as np
+
     from conatus.expert import HillBlocks
 
     a, q = 1.5, 0.5                      # Mathieu x'' + (a - 2q cos 2t) x = 0, period pi
@@ -48,7 +50,7 @@ def contour() -> None:
     gap = cn.box(re=(-0.5, 0.5), im=(-0.9, 0.9))         # known to hold none
     n = cn.contour.count(H, pair, control=(gap, 0))
     print(n.explain())
-    roots = cn.contour.beyn(H, pair, counted=n)          # the two exponents, certified
+    roots = cn.contour.beyn(H, pair, counted=n)          # the two exponents, residual-checked
     print(roots.values, roots.residuals)
     # [/ct-count]
     assert n.count == 2 and n.poles == 0

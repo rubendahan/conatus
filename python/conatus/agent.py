@@ -136,6 +136,12 @@ SIDE_EFFECTS = ("Simulation.watch", "Simulation.output", "Simulation.checkpoints
 # state is set as on a fresh start.
 NO_WRITE = ("Simulation.resume_or_start",)
 
+# Calls whose argument VALUES ``check`` validates at the stop, by the side-effect-free method
+# the call itself runs first (review 0.1.1, F13: run(steps=-1) was reported ok). For every other
+# stop only the signature, the conditional tolerances and the discretization are checked; the
+# report's ``validated`` field says which applied.
+PREFLIGHT = {"Simulation.run": "_run_arguments", "IVPSolver.run": "_run_arguments"}
+
 # Arguments that a call requires only in some cases (tolerances): they hide behind
 # ``**kw`` or are required by one option, so a signature does not show them. (call, condition as
 # text, condition, argument, value Conatus suggests in its refusal or None).
@@ -245,7 +251,7 @@ def info(*, probe: bool = True, runs: bool = True) -> dict:
            "packages": {p: _version(p) for p in ("numpy", "scipy", "h5py", "cupy", "cupy-cuda12x",
                                                    "mpi4py", "matplotlib")},
            "gpu": _gpu(probe), "surface": _user_layer(), "commands": COMMANDS, "docs": DOCS,
-           "rules": ["read every refusal: its 'fix' is a suggestion, never applied for you",
+           "rules": ["read every refusal: its 'fix' is a suggestion for you to apply",
                      "tolerances that decide digits have no default: write them",
                      "validate by residuals and explain(), never by a bare value",
                      "check a script first: python -m conatus agent check script.py"]}
@@ -428,7 +434,7 @@ class _Checker:
         self.path, self.memory = path, memory
         self.report: dict[str, Any] = {"missing": [], "refusals": [], "explain": {},
                                        "memory": None, "stopped_at": None, "plan": None,
-                                       "calls": [], "notes": []}
+                                       "calls": [], "notes": [], "validated": []}
         self._undo: list[tuple[Any, str, Any]] = []
         self._wrappers: dict[int, tuple[Any, Any]] = {}
         self.active = False            # wrappers that outlive the check call the original
@@ -550,9 +556,33 @@ class _Checker:
                 return sim
         rep["calls"].append({"call": label, "line": line, "action": "stopped"})
         rep["stopped_at"] = {"call": label, "line": line}
+        self._preflight(label, line, args, kwargs)
         self._discretize(label, args, given)
         self.stops += 1
         raise _Stop(label)
+
+    def _preflight(self, label: str, line: Any, args: tuple, kwargs: dict) -> None:
+        """The value checks of the stopped call (:data:`PREFLIGHT`), recorded in ``validated``;
+        a refusal is reported like any other."""
+        from .errors import ConatusError
+        attr = PREFLIGHT.get(label)
+        fn = getattr(args[0], attr, None) if (attr and args) else None
+        if fn is None:
+            self.report["validated"].append(
+                {"call": label, "values": "not checked", "checked": "signature, conditional "
+                 "tolerances and discretization; the argument values are checked only when the "
+                 "call runs"})
+            return
+        self.report["validated"].append({"call": label, "values": "checked",
+                                         "checked": f"{label} argument checks ({attr})"})
+        try:
+            fn(*args[1:], **kwargs)
+        except ConatusError as err:
+            e = _error(err, self.path)
+            e["line"] = line
+            self.report["refusals"].append(e)
+        except TypeError:          # an argument the signature lacks: already in "missing"
+            pass
 
     def _arguments(self, label: str, orig: Any, args: tuple, kwargs: dict) -> dict:
         """Arguments as given; record missing required arguments and tolerances."""
@@ -679,6 +709,7 @@ def check(path: str | os.PathLike, *, argv: list[str] | None = None, timeout: fl
     out: dict[str, Any] = {"api": API, "command": "check", "script": path}
     if not os.path.isfile(path):                  # same keys as any other report
         out.update(ok=False, calls=[], stopped_at=None, missing=[], refusals=[], warnings=[],
+                   validated=[],
                    explain={}, plan=None, memory=None, notes=[],
                    errors=[{"type": "FileNotFoundError", "message": path, "line": None}],
                    elapsed_s=round(time.perf_counter() - t0, 3))

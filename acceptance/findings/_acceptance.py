@@ -1,12 +1,14 @@
 """Shared helpers of the acceptance scripts: the result line, the refusal test, tolerances.
 
 Every script of this directory reproduces one finding of the external review of 0.1.0 against
-the installed package's public API and asserts the CORRECT behaviour. It prints exactly one line
+the installed package's public API and asserts the CORRECT behaviour, anchored on an independent
+value (analytic, NumPy/SciPy) wherever a value is claimed. It prints exactly one line, its last
 
     RESULT F<nnn> PASS|FAIL|SKIP <detail>
 
 and exits 0 (PASS), 1 (FAIL) or 3 (SKIP: the feature is not shipped in this build). An uncaught
-exception is a FAIL too (the runner reports it as a crash). Standard library and NumPy only.
+exception, a second result line or an exit status that does not match the word is a FAIL
+(run_all.verdict). Standard library, NumPy and SciPy (a dependency of conatus) only.
 """
 from __future__ import annotations
 

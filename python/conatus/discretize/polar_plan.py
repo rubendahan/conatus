@@ -41,6 +41,7 @@ from ..reference.evaluate import FieldData
 from ..tolerances import NCC_TAIL_TOL
 from . import ultraspherical as us
 from .compiler import DiscretizationError
+from .curvilinear_common import const_value
 from .curvilinear_symmetry import (CurvilinearReduction, plan_embed, plan_matrices, plan_project,
                                    reduced_lbvp_solve)
 from .plan import GroupMatrices, LBVPSolution, Plan, data_snapshot, rebind_for_data
@@ -151,22 +152,7 @@ class _PolarCompiler:
         return v
 
     def _const(self, f: E.Expr):
-        if isinstance(f, E.Constant) and f.rank == 0:
-            return f.value
-        if isinstance(f, E.Parameter):
-            return self._param(f)
-        if isinstance(f, E.Power) and not f.free_fields():
-            b = self._const(f.args[0])
-            return None if b is None else b ** f.exponent
-        if isinstance(f, E.Mul) and not f.free_fields():
-            v = 1.0
-            for a in f.args:
-                w = self._const(a)
-                if w is None:
-                    return None
-                v = v * w
-            return v
-        return None
+        return const_value(f, self._param)
 
     # ---------------------------------------------------------------- entry point
     def compile(self, x: E.Expr, mode: str) -> dict:

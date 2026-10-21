@@ -1,8 +1,9 @@
-// Validation: the one page of the site with numbers. Every verification result of the release,
+// Validation: the one page of the site with numbers. The verification results of the release,
 // grouped by topic: value obtained, reference, deviation; each row says where it comes from (the
-// table of the Conatus paper, how its deviation was obtained) and, when there is one, the script of
-// this repository that reproduces it. The run records stay in the development repository: the page
-// says so instead of linking to them (external review 0.1.0, finding 70).
+// table of the Conatus paper in preparation, how its deviation was obtained) and, when there is one,
+// the script of this repository that reproduces it. The run records are not published: the page
+// labels the values as author-reported (external review 0.1.0, finding 70; review of 0.1.1, F24).
+// Rows compare with published values only (cross-checks against other codes stay in the paper).
 // Data: src/generated/ledger.json (scripts/gen-data.mjs).
 // Self-contained: no other page imports anything from here, so it can be removed with its route.
 import { PageHead, RepoPath } from "../components/ui";
@@ -14,11 +15,11 @@ import "../styles/ledger.css";
 const TOPICS: { id: string; title: string; lede: string; domains: string[] }[] = [
   { id: "stability", title: "Linear stability", lede: "Eigenvalues and critical parameters of classical flows, against published tables.",
     domains: ["stability", "convection", "shear", "bvp"] },
-  { id: "time", title: "Time integration", lede: "Orders of the time steppers and agreement with Dedalus.",
+  { id: "time", title: "Time integration", lede: "Orders of the time steppers, measured and against the theory.",
     domains: ["time-integration", "turbulence"] },
-  { id: "geometries", title: "Geometries and bases", lede: "The disk, annulus, sphere, shell and ball, the whole and half line, compound intervals and stress-free walls, against closed forms and Dedalus.",
+  { id: "geometries", title: "Geometries and bases", lede: "The disk, annulus, sphere, shell and ball, the whole and half line, compound intervals and stress-free walls, against closed forms.",
     domains: ["geometry"] },
-  { id: "dynamics", title: "Dynamics", lede: "Periodic orbits, bifurcations, Floquet exponents and exact adjoints, including the spherical shell.",
+  { id: "dynamics", title: "Dynamics", lede: "Periodic orbits, bifurcations, Floquet exponents and adjoints, including the spherical shell.",
     domains: ["dynamics", "bifurcation", "floquet", "adjoint"] },
   { id: "other", title: "Patterns and other checks", lede: "Pattern-forming systems, operator compilers and symmetry subspaces.",
     domains: ["patterns", "operators", "other"] },
@@ -35,7 +36,7 @@ function Row({ e }: { e: LedgerEntry }) {
         <details className="v-more">
           <summary>Source</summary>
           <p>
-            {e.section} table of the Conatus paper{e.deviationNote ? <>; deviation: {e.deviationNote}</> : null}
+            {e.section} table of the Conatus paper (in preparation){e.deviationNote ? <>; deviation: {e.deviationNote}</> : null}
             {e.script && <> · reproduced by <RepoPath path={e.script}>{e.script}</RepoPath></>}
           </p>
         </details>
@@ -63,8 +64,8 @@ export default function Validation() {
   return (
     <>
       <PageHead eyebrow="Evidence" title="Validation">
-        <p>The numbers behind Conatus, in one place. Each value is compared with a published result or an independent code,
-          and the deviation is the difference between them.</p>
+        <p>The verification values of this release, in one place. Each value is compared with a published result or a closed
+          form. The deviation is the difference between them.</p>
       </PageHead>
       <nav className="wrap v-topics" aria-label="Topics">
         <ul>{TOPICS.map((t) => <li key={t.id}><a href={`#${t.id}`}>{t.title} <span className="num">{rowsOf(t.id).length}</span></a></li>)}</ul>
@@ -85,11 +86,11 @@ export default function Validation() {
         })}
         <section className="v-note" aria-labelledby="how-h">
           <h2 id="how-h">How these numbers are produced</h2>
-          <p>Values are taken from the validation record of Conatus {ledger.version ?? ""} (the Verification table of the
-            Conatus paper) at every build of this site, never typed by hand. A deviation is the relative error of a recorded
-            measurement or the one deviation the row states; a dash means the row states the agreement in words rather
-            than as one number. Each number was produced by a recorded run; the run records (inputs, code version, log)
-            are kept with the development repository, not in this one.</p>
+          <p>The values are measurements reported by the author. They are copied at each build of this site from the
+            Verification table of the Conatus paper (in preparation), for Conatus {ledger.version ?? ""}. A deviation is the
+            relative error of the measurement, or the one deviation the row states. A dash means the row states the
+            agreement in words. The run records (inputs, code revision, logs) are not published with this release. When a
+            row names a script, that script reproduces the value from this repository.</p>
         </section>
       </div>
     </>

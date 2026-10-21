@@ -199,8 +199,7 @@ def _num(v: Any, what: str) -> float:
     if isinstance(v, bool) or type(v).__name__ == "bool_" \
             or not isinstance(v, (numbers.Real, decimal.Decimal)):
         raise InputTypeError(f"{what}: {v!r} is not a real number",
-                             why="lengths and positions are numbers; text, flags and complex "
-                                 "values are never converted for you",
+                             why="lengths and positions must be real numbers",
                              fix=f"{what} as a float, e.g. 1.0", doc=_DOC)
     return float(v)
 
@@ -311,15 +310,14 @@ class Geometry:
                 raise ResolutionError(
                     f"resolution {dict(N)!r} does not match the coordinates {names}",
                     where="N=" + repr(dict(N)),
-                    why="every coordinate needs a declared number of modes (never defaulted)",
+                    why="every coordinate needs a declared number of modes",
                     fix="N={" + ", ".join(f"'{c}': ..." for c in names) + "}", doc=_DOC)
             out = {c: N[c] for c in names}
         elif isinstance(N, numbers.Integral):
             if len(names) != 1:
                 raise ResolutionError(
                     f"N={N} is one number for the {len(names)} coordinates {names}",
-                    why="the resolution of each coordinate is a numerical choice: it is never "
-                        "copied from another coordinate",
+                    why="each coordinate needs its own number of modes",
                     fix=f"N=({', '.join('...' for _ in names)}) in the order {names}, or a dict "
                         "by coordinate name", doc=_DOC)
             out = {names[0]: N}
@@ -327,7 +325,7 @@ class Geometry:
             # U1: N=32.0 was "'float' object is not iterable"
             raise ResolutionError(
                 f"N={N!r} is not an integer number of modes",
-                why="a resolution is an integer per coordinate; it is never rounded for you",
+                why="a resolution is an integer per coordinate",
                 fix=(f"N={int(N)}" if isinstance(N, numbers.Real) and float(N).is_integer()
                      and len(names) == 1 else
                      f"N=({', '.join('...' for _ in names)}) (integers, in the order {names})"),
@@ -506,8 +504,7 @@ class Box(Geometry):
             raise ResolutionError(
                 f"N[{c!r}] = {given!r} for the compound interval {c} in {pts}",
                 why=f"each of its {pieces} pieces has its own number of Chebyshev modes (a numerical "
-                    "choice per piece: refine the piece that holds a thin layer); one number would "
-                    "have to be split for you",
+                    "choice per piece: refine the piece that holds a thin layer)",
                 fix=f"N[{c!r}] = ({', '.join(['...'] * pieces)}), one integer >= 2 per piece, "
                     "e.g. (" + ", ".join(["24"] * pieces) + ")", doc=_DOC)
         probe = dict(N) if isinstance(N, Mapping) else list(N)

@@ -22,7 +22,8 @@ r, err = refused(eigenvalues, plan, method="Dense")
 check(r and "dense" in str(err), "method='Dense' not refused with the close name")
 r, _ = refused(eigenvalues, plan, method="shift-invert")
 check(r, "shift-invert without target accepted")
-cache = getattr(plan, "_cache", {})
+check(hasattr(plan, "_cache"), "plan has no _cache: the no-assembly check below would pass on {}")
+cache = plan._cache
 check(not any(isinstance(k, tuple) and k and k[0] == "full" for k in cache),
       "a group was assembled before the refusal")
 for kw in ({"method": "Dense"}, {"method": "shift-invert"}, {"method": "shift-invert",

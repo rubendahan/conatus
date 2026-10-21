@@ -1,3 +1,3 @@
-linear optimal gains G = 0.0894396740, 0.0894396740
-NLOPState: 0 iterations, alpha = 0.5, J = 8.943967397713519e-12
-  it   0  gain 8.94396740e-02  residual 5.05e-08  accepted alpha -  stop: residual
+linear optimal gains G = 0.0894397759, 0.0894397759
+NLOPState: 0 iterations, alpha = 0.5, J = 8.943977593512499e-12
+  it   0  gain 8.94397759e-02  residual 5.05e-08  accepted alpha -  stop: residual

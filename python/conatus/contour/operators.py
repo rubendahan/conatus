@@ -40,8 +40,8 @@ __all__ = ["Operator", "Pencil", "HillBlocksOperator", "MatrixFunction", "as_ope
 
 _DOC = "docs/site/guide/dynamics/contour.md"
 #: Relative step of the central difference for T'(z) when a callable T comes without its
-#: derivative: only the polish uses T' (its convergence rate, never the certificate, which is the
-#: residual of T itself); about eps^(1/3) for a central difference.
+#: derivative: only the polish uses T' (its convergence rate; the acceptance test is the residual
+#: of T itself); about eps^(1/3) for a central difference.
 DERIVATIVE_STEP = 6e-6
 
 
@@ -157,6 +157,9 @@ class Operator:
     #: 1); set by :func:`conatus.contour.beyn` to the median ||T|| on the boundary of the region
     reference: float = 0.0
     needs_reference: bool = False
+    #: the scale s(z) of the residual ||T(z) v|| / (s(z) ||v||), in words (an operator with
+    #: needs_reference gets its sentence from conatus.contour.beyn, with the reference value)
+    scale_definition: str = "a norm of T(z)"
     #: True when ``poles`` holds by construction (a pencil, a linear Hill operator), not by the
     #: caller's declaration: only then may a box be cut and its halves counted on their own (a
     #: wrong declaration would otherwise hide a root behind a half with winding 0)
@@ -207,6 +210,8 @@ class Pencil(Operator):
                             f"{'sparse (SuperLU)' if self.sparse else 'dense'} LU as unit phase "
                             "and log modulus with both permutation signs")
         self._nL, self._nM = _norm1(self.L), _norm1(self.M)
+        self.scale_definition = ("||L||_1 + |z| ||M||_1 (a backward error relative to the "
+                                 "pencil's coefficients)")
 
     def matrix(self, z: complex):
         """The matrix ``L + z M``."""
@@ -229,8 +234,10 @@ class Pencil(Operator):
         return self.M.conj().T @ Y
 
     def scale(self, z):
-        """``||L||_1 + |z| ||M||_1``, the scale of the EVP residuals (conatus.solvers.evp)."""
-        return self._nL + abs(z) * self._nM
+        """``||L||_1 + |z| ||M||_1``, the scale of the EVP residuals (conatus.solvers.evp); ``||M||_1``
+        where that vanishes (``L = 0`` at ``z = 0``: the residual was 0 / 0)."""
+        s = self._nL + abs(z) * self._nM
+        return s if s > 0 else self._nM
 
 
 class MatrixFunction(Operator):
@@ -316,6 +323,8 @@ class HillBlocksOperator(Operator):
         self.poles = 0 if linear else poles
         self.needs_reference = not linear
         self.structural_poles = linear
+        self.scale_definition = ("an upper bound of ||T(z)||_1: the largest diagonal block plus "
+                                 "the couplings")
         self.kind = f"Hill operator [{hill.label}] (harmonics -{hill.Nh}..{hill.Nh}, block {hill.size})"
         self.determinant = ("block-Thomas LU on super-blocks, phase and log modulus of the pivots "
                             "with their row interchanges"

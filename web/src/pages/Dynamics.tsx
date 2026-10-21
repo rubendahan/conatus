@@ -26,19 +26,19 @@ const TOPICS: { id: string; title: string; body: ReactNode; tut: number[] }[] = 
       residual.</p> },
   { id: "floquet", title: "Time-periodic flows: Floquet analysis", tut: [],
     body: <p>When the base flow oscillates, as in a pulsating channel or pipe, stability is a question
-      about periodic motion. Conatus answers it with a Floquet–Hill method (Fourier in time, spectral in space), for any
-      time-periodic linear problem written in the same language: give the base flow as a function of time and its period,
+      about periodic motion. Conatus answers it with a Floquet–Hill method (Fourier in time, spectral in space), for
+      time-periodic linear problems written in the same language: give the base flow as a function of time and its period,
       and ask for its Floquet exponents or its optimal growth.</p> },
   { id: "nonmodal", title: "Transient growth", tut: [],
-    body: <p>Stable flows can still amplify a disturbance enormously before it decays. Find the optimal perturbation and its
+    body: <p>A stable flow can still amplify a disturbance by a large factor before it decays. Find the optimal perturbation and its
       growth, about a steady or a time-periodic base flow, in the
       energy norm you declare.</p> },
   { id: "chaos", title: "Chaos: Lyapunov exponents and ensembles", tut: [12],
     body: <p>Lyapunov spectra, covariant vectors, the Kaplan–Yorke dimension, Poincaré maps and basins of attraction, from
       ensembles of trajectories integrated together.</p> },
   { id: "adjoint", title: "Adjoints, sensitivity and data", tut: [13],
-    body: <p>The physical adjoint of an operator in the inner product you declare (never a bare transpose), direct and
-      adjoint global modes, the wavemaker and base-flow sensitivity; the exact adjoint of the time stepper for gradients,
+    body: <p>The physical adjoint of an operator uses the weights of the inner product you declare. Direct and
+      adjoint global modes, the wavemaker and base-flow sensitivity; the adjoint of the discrete time stepper for gradients,
       in a channel or a spherical shell, with the nonlinear optimal perturbation that grows most at a given energy.
       DMD and SPOD of data in the same norm.</p> },
 ];
@@ -48,9 +48,9 @@ export default function Dynamics() {
   return (
     <>
       <PageHead eyebrow="Dynamics" title="The dynamical system behind the equations">
-        <p>The equations you write for a simulation also define a dynamical system. Conatus lets you ask it the questions that
-          matter: where it becomes unstable, how its solutions branch, which orbits organise it, how it answers a push. Same
-          equations, no problem-specific code.</p>
+        <p>The equations you write for a simulation also define a dynamical system. These tools ask where it becomes
+          unstable, how its solutions branch, which orbits organise it and how it responds to a push. They reuse the
+          model's equations where the solver adapters documented in the user guide support them.</p>
       </PageHead>
       <nav className="wrap toc-inline" aria-label="On this page">
         {TOPICS.map((t) => <a key={t.id} href={`#${t.id}`}>{t.title}</a>)}
@@ -64,7 +64,7 @@ export default function Dynamics() {
               <p className="dyn-tut">{t.tut.map((n, i) => {
                 const tt = byN.get(n);
                 if (!tt) return null;
-                return <span key={n}>{i > 0 && " · "}Tutorial {n}: <DocLink to={`tutorials/${tt.slug}.html`}>{tt.title}</DocLink></span>;
+                return <span key={n}>{i > 0 && " · "}Tutorial: <DocLink to={`tutorials/${tt.slug}.html`}>{tt.title}</DocLink></span>;
               })}</p>
             </article>
           ))}

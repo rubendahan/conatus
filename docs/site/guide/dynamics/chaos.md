@@ -59,8 +59,8 @@ durations of the problem (each a whole number of steps or of intervals `reortho_
 ## Ensembles
 
 An ensemble integrates many members of one model as a single batched state, on CPU or GPU.
-`ensemble_fate` classifies each member with your criterion and stops when every member is decided
-or the horizon is reached; members still undecided are reported as such, never assigned.
+`ensemble_fate` classifies each member with your criterion. It stops when all members are decided
+or the horizon is reached. At the final time, unresolved members remain marked undecided.
 
 ```{literalinclude} _check.py
 :language: python

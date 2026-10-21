@@ -913,7 +913,7 @@ class Model:
                     for c in self.conditions))
             if N is None:
                 lines.append("Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))")
-        lines.append("(every decision, tau by tau and term by term: m.explain(full=True))")
+        lines.append("(compiler decisions, tau by tau and term by term: m.explain(full=True))")
         return "\n".join(lines)
 
     def __repr__(self) -> str:

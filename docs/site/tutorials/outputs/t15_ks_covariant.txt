@@ -1,4 +1,4 @@
-# t15_ks_covariant: PASS (exit 0) in 52.4 s | 2026-10-20 | script sha256 77224d7831ae3936
+# t15_ks_covariant: PASS (exit 0) in 45.4 s | 2026-10-21 | script sha256 77224d7831ae3936
 Lyapunov spectrum of the discrete map (RK443, dt = 0.05, backend = cpu): 12 vector(s), 4 trajectory(ies)
   transient 2000 steps, tangent transient 1000 steps, average over T = 200 per trajectory (400 QR every 10 steps = 0.5)
   inner product: Euclidean on the coefficient vector; projection: zero mean: the wavenumber-zero coefficient of u set to 0 in every tangent vector (1 component(s) of the state vector); seed 1

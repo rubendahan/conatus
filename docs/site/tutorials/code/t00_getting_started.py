@@ -117,8 +117,6 @@ print(sim.methods().explain())
 # [/saturate]
 
 # [figure]
-import os
-
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
@@ -129,19 +127,21 @@ zf = np.linspace(-0.5, 0.5, 201)
 Tz = np.polynomial.chebyshev.chebval(2 * zf, cz.T)          # (x nodes, fine z)
 Tf = np.fft.irfft(np.fft.rfft(Tz, axis=0), n=256, axis=0) * 256 / 32   # Fourier in x
 xf = np.linspace(0, 2, 256, endpoint=False)
-signed = LinearSegmentedColormap.from_list(   # the site's signed palette: glass, black, rubric
-    "signed", ["#9DBBA6", "#3F5245", "#0B0B0B", "#6E2019", "#D4574A"])
+signed = LinearSegmentedColormap.from_list(   # the site's signed palette: blue, black, red
+    "signed", ["#8FB0E0", "#2E4A78", "#0B0B0B", "#6E2019", "#D4574A"])
 fig, ax = plt.subplots(figsize=(6.4, 3.4), dpi=150)
-theta = Tf + zf[None, :]                       # departure from conduction: warm red, cool green
-ax.pcolormesh(xf, zf, theta.T, cmap=signed, shading="gouraud", vmin=-0.3, vmax=0.3)
-ax.contour(xf, zf, Tf.T, levels=np.linspace(-0.45, 0.45, 10), colors="#EDEBE6",
+theta = Tf + zf[None, :]                       # departure from conduction: warm red, cool blue
+im = ax.pcolormesh(xf, zf, theta.T, cmap=signed, shading="gouraud", vmin=-0.3, vmax=0.3)
+ax.contour(xf, zf, Tf.T, levels=np.linspace(-0.45, 0.45, 10), colors="#77736B",
            linewidths=0.5, linestyles="solid")
 ax.set_aspect("equal")
-ax.set_axis_off()
-out = os.environ.get("CN_TUTORIAL_OUT", ".")
-os.makedirs(out, exist_ok=True)                # a CN_TUTORIAL_OUT that does not exist yet
-fig.savefig(os.path.join(out, "rolls.png"),
-            bbox_inches="tight", pad_inches=0, facecolor="#0B0B0B")
+ax.set_xlabel("x")
+ax.set_ylabel("z")
+cb = fig.colorbar(im, ax=ax, fraction=0.025, pad=0.03)
+cb.set_label("T + z (departure from conduction)")
+ax.set_title(f"temperature at t = {sim.t:g} (units of the plate temperature difference and depth)",
+             fontsize=9)
+fig.savefig("rolls.png", bbox_inches="tight", transparent=True)
 # [/figure]
 
 # [check]

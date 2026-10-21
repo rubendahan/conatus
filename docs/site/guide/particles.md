@@ -14,15 +14,15 @@ step of `sim.run`, on the CPU or the GPU, and write files in the `cn.io` layout.
 
 What is computed, and declared by `explain()`:
 
-- **Velocity at a tracer**: the spectral series of the velocity evaluated exactly at the point (all
-  resolved modes: cos/sin along periodic axes, Chebyshev $T_n$ across the walls), from
-  the coefficients of the state; never an interpolation of grid values. The cost is $P \times$ the
-  number of modes per evaluation (four per step), in chunks of particles.
+- **Velocity at a tracer**: the velocity is evaluated from all retained spectral coefficients of
+  the state at each tracer position (cos/sin along periodic axes, Chebyshev $T_n$ across the
+  walls). The cost is $P \times$ the number of modes per evaluation (four per step), in chunks of
+  particles.
 - **Time integration**: one classical RK4 step per flow step. Its end velocities are the flow states
   before and after the step; the midpoint velocity is interpolated in time through the last four flow
-  states. Order 4 in a steady flow; in an unsteady one, never better than the order of the flow
-  scheme itself, whose time error the flow states carry (3 with RK443), and the first step of each
-  `run` interpolates linearly between two states (also third order).
+  states. The order is 4 in a steady flow. In an unsteady flow it is at most the order of the flow
+  scheme, whose time error the flow states carry (3 with RK443). The first step of each `run`
+  interpolates linearly between two states (also third order).
 - **Periodic axes**: positions are kept unwrapped (`positions(unwrapped=True)`, for dispersion) and
   also given wrapped into $[a, a + L)$.
 - **Walls**: a step that ends outside the walls raises a `NumericalError` naming the particle
@@ -50,8 +50,8 @@ form, $\partial_t c - \kappa \nabla^2 c = -\nabla\cdot(c\,\boldsymbol u)$, with 
 $\partial_n c = 0$ on the walls when $\kappa > 0$ (both printed by `m.explain()`). The dye is advanced
 by the simulation's own scheme: diffusion implicit, advection explicit, the same dealiasing and the
 same time step, on the CPU or the GPU. `kappa` is a number or the name of a declared parameter.
-`kappa=0` is pure advection: no diffusion, no filter, no hyperviscosity, no wall condition; the dye's
-spectral tail then grows as its filaments thin, and the file records it.
+With `kappa=0`, the dye equation contains only conservative advection, and no wall condition is
+imposed. The dye's spectral tail then grows as its filaments thin, and the file records it.
 
 `sim.dye(name, path, every=)` writes the dye (grid values; `field=False` for the diagnostics only)
 and, at each row: `mass` ($\int c\,dV$ of the series), `variance` ($\int (c - \bar c)^2\,dV$),
@@ -72,7 +72,7 @@ that test has not run yet, so treat the GPU path of tracers and dye as experimen
 
 | | `sim.particles`, `sim.dye` (this page) | `cn.diagnostics.Particles`, `Dye` ({doc}`diagnostics`) |
 |---|---|---|
-| Velocity | the running simulation, its exact spectral series | any callable, or grid snapshots with a declared interpolation |
+| Velocity | the running simulation, its spectral series | any callable, or grid snapshots with a declared interpolation |
 | Time step | one RK4 step per flow step, past flow states for the midpoint | the caller's `dt`, RK4 or RK2 |
 | Walls | `at_walls="refuse"` or `"clip"` (counted) | `boundary="raise"` or `"clip"` (counted) |
 | Output | HDF5 file (`cn.io.read`) and `positions()` | arrays in memory |

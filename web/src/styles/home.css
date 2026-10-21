@@ -1,66 +1,36 @@
 /* Home page (the hero is in hero.css). */
 
-/* ---------- what it does ---------- */
-.does-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--cn-text); }
-.does-item { padding: 1.5rem 1.75rem 1.9rem 0; border-bottom: 1px solid var(--cn-rule); }
-.does-item:not(:nth-child(3n + 1)) { padding-left: 1.75rem; border-left: 1px solid var(--cn-rule); }
-.does-k { margin: 0 0 0.6rem; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cn-accent); }
-.does-item h3 { font-size: clamp(1.35rem, 2vw, 1.6rem); line-height: 1.2; margin: 0 0 0.6rem; }
-.does-item p:last-child { margin: 0; color: var(--cn-muted); font-size: 0.97rem; }
-@media (max-width: 960px) {
-  .does-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .does-item:not(:nth-child(3n + 1)) { padding-left: 0; border-left: 0; }
-  .does-item:nth-child(even) { padding-left: 1.5rem; border-left: 1px solid var(--cn-rule); }
-}
-@media (max-width: 600px) {
-  .does-grid { grid-template-columns: 1fr; }
-  .does-item:nth-child(even) { padding-left: 0; border-left: 0; }
-  .does-item { padding: 1.25rem 0 1.4rem; }
-}
-
 /* ---------- code band ---------- */
-/* Code first at the full width of the page, then its output and the three steps (W1: in two columns
+/* Code first at the full width of the page, then its output and three short notes (W1: in two columns
    the code and its output were cut at 1440 px; a reader had to scroll inside the block). */
 .code-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; }
-.code-side { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
-.code-side .code-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
-.code-steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 0.9rem; }
-.code-steps li { counter-increment: s; position: relative; padding-left: 1.9rem; color: var(--cn-muted); font-size: 0.95rem; }
-.code-steps li::before { content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 0.2rem; font-family: var(--cn-font-code); font-size: 0.75rem; color: var(--cn-accent); }
-.code-steps strong { color: var(--cn-text); font-weight: 500; }
-@media (max-width: 900px) { .code-side .code-steps { grid-template-columns: minmax(0, 1fr); gap: 0.9rem; } }
-
-/* ---------- gallery strip ---------- */
-.plates-strip {
-  list-style: none; margin: 0 auto; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(15rem, 22rem); gap: 1rem;
-  overflow-x: auto; padding: 0 max(var(--cn-gutter), calc((100% - var(--cn-max)) / 2 + var(--cn-gutter))) 1rem;
-  scroll-snap-type: x mandatory; scroll-padding: 0 var(--cn-gutter); scrollbar-width: thin;
-}
-.plates-strip li { scroll-snap-align: start; }
-.strip-item { display: grid; gap: 0.65rem; text-decoration: none; color: var(--cn-text); }
-.strip-item img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: var(--cn-lab); border-radius: var(--cn-radius); }
-.strip-caption { font-size: var(--cn-size-caption); color: var(--cn-muted); }
-.strip-item:hover .strip-caption { color: var(--cn-text); }
 .more-link { margin: 1.5rem 0 0; font-weight: 500; font-size: var(--cn-size-ui); }
 .more-link a { text-decoration: none; }
 .more-link a:hover { text-decoration: underline; }
 
-/* ---------- get started ---------- */
-/* five cards: one row of five on a desktop (four columns left the fifth alone on a second row) */
-.start-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--cn-text); }
-.start-card { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.4rem 1.4rem 1.6rem 0; color: var(--cn-text); text-decoration: none; border-bottom: 1px solid var(--cn-rule); }
-.start-card + .start-card { padding-left: 1.4rem; border-left: 1px solid var(--cn-rule); }
-.start-k { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cn-accent); }
-.start-card strong { font-family: var(--cn-font-display); font-weight: 400; font-size: 1.55rem; line-height: 1.15; }
-.start-card strong code { font-size: 0.72em; background: none; padding: 0; overflow-wrap: anywhere; }
-.start-card span:last-child { color: var(--cn-muted); font-size: 0.92rem; line-height: 1.5; }
-.start-card:hover strong { color: var(--cn-accent); }
+/* ---------- home page of 0.1.2 (lot F): example notes, the short list, the getting-started route ---------- */
+.code-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.code-notes p { margin: 0; color: var(--cn-muted); font-size: 0.95rem; }
+.code-notes strong { color: var(--cn-text); font-weight: 500; }
+@media (max-width: 900px) { .code-notes { grid-template-columns: minmax(0, 1fr); gap: 0.9rem; } }
+.also-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--cn-text); max-width: 52rem; }
+.also-list li { border-bottom: 1px solid var(--cn-rule); }
+.also-list a { display: block; padding: 0.85rem 0; color: var(--cn-text); text-decoration: none; }
+.also-list a:hover { color: var(--cn-accent); }
+.route { list-style: none; margin: 0; padding: 0; counter-reset: r; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--cn-text); }
+.route li { counter-increment: r; display: flex; flex-direction: column; gap: 0.45rem; padding: 1.3rem 1.3rem 1.5rem 0; border-bottom: 1px solid var(--cn-rule); }
+.route li + li { padding-left: 1.3rem; border-left: 1px solid var(--cn-rule); }
+.route li::before { content: counter(r); font-family: var(--cn-font-code); font-size: 0.8rem; color: var(--cn-accent); }
+.route strong { font-family: var(--cn-font-display); font-weight: 400; font-size: 1.35rem; line-height: 1.2; }
+.route a { color: var(--cn-text); text-decoration: none; }
+.route a:hover strong { color: var(--cn-accent); }
+.route span { color: var(--cn-muted); font-size: 0.92rem; line-height: 1.5; }
 @media (max-width: 960px) {
-  .start-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .start-card:nth-child(odd) { padding-left: 0; border-left: 0; }
-  .start-card:last-child:nth-child(odd) { grid-column: 1 / -1; }   /* the fifth card takes the whole row */
+  .route { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .route li:nth-child(odd) { padding-left: 0; border-left: 0; }
 }
 @media (max-width: 520px) {
-  .start-grid { grid-template-columns: 1fr; }
-  .start-card + .start-card { padding-left: 0; border-left: 0; }
+  .route { grid-template-columns: minmax(0, 1fr); }
+  .route li + li { padding-left: 0; border-left: 0; }
 }
+.home-about { margin: 1.75rem 0 0; font-size: var(--cn-size-ui); color: var(--cn-muted); }

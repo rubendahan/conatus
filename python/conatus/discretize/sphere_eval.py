@@ -34,6 +34,7 @@ from ..ir.bases import BallBasis, ComplexFourier, RealFourier, ShellBasis
 from ..ir.domain import Domain
 from ._xp import array_module, on
 from .compiler import DiscretizationError
+from .curvilinear_common import spin_dot as _dot
 # reality tolerances and check, shared with the other curvilinear evaluator (historical names)
 from .real_fields import FUNC_REAL_TOL, REAL_TOL, STATE_REAL_TOL
 from .real_fields import checked_real as _real
@@ -928,26 +929,6 @@ class SphereEvaluator:
         if self.S.real:
             return _real(g, f"'{x}'", self.S.func_real_tol, "func_real_tol")
         return g
-
-
-def _dot(a: np.ndarray, ra: int, b: np.ndarray, rb: int, G: np.ndarray) -> np.ndarray:
-    """Contract the last index of a with the first of b with the spin-basis metric G."""
-    if ra == 0 or rb == 0:
-        raise DiscretizationError("dot of a scalar")
-    A = array_module(a).moveaxis(a, ra - 1, 0)
-    ar, br = ra - 1, rb - 1
-
-    def outer(x, y):
-        gx, gy = x.shape[ar:], y.shape[br:]
-        x = x.reshape(x.shape[:ar] + (1,) * br + gx)
-        y = y.reshape((1,) * ar + y.shape[:br] + gy)
-        return x * y
-    out = 0
-    for s in range(G.shape[0]):
-        for t in range(G.shape[1]):
-            if G[s, t]:
-                out = out + G[s, t] * outer(A[s], b[t])
-    return out
 
 
 def embed_coeffs(c, shape: tuple, what: str = "right-hand side"):

@@ -325,8 +325,7 @@ def blas_threads_check(blas: list[dict], cpus: int | None, value: str, detail: s
            "compete and dense solves can be many times slower" if len(blas) > 1 else
            f"; a pool with more threads than the {cpus} CPUs")
     return Check("BLAS threads", "warning", value, detail + why,
-                 f"export OMP_NUM_THREADS={per} before starting Python (thread counts are never "
-                 "changed for you)")
+                 f"export OMP_NUM_THREADS={per} before starting Python")
 
 
 

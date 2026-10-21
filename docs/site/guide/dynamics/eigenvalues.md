@@ -1,6 +1,6 @@
 # Eigenvalues and stability
 
-Normal modes of a linear problem, each with its backward residual, with spurious modes removed only by a declared test.
+Normal modes of a linear problem, each with its backward residual, and the tests that flag or remove spurious modes.
 
 A linear model with an eigenvalue, or the linearization of a nonlinear model about a base
 state, is discretised into the generalized eigenvalue problem
@@ -9,7 +9,9 @@ $$ (L + \sigma M)\,x = 0 $$
 
 for each wavenumber. All finite eigenvalues are computed (dense QZ) unless you ask for a few near
 a target (shift-invert Arnoldi). Infinite eigenvalues (rows of boundary conditions) are counted
-and removed; every finite mode reports its relative backward residual
+and removed. The dense solver classifies an eigenvalue as infinite when $|\beta|$ is small
+relative to $|\alpha|$ in its QZ pair $(\alpha, \beta)$; the threshold is printed by
+`res.explain(full=True)`. Each finite mode reports its relative backward residual
 $\|(L+\sigma M)x\| / ((\|L\| + |\sigma|\,\|M\|)\,\|x\|)$.
 
 ## An eigenvalue problem written as on paper
@@ -33,10 +35,10 @@ flow `U(y)` is a given field, the conditions are named by boundary.
 :dedent: 4
 ```
 
-Spectral tau methods can produce spurious finite eigenvalues. Conatus never removes them by a
-hidden threshold: `drift=96` recomputes the spectrum at a second resolution and keeps only the
-modes found again within `drift_tol`. The filter, and how many modes it removed, appear in
-`res.explain()`. Without `drift=`, every finite mode is returned, and `res.explain()` and the
+Spectral tau methods can produce spurious finite eigenvalues. `drift=96` recomputes the spectrum
+at a second resolution and keeps only the modes found again within `drift_tol`. The filter, and
+how many modes it removed, appear in `res.explain()`. Without `drift=`, all finite modes are
+returned, and `res.explain()` and the
 one-line `repr(res)` say so once ("no spurious-mode filter: tau modes may appear").
 
 A cheaper test runs on every result, with or without `drift=`: the **spectral tail** of each
@@ -48,10 +50,10 @@ mode). A mode whose tail energy in the last 10 % of the coefficients
 `cn.tolerances.SPURIOUS_SIGNIFICANT` $= 10^{-12}$ of the most excited one holds round-off and is not
 judged) exceeds `cn.tolerances.SPURIOUS_TAIL_TOL` ($10^{-3}$, declared) is *flagged*: it stays in `res.values` and
 `res.mode(i)`, is listed by `res.explain()` with its tail, its indices are `res.flagged`, and
-`res.order()` ranks it after every mode that passes, so `res.order()[0]` is the least stable mode
-that passes. `critical` and `least_stable` select only modes that pass. The flag removes nothing
-(`drift=` remains the filter that removes modes); `spurious="none"` turns it off, and the result
-says so.
+`res.order()` ranks it after the modes that pass, so `res.order()[0]` is the least stable mode
+that passes. `critical` and `least_stable` select only modes that pass. The flag keeps the mode in
+the result; `drift=` is the filter that removes modes. `spurious="none"` turns the flag off, and
+the result says so.
 
 A mode can pass the flag and still be under-resolved: for Orr–Sommerfeld at $Re = 10^4$ and
 $N = 24$ the least stable mode that passes is $c = 0.580 + 0.024i$ (the converged value is
@@ -66,8 +68,8 @@ $\sqrt{\text{tail}}$ of the mode in amplitude, and so, to an order of magnitude,
 error of the eigenvalue ($\sqrt{10^{-8}} = 10^{-4}$ at $N = 32$, for an error of $4\times10^{-5}$;
 not a bound: the drift test measures it), in `repr(res)` and
 `res.explain()`, and one `cn.errors.ResolutionWarning`; `res.unresolved` lists every passing mode
-above the level. Nothing is removed or re-ranked. With `drift=` the drift test is the evidence and
-no tail warning is given. `critical()` without a drift pencil prints the tail of the critical mode
+above the level. These modes stay in the result, in the same order. With `drift=`, the drift test
+replaces the tail warning. `critical()` without a drift pencil prints the tail of the critical mode
 and warns when it is above the level (the case above gives $Re_c = 5037.6$ instead of $5772.2$).
 
 The drift test itself is checked before any solve: `drift` must be finer than `N` (equal keeps every
@@ -90,12 +92,12 @@ drift test that removes every mode raises `ResolutionError` instead of returning
 
 `res.mode(i)` unpacks eigenvector `i` into the named unknowns on the physical (non-dealiased) grid,
 tau variables (the fields lifted by a `lift(...)` term) left out: `mode["v"]` (complex values; a vector unknown has its components first),
-`mode.coeffs("v")`, `mode.coordinate("y")`, and `mode.at("v", y=points)` for the exact value of the
+`mode.coeffs("v")`, `mode.coordinate("y")`, and `mode.at("v", y=points)` for the value of the
 expansion at any point (the walls included). An eigenvector is defined up to a complex factor; the
 declared normalisation (`mode.explain()`) makes the first non-zero unknown have $\max|q| = 1$, real
 and positive where $|q|$ is largest, the other unknowns scaled by the same factor; an unknown whose
-largest coefficient is below $10^{-10}$ of the eigenvector's counts as zero (round-off is never
-scaled to 1). The same works on
+largest coefficient is below $10^{-10}$ of the eigenvector's counts as zero, so that round-off is
+not scaled to 1. The same works on
 `lin.eigenvalues(...)` (unknown names, not the perturbation variables) and on the expert
 `conatus.expert.eigenvalues(plan, ...)` of a Cartesian plan.
 
@@ -175,7 +177,7 @@ print(lin.group(plan, k=3.1))             # the group of the plan that holds k =
 ## Critical parameters
 
 `m.parametric(N, over=...)` keeps the parameters symbolic in the matrices, so that the neutral
-curve and its minimum are found by root finding on exact derivatives (a linearization has the same
+curve and its minimum are found by root finding on derivatives with respect to the parameters (a linearization has the same
 call, with its wavenumber `k` as a parameter: {doc}`onset`):
 
 ```{literalinclude} _check.py
@@ -185,9 +187,10 @@ call, with its wavenumber `k` as a parameter: {doc}`onset`):
 :dedent: 4
 ```
 
-Which modes may be the least stable one is decided by the drift test of `drift=96` (as for
-`eigenvalues`), never by a hand-written bound on $|c|$; `select=` remains available for a physical
-restriction, logged; modes flagged by the spectral-tail test never compete. The growth of a mode
+The drift test of `drift=96` (as for `eigenvalues`) decides which modes may be the least stable
+one. The finite/infinite classification of QZ is a separate filter with its own threshold.
+`select=` remains available for a physical restriction, and is logged. Modes flagged by the
+spectral-tail test are not candidates. The growth of a mode
 is declared with the eigenvalue: `m.eigenvalue("c", growth="imag")` for a phase speed (mode
 $e^{i\alpha(x - ct)}$, growth $\operatorname{Im} c$), `growth="real"` for a rate (mode $e^{st}$),
 or `critical(growth=...)` for one call; a linearization's eigenvalue is the $s$ of $e^{st}$
@@ -216,12 +219,12 @@ With `left=True` the result also carries the left eigenvectors $y$, $y^H(L + \si
 give the derivative of an eigenvalue with respect to any parameter,
 $\mathrm d\sigma/\mathrm dp = -\,y^H (\partial_p L + \sigma\,\partial_p M)\,x \,/\, (y^H M x)$.
 
-## What you choose, what Conatus refuses to choose
+## What you choose
 
 - The resolution `N`, the second resolution of the drift test and its tolerance.
 - The growth convention of the eigenvalue (`m.eigenvalue("c", growth="imag")`).
 - Whether flagged modes are flagged (`spurious="tail"`, the default, or `"none"`).
-- Dense or sparse solution (`method=`, `target=`, `n_modes=`): never switched for you.
+- Dense or sparse solution (`method=`, `target=`, `n_modes=`).
 - The wavenumber `k=` of a periodic direction (or `m=`, `kz=`, `ell=` of a curvilinear one).
 - A singular pencil (a missing or extra boundary condition) is refused with a rank report.
 

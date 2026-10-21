@@ -1,7 +1,7 @@
-# 14. Coming from Dedalus
+# Importing a Dedalus script
 
-Write a convection cell as a Conatus model, read the same cell from a Dedalus script, and check
-that the two agree.
+Write a convection cell as a Conatus model, import the same cell from a Dedalus 3 script, and
+check that the two agree.
 
 **Goal.** The onset of two-dimensional Boussinesq convection between a hot and a cold wall:
 
@@ -9,17 +9,17 @@ that the two agree.
   terms;
 - give a Dedalus 3 script of the same cell to `cn.from_dedalus` and read its line-by-line report;
 - run the translation and compare it with the native model as the wall-normal resolution grows;
-- optionally, run the script with Dedalus itself and compare it with the translation.
+- optionally, run the original script and compare its result with the translation.
 
 **Expected.** The report has no unsupported line. The native model and the translation are two
 tau formulations of the same equations, so they differ by a truncation error that decays
-spectrally with $N_z$, down to rounding at $N_z = 32$. With Dedalus installed, the check script
-finds the translation equal to Dedalus to rounding ($< 10^{-10}$ relative after 40 steps of
-SBDF2).
-**Time:** about 5 s of CPU; the Dedalus check takes under a minute, most of it importing Dedalus.
+spectrally with $N_z$, down to rounding at $N_z = 32$. When the original script can be run, the
+check script finds the translation equal to its result to rounding ($< 10^{-10}$ relative after
+40 steps of SBDF2).
+**Time:** about 5 s of CPU; the optional check takes under a minute, most of it at import.
 **Scripts:** [`t14_from_dedalus.py`](code/t14_from_dedalus.py) (no Dedalus needed),
 [`rb_cell_dedalus.py`](code/rb_cell_dedalus.py) (the Dedalus script, written for this tutorial),
-[`t14b_dedalus_check.py`](code/t14b_dedalus_check.py) (the comparison with Dedalus).
+[`t14b_dedalus_check.py`](code/t14b_dedalus_check.py) (runs the original script and compares).
 **Tests behind it:** `tests/translate/`, `tests/parse/`.
 **Guide:** {doc}`../guide/dedalus`, {doc}`../guide/equations`.
 
@@ -31,27 +31,26 @@ SBDF2).
 :end-before: "# [/native]"
 ```
 
-You name the unknowns by their role and write the equations as you would on paper; `lap`, `div`
-and `grad` are the operators of the box's coordinates. The unknown `th` is the temperature minus
-the conduction profile $1 - z$, so it vanishes on both walls, and `u·ez` is the advection of that
-profile; lengths are in units of the depth and times of the thermal diffusion time. The walls are `bottom` and `top`. There is
-no tau field and no lift: the native layer adds one tau term per wall condition by a fixed rule,
-which `explain()` prints.
+You name the unknowns by their role and write the equations as on paper. `lap`, `div` and `grad`
+are the operators of the box's coordinates. The unknown `th` is the temperature minus the
+conduction profile $1 - z$, so it vanishes on both walls, and `u·ez` is the advection of that
+profile. Lengths are in units of the depth and times in units of the thermal diffusion time. The
+walls are `bottom` and `top`. The native layer adds one tau term per wall condition by a fixed
+rule, and `explain()` prints them.
 
-## The same cell in Dedalus
+## The same cell as a Dedalus script
 
-[`rb_cell_dedalus.py`](code/rb_cell_dedalus.py) is the script a Dedalus user would write for this
-cell. It reduces the equations to first order, so it declares the tau fields and the lifts
-itself:
+[`rb_cell_dedalus.py`](code/rb_cell_dedalus.py) is a Dedalus 3 script written for this tutorial.
+It reduces the equations to first order and declares its own tau fields and lifts:
 
 ```{literalinclude} code/rb_cell_dedalus.py
 :language: python
 :start-after: "# Coordinates, bases"
 ```
 
-It uses a fixed time step and a deterministic start. Conatus never adapts `dt` by itself, and
-`fill_random` cannot be repeated outside Dedalus. Given a script with a `CFL` or a `fill_random`
-line, the translator marks that line **unsupported** and says what to write instead.
+It uses a fixed time step and a deterministic start. The translator marks a `CFL` or a
+`fill_random` line **unsupported** and says what to write instead: Conatus runs with a fixed
+`dt`, and the random layout of `fill_random` cannot be reproduced.
 
 ## Translate and read the report
 
@@ -61,15 +60,15 @@ line, the translator marks that line **unsupported** and says what to write inst
 :end-before: "# [/translate]"
 ```
 
-The script is parsed with `ast` and read statement by statement by a restricted interpreter.
-Nothing in it is executed, and Dedalus is not imported. In the output below, look for:
+The translator parses the script with `ast` and reads it statement by statement with a restricted
+interpreter. It does not execute the script or import Dedalus. In the output below, look for:
 
-- `e_z*tau_z(u_bot)`: a product of two vectors, which Dedalus reads as a tensor product. The
-  report says `outer`.
+- `e_z*tau_z(u_bot)`: a product of two vectors, which the source language reads as a tensor
+  product. The report says `outer`.
 - `trace(Gu)`: it becomes `div(u)` plus the tau term, and `div(outer(ez, ...))` becomes `dz(...)`.
   Both are exact identities, and both are listed.
 - `dealias=1.5`, written in the script. When a script leaves `dealias` out, the translator writes
-  the Dedalus default of 1 explicitly and reports it.
+  the source default of 1 explicitly and reports it.
 - The `while` loop: it becomes `solver.run(n)` with the script's fixed `dt`.
 
 ## Run the translation
@@ -81,8 +80,8 @@ Nothing in it is executed, and Dedalus is not imported. In the output below, loo
 ```
 
 `tr.ivp_solver` takes the script's scheme and `dt`, and replays its `th['g'] = ...` line on the
-Conatus grid. SBDF2 is a two-step scheme: `startup="lower_order"` is the start-up Dedalus uses
-(one first-order step), written here explicitly.
+Conatus grid. SBDF2 is a two-step scheme. `startup="lower_order"` starts it with one first-order
+step, as the source script does.
 
 ## Native model and translation, side by side
 
@@ -92,25 +91,25 @@ Conatus grid. SBDF2 is a two-step scheme: `startup="lower_order"` is the start-u
 :end-before: "# [/compare]"
 ```
 
-The translation keeps the script's tau terms; the native model places its own. These are two
-discretisations of the same equations, so they agree up to the truncation error, not to
-rounding. The difference falls spectrally as $N_z$ grows and reaches rounding at $N_z = 32$:
-both converge to the same solution, and the difference measures how far the coarser grids are
-from it. `overrides={"N_z": nz}` changes one top-level assignment of the script, and the report
-lists the change.
+The translation keeps the script's tau terms, and the native model places its own. These are two
+discretisations of the same equations, so they agree up to the truncation error. The difference
+falls spectrally as $N_z$ grows and reaches rounding at $N_z = 32$. Both converge to the same
+solution, and the difference measures how far the coarser grids are from it.
+`overrides={"N_z": nz}` changes one top-level assignment of the script, and the report lists the
+change.
 
 ```{figure} media/t14_convergence.png
-:alt: The relative difference between the native model and the translated Dedalus script on a log scale, falling steeply with the number of wall-normal modes down to rounding.
+:alt: The relative difference between the native model and the translated script on a log scale, falling steeply with the number of wall-normal modes down to rounding.
 :width: 100%
 
-Native model against the translated Dedalus script after 40 SBDF2 steps: two tau formulations of the same equations, whose difference falls spectrally with nz down to rounding.
+Relative difference between the native model and the translated script after 40 SBDF2 steps, against nz. The two tau formulations of the same equations differ by an amount that falls spectrally down to rounding.
 ```
 
-## Compare with Dedalus
+## Optional: run the original script
 
-[`t14b_dedalus_check.py`](code/t14b_dedalus_check.py) runs the same file with Dedalus, if
-Dedalus is installed (`micromamba install -c conda-forge dedalus`), and compares the result with
-the translation:
+[`t14b_dedalus_check.py`](code/t14b_dedalus_check.py) runs the original script, if Dedalus is
+installed (`micromamba install -c conda-forge dedalus`), and compares its result with the
+translation:
 
 ```{literalinclude} code/t14b_dedalus_check.py
 :language: python
@@ -118,8 +117,8 @@ the translation:
 :end-before: "# [/dedalus]"
 ```
 
-Both codes now use the same method: the same bases, tau terms, lifts, scheme, start-up and
-dealiasing. So the difference is rounding.
+The translation keeps the script's bases, tau terms, lifts, scheme, start-up and dealiasing, so
+the difference is rounding.
 
 ## Output (as executed)
 
@@ -127,7 +126,7 @@ dealiasing. So the difference is rounding.
 :language: text
 ```
 
-The Dedalus check:
+The optional check:
 
 ```{literalinclude} outputs/t14b_dedalus_check.txt
 :language: text
@@ -137,6 +136,7 @@ The Dedalus check:
 
 - `print(tr.to_script())` writes a runnable Conatus program (it replays the translation and runs it), with the report as comments.
 - For a problem built inside a function, use `cn.from_dedalus(script, entry=("f", {...}))`.
-- {doc}`../guide/dedalus` lists the translated subset and the comparisons on the official Dedalus
-  examples. These include KdV–Burgers (1.3e-15), Poisson (7e-16), shear flow (1.3e-15), the
-  Rayleigh–Bénard eigenvalue problem (4e-16) and the pipe-flow eigenvalues on the disk (5e-14).
+- {doc}`../guide/dedalus` lists the translated subset and the translator's tests on the official
+  examples. The relative differences between translated and original results are 1.3e-15 for
+  KdV–Burgers, 7e-16 for Poisson, 1.3e-15 for the shear flow, 4e-16 for the Rayleigh–Bénard
+  eigenvalue problem and 5e-14 for the pipe-flow eigenvalues on the disk.

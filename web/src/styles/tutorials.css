@@ -1,14 +1,16 @@
-/* Tutorials page: a numbered list in the manner of a table of contents. */
+/* Tutorials page: lists by topic, in the manner of a table of contents; "Start here" is numbered (an order). */
 .tut-section { border-top: 0; padding-top: 0.5rem; }
 .tut-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--cn-text); }
-.tut { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 1rem; padding: 1.25rem 0; border-bottom: 1px solid var(--cn-rule); }
-.tut-n { font-family: var(--cn-font-code); font-size: 0.85rem; line-height: 2.1; color: var(--cn-accent); }
+.tut { padding: 1.25rem 0; border-bottom: 1px solid var(--cn-rule); }
+.tut-route { counter-reset: tr; }
+.tut-route .tut { counter-increment: tr; display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 0.8rem; }
+.tut-route .tut::before { content: counter(tr); font-family: var(--cn-font-code); font-size: 0.85rem; line-height: 2.1; color: var(--cn-accent); }
 .tut-title { font-size: 1.56rem; margin: 0 0 0.35rem; }
 .tut-title a { color: var(--cn-text); text-decoration: none; }
 .tut-learn { margin: 0 0 0.25rem; font-size: 0.97rem; }
 .tut-ref { margin: 0; color: var(--cn-muted); font-size: 0.93rem; }
 .tut-title a:hover { color: var(--cn-accent); text-decoration: underline; }
-@media (max-width: 560px) { .tut { grid-template-columns: 2.2rem minmax(0, 1fr); } .tut-title { font-size: 1.35rem; } }
+@media (max-width: 560px) { .tut-title { font-size: 1.35rem; } }
 /* Citing page */
 .bib { display: grid; gap: 0.6rem; align-content: start; }
 .bib-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }

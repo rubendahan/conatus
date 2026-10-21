@@ -13,8 +13,8 @@ sim.initial(T=lambda x, z: -z + 1e-3 * (1 - 4 * z**2))
 sim.run(until=0.01)
 ```
 
-The backend is always your choice. Nothing falls back to the CPU on its own: a GPU request that
-cannot be served raises an error that says what is missing.
+The run uses the backend you pass. If the GPU cannot be used, the call raises an error that says
+what is missing; it does not switch to the CPU.
 
 ## Is there a GPU here?
 
@@ -84,20 +84,22 @@ machine without a GPU). This release has not been re-run on a GPU: the last comp
 276 tests and failed 11 on an A100 and on an L40S; the 11 were fixed and re-run as targeted tests
 on an A100, where one memory-prediction test still predicts 3 % more than measured. Paths whose
 tests were written after that suite have not been run on a GPU: treat them as experimental there.
+Some GPU tests use development infrastructure and are not in the public source tree; the table
+says "development suite only" for those.
 
-| Capability | GPU tests | Run on GPU hardware |
+| Capability | GPU tests in the public tree | Run on GPU hardware |
 |---|---|---|
 | Box and channel simulations, fused kernels, CUDA graphs | `tests/ivp/test_gpu_backend.py`, `tests/cross_backend/` | A100 and L40S |
 | HDF5 checkpoints and restarts on the GPU | `tests/ivp/test_checkpoint_series_gpu.py` | A100 and L40S |
-| Disk, annulus, pipe, sphere, ball, shell | `tests/curvilinear/test_curvilinear_gpu.py`, `tests/spherical/` | A100 (on the L40S the comparison ran before a fix of the test's own assertions and was not re-run) |
-| Hermite, Laguerre and compound bases | `tests/discretize/test_families_gpu.py` | A100 and L40S |
-| Legendre, Jacobi and ultraspherical bases | `tests/discretize/test_families_gpu.py` | A100 |
+| Disk, annulus, pipe, sphere, ball, shell | `tests/spherical/`; disk to pipe: development suite only | A100 (on the L40S the comparison ran before a fix of the test's own assertions and was not re-run) |
+| Hermite, Laguerre and compound bases | development suite only | A100 and L40S |
+| Legendre, Jacobi and ultraspherical bases | development suite only | A100 |
 | User functions (`m.function`) | `tests/model/test_pointwise_function_gpu.py` | A100 |
-| Tangent and adjoint of the time-stepping map | `tests/adjoint/test_gpu_adjoint.py`, `tests/adjoint/test_sphere_adjoint.py` | A100 and L40S |
-| Floquet–Hill determinants | `tests/floquet/test_hill_gpu.py` | A100 and L40S |
+| Tangent and adjoint of the time-stepping map | development suite only | A100 and L40S |
+| Floquet–Hill determinants | development suite only | A100 and L40S |
 | Ensembles | `tests/ensembles/test_gpu_ensemble.py` | A100 and L40S |
 | Tracers, dye, Lyapunov exponents | `tests/model/test_particles_gpu.py` | not run on a GPU |
-| Symmetry subspaces of the disk, cylinder and pipe | `tests/polar/test_polar_symmetry_gpu.py` | L40S |
+| Symmetry subspaces of the disk, cylinder and pipe | development suite only | L40S |
 
 ## How much GPU memory?
 
@@ -122,7 +124,7 @@ CPU solver it refuses and points to `plan_memory`.
 
 ## On a cluster
 
-GPU work belongs in a batch job on a GPU node, never on a login node. Build the compiled core once
+Submit GPU work as a batch job on an allocated GPU node, under the cluster's scheduling policy. Build the compiled core once
 for the architectures of your cards ({doc}`../install`, GPU section: tested CUDA and CuPy versions
 and the exact commands; A100 and L40S are the tested targets), then
 run your script in a job that requests one GPU. Recording the run ({doc}`runs`) keeps the host,

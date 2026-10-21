@@ -65,6 +65,7 @@ MIN_FIT_POINTS = 3         # fewer points: no decay rate, no estimate
 CFL_REFERENCE = 1.0        # CFL number printed against 1 (indicator only)
 MAX_MODES_ESTIMATE = 1 << 16   # the estimate gives up above this many mode numbers
 
+_NOT_IN_STATE = "not in the state"
 _ASSUMPTION = ("assumes the exponential decay fitted on the resolved modes continues beyond them "
                "(analytic field, asymptotic regime); unreliable for fronts/shocks or "
                "pre-asymptotic spectra, and a nonlinear state may change at the new N")
@@ -285,9 +286,32 @@ class ResolutionReport:
     cfl: dict | None = None
 
     @property
+    def unmeasured(self) -> list[str]:
+        """Variables of the plan the report did not measure because the state lacks them (tau
+        variables and constants are not counted). Review 0.1.1, F10: an empty state gave zero
+        entries, ``ok=True`` and "all resolved"."""
+        return [v for v, why in self.skipped if why == _NOT_IN_STATE]
+
+    @property
+    def complete(self) -> bool:
+        """True when every variable of the plan with a spectral direction was measured."""
+        return not self.unmeasured and bool(self.entries)
+
+    @property
     def ok(self) -> bool:
-        """True when every (variable, direction) is resolved (or identically zero)."""
-        return all(e.verdict in ("resolved", "zero") for e in self.entries)
+        """True when the report is complete and every (variable, direction) is resolved (or
+        identically zero)."""
+        return self.complete and all(e.verdict in ("resolved", "zero") for e in self.entries)
+
+    def _headline(self) -> str:
+        if not self.entries:
+            return "NOT MEASURED (no variable of the plan measured)"
+        if self.unmeasured:
+            return ("INCOMPLETE: not measured " + ", ".join(self.unmeasured)
+                    + ("; the measured ones all resolved" if all(
+                        e.verdict in ("resolved", "zero") for e in self.entries)
+                       else "; NOT all measured ones resolved"))
+        return "all resolved" if self.ok else "NOT all resolved"
 
     def entry(self, variable: str, coord: str) -> DirectionResolution:
         for e in self.entries:
@@ -308,8 +332,7 @@ class ResolutionReport:
                 f"fitted on the last {FIT_FRACTION:g} of the modes above {FIT_FLOOR:.0e} x max")
 
     def explain(self) -> str:
-        lines = [f"Resolution report for '{self.problem}': "
-                 + ("all resolved" if self.ok else "NOT all resolved"),
+        lines = [f"Resolution report for '{self.problem}': " + self._headline(),
                  "  " + self.thresholds(),
                  f"  {'variable':10s} {'dir':4s} {'basis':14s} {'N':>5s} {'dealias':>7s} "
                  f"{'max|c|':>9s} {'tail':>9s} {'decay/mode':>10s}  verdict"]
@@ -324,19 +347,27 @@ class ResolutionReport:
         if self.cfl is not None:
             c = self.cfl
             lines.append(f"  advective CFL ({c['velocity']}, dt={c['dt']:g}{c['dt_source']}): "
-                         f"{c['cfl']:.3g} (reference {CFL_REFERENCE:g}); a stability indicator, "
-                         "not an error control")
+                         f"{c['cfl']:.3g} (reference {CFL_REFERENCE:g}); it limits the step for "
+                         "stability and does not estimate the time error")
         recs = self.recommend()
-        lines.append("  recommendations (declared, never applied; the plan is unchanged):")
+        lines.append("  suggested resolutions (the plan is unchanged):")
         lines.append(f"    estimated N: {_ASSUMPTION}")
-        lines += ["    " + r for r in recs] if recs else ["    none: every tail is under the target"]
+        if recs:
+            lines += ["    " + r for r in recs]
+        elif not self.entries:
+            lines.append("    none: nothing was measured (pass the state of every variable)")
+        else:
+            lines.append("    none: every measured tail is under the target"
+                         + (f" (not measured: {', '.join(self.unmeasured)})"
+                            if self.unmeasured else ""))
         return "\n".join(lines)
 
     def __str__(self) -> str:
         return self.explain()
 
     def to_dict(self) -> dict:
-        return {"problem": self.problem, "ok": self.ok, "target": self.target,
+        return {"problem": self.problem, "ok": self.ok, "complete": self.complete,
+                "unmeasured": self.unmeasured, "target": self.target,
                 "marginal": self.marginal, "definition": self.thresholds(),
                 "entries": [e.to_dict() for e in self.entries],
                 "skipped": [list(s) for s in self.skipped], "cfl": self.cfl,
@@ -351,14 +382,14 @@ class ResolutionReport:
             f"<td>{esc(e.verdict)}</td></tr>" for e in self.entries)
         recs = "".join(f"<li>{esc(r)}</li>" for r in self.recommend()) or "<li>none</li>"
         cfl = ("" if self.cfl is None else
-               f"<p>Advective CFL: {self.cfl['cfl']:.3g} (stability indicator, not an error "
-               "control)</p>")
+               f"<p>Advective CFL: {self.cfl['cfl']:.3g} (a stability limit; it does not estimate the time "
+               "error)</p>")
         return (f"<div><b>Resolution report: {esc(self.problem)}</b> "
-                f"({'all resolved' if self.ok else 'NOT all resolved'})"
+                f"({esc(self._headline())})"
                 f"<p><small>{esc(self.thresholds())}</small></p>"
                 "<table><tr><th>variable</th><th>dir</th><th>basis</th><th>N</th><th>dealias</th>"
                 f"<th>max|c|</th><th>tail</th><th>decay/mode</th><th>verdict</th></tr>{rows}</table>{cfl}"
-                f"<p>Recommendations (never applied):</p><ul>{recs}</ul></div>")
+                f"<p>Suggested resolutions (the plan is unchanged):</p><ul>{recs}</ul></div>")
 
 
 # ---------------------------------------------------------------- state -> coefficients
@@ -389,13 +420,13 @@ def _coefficients(plan, state: Any, layout: str | None) -> dict[str, np.ndarray]
             out[name] = plan._to_coeffs(plan._as_grid(v, d), v.domain, v.rank)   # f(X, ...)
         elif isinstance(d, FieldData):
             if d.layout == "coeff":
-                out[name] = np.asarray(d.data)
+                out[name] = _check_shape(plan, v, d.data, "coeff")
             else:
                 out[name] = plan._to_coeffs(plan._as_grid(v, d), v.domain, v.rank)
         elif layout == "coeff":
-            out[name] = np.asarray(d)
+            out[name] = _check_shape(plan, v, d, "coeff")
         elif layout == "grid":
-            out[name] = plan._to_coeffs(np.asarray(d), v.domain, v.rank)
+            out[name] = plan._to_coeffs(_check_shape(plan, v, d, "grid"), v.domain, v.rank)
         else:
             raise InputTypeError(
                 f"resolution report: bare array for {name!r} with no declared layout",
@@ -403,6 +434,24 @@ def _coefficients(plan, state: Any, layout: str | None) -> dict[str, np.ndarray]
                     "meaningless tail",
                 fix="wrap it in FieldData(field, data, layout=...) or pass layout='coeff'/'grid'")
     return out
+
+
+def _check_shape(plan, v, data: Any, layout: str) -> np.ndarray:
+    """``data`` as an array of the shape of variable ``v`` on ``plan`` (components first, then
+    one axis per coordinate; coefficient and grid layouts have the same shape on a Cartesian
+    plan). Review 0.1.1, F17: a 2-entry array for an N = 16 variable raised a bare IndexError
+    from inside the tail measurement."""
+    a = np.asarray(data)
+    want = plan._grid_shape(v.domain, v.tensorsig)
+    if a.shape != want:
+        raise InputTypeError(
+            f"resolution report: {v.name!r} has shape {a.shape}, the plan's {layout} layout of "
+            f"{v.name} has shape {want}",
+            why=f"the tail is read along each axis of the {layout} array; another shape has no "
+                "mode numbers to read",
+            fix=f"pass the {layout} array of {v.name} on this plan (shape {want}), e.g. "
+                f"solver.coeffs({v.name!r}), or the solver itself")
+    return a
 
 
 class _GridView:
@@ -442,23 +491,22 @@ def resolution_report(plan, state: Any, *, target: float = TAIL_TARGET,
     coords = plan.domain.coordsys.coords
     entries, skipped = [], []
     for v in plan.variables:
-        if v.name not in coeffs:
-            skipped.append((v.name, "not in the state"))
-            continue
         if v in plan.taus and not include_taus:
             skipped.append((v.name, "tau variable (include_taus=True to report it)"))
             continue
-        c = coeffs[v.name]
-        dirs = 0
-        for i, crd in enumerate(coords):
-            b = v.domain.basis(crd) if v.domain is not None else None
-            if b is None or b.size <= 1:
-                continue
-            _family(b)                     # refuses an unknown basis by name
-            entries.append(_analyse(v.name, c, v.rank + i, b, float(target), float(marginal)))
-            dirs += 1
+        dirs = [(i, v.domain.basis(crd)) for i, crd in enumerate(coords)
+                if v.domain is not None and v.domain.basis(crd) is not None
+                and v.domain.basis(crd).size > 1]
         if not dirs:
             skipped.append((v.name, "no spectral direction (constant)"))
+            continue
+        if v.name not in coeffs:
+            skipped.append((v.name, _NOT_IN_STATE))
+            continue
+        for i, b in dirs:
+            _family(b)                     # refuses an unknown basis by name
+            entries.append(_analyse(v.name, coeffs[v.name], v.rank + i, b, float(target),
+                                    float(marginal)))
     cfl = None
     if velocity is not None:
         from .timestep.control import CFL

@@ -12,7 +12,7 @@ studies, observed orders, Richardson extrapolation, an error estimate with its a
     print(rep.explain())          # value, estimate of the error, observed orders, verdicts
     rep.value, rep.error, rep.interval
 
-What is computed (every number in the report, nothing hidden):
+The report uses the following formulas and assumptions:
 
 * **temporal study** at the finest N: q(dt_1), q(dt_2), q(dt_3) with a constant ratio r =
   dt_i / dt_{i+1}; observed order p = log(|q1 - q2| / |q2 - q3|) / log r; Richardson value
@@ -56,6 +56,14 @@ _SPACING_RTOL = 1e-12
 _DECAY_RATE_MAX = 1e6
 
 
+def _fmt(p: Any) -> str:
+    """A resolution or a time step: a number, or a tuple of sizes ``(8, 8)`` (review 0.1.1, F16:
+    ``f"{p:g}"`` raised TypeError on the documented tuple resolutions)."""
+    if isinstance(p, (tuple, list)):
+        return "(" + ", ".join(f"{x:g}" for x in p) + ")"
+    return f"{p:g}"
+
+
 @dataclass
 class _Study:
     kind: str
@@ -69,7 +77,7 @@ class _Study:
 
     def lines(self) -> list[str]:
         name = "dt" if self.kind == "temporal" else "N"
-        out = [f"  {self.kind} study ({name} = {', '.join(f'{p:g}' for p in self.params)}): "
+        out = [f"  {self.kind} study ({name} = {', '.join(_fmt(p) for p in self.params)}): "
                + ", ".join(f"{v:.15g}" for v in self.values)]
         if self.order is not None:
             out.append(f"    observed order p = {self.order:.3f} (ratio r = {self.ratio:g})"

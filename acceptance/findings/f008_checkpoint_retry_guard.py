@@ -39,6 +39,7 @@ for attempt in range(0 if was_refused else 2):      # the same writer, twice
         outcomes.append(type(exc).__name__)
 check("accepted" not in outcomes, f"attempts: {outcomes}")
 files = sorted(root.glob("checkpoint_*.h5"))
+check(bool(files), "no checkpoint left in the series (all([]) would pass)")
 params = [cn.io.read(f).parameters for f in files]
 check(all(pp.get("nu") == 0.05 for pp in params), f"series parameters after the attempts: {params}")
 passed(f"attempts {outcomes}, series still nu = 0.05")

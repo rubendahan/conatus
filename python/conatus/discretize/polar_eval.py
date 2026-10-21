@@ -34,6 +34,7 @@ from ..ir.bases import AnnulusBasis, ComplexFourier, DiskBasis, RealFourier
 from ..ir.domain import Domain
 from ._xp import array_module, on
 from .compiler import DiscretizationError
+from .curvilinear_common import spin_dot as _dot
 # reality tolerances and check, shared with the other curvilinear evaluator (historical names)
 from .real_fields import FUNC_REAL_TOL, REAL_TOL, STATE_REAL_TOL
 from .real_fields import checked_real as _real
@@ -738,22 +739,3 @@ class PolarEvaluator:
         return g
 
 
-def _dot(a: np.ndarray, ra: int, b: np.ndarray, rb: int, G: np.ndarray) -> np.ndarray:
-    """Contract the last index of a with the first of b with the spin-basis metric G
-    (e_- . e_+ = 1/2, e_z . e_z = 1); grid axes pointwise (broadcast)."""
-    if ra == 0 or rb == 0:
-        raise DiscretizationError("dot of a scalar")
-    A = array_module(a).moveaxis(a, ra - 1, 0)    # (nc, a_rest..., grid)
-    ar, br = ra - 1, rb - 1
-
-    def outer(x, y):                              # tensor axes outer, grid axes pointwise
-        gx, gy = x.shape[ar:], y.shape[br:]
-        x = x.reshape(x.shape[:ar] + (1,) * br + gx)
-        y = y.reshape((1,) * ar + y.shape[:br] + gy)
-        return x * y
-    out = 0
-    for s in range(G.shape[0]):
-        for t in range(G.shape[1]):
-            if G[s, t]:
-                out = out + G[s, t] * outer(A[s], b[t])
-    return out

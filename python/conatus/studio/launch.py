@@ -34,6 +34,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from conatus._private import open_private, private_dir
+
 __all__ = ["Param", "Template", "CATALOG", "LaunchError", "Launcher", "validate_request",
            "render_args", "params_diff", "JOB_OPS", "NAME_RE", "MAX_PARAMS_BYTES"]
 
@@ -417,8 +419,8 @@ class Launcher:
                      params=out["params"], parent=out["params"].get("parent"), diff=out["diff"],
                      run_id=m_run.group(1), jobid=m_job.group(1) if m_job else None,
                      digest=out["digest"], command=out["command"])
-        self.registry.parent.mkdir(parents=True, exist_ok=True)
-        with self.registry.open("a", encoding="utf-8") as fh:
+        private_dir(self.registry.parent)
+        with open_private(self.registry, "a") as fh:     # 0600: user names, commands (F12)
             fh.write(json.dumps(entry) + "\n")
         self._audit(op="submit", user=user, result="submitted", template=out["template"],
                     name=out["name"], params=out["params"], run_id=entry["run_id"], jobid=entry["jobid"])
@@ -482,8 +484,8 @@ class Launcher:
     def _audit(self, **entry: Any) -> None:
         entry = {"wall": time.time(), "iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), **entry}
         try:
-            self.audit_path.parent.mkdir(parents=True, exist_ok=True)
-            with self.audit_path.open("a", encoding="utf-8") as fh:
+            private_dir(self.audit_path.parent)
+            with open_private(self.audit_path, "a") as fh:   # 0600 (F12)
                 fh.write(json.dumps(entry, sort_keys=True, default=str) + "\n")
         except OSError as err:                          # never lost: echoed
             print(f"STUDIO AUDIT (file unwritable: {err}) {json.dumps(entry, default=str)}", flush=True)

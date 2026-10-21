@@ -1,6 +1,6 @@
-# 13. Where a global mode is born, and what the data say about it
+# Where a global mode is born, and what the data say about it
 
-The adjoint tells where to act; the data, read in the right norm, tell what the operator predicts.
+Compute the sensitivity of an eigenvalue to changes in μ(x), then recover the model's eigenvalues from snapshots.
 
 **Goal.** Compute the direct and adjoint global modes of the linear Ginzburg–Landau equation, its
 wavemaker (Giannetti & Luchini 2007) and the gradient of the eigenvalue with respect to the
@@ -25,8 +25,8 @@ tools need it as a function of the "base flow" μ(x), which they differentiate.
 ## Structural and base-flow sensitivity
 
 The adjoint is declared (`adjoint="continuous"`: the formal adjoint with its checked boundary
-conditions); the product is the energy of the system; nothing is normalized for you without being
-said in `explain()`.
+conditions). The inner product is the energy of the system. `explain()` states each normalization
+that is applied.
 
 ```{literalinclude} code/t13_sensitivity_data.py
 :language: python
@@ -35,23 +35,16 @@ said in `explain()`.
 ```
 
 ```{figure} media/t13_modes.png
-:alt: Two bell-shaped curves: the direct global mode peaks downstream (right) and the adjoint mode upstream (left), barely overlapping.
+:alt: Top: two bell-shaped curves, the direct global mode peaking downstream (right) and the adjoint mode upstream (left), overlapping little. Bottom: their product, the wavemaker, a single bump centred at x = 0 with its maximum marked in red.
 :width: 100%
 
-The direct and adjoint global modes of the Ginzburg-Landau model of the page. Advection pushes the direct mode downstream and the adjoint upstream: the operator is far from normal.
-```
-
-```{figure} media/t13_wavemaker.png
-:alt: A single bump centred at x = 0, the structural sensitivity, with its maximum marked in red.
-:width: 100%
-
-The wavemaker S(x) = |q†(x)| |q(x)|, where the overlap of the two modes is largest: the region where a local change of the model moves the eigenvalue most. The maximum matches Chomaz's closed form.
+The direct and adjoint global modes of the Ginzburg-Landau model of the page (top) and the wavemaker S(x) = |q†(x)| |q(x)| (bottom). Advection pushes the direct mode downstream and the adjoint upstream; S is largest where they overlap, the region where a local change of the model moves the eigenvalue most. Its maximum, at |x| < 3×10⁻¹⁰, equals Chomaz's closed form |χ|/√π to a relative 7×10⁻¹².
 ```
 
 ## Data: DMD in the exact norm
 
-Grid values on Gauss nodes with Fejér weights: the quadrature is exact for the resolved field, so
-the data norm is the energy norm of the model (EᴴWE = 2I).
+The data are grid values on Gauss nodes with Fejér weights. This quadrature integrates the resolved
+field without error, so the data norm is the energy norm of the model (EᴴWE = 2I).
 
 ```{literalinclude} code/t13_sensitivity_data.py
 :language: python
@@ -60,10 +53,10 @@ the data norm is the energy norm of the model (EᴴWE = 2I).
 ```
 
 ```{figure} media/t13_dmd.png
-:alt: Eigenvalues of the model in grey; four of them circled in red, each with a black cross from the decomposition of the data exactly at its centre.
+:alt: Eigenvalues of the model in grey; four of them circled in red and numbered 1 to 4, each with a black cross from the decomposition of the data at its centre.
 :width: 100%
 
-Dynamic mode decomposition of a transient made of four global modes: the DMD eigenvalues (crosses) land on the model's (red circles) to 10⁻⁹, from the snapshots alone.
+Dynamic mode decomposition of a transient made of four global modes (numbered by growth rate): the DMD eigenvalues (crosses), computed from the snapshots alone, against the model's (red circles). The distances, too small to see here, are 2×10⁻¹⁴, 4×10⁻¹³, 2×10⁻¹², 5×10⁻¹³ for modes 1 to 4.
 ```
 
 ## Checks

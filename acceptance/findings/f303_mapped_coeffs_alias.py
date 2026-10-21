@@ -18,7 +18,9 @@ m.at("walls", T=0)
 sim = m.simulate((16, 8), scheme="RK222", dt=1e-3)
 sim.initial(T=lambda x, z: np.sin(np.pi * z))
 g0 = sim.grid("T").copy()
-for v in sim.coeffs("T").values():
+cs = sim.coeffs("T")
+check(len(cs) > 0 and np.abs(g0).max() > 0.5, "nothing to edit: empty coeffs() or zero state")
+for v in cs.values():
     v *= 0.0
 check(np.array_equal(sim.grid("T"), g0), "the simulation's state changed when the arrays "
       "returned by coeffs() were edited")

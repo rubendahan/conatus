@@ -79,8 +79,6 @@
 .footer-inner { display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 2rem; }
 .footer-brand { display: flex; flex-direction: column; gap: 1rem; color: var(--cn-text); }
 .footer-tagline { margin: 0; max-width: 24rem; font-size: 0.95rem; }
-.footer-epigraph { font-family: var(--cn-font-display); font-style: italic; font-size: 1rem; line-height: 1.45; display: grid; gap: 0.35rem; max-width: 24rem; color: var(--cn-muted); margin: 0.5rem 0 0; }
-.footer-epigraph .caption { font-family: var(--cn-font-text); font-style: normal; }
 .footer-title { font-family: var(--cn-font-text); font-size: var(--cn-size-ui); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--cn-muted); margin: 0 0 0.8rem; }
 .footer-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem; }
 .footer-col a { color: var(--cn-text); text-decoration: none; }
@@ -169,6 +167,7 @@ a.card:hover { border-color: var(--cn-text); text-decoration: none; }
 .search-results li { padding: 0.6rem 0.7rem; border-radius: var(--cn-radius); cursor: pointer; display: grid; gap: 0.2rem; }
 .search-results li.active { background: var(--cn-surface); box-shadow: inset 2px 0 0 var(--cn-accent); }
 .sr-page { font-weight: 500; font-size: 0.92rem; }
+.sr-kind { display: inline-block; margin-right: 0.5rem; padding: 0 0.35rem; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cn-muted); border: 1px solid var(--cn-rule); border-radius: var(--cn-radius); vertical-align: 0.1em; }
 .sr-snippet { font-size: 0.82rem; color: var(--cn-muted); line-height: 1.45; }
 .search-results mark { background: none; color: var(--cn-accent); font-weight: 600; }
 

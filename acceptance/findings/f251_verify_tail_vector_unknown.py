@@ -18,8 +18,11 @@ x = np.concatenate([0.7 ** np.arange(n), 1e-3 * 0.01 ** np.arange(n)])
 
 
 def pevp(cols):
+    # L + sigma M = 0 for sigma = -1: x is an exact eigenvector, only the tail is under test
+    # (verify() measures the residual on the pencil since 0.1.2, review F4)
     return SimpleNamespace(recon_error=0.0, rank_check="regular pencil", params=[],
-                           gm0=SimpleNamespace(cols=cols), matrices=lambda **v: None)
+                           gm0=SimpleNamespace(cols=cols),
+                           matrices=lambda **v: (np.eye(x.size), np.eye(x.size)))
 
 
 mode = SimpleNamespace(residual=0.0, y=None, x=x, values={}, sigma=-1.0)

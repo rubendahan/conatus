@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import os
 import sys
 import tempfile
 import time
@@ -65,9 +66,9 @@ def sincos_free_slip() -> None:
         assert abs(s - exact) < 1e-12, (s, exact)
     # [sincos-explain]
     m, u, T = model("sincos", Ra_c)
-    print("\n".join(l.strip() for l in m.explain().splitlines() if l.lstrip().startswith(("z:", "u:", "p:", "T:"))))
+    print("\n".join(l.strip() for l in m.explain(full=True).splitlines() if l.lstrip().startswith(("z:", "u:", "p:", "T:"))))
     m, u, T = model("chebyshev", Ra_c)
-    print("\n".join(l.strip() for l in m.explain().splitlines() if ("free-slip" in l and "tau" in l) or l.strip().startswith("divergence tau")))
+    print("\n".join(l.strip() for l in m.explain(full=True).splitlines() if ("free-slip" in l and "tau" in l) or l.strip().startswith("divergence tau")))
     # [/sincos-explain]
     assert "no tau" in model("sincos", Ra_c)[0].explain()
 
@@ -206,11 +207,15 @@ def shell_native() -> None:
 
 def studio_watch() -> None:
     """studio.md: declare what the Studio may show, run, read back what was sent."""
-    spool_dir = TMP / "spool"
+    os.chdir(TMP)                                        # the reader's working directory
     # [watch]
+    from pathlib import Path
+
     import numpy as np
 
     import conatus as cn
+
+    spool_dir = Path("studio_spool")                     # where the Studio reads the telemetry
 
     box = cn.Box(x=cn.periodic(2.0), z=cn.walls(-0.5, 0.5))
     m = cn.Model(box, name="Rayleigh-Benard 2D", Ra=2e4, Pr=1)
@@ -244,25 +249,28 @@ def studio_watch() -> None:
     plain.run(steps=50)
     assert np.array_equal(plain.solver.X, sim.solver.X)      # watching never changes the numbers
     assert w.tel.dropped_records == 0
-    print("watched run identical to the unwatched one: True")
 
 
 def io_hdf5() -> None:
     """io.md: analysis files and checkpoints in HDF5, a run cut in two jobs equal to one run, files
     read back with cn.io and with h5py alone."""
-    work = TMP / "io"
-    work.mkdir(parents=True, exist_ok=True)
+    os.chdir(TMP)                                        # the reader's working directory
     # [io]
+    from pathlib import Path
+
     import h5py
     import numpy as np
 
     import conatus as cn
 
+    work = Path("burgers_chain")                         # checkpoints and output of the chain
+    work.mkdir(exist_ok=True)
+
     def burgers():
         m = cn.Model(cn.Box(x=cn.periodic(2 * np.pi)), name="viscous Burgers", nu=0.05)
         m.scalar("u")
         m.equations("dt(u) - nu*dx(dx(u)) = -u*dx(u)")
-        return m.simulate(N=64, scheme="SBDF3", dt=2e-3)
+        return m.simulate(N=128, scheme="SBDF3", dt=2e-3)
 
     def job(steps):
         """The same script for every job of the chain."""
@@ -287,9 +295,40 @@ def io_hdf5() -> None:
     one = burgers()
     one.initial(u=lambda x: np.sin(x) + 0.3 * np.cos(2 * x))
     one.run(steps=500)
-    same = bool(np.array_equal(one.solver.X, sim.solver.X))
-    print(f"two jobs equal to one uninterrupted run, bit for bit: {same}")
-    assert same and len(d.sim_time) == 11       # steps 0, 50, ..., 500 (the initial state first)
+    assert np.array_equal(one.solver.X, sim.solver.X)   # two jobs give one uninterrupted run
+    assert len(d.sim_time) == 11                # steps 0, 50, ..., 500 (the initial state first)
+
+
+def io_allow() -> None:
+    """io.md, *Continue a state with another parameter*: a restart at another parameter value is
+    refused with what differs, and accepted when the change is named with allow=."""
+    os.chdir(TMP)
+    # [io-allow]
+    import numpy as np
+
+    import conatus as cn
+
+    def burgers(nu):
+        m = cn.Model(cn.Box(x=cn.periodic(2 * np.pi)), name="viscous Burgers", nu=nu)
+        m.scalar("u")
+        m.equations("dt(u) - nu*dx(dx(u)) = -u*dx(u)")
+        return m.simulate(N=128, scheme="SBDF3", dt=2e-3)
+
+    sim = burgers(nu=0.05)
+    sim.initial(u=lambda x: np.sin(x))
+    sim.run(steps=200)
+    sim.save("state_nu005.h5")
+
+    later = burgers(nu=0.02)                             # the same state, a smaller viscosity
+    try:
+        later.restart("state_nu005.h5")
+    except cn.errors.ConatusError as e:
+        print("refused:", str(e).splitlines()[0])
+    later.restart("state_nu005.h5", allow=("nu",))       # the change is named: accepted
+    later.run(steps=200)
+    print(f"continued from t = 0.4 to t = {later.t:g} at nu = 0.02")
+    # [/io-allow]
+    assert abs(later.t - 0.8) < 1e-12
 
 
 def uncertainty_report() -> None:
@@ -319,8 +358,7 @@ def uncertainty_report() -> None:
     from scipy.special import iv
     k = np.arange(1, 40)
     exact = float(iv(0, 1) + 2 * np.sum(iv(k, 1) * np.exp(-0.5 * k ** 2 * 0.4)))
-    print(f"exact value {exact:.8f}: inside the interval: {lo <= exact <= hi}")
-    assert lo <= exact <= hi and rep.trusted
+    assert lo <= exact <= hi and rep.trusted                 # the exact value is inside
 
 
 def initial_time() -> None:
@@ -402,7 +440,7 @@ def implicit_coriolis() -> None:
 
 CHECKS = {"sincos_free_slip": sincos_free_slip, "unbounded_compound": unbounded_compound,
           "schemes": schemes, "flowmap_nlop": flowmap_nlop, "shell_native": shell_native,
-          "studio_watch": studio_watch, "io_hdf5": io_hdf5,
+          "studio_watch": studio_watch, "io_hdf5": io_hdf5, "io_allow": io_allow,
           "uncertainty_report": uncertainty_report, "initial_time": initial_time,
           "implicit_coriolis": implicit_coriolis}
 

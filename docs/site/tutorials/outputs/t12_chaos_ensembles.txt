@@ -1,4 +1,4 @@
-# t12_chaos_ensembles: PASS (exit 0) in 165.3 s | 2026-10-20 | script sha256 3111592b18e09a94
+# t12_chaos_ensembles: PASS (exit 0) in 136.6 s | 2026-10-21 | script sha256 26241358f979bb75
 Lyapunov spectrum of the discrete map (RK443, dt = 0.01, backend = cpu): 3 vector(s), 32 trajectory(ies)
   transient 1000 steps, tangent transient 1000 steps, average over T = 100 per trajectory (1000 QR every 10 steps = 0.1)
   inner product: Euclidean on the coefficient vector; projection: none; seed 1
@@ -19,7 +19,7 @@ Poincaré section (g decreasing through 0), 8 member(s), 530 crossing(s) over 50
   location: τ* in (0, dt] with g(Φ_τ*(X_n)) = 0 on the scheme (Illinois regula falsi), |g| <= 1e-10, max 30 iterations; observed max |g| 8.2e-11, mean iterations 4.9
 Lorenz map: 522 pairs (z_k, z_k+1), z in [29.29, 45.38]
 EnsembleFate: 2304 member(s); checks every 100 steps (dt = 0.01), no verdict before step 100, horizon 10000 steps; classifier: |X - C+-| < 1
-  outcomes {-1: 1152, 1: 1152} (0 = undecided, reported, never assigned)
+  outcomes {-1: 1152, 1: 1152} (0 = undecided at the final time)
 Ensemble(2304 member(s), 1 parameter set(s), scheme=RK443, dt=0.01, backend=cpu)
   step: IVPSolver arithmetic on (B, n) arrays (same stages, same order)
   BatchedRHS(polynomial form, CPU/NumPy): 7 term(s), 0 with per-member coefficients; transforms, derivatives and products vectorized over a leading member axis (same operations as the fused/linearized forms; equal to IVPSolver.F to rounding, not bit for bit)

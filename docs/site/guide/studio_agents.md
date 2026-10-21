@@ -27,7 +27,7 @@ sim.unwatch()
 - The new value is applied between two steps and recorded in the run (event `param_set`, with the
   old value, the step and who asked).
 - A value outside the bounds, or a parameter that was not declared, is refused (event
-  `set_refused`, with the reason); nothing is clipped or rounded.
+  `set_refused`, with the reason). The value is not clipped or rounded to fit.
 - With `run(until=T)` the time left must stay a whole number of steps: a step that would miss `T`
   is refused, and the refusal gives the nearest step that lands on it. With `run(steps=n)`, `n`
   steps are taken in all.
@@ -83,31 +83,35 @@ parameters and their bounds), and the tail of the log and of the events.
 
 ## Where the command line talks
 
-- **On the cluster** (a session in a job, the spool on the shared file system): nothing to start.
-  The command line reads the spool and appends the command to the run's control file itself, with
+- **On the cluster** (a session in a job, the spool on the shared file system): no server is
+  needed. The command line reads the spool and appends the command to the run's control file itself, with
   the same checks; file permissions are the authentication, and commands are logged in
   `<spool>/studio_audit.jsonl`. Control files are created `0600`, and a run ignores (with an
   error in its log) a control file that belongs to another account or that group or others can
   write: nobody else on the cluster can pause, stop or re-time your run.
+  The spool directory is created `0700`, and the telemetry files and the audit log in it are
+  `0600`, whatever your umask. Other accounts cannot read the logs, numbers or films written from this version on. To
+  share them with your group, copy them or change their mode yourself.
 - **Through a hub**: `--hub https://…` (or `$CN_STUDIO_URL`) with a token in a file
   (`--token-file`, `$CN_STUDIO_TOKEN`, or `~/.config/conatus/studio_token`). Plain `http://` is
-  accepted only to `localhost`, through an ssh tunnel to a hub running in a job; a token never
-  travels in clear.
+  accepted only to `localhost`, through an ssh tunnel to a hub running in a job, so the token does
+  not cross the network in clear text.
 
 ## Tokens for agents
 
-An agent gets its own token, never a person's password:
+Create a separate scoped token for each agent:
 
 ```bash
 H="python -m conatus.studio.hub --state ~/.config/conatus/hub"
 $H addagent watcher --scope read --token-out ~/.config/conatus/watcher_token
 $H addagent claude --scope command --runs 'local:rb_*' --token-out ~/.config/conatus/studio_token
-$H agents                      # names, scopes, run patterns (never the tokens)
+$H agents                      # names, scopes, run patterns (tokens are not shown)
 $H delagent claude             # revoke
 ```
 
 - `read`: state, scalars, log, pictures. Every command is refused (and logged).
-- `command`: also the declared run commands. Never job submission, never the audit log.
+- `command`: also the declared run commands. The command scope excludes job submission and access
+  to the audit log.
 - `--runs`: the run keys the token can reach at all (patterns); other runs do not exist for it.
 
 The token is written to a file readable only by you and shown nowhere else; the hub keeps only
@@ -130,8 +134,10 @@ cl = connect()                                   # same resolution as the comman
 run = cl.status("rb_demo")["run"]
 print(run["state"], run["t"], run["alerts"])
 blown_up = any(a["code"] == "non_finite" for a in run["alerts"])
-first = cl.send("rb_demo", "stop")               # (on blown_up, say) refused once, with a token
-print(cl.send("rb_demo", "stop", confirm=first["confirm_token"])["note"])
+answer = cl.send("rb_demo", "stop")              # (on blown_up, say) a live run: refused once
+if answer.get("needs_confirmation"):             # ... with a token to send it again
+    answer = cl.send("rb_demo", "stop", confirm=answer["confirm_token"])
+print(answer.get("ok"), answer.get("error", ""))  # a finished run refuses the stop
 sim.unwatch()
 ```
 

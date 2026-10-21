@@ -15,6 +15,8 @@ h = hill_from_blocks(np.eye(1), np.zeros((1, 1)), {1: np.ones((1, 1)), -1: np.on
                      Nh=1, omega=1.0, label="audit", note="")
 A = h.dense(1j)
 det = np.linalg.det(A)
+# analytic determinant (review 2026-10-21, F14: A itself comes from the code under test)
+check(abs(det - (-2j)) < 1e-12, f"det of the Hill matrix = {det}, expected -2j")
 was_refused, sl = refused(h.slogdet, 1j)
 if was_refused:
     passed("slogdet refused")

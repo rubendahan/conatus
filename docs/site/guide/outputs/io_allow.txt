@@ -1,0 +1,2 @@
+refused: load_checkpoint: the checkpoint state_nu005.h5 is not a state of this run: parameter nu: 0.05 in the checkpoint, 0.02 now
+continued from t = 0.4 to t = 0.8 at nu = 0.02

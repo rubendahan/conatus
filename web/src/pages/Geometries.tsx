@@ -22,7 +22,7 @@ const GEOS: Geo[] = [
     uses: "Plane Poiseuille and Couette flow, turbulent channels." },
   { id: "disk", name: "Disk", code: "cn.Disk(1.0)",
     coords: "phi, r", walls: "wall",
-    text: "Regular at the centre by construction: no axis condition to add, nothing singular to guard against.",
+    text: "The radial basis enforces regularity at the centre, so no axis condition is needed.",
     uses: "Vortices, rotating tanks, flows in a circular cross-section." },
   { id: "annulus", name: "Annulus", code: "cn.Annulus(1.0, 2.0)",
     coords: "phi, r", walls: "inner, outer, walls",
@@ -34,12 +34,12 @@ const GEOS: Geo[] = [
     uses: "Shallow water, planetary waves, atmospheres." },
   { id: "shell", name: "Spherical shell", code: "cn.Shell(0.35, 1.0)",
     coords: "phi, theta, r", walls: "inner, outer, walls",
-    text: "The space between two spheres, where planets and stars convect. Simulations on a CPU or a GPU, exact adjoints and optimal perturbations, and rotating convection ready to run; the wall conditions are written in a form that stays stable at any radial resolution, and checked before the first step.",
+    text: "The space between two spheres, where planets and stars convect. Simulations on a CPU or a GPU, adjoints and optimal perturbations, and a ready rotating-convection problem. The wall conditions use a formulation designed to stay well conditioned as the radial resolution grows, and they are checked before the first step; the user guide lists the tested sizes.",
     uses: "Rotating convection, dynamos, mantle and core flows, rotating shells.",
     guide: ["guide/shells.html", "Spherical shells in the user guide"] },
   { id: "ball", name: "Ball", code: "cn.Ball(1.0)",
     coords: "phi, theta, r", walls: "wall",
-    text: "The full sphere, regular at the centre by construction.",
+    text: "The full sphere. The basis is regular at the centre.",
     uses: "Flows in a spherical container, stellar interiors." },
 ];
 
@@ -56,9 +56,9 @@ export default function Geometries() {
   return (
     <>
       <PageHead eyebrow="Geometries" title="From the channel to the ball">
-        <p>Every geometry speaks the same language: you name the domain, write the same equations, and name the boundaries
-          where conditions hold. Conatus chooses the bases that belong to the geometry, regular at the axis and at the centre,
-          and prints them with <code>explain()</code>.</p>
+        <p>In every geometry you name the domain, write the equations and name the boundaries where conditions hold.
+          Conatus chooses the bases of the geometry, regular at the axis and at the centre, and prints them with
+          <code>explain()</code>.</p>
       </PageHead>
       <Section id="example" title="Declaring a domain" intro={<p>A geometry is one line. The rest of the model does not
         depend on it: the same equation in a box or in a ball differs only by this line and by the boundary names.</p>}>

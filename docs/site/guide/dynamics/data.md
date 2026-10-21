@@ -1,10 +1,10 @@
 # Data-driven analysis
 
-Dynamic mode decomposition and spectral proper orthogonal decomposition of snapshots, in the inner product of the physics rather than that of the array.
+Dynamic mode decomposition and spectral proper orthogonal decomposition of snapshots, in a weighted inner product.
 
-Snapshots are vectors of values on a grid. Every decomposition takes a `DataInnerProduct`, built
-from the quadrature weights of the grid and per-component weights, so that modes are orthogonal in
-the energy norm of the flow. The example uses snapshots of the linear Ginzburg–Landau equation.
+Snapshots are vectors of values on a grid. Each decomposition takes a `DataInnerProduct`, built
+from the quadrature weights of the grid and the weights you give each component. The modes are
+then orthogonal in that norm, for example the energy norm of the flow. The example uses snapshots of the linear Ginzburg–Landau equation.
 
 ```{literalinclude} _check.py
 :language: python
@@ -29,7 +29,7 @@ to observables of the state.
 ## Spectral POD
 
 The Welch segmentation (`nfft`, `noverlap`, `window`), the treatment of the mean and one- or
-two-sided spectra are all arguments.
+two-sided spectra are arguments.
 
 **See also:** tutorial {doc}`../../tutorials/13_sensitivity_data` (Towne et al. 2018);
 {doc}`dmd <../../api/_generated/_stubs/conatus.expert.dmd>`, {doc}`spod <../../api/_generated/_stubs/conatus.expert.spod>`, {doc}`pod <../../api/_generated/_stubs/conatus.expert.pod>`,

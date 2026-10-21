@@ -1,10 +1,8 @@
 # Notebooks
 
-In Jupyter, Conatus objects display as formatted tables and cards.
-
-Conatus objects display as formatted HTML in Jupyter. In a terminal, `print(obj.explain())` gives
-the same content as text. Nothing about the notebook is required: neither IPython nor ipywidgets
-is a dependency, and `__repr__` / `explain()` are unchanged.
+In Jupyter, Conatus objects display as tables and cards. In a terminal, `print(obj.explain())`
+gives the same content as text. Neither IPython nor ipywidgets is a dependency, and `__repr__` and
+`explain()` are the same with or without a notebook.
 
 | Object | What the cell shows |
 |---|---|
@@ -19,8 +17,8 @@ is a dependency, and `__repr__` / `explain()` are unchanged.
 | `DedalusTranslation` (`cn.from_dedalus`) | the line-by-line report, colour-coded by status |
 | `DoctorReport` (`cn.doctor()`), `ResolutionReport` | tables of checks and of spectral tails |
 
-A status badge appears only where the object computes that status itself. The EVP table shows
-residuals but no invented pass threshold.
+A status badge appears only where the object computes that status itself. The EVP table
+displays residual values without a pass or fail classification.
 
 ## Parameter widgets (optional)
 
@@ -41,11 +39,11 @@ w          # one text box per Parameter of the problem (the EVP eigenvalue exclu
 ```
 
 If ipywidgets is not installed, `parameter_widgets` returns `None` and says so with a
-`UserWarning`. Nothing else changes. The widgets **never modify the IR or a plan**: IR objects are
-immutable. Each edit passes the full `{name: value}` dict to your `on_change`, which re-discretizes
-or re-solves as you decide, and `w.values()` returns the same dict. The boxes are plain text boxes
-rather than sliders, because a slider range would be an invented bound. Text that is not a number
-is refused (`ParameterError`) in the widget, without calling your function.
+`UserWarning`. The widgets do not modify the IR or a plan, since IR objects are immutable. Each
+edit passes the full `{name: value}` dict to your `on_change`, which re-discretizes or re-solves as
+you decide. `w.values()` returns the same dict. The inputs are text boxes, so a parameter value
+does not need a preset slider interval. Text that is not a number is refused (`ParameterError`) in
+the widget, and your function is not called.
 
 Implementation: `python/conatus/notebook.py` (HTML with escaped text, inline CSS readable in light
 and dark themes, no JavaScript).

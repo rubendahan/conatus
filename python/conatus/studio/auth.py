@@ -30,6 +30,8 @@ from fnmatch import fnmatchcase
 from pathlib import Path
 from typing import Any
 
+from conatus._private import open_private, private_dir
+
 # scrypt cost: 16 MiB of memory per hash, ~50 ms on a laptop; stored with the hash so it can change.
 SCRYPT_N, SCRYPT_R, SCRYPT_P = 2 ** 14, 8, 1
 TOKEN_BYTES = 32                     # 256-bit tokens (relay and user API tokens, session cookies)
@@ -128,7 +130,7 @@ class AuthDB:
         """Write atomically to ``path`` with mode 0600; ValueError if loaded from the environment."""
         if self.path is None:
             raise ValueError("this AuthDB came from the environment; nowhere to save it")
-        self.path.parent.mkdir(parents=True, exist_ok=True)
+        private_dir(self.path.parent)
         # a fresh file, created exclusively and without following links (security audit
         #): the fixed name auth.tmp, opened O_TRUNC, followed a link planted there
         # (overwriting its target) and kept the mode of an existing auth.tmp (0644: hashes readable)
@@ -241,23 +243,30 @@ def _check_name(name: str) -> None:
 
 
 class Sessions:
-    """In-memory browser sessions: random cookie value -> (user, expiry)."""
+    """In-memory browser sessions: random cookie value -> (user, expiry, origin).
+
+    ``origin`` is the ``Host`` (name and port) the session was opened at; the session answers only
+    there (review F11, 0.1.2). This keeps a cookie that a browser sends to another port or name
+    from opening a session there. It does not stop a program that has captured the cookie and
+    sends it with the right ``Host``: see docs/site/guide/studio.md (F11)."""
 
     def __init__(self, ttl_s: float = 12 * 3600) -> None:
         self.ttl_s = float(ttl_s)
-        self._s: dict[str, tuple[str, float]] = {}
+        self._s: dict[str, tuple[str, float, str | None]] = {}
 
-    def create(self, user: str) -> str:
-        """Open a session for ``user``; returns the cookie value (only its digest is kept).
-        Expired sessions are dropped here too (a session never used again was kept forever)."""
+    def create(self, user: str, origin: str | None = None) -> str:
+        """Open a session for ``user`` at ``origin`` (a ``Host`` value, or None: any); returns
+        the cookie value (only its digest is kept). Expired sessions are dropped here too (a
+        session never used again was kept forever)."""
         now = time.time()
         self._s = {d: v for d, v in self._s.items() if v[1] >= now}
         tok = new_token()
-        self._s[token_digest(tok)] = (user, now + self.ttl_s)
+        self._s[token_digest(tok)] = (user, now + self.ttl_s, origin.lower() if origin else None)
         return tok
 
-    def user(self, tok: str | None) -> str | None:
-        """The user of a live session cookie, else None (expired sessions are dropped)."""
+    def user(self, tok: str | None, origin: str | None = None) -> str | None:
+        """The user of a live session cookie presented at ``origin``, else None (expired
+        sessions are dropped; a session opened at another ``Host`` answers None)."""
         if not tok:
             return None
         hit = self._s.get(token_digest(tok))
@@ -265,6 +274,8 @@ class Sessions:
             return None
         if hit[1] < time.time():
             self._s.pop(token_digest(tok), None)
+            return None
+        if hit[2] is not None and (origin or "").lower() != hit[2]:
             return None
         return hit[0]
 
@@ -314,8 +325,8 @@ class AuditLog:
         line = json.dumps(entry, sort_keys=True)
         if self.path is not None:
             try:
-                self.path.parent.mkdir(parents=True, exist_ok=True)
-                with self.path.open("a", encoding="utf-8") as fh:
+                private_dir(self.path.parent)
+                with open_private(self.path, "a") as fh:  # 0600: names, addresses (F12)
                     fh.write(line + "\n")
             except OSError as err:              # never lose the entry: it still goes to stdout
                 if self.error is None:

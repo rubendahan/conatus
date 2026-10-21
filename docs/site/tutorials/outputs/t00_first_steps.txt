@@ -1,4 +1,4 @@
-# t00_first_steps: PASS (exit 0) in 30.5 s | 2026-10-20 | script sha256 46b3ef78528aff94
+# t00_first_steps: PASS (exit 0) in 29.2 s | 2026-10-21 | script sha256 fc40e6b3eb0132db
 Model 'Burgers': Box(x=periodic((0, 6.28319))) (Cartesian box)
 Unknowns: u (scalar); parameters: nu = 0.1
 Equations as written:
@@ -7,7 +7,6 @@ Problem: IVP (a time derivative dt() appears)
 Time stepping: 2 linear term(s) implicit; nonlinear terms explicit (eq0)
 Dealiasing: x: 3/2 (declared default for products of degree 2)
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
-(every decision, tau by tau and term by term: m.explain(full=True))
-kinetic energy at t = 2: E = 0.759907890109 (E(0) = pi/2 = 1.570796326795)
-Cole-Hopf: E = 0.759907890081, relative error 3.7e-11
-OK: the kinetic energy of the simulation equals the exact Cole-Hopf value
+(compiler decisions, tau by tau and term by term: m.explain(full=True))
+kinetic energy at t = 2: E = 0.759908
+exact (Cole-Hopf): E = 0.759908, relative error 3.7e-11

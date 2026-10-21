@@ -14,15 +14,19 @@ anywhere in the equations as long as they are affine in it.
 ## Solvers
 
 - **Dense QZ** on the full pencil. Because the boundary and tau rows have no $M$ part, the pencil
-  has infinite eigenvalues; they are detected from the homogeneous pair $(\alpha, \beta)$ and
-  counted, never mixed with the finite ones. Left eigenvectors are available.
+  has infinite eigenvalues. A pair $(\alpha, \beta)$ is classified infinite when $\beta = 0$, or
+  when $|\beta| \le 10^3\,\varepsilon\,|\alpha|$ (rows equilibrated, scaled by
+  $\|L\|/\|M\|$) and $M$ is singular. The rank of $M$ counts its singular values above
+  $n\,\varepsilon\,\sigma_{\max}(M)$. With $M$ nonsingular every eigenvalue is finite and is
+  returned. The infinite ones are counted in `n_infinite`; the log states the rank of $M$ and
+  names any pair the rule cannot classify. Left eigenvectors are available.
 - **Shift-invert Arnoldi** for a few eigenvalues near a target, valid for singular,
   non-symmetric $M$.
 
 Before solving, the pencil is checked for regularity at a generic $\sigma$; a singular pencil
 (a missing condition) is refused.
 
-## Every eigenvalue comes with its residual
+## Residuals
 
 For each mode the relative backward residual
 
@@ -37,8 +41,8 @@ such as shear flows at high Reynolds number.
 Tau discretisations of fourth-order problems can produce a few spurious eigenvalues of large
 modulus, sometimes with positive growth rate, that move by orders of magnitude when $N$ changes.
 They are removed by the drift test: the spectrum is computed at two resolutions and only the
-eigenvalues found again within a tolerance are kept. The number of rejected modes is reported;
-nothing is filtered implicitly.
+eigenvalues found again within a tolerance are kept. The number of rejected modes is reported.
+The drift test runs only when you ask for it (`drift=`).
 
 ## Critical parameters and sensitivities
 

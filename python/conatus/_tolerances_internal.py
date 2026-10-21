@@ -122,7 +122,6 @@ _ENTRIES = (
     Internal("STRUCTURAL_ZERO_13", 1e-13, "structural zero",
              _ZERO + " (complex views and real projections of assembled blocks)", (
                  "conatus.discretize.polar_eval:PolarSpace.embed",
-                 "conatus.solvers.parametric:ParametricEVP._build",
                  "conatus.timestep.spectral:SpectralEvaluator.to_coeffs",
                  "conatus.timestep.system:GlobalSystem._complex_view",
                  "conatus.timestep.system:GlobalSystem._multi_complex_views",
@@ -270,7 +269,7 @@ _ENTRIES = (
              "Beyn's method: singular values of the block Hankel moment matrix above 1e-10 of the "
              "largest are its numerical rank (the Gauss-Legendre moments are accurate to about "
              "1e-12..1e-14 with eigenvalues clear of the edges); every Ritz value of that rank is "
-             "polished and certified, so a noise direction kept costs time, never a wrong root "
+             "polished and checked by its residual, so a noise direction kept costs time "
              "",
              ("conatus.contour.beyn:_rounds",)),
     # --- invariance battery (tests/invariance, audit invariance): the bounds of the

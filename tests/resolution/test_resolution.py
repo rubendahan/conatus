@@ -113,7 +113,7 @@ def test_ivp_solver_state_rb2d_with_cfl():
     skipped = dict(rep.skipped)
     assert "tau" in skipped["tT1"] and "constant" in skipped["tp"]
     assert rep.cfl is not None and rep.cfl["dt"] == 2e-4 and np.isfinite(rep.cfl["cfl"])
-    assert "not an error control" in rep.explain()
+    assert "does not estimate the time error" in rep.explain()
     # T: resolved along x (16 Fourier modes), not to 1e-8 along z with Nz = 8 (tail 7e-6)
     assert rep.entry("T", "x").verdict == "resolved"
     assert rep.entry("T", "z").tail > R.TAIL_TARGET and any("T/z" in r for r in rep.recommend())

@@ -1,18 +1,19 @@
 # Units and conventions
 
-Unit systems make every change of nondimensionalisation an explicit, checked call.
+Unit systems let you convert between nondimensionalisations with `convert()`, which checks the supplied unit systems and the scales it needs.
 
 Published values are written in many nondimensionalisations: a plane channel alone has three
 Reynolds numbers (centreline, bulk, friction), and wavenumbers are scaled by the half-height or the
-full height depending on the paper. Silent factors of $2$ or $3/2$ are among the most common errors
-when comparing with the literature. The rule: **the mechanics is generic, a study's conventions are
-presets, and every conversion is an explicit call.**
+full height depending on the paper. A missed factor of $2$ or $3/2$ is a common error when
+comparing with the literature. `UnitSystem` stores reference scales. Presets provide the
+conventions of particular studies. `convert()` translates a quantity between two declared
+systems.
 
 ## Unit systems and `convert`
 
 A `UnitSystem(name, family, scales, reynolds)` lists reference scales (length, time, velocity)
-with their definition and value in the family's base units, and its Reynolds group. `convert` is
-the only way to move a number between systems:
+with their definition and value in the family's base units, and its Reynolds group. `convert`
+moves a number between two systems:
 
 ```python
 from conatus.expert import CHANNEL_SYSTEMS, convert

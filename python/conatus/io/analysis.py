@@ -96,7 +96,7 @@ class AnalysisFile:
                               "'resume' (append after a restart, dropping later rows)", doc=DOC)
         if self.path.exists() and mode is None:
             raise OptionError(f"output(): {self.path} exists",
-                              why="an existing file is never replaced or appended to silently",
+                              why="replacing or appending to an existing file needs mode=",
                               fix="mode='w' to replace it, mode='a' to append to it "
                                   "(mode='resume' after a restart from an older checkpoint)", doc=DOC)
         self.mode = mode or "w"

@@ -429,7 +429,25 @@ function genValidation() {
     entries.push({ id, ...e });
   }
 
+  // The site describes Conatus on its own terms: no comparison with another code. A
+  // cross-check against Dedalus is dropped from a row (the paper keeps it); a row whose only
+  // reference is Dedalus is left out, unless CROSS_CODE_REF names its published reference.
+  const CROSS_CODE_REF = { "3D channel": "\\cite{orszag1971}" };
+  function withoutCrossCode(testTex, resultTex, refTex) {
+    if (!/Dedalus/.test(resultTex + refTex)) return { result: resultTex, ref: refTex };
+    const ref = refTex.split(/,\s*/).filter((x) => !/Dedalus/.test(x)).join(", ").trim()
+      || CROSS_CODE_REF[testTex.trim()] || "";
+    const result = resultTex
+      .replace(/, 1\.05 in the Dedalus convention\)/, ", 1.05 with $g$ in the explicit part)")
+      .replace(/[;,]\s*[^;,]*Dedalus[^;,]*/g, "")
+      .trim();
+    return ref && !/Dedalus/.test(result) ? { result, ref } : null;
+  }
+
   function paperRow(section, row, testTex, resultTex, refTex, extra = {}) {
+    const kept = withoutCrossCode(testTex, resultTex, refTex);
+    if (!kept) return;
+    ({ result: resultTex, ref: refTex } = kept);
     const rule = RULES.find((r) => r.re.test(testTex.replace(/\\'e/g, "\u00e9")));
     if (!rule) warn(`${TEX_FILE}:${row.line}: no domain rule for "${testTex.slice(0, 50)}" (domain "other")`);
     const t = conv(testTex), v = conv(resultTex), r = conv(refTex);
@@ -714,21 +732,30 @@ if (statusJsonText) {
     .map((m) => ({ script: m[1], n: +m[2], status: m[3].toLowerCase(), time: m[4].trim(), run: m[5], commit: m[6] ?? null }));
 }
 const statusSource = statusJsonText ? "docs/site/tutorials/outputs/STATUS.json" : statusMd ? "docs/site/tutorials/_generated/status.md" : null;
+// The index groups the tutorials by topic ("## <group>" then a table "| {doc}`slug` | learn | reference |");
+// the number of a tutorial is only the prefix of its file name (00_…), used to find its scripts (tNN…):
+// pages show titles and groups, not course numbers (presentation review of 0.1.1, priority 9).
 const tutorials = [];
+let group = null;
 for (const line of tutIndex.split("\n")) {
-  const m = line.match(/^\|\s*(\d+)\s*\|\s*\{doc\}`([^`]+)`\s*\|([^|]*)\|([^|]*)\|/);
+  const h = line.match(/^##\s+(.+)$/);
+  if (h) { group = h[1].trim(); continue; }
+  const m = line.match(/^\|\s*\{doc\}`([^`]+)`\s*\|([^|]*)\|([^|]*)\|/);
   if (!m) continue;
-  const n = +m[1], slugT = m[2];
+  const slugT = m[1];
+  const n = /^\d+_/.test(slugT) ? parseInt(slugT, 10) : null;
+  // first_steps runs t00_first_steps.py, which shares the prefix 00 with the convection tutorial
+  const own = (r) => slugT === "first_steps" ? r.script.startsWith("t00_first_steps") : r.n === n && !r.script.startsWith("t00_first_steps");
   const md = read(`docs/site/tutorials/${slugT}.md`, { optional: true });
   const title = md ? (md.match(/^#\s+(?:\d+\.\s*)?(.+)$/m)?.[1] ?? slugT) : slugT;
   const mdToText = (s) => conv(s.trim().replace(/`([^`]+)`/g, "\\code{$1}").replace(/_/g, "\\_").replace(/\$([^$]*)\$/g, (x) => x.replace(/\\_/g, "_"))).plain;
-  const scripts = statusRows.filter((r) => r.n === n).map((r) => ({
+  const scripts = statusRows.filter(own).map((r) => ({
     script: r.script, status: r.status, time: r.time, run: r.run, commit: r.commit,
     date: /^\d{8}_\d{6}/.test(r.run) ? `${r.run.slice(0, 4)}-${r.run.slice(4, 6)}-${r.run.slice(6, 8)}` : null,
     runId: runDirs.has(r.run) ? r.run : null,
   }));
   tutorials.push({
-    n, slug: slugT, title: mdToText(title), learn: mdToText(m[3]), reference: mdToText(m[4]).replace(/^—$/, "") || null,
+    n, group, slug: slugT, title: mdToText(title), learn: mdToText(m[2]), reference: mdToText(m[3]).replace(/^—$/, "") || null,
     status: !scripts.length ? "not-run" : scripts.every((s) => s.status === "pass") ? "pass" : scripts.some((s) => s.status === "pass") ? "partial" : "fail",
     scripts,
   });
@@ -956,7 +983,8 @@ genTutorialFreshness();
 // the docs told the getting-started path twice and the two had drifted apart). The MyST subset of that
 // page is read strictly: "##" headings, paragraphs, numbered lists, $$ display math $$, ```bash /
 // ```python fences, {literalinclude} of a region of a tutorial script ("# [name]") or of lines of its
-// output (:start-at: / :end-at:), {image} of a script's figure; inline `code`, **bold**, $math$,
+// output (:start-at: / :end-at:), {image} of a script's figure, :::{dropdown} <label> ... ::: around
+// such blocks (shown as <details>); inline `code`, **bold**, $math$,
 // {doc}`page` and [label](link). Anything else stops the build, naming the line, so the page cannot
 // say something the documentation does not.
 // ---------------------------------------------------------------------------------------------
@@ -998,7 +1026,13 @@ function genFirstSteps() {
     return out;
   };
   const slugOf = (t) => t.toLowerCase().replace(/[^a-z0-9 -]/g, "").trim().replace(/\s+/g, "-");   // MyST heading anchors
-  const blocks = [];
+  const top = [];
+  let open = null;                                  // the dropdown being read, if any
+  const blocks = { push: (b) => {
+    if (b.t === "details") top.push(b);
+    else if (open) { if (b.t === "h2") fail(`heading inside a dropdown: ${b.text}`); open.blocks.push(b); }
+    else top.push(b);
+  } };
   let title = null, k = 0;
   const directive = (name) => {                     // ```{name} arg + :opt: value lines, up to ```
     const arg = lines[k].replace(/^```\{[\w-]+\}\s*/, "").trim();
@@ -1044,6 +1078,14 @@ function genFirstSteps() {
       blocks.push({ t: "fence", lang: m[1], text: body.join("\n") });
       continue;
     }
+    if ((m = l.match(/^:::\{dropdown\}\s+(.+)$/))) {      // a labelled expandable section (sphinx-design)
+      if (open) fail(`${where(k)}: nested dropdown`);
+      open = { t: "details", label: m[1].trim(), blocks: [] };
+      blocks.push(open);
+      k++;
+      continue;
+    }
+    if (l.trim() === ":::" && open) { open = null; k++; continue; }
     if (l.startsWith("```") || l.startsWith(":::")) fail(`${where(k)}: block ${l.trim()} is not converted`);
     if (l.trim() === "$$") {
       const body = [];
@@ -1068,7 +1110,8 @@ function genFirstSteps() {
     blocks.push({ t: "p", inl: inline(para.join(" "), at) });
   }
   if (!title) fail(`${REL}: no "# Title"`);
-  write("first-steps.json", { generated, source: REL, title, blocks });
-  console.log(`gen-data: getting started: ${blocks.length} blocks from ${REL}`);
+  if (open) fail(`${REL}: dropdown "${open.label}" not closed`);
+  write("first-steps.json", { generated, source: REL, title, blocks: top });
+  console.log(`gen-data: getting started: ${top.length} blocks from ${REL}`);
 }
 genFirstSteps();

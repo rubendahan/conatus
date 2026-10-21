@@ -102,7 +102,7 @@ class DedalusTranslation:
         if scheme is None or dt is None:
             raise UnsupportedError(
                 "the script does not declare a translatable scheme and fixed dt",
-                why="Conatus never picks a time stepper or a time step for you",
+                why="the time stepper and the time step are explicit choices",
                 fix="tr.ivp_solver(dt=..., scheme='RK222')")
         plan = plan if plan is not None else self.discretize()
         if self.time_parameter:
@@ -235,7 +235,7 @@ class DedalusTranslation:
                    "a Newton solve from an initial guess of your choice")
             out += ["plan = tr.discretize()",
                     f"print('{self.kind} discretized: next step is {nxt} (the program stops "
-                    "here: Conatus never chooses it for you)')"]
+                    "here: choose it explicitly)')"]
         out += ["", "# " + "-" * 94,
                 "# Translation, line by line (Conatus form of each statement; not executed):", ""]
         by_line: dict[int, list[str]] = {}

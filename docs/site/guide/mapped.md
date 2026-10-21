@@ -54,8 +54,8 @@ with the volume element $\tfrac{t - b}{2}\,d\xi\,dx$ for integrals (the pressure
 $\int p\,dV = 0$ is over the physical domain). The metric is a polynomial of degree one in $\xi$:
 along the vertical the operators stay banded, exactly. Along $x$ the functions $J$, $A$, $B$
 multiply, so the Fourier modes are coupled: Conatus builds one sparse system for the whole domain
-(all modes, the metric inside the operator) and solves it directly. Nothing is split into an
-explicit correction, so there is no condition on the wall slope.
+(all modes, the metric inside the operator) and solves it directly. The metric is not split into
+an explicit correction, so there is no stability condition on the wall slope.
 
 ```{literalinclude} _check_mapped.py
 :language: python
@@ -70,8 +70,8 @@ explicit correction, so there is no condition on the wall slope.
 
 The Fourier coefficients of each metric function are computed once on a fine grid. Their tail on
 the grid of the unknowns must be below `ncc_tail_tol` (default `1e-8`), like any non-constant
-coefficient: a wall too steep for the horizontal resolution is refused, with the resolution that
-resolves it, never used truncated ({doc}`errors`). The same holds for a known field `m.given(...)`,
+coefficient. The compiler checks this coefficient tail and rejects a wall too steep for the
+horizontal resolution, with the resolution that resolves it ({doc}`errors`). The same holds for a known field `m.given(...)`,
 which on a mapped domain is a function of $x$ and of the physical $z$.
 
 ## Convergence

@@ -1,4 +1,4 @@
-"""Every eigenvalue of ``T(z) v = 0`` in a region: Beyn's contour-integral method, certified.
+"""Every eigenvalue of ``T(z) v = 0`` in a region: Beyn's contour-integral method.
 
 Beyn (2012, Linear Algebra Appl. 436, 3839) for linear and nonlinear eigenproblems: with a random
 probe block ``V`` (n x l) and the scaled variable ``zeta = (z - c) / rho`` (box centre ``c``,
@@ -14,23 +14,35 @@ eigenvalues are the ``zeta`` of the eigenvalues inside (and whose eigenvectors g
 The integrals are Gauss-Legendre sums on each edge of the box (exponentially convergent for the
 piecewise-analytic integrand; slower when an eigenvalue lies just outside an edge).
 
-What is returned is certified, root by root and as a whole:
+What is returned is checked root by root and as a whole:
 
 1. the number of eigenvalues inside, ``Z``, is counted first by the argument principle
-   (:func:`conatus.contour.count`); ``l p`` is chosen above it;
+   (:func:`conatus.contour.count`, a test on samples of the boundary: its scope is stated in
+   ``counted.scope``); ``l p`` is chosen above it;
 2. every Ritz value is polished by two-sided nonlinear inverse iteration (right and left vectors,
    ``x <- T(z)^{-1} T'(z) x``, ``y <- T(z)^{-H} T'(z)^H y``, Newton step on ``y^H T(z) x = 0``: the
    two-sided Rayleigh quotient of a pencil), or one-sided ``u = T(z)^{-1} T'(z) v``,
    ``z <- z - (c^H v) / (c^H u)`` when no adjoint solve is available (Hill operators); a polish
    never leaves half the distance to the nearest other Ritz value;
-3. a root is kept when it lies in the box and its relative backward residual
-   ``||T(z) v|| / (||T(z)|| ||v||)`` is at most ``residual_tol``;
-4. roots closer than a millionth of the box size are one root; the multiplicity of such a
-   cluster (a double eigenvalue, a coalescence, two Ritz values polished onto one root) is its
-   own argument-principle count on a small box around it;
+3. a root is kept when it lies in the box and its residual ``||T(z) v|| / (s(z) ||v||)`` is at
+   most ``residual_tol``. The scale ``s(z)`` depends on the operator (``residual_definition``):
+   ``||L||_1 + |z| ||M||_1`` for a pencil (a backward error relative to the pencil's
+   coefficients); an upper bound of ``||T(z)||_1`` for a Hill operator; and, for a callable or a
+   Hill operator nonlinear in the exponent, ``max(||T(z)||_1, s_ref)`` with ``s_ref`` the median
+   ``||T||_1`` at the four corners and four edge midpoints of the box. The floor ``s_ref`` keeps
+   a scalar ``f`` from scoring ``|f(z)| / |f(z)| = 1``; such a residual is relative to the size of
+   ``T`` on the boundary, not a relative perturbation of the near-singular ``T(z)`` itself;
+4. polished roots closer than a millionth of the box size are grouped, and each group is counted
+   by the argument principle on a small square around it (``enclosure``: its half-side). A group
+   of k distinct values whose square holds k eigenvalues is then separated: each value gets its
+   own square, a quarter of the distance to its neighbours, and is returned on its own when that
+   square holds one eigenvalue. Otherwise the group is returned once, with ``multiplicity`` = the
+   number of eigenvalues its square holds: a multiple eigenvalue, or a cluster not separated at
+   that size (a defective eigenvalue, which rounding splits into a small circle of values, is
+   returned at their mean when the mean passes the residual test);
 5. the multiplicities must add up to ``Z``. If they do not, the moments are recomputed with more
    quadrature nodes, columns and moments (``max_rounds``); if they still do not, the call is
-   refused with what was found. A partial or uncertified list is never returned.
+   refused with what was found. A partial list, or a root above ``residual_tol``, is not returned.
 """
 from __future__ import annotations
 
@@ -49,14 +61,15 @@ from .operators import Operator, SingularPoint, as_operator
 from .region import ContourBox
 
 __all__ = ["beyn", "BeynResult", "RESIDUAL_TOL", "QUADRATURE_POINTS", "POLISH_MAX_ITERATIONS",
-           "BEYN_MARGIN", "BEYN_MAX_ROUNDS", "BEYN_MAX_SPLITS"]
+           "BEYN_MARGIN", "BEYN_MAX_ROUNDS", "BEYN_MAX_SPLITS", "SAME_OPERATOR_TOL",
+           "SEPARATION_ROUNDING"]
 
 _DOC = "docs/site/guide/dynamics/contour.md"
-#: Certification threshold of a root: relative backward residual ||T(z) v|| / (||T(z)|| ||v||).
+#: Acceptance threshold of a root: residual ||T(z) v|| / (s(z) ||v||) (module docstring, point 3).
 #: The roots of the test suite (Orr-Sommerfeld, Hill, nonlinear) polish to 1e-19..1e-15 (dense QZ:
 #: about 1e-15). 1e-10 was too loose for a strongly non-normal operator: on Orr-Sommerfeld at
 #: Re = 1e4, N = 128, points 0.01..0.08 away from the S-branch eigenvalues passed it (residuals
-#: 1e-10..1e-11, pseudospectrum); at 1e-13 every certified root agrees with QZ to 5e-8.
+#: 1e-10..1e-11, pseudospectrum); at 1e-13 every accepted root agrees with QZ to 5e-8.
 RESIDUAL_TOL = 1e-13
 #: Gauss-Legendre nodes per edge of the box for the moments (doubled at every new round).
 QUADRATURE_POINTS = 32
@@ -67,19 +80,30 @@ POLISH_MAX_ITERATIONS = 20
 BEYN_MARGIN = 2
 #: Rounds of moments on one box before it is cut in two.
 BEYN_MAX_ROUNDS = 3
-#: Levels of cuts of a box whose rounds did not certify its roots (each half counted and solved;
+#: Levels of cuts of a box whose rounds did not account for its count (each half counted and solved;
 #: the counts of the halves must add up), before the method is refused.
 BEYN_MAX_SPLITS = 3
+#: beyn(counted=...): det T of the operator given must match, at the boundary points the count
+#: recorded, the unit phase (absolute) and log modulus (relative) of the counted operator's to
+#: this tolerance (external review of 0.1.1, F9; one evaluation of the same T agrees exactly).
+SAME_OPERATOR_TOL = 1e-8
+#: A separation square (``_separate``) smaller than this x eps x max(box radius, largest |root|)
+#: is not tried: at that size det T is rounding noise (copies of one simple root, a defective
+#: eigenvalue's circle).
+SEPARATION_ROUNDING = 1e3
 
 
 @dataclass
 class BeynResult:
-    """Certified eigenvalues of ``T(z) v = 0`` in a region (:func:`beyn`)."""
+    """Eigenvalues of ``T(z) v = 0`` in a region, each checked by its residual and a local count
+    (:func:`beyn`)."""
 
     values: np.ndarray            # distinct roots in the box
     vectors: np.ndarray           # their right eigenvectors (columns, unit 2-norm)
-    residuals: np.ndarray         # relative backward residual of each root
-    multiplicity: np.ndarray      # algebraic multiplicity (argument-principle count of a cluster)
+    residuals: np.ndarray         # residual ||T(z) v|| / (s(z) ||v||) of each root (residual_definition)
+    # eigenvalues counted (argument principle) in the square of half-side enclosure[i] around
+    # values[i]: 1 for a separated root; > 1 for a multiple eigenvalue or an unseparated cluster
+    multiplicity: np.ndarray
     counted: CountResult          # Z, by the argument principle on the whole box
     region: ContourBox
     residual_tol: float
@@ -93,6 +117,8 @@ class BeynResult:
     operator: str = ""
     iterations: np.ndarray = field(default_factory=lambda: np.zeros(0, dtype=int))
     log: list[str] = field(default_factory=list)
+    enclosure: np.ndarray = field(default_factory=lambda: np.zeros(0))   # half-side of each square
+    residual_definition: str = ""      # the scale s(z) of the residuals, in words
 
     @property
     def count(self) -> int:
@@ -101,14 +127,15 @@ class BeynResult:
 
     @property
     def count_method(self) -> str:
-        """How the count was certified, in words (the argument principle, matched by the roots)."""
-        return self.counted.count_method + "; matched by the certified roots of Beyn's method"
+        """How the count was obtained, in words (the argument principle, matched by the roots)."""
+        return (self.counted.count_method + "; the roots of Beyn's method, each within "
+                "residual_tol and counted on its own square, add up to it")
 
     def __len__(self) -> int:
         return int(self.values.size)
 
     def __repr__(self) -> str:
-        return (f"BeynResult({self.values.size} certified root(s), count Z = {self.count} in "
+        return (f"BeynResult({self.values.size} root(s), count Z = {self.count} in "
                 f"{self.region.describe()}; .explain())")
 
     def explain(self, n: int = 12) -> str:
@@ -129,17 +156,54 @@ class BeynResult:
                 lines.append(f"  Hankel singular values: rank {self.rank} above 1e-10 sigma_1, "
                              f"sigma_Z/sigma_1 = {sv[self.count - 1] / sv[0]:.1e}{gap}")
             lines += [
-                      "  polish: inverse iteration on T(z)^-1 T'(z) (two-sided when adjoint solves exist); certified when "
-                      f"||T(z) v|| / (||T(z)|| ||v||) <= {self.residual_tol:g} and z in the box"]
-            lines.append("  roots (multiplicity > 1: a cluster counted on its own small box):")
+                      "  polish: inverse iteration on T(z)^-1 T'(z) (two-sided when adjoint solves "
+                      f"exist); a root is kept when ||T(z) v|| / (s(z) ||v||) <= "
+                      f"{self.residual_tol:g} and z is in the box, s(z) = {self.residual_definition}"]
+            lines.append("  roots, each with the eigenvalues counted in a square around it "
+                         "(> 1: a multiple eigenvalue or a cluster not separated at that size):")
+            enc = self.enclosure if self.enclosure.size == self.values.size else \
+                np.full(self.values.size, np.nan)
             for i in np.argsort(-self.values.imag, kind="stable")[:n]:
                 lines.append(f"    z = {self.values[i]: .12e}  residual {self.residuals[i]:.1e}  "
-                             f"multiplicity {int(self.multiplicity[i])}  "
-                             f"[{int(self.iterations[i])} polish iteration(s)]")
+                             f"multiplicity {int(self.multiplicity[i])} in half-side "
+                             f"{enc[i]:.1e}  [{int(self.iterations[i])} polish iteration(s)]")
             if self.values.size > n:
                 lines.append(f"    ... {self.values.size - n} more (explain(n=...))")
         lines += ["  " + s for s in self.log]
         return "\n".join(lines)
+
+
+def _check_same_operator(op: Operator, counted: CountResult) -> None:
+    """Refuse a count of another operator (external review of 0.1.1, F9): the size and kind of T,
+    its declared poles, and det T at the boundary points the count recorded must agree."""
+    ref = counted.reference
+    why = ""
+    if not ref:
+        why = "the count carries no record of its operator"
+    elif ref[0] != op.n or ref[1] != op.kind or (counted.poles is not None and counted.poles != op.poles):
+        why = (f"the count is of a {ref[1]} of size {ref[0]} with P = {counted.poles}, not of "
+               f"this {op.kind} of size {op.n} with P = {op.poles}")
+    else:
+        for s, phase, logabs in ref[2]:
+            z = complex(counted.region.point(s))
+            try:
+                ph, la = op.slogdet(z)
+            except SingularPoint:
+                why = f"det T is zero at z = {z:.12g}, where the counted operator was not"
+                break
+            if not (abs(complex(ph) - phase) <= SAME_OPERATOR_TOL
+                    and abs(la - logabs) <= SAME_OPERATOR_TOL * max(1.0, abs(logabs))):
+                why = (f"det T at z = {z:.12g} differs from the counted operator's (phase "
+                       f"{np.angle(ph):.6g} vs {np.angle(phase):.6g}, log modulus {la:.6g} vs "
+                       f"{logabs:.6g})")
+                break
+    if why:
+        raise OptionError(f"beyn(counted=...): that count is of another operator: {why}",
+                          why="the roots are checked against the count Z; a count of another "
+                              "operator (another parameter value, another matrix) would accept "
+                              "a wrong root list",
+                          fix="count this operator (leave counted= out, or counted=count(T, "
+                              "region) with the same T)", doc=_DOC)
 
 
 def _check_tol(value: Any, name: str) -> float:
@@ -286,16 +350,16 @@ def _vector_at(op: Operator, z: complex, x: np.ndarray, rho: float) -> np.ndarra
     return np.asarray(x, complex) / float(np.linalg.norm(x))
 
 
-def _certified_groups(op: Operator, region: ContourBox, roots: np.ndarray, Z: int,
-                      obstacles: np.ndarray, cache: dict):
-    """(groups, multiplicities, half-sides) of the certified roots ``roots``, every multiplicity
+def _counted_groups(op: Operator, region: ContourBox, roots: np.ndarray, Z: int,
+                    obstacles: np.ndarray, cache: dict):
+    """(groups, multiplicities, half-sides) of the accepted roots ``roots``, every multiplicity
     an argument-principle count on a small square around its group, the squares disjoint, inside
     the region and clear of every other polished root (``obstacles``); a grouping is accepted
     when every count is >= 1 and they add up to ``Z`` (else the last one tried is returned, and
     the round fails).
 
     Every group, a single root too, is counted (critic review of L10: a defective eigenvalue of
-    order m >= 3 was returned as m "certified" simple roots spread over eps^(1/m), each of
+    order m >= 3 was returned as m simple roots spread over eps^(1/m), each of
     backward residual 1e-16 but none an eigenvalue, multiplicity 1 each, adding up to Z). A
     group's square has half-side ``max(2 r_g, 1e-3 rho)`` capped by a quarter of the distance to
     the other roots and 0.9 of the distance to the boundary (``r_g``: the group's radius about
@@ -344,22 +408,66 @@ def _certified_groups(op: Operator, region: ContourBox, roots: np.ndarray, Z: in
     return last
 
 
+def _separate(op: Operator, region: ContourBox, roots: np.ndarray, groups: list, mult: np.ndarray,
+              halves: np.ndarray, obstacles: np.ndarray, cache: dict):
+    """Split the groups of k distinct values whose square holds k eigenvalues into separated roots
+    (external review of 0.1.1, F3: 0.2 and 0.2000001, 1e-7 apart, were one root of multiplicity
+    2 at their mean). Each value gets a square of half-side a quarter of the distance to every
+    other polished root (and 0.9 of the distance to the boundary); the group is split when every
+    square holds exactly one eigenvalue. The squares are disjoint, so the k values are k distinct
+    eigenvalues. ``roots`` are the polished roots and ``obstacles`` the same array (``groups``
+    index both). A square below 1e3 eps of max(box radius, largest |root|) is not tried (rounding
+    noise: two copies of one simple root, or the rounding circle of a defective eigenvalue)."""
+    rho = region.radius
+    floor = SEPARATION_ROUNDING * np.finfo(float).eps * max(rho, float(np.max(np.abs(roots), initial=0.0)))
+    out_g, out_m, out_h = [], [], []
+    for g, m, h in zip(groups, mult, halves, strict=True):
+        split = None
+        if len(g) > 1 and int(m) == len(g):
+            split = []
+            for k in g:
+                z = complex(roots[k])
+                d = np.abs(np.delete(obstacles, k) - z)      # obstacles[k] is this root
+                hk = min(0.25 * float(np.min(d, initial=np.inf)),
+                         0.9 * float(region.distance_to_boundary(z)))
+                if not hk > floor:
+                    split = None
+                    break
+                key = (z, float(hk))
+                if key not in cache:
+                    cache[key] = _local_count(op, region, z, hk)
+                if cache[key] != 1:
+                    split = None
+                    break
+                split.append(hk)
+        if split is None:
+            out_g.append(g)
+            out_m.append(int(m))
+            out_h.append(float(h))
+        else:
+            out_g += [[k] for k in g]
+            out_m += [1] * len(g)
+            out_h += split
+    return out_g, np.array(out_m, dtype=int), np.array(out_h)
+
+
 def beyn(T: Any, region: ContourBox, *, poles: int | None = None, derivative: Any = None,
          counted: CountResult | None = None, control: tuple[ContourBox, int] | None = None,
          residual_tol: float = RESIDUAL_TOL, quadrature: int = QUADRATURE_POINTS, seed: int = 0,
          max_rounds: int = BEYN_MAX_ROUNDS,
          polish_max_iterations: int = POLISH_MAX_ITERATIONS) -> BeynResult:
-    """Every eigenvalue of ``T(z) v = 0`` in ``region``, certified (module docstring).
+    """Every eigenvalue of ``T(z) v = 0`` in ``region`` (module docstring: what is checked).
 
     ``T``: a pair ``(L, M)`` (the pencil ``L + z M``), a :class:`conatus.floquet.HillBlocks`, or a
     callable ``z -> matrix`` (or scalar) with, optionally, its ``derivative`` ``z -> T'(z)``.
     ``poles``: the poles of ``det T`` inside the region; required for a callable (0 when ``T`` is
     holomorphic there), since the count of eigenvalues is ``Z = N_Gamma + P``. ``counted``: a
     :class:`CountResult` of the same ``T`` and region already computed (else :func:`count` runs,
-    with ``control=``). ``residual_tol``: certification threshold of every root (declared default
-    ``RESIDUAL_TOL``). ``quadrature``: Gauss-Legendre nodes per edge; ``seed``: of the random
-    probe block (the result is reproducible). Raises ConvergenceError when the certified roots do
-    not account for the count after ``max_rounds`` rounds."""
+    with ``control=``); ``det T`` is evaluated again at the points it recorded and a count of
+    another operator is refused. ``residual_tol``: acceptance threshold of every root (declared
+    default ``RESIDUAL_TOL``). ``quadrature``: Gauss-Legendre nodes per edge; ``seed``: of the
+    random probe block (the result is reproducible). Raises ConvergenceError when the accepted
+    roots do not account for the count after ``max_rounds`` rounds."""
     residual_tol = _check_tol(residual_tol, "residual_tol")
     for name, v in (("quadrature", quadrature), ("max_rounds", max_rounds),
                     ("polish_max_iterations", polish_max_iterations)):
@@ -368,13 +476,19 @@ def beyn(T: Any, region: ContourBox, *, poles: int | None = None, derivative: An
     op = as_operator(T, poles=poles, derivative=derivative)
     if counted is None:
         counted = count(op, region, control=control)
+    elif not isinstance(counted, CountResult):
+        raise OptionError(f"beyn(counted={counted!r}): a CountResult of cn.contour.count",
+                          fix="counted=cn.contour.count(T, region, ...), or leave it out",
+                          doc=_DOC)
     elif counted.region != region:
         raise OptionError("beyn(counted=...): that count is of another region", doc=_DOC)
+    else:
+        _check_same_operator(op, counted)
     if counted.count is None:
         raise OptionError("beyn(): the number of eigenvalues inside is not known: the winding "
                           f"of det T is Z - P = {counted.winding} and P (the poles of det T in "
                           "the box) was not declared",
-                          why="the roots are certified by adding up to the count Z",
+                          why="the roots are checked by adding up to the count Z",
                           fix="poles=0 if T(z) is holomorphic in the box, poles=k if det T has "
                               "k poles there (multiplicities included)", doc=_DOC)
     Z = int(counted.count)
@@ -383,18 +497,23 @@ def beyn(T: Any, region: ContourBox, *, poles: int | None = None, derivative: An
     if Z < 0:
         raise ConvergenceError(f"count Z = {Z} < 0 in {region.describe()}: the declared poles "
                                f"({counted.poles}) exceed what the winding allows", doc=_DOC)
-    if Z == 0:
-        return BeynResult(np.zeros(0, complex), np.zeros((op.n, 0), complex), np.zeros(0),
-                          np.zeros(0, dtype=int), log=["no eigenvalue in the box: nothing to compute"],
-                          **base)
     log: list[str] = []
     if op.needs_reference:
         # residual scale of an operator without a structural norm: never below the typical size
         # of T on the boundary (a scalar f vanishes at its roots: |f(z)| / |f(z)| = 1)
         op.reference = 0.0
         op.reference = float(np.median([op.scale(z) for z in region.point(np.arange(8) / 2)]))
-        log.append(f"residual scale: max(||T(z)||_1, {op.reference:.3e}), the median ||T||_1 at "
-                   "the corners and edge midpoints of the box")
+        base["residual_definition"] = (
+            f"max(||T(z)||_1, s_ref), s_ref = {op.reference:.3e} the median ||T||_1 at the corners "
+            "and edge midpoints of the box (relative to the size of T on the boundary, not to "
+            "||T(z)|| itself)")
+        log.append(f"residual scale: {base['residual_definition']}")
+    else:
+        base["residual_definition"] = op.scale_definition
+    if Z == 0:
+        return BeynResult(np.zeros(0, complex), np.zeros((op.n, 0), complex), np.zeros(0),
+                          np.zeros(0, dtype=int), log=["no eigenvalue in the box: nothing to compute"],
+                          **base)
     opts = dict(residual_tol=residual_tol, quadrature=int(quadrature), max_rounds=int(max_rounds),
                 polish_max_iterations=int(polish_max_iterations))
     out = _solve(op, region, Z, np.random.default_rng(seed), opts, BEYN_MAX_SPLITS)
@@ -416,6 +535,7 @@ class _Found:
     rounds: int = 0
     iterations: np.ndarray = field(default_factory=lambda: np.zeros(0, dtype=int))
     log: list[str] = field(default_factory=list)
+    enclosure: np.ndarray = field(default_factory=lambda: np.zeros(0))
 
 
 def _rounds(op: Operator, region: ContourBox, Z: int, rng, opts: dict):
@@ -454,7 +574,7 @@ def _rounds(op: Operator, region: ContourBox, Z: int, rng, opts: dict):
             zj, xj, rj, itj = _polish(op, complex(cand[j]), X[:, j], opts["polish_max_iterations"],
                                       float(reach[j]))
             if not rj <= residual_tol:
-                # not certified within its reach: polish on without the bound (a duplicate of a
+                # not accepted within its reach: polish on without the bound (a duplicate of a
                 # neighbour is merged by the clusters; a root it leaves behind is found again
                 # by the next round or a cut)
                 zf, xf, rf, itf = _polish(op, zj, xj, opts["polish_max_iterations"])
@@ -468,13 +588,14 @@ def _rounds(op: Operator, region: ContourBox, Z: int, rng, opts: dict):
             res.append(rj)
             its.append(itj)
         roots_a = np.array(roots, complex)
-        # only certified roots are grouped and reported (an uncertified one cannot be returned),
+        # only accepted roots are grouped and reported (one above residual_tol is not returned),
         # but every polished root bounds the squares of the others: a square must not reach a
         # root whose polish merely failed, else its eigenvalue would be counted as a multiplicity
         ok_idx = [k for k, r in enumerate(res) if r <= residual_tol]
         if ok_idx:
-            sub, mult, half = _certified_groups(op, region, roots_a[ok_idx], Z, roots_a, cache)
+            sub, mult, half = _counted_groups(op, region, roots_a[ok_idx], Z, roots_a, cache)
             groups = [[ok_idx[i] for i in g] for g in sub]
+            groups, mult, half = _separate(op, region, roots_a, groups, mult, half, roots_a, cache)
         else:
             groups, mult, half = [], np.zeros(0, int), np.zeros(0)
         # one representative per group: the root of smallest residual, or, for a group of
@@ -493,7 +614,7 @@ def _rounds(op: Operator, region: ContourBox, Z: int, rng, opts: dict):
         uncert = [k for k in keep if not res[k] <= residual_tol]
         msg = (f"round {rnd}: l = {ell} column(s), p = {p}, {q} nodes per edge; Hankel rank "
                f"{rank}; {K} Ritz value(s) polished, {outside} left the box, "
-               f"{len(roots) - len(ok_idx)} above residual_tol, {len(keep)} distinct certified "
+               f"{len(roots) - len(ok_idx)} above residual_tol, {len(keep)} distinct accepted "
                f"root(s) with multiplicities adding up to {int(mult.sum())}")
         for gi, k in enumerate(keep):
             if mult[gi] > 1:
@@ -507,7 +628,8 @@ def _rounds(op: Operator, region: ContourBox, Z: int, rng, opts: dict):
             return _Found(roots_a[k], np.stack([vecs[i] for i in keep], axis=1),
                           np.array([res[i] for i in keep]), mult, columns=ell, moments=p,
                           quadrature=q, singular_values=s, rank=rank, rounds=rnd,
-                          iterations=np.array([its[i] for i in keep], dtype=int), log=log), log, seen, found
+                          iterations=np.array([its[i] for i in keep], dtype=int), log=log,
+                          enclosure=np.asarray(half, dtype=float)), log, seen, found
         margin, q = 2 * margin, 2 * q
     return None, log, seen, found
 
@@ -533,7 +655,7 @@ def _split_boxes(region: ContourBox, avoid: np.ndarray):
 
 
 def _solve(op: Operator, region: ContourBox, Z: int, rng, opts: dict, splits: int) -> _Found:
-    """Beyn on ``region`` holding ``Z`` eigenvalues; if its rounds do not certify them, the box is
+    """Beyn on ``region`` holding ``Z`` eigenvalues; if its rounds do not find them, the box is
     cut in two (each half counted, the counts adding up to Z) and each half solved, at most
     ``splits`` times deep. Raises ConvergenceError when that fails too."""
     if Z == 0:
@@ -553,7 +675,7 @@ def _solve(op: Operator, region: ContourBox, Z: int, rng, opts: dict, splits: in
             if z1 + z2 != Z:
                 continue
             parts = [_solve(op, bb, zz, rng, opts, splits - 1) for bb, zz in ((b1, z1), (b2, z2))]
-            note = (f"{region.describe()}: the rounds did not certify the Z = {Z} roots "
+            note = (f"{region.describe()}: the rounds did not find the Z = {Z} roots "
                     f"({log[-1] if log else 'no round'}); cut at "
                     f"{'Re' if b1.re[1] != region.re[1] else 'Im'} = {x:.6g} into boxes of "
                     f"{z1} and {z2}, each counted and solved")
@@ -568,12 +690,13 @@ def _solve(op: Operator, region: ContourBox, Z: int, rng, opts: dict, splits: in
                           rank=sum(pp.rank for pp in parts),
                           rounds=max(pp.rounds for pp in parts),
                           iterations=np.r_[parts[0].iterations, parts[1].iterations],
-                          log=[note] + parts[0].log + parts[1].log)
+                          log=[note] + parts[0].log + parts[1].log,
+                          enclosure=np.r_[parts[0].enclosure, parts[1].enclosure])
     roots_a, res, mult, keep = found or (np.zeros(0), [], np.zeros(0, int), [])
     listing = "; ".join(f"{roots_a[k]:.10g} (residual {res[k]:.1e}, multiplicity {m})"
                         for k, m in zip(keep, mult, strict=True)) or "none"
     raise ConvergenceError(
-        f"Beyn's method refused in {region.describe()}: the certified roots do not account for "
+        f"Beyn's method refused in {region.describe()}: the accepted roots do not account for "
         f"the count Z = {Z} after {opts['max_rounds']} round(s) and {BEYN_MAX_SPLITS} level(s) of "
         "box cuts",
         why="a root list that does not match the argument-principle count, or a root whose "

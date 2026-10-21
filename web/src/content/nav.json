@@ -1,0 +1,21 @@
+{
+  "_comment": "One navigation for the website and the Sphinx documentation (lot F). Read by web/src/content/nav.ts (header, footer, home page) and by docs/site/conf.py (the docs sidebar and the docs home page). 'route' is a page of the website, 'docs' a page of the documentation (relative to its root).",
+  "primary": [
+    { "label": "Getting started", "route": "/tutorials/getting-started" },
+    { "label": "Tutorials", "route": "/tutorials" },
+    { "label": "Documentation", "short": "Docs", "route": "/documentation" },
+    { "label": "Gallery", "route": "/gallery" },
+    { "label": "Install", "route": "/install" },
+    { "label": "About", "route": "/about" }
+  ],
+  "start": [
+    { "title": "Install", "route": "/install",
+      "text": "pip install conatus, then python -m conatus doctor to see what this machine can run." },
+    { "title": "First steps: the Burgers equation", "route": "/tutorials/getting-started",
+      "text": "Ten minutes: write one equation, simulate it, plot it and measure its energy." },
+    { "title": "A stability calculation: Orr–Sommerfeld", "docs": "tutorials/01_orr_sommerfeld.html",
+      "text": "The calculation of the home page, with the eigenfunction, a resolution check and the critical Reynolds number." },
+    { "title": "One problem from onset to simulation: convection", "docs": "tutorials/00_getting_started.html",
+      "text": "Rayleigh–Bénard convection: the onset by linear stability, then a simulation and its heat flux." }
+  ]
+}

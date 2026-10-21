@@ -15,5 +15,9 @@ r = gain(Phi, np.eye(2), None)
 v, u = np.asarray(r.v_opt), np.asarray(r.u_resp)
 err = float(np.max(np.abs(u - Phi @ v)))
 check(abs(r.G - 9.0) < 1e-12, f"G = {r.G}, expected 9")
+# analytic optimum (review 2026-10-21, F14: u = Phi v also holds for u = v = 0): v = e1 up to a
+# unit phase, response 3 e1
+check(v.shape == (2,) and abs(abs(v[0]) - 1) < 1e-12 and abs(v[1]) < 1e-12, f"v_opt = {v}, expected e1")
+check(abs(np.linalg.norm(u) - 3.0) < 1e-12, f"|u_resp| = {np.linalg.norm(u)}, expected 3")
 check(err < 1e-12, f"u_resp = {u}, Phi v_opt = {Phi @ v} (|response| {np.linalg.norm(u):.3g}, expected 3)")
 passed("response = Phi v_opt")

@@ -74,7 +74,7 @@ export interface TutorialScript {
   script: string; status: string; time: string; run: string; commit: string | null; date: string | null; runId: string | null;
 }
 export interface Tutorial {
-  n: number; slug: string; title: string; learn: string; reference: string | null;
+  n: number | null; group: string | null; slug: string; title: string; learn: string; reference: string | null;
   status: "pass" | "partial" | "fail" | "not-run"; scripts: TutorialScript[];
 }
 export interface Tutorials { generated: string; source: string; statusSource: string | null; tutorials: Tutorial[] }

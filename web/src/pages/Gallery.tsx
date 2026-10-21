@@ -87,7 +87,8 @@ export default function Gallery() {
     <>
       <PageHead eyebrow="Gallery" title="Fluids, everywhere">
         <p>Flows computed with Conatus, drawn like the photographs of <i>An Album of Fluid Motion</i>: magnitudes in smoke
-          greys, signed fields through black at zero, from red to glass green. Open a plate to see it at full size.</p>
+          greys, signed fields through black at zero, from red to glass green. The plates are illustrations. Open one to see
+          it at full size, with its colour scale, the value it was checked against and the script that made it.</p>
       </PageHead>
       {films.length > 0 && (
         <Section id="films" className="gallery-section" title="In motion" intro={<p>Two Conatus runs, frame by frame, looping.</p>}>

@@ -43,6 +43,30 @@ def pairs(exact):
                          adjoint_bcs=ADJ_BCS) for k in ("discrete", "continuous")}
 
 
+def _gl_eigenvalue(nu, gamma, mu_c, mu2, n):
+    """lambda_n = mu_c - nu^2/(4 gamma) - (n + 1/2) sqrt(-2 gamma mu2) (Chomaz 2005, eq. 3.12),
+    written here independently of conatus.sensitivity.models (axis 11: the
+    closed-form oracle lived in the package under test)."""
+    return mu_c - nu ** 2 / (4 * gamma) - (n + 0.5) * np.sqrt(-2 * gamma * mu2 + 0j)
+
+
+@pytest.mark.parametrize("n", [0, 1, 3])
+def test_closed_form_oracle_is_the_textbook_one(n):
+    ex = ginzburg_landau_exact(nu=NU, gamma=GAMMA, mu_c=MUC, mu2=MU2, n=n)
+    lam = _gl_eigenvalue(NU, GAMMA, MUC, MU2, n)
+    assert abs(ex.eigenvalue - lam) < 1e-14
+    # derivatives by central differences of the test's own formula (h = 1e-6: error < 1e-8)
+    h, d = 1e-6, ex.d_eigenvalue()
+    fd = {"nu": (_gl_eigenvalue(NU + h, GAMMA, MUC, MU2, n) - _gl_eigenvalue(NU - h, GAMMA, MUC, MU2, n)) / (2 * h),
+          "mu_c": (_gl_eigenvalue(NU, GAMMA, MUC + h, MU2, n) - _gl_eigenvalue(NU, GAMMA, MUC - h, MU2, n)) / (2 * h),
+          "mu2": (_gl_eigenvalue(NU, GAMMA, MUC, MU2 + h, n) - _gl_eigenvalue(NU, GAMMA, MUC, MU2 - h, n)) / (2 * h)}
+    for k, v in fd.items():
+        assert abs(d[k] - v) < 1e-7 * max(1.0, abs(v)), (k, d[k], v)
+    # mutation check: a sign error in the nu term is caught by the same comparison
+    assert abs(ex.eigenvalue - (MUC + NU ** 2 / (4 * GAMMA)
+                                - (n + 0.5) * np.sqrt(-2 * GAMMA * MU2 + 0j))) > 1e-3
+
+
 def test_truncation_is_negligible(exact):
     assert exact.truncation(BOUNDS) < 1e-60
 

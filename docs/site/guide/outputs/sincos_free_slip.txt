@@ -1,7 +1,7 @@
-sincos     Ra/Ra_c = 0.99: s = -0.074208019189858
-chebyshev  Ra/Ra_c = 0.99: s = -0.074208019189862
+sincos     Ra/Ra_c = 0.99: s = -0.074208019189859
+chebyshev  Ra/Ra_c = 0.99: s = -0.074208019189847
 sincos     Ra/Ra_c = 1.01: s = +0.073837897458271
-chebyshev  Ra/Ra_c = 1.01: s = +0.073837897458291
+chebyshev  Ra/Ra_c = 1.01: s = +0.073837897458280
 z: walls at 0, 1 -> sine/cosine bases (N_z wavenumbers n pi/L, n < N_z, L = 1), realised as the reflection subspace of RealFourier(2 N_z) on [0, 2); no tau
 u: cosine/sine by component (x: cosine, z: sine) (free-slip (u·n = 0, dz(u_t) = 0) at walls)
 T: sine series (T = 0 at walls)

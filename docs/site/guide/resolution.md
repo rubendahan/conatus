@@ -13,10 +13,17 @@ sim.initial(T=lambda x, z: -z + 1e-3 * np.cos(np.pi * x) * np.cos(np.pi * z))
 sim.run(steps=10)
 rep = sim.plan.resolution_report(sim.solver, velocity="u")   # a simulation, an LBVP solution, or data
 print(rep.explain())
-rep.ok                          # every (variable, direction) resolved
-rep.recommend(target=1e-10)     # declared recommendations, never applied
+rep.ok                          # complete, and every (variable, direction) resolved
+rep.complete, rep.unmeasured    # every variable measured? the ones the state lacks
+rep.recommend(target=1e-10)     # suggested resolutions; the plan is unchanged
 rep.entry("T", "z").modes_for(1e-12)
 ```
+
+A state that lacks a variable of the plan (an empty mapping, or only some of the fields) gives an
+incomplete report: the missing variables are listed in `rep.unmeasured`, the headline says
+"INCOMPLETE" (or "NOT MEASURED" when nothing was measured), and `rep.ok` is False. Tau variables
+and variables without a spectral direction are not counted. An array whose shape is not the
+variable's on the plan is refused with the expected shape.
 
 For each variable and each direction, the report measures the **spectral tail** of the
 coefficients:
@@ -45,10 +52,10 @@ The report also gives:
 
 - the dealias factor of each basis;
 - when a velocity and `dt` are known, the advective CFL number $\Delta t\,\max\sum_i |u_i|/\Delta
-  x_i$, labelled as a **stability indicator, not an error control**.
+  x_i$. It estimates a stability-limited time step. Estimate the integration error separately.
 
-A recommendation such as "increase Nz from 24 to ~36" is text. Nothing changes the plan, the
-bases or the solver (tested).
+A recommendation such as "increase Nz from 24 to ~36" is text. The report leaves the plan, the
+bases and the solver unchanged (tested).
 
 For example, $\tanh(10x)$ on 24 Chebyshev polynomials is reported under-resolved with an
 estimate of about 170 modes; $\sin(\pi x)$ on 32 is resolved, with no recommendation.

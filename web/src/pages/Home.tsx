@@ -1,107 +1,101 @@
-// Home page: a thesis over a live simulation (a real computation), two short films of Conatus
-// runs, then the code of an executed tutorial with its output, what Conatus lets you do, and the way in.
-// Text-first, like a project home page (Ruben, 2026-10-02). No measured figures here: the numbers
-// live on the Validation page only. Code and output are cut from the executed tutorial
-// (lib/snippet.ts), never retyped.
-import type { ReactNode } from "react";
+// Home page, built around one research task (presentation review of 0.1.1, priorities 1, 3, 6, 12, 14, 15;
+// lot F): what Conatus is for, one complete stability calculation that runs as shown next to what it
+// printed, a short list of what else it does, and one route to get started. Optional tools, plans and the
+// origin of the name are on the About page.
+//
+// The example is the whole file web/home/critical_reynolds.py and its output is web/home/critical_reynolds.out,
+// written by web/home/run.sh when the script runs (header: sha256 of the script, Conatus and Python versions).
+// tests/docs/test_home_example.py checks that the output belongs to the script shown and that the README
+// shows the same code and output.
 import { Link } from "react-router-dom";
-import FluidHero from "../sim/FluidHero";
-import { ButtonLink, Code } from "../components/ui";
+import { ButtonLink, Code, DocLink, RepoPath } from "../components/ui";
 import { SITE } from "../content/site";
-import { region, tutorial } from "../lib/snippet";
-import Executed from "../components/Executed";
 import Film from "../components/Film";
 import { films } from "../data/films";
+import { GETTING_STARTED } from "../content/nav";
 import "../styles/home.css";
 import "../styles/hero.css";
 import "../styles/films.css";
+import "../styles/replay.css";
 
-const PAGE = "web/src/pages/Home.tsx";
+const RAW = import.meta.glob<string>("../../home/critical_reynolds.{py,out}", { query: "?raw", import: "default", eager: true });
+const raw = (ext: string): string => {
+  const hit = Object.entries(RAW).find(([k]) => k.endsWith("." + ext));
+  if (!hit) throw new Error(`[home] web/home/critical_reynolds.${ext} is missing (bash web/home/run.sh writes the output)`);
+  return hit[1];
+};
+const CODE = raw("py").replace(/\s+$/, "");
+const OUT_LINES = raw("out").replace(/\s+$/, "").split("\n");
+// header: "# critical_reynolds.py | script sha256 … | conatus 0.1.2 | python 3.12.11 | 2026-10-21 | 41 s"
+const HEAD: RegExpMatchArray = OUT_LINES[0].match(/^# critical_reynolds\.py \| script sha256 [0-9a-f]{64} \| conatus (\S+) \| python (\S+) \| (\S+) \| (\d+) s$/)
+  ?? (() => { throw new Error("[home] unexpected header in web/home/critical_reynolds.out (re-run bash web/home/run.sh)"); })();
+const OUTPUT = OUT_LINES.slice(1).join("\n");
 
-// Tutorial 1, as executed: the problem, the solve, and what it printed.
-const t01 = tutorial("t01_orr_sommerfeld");
-const CODE = region(t01.code, "problem", PAGE).replace(/\nprint\([^\n]*explain\(\)\)[^\n]*$/, "") + "\n\n" + region(t01.code, "solve", PAGE);
-const OUTPUT = [/^c = /, /^Re_c = /, /\[PASS\] (right residual|spectral tail)/, /^OK:/];
+// The film beside the title: a solver-produced field, small and pauseable (review: "Homepage motion").
+const film = films.find((f) => f.slug === "kelvin-helmholtz-film") ?? films[0];
 
-// ---- what you can do ---------------------------------------------------------------------------------
-const DOES: { k: string; title: string; text: ReactNode }[] = [
-  { k: "Write", title: "Equations as on paper", text: "Declare the domain, the fields and the equations in their usual form; name the boundaries and say what holds there. Conatus places the rest and tells you what it did." },
-  { k: "Simulate", title: "On a CPU or a GPU", text: "The same model runs on your laptop or on a GPU with one keyword. Resolution, scheme and time step are always yours to choose." },
-  { k: "Analyse", title: "Where a flow becomes unstable", text: "Eigenvalues with their residuals, critical parameters, exact adjoints, transient growth and Floquet analysis of time-periodic flows." },
-  { k: "Discover", title: "Orbits and bifurcations", text: "Equilibria, travelling waves and periodic orbits by Newton–Krylov; branches followed through folds, pitchforks and Hopf points." },
-  { k: "Keep track", title: "Runs you choose to record", text: "Ask for it (record=True, or cn.runs.track) and the parameters, code version and results of a run are kept, so you can find it, compare it and reproduce it later." },
+// What else it does: one line each, each pointing at a page that shows it.
+const ALSO: { what: string; to: string; doc?: boolean }[] = [
+  { what: "Time-dependent simulations of the same kind of model, with implicit–explicit time stepping.", to: "/tutorials/getting-started" },
+  { what: "Channels, periodic boxes, disks, annuli, pipes, spheres, balls and spherical shells.", to: "/geometries" },
+  { what: "Adjoint modes, transient growth, and Floquet analysis of time-periodic base flows.", to: "/dynamics" },
+  { what: "Steady states, travelling waves and periodic orbits by Newton–Krylov; continuation through folds and bifurcations.", to: "/dynamics" },
+  { what: "Lyapunov exponents, covariant Lyapunov vectors, tracers and dye in a simulated flow.", to: "/capabilities" },
 ];
 
 export default function Home() {
   return (
     <>
       <section className="hero" aria-labelledby="hero-title">
-        <div className="hero-sim">
-          <FluidHero interactive label="Kelvin–Helmholtz illustration, computed in your browser by a WebGL grid scheme, not by the Conatus solver" />
-        </div>
-        <div className="hero-veil" aria-hidden="true" />
-        <div className="wrap hero-content">
-          <p className="hero-eyebrow">Spectral PDEs · Dynamical systems · GPU</p>
-          <h1 id="hero-title" className="hero-title">Write the equations.<br />Conatus finds the structure.</h1>
-          <p className="hero-lede">
-            A spectral framework for partial differential equations and the dynamical systems they define, native on GPUs.
-            Write the equations as on paper, simulate them, find where the flow becomes unstable, follow its orbits and
-            bifurcations.
-          </p>
-          <div className="row hero-cta">
-            <ButtonLink to="/tutorials/getting-started">Get started</ButtonLink>
-            <ButtonLink to="/documentation" variant="ghost">Documentation</ButtonLink>
+        <div className="wrap hero-grid">
+          <div className="hero-content">
+            <p className="hero-eyebrow">Conatus</p>
+            <h1 id="hero-title" className="hero-title">Spectral PDE and stability calculations in Python</h1>
+            <p className="hero-lede">
+              Conatus is experimental research software for defining PDE models, computing eigenmodes and running
+              time-dependent simulations. Its examples focus on fluid instability and dynamical systems.
+            </p>
+            <div className="row hero-cta">
+              <ButtonLink to="#example">See a first calculation</ButtonLink>
+              <ButtonLink to="/tutorials/getting-started" variant="ghost">Getting started</ButtonLink>
+            </div>
+            <p className="hero-status">
+              Version {SITE.version}: CPU wheels for Linux x86-64 (<code>pip install conatus</code>); CUDA support is
+              experimental. The interface may still change.{SITE.repo && <> <a href={SITE.repo}>Source on GitHub</a>.</>}
+            </p>
           </div>
-          {/* first screen (W1): which version, its status, and how to get the code */}
-          <p className="hero-status">
-            Version {SITE.version} · CPU supported, GPU in beta · {SITE.repo
-              ? <a href={SITE.repo}>source on GitHub</a>
-              : <>repository private during the preview, source on request</>}
-            {" "}· install: <code>pip install conatus</code> (<Link to="/install">Install</Link>)
-          </p>
+          {film && <div className="hero-film"><Film f={film} /></div>}
         </div>
-        <p className="hero-caption wrap">
-          A Kelvin–Helmholtz shear layer rolling up: an illustration computed in your browser by a simple WebGL grid
-          scheme, not by the Conatus spectral solver. The films below are Conatus runs.
-        </p>
       </section>
 
-      {/* two short films of real runs (web/gallery/films.py), each frame a state the solver computed */}
-      {films.length > 0 && (
-        <section className="section home-films" aria-labelledby="films-h">
-          <div className="wrap">
-            <div className="section-head">
-              <p className="eyebrow">In motion</p>
-              <h2 id="films-h">Computed with Conatus</h2>
-              <p className="section-intro">Each film is a Conatus run, frame by frame: a shear layer rolling up, and heavy
-                fluid falling into light fluid.</p>
-            </div>
-            <ul className="films">
-              {films.map((f) => <li key={f.slug}><Film f={f} /></li>)}
-            </ul>
-            <p className="more-link"><Link to="/gallery">The gallery <span aria-hidden="true">→</span></Link></p>
-          </div>
-        </section>
-      )}
-
-      <section className="section lab home-code" aria-labelledby="code-h">
+      <section id="example" className="section home-code" aria-labelledby="code-h">
         <div className="wrap">
           <div className="section-head">
-            <p className="eyebrow">Write</p>
-            <h2 id="code-h">The equation on the page is the equation that runs</h2>
-            <p className="section-intro">Conatus reads the problem as mathematics, compiles it for the CPU or the GPU, and
-              tells you exactly what it did. Nothing changes behind your back. Below, the first tutorial as it ran, and what
-              it printed.</p>
+            <p className="eyebrow">A first calculation</p>
+            <h2 id="code-h">When does flow between two plates become unstable?</h2>
+            <p className="section-intro">Small wavy disturbances of plane Poiseuille flow obey the Orr–Sommerfeld equation.
+              The script below writes that equation, computes the least stable mode at one Reynolds number, then searches
+              for the critical Reynolds number. Save it as a file and run it with <code>python</code> after{" "}
+              <code>pip install conatus</code>.</p>
           </div>
           <div className="code-grid">
-            <Code title={`${t01.code.path.split("/").pop()} (excerpt)`}>{CODE}</Code>
-            <div className="code-side">
-              <Executed out={t01.out} patterns={OUTPUT} page={PAGE} label="Output" />
-              <ol className="code-steps">
-                <li><strong>Declare</strong> the domain, the fields and the equations, as written on paper.</li>
-                <li><strong>Discretise and check.</strong> A rank report refuses a missing or extra boundary condition before anything runs.</li>
-                <li><strong>Solve, and see how far to trust it.</strong> Every result comes with its own checks.</li>
-              </ol>
+            <Code title="critical_reynolds.py">{CODE}</Code>
+            <figure className="replay">
+              <figcaption className="replay-head">
+                <span className="replay-label">Output</span>
+                <span>what this script printed (Conatus {HEAD[1]}, Python {HEAD[2]}, {HEAD[4]} s on a CPU)</span>
+              </figcaption>
+              <pre tabIndex={0}><code>{OUTPUT}</code></pre>
+            </figure>
+            <div className="code-notes">
+              <p><strong>Reference.</strong> Orszag (1971) gives c = 0.23752649 + 0.00373967i at Re = 10 000, α = 1, and
+                Re<sub>c</sub> = 5772.22 at α<sub>c</sub> = 1.02056; the script's 1.02055 differs in the last digit.</p>
+              <p><strong>What the checks mean.</strong> The residual is the backward error of the computed eigenpair.
+                With <code>drift=96</code>, a mode is kept only if it is found again with 96 Chebyshev polynomials
+                instead of 64; modes that move are discretisation artefacts and are dropped.</p>
+              <p><strong>Next.</strong> The <DocLink to="tutorials/01_orr_sommerfeld.html">stability tutorial</DocLink>{" "}
+                continues from this script: the eigenfunction, its spectral coefficients and the sensitivity of c to Re.
+                The file is <RepoPath path="web/home/critical_reynolds.py">web/home/critical_reynolds.py</RepoPath>.</p>
             </div>
           </div>
         </div>
@@ -110,38 +104,37 @@ export default function Home() {
       <section className="section does" aria-labelledby="does-h">
         <div className="wrap">
           <div className="section-head">
-            <p className="eyebrow">What it does</p>
-            <h2 id="does-h">From the equations to the structure of the flow</h2>
+            <p className="eyebrow">What else it does</p>
+            <h2 id="does-h">The same model, other questions</h2>
           </div>
-          <ol className="does-grid">
-            {DOES.map((d) => (
-              <li key={d.k} className="does-item">
-                <p className="does-k">{d.k}</p>
-                <h3>{d.title}</h3>
-                <p>{d.text}</p>
-              </li>
+          <ul className="also-list">
+            {ALSO.map((a) => (
+              <li key={a.what}><Link to={a.to}>{a.what}</Link></li>
             ))}
-          </ol>
-          <p className="more-link"><Link to="/capabilities">All capabilities <span aria-hidden="true">→</span></Link></p>
+          </ul>
+          <p className="more-link"><Link to="/capabilities">Capabilities, with what is experimental <span aria-hidden="true">→</span></Link></p>
         </div>
       </section>
-
 
       <section className="section start" aria-labelledby="start-h">
         <div className="wrap">
           <div className="section-head">
             <p className="eyebrow">Get started</p>
-            <h2 id="start-h">Install, learn, read, cite</h2>
-            <p className="section-intro">Install it, work through the tutorials, then find each part described once in the
-              documentation.</p>
+            <h2 id="start-h">Four steps</h2>
           </div>
-          <div className="start-grid">
-            <Link className="start-card" to="/install"><span className="start-k">Install</span><strong><code>pip install conatus</code></strong><span>CPU wheel with the compiled core, no compiler needed; a CUDA 12 wheel for NVIDIA GPUs (beta). <code>python -m conatus doctor</code> says what this machine can run.</span></Link>
-            <Link className="start-card" to="/tutorials"><span className="start-k">Learn</span><strong>Tutorials</strong><span>Executed tutorials, each ending on a published result: start with 0, getting started.</span></Link>
-            <Link className="start-card" to="/documentation"><span className="start-k">Read</span><strong>Documentation</strong><span>The user guide, the API reference and the mathematics behind each method.</span></Link>
-            <Link className="start-card" to="/citing"><span className="start-k">Cite</span><strong>Citing</strong><span>CITATION.cff and BibTeX. Licence: BSD-3-Clause.</span></Link>
-            <Link className="start-card" to="/coming-next"><span className="start-k">Next</span><strong>Coming next</strong><span>Multi-GPU runs, the Studio from anywhere and further stability tools: under development, not in this release.</span></Link>
-          </div>
+          <ol className="route">
+            {GETTING_STARTED.map((s) => (
+              <li key={s.title}>
+                {s.docs ? <DocLink to={s.docs}><strong>{s.title}</strong></DocLink> : <Link to={s.to!}><strong>{s.title}</strong></Link>}
+                <span>{s.text}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="home-about">
+            <Link to="/documentation">Documentation</Link> · <Link to="/gallery">Gallery</Link> ·{" "}
+            <Link to="/validation">Validation</Link> · <Link to="/citing">Citing</Link> ·{" "}
+            <Link to="/about">About: maintenance, optional tools and plans</Link>
+          </p>
         </div>
       </section>
     </>

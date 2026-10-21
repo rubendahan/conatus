@@ -1,0 +1,6 @@
+/* About page (pages/About.tsx): prose at reading width, the epigraph that gives the name. */
+.about-body { max-width: var(--cn-max-text); }
+.about-body p { margin: 0 0 1rem; }
+.about-list { max-width: var(--cn-max-text); margin: 0; padding-left: 1.2rem; display: grid; gap: 0.7rem; }
+.about-epigraph { font-family: var(--cn-font-display); font-style: italic; font-size: 1.15rem; line-height: 1.45; display: grid; gap: 0.5rem; max-width: 30rem; margin: 0; }
+.about-epigraph .caption { font-family: var(--cn-font-text); font-style: normal; font-size: var(--cn-size-caption); color: var(--cn-muted); }

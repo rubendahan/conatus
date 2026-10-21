@@ -83,7 +83,7 @@ def default_root() -> Path:
         repo_tmp = REPO_ROOT / "scratch"
         if not in_checkout() or not repo_tmp.exists():
             raise OptionError("conatus.runs: no registry root declared",
-                              why="the registry never writes to a guessed place",
+                              why="the registry needs a declared location",
                               fix="set CN_RUNS=/path/on/scratch (or pass root=... explicitly, e.g. "
                                   "cn.runs.track(..., root='runs') for ./runs)")
         root = repo_tmp / "runs"
@@ -400,7 +400,7 @@ class Registry:
             table = "runs"
         elif key in pkeys and key in rkeys:
             raise OptionError(f"conatus.runs.find: {key!r} is both a parameter and a result",
-                              why="the registry does not choose between them for you",
+                              why="the key is ambiguous",
                               fix=f"write param_{key}__... or result_{key}__...")
         elif key in pkeys:
             table = "params"

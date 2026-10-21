@@ -26,6 +26,8 @@ from typing import Any
 
 import numpy as np
 
+from .._private import open_private, private_dir
+
 from .protocol import (COMMANDS, FILM_ENCODING, PROTOCOL_VERSION, RESERVED_RUN_IDS, RUN_ID_RE, SCALES, STAT_KINDS,
                        VIEW_KINDS, check_controls, check_set, control_file_problem, encode_curve, encode_frame, encode_frame3d, encode_points, encode_vec2d,
                        film_record, record)
@@ -153,7 +155,7 @@ class Telemetry:
         self.paused = False
         self._thread = threading.Thread(target=self._writer, name=f"telemetry-{run_id}", daemon=True)
         try:
-            self.spool.mkdir(parents=True, exist_ok=True)
+            private_dir(self.spool)                 # 0700 when created here (F12)
         except OSError as err:                      # never fatal for the computation
             self.error = f"spool {self.spool} unavailable: {err}"
         # a run_id used again (a script re-run): the old film is moved aside, never appended to
@@ -616,7 +618,7 @@ class Telemetry:
                 try:
                     if batch:
                         if fh is None:
-                            fh = path.open("a", encoding="utf-8")
+                            fh = open_private(path, "a")    # 0600 whatever the umask (F12)
                         fh.write("".join(json.dumps(b, separators=(",", ":")) + "\n" for b in batch))
                         fh.flush()
                         self.written_records += len(batch)
@@ -634,7 +636,8 @@ class Telemetry:
         for name, fr in frames.items():
             dst = self.spool / f"{self.run_id}.frame.{name}.json"
             tmp = dst.with_suffix(".json.tmp")
-            tmp.write_text(json.dumps(fr, separators=(",", ":")))
+            with open_private(tmp, "w") as fh:
+                fh.write(json.dumps(fr, separators=(",", ":")))
             os.replace(tmp, dst)                    # atomic for readers
             if self.film_max_bytes:
                 self._film_append(name, fr)
@@ -656,7 +659,7 @@ class Telemetry:
                 self.event("film_full", t=fr.get("t"), iteration=fr.get("iteration"),
                            bytes=self.film_bytes, level=self.film_level)
             return
-        with (self.spool / f"{self.run_id}.film.ndjson").open("ab") as fh:
+        with open_private(self.spool / f"{self.run_id}.film.ndjson", "ab") as fh:
             fh.write(line)
         self._film_next[name] = i + 1
         self.film_bytes += len(line)

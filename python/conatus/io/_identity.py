@@ -152,6 +152,29 @@ def _global_names(code: types.CodeType) -> set[str]:
     return out
 
 
+#: Names whose call or attribute reads state the identity cannot follow statically: a computed
+#: attribute or global name (``getattr(cfg, "factor")``: the name is a string constant, not a
+#: code name), the environment, files, and code built at run time. A function whose code (or
+#: the code of a user function it calls) names one of them has an undeclared dependency, so it
+#: is never given a cache key (review 0.1.1, F5: ``getattr(cfg, 'factor')`` kept the key after
+#: ``cfg.factor`` changed, a stale cache hit). Conservative: an attribute of the same name used
+#: for something else (``obj.load``) refuses the cache too.
+DYNAMIC_READS = frozenset({
+    # computed attribute / global / name lookups
+    "getattr", "hasattr", "vars", "globals", "locals", "__dict__", "__getattribute__",
+    "attrgetter", "eval", "exec", "compile", "__import__", "import_module", "reload",
+    # the environment
+    "environ", "getenv", "environb",
+    # files and other external input
+    "open", "read_text", "read_bytes", "load", "loads", "loadtxt", "genfromtxt", "fromfile",
+    "read_csv", "read_json", "read_hdf", "File", "urlopen", "input"})
+
+
+def _dynamic_reads(code: types.CodeType) -> list[str]:
+    """The names of :data:`DYNAMIC_READS` a code object (and the code nested in it) uses."""
+    return sorted(_global_names(code) & DYNAMIC_READS)
+
+
 def value_identity(v: Any, what: str, seen: set[int] | None = None,
                    _active: set[int] | None = None) -> Any:
     """Content identity of a value a computation reads: data by content (numbers, strings,
@@ -233,6 +256,12 @@ def callable_identity(fn: Any, what: str | None = None, seen: set[int] | None = 
     if not isinstance(code, types.CodeType):
         raise Undeclared(f"{what} is a callable {type(fn).__name__} object, whose state has no "
                          "content hash")
+    dyn = _dynamic_reads(code)
+    if dyn:
+        raise Undeclared(
+            f"{what}: its code uses {', '.join(dyn)}, a read whose target is chosen at run time "
+            "(a computed attribute or name, the environment or a file): what it reads has no "
+            "content hash")
     out: dict[str, Any] = {"function": f"{module}:{name}", "code_sha256": _code_digest(code)}
     if id(fn) in seen:                                  # recursion: its code is enough
         return out

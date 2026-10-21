@@ -1,19 +1,19 @@
 {
- "generated": "2026-10-20T23:09:22.591Z",
+ "generated": "2026-10-21T21:29:53.164Z",
  "source": "",
- "title": "Getting started in ten minutes",
+ "title": "First steps: the Burgers equation in ten minutes",
  "blocks": [
   {
    "t": "p",
    "inl": [
     {
      "k": "t",
-     "v": "One equation, one plot, one physical number. You write the viscous Burgers equation as on paper, simulate it, draw the solution and measure its kinetic energy, which the script checks against the exact solution. Then four small changes show what Conatus decides for you, and what it never does. The longer path through one problem, from stability to a simulation of convection rolls, is "
+     "v": "Simulate the viscous Burgers equation, plot its evolution and measure its kinetic energy. Then change one line at a time and see what changes. The longer path through one problem, from stability to a simulation of convection rolls, is "
     },
     {
      "k": "doc",
      "to": "tutorials/00_getting_started.html",
-     "v": "Getting started: convection between two plates"
+     "v": "Convection between two plates: from onset to simulation"
     },
     {
      "k": "t",
@@ -131,7 +131,7 @@
    "inl": [
     {
      "k": "t",
-     "v": "The domain, the unknown, the parameter and the equation are all you write. "
+     "v": "You write the domain, the unknown, the parameter and the equation. "
     },
     {
      "k": "code",
@@ -139,7 +139,7 @@
     },
     {
      "k": "t",
-     "v": " prints what Conatus decided from them: the linear term is treated implicitly, the product "
+     "v": " prints how Conatus will treat each term. The linear term is implicit, the product "
     },
     {
      "k": "code",
@@ -147,7 +147,7 @@
     },
     {
      "k": "t",
-     "v": " explicitly, and the product is dealiased by the 3/2 rule."
+     "v": " is explicit, and the product is dealiased by the 3/2 rule:"
     }
    ]
   },
@@ -163,16 +163,27 @@
    "text": "Simulate and plot"
   },
   {
-   "t": "code",
-   "script": "t00_first_steps",
-   "region": "simulate"
-  },
-  {
    "t": "p",
    "inl": [
     {
      "k": "t",
-     "v": "A simulation needs a resolution, a scheme and a time step: three arguments, never defaults. "
+     "v": "Specify the resolution "
+    },
+    {
+     "k": "code",
+     "v": "N"
+    },
+    {
+     "k": "t",
+     "v": ", the time-stepping scheme and the time step "
+    },
+    {
+     "k": "code",
+     "v": "dt"
+    },
+    {
+     "k": "t",
+     "v": ". "
     },
     {
      "k": "code",
@@ -180,7 +191,7 @@
     },
     {
      "k": "t",
-     "v": " advances to "
+     "v": " advances to time "
     },
     {
      "k": "m",
@@ -188,9 +199,14 @@
     },
     {
      "k": "t",
-     "v": ", which must be a whole number of steps: the step is never changed for you."
+     "v": ", which must be a whole number of steps."
     }
    ]
+  },
+  {
+   "t": "code",
+   "script": "t00_first_steps",
+   "region": "simulate"
   },
   {
    "t": "code",
@@ -204,8 +220,8 @@
   },
   {
    "t": "h2",
-   "id": "one-physical-number",
-   "text": "One physical number"
+   "id": "the-kinetic-energy",
+   "text": "The kinetic energy"
   },
   {
    "t": "p",
@@ -238,24 +254,68 @@
    "region": "energy"
   },
   {
+   "t": "out",
+   "script": "t00_first_steps",
+   "startAt": "kinetic energy at t",
+   "endAt": "relative error"
+  },
+  {
    "t": "p",
    "inl": [
     {
      "k": "t",
-     "v": "The Cole–Hopf transformation turns the Burgers equation into the heat equation, so the exact solution is known (Cole 1951; Hopf 1950). The script ends by comparing the energy with it:"
+     "v": "The second line compares "
+    },
+    {
+     "k": "m",
+     "v": "E"
+    },
+    {
+     "k": "t",
+     "v": " with the exact solution, given by the Cole–Hopf transformation (Cole 1951; Hopf 1950). The code of that comparison is below."
     }
    ]
   },
   {
-   "t": "out",
-   "script": "t00_first_steps",
-   "startAt": "kinetic energy at t",
-   "endAt": "OK:"
+   "t": "details",
+   "label": "Verification against the exact solution",
+   "blocks": [
+    {
+     "t": "p",
+     "inl": [
+      {
+       "k": "t",
+       "v": "The Cole–Hopf transformation turns the Burgers equation into the heat equation, whose solution from "
+      },
+      {
+       "k": "m",
+       "v": "u(x,0) = sinx"
+      },
+      {
+       "k": "t",
+       "v": " is a series of Bessel functions. The script computes the exact energy from that series and checks the simulation against it to "
+      },
+      {
+       "k": "m",
+       "v": "10⁻⁹"
+      },
+      {
+       "k": "t",
+       "v": " relative."
+      }
+     ]
+    },
+    {
+     "t": "code",
+     "script": "t00_first_steps",
+     "region": "check"
+    }
+   ]
   },
   {
    "t": "h2",
-   "id": "four-changes-to-try",
-   "text": "Four changes to try"
+   "id": "changes-to-try",
+   "text": "Changes to try"
   },
   {
    "t": "p",
@@ -284,7 +344,7 @@
      },
      {
       "k": "t",
-      "v": " makes the front twice as steep. The energy still matches the exact solution (change the "
+      "v": " makes the front twice as steep. Change the "
      },
      {
       "k": "code",
@@ -300,7 +360,7 @@
      },
      {
       "k": "t",
-      "v": " too), to "
+      "v": " too: the energy still matches the exact solution, to "
      },
      {
       "k": "m",
@@ -318,7 +378,7 @@
      },
      {
       "k": "t",
-      "v": " "
+      "v": " With "
      },
      {
       "k": "code",
@@ -326,7 +386,7 @@
      },
      {
       "k": "t",
-      "v": " cannot resolve the front. Conatus does not raise the resolution for you: it warns, once, with an "
+      "v": " the front is not resolved. Conatus keeps the resolution you gave and warns once, with an "
      },
      {
       "k": "code",
@@ -334,7 +394,7 @@
      },
      {
       "k": "t",
-      "v": " that names the unknown, the direction and the spectral tail, and the energy is then only right to about "
+      "v": " that names the unknown, the direction and the spectral tail. The energy is then right to about "
      },
      {
       "k": "m",
@@ -368,7 +428,7 @@
      },
      {
       "k": "t",
-      "v": "; "
+      "v": ". "
      },
      {
       "k": "code",
@@ -376,7 +436,15 @@
      },
      {
       "k": "t",
-      "v": " tells you a stable step, it never imposes one."
+      "v": " suggests a stable step; the run keeps the "
+     },
+     {
+      "k": "code",
+      "v": "dt"
+     },
+     {
+      "k": "t",
+      "v": " you gave."
      }
     ],
     [
@@ -418,11 +486,11 @@
     {
      "k": "doc",
      "to": "tutorials/00_getting_started.html",
-     "v": "Getting started: convection between two plates"
+     "v": "Convection between two plates: from onset to simulation"
     },
     {
      "k": "t",
-     "v": " takes one problem, convection between two plates, from its equations to its stability, its onset and a simulation; then each tutorial of "
+     "v": " takes one problem, convection between two plates, from its equations to its stability, its onset and a simulation. Each tutorial of "
     },
     {
      "k": "doc",
@@ -436,15 +504,16 @@
    ]
   },
   {
-   "t": "h2",
-   "id": "output",
-   "text": "Output"
-  },
-  {
-   "t": "out",
-   "script": "t00_first_steps",
-   "startAt": null,
-   "endAt": null
+   "t": "details",
+   "label": "The whole output of the script",
+   "blocks": [
+    {
+     "t": "out",
+     "script": "t00_first_steps",
+     "startAt": null,
+     "endAt": null
+    }
+   ]
   }
  ]
 }

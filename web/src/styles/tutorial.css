@@ -39,3 +39,7 @@
   .tu-eqs { font-size: 1rem; padding: 0.6rem 0.8rem; }
   .tu-snippet .code pre { font-size: 0.74rem; }
 }
+/* labelled expandable sections (":::{dropdown}" of the documentation page) */
+.tu-details { margin: 1rem 0; border: 1px solid var(--cn-rule); border-radius: var(--cn-radius); padding: 0.4rem 0.9rem; }
+.tu-details > summary { cursor: pointer; font-weight: 600; padding: 0.3rem 0; }
+.tu-details[open] > summary { margin-bottom: 0.4rem; }

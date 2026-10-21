@@ -1,4 +1,7 @@
-// Client-side full-text search of the site and of the documentation (W1). The index
+// Client-side full-text search of the site and of the documentation (W1). Each result is labelled by kind
+// (guide, tutorial, methods, API, site page), and task guides and tutorials rank above the methods and API
+// pages for the same match (presentation review of 0.1.1, priority 9: "restart" listed the mathematics of
+// exact restarts before the guide's recipe). The index
 // (search-index.json) is written by scripts/prerender.mjs from the rendered pages and, with
 // --with-docs, from the built Sphinx pages (one document per section) and fetched on first open, with MiniSearch
 // loaded as a separate chunk. Keyboard: "/" or Ctrl/Cmd+K opens, arrows move, Enter opens, Esc closes.
@@ -11,6 +14,16 @@ interface Hit { id: string; path: string; page: string; heading: string; snippet
 
 // At most MAX_HITS results are listed; the hint says how many matched in all (finding 78).
 const MAX_HITS = 12;
+
+/** The kind of a page, from its path, and how much a match on it counts. */
+export function pageKind(path: string): { label: string; boost: number } {
+  if (path.startsWith("/docs/guide/")) return { label: "Guide", boost: 1.8 };
+  if (path.startsWith("/docs/tutorials/") || path.startsWith("/tutorials")) return { label: "Tutorial", boost: 1.4 };
+  if (path.startsWith("/docs/math/")) return { label: "Methods", boost: 0.6 };
+  if (path.startsWith("/docs/api/")) return { label: "API", boost: 0.7 };
+  if (path.startsWith("/docs/")) return { label: "Docs", boost: 1 };
+  return { label: "Site", boost: 1.1 };
+}
 type Engine = { search: (q: string) => { hits: Hit[]; total: number } };
 
 let enginePromise: Promise<Engine> | null = null;
@@ -24,7 +37,10 @@ function loadEngine(): Promise<Engine> {
     const ms = new MiniSearch<Doc>({
       fields: ["heading", "page", "text"],
       storeFields: ["path", "page", "heading", "text"],
-      searchOptions: { boost: { heading: 3, page: 2 }, prefix: true, fuzzy: 0.15, combineWith: "AND" },
+      searchOptions: {
+        boost: { heading: 3, page: 2 }, prefix: true, fuzzy: 0.15, combineWith: "AND",
+        boostDocument: (_id: unknown, _term: string, stored?: Record<string, unknown>) => pageKind(String(stored?.path ?? "")).boost,
+      },
     });
     ms.addAll(docs);
     return {
@@ -146,7 +162,7 @@ export default function Search() {
             {hits.map((h, i) => (
               <li key={h.id} id={`sr-${i}`} role="option" aria-selected={i === active} className={i === active ? "active" : undefined}
                 onMouseEnter={() => setActive(i)} onClick={() => go(h)}>
-                <span className="sr-page">{h.page}{h.heading && h.heading !== h.page ? <> · <Highlight text={h.heading} q={q} /></> : null}</span>
+                <span className="sr-page"><span className="sr-kind">{pageKind(h.path).label}</span>{h.page}{h.heading && h.heading !== h.page ? <> · <Highlight text={h.heading} q={q} /></> : null}</span>
                 <span className="sr-snippet"><Highlight text={h.snippet} q={q} /></span>
               </li>
             ))}

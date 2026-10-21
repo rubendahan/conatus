@@ -1,12 +1,11 @@
 # Errors and what they mean
 
-Every error says what is wrong, where, why it is refused, and what to write instead.
-
-Conatus refuses rather than guesses. When a problem is ill-posed, a choice is missing or a solver
-does not converge, it raises an exception that says **what** is wrong, **where** (equation, term,
-variable, group), **why** it is refused and a suggested **fix**, which it never applies for you
-(see {doc}`../principles`). The last line of every message links to the section of this page
-named after the exception class.
+A `ConatusError` states what is wrong, where (equation, term, variable, group), why the call is
+refused, and a suggested fix. It is raised when a problem is ill-posed, a required choice is
+missing or a solver does not converge. The fix is a suggestion: Conatus does not apply it for you
+({doc}`../principles`). The last line of each message links to the section of this page named
+after the exception class. An unexpected Python exception (an `IndexError` from inside Conatus, for
+example) is a bug: please report it.
 
 All errors derive from `ConatusError`, and each also derives from the built-in exception its code
 raised before 0.1 (`ValueError`, `TypeError`, `KeyError`, `RuntimeError`,
@@ -19,12 +18,11 @@ print(conatus.errors.explain())   # the tree of exception classes
 
 ## Warnings
 
-A warning never replaces a result: the result is returned. A warning is shown once per line of
-your script, and `explain()` does not repeat every one (it keeps the base residual of a
-linearization, the group in a result's header and a growth rule "inferred from the name"), so read
-the warnings. A statement that the answer may not be the one the call meant is a
-`conatus.errors.CorrectnessWarning` (a `UserWarning`, shown by Python's default filters wherever it
-is raised):
+A warning comes with a returned result. Read the warning's category and message before you use
+that result. Python shows a warning once per line of your script. `explain()` repeats only some of
+them: the base residual of a linearization, the group in a result's header, and a growth rule
+"inferred from the name". When the answer may not be the one the call meant, the warning is a
+`conatus.errors.CorrectnessWarning`. It is a `UserWarning`, so Python's default filters show it:
 
 | Warning | When |
 |---|---|

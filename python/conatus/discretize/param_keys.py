@@ -40,7 +40,7 @@ def check_param_keys(params: Mapping[str, object], valid: Iterable[str], *, wher
         f"{', '.join(repr(k) for k in stray)}; valid keys: {valid}"
         + (f" ({'; '.join(hints)})" if hints else "")
         + ". An unknown key would otherwise be ignored and the value declared on the Parameter "
-          "used instead (nothing is renamed for you).")
+          "used instead.")
 
 
 def check_param_values(params: Mapping[str, object], *, where: str) -> None:
@@ -57,8 +57,7 @@ def check_param_values(params: Mapping[str, object], *, where: str) -> None:
             ok = math.isfinite(c.real) and math.isfinite(c.imag)
         if not ok:
             raise InputTypeError(f"{where}: params[{k!r}] = {v!r} is not a finite number",
-                                 why="a parameter value enters every matrix; NaN, text or a flag "
-                                     "is never converted for you",
+                                 why="a parameter value enters every matrix and must be a finite number",
                                  fix=f"params={{{k!r}: 1.0}}")
 
 

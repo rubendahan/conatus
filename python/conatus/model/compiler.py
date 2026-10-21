@@ -287,7 +287,7 @@ class Compiled:
                  + ", ".join(f"{c}: {n}" for c, n in self.N.items())]
         if not full:
             return "\n".join(lines + self.summary()
-                             + ["(every decision and the IR problem: explain(full=True))"])
+                             + ["(compiler decisions and the IR problem: explain(full=True))"])
         lines += self.decisions()
         lines.append("")
         lines.append("IR problem (expert layer):")

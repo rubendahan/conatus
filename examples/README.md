@@ -2,8 +2,8 @@
 
 Each example is a short, readable script, written as in the paper (equation, physical
 comments, `explain()`), and each ends with an `assert` against a published value or a closed
-form (it stops with an error if the value is not reproduced). No value without a residual or
-convergence in N.
+form (it stops with an error if the value is not reproduced). Each example states its reference
+and the numerical checks it performs.
 
 Run: `python examples/<family>/<case>.py` (with the `tutorials` extra installed).
 User lines = lines of code excluding docstrings, comments and blank lines (functions + `__main__` block).
@@ -25,5 +25,5 @@ User lines = lines of code excluding docstrings, comments and blank lines (funct
 
 Writing the gallery found gaps in the library (`discretize` in `conatus.expert`, (U − c)·L,
 conj() on the left-hand side, the wavenumber as a parameter, √Ta declared, `critical()`
-start/xtol, double eigenvalues, the aliasing alert, periodic NLBVP, mapped domains), all closed
-since; none was worked around silently.
+start/xtol, double eigenvalues, the aliasing alert, periodic NLBVP, mapped domains). They are
+fixed.

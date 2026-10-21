@@ -1,6 +1,6 @@
-# 11. Record, query, reproduce: the run registry
+# Record, query, reproduce: the run registry
 
-Every run can be found again, compared, re-run to the bit, and reused only when you ask.
+Record a parameter scan, query its results and rerun a selected calculation. Recording is opt-in.
 
 **Goal.** Record a small parameter scan, certify the runs that pass a closed-form check, query them,
 compare two of them, reproduce one bit for bit, and see the cache reuse an identical computation
@@ -22,7 +22,7 @@ several processes writing at once, and an unwritable registry leaving the run bi
 :end-before: "# [/imports]"
 ```
 
-The tutorial keeps its registry in a new temporary directory, so it never reads or deletes a
+The tutorial keeps its registry in a new temporary directory, so it does not read or delete a
 registry of yours. Point `CN_RUNS` at a scratch disk for your own work: a registry holds states, and
 states can be large.
 
@@ -34,9 +34,13 @@ states can be large.
 
 The heat equation is a native model on a periodic line; `kappa` is a model parameter. Its value is
 not part of the problem's structural hash, but it is recorded as a run parameter and enters the cache
-key (two runs at different $\kappa$ are never confused).
+key, so two runs at different $\kappa$ are kept apart.
 
 ## Record and certify
+
+This tutorial works one level below `sim.run`. A simulation wraps a time stepper, `sim.solver`,
+and the registry works with that object: `sim.solver.run(n, record=run)` records a run, and
+`run.reproduce(solver)` runs it again.
 
 ```{literalinclude} code/t11_runs.py
 :language: python
@@ -46,17 +50,8 @@ key (two runs at different $\kappa$ are never confused).
 
 - `sim.solver.run(n, record=run)` records into the open run: problem hash, parameter values,
   numerics and `explain()`, the executed code, host, GPU, Slurm job, and the start and end states.
-  `sim.solver` is the time stepper the simulation wraps; recording and the cache are options of its
-  `run`.
 - `run.result(...)` stores scalars you can query. `certify` needs a reason, and here carries the
   evidence (the relative error against the closed form); the history of statuses is kept.
-
-```{figure} media/t11_decay.png
-:alt: Three straight lines on a log scale, the decay of sin 3x for three diffusivities, the coloured dots on thin grey closed-form lines.
-:width: 100%
-
-The three recorded runs, sampled every five steps: each decays as exp(−9κt) (grey), the closed form the registry's results are checked against.
-```
 
 ## Query and compare
 
@@ -67,8 +62,8 @@ The three recorded runs, sampled every five steps: each decays as exp(−9κt) (
 ```
 
 `kappa__gt=0.15` filters on a parameter; results, tags, statuses and index columns (`host`, `gpu`,
-`git_head`, `slurm_job`...) work the same way. An unknown key is an error with a suggestion, never an
-empty list.
+`git_head`, `slurm_job`...) work the same way. An unknown search key raises an error that suggests
+supported names.
 
 ## Reproduce
 
@@ -78,8 +73,9 @@ empty list.
 :end-before: "# [/reproduce]"
 ```
 
-The solver you pass must be the same problem with the same parameter values and numerics (checked,
-never adapted); the recorded start state is loaded and the end state compared bit for bit.
+The solver you pass must be the same problem with the same parameter values and numerics. A
+mismatch raises an error that lists the differences. The recorded start state is loaded and the end
+state compared bit for bit.
 
 ## The cache, only when asked
 
@@ -87,6 +83,13 @@ never adapted); the recorded start state is loaded and the end state compared bi
 :language: python
 :start-after: "# [cache]"
 :end-before: "# [/cache]"
+```
+
+```{figure} media/t11_registry.png
+:alt: A diagram of the registry: three run cards on the left, two of them outlined in red as certified, with arrows to a query box; on the right, a reproduction box reporting an identical end state and a cache box reporting that nothing was computed.
+:width: 100%
+
+The registry of the page when the script ends. Each run records its parameters and its measured error against the closed form exp(−9κt); the two certified ones (red) are what the query returns. reproduce() runs heat_k0.2 again and compares the end states: identical, largest difference 0. A repeated call with cache=True takes no step and reads the recorded state (200 steps in the original).
 ```
 
 ## Check

@@ -3,17 +3,17 @@
 Eulerian, Lagrangian and mixing diagnostics computed from the fields of a run, on the CPU or the GPU.
 
 `conatus.diagnostics` computes the classical Eulerian, Lagrangian and mixing diagnostics of a flow
-from **physical values on a declared grid**, with the same code on NumPy and CuPy. It never touches
-a solver: every function reads arrays and returns new ones, so a run with diagnostics is identical
-to the bit to the same run without them. Anything that is
-not defined by the data alone is refused with the reason, never guessed.
+from **physical values on a declared grid**, with the same code on NumPy and CuPy. Each function
+reads arrays and returns new ones without modifying the solver, so a run with diagnostics is
+bit-for-bit identical to the same run without them. Supply the metadata each diagnostic needs
+(grid spacing, periodicity, and so on); missing information raises an error with the reason.
 
 ## Global properties during a run
 
 `sim.properties(every=n, name=...)` evaluates global quantities of a running simulation every `n`
-steps (the role of Dedalus's `GlobalFlowProperty`): a property is an unknown, a component, or a
+steps: a property is an unknown, a component, or a
 function of the simulation; the reductions are `max`, `min`, `grid_average` (mean of the grid
-values), `volume_average` and `integral` (quadrature). It never changes the run:
+values), `volume_average` and `integral` (quadrature). It does not change the run:
 
 ```python
 import numpy as np
@@ -106,10 +106,4 @@ sample positions), `points3d` (particles or polylines, 16 bits) and `vec2d` (a 2
 integral convolution). `Telemetry.want_frame(name)` says whether a frame would leave now, so that
 Q or λ₂ are computed only then. The Studio shows them in a WebGL2 view: orbit, zoom and pan by mouse
 or touch, movable slices, isosurfaces, volume rendering in the chart's scales, Eulerian and
-Lagrangian side by side, LIC in 2D and the mixing curves. See `studio/README.md`.
-
-Two real examples ship with the repository: `studio/runs/channel3d_live.py` (the Re_τ 180 channel
-restarted from a checkpoint, with Q, λ₂, u′ volumes, a hydrogen-bubble wire and smoke streaklines;
-`--check-bitwise N` proves that the visualization does not change the computation) and
-`studio/runs/kh2d_live.py` (Kelvin–Helmholtz with a dye, mixing curves and a live check of the
-variance budget d⟨c′²⟩/dt + χ = 0).
+Lagrangian side by side, LIC in 2D and the mixing curves. See {doc}`studio`.

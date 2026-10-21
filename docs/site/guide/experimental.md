@@ -1,9 +1,8 @@
 # Experimental features
 
-Most of Conatus is supported: its API changes only through a declared deprecation, and what the
-guide says about it is measured. A few parts are shipped and tested but **not promised**: their
-API and defaults may change in a minor release without a deprecation cycle, and some of their
-claims rest on fewer measurements. The first use of each in a process emits one
+Most of the Conatus API changes only through a declared deprecation. The experimental APIs below
+may change in a minor release without a deprecation cycle. Some of their documented results rest
+on fewer measurements than the rest of the library. The first use of each in a process emits one
 `ExperimentalWarning` that names it:
 
 - **Orbits of 3-D channel and pipe flow**: `conatus.ecs.shooting.ShootingRPO` (relative periodic
@@ -26,6 +25,6 @@ import conatus as cn
 warnings.filterwarnings("ignore", category=cn.errors.ExperimentalWarning)
 ```
 
-Experimental never means unchecked: the same rules hold (residuals reported, nothing substituted
-silently), and every number that the documentation gives for these features points to the run
-that measured it.
+The same checks apply to these features as to the rest of the library: residuals are reported and
+numerical choices are declared. Numbers that the documentation gives for them point to the run that
+measured them.

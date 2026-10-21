@@ -14,6 +14,7 @@ import scipy.sparse as sp
 
 from ..ir import expr as E
 from .compiler import DiscretizationError
+from .curvilinear_common import const_value
 from .sphere_eval import comps
 from .sphere_ops import cross_table, spin_of
 from .sphere_blocks import _SQ2, SphereGroup, _Ent, _relabel, _sum_blocks
@@ -171,22 +172,7 @@ class _SphereCompiler:
         return v
 
     def _const(self, f: E.Expr):
-        if isinstance(f, E.Constant) and f.rank == 0:
-            return f.value
-        if isinstance(f, E.Parameter):
-            return self._param(f)
-        if isinstance(f, E.Power) and not f.free_fields():
-            b = self._const(f.args[0])
-            return None if b is None else b ** f.exponent
-        if isinstance(f, E.Mul) and not f.free_fields():
-            v = 1.0
-            for a in f.args:
-                w = self._const(a)
-                if w is None:
-                    return None
-                v = v * w
-            return v
-        return None
+        return const_value(f, self._param)
 
     # ---------------------------------------------------------------- entry point
     def compile(self, x: E.Expr, mode: str) -> dict:

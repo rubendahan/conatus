@@ -10,6 +10,12 @@ from __future__ import annotations
 import warnings
 from typing import Any
 
+#: The release that narrowed the public surface (``conatus.expert`` lists documented names only,
+#: some modules hide former names) and the release that removes the former names. Every warning
+#: about those names reads its versions here (external review of 0.1.1, F19).
+SURFACE_NARROWED_IN = "0.1.1"
+SURFACE_REMOVED_IN = "0.3"
+
 __all__ = ["DEPRECATED", "RENAMES", "RENAME_NOTES", "VOCABULARY", "renamed", "renames",
            "positional_order", "aliases_of", "given"]
 
@@ -272,16 +278,16 @@ def given(where: str, name: str, value: Any) -> Any:
 
 def former_names(module: str, names: dict[str, tuple[str, Any]]):
     """A module ``__getattr__`` (PEP 562) for names a module showed in 0.1 and no longer does
-    (release 0.2, L8): ``names`` maps the former name to (its canonical path, the object). The
+    (release 0.1.1, L8): ``names`` maps the former name to (its canonical path, the object). The
     name resolves to the same object with a DeprecationWarning at the user's line; anything else
     raises AttributeError as usual. Example: ``renames`` of the problem modules, imported there as
-    ``_renames`` since 0.2 (V5)."""
+    ``_renames`` since 0.1.1 (V5)."""
     def __getattr__(name: str) -> Any:
         if name in names:
             from .errors import _warn_user
             path, obj = names[name]
-            _warn_user(f"{module}.{name} is not a public name of this module since 0.2: use "
-                       f"{path}, the same object", DeprecationWarning)
+            _warn_user(f"{module}.{name} is not a public name of this module since "
+                       f"{SURFACE_NARROWED_IN}: use {path}, the same object", DeprecationWarning)
             return obj
         raise AttributeError(f"module {module!r} has no attribute {name!r}")
     return __getattr__

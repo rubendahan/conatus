@@ -376,11 +376,8 @@ class Simulation:
         (default, v0.1) raises ``cn.StopRun`` out of here; ``"return"`` ends the run where it is
         and returns normally, so that the post-processing after ``run()`` still runs
         (``sim.stopped`` then holds the reason)."""
-        if on_stop not in ("raise", "return"):
-            from ..errors import did_you_mean
-            raise OptionError(f"run(on_stop={on_stop!r})",
-                              fix="on_stop='raise' (cn.StopRun out of run) or 'return'"
-                                  + did_you_mean(str(on_stop), ("raise", "return")), doc=_DOC)
+        n = self._run_arguments(until, steps=steps, callback=callback, every=every,
+                                record=record, cache=cache, on_stop=on_stop)
         self.stopped = None
         if on_stop == "return":
             from ..telemetry.sink import StopRun
@@ -390,6 +387,46 @@ class Simulation:
             except StopRun as stop:
                 self.stopped = str(stop) or "stopped from the Studio"
                 return self
+        steps = n
+        if callback is not None:                   # the native callback sees the Simulation
+            user = callback
+            callback = lambda _solver: user(self)  # noqa: E731
+        w = self.watching
+        if w is not None and not w.closed:
+            callback, every = _combine(w.callback, w.poll, callback, every)
+        for o in self.outputs:                     # particles: the velocity at the start
+            begin = getattr(o, "begin_run", None)
+            if begin is not None:
+                begin()
+        for o in self.outputs:                     # the row of the start (output(initial=True))
+            if getattr(o, "initial_pending", False):
+                o.write_initial()
+        if self.outputs:                           # cn.io files, each on its own cadence
+            from ..io.analysis import _combine as _combine_io
+            callback, every = _combine_io([(callback, every)] + [(o, o.every) for o in self.outputs])
+        if w is not None and not w.closed and w.settable:
+            try:
+                self._run_settable(until, steps, callback, every, w.poll)
+            finally:
+                self._write_sidecars()
+            return self
+        try:
+            out = self.solver.run(steps, callback, every, record=record, cache=cache)
+        finally:                                   # also after a stop or a NumericalError:
+            self._write_sidecars()                 # the sidecar lists the rows written
+        return self if out is None else out
+
+    def _run_arguments(self, until: float | None = None, *, steps: int | None = None,
+                       callback: Callable | None = None, every: int | None = None,
+                       record: Any = None, cache: bool = False, on_stop: str = "raise") -> int:
+        """The checks of :meth:`run` on its arguments, without side effects; returns the number
+        of steps. Shared by ``run`` and by ``python -m conatus agent check`` (review 0.1.1, F13:
+        the dry run stopped at ``run(steps=-1)`` and reported ok)."""
+        if on_stop not in ("raise", "return"):
+            from ..errors import did_you_mean
+            raise OptionError(f"run(on_stop={on_stop!r})",
+                              fix="on_stop='raise' (cn.StopRun out of run) or 'return'"
+                                  + did_you_mean(str(on_stop), ("raise", "return")), doc=_DOC)
         from ..timestep.integrator import check_callback, check_steps, is_whole
         check_callback(callback, every, "run()")   # callback used to reach IVPSolver.run
         if (until is None) == (steps is None):     # without every and always raise there
@@ -419,41 +456,16 @@ class Simulation:
                 raise ResolutionError(
                     f"run(until={until}): {until - self.t:g} is not a whole number of steps "
                     f"dt = {self.dt:g} ({n:.6f})",
-                    why="the time step is never adjusted silently to land on a time",
+                    why="the stop time must be a whole number of time steps from the current time",
                     fix=f"run(steps={math.floor(n)}) or choose until = t + k*dt", doc=_DOC)
         else:                                      # a float is refused, never truncated
             steps = check_steps(steps, "run()", "steps")
-        if callback is not None:                   # the native callback sees the Simulation
-            user = callback
-            callback = lambda _solver: user(self)  # noqa: E731
         w = self.watching
-        if w is not None and not w.closed:
-            callback, every = _combine(w.callback, w.poll, callback, every)
-        for o in self.outputs:                     # particles: the velocity at the start
-            begin = getattr(o, "begin_run", None)
-            if begin is not None:
-                begin()
-        for o in self.outputs:                     # the row of the start (output(initial=True))
-            if getattr(o, "initial_pending", False):
-                o.write_initial()
-        if self.outputs:                           # cn.io files, each on its own cadence
-            from ..io.analysis import _combine as _combine_io
-            callback, every = _combine_io([(callback, every)] + [(o, o.every) for o in self.outputs])
-        if w is not None and not w.closed and w.settable:
-            if record is not None or cache:
-                raise OptionError("run(record=...): this run's dt may be changed from the Studio "
-                                  "(watch(settable=...)); the registry records one constant dt",
-                                  fix="drop record=/cache=, or watch without settable=", doc=_DOC)
-            try:
-                self._run_settable(until, steps, callback, every, w.poll)
-            finally:
-                self._write_sidecars()
-            return self
-        try:
-            out = self.solver.run(steps, callback, every, record=record, cache=cache)
-        finally:                                   # also after a stop or a NumericalError:
-            self._write_sidecars()                 # the sidecar lists the rows written
-        return self if out is None else out
+        if w is not None and not w.closed and w.settable and (record is not None or cache):
+            raise OptionError("run(record=...): this run's dt may be changed from the Studio "
+                              "(watch(settable=...)); the registry records one constant dt",
+                              fix="drop record=/cache=, or watch without settable=", doc=_DOC)
+        return steps
 
     def _write_sidecars(self) -> None:
         """XDMF sidecars of the analysis files: rewritten at the end of each run call;
@@ -974,7 +986,7 @@ class Simulation:
                 o, "chain_note", None) else "") for o in self.outputs]
             if self.watching is not None and not self.watching.closed:
                 lines.append(self.watching.explain().splitlines()[0])
-            lines.append("(every decision, tau by tau and term by term, and the solver layout: "
+            lines.append("(compiler decisions, tau by tau and term by term, and the solver layout: "
                          "sim.explain(full=True))")
             return "\n".join(lines)
         lines = [f"Simulation of '{comp.problem.name}' (native model) at N = "
@@ -1931,7 +1943,7 @@ def sincos_eigenvalues(plan, geo, want: Mapping, n: int | None = None, **kw: Any
         # left=True was overwritten silently (eigenvectors are dropped here)
         raise OptionError("left=True on a sine/cosine axis: the gathered result has no "
                           "eigenvectors (their sizes differ per group)",
-                          why="an argument is never ignored",
+                          why="every argument given must be used",
                           fix="pick one group with n=... and use the IR plan "
                               "(conatus.eigenvalues(plan, group, left=True))", doc=_LIN_DOC)
     kw = dict(kw, left=False)

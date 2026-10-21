@@ -5,8 +5,8 @@ Equilibria, travelling waves and periodic orbits found by Newton–Krylov–hook
 An invariant solution is a state that the flow maps to itself, up to a symmetry: an equilibrium
 $v(u) = 0$, a travelling wave $u(x - ct)$, a relative periodic orbit
 $\tau_\ell\,\Phi_T(u) = u$. Conatus solves these equations with a Newton–Krylov method and a
-trust-region (hookstep) step. The Jacobian is never formed: each Krylov vector costs one
-linearized evaluation or time integration, exact for the discrete scheme.
+trust-region (hookstep) step. The Jacobian is not formed. Each Krylov vector costs one linearized
+evaluation or time integration of the discrete scheme.
 
 ## The flow map
 
@@ -22,8 +22,9 @@ length 22:
 
 The tolerance of the Newton–Krylov solver is required (it decides the digits of the solution);
 its algorithm controls (iteration budget, Krylov tolerance and size, initial, minimum and maximum
-trust radius) have declared defaults, printed by `newton.explain()` and marked "(default)": they
-change how fast the residual reaches the tolerance, not the answer, whose residual is returned.
+trust radius) have declared defaults, printed by `newton.explain()` and marked "(default)". These
+controls affect convergence. Different controls or seeds can also converge to different
+solutions, so check the returned residual and which solution was reached.
 
 **Scope.** `find_equilibrium`, `find_travelling_wave` and `find_relative_periodic_orbit` work on
 problems with **one periodic direction** (a real Fourier basis, no other axis): Kuramoto–Sivashinsky,
@@ -32,7 +33,8 @@ with `N=` for equilibria and waves, whose search does not depend on the time sch
 is refused with this scope and the alternatives: steady states of large problems in symmetry
 subspaces (plane Couette, `conatus.ecs.steady.AffineSteadyProblem`), pipe travelling waves
 (`conatus.ecs.pipe.PipeTravellingWave`, experimental: {doc}`../experimental`), 2D Kolmogorov flow
-(`conatus.ecs.kolmogorov`). A generalisation to every geometry is planned, not available.
+(`conatus.ecs.kolmogorov`). This release supports the cases listed here; broader geometry support
+is planned.
 
 The seed `x0` of every finder is the state vector of the solver (`sim.solver.X`), the simulation
 itself (its current state), or the grid values of the unknown (`sim.grid("u")`), converted to the
@@ -87,8 +89,8 @@ and identifies its marginal directions. Seeds come from near-recurrences of a lo
 ## Thresholds and edge states
 
 The boundary between initial states that decay and those that become turbulent is located by
-bisection on an amplitude. Conatus returns the threshold as a bracket and never counts an
-undecided run on either side:
+bisection on an amplitude. Conatus returns the threshold as a bracket. A run that stays undecided
+is not counted on either side:
 
 ```{literalinclude} _check.py
 :language: python

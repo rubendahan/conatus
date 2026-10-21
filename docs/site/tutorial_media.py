@@ -136,6 +136,15 @@ def cap_t02(g):
     d = {"t": t, "amp": a, "spec": modes.values, "ke_t": dd.sim_time, "ke": dd.tasks["KE"],
          "T": sim.grid("T"), "xn": grid.axes[0].nodes(), "zn": grid.axes[1].nodes()}
     meta = {"sigma_evp": float(g["sigma_evp"]), "sigma_ivp": float(g["sigma_ivp"])}
+    # the restart check of the jobs block: the two-job chain against the uninterrupted run
+    import re
+    Xc, Xs = np.asarray(g["chain"].solver.X), np.asarray(g["sim"].solver.X)
+    hit = re.search(r"checkpoint_\d+\.h5 \(iteration (\d+), t = ([0-9.eE+-]+)\)", g["chain"].explain())
+    meta.update(chain_identical=bool(np.array_equal(Xc, Xs)), chain_max_abs_diff=float(np.abs(Xc - Xs).max()),
+                chain_unknowns=int(Xc.size), chain_iteration=int(g["chain"].solver.iteration),
+                chain_t=float(g["chain"].t), chain_rows=int(len(dd.sim_time)),
+                checkpoint_iteration=int(hit.group(1)) if hit else None,
+                checkpoint_t=float(hit.group(2)) if hit else None)
     try:                                           # the leading eigenfunction, temperature part
         j = int(np.argmax(modes.values.real))
         md = modes.mode(j)
@@ -146,18 +155,42 @@ def cap_t02(g):
     return d, meta
 
 
+def _timed(fn, repeats: int):
+    """``repeats`` wall times of ``fn()`` in ms, and its last result."""
+    walls, out = [], None
+    for _ in range(repeats):
+        t0 = time.perf_counter()
+        out = fn()
+        walls.append(1e3 * (time.perf_counter() - t0))
+    return walls, out
+
+
+def _machine() -> dict:
+    """Hardware and library versions of a timing (the cost table of tutorial 3)."""
+    import platform
+
+    import scipy
+    cpu = platform.processor() or "?"
+    try:
+        cpu = next(ln.split(":", 1)[1].strip() for ln in open("/proc/cpuinfo") if ln.startswith("model name"))
+    except (OSError, StopIteration):
+        pass
+    return {"cpu": cpu, "threads": os.environ.get("OMP_NUM_THREADS", "unset"), "numpy": np.__version__,
+            "scipy": scipy.__version__, "python": platform.python_version()}
+
+
 def cap_t03(g):
     from conatus.expert import discretize, eigenvalues, linearize
-    comp, evp = g["comp"], g["evp"]
+    comp, evp, R = g["comp"], g["evp"], 7          # R timings of each dense solve (first one included)
     d = {"full": g["res"].values}
-    meta = {"n_full": int(g["nf"]), "wall_full_ms": 1e3 * g["wall_full"]}
+    walls, _ = _timed(lambda: eigenvalues(g["plan"], g["group"]), R)
+    meta = {"n_full": int(g["nf"]), "wall_full_ms": walls, "repeats": R, "machine": _machine()}
     for label, sym in (("onset", g["onset"]), ("other", g["other"])):   # the solve block again
         sub = linearize(comp.problem, evp.base, evp.eigenvalue, symmetry=sym)
         splan = discretize(sub, ncc=g["ncc"])
         grp = next(x for x in splan.groups if x[0].k > 0)
-        t0 = time.perf_counter()
-        r = eigenvalues(splan, grp)
-        meta[f"wall_{label}_ms"] = 1e3 * (time.perf_counter() - t0)
+        walls, r = _timed(lambda splan=splan, grp=grp: eigenvalues(splan, grp), R)
+        meta[f"wall_{label}_ms"] = walls
         d[label] = r.values
         meta[f"n_{label}"] = int(splan.matrices(grp).L.shape[0])
     return d, meta
@@ -181,7 +214,8 @@ def cap_t04(g):
         prof.append(np.real(sol.plan.to_grid("u", parts[k].reshape(np.shape(sol.coeffs["u"])))))
         lam.append(p.p)
     d.update(lam=lam, prof=prof)
-    return d, {"lam_c": float(g["fold"].p)}
+    tol = getattr(newton, "tol", None)
+    return d, {"lam_c": float(g["fold"].p), "tol": None if tol is None else float(tol)}
 
 
 def _ks_grid(solver, X):
@@ -244,20 +278,21 @@ def cap_t10(g):
 
 
 def cap_t11(g):
-    simulation, amplitude, NSTEPS = g["simulation"], g["amplitude"], g["NSTEPS"]
-    certified = {r.id for r in g["found"]}          # the query block: the certified runs
-    d, meta = {}, {"rel_error": {}, "certified": []}
-    for kappa, run in g["runs"].items():
-        sim = simulation(kappa)                     # the recorded run, sampled every 5 steps
-        t, a = [0.0], [amplitude(sim)]
-        for _ in range(NSTEPS // 5):
-            sim.solver.run(5)
-            t.append(sim.t), a.append(amplitude(sim))
-        d[f"t_{kappa}"], d[f"a_{kappa}"] = t, a
-        meta["rel_error"][str(kappa)] = float(run.results["rel_error"])
-        if run.id in certified:
-            meta["certified"].append(kappa)
-    return d, meta
+    """The registry of the page as it stands at the end of the script: its records, the query
+    result, the reproduction and the cache reuse (the figure draws these, not the heat solution)."""
+    runs, found, rep, hit = g["runs"], g["found"], g["rep"], g["hit"]
+    records = [{"id": r.id, "name": r.name, "kappa": float(k), "status": r.status,
+                "rel_error": float(r.results["rel_error"])} for k, r in runs.items()]
+    meta = {"records": records, "found": [r.id for r in found],
+            "query": 'cn.runs.find(kappa__gt=0.15, status="certified", tags="tutorial")',
+            "reproduce": {"original": rep.original.id, "new": rep.new.id if rep.new is not None else None,
+                          "identical": bool(rep.identical), "max_abs_diff": float(rep.max_abs_diff),
+                          "code_identical": bool(rep.code_identical)},
+            "cache": {"run": g["again"].id, "reused_by": hit.id, "hit": bool(hit.cache_report["hit"]),
+                      "reused_from": hit.cache_report["reused_from"],
+                      "computed": str(hit.cache_report["computed"])},
+            "nsteps": int(g["NSTEPS"])}
+    return {"kappa": [r["kappa"] for r in records]}, meta
 
 
 def cap_t12(g):
@@ -295,7 +330,7 @@ def cap_t13(g):
     d = {"x": x, "S": st.wavemaker(x), "direct": next(iter(dd.values())),
          "adjoint": next(iter(da.values())), "omega": g["r"].omega, "lam": g["lam"],
          "lead4": g["lead4"]}
-    return d, {"x_star": float(g["x_star"]), "s_star": float(g["s_star"]),
+    return d, {"x_star": float(g["x_star"]), "s_star": float(g["s_star"]), "S0_closed_form": float(g["S0"]),
                "eigenvalue": [float(np.real(bfs.pair.sigma)), float(np.imag(bfs.pair.sigma))]}
 
 

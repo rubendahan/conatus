@@ -23,9 +23,9 @@ $\det M(\mu)$, found by a secant method from a declared seed, or the eigenvalues
 corresponding generalised problem near a shift. Block elimination along the harmonics keeps the
 cost linear in the number of harmonics.
 
-A root is never accepted on a residual alone (the residual of a nearly singular matrix is small
-everywhere). `root.certify(residual_tol=..., convergence_tol=...)` marks it certified only if the
-secant converged, the residual is below the declared tolerance, and the root moves by less than
+A small residual alone does not validate a root, because the residual of a nearly singular
+matrix is small everywhere. `root.certify(residual_tol=..., convergence_tol=...)` marks a root
+certified only if the secant converged, the residual is below the declared tolerance, and the root moves by less than
 `convergence_tol` between two resolutions. Two further checks are run on request and recorded
 when passed to `certify`: the contrast $\sigma_{\min}/\sigma_2$ of $M(\mu)$ (`contrast(mu)`, small
 problems) and the argument principle (`winding(center, radius, n_points)`, the winding of

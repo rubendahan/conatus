@@ -19,8 +19,8 @@ plus the handles needed next: `r.fields` (unknowns by name, taus included), `r.p
 `r.bases` (by coordinate name), `r.ncc` (non-constant-coefficient data for
 `discretize(problem, ncc=r.ncc)`), `r.notes`, `r.reference` and `r.extras`.
 
-Nothing has a numerical default: resolution, dealiasing and domain size are keyword arguments, as
-are the physical parameters. `<name>` is the IVP, `<name>_evp` its linear-stability EVP.
+Resolution, dealiasing and domain size have no default. They are keyword arguments, like the
+physical parameters. `<name>` is the IVP, `<name>_evp` its linear-stability EVP.
 
 | Function | Problem | Validation reference |
 |---|---|---|

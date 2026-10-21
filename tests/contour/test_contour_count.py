@@ -195,6 +195,10 @@ def test_hill_count_through_a_block_thomas_breakdown():
     r = count(h, box, initial_points=17)                             # a node exactly at 1j
     assert r.count == int(np.sum(box.contains(exact))) == 3
     b = beyn(h, box, counted=r)
+    # complex values against the dense oracle, not only the real parts
+    inside = np.sort_complex(exact[box.contains(exact)])
+    assert b.values.size == inside.size == 3
+    assert np.allclose(np.sort_complex(b.values), inside, rtol=0, atol=1e-10), (b.values, inside)
     assert np.allclose(np.sort(b.values.real), [-1.0, 0.0, 1.0], rtol=0, atol=1e-10)
 
 

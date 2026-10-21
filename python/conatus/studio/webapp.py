@@ -88,18 +88,51 @@ def static_file(dist: Path, path: str) -> tuple[bytes, str, bool] | None:
 
 
 LOOPBACK_HOSTS = ("localhost", "127.0.0.1", "::1")
+SESSION_COOKIE = "cn_session"
+_LABEL = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")
+
+
+def _host_name(host: str) -> str:
+    """The name part of a ``Host`` header, lower case, without the port or IPv6 brackets."""
+    h = host.strip().lower()
+    if h.startswith("["):                                   # [::1]:8765
+        return h[1:h.find("]")] if "]" in h else h
+    if h.count(":") == 1:
+        return h.split(":", 1)[0]
+    return h
 
 
 def loopback_host(host: str) -> bool:
     """``Host`` header names this machine's loopback (any port). The local server answers only
     those: a page of another site that rebinds its DNS name to 127.0.0.1 (DNS rebinding) reaches
-    the ssh tunnel with ITS name in ``Host``, and is refused (review)."""
-    h = host.strip().lower()
-    if h.startswith("["):                                   # [::1]:8765
-        h = h[1:h.find("]")] if "]" in h else h
-    elif h.count(":") == 1:
-        h = h.split(":", 1)[0]
-    return h in LOOPBACK_HOSTS
+    the ssh tunnel with ITS name in ``Host``, and is refused (review).
+
+    Names under ``.localhost`` (``studio.localhost``) are accepted too (review F11, 0.1.2): the
+    name is reserved for the loopback (RFC 6761), so no outside site can rebind it, and browsers
+    resolve it to 127.0.0.1 themselves. A Studio opened at such a name gets a cookie that the
+    browser sends only to that name, not to other services on ``localhost``."""
+    h = _host_name(host)
+    if h in LOOPBACK_HOSTS:
+        return True
+    labels = h.split(".")
+    return (len(labels) >= 2 and labels[-1] == "localhost"
+            and all(_LABEL.match(x) for x in labels[:-1]))
+
+
+def session_cookie_name(host: str, *, secure: bool) -> str:
+    """The name of the Studio session cookie for a request with this ``Host`` (review F11, 0.1.2).
+
+    Browsers key cookies by host name, not by port: every service on ``127.0.0.1`` receives
+    the cookies set by any other one. Over HTTPS the name is ``__Host-cn_session``, which a
+    browser accepts only as Secure, host-only and with ``Path=/``. Over plain HTTP that prefix
+    is refused by browsers, so the local Studio uses ``cn_session_<port>``: two Studios on
+    one host keep separate sessions. The name does not hide the cookie from another service
+    on the same host name (docs/site/guide/studio.md, F11)."""
+    if secure:
+        return f"__Host-{SESSION_COOKIE}"
+    h = host.strip()
+    port = h.rpartition(":")[2] if ":" in h.rpartition("]")[2] else ""
+    return f"{SESSION_COOKIE}_{port}" if port.isdigit() else SESSION_COOKIE
 
 
 def same_origin(headers: Mapping[str, str], host: str) -> bool:

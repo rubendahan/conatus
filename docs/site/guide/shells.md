@@ -1,7 +1,7 @@
 # Spherical shells
 
 The space between two concentric spheres, where planets and stars convect: simulations on a CPU or
-a GPU, rotating convection, exact adjoints and optimal perturbations, with the same model text as in
+a GPU, rotating convection, discrete adjoints and optimal perturbations, with the same model text as in
 a box.
 
 ## A shell in a few lines
@@ -27,11 +27,10 @@ a temperature or any other scalar takes its own values on `inner` and `outer`.
 
 ## What Conatus checks before the first step
 
-The usual way of writing the wall conditions of a shell in a spectral code (the one of the Dedalus
-shell examples) creates, at fine radial resolution and small viscosity, a growing mode that belongs
-to the discretisation and not to the flow: the run blows up after a while, whatever the time step.
-The native layer writes the conditions in a form that has no such mode, at every resolution, and
-you do not have to know which.
+A common way of writing the wall conditions of a shell in a spectral code creates, at fine radial
+resolution and small viscosity, a growing mode that belongs to the discretisation and not to the
+flow. The run then blows up after a while, whatever the time step. The native layer writes the
+conditions in a form designed to avoid this mode, and checks for it as described below.
 
 Before the first step, Conatus looks for any growing artefact of this kind in the implicit
 operator and states the result (the `spurious tau modes` line above, also in `sim.explain()`). A
@@ -83,7 +82,7 @@ numbers as `sim.run`, and the two can be mixed. Time-dependent wall data are not
 
 ## Gradients, adjoints and optimal perturbations
 
-`sim.flowmap(T)` is the exact tangent and adjoint of the time stepper over a time `T`, and
+`sim.flowmap(T)` is the tangent and discrete adjoint of the time stepper over a time `T`, and
 `sim.nlop(T=..., E0=...)` the search for the perturbation of given energy that grows most, in the
 shell as in a channel, on the CPU and on the GPU: see
 {doc}`dynamics/optimal_perturbations` for the shell example and {doc}`dynamics/adjoint` for the

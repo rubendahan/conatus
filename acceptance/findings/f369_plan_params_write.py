@@ -32,7 +32,11 @@ for key, val in (("Re", float("nan")), ("Re", "2000"), ("re", 2000.0)):
 plan.params["Re"] = 2000.0
 a = np.sort_complex(eigenvalues(plan).values)
 b = np.sort_complex(eigenvalues(model(2000.0).discretize(32)).values)
-check(np.allclose(a, b), "a value written before the assembly was not the one used")
+c = np.sort_complex(eigenvalues(model(1e4).discretize(32)).values)
+# non-empty, and the spectrum of Re = 2000, not of the Re = 1e4 the plan was built with (review
+# 2026-10-21, F14: allclose of two empty spectra passed)
+check(a.size == b.size > 0 and np.allclose(a, b), "a value written before the assembly was not the one used")
+check(c.size != a.size or not np.allclose(a, c), "the spectra at Re = 2000 and Re = 1e4 coincide")
 plan.params["Re"] = 3000.0
 r, _ = refused(eigenvalues, plan)
 check(r, "a change after the assembly was used with the cached group")

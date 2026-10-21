@@ -1,29 +1,21 @@
 {
- "generated": "2026-10-20T23:09:22.591Z",
+ "generated": "2026-10-21T21:29:53.164Z",
  "source": "",
  "statusSource": "docs/site/tutorials/outputs/STATUS.json",
  "tutorials": [
   {
-   "n": 0,
-   "slug": "00_getting_started",
-   "title": "Getting started: convection between two plates",
-   "learn": "the whole path once: a native model, explain(), stability, the onset by critical, a simulation, the heat flux, the *Methods* paragraph, the run registry",
-   "reference": "Reid & Harris (1958)",
+   "n": null,
+   "group": "Start here",
+   "slug": "first_steps",
+   "title": "First steps: the Burgers equation in ten minutes",
+   "learn": "ten minutes: one equation written as on paper, a simulation, a plot, one physical number, four guided changes",
+   "reference": "Cole (1951), Hopf (1950)",
    "status": "pass",
    "scripts": [
     {
      "script": "t00_first_steps.py",
      "status": "pass",
-     "time": "30.5 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    },
-    {
-     "script": "t00_getting_started.py",
-     "status": "pass",
-     "time": "138.6 s",
+     "time": "29.2 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -33,6 +25,7 @@
   },
   {
    "n": 1,
+   "group": "Start here",
    "slug": "01_orr_sommerfeld",
    "title": "A first eigenvalue problem: Orr–Sommerfeld",
    "learn": "a native model, conditions by wall name, eigenvalues with residuals, critical parameters, verify",
@@ -42,7 +35,27 @@
     {
      "script": "t01_orr_sommerfeld.py",
      "status": "pass",
-     "time": "29.6 s",
+     "time": "32.3 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    }
+   ]
+  },
+  {
+   "n": 0,
+   "group": "Start here",
+   "slug": "00_getting_started",
+   "title": "Convection between two plates: from onset to simulation",
+   "learn": "the whole path once: a native model, explain(), stability, the onset by critical, a simulation, the heat flux, the *Methods* paragraph, the run registry",
+   "reference": "Reid & Harris (1958)",
+   "status": "pass",
+   "scripts": [
+    {
+     "script": "t00_getting_started.py",
+     "status": "pass",
+     "time": "167.7 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -52,6 +65,7 @@
   },
   {
    "n": 2,
+   "group": "Simulation",
    "slug": "02_rayleigh_benard",
    "title": "A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU",
    "learn": "a simulation on CPU, then on GPU; time steppers, CFL, the *Methods* paragraph",
@@ -61,7 +75,7 @@
     {
      "script": "t02a_rayleigh_benard_cpu.py",
      "status": "pass",
-     "time": "32.2 s",
+     "time": "30.4 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -79,64 +93,8 @@
    ]
   },
   {
-   "n": 3,
-   "slug": "03_symmetries",
-   "title": "Symmetries and symmetry subspaces",
-   "learn": "linearizing a native model, symmetry subspaces: the same eigenvalue with half the unknowns",
-   "reference": "Reid & Harris (1958)",
-   "status": "pass",
-   "scripts": [
-    {
-     "script": "t03_symmetries.py",
-     "status": "pass",
-     "time": "3.5 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    }
-   ]
-  },
-  {
-   "n": 4,
-   "slug": "04_bratu",
-   "title": "Nonlinear boundary-value problems and continuation: Bratu",
-   "learn": "a nonlinear boundary-value model, Newton on the exact Jacobian, pseudo-arclength continuation, folds",
-   "reference": "Bratu (1914), Gelfand (1963)",
-   "status": "pass",
-   "scripts": [
-    {
-     "script": "t04_bratu.py",
-     "status": "pass",
-     "time": "8.9 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    }
-   ]
-  },
-  {
-   "n": 5,
-   "slug": "05_ks_orbits",
-   "title": "Invariant solutions: Kuramoto–Sivashinsky, L = 22",
-   "learn": "equilibria, travelling waves and periodic orbits of a native model by Newton–Krylov–hookstep, Floquet exponents",
-   "reference": "Cvitanović et al. (2010), Ding & Cvitanović (2016)",
-   "status": "pass",
-   "scripts": [
-    {
-     "script": "t05_ks_orbits.py",
-     "status": "pass",
-     "time": "68.7 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    }
-   ]
-  },
-  {
    "n": 8,
+   "group": "Simulation",
    "slug": "08_polar",
    "title": "Polar geometry: a drum, a pipe, two rotating cylinders",
    "learn": "polar and cylindrical geometry: a drum on cn.Disk, ready pipe and Taylor–Couette problems",
@@ -146,130 +104,7 @@
     {
      "script": "t08_polar.py",
      "status": "pass",
-     "time": "33.7 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    }
-   ]
-  },
-  {
-   "n": 10,
-   "slug": "10_bifurcations",
-   "title": "Bifurcations: branch switching, cycles, codimension 2, normal forms",
-   "learn": "branch switching, cycles, codimension 2, normal forms, Landau and Ginzburg–Landau",
-   "reference": "Lorenz (1963), Kuznetsov (2004), Cross & Hohenberg (1993)",
-   "status": "pass",
-   "scripts": [
-    {
-     "script": "t10_bifurcations.py",
-     "status": "pass",
-     "time": "28.7 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    }
-   ]
-  },
-  {
-   "n": 11,
-   "slug": "11_runs",
-   "title": "Record, query, reproduce: the run registry",
-   "learn": "the run registry on a native simulation: record, certify, query, compare, reproduce bit for bit, cache only on request",
-   "reference": "heat equation, closed form",
-   "status": "pass",
-   "scripts": [
-    {
-     "script": "t11_runs.py",
-     "status": "pass",
-     "time": "26.6 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    }
-   ]
-  },
-  {
-   "n": 12,
-   "slug": "12_chaos_ensembles",
-   "title": "Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins",
-   "learn": "Lyapunov spectrum, covariant vectors, Kaplan–Yorke, Poincaré map, basins from one ensemble",
-   "reference": "Sprott (Lorenz), exact divergence",
-   "status": "pass",
-   "scripts": [
-    {
-     "script": "t12_chaos_ensembles.py",
-     "status": "pass",
-     "time": "165.3 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    }
-   ]
-  },
-  {
-   "n": 13,
-   "slug": "13_sensitivity_data",
-   "title": "Where a global mode is born, and what the data say about it",
-   "learn": "direct and adjoint global modes, wavemaker, base-flow sensitivity; DMD in the exact norm",
-   "reference": "Chomaz (2005) closed forms, Towne et al. (2018)",
-   "status": "pass",
-   "scripts": [
-    {
-     "script": "t13_sensitivity_data.py",
-     "status": "pass",
-     "time": "24.9 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    }
-   ]
-  },
-  {
-   "n": 14,
-   "slug": "14_from_dedalus",
-   "title": "Coming from Dedalus",
-   "learn": "a convection cell as a native model, then read from a Dedalus script: line-by-line report, run, native vs translated; optional check against Dedalus",
-   "reference": "Dedalus itself (same method, rounding; check script, needs Dedalus)",
-   "status": "pass",
-   "scripts": [
-    {
-     "script": "t14_from_dedalus.py",
-     "status": "pass",
-     "time": "10.8 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    },
-    {
-     "script": "t14b_dedalus_check.py",
-     "status": "pass",
-     "time": "21.8 s",
-     "run": "",
-     "commit": null,
-     "date": null,
-     "runId": null
-    }
-   ]
-  },
-  {
-   "n": 15,
-   "slug": "15_ks_covariant",
-   "title": "Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes",
-   "learn": "sim.lyapunov with covariant vectors: exponents with errors, covariance residual, tangencies, domination and the physical modes",
-   "reference": "Cvitanović et al. (2010), Ding et al. (2016)",
-   "status": "pass",
-   "scripts": [
-    {
-     "script": "t15_ks_covariant.py",
-     "status": "pass",
-     "time": "52.4 s",
+     "time": "8.8 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -279,16 +114,206 @@
   },
   {
    "n": 16,
+   "group": "Simulation",
    "slug": "16_particles_dye",
    "title": "Lagrangian tracers and a numerical dye",
-   "learn": "sim.particles and m.dye: exact velocity at the tracers, observed order in time, a dye whose mass is measured",
+   "learn": "sim.particles and m.dye: spectral velocity at the tracers, observed order in time, a dye whose mass is measured",
    "reference": "Taylor–Green and Couette closed forms",
    "status": "pass",
    "scripts": [
     {
      "script": "t16_particles_dye.py",
      "status": "pass",
-     "time": "47.1 s",
+     "time": "45.4 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "group": "Stability and sensitivity",
+   "slug": "03_symmetries",
+   "title": "Symmetries and symmetry subspaces",
+   "learn": "linearizing a native model, symmetry subspaces: the same eigenvalue with half the unknowns",
+   "reference": "Reid & Harris (1958)",
+   "status": "pass",
+   "scripts": [
+    {
+     "script": "t03_symmetries.py",
+     "status": "pass",
+     "time": "5.1 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    }
+   ]
+  },
+  {
+   "n": 13,
+   "group": "Stability and sensitivity",
+   "slug": "13_sensitivity_data",
+   "title": "Where a global mode is born, and what the data say about it",
+   "learn": "direct and adjoint global modes, wavemaker, base-flow sensitivity; DMD in the exact norm",
+   "reference": "Chomaz (2005) closed forms, Towne et al. (2018)",
+   "status": "pass",
+   "scripts": [
+    {
+     "script": "t13_sensitivity_data.py",
+     "status": "pass",
+     "time": "60.8 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "group": "Nonlinear dynamics",
+   "slug": "04_bratu",
+   "title": "Nonlinear boundary-value problems and continuation: Bratu",
+   "learn": "a nonlinear boundary-value model, Newton on the exact Jacobian, pseudo-arclength continuation, folds",
+   "reference": "Bratu (1914), Gelfand (1963)",
+   "status": "pass",
+   "scripts": [
+    {
+     "script": "t04_bratu.py",
+     "status": "pass",
+     "time": "8.7 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "group": "Nonlinear dynamics",
+   "slug": "05_ks_orbits",
+   "title": "Invariant solutions: Kuramoto–Sivashinsky, L = 22",
+   "learn": "equilibria, travelling waves and periodic orbits of a native model by Newton–Krylov–hookstep, Floquet exponents",
+   "reference": "Cvitanović et al. (2010), Ding & Cvitanović (2016)",
+   "status": "pass",
+   "scripts": [
+    {
+     "script": "t05_ks_orbits.py",
+     "status": "pass",
+     "time": "66.6 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    }
+   ]
+  },
+  {
+   "n": 10,
+   "group": "Nonlinear dynamics",
+   "slug": "10_bifurcations",
+   "title": "Bifurcations: branch switching, cycles, codimension 2, normal forms",
+   "learn": "branch switching, cycles, codimension 2, normal forms, Landau and Ginzburg–Landau",
+   "reference": "Lorenz (1963), Kuznetsov (2004), Cross & Hohenberg (1993)",
+   "status": "pass",
+   "scripts": [
+    {
+     "script": "t10_bifurcations.py",
+     "status": "pass",
+     "time": "4.6 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    }
+   ]
+  },
+  {
+   "n": 12,
+   "group": "Nonlinear dynamics",
+   "slug": "12_chaos_ensembles",
+   "title": "Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins",
+   "learn": "Lyapunov spectrum, covariant vectors, Kaplan–Yorke, Poincaré map, basins from one ensemble",
+   "reference": "Sprott (Lorenz), exact divergence",
+   "status": "pass",
+   "scripts": [
+    {
+     "script": "t12_chaos_ensembles.py",
+     "status": "pass",
+     "time": "136.6 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    }
+   ]
+  },
+  {
+   "n": 15,
+   "group": "Nonlinear dynamics",
+   "slug": "15_ks_covariant",
+   "title": "Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes",
+   "learn": "sim.lyapunov with covariant vectors: exponents with errors, covariance residual, tangencies, domination and the physical modes",
+   "reference": "Cvitanović et al. (2010), Ding et al. (2016)",
+   "status": "pass",
+   "scripts": [
+    {
+     "script": "t15_ks_covariant.py",
+     "status": "pass",
+     "time": "45.4 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    }
+   ]
+  },
+  {
+   "n": 11,
+   "group": "Workflow",
+   "slug": "11_runs",
+   "title": "Record, query, reproduce: the run registry",
+   "learn": "the run registry on a native simulation: record, certify, query, compare, reproduce bit for bit, cache only on request",
+   "reference": "heat equation, closed form",
+   "status": "pass",
+   "scripts": [
+    {
+     "script": "t11_runs.py",
+     "status": "pass",
+     "time": "6.8 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    }
+   ]
+  },
+  {
+   "n": 14,
+   "group": "Workflow",
+   "slug": "14_from_dedalus",
+   "title": "Importing a Dedalus script",
+   "learn": "a convection cell as a native model, then imported from a Dedalus 3 script: line-by-line report, run, native vs translated",
+   "reference": "the original script (optional check, needs Dedalus)",
+   "status": "pass",
+   "scripts": [
+    {
+     "script": "t14_from_dedalus.py",
+     "status": "pass",
+     "time": "5.5 s",
+     "run": "",
+     "commit": null,
+     "date": null,
+     "runId": null
+    },
+    {
+     "script": "t14b_dedalus_check.py",
+     "status": "pass",
+     "time": "13.3 s",
      "run": "",
      "commit": null,
      "date": null,

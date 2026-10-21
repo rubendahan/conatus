@@ -1,3 +1,2 @@
-11 writes, t = 0.0 ... 1.0, u: (11, 64)
+11 writes, t = 0.0 ... 1.0, u: (11, 128)
 tasks: ['dx(u)', 'u']  format: conatus.analysis/1
-two jobs equal to one uninterrupted run, bit for bit: True

@@ -25,10 +25,10 @@ export default function Citing() {
         </div>
       </Section>
       <Section id="methods" title="Cite what you used" intro={<p>
-        Every simulation can write the “Methods” paragraph of your paper from the objects themselves (resolution, boundary
-        treatment, time stepper, tolerances), with its BibTeX, so the methods you used are cited as they were run. Conatus
-        follows Dedalus
-        (Burns et al. 2020) for its symbolic language and spectral methods; please cite it too when you rely on that design.</p>} />
+        <code>sim.methods()</code> drafts a “Methods” paragraph from the recorded numerical settings (resolution, boundary
+        treatment, time stepper, tolerances), with the BibTeX of the methods used. Add your study's validation and
+        interpretation. The symbolic language and the sparse spectral bases build on Dedalus (Burns et al. 2020);
+        please cite it as well when your work relies on them.</p>} />
     </>
   );
 }

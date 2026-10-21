@@ -1,4 +1,4 @@
-# 3. Symmetries and symmetry subspaces
+# Symmetries and symmetry subspaces
 
 **Goal.** Compute the Rayleigh–Bénard onset mode in the subspace of solutions symmetric about
 mid-depth, with half the unknowns, and see what the subspace hides.
@@ -11,10 +11,10 @@ rounding with half the unknowns. The complementary class decays.
 
 ## The idea
 
-A symmetry is declared, never guessed. You give a group (here the reflection $z \to -z$) and the
-parity of each field; Conatus then
+You declare the symmetry: a group (here the reflection $z \to -z$) and the parity of each field.
+Conatus then
 
-1. checks that every equation is **equivariant** and refuses otherwise, naming the offending term;
+1. checks that each equation is **equivariant** and refuses otherwise, naming the offending term;
 2. builds bases of the invariant subspace (even or odd Chebyshev polynomials, cosines or sines) and
    drops the boundary conditions that became mirror images of each other;
 3. solves only there, on CPU or GPU.
@@ -26,6 +26,12 @@ reflected direction changes sign, the others do not (`du=ODD` means $u_x$ odd, $
 
 The Boussinesq equations of {doc}`02_rayleigh_benard`, written as on paper, on one wavelength
 $2\pi/k_c$, and their linearization about the conduction state $T_0 = -z$:
+
+```{literalinclude} code/t03_symmetries.py
+:language: python
+:start-after: "# [imports]"
+:end-before: "# [/imports]"
+```
 
 ```{literalinclude} code/t03_symmetries.py
 :language: python
@@ -66,24 +72,22 @@ like the physical fields.
 ```
 
 `linearize` rebuilds the perturbation problem with `symmetry=`; everything downstream (plan,
-eigenvalues, residuals) is unchanged. `symmetry_report()` lists the parity of every component, the equivariance of every
-equation and the boundary conditions dropped as mirror images, and always warns that the subspace
-**hides symmetry-breaking instabilities**. Here the other class is the check: its leading mode decays
-strongly, so the onset mode found in the symmetric class is the leading mode of the
-full problem. A dense QZ costs $O(n^3)$; halving $n$ saves 2–8× depending on the size.
+eigenvalues, residuals) is unchanged. `symmetry_report()` lists the parity of each component, the
+equivariance of each equation and the boundary conditions dropped as mirror images. It also warns
+that the subspace **hides symmetry-breaking instabilities**. Here the other class is the check: its
+leading mode decays strongly, so the onset mode found in the symmetric class is the leading mode
+of the full problem. A dense QZ costs $O(n^3)$, so halving $n$ can save at most 8×. In the
+recorded run below (table), the median solve took 15 ms for each class against 74 ms for the full
+space: at this size the saving is about 5×.
 
 ```{figure} media/t03_spectra.png
-:alt: Eigenvalues of the full problem as grey rings; each ring holds either a red dot (onset class) or a green cross (other class), and the rightmost, at zero, holds a red dot.
+:alt: Three rows of eigenvalues along the growth-rate axis: open circles for the full space, red dots for the onset class, blue crosses for the other class; thin lines join each circle to the class row that holds it, and the rightmost circle, at zero, joins a red dot.
 :width: 100%
 
-Every eigenvalue of the full space (rings) is found in exactly one of the two symmetry classes, each solved with half the unknowns. The neutral mode at the onset point belongs to the onset class.
+The 12 eigenvalues of the full space with σ > −160, each joined to the symmetry class that holds the same value (largest relative gap 3×10⁻¹³). All are real (largest |Im σ| 1×10⁻¹⁶). The neutral mode at the onset point, σ ≈ 0, is in the onset class.
 ```
 
-```{figure} media/t03_cost.png
-:alt: Two bar charts: the number of unknowns, 268 for the full space and 134 for each class; and the time of the dense eigenvalue solve, several times shorter for each class.
-:width: 100%
-
-Size and cost of each eigenproblem as measured in this run. Halving the unknowns makes the dense QZ solve several times cheaper (it scales as n³).
+```{include} media/t03_cost.md
 ```
 
 ## A wrong declaration is refused
@@ -96,9 +100,9 @@ Size and cost of each eigenproblem as measured in this run. Halving the unknowns
 
 ## Check
 
-At Reid & Harris' $(Ra_c, k_c)$ the leading growth rate is $1.7\times10^{-6}$ (zero within the rounding of the published $Ra_c$ and $k_c$), the
-onset class gives the same eigenvalue to rounding with half the unknowns, and the other class
-decays.
+At Reid & Harris' $(Ra_c, k_c)$ the leading growth rate is $1.7\times10^{-6}$, zero within the
+rounding of the published $Ra_c$ and $k_c$. The onset class gives the same eigenvalue to rounding
+with half the unknowns, and the other class decays.
 
 ```{literalinclude} code/t03_symmetries.py
 :language: python

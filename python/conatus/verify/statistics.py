@@ -105,8 +105,7 @@ def time_average(series: Any, *, dt: float | None = None, discard: int, name: st
                 f"an array of dtype {raw.dtype} and shape {raw.shape}")
         raise InputTypeError(f"time_average: the series is {what}",
                              why="a series is one real number per sample (a 1D array); several "
-                                 "quantities, complex values or text are never flattened or "
-                                 "converted for you",
+                                 "quantities, complex values or text are refused",
                              fix="time_average(q, discard=...) with q of shape (n,): one call per "
                                  "quantity (q[:, j]), or the real part/modulus taken explicitly",
                              doc=_DOC)
@@ -116,7 +115,7 @@ def time_average(series: Any, *, dt: float | None = None, discard: int, name: st
         dt = check_real(dt, "dt", "time_average()", positive=True)
     if isinstance(discard, bool) or not isinstance(discard, (int, np.integer)) or discard < 0:
         raise InputTypeError(f"time_average(discard={discard!r}): a number of samples >= 0",
-                             why="the transient is not detected for you", doc=_DOC)
+                             why="the length of the transient to discard is an explicit choice", doc=_DOC)
     if not np.all(np.isfinite(x)):
         raise InputTypeError("time_average: non-finite values in the series", doc=_DOC)
     x = x[int(discard):]

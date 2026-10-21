@@ -2,154 +2,118 @@
 
 # 🌀 Conatus
 
-### *Spectral PDEs and dynamical systems, from equations written as on paper.*
+### *Spectral PDE and stability calculations in Python.*
 
-Write the geometry, the unknowns and the equations as text. Conatus builds the spectral
-discretisation, then lets you simulate the model or take apart its dynamics.
+Conatus is experimental research software for defining PDE models, computing eigenmodes and
+running time-dependent simulations. Its examples focus on fluid instability and dynamical systems.
 
 **[Website](https://rubendahan.github.io/conatus/)** ·
+**[Getting started](https://rubendahan.github.io/conatus/tutorials/getting-started/)** ·
 **[Tutorials](https://rubendahan.github.io/conatus/tutorials/)** ·
 **[Install](https://rubendahan.github.io/conatus/install/)**
 
 ![Python](https://img.shields.io/badge/Python-3.11%20|%203.12%20|%203.13-3776AB?logo=python&logoColor=white)
 ![Platform](https://img.shields.io/badge/Linux-x86--64-FCC624?logo=linux&logoColor=black)
-![CUDA](https://img.shields.io/badge/CUDA%2012-beta-76B900?logo=nvidia&logoColor=white)
+![CUDA](https://img.shields.io/badge/CUDA%2012-experimental-76B900?logo=nvidia&logoColor=white)
 ![License](https://img.shields.io/badge/license-BSD--3-success)
-![Version](https://img.shields.io/badge/version-0.1.1-blue)
-
-<img src="https://raw.githubusercontent.com/rubendahan/conatus/main/web/public/gallery/kelvin-helmholtz-dye.webp" alt="Kelvin-Helmholtz billows in a shear layer, dye field computed with Conatus" width="85%"/>
-
-*Kelvin-Helmholtz billows rolling up in a shear layer, with a passive dye, computed with Conatus (`web/gallery/kelvin_helmholtz.py`; the linear stability of the same layer: `examples/shear/kelvin_helmholtz.py`).*
+![Version](https://img.shields.io/badge/version-0.1.2-blue)
 
 </div>
-
-## What it does
-
-You describe a problem the way you would on a blackboard. Conatus picks the bases, places the
-boundary conditions, splits implicit and explicit terms, and then tells you what it did:
-`explain()` prints every numerical choice, so nothing happens behind your back.
-
-From one model you can:
-
-- 🌊 **Simulate** it in time, on CPU or on an NVIDIA GPU (beta).
-- 📈 **Find its eigenvalues**, each with its residual, adjoint modes, and a check that a finer
-  resolution finds the same mode again.
-- ⚡ **Measure non-modal growth**: optimal perturbations and transient amplification.
-- 🔁 **Study periodic problems** with Floquet and Hill spectra.
-- 🎯 **Converge invariant solutions** (equilibria, periodic orbits) with Newton-Krylov.
-- 🧭 **Follow branches** with continuation and locate bifurcations.
-- 🌪️ **Quantify chaos** with Lyapunov spectra and covariant vectors.
-
-## 📐 Stability: where does convection start?
-
-Rayleigh-Bénard onset between rigid plates. The normal-mode problem, written as on paper
-(from tutorial 0):
-
-```python
-import conatus as cn
-from conatus.expert import critical
-
-onset = cn.Model(cn.Box(z=cn.walls(-0.5, 0.5)), name="convection onset", Ra=1700.0, k=3.1, Pr=1)
-onset.scalar("w"), onset.scalar("theta")       # w(z), theta(z) times exp(i k x + s t)
-onset.eigenvalue("s", growth="real")
-onset.define("L(f) = dz(dz(f)) - k**2*f")
-onset.equations("""
-    momentum: s*L(w) = Pr*L(L(w)) - Pr*Ra*k**2*theta
-    heat:     s*theta = w + L(theta)
-""")
-onset.at("walls", "w = 0", "dz(w) = 0", "theta = 0")
-
-P = onset.parametric(N=32, over=("Ra", "k"), drift=48, drift_tol=1e-6)   # modes confirmed at N=48
-crit = critical(P, "Ra", bracket=(1500, 2000), over={"k": (2.8, 3.4)}, xtol=1e-9)
-print(f"Ra_c = {crit.value:.4f}   k_c = {crit.over['k']:.5f}")
-```
-
-```text
-Ra_c = 1707.7618   k_c = 3.11632
-```
-
-The classical value (Reid & Harris, 1958) is Ra_c = 1707.762 at k_c = 3.117.
-
-## 🌡️ Simulation: the same convection, in time
-
-```python
-import numpy as np
-import conatus as cn
-
-box = cn.Box(x=cn.periodic(2.0), z=cn.walls(-0.5, 0.5))
-m = cn.Model(box, name="Rayleigh-Benard 2D", Ra=2500, Pr=1)
-u, p, T = m.velocity("u"), m.pressure("p"), m.scalar("T")
-m.equations("""
-    momentum:   dt(u) + grad(p) - Pr*lap(u) = Pr*Ra*T*ez - u·grad(u)
-    continuity: div(u) = 0
-    heat:       dt(T) - lap(T) = -u·grad(T)
-""")
-m.at("bottom", u=0, T=+0.5)
-m.at("top", u=0, T=-0.5)
-
-sim = m.simulate(N=(32, 24), scheme="RK443", dt=5e-4)    # backend="cuda" on a GPU (beta)
-sim.initial(T=lambda x, z: -z + 1e-6 * np.cos(np.pi * x) * np.cos(np.pi * z))
-sim.run(until=0.8)
-print(sim.explain())
-```
-
-The small perturbation grows at the rate of the leading eigenvalue of the linearised model
-(σ = 5.5425 at Ra = 2500), then saturates into rolls that carry the same heat flux through both
-plates.
 
 ## 📦 Install
 
 ```bash
-pip install conatus==0.1.1   # CPU wheel, compiled core included, no compiler needed
-python -m conatus doctor     # what this machine can run, and what is missing
+pip install conatus==0.1.2   # CPU wheel for Linux x86-64, compiled core included
+python -m conatus doctor         # what this machine can run, and what is missing
 ```
 
-**GPU (beta).** For an NVIDIA A100 or L40S class card with a driver that supports CUDA 12.9.
-The CUDA wheel is not on PyPI: it is attached to the
-[v0.1.1 release](https://github.com/rubendahan/conatus/releases/tag/v0.1.1), one per Python; for CPython 3.12,
-with CuPy:
-
-```bash
-pip install "conatus[gpu] @ https://github.com/rubendahan/conatus/releases/download/v0.1.1/conatus-0.1.1+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
-python -m conatus doctor                                      # says whether the CUDA core sees a GPU
-```
-
-**From source.** `pip install .` with LAPACK and BLAS available. Details on the
+CUDA support (one NVIDIA GPU, CUDA 12 wheel attached to the
+[v0.1.2 release](https://github.com/rubendahan/conatus/releases/tag/v0.1.2)) is experimental.
+Building from source and the GPU wheel are described on the
 [install page](https://rubendahan.github.io/conatus/install/).
 
-## 🎬 Studio and AI agents (experimental)
+## 📐 A first calculation: when does plane Poiseuille flow become unstable?
 
-Watch a run live in your browser: declare what to show with `sim.watch("my_run", film={"T": cn.view("T")})`,
-then start the local Studio, which reads the same spool directory:
+Small wavy disturbances of the flow between two plates obey the Orr-Sommerfeld equation. This
+script writes that equation, computes the least stable mode at one Reynolds number, then searches
+for the critical Reynolds number. Save it as `critical_reynolds.py` and run `python critical_reynolds.py`
+([`web/home/critical_reynolds.py`](web/home/critical_reynolds.py)).
 
-```bash
-pip install "conatus[studio]"
-python -m conatus.studio.hub serve --local --port 8765   # open http://localhost:8765/login
+```python
+# Linear stability of plane Poiseuille flow U(y) = 1 - y^2 between walls at y = -1 and y = 1.
+# Orr-Sommerfeld equation for v(y) exp(i alpha (x - c t)): a mode grows when Im(c) > 0.
+import conatus as cn
+from conatus.expert import critical
+
+m = cn.Model(cn.Box(y=cn.walls(-1, 1)), name="plane Poiseuille", Re=1e4, alpha=1.0)
+m.scalar("v")
+m.given(U=lambda y: 1 - y**2)
+m.eigenvalue("c", growth="imag")
+m.define("L2(f) = dy(dy(f)) - alpha**2*f")
+m.equations("L2(L2(v))/(1j*alpha*Re) - U*L2(v) + dy(dy(U))*v + c*L2(v) = 0")
+m.at("walls", "v = 0", "dy(v) = 0")
+
+# Least stable mode at Re = 10000, alpha = 1 (modes kept only if found again at N = 96)
+res = m.eigenvalues(N=64, drift=96, drift_tol=1e-6)
+i = res.values.imag.argmax()
+print(f"c = {res.values[i]:.8f}   residual {res.residuals[i]:.0e}")
+
+# Critical Reynolds number: the lowest Re at which Im(c) = 0 for some alpha
+P = m.parametric(N=64, over=("Re", "alpha"), drift=96, drift_tol=1e-6)
+crit = critical(P, "Re", bracket=(5000, 7000), over={"alpha": (0.98, 1.06)}, xtol=1e-9)
+print(f"Re_c = {crit.value:.2f}   alpha_c = {crit.over['alpha']:.5f}")
 ```
 
-The one-session login token goes to a private file whose path is printed. On a cluster, run it
-in a batch job and open an ssh tunnel (see the
-[Studio guide](https://rubendahan.github.io/conatus/docs/guide/studio.html)).
+It prints:
 
-For AI coding agents, `python -m conatus agent` answers in JSON (versions, devices, the names of
-the API), `python -m conatus agent check run.py` dry-runs a script, and
-[`AGENTS.md`](https://github.com/rubendahan/conatus/blob/main/AGENTS.md) is the page to give them.
+```text
+c = 0.23752649+0.00373967j   residual 1e-16
+Re_c = 5772.22   alpha_c = 1.02055
+```
 
-## 📚 Learn more
+Orszag (1971) gives c = 0.23752649 + 0.00373967i at Re = 10000, alpha = 1, and Re_c = 5772.22 at
+alpha_c = 1.02056 (the script's 1.02055 differs in the last digit). The residual is the backward error of the computed eigenpair. With `drift=96`, a
+mode is kept only if it is found again with 96 Chebyshev polynomials instead of 64. The
+[stability tutorial](https://rubendahan.github.io/conatus/docs/tutorials/01_orr_sommerfeld.html)
+continues from this script.
 
-- The [website](https://rubendahan.github.io/conatus/) has the tutorials, the user guide, the API
-  reference and the maths behind each method.
-- [`examples/`](https://github.com/rubendahan/conatus/tree/main/examples) holds ready-to-run cases: convection, shear flows, patterns,
-  bifurcations.
+## 🧭 What else it does
 
-## ⚠️ Good to know
+- Time-dependent simulations of the same kind of model, with implicit-explicit time stepping
+  ([first steps](https://rubendahan.github.io/conatus/tutorials/getting-started/), ten minutes).
+- Channels, periodic boxes, disks, annuli, pipes, spheres, balls and spherical shells.
+- Adjoint modes, transient growth, and Floquet analysis of time-periodic base flows.
+- Steady states, travelling waves and periodic orbits by Newton-Krylov; continuation through folds
+  and bifurcations.
+- Lyapunov exponents, covariant Lyapunov vectors, tracers and dye in a simulated flow.
 
-- **CPU speed.** The CPU path is a NumPy reference implementation. It is great for eigenvalue
-  problems, small grids and setting a run up, but slower than established CPU codes on large
-  grids. The speed comes from the GPU path, which is still in beta.
-- **One GPU.** 0.1.1 runs a simulation on one CPU process or one GPU. No multi-GPU or MPI yet.
-- **Young API.** The 0.1 interface can still change. Any change comes with a deprecation warning
-  and a line in the [changelog](https://github.com/rubendahan/conatus/blob/main/CHANGELOG.md).
+[`examples/`](https://github.com/rubendahan/conatus/tree/main/examples) holds further cases, each
+checked against a published value.
+
+## 📚 Getting started
+
+1. [Install](https://rubendahan.github.io/conatus/install/) and run `python -m conatus doctor`.
+2. [First steps](https://rubendahan.github.io/conatus/tutorials/getting-started/): the Burgers equation in ten minutes.
+3. [A stability calculation](https://rubendahan.github.io/conatus/docs/tutorials/01_orr_sommerfeld.html): the example above, with the eigenfunction and a resolution check.
+4. [One problem from onset to simulation](https://rubendahan.github.io/conatus/docs/tutorials/00_getting_started.html): Rayleigh-Bénard convection.
+
+The [documentation](https://rubendahan.github.io/conatus/documentation/) has the user guide, the
+API reference and the numerical methods.
+
+## ⚠️ Status and limits
+
+- **Young API.** The interface can still change. Changes come with a deprecation warning and a line
+  in the [changelog](https://github.com/rubendahan/conatus/blob/main/CHANGELOG.md).
+- **CPU speed.** The CPU path is a NumPy reference implementation. It suits eigenvalue problems,
+  small grids and setting a run up. Large grids can be slow on it.
+- **One process.** 0.1.2 runs a simulation on one CPU process or one GPU. No multi-GPU or MPI yet.
+
+## 🔧 Optional tools
+
+- **Studio**: watch a running simulation in a browser (`pip install "conatus[studio]"`,
+  [Studio guide](https://rubendahan.github.io/conatus/docs/guide/studio.html)).
+- **Coding agents**: `python -m conatus agent` describes the installation and the API in JSON;
+  [`AGENTS.md`](https://github.com/rubendahan/conatus/blob/main/AGENTS.md) is the page to give them.
 
 ## 📄 License
 
@@ -157,4 +121,4 @@ BSD-3-Clause, see [LICENSE](https://github.com/rubendahan/conatus/blob/main/LICE
 listed in [THIRD_PARTY_NOTICES.md](https://github.com/rubendahan/conatus/blob/main/THIRD_PARTY_NOTICES.md), with the full texts in
 [`licenses/`](https://github.com/rubendahan/conatus/tree/main/licenses). To cite Conatus, see [CITATION.cff](https://github.com/rubendahan/conatus/blob/main/CITATION.cff).
 
-Made by Ruben Dahan.
+Made by Ruben Dahan. Conatus is developed with AI coding agents under the direction of one researcher.

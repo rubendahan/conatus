@@ -1,6 +1,6 @@
-# t14b_dedalus_check: PASS (exit 0) in 21.8 s | 2026-10-20 | script sha256 763cece2d005a63e
+# t14b_dedalus_check: PASS (exit 0) in 13.3 s | 2026-10-21 | script sha256 763cece2d005a63e
 Conatus: t = 0.020 after 40 steps
-2026-10-20 13:30:36,614 dedalus 0/1 WARNING :: Threading has not been disabled. This may massively degrade Dedalus performance.
-2026-10-20 13:30:36,614 dedalus 0/1 WARNING :: We strongly suggest setting the "OMP_NUM_THREADS" environment variable to "1".
+2026-10-21 19:47:52,019 dedalus 0/1 WARNING :: Threading has not been disabled. This may massively degrade Dedalus performance.
+2026-10-21 19:47:52,020 dedalus 0/1 WARNING :: We strongly suggest setting the "OMP_NUM_THREADS" environment variable to "1".
 Dedalus: t = 0.020; relative difference th 3.0e-14, u 3.8e-15
 PASS

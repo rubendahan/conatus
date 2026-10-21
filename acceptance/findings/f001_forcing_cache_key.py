@@ -27,12 +27,16 @@ def forced(amplitude):
 a, b = forced(1.0), forced(2.0)
 a.solver.run(5, record={"root": "runs"})
 was_refused, r = refused(b.solver.run, 5, record={"root": "runs"}, cache=True)
-if was_refused:
-    passed("cache refused for a model with bound data")
-hit = bool(r.cache_report["hit"]) if getattr(r, "cache_report", None) else False
-mean = float(np.mean(b.grid("u")))
-check(not hit, f"cache hit on a different forcing (mean u = {mean:.6g}, expected 0.1)")
-check(abs(mean - 0.1) < 1e-10, f"mean u = {mean:.12g}, expected 0.1")
+# a typed cache refusal is accepted, but the restart check below runs in every case (review
+# 2026-10-21, F14: an early pass skipped it); u(0.05) = 2 * 0.05 at every grid point
+mean = float("nan")
+cache_refused = was_refused
+if not cache_refused:
+    hit = bool(r.cache_report["hit"]) if getattr(r, "cache_report", None) else False
+    mean = float(np.mean(b.grid("u")))
+    check(not hit, f"cache hit on a different forcing (mean u = {mean:.6g}, expected 0.1)")
+    err = float(np.max(np.abs(np.asarray(b.grid("u")) - 0.1)))
+    check(err < 1e-10, f"max |u - 0.1| = {err:.3g}")
 
 c, d = forced(1.0), forced(2.0)
 c.checkpoints(Path("ckpt").resolve(), every=1, keep=2)
@@ -41,4 +45,4 @@ files = sorted(Path("ckpt").glob("checkpoint_*.h5"))
 check(bool(files), "no checkpoint written")
 was_refused, _ = refused(d.restart, files[-1])
 check(was_refused, "restart of the amplitude-2 model from an amplitude-1 checkpoint accepted")
-passed(f"no hit, mean u = {mean:.6g}; foreign-forcing restart refused")
+passed(("cache refused" if cache_refused else f"no hit, u = {mean:.6g}") + "; foreign-forcing restart refused")

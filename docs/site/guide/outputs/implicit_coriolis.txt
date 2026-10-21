@@ -1,2 +1,2 @@
-implicit rotation 2*Om*cross(ez, u): |W| = 2, |W| dt = 0.02 (stable at any dt; its waves are resolved in time)
+implicit rotation 2*Om*cross(ez, u): |W| = 2, |W| dt = 0.02 (stable at any dt; dt is below the rotation time 1/|W|; the scheme still damps and slows its waves by its own error, of order (|W| dt)^p: halve dt to measure it)
 UnderResolvedWarning: implicit rotation 2*Om*cross(ez, u): |W| = 100, |W| dt = 5 (stable at an ...

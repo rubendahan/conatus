@@ -1,9 +1,9 @@
 # Tangent, adjoint and optimal perturbations
 
-`FlowMap` is the time-stepping map of a solver, X_0 ↦ X_N, with its **exact discrete** tangent
-(`jvp`) and adjoint (`vjp`): the same schemes, the same operators, the same linear factorizations,
-transposed. Nothing is approximated by a continuous adjoint, so the dot-product test holds to
-rounding and the Taylor remainder is of order 2. `NLOP` builds on it: nonlinear optimal
+`FlowMap` is the time-stepping map of a solver, X_0 ↦ X_N, with its **discrete** tangent (`jvp`)
+and adjoint (`vjp`). Both use the same schemes, operators and linear factorizations as the forward
+step, transposed for the adjoint. The dot-product test therefore holds to rounding, and the Taylor
+remainder is of order 2. `NLOP` builds on it: nonlinear optimal
 perturbations (maximum energy growth at a horizon T for a given initial energy E0) and, in the limit
 E0 → 0, the linear optimal gain.
 
@@ -23,7 +23,7 @@ E0 → 0, the linear optimal gain.
 Started from the linear optimum, the nonlinear optimisation at $E_0 = 10^{-10}$ stays on it: in
 this limit the NLOP gain is the linear optimal gain.
 
-No tau, lift or gauge is written: the native layer places them, and they never enter the energy.
+The native layer places the tau terms, lifts and gauge. They do not enter the energy.
 `sim.flowmap(T, t0=...)` and `sim.nlop(..., t0=...)` take the start time when the equations depend
 on time (`time_parameter="t"`); `checkpoints=k` reverses the map with Revolve and k stored states.
 

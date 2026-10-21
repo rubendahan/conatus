@@ -1,4 +1,4 @@
-# 5. Invariant solutions: Kuramoto–Sivashinsky, L = 22
+# Invariant solutions: Kuramoto–Sivashinsky, L = 22
 
 **Goal.** Find the equilibria, a travelling wave and the shortest pre-periodic orbit of the
 Kuramoto–Sivashinsky equation on the $L = 22$ domain by Newton–Krylov–hookstep on the time-stepper's
@@ -37,9 +37,9 @@ $R u(x) = -u(-x)$. Invariant solutions come in families: equilibria ($\Phi_t u =
 ```
 
 The model is one line: `m.explain()` would show the split (the linear terms implicit, $u u_x$
-explicit) and the declared default dealiasing 3/2. The searches never see the equation: they see the
-flow map $\Phi_T$ of the simulation's time stepper (`sim.solver`, RK443 at $dt = 0.01$) and its exact
-tangent (Jacobian–vector products through the same stepper). Any model with `dt()` can be searched
+explicit) and the declared default dealiasing 3/2. The searches work on the flow map $\Phi_T$ of the
+simulation's time stepper (`sim.solver`, RK443 at $dt = 0.01$) and its tangent (Jacobian–vector
+products through the same stepper), not on the equation directly. Any model with `dt()` can be searched
 the same way, within the scope of these finders: one periodic direction (1D problems such as KS;
 flows with walls use the drivers listed in {doc}`../guide/dynamics/invariant_solutions`).
 `NewtonKrylovHookstep` is a trust-region (hookstep) Newton with GMRES: its accuracy target `tol`
@@ -56,7 +56,7 @@ the searches start from.
 ```
 
 The seeds are single sine modes, $u_0 = \sin(2\pi n x/L)$. A seed that falls back to $u = 0$ is marked `retracted` (the
-trivial-state threshold is declared in `explain()`), never reported as a new solution. The stability
+trivial-state threshold is declared in `explain()`) and is not reported as a new solution. The stability
 eigenvalues come from the linearised flow at the equilibrium.
 
 ## A travelling wave
@@ -93,7 +93,7 @@ relative to the stored seed because $\mu_1$ moves by $2\times10^{-6}$ between $d
 $0.02$ (time-discretisation error).
 
 <figure class="cn-film">
-<video class="cn-film" muted loop playsinline preload="none" poster="../_static/tutorial_films/t05_orbit.webp" width="720" height="480" aria-label="A yellow-green curve u(x) wriggles in the upper part of the frame while, below, its history fills a red and green space-time map from the bottom up over two periods of the orbit.">
+<video class="cn-film" muted loop playsinline preload="none" poster="../_static/tutorial_films/t05_orbit.webp" width="720" height="480" aria-label="A yellow-green curve u(x) wriggles in the upper part of the frame while, below, its history fills a red and blue space-time map from the bottom up over two periods of the orbit.">
 <source src="../_static/tutorial_films/t05_orbit.webm" type="video/webm">
 <source src="../_static/tutorial_films/t05_orbit.mp4" type="video/mp4">
 </video>
@@ -104,7 +104,7 @@ $0.02$ (time-discretisation error).
 :alt: Left: Floquet multipliers of the orbit with the unit circle; a red pair lies just outside it. Right: the leading eigenvalues of E1, two red complex pairs with positive real part.
 :width: 100%
 
-Stability of the solutions. Left: the multipliers of the orbit; the red pair outside the unit circle is the unstable direction, μ₁ = log|Λ|/T. Right: the leading eigenvalues of E1.
+Stability of the solutions. Left: the multipliers Λ of the orbit; the red pair outside the unit circle is the unstable direction, with Floquet exponent μ₁ = log|Λ|/T = 0.0332. Right: the eigenvalues λ of E1, modes growing as exp(λt); the red ones are the four with the largest real part.
 ```
 
 ## Check against the references

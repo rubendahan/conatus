@@ -17,7 +17,8 @@ privileged parameter (Keller 1977). From a converged point $z_k$ with unit tange
 
 At a fold $G_x$ is singular but the bordered matrix is not, so the branch passes through the fold
 and $t_p$ changes sign exactly there. The weights $W$ of the norm, the step bounds, the adaptation
-factor, the tolerances and the budgets are all arguments; no step size is chosen for you.
+factor, the tolerances and the budgets are arguments. You supply the initial step and its bounds;
+the algorithm adapts the step within them using the documented controls.
 
 ## Events
 
@@ -39,9 +40,11 @@ point of an orbit the doubled orbit is started from the Floquet vector.
 ## Periodic orbits by collocation
 
 Periodic orbits of low-dimensional systems (and of Galerkin truncations) are computed by orthogonal
-collocation on a mesh in time, with the period as unknown and an integral phase condition, as in
-AUTO and MatCont. Their Floquet multipliers detect limit points of cycles, branch points,
-period doubling and Neimark–Sacker bifurcations.
+collocation. The orbit is a piecewise polynomial on a mesh in time, and the differential equation
+holds at the Gauss points of each mesh interval. The period is an unknown, and an integral phase
+condition fixes the time origin (Doedel, Keller and Kernévez 1991). The Floquet multipliers of the
+orbit detect limit points of cycles, branch points, period doubling and Neimark–Sacker
+bifurcations.
 
 ## Codimension two
 

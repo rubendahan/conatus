@@ -389,7 +389,7 @@ class Watch:
             if isinstance(s, str):
                 raise InputTypeError(
                     f"watch(stats): {name!r} = {s!r} is a name, not a declared quantity",
-                    why="the Studio never computes physics you did not declare",
+                    why="the Studio shows only the quantities you declared",
                     fix=f'stats={{"{name}": lambda sim: ...}} (a number), or cn.spectrum("{s}", '
                         f'axis=...) / cn.profile("{s}", along=...)', doc=_DOC)
             if callable(s) and not isinstance(s, Stat):

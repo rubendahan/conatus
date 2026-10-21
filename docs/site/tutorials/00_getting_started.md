@@ -1,4 +1,4 @@
-# 0. Getting started: convection between two plates
+# Convection between two plates: from onset to simulation
 
 One problem from beginning to end: a layer of fluid heated from below. You write its equations as
 on paper, ask whether the fluid at rest is stable, find where convection starts (the published
@@ -37,11 +37,11 @@ with $\mathbf{u} = 0$ and $T = \pm 1/2$ on the plates $z = \mp 1/2$.
 :end-before: "# [/model]"
 ```
 
-The domain names its boundaries (`bottom`, `top`); conditions are stated where they hold. There is
-no basis to choose and nothing to say about how the conditions are imposed: `m.explain()` sums up
-the implicit–explicit split, the conditions by wall, the pressure gauge and the dealiasing, all
-placed by fixed rules (see the output at the end of the page); `m.explain(full=True)` lists every
-decision, tau by tau and term by term.
+The domain names its boundaries (`bottom`, `top`), and conditions are stated where they hold. The
+native layer chooses the bases and imposes the conditions by fixed rules. `m.explain()` sums up the
+implicit–explicit split, the conditions by wall, the pressure gauge and the dealiasing (see the
+output at the end of the page). `m.explain(full=True)` lists the compiler decisions tau by tau and
+term by term.
 
 ## Is the fluid at rest stable?
 
@@ -73,10 +73,10 @@ does not move; a spurious one jumps). The growth of $s$ is its real part, read o
 printed by `crit.explain()`.
 
 ```{figure} media/t00_neutral_curve.png
-:alt: The neutral curve in the plane of wavenumber and Rayleigh number: a U-shaped red line with its minimum marked at Ra about 1708 and k about 3.12; the region above it is shaded.
+:alt: The neutral curve in the plane of wavenumber and Rayleigh number: a U-shaped red line with its minimum marked at Ra about 1708 and k about 3.12; the region above it, where modes grow, is shaded; two crosses at k = pi mark Ra = 1500 and 2500.
 :width: 100%
 
-Growth rate of the least stable mode over a grid of (k, Ra), from the parametric pencil of the onset block. The red line is where it vanishes; its minimum is the critical point the script finds, Ra_c = 1707.762 at k_c = 3.1163.
+Rayleigh-Bénard onset between rigid plates, Pr = 1: growth rate of the least stable mode over a grid of (k, Ra), from the parametric pencil of the onset block. The red line is where it vanishes; modes grow in the shaded region. Its minimum is the critical point Ra_c = 1707.762 at k_c = 3.1163. The crosses are the two runs of the page, Ra = 1500 (stable) and 2500 (unstable) at k = π.
 ```
 
 ## Simulate above onset
@@ -94,7 +94,7 @@ they agree.
 :alt: Left: the roll amplitude on a log scale rises along a straight dashed line, then levels off. Right: the Nusselt number stays at 1, rises to a peak and settles to a constant.
 :width: 100%
 
-The simulation of the page. Left: the rolls grow at the rate of the eigenvalue (dashed) until the nonlinear terms stop them. Right: the heat carried across the layer, in units of conduction, settles to a steady value.
+The simulation of the page at Ra = 2500, Pr = 1; time in thermal diffusion units d²/κ. Left: the roll amplitude grows at the rate σ = 5.543 of the leading eigenvalue (dashed line, drawn through the run at t = 0.3) until the nonlinear terms stop it. Right: the heat flux across the layer in units of conduction, Nu = 1.474 at t = 6 (it varies by 4×10⁻¹⁵ over the last time unit).
 ```
 
 ## Steady rolls and the heat they carry
@@ -115,7 +115,7 @@ In a steady state the heat entering through the hot plate crosses every level an
 the cold one: the three values of $Nu$ agree.
 
 ```{image} outputs/t00_getting_started_rolls.png
-:alt: The saturated rolls: warm fluid rising at the sides (red), cool fluid sinking in the middle (green), with isotherms.
+:alt: The saturated rolls in the (x, z) plane: warm fluid rising at the sides (red), cool fluid sinking in the middle (blue), isotherms, and a colour bar of the departure from conduction T + z.
 :width: 100%
 ```
 

@@ -359,7 +359,7 @@ class Run:
         self._live("save_field")
         if compression not in COMPRESSIONS:
             raise OptionError(f"save_field: compression={compression!r} unknown; one of {COMPRESSIONS}",
-                              why="storage choices are declared, never chosen for you (all are lossless)")
+                              why="storage choices are declared explicitly (all are lossless)")
         if level is not None and compression != "gzip":
             raise OptionError("save_field: level= applies to gzip only")
         if level is not None and (isinstance(level, bool) or not isinstance(level, (int, np.integer))

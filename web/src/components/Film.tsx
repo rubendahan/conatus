@@ -82,7 +82,9 @@ export default function Film({ f }: { f: FilmItem }) {
       </div>
       <figcaption>
         <strong>{f.title}</strong>
-        <span>{f.caption}{note && <> {note}</>}</span>
+        <span>{f.caption}{f.details && <> {f.details}</>}</span>
+        {(f.legend || f.span) && <span className="film-legend">{[f.legend, f.span].filter(Boolean).join(" ")}</span>}
+        {note && <span>{note}</span>}
       </figcaption>
     </figure>
   );

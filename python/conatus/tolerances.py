@@ -266,7 +266,9 @@ DECLARED: dict[str, Declared] = dict([
        "nnz(L) + nnz(M) of the coupled system of a mapped domain, refused above (before any "
        "factorization; the LU fills in far beyond it)"),
     _d("conatus.solvers.evp.INF_TOL", 1e3 * 2.220446049250313e-16, "detection",
-       "infinite eigenvalues (|beta| small): counted and logged, never returned as finite modes"),
+       "infinite eigenvalues: |beta| <= INF_TOL |alpha| (scaled) with M singular, or beta = 0; "
+       "counted and logged. With M of full numerical rank every pair is finite (external review "
+       "of 0.1.1, F7)"),
     _d("conatus.solvers.evp.DRIFT_FLOOR", 1e-3, "detection",
        "floor of the drift ratio as a fraction of the median nonzero |sigma| of the finer spectrum: the "
        "drift test is relative, and a mode below this fraction of the spectrum's scale is near "
@@ -283,6 +285,11 @@ DECLARED: dict[str, Declared] = dict([
        ("conatus.solvers.evp:solve_sparse(tol)",)),
     # parametric pencils
     _d("conatus.solvers.parametric.RECON_TOL", 1e-10, "refusal", _CHECK),
+    _d("conatus.solvers.parametric.ENTRY_DROP_TOL", 1e-13, "detection",
+       "a Laurent coefficient entry at most this x the largest modulus of that matrix entry over "
+       "the sample plans is rounding of the DFT and discarded (counted); an evaluation where the "
+       "discarded entries could exceed RECON_TOL of the pencil is refused (external review of "
+       "0.1.1, F2: was a global amplitude threshold that deleted a real parameter term)"),
     _d("conatus.solvers.parametric.TRACK_TOL", 1e-13, "stop at the floor", _FLOOR,
        ("conatus.solvers.parametric:ParametricEVP.track(tol)",)),
     _d("conatus.solvers.parametric.TRACK_MAX_ITERATIONS", 30, "iteration cap", _CAP,
@@ -400,6 +407,10 @@ DECLARED: dict[str, Declared] = dict([
        "(stored per point and listed by explain(), never counted); the multipliers are returned"),
     _d("conatus.bifurcation.codim2.L1_KERNEL_TOL", 1e-6, "detection",
        "kernel tolerance of the first Lyapunov coefficient along a Hopf curve (diagnostic column)"),
+    _d("conatus.bifurcation.codim2.HOPF_PAIR_TOL", 1e-6, "refusal",
+       "a point of a Hopf curve is kept only when the eigenvalues of J (QZ, independent of the "
+       "augmented system) hold ±iω, ω = √κ, within it x max(1, |λ|max); κ <= 0 ends the curve "
+       "(external review of 0.1.1, F8)"),
     _d("conatus.bifurcation.codim2.BT_KAPPA_TOL", 1e-6, "detection",
        "a zero-Hopf test zero with |ω²| below it x max(1, |λ|max²) is reported as the "
        "Bogdanov–Takens point, not a fold–Hopf point (the event keeps κ = ω²)"),
@@ -461,9 +472,10 @@ DECLARED: dict[str, Declared] = dict([
         "conatus.solvers.periodic:PeriodicNewtonSolver.__init__(max_iterations)")),
     # contour methods (conatus.contour)
     _d("conatus.contour.beyn.RESIDUAL_TOL", 1e-13, "refusal",
-       "certification of every root of beyn() and of m.eigenvalues(region=): relative backward "
-       "residual ||T(z) v|| / (||T(z)|| ||v||) at most this, else the root is not returned (and "
-       "the call is refused if the certified roots do not add up to the count)",
+       "acceptance of every root of beyn() and of m.eigenvalues(region=): residual "
+       "||T(z) v|| / (s(z) ||v||) at most this (s(z) per operator: BeynResult.residual_definition), "
+       "else the root is not returned (and the call is refused if the accepted roots do not add "
+       "up to the count)",
        ("conatus.contour.beyn:beyn(residual_tol)",
         "conatus.contour.evp:region_eigenvalues(residual_tol)")),
     _d("conatus.contour.beyn.POLISH_MAX_ITERATIONS", 20, "iteration cap",
@@ -552,6 +564,11 @@ ALGORITHM_DEFAULTS: dict[str, Declared] = dict([
        "over interval from one of its ends, or within the bounded minimizer's own tolerance "
        "3 (xtol max|end| + sqrt(eps) |end|) if larger, is at the edge (a constrained minimum): "
        "CorrectnessWarning, and the CriticalPoint's repr and explain() say it"),
+    _d("conatus.solvers.parametric.OVER_SCAN_POINTS", 9, "detection",
+       "critical(over=): the neutral value is computed at this many equally spaced points of the "
+       "over interval (ends included, the least stable mode selected afresh at each); every "
+       "local minimum of the scan is refined by bounded Brent and the smallest refined value is "
+       "returned; a minimum narrower than the scan spacing is not seen (said in the log)"),
     _d("conatus.solvers.parametric.BRACKET_SCAN_POINTS", 8, "detection",
        "critical(): when the growth of the least stable admissible mode has the same sign at both "
        "ends of the bracket (refused), this many interior points are scanned (geometric for a "
@@ -573,6 +590,14 @@ ALGORITHM_DEFAULTS: dict[str, Declared] = dict([
        "Every group, a single root included, is counted by the argument principle on its own "
        "square; a grouping is accepted only when every count is >= 1 and they add up to Z, "
        "else the round fails (never a root reported without its own count)"),
+    _d("conatus.contour.beyn.SAME_OPERATOR_TOL", 1e-8, "refusal",
+       "beyn(counted=...): det T at the boundary points the count recorded must agree with the "
+       "counted operator's (unit phase absolute, log modulus relative) to it, else the count is "
+       "of another operator and refused (external review of 0.1.1, F9)"),
+    _d("conatus.contour.beyn.SEPARATION_ROUNDING", 1e3, "detection",
+       "Beyn's close roots are separated on squares of their own; a square below this x eps x "
+       "max(box radius, largest |root|) is not tried (det T is rounding noise there), the "
+       "group stays a cluster (external review of 0.1.1, F3)"),
     _d("conatus.contour.beyn.QUADRATURE_POINTS", 32, "algorithm control",
        "Gauss-Legendre nodes per edge for Beyn's moments, doubled at each new round"),
     _d("conatus.contour.beyn.BEYN_MARGIN", 2, "algorithm control",
@@ -580,11 +605,11 @@ ALGORITHM_DEFAULTS: dict[str, Declared] = dict([
     _d("conatus.contour.beyn.BEYN_MAX_ROUNDS", 3, "iteration cap",
        "rounds of moments on one box (more nodes, columns and moments each) before it is cut"),
     _d("conatus.contour.beyn.BEYN_MAX_SPLITS", 3, "iteration cap",
-       "levels of cuts of a box whose rounds did not certify its roots (each half counted, the "
+       "levels of cuts of a box whose rounds did not account for its count (each half counted, the "
        "counts adding up, and solved) before beyn() is refused"),
     _d("conatus.contour.operators.DERIVATIVE_STEP", 6e-6, "algorithm control",
        "relative step of the central difference for T'(z) of a callable given without its "
-       "derivative: used by the polish only (convergence rate), never by a certificate"),
+       "derivative: used by the polish only (convergence rate), not by the acceptance test"),
 ])
 
 

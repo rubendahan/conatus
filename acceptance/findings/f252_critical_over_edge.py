@@ -27,5 +27,10 @@ with warnings.catch_warnings(record=True) as w:
     cp = critical(P, "r", bracket=(-0.5, 1.0), over={"q": (1.2, 1.5)}, xtol=1e-10)
 said = any("edge" in str(m.message) or "end q" in str(m.message) for m in w) and \
     "EDGE" in repr(cp).upper()
+# values (review 2026-10-21, F14): the neutral curve r_c(q) = (1 - q^2)^2 at the end q = 1.2
+q = float(cp.over["q"])
+check(abs(q - 1.2) < 1e-3 and abs(cp.value - (1 - q * q) ** 2) < 1e-8,
+      f"r = {cp.value} at q = {q}, expected (1 - q^2)^2 = {(1 - q * q) ** 2} near q = 1.2")
+check(bool(cp.edge_note), "edge_note is empty for a minimum at the end of over")
 check(said, f"{cp!r} returned without saying the minimum is at the end of over")
 passed(f"r = {cp.value:.4g} at q = {cp.over['q']:.6g}, at the edge: said")

@@ -53,7 +53,9 @@ token, or an agent token with a scope, ``Authorization: Bearer``; tokens never i
     ``<run>`` is a key ``relay:run_id`` or a run id that names one run.
 
 Security model (see studio/hub/DEPLOY.md): TLS is terminated by the host or by ``--certfile``; outside
-``--local`` every non-HTTPS request is refused; session cookies are Secure, HttpOnly, SameSite=Strict;
+``--local`` every non-HTTPS request is refused; session cookies are HttpOnly, SameSite=Strict, bound to
+the ``Host`` of the login, and named ``__Host-cn_session`` (Secure) over HTTPS, ``cn_session_<port>`` with
+``--local`` (other services on the same host name receive it: docs/site/guide/studio.md, F11);
 state-changing requests must be JSON from the same origin; failed logins are throttled per client;
 commands are filtered against the protocol list (hub *and* relay), stop/fork need an explicit
 confirmation, and every login and command is written to the audit log (who, when, what, result).
@@ -80,6 +82,7 @@ import tornado.netutil
 import tornado.web
 import tornado.websocket
 
+from conatus._private import private_dir
 from conatus.telemetry import COMMANDS, RunState, default_spool
 from conatus.telemetry.film import FilmIndex, thin_to_budget
 
@@ -92,7 +95,7 @@ from . import webapp
 
 WEB_DEFAULT = webapp.classic_page()             # the repository's, else the shipped copy
 CONFIRM = ("stop", "fork")          # commands that need an explicit confirmation
-COOKIE = "cn_session"
+COOKIE = "cn_session"               # base name; see webapp.session_cookie_name (F11)
 ACK_TIMEOUT_S = 10.0
 JOB_ACK_TIMEOUT_S = {"submit": 150.0, "prepare": 45.0}   # submit.sh runs on the relay; others 15 s
 FILM_MAX_FRAMES = 720               # film frames kept per run and name in memory (then thinned)
@@ -552,9 +555,20 @@ class Guard:
         ctx = getattr(self.request.connection, "context", None)
         return getattr(ctx, "_orig_remote_ip", None) or self.request.remote_ip
 
+    @property
+    def cookie_name(self) -> str:
+        """The session cookie of this hub as the browser addresses it (review F11, 0.1.2):
+        ``__Host-cn_session`` over HTTPS; ``cn_session_<port>`` with ``--local``, so two Studios
+        on one loopback name do not share or overwrite one cookie."""
+        return webapp.session_cookie_name(self.request.host or "", secure=not self.hub.local)
+
+    def session_user(self) -> str | None:
+        """The user of the session cookie, if the session was opened at this ``Host`` (F11)."""
+        return self.hub.sessions.user(self.get_cookie(self.cookie_name), origin=self.request.host)
+
     def get_current_user(self) -> str | None:
         """The user of the session cookie, else of a ``Bearer`` API token, else None."""
-        user = self.hub.sessions.user(self.get_cookie(COOKIE))
+        user = self.session_user()
         if user:
             return user
         authz = self.request.headers.get("Authorization", "")
@@ -667,8 +681,8 @@ class Login(Base):
         if not token:                                   # a token login does not wipe the
             self.hub.throttle.success(ip)               # password failures of a shared address
         self.hub.audit.write(event="login", ip=ip, user=user, result="ok")
-        self.set_cookie(COOKIE, self.hub.sessions.create(user), httponly=True,
-                        secure=not self.hub.local, samesite="Strict", path="/")
+        self.set_cookie(self.cookie_name, self.hub.sessions.create(user, origin=self.request.host),
+                        httponly=True, secure=not self.hub.local, samesite="Strict", path="/")
         self.redirect("/")
 
 
@@ -679,8 +693,8 @@ class Logout(Base):
         if not self.same_origin():
             raise tornado.web.HTTPError(403, "cross-origin request refused")
         self.hub.audit.write(event="logout", ip=self.client_ip, user=self.current_user)
-        self.hub.sessions.drop(self.get_cookie(COOKIE))
-        self.clear_cookie(COOKIE, path="/")
+        self.hub.sessions.drop(self.get_cookie(self.cookie_name))
+        self.clear_cookie(self.cookie_name, path="/", secure=not self.hub.local, samesite="Strict")
         self.redirect("/login")
 
 
@@ -834,7 +848,7 @@ class V1(Base):
         """Guard checks; then the caller (401 without one, 429 after repeated bad tokens)."""
         super().prepare()
         ip = self.client_ip
-        user = self.hub.sessions.user(self.get_cookie(COOKIE))
+        user = self.session_user()
         if user:
             self.who = Principal(user, session=True)
             return
@@ -1159,6 +1173,23 @@ def make_app(hub: Hub) -> tornado.web.Application:
 
 
 # ====================================================================== CLI
+STATE_DEFAULT = "hub_state"
+
+
+def state_dir(given: str | None, *, local: bool) -> str:
+    """The state directory of the hub (review F28, 0.1.2): ``--state`` when given (``--state
+    hub_state`` included: that spelling used to be replaced by a temporary directory under
+    ``--local``), else ``$CN_HUB_STATE``, else ``hub_state`` for a hosted hub; ``serve --local``
+    without either gets a new private (0700) directory ``conatus_hub_*`` in the system temporary
+    directory. That directory is not removed when the hub stops; ``serve`` prints its path."""
+    if given:
+        return given
+    env = os.environ.get("CN_HUB_STATE")
+    if env:
+        return env
+    return tempfile.mkdtemp(prefix="conatus_hub_") if local else STATE_DEFAULT
+
+
 def _auth_path(a: argparse.Namespace) -> Path:
     return Path(a.auth) if a.auth else Path(a.state) / "auth.json"
 
@@ -1188,7 +1219,7 @@ def _write_secret(path: str | Path, tok: str) -> Path:
     never lands in an existing file (another account's, or one with looser permissions) nor
     through a symbolic link planted at the path, and a reader never sees a partial token."""
     out = Path(path).expanduser()
-    out.parent.mkdir(parents=True, exist_ok=True)
+    private_dir(out.parent)                             # 0700 when created here (F12)
     tmp = out.with_name(f".{out.name}.{os.getpid()}.{secrets.token_hex(4)}.tmp")
     fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o600)
     try:
@@ -1358,6 +1389,7 @@ async def _serve(a: argparse.Namespace) -> None:
     scheme = "https" if ssl else "http"
     print(f"Conatus Studio hub on {scheme}://{host}:{a.port} ({'LOCAL mode' if a.local else 'hub mode'};"
           f" audit {audit.path})", flush=True)
+    print(f"state directory: {state} (audit, local token; kept after the hub stops)", flush=True)
     relay = None
     if a.local:
         spool = Path(a.spool) if a.spool else default_spool()
@@ -1376,8 +1408,11 @@ def main(argv: list[str] | None = None) -> None:
     from conatus._experimental import experimental
     experimental("hub")
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--state", default=os.environ.get("CN_HUB_STATE", "hub_state"),
-                    help="directory for auth.json and audit.jsonl (a persistent volume when hosted)")
+    ap.add_argument("--state", default=None,
+                    help="directory for auth.json, audit.jsonl and the --local token file (a "
+                         "persistent volume when hosted). Default: $CN_HUB_STATE, else "
+                         f"{STATE_DEFAULT} for the hub; `serve --local` without either uses a new "
+                         "private temporary directory and prints its path")
     ap.add_argument("--auth", default=None, help="auth file (default <state>/auth.json; else $CN_HUB_AUTH_JSON)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("serve", help="run the hub")
@@ -1445,6 +1480,8 @@ def main(argv: list[str] | None = None) -> None:
         d.add_argument("name")
     sub.add_parser("export", help="print the auth file (hashes only) for $CN_HUB_AUTH_JSON")
     a = ap.parse_args(argv)
+    if a.cmd != "serve":
+        a.state = state_dir(a.state, local=False)
     if a.cmd == "adduser":
         _cmd_adduser(a)
     elif a.cmd == "addrelay":
@@ -1463,8 +1500,7 @@ def main(argv: list[str] | None = None) -> None:
         if not a.local:
             sys.exit("the hosted hub (serve without --local) is not part of this release: "
                      "use `serve --local` (see the Studio guide)")
-        if a.local and a.state == "hub_state":
-            a.state = tempfile.mkdtemp(prefix="conatus_hub_")
+        a.state = state_dir(a.state, local=a.local)
         try:
             asyncio.run(_serve(a))
         except KeyboardInterrupt:

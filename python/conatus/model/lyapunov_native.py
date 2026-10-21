@@ -35,8 +35,8 @@ def _whole(sim: Any, T: float, what: str, unit: float, unit_name: str, *, zero: 
     if k < (0 if zero else 1) or not is_whole(n):
         raise ResolutionError(
             f"lyapunov({what}={T!r}): not a whole number of {unit_name} ({unit:g}): {n:.6f}",
-            why="durations are never rounded: the time step and the reorthonormalization "
-                "interval stay what was declared",
+            why="durations must be whole multiples of the time step and of the "
+                "reorthonormalization interval",
             fix=f"{what} = {max(k, 0 if zero else 1) * unit!r}", doc=_DOC)
     return k
 

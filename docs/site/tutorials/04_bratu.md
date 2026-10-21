@@ -1,4 +1,4 @@
-# 4. Nonlinear boundary-value problems and continuation: Bratu
+# Nonlinear boundary-value problems and continuation: Bratu
 
 **Goal.** Solve the Bratu problem $u'' + \lambda e^u = 0$ by Newton, see quadratic convergence
 reported, then follow the solution branch by pseudo-arclength continuation through its fold.
@@ -14,9 +14,9 @@ $$
 u'' + \lambda\, e^{u} = 0 \quad \text{on } [-1, 1], \qquad u(\pm 1) = 0 .
 $$
 
-For $\lambda < \lambda_c$ there are two solutions (lower and upper branch); they merge at the fold
-$\lambda_c$ and none exists beyond. A Newton solver alone cannot pass the fold: the Jacobian is singular
-there. Pseudo-arclength continuation parametrises the branch by its arclength instead.
+For $0 < \lambda < \lambda_c$ the problem has two solutions (lower and upper branch). They merge
+at the fold $\lambda_c$, and none exists beyond. A Newton solver alone cannot pass the fold,
+because the Jacobian is singular there. Pseudo-arclength continuation parametrises the branch by its arclength instead.
 
 ## Write the problem
 
@@ -54,14 +54,9 @@ The tolerance `tol` is required: it decides the digits of the solution. The damp
 full Newton steps) and the iteration budget (default 50) have declared defaults; the script gives
 both explicitly (1 and 20). All three are printed with the result. `sol.explain()` lists the residual of every iteration and the **observed** order of
 convergence $q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})$, about 2 here, the signature of an exact
-Jacobian. Non-convergence raises `NewtonNotConverged` with the history; it never returns the last
-iterate silently.
+Jacobian. Non-convergence raises `NewtonNotConverged` with the history of the iterations.
 
-```{figure} media/t04_newton.png
-:alt: The relative residual of Newton's method on a log scale, dropping faster at each iteration below the dashed tolerance line.
-:width: 100%
-
-Newton from u = 0 at λ = 0.3, as printed by sol.explain(): the number of correct digits doubles at each step (quadratic convergence) down to the declared tolerance.
+```{include} media/t04_newton.md
 ```
 
 ## Continuation through the fold
@@ -77,18 +72,19 @@ its bounds, corrector tolerance, number of points); the algorithm controls (adap
 corrector budget, finite-difference step for $\partial G/\partial\lambda$) have declared defaults,
 marked "(default)" by `explain()`. The branch starts on the
 lower branch at $\lambda = 0.3$, passes the fold and comes back down the upper branch for a few
-points (`max_points`). Up there $u$ grows and $e^u$ needs more modes: at 64 modes its Chebyshev tail
-stays below $10^{-12}$ along the whole branch; at too few modes Conatus refuses the step (a
-non-constant coefficient whose Chebyshev tail exceeds `ncc_tail_tol`, $10^{-8}$ by default, is never
-used or truncated silently: the error gives the resolution to use, or the `ncc_cutoff=` to declare). Folds are *located* (the $\lambda$-component of the tangent changes sign,
-refined to $|t_\lambda| \approx 10^{-16}$), not read off the nearest point; `branch.explain()` reports
-the residual at the located point and every step-size change.
+points (`max_points`). Up there $u$ grows and $e^u$ needs more modes. At 64 modes its Chebyshev
+tail stays below $10^{-12}$ along the whole branch. At too few modes Conatus refuses the step: a
+non-constant coefficient whose Chebyshev tail exceeds `ncc_tail_tol` ($10^{-8}$ by default) raises
+an error that gives the resolution to use, or the `ncc_cutoff=` to declare. The continuation routine
+refines the fold by solving for a zero $\lambda$-component of the tangent (to
+$|t_\lambda| \approx 10^{-16}$). `branch.explain()` reports the residual at the located point and
+each step-size change.
 
 ```{figure} media/t04_branch.png
 :alt: The solution branch of the Bratu problem: u(0) rises with lambda, turns back at a red fold near lambda = 0.878 and climbs on the upper branch, the dots lying on a thin closed-form curve.
 :width: 100%
 
-The branch followed by pseudo-arclength continuation (the page's settings, run for more points), on the closed form u(0) = 2 ln cosh a. The fold is located by bisection on the tangent.
+The branch followed by pseudo-arclength continuation (the page's settings, run for more points), on the closed form u(0) = 2 ln cosh a. The fold, located by bisection on the tangent, is at λ_c = 0.8784576798.
 ```
 
 ## Check against the closed form

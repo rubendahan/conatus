@@ -8,20 +8,22 @@ import { PageHead, Section } from "../components/ui";
 import { withBase } from "../lib/base";
 import { SITE } from "../content/site";
 import docsMap from "../generated/docs-map.json";
+import { GETTING_STARTED } from "../content/nav";
 import "../styles/docs.css";
 
 type Entry = { title: string; text: string; to?: string; docs?: string; file?: string };
 type MapEntry = { title: string; text: string; href: string };
 const MAP = docsMap as { guide: { caption: string; entries: MapEntry[] }[]; dynamics: MapEntry[] };
 
+// Start here: the getting-started route of content/nav.json (the same four steps as the Home page and the
+// documentation home), then the tutorials index.
 const START: Entry[] = [
-  { title: "Getting started", to: "/tutorials/getting-started", text: "Tutorial 0: one problem from the equations to a published result, every step executed." },
-  { title: "Install", to: "/install", text: "On CPU or with CUDA, and how to check what your machine can run." },
-  { title: "Tutorials", to: "/tutorials", text: "All the tutorials, each a script ending on a result from the literature." },
+  ...GETTING_STARTED.map((s, i) => ({ title: `${i + 1}. ${s.title}`, text: s.text, to: s.to, docs: s.docs })),
+  { title: "Tutorials", to: "/tutorials", text: "All the tutorials, by topic, each a script that ends on a published value or a closed form." },
 ];
 
 const REFERENCE: Entry[] = [
-  { title: "API reference", docs: "api/index.html", text: "Every public object, from its docstring: the user layer, then the expert layer." },
+  { title: "API reference", docs: "api/index.html", text: "The public objects, from their docstrings: the user layer, then the expert layer." },
   { title: "Mathematics", docs: "math/index.html", text: "The methods behind Conatus: discretisation, time stepping, eigenproblems, orbits, continuation." },
 ];
 
@@ -44,8 +46,8 @@ export default function Documentation() {
   return (
     <>
       <PageHead eyebrow="Documentation" title="Documentation">
-        <p>The reference: each part of Conatus described once, with the choices you make and the ones it will not make for you.
-          To learn, start with the <Link to="/tutorials">Tutorials</Link>.</p>
+        <p>Find task guides, API documentation and the numerical methods reference. To learn, start with the four steps
+          below.</p>
       </PageHead>
       <Section id="start" title="Start here" className="doc-sec">
         <div className="doc-grid">{START.map((e) => <EntryCard key={e.title} e={e} />)}</div>

@@ -1507,7 +1507,7 @@ class TerrainSimulation:
             from ..timestep.integrator import is_whole    # the one whole-steps rule
             if not is_whole(n):
                 raise ResolutionError(f"run(until={until}): not a whole number of steps of dt = "
-                                      f"{self._dt:g}", why="the time step is never adjusted silently",
+                                      f"{self._dt:g}", why="the stop time must be a whole number of time steps",
                                       fix=f"run(steps={math.floor(n)})", doc=_DOC)
         from ..timestep.integrator import check_state_finite
         fe = self._finite_every

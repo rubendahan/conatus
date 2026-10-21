@@ -54,7 +54,7 @@ def _count(value, name: str, where: str) -> None:
     import numbers
     if isinstance(value, bool) or not isinstance(value, numbers.Integral) or value < 1:
         raise OptionError(f"{where}: {name}={value!r} must be an integer >= 1",
-                          fix=f"e.g. {name}=10 (counts are never rounded for you)")
+                          fix=f"e.g. {name}=10 (counts must be integers)")
 
 
 def real_state(x, where: str) -> np.ndarray:
@@ -68,8 +68,7 @@ def real_state(x, where: str) -> np.ndarray:
         if im > IMAG_ROUNDOFF * scale:
             raise DtypeError(f"{where}: the starting state is complex (max|Im x| = {im:.2e} > "
                              f"{IMAG_ROUNDOFF:.1e} x max(1, max|x|), the declared round-off)",
-                             why="pseudo-arclength continuation here works on real unknowns; the "
-                                 "imaginary part is never dropped for you",
+                             why="pseudo-arclength continuation here works on real unknowns",
                              fix="continue the real and imaginary parts as separate real unknowns, "
                                  "or pass the real state (x.real) if the imaginary part is spurious")
         x = x.real

@@ -397,7 +397,7 @@ class NLOP:
             raise OptionError(
                 f"NLOP.from_solver: T = {T!r} is not a whole number of steps of dt = {solver.dt!r} "
                 f"(T/dt = {n!r})",
-                why="the horizon is part of the problem and is not rounded for you",
+                why="the horizon must be a whole number of time steps",
                 fix=f"pass T = {max(nsteps, 1) * solver.dt!r} or change the solver's dt")
         fm = FlowMap(solver, nsteps, t0=t0, checkpoints=checkpoints,
                      checkpoint_store=checkpoint_store, checkpoint_dir=checkpoint_dir)

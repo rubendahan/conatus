@@ -2,6 +2,104 @@
 
 All notable changes to Conatus.
 
+## [0.1.2] - 2026-10-21
+
+A correction release for the findings of an external review of 0.1.1 and of a review of its
+documentation. Each fix has a test against an independent reference value. Upgrading is
+recommended: some results of 0.1.1 were wrong (see Correctness). Results that can differ from
+0.1.1: large finite eigenvalues of dense QZ, parametric pencils with small parameter terms,
+contour results with close roots, `critical(over=)` and the Hopf curves of `continue_codim2`.
+
+### Security
+
+- Local Studio: the session cookie is `cn_session_<port>` with `--local` and `__Host-cn_session`
+  over HTTPS, and each session is bound to the `Host` it was opened at. The cookie was valid when
+  replayed from any port of 127.0.0.1. On plain HTTP, another service on the same host name and
+  port can still read it; the Studio guide says so.
+- Telemetry spools, Studio audit logs and token files are created 0600 in 0700 directories,
+  whatever the umask; they took the umask's mode. Run records and outputs keep the umask's mode.
+- `hub serve --local --state hub_state` uses the directory given; the explicit spelling of the
+  default was replaced by a temporary directory.
+
+### Correctness
+
+- Dense QZ (`solve_dense`, `m.eigenvalues(method="dense")`): with a nonsingular `M` every
+  eigenvalue is finite and returned; `L = -diag(1, 1e13)`, `M = I` lost 1e13 as infinite. The
+  rank of `M` is measured on `M` as given, so a row of rounding noise where `M` has a zero row
+  does not make `M` look nonsingular (its infinite eigenvalue was returned as a finite value near
+  1e17). The log states the rank and names the pairs it cannot classify.
+- Parametric pencils (`m.parametric`): a coefficient entry is discarded only at rounding level
+  for that entry; a whole matrix 1e-14 times the pencil's largest entry was deleted as
+  "identically zero" (eigenvalue 1e-14 r read 0 at r = 1e14). An evaluation where the discarded
+  entries could matter is refused.
+- `continue_codim2(kind="hopf")` stops at the Bogdanov–Takens point (κ = ω² = 0) and keeps only
+  points whose Jacobian has the pair ±iω; it continued into real-saddle points. Tutorial 10, its
+  figure and its checks are corrected.
+- `cn.contour.beyn`: close distinct roots (0.2 and 0.2000001) are returned separately, each
+  counted on its own square; they were one root "of multiplicity 2" at their mean.
+  `multiplicity` is the number of eigenvalues in a square of half-side `enclosure` (new field)
+  around each value.
+- `cn.contour.beyn(counted=...)` refuses a count of another operator (it evaluates `det T` again
+  at points the count recorded); it accepted any count of the same box.
+- `cn.contour.count` is described as a test on samples of the boundary. For a function `T(z)`
+  with poles, a zero and a pole on opposite sides of the boundary, closer to it than a step, are
+  not seen; `count_method`, `explain()` and the new `CountResult.scope` and
+  `poles_by_construction` say so. The contour results no longer use the word "certified".
+- `BeynResult.residual_definition` states the scale of the residuals; the guide's formula for a
+  function `T(z)` was not the one computed.
+- `critical(over=)` computes the neutral value at `over_points` points of the interval (default
+  9) and refines every local minimum of that scan; one bounded Brent search could return a higher
+  local minimum as the critical value. The log lists the minima found, and a point where the
+  pencil is refused is logged as unchecked.
+- The run cache refuses a function whose code reads a value chosen at run time (`getattr`,
+  `vars`, `os.environ`, `open`, `np.load`, ...); such a read kept the cache key, and a changed
+  configuration returned the old value.
+
+### Checks that reported success without measuring it
+
+- `verify()` measures the right and left residuals of the vectors the mode holds when it is
+  called; it printed the residual stored by `track()`, so a mode whose vector had been changed
+  still passed. A zero vector, or a vector of the wrong size, is not a pass. A point where the
+  parametric pencil is refused is reported as a failed check instead of an exception.
+- `resolution_report` is `ok` only when every variable of the plan was measured; an empty or
+  partial state is reported as not measured (`complete`, `unmeasured`). An array of the wrong
+  shape is refused with the expected shape instead of an `IndexError`.
+- `python -m conatus agent check` checks the argument values of `Simulation.run` and
+  `IVPSolver.run` at the stop (`run(steps=-1)` was reported ok); the new `validated` field says
+  whether the values of the stopped call were checked.
+- The acceptance scripts shipped with the package check the mathematical requirement of each
+  case, and their runner counts a script that crashes or prints no result as a failure.
+- `uncertainty(...).explain()` prints tuple resolutions such as `N=[(8, 8), (12, 12), (16, 16)]`
+  (it raised `TypeError`).
+
+### Documentation and website
+
+- The home page and the README start with one complete calculation, the critical Reynolds number
+  of plane Poiseuille flow, shown with its recorded output. The site and the documentation share
+  one navigation and one getting-started route.
+- The code shown on the guide and tutorial pages runs when copied in order, and the outputs shown
+  are what it prints; a test runs every page.
+- Tutorial figures redrawn: tables where a plot carried little information, captions computed
+  from the plotted data, values below the axis floor drawn as upper limits.
+- Wording: claims are stated with their scope and threshold, without slogans; the time-stepper
+  orders are given per scheme; the pages no longer compare Conatus with other codes.
+- The Validation page lists published values and closed forms; the values are labelled as
+  reported by the author, since their run records are not public.
+- Pages no longer cite examples or test files that the package does not ship; the deprecation
+  versions and the release status are read from the package.
+- `SHA256SUMS` lists bare file names, so `sha256sum -c SHA256SUMS` works in the directory that
+  holds the downloaded wheels.
+
+### Known limitations
+
+- Unchanged from 0.1.1 (see below).
+- A contour count for a user function `T(z)` with poles is a test on samples, not a proof.
+- Local Studio over plain HTTP: another service on the same host name and port can replay the
+  session cookie.
+- Dense QZ: a pencil whose `M` is singular and which also has finite eigenvalues larger than
+  about 1e12 times the scale of the pencil can have pairs that cannot be classified; they are
+  kept as finite and named in the log.
+
 ## [0.1.1] - 2026-10-20
 
 A correction release: every finding of an external review of 0.1.0, and of our own audits of

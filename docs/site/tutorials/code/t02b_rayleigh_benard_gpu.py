@@ -43,6 +43,7 @@ T_init = lambda x, z: -z + 1e-2 * np.cos(np.pi * x) * np.cos(np.pi * z)  # noqa:
 # [/problem]
 
 # [backends]
+# requires: gpu
 runs, early = {}, {}
 for label, kw in [("cpu", dict(backend="cpu")),
                   ("gpu", dict(backend="cuda", f_backend="fused"))]:   # both choices explicit
@@ -58,6 +59,7 @@ print(runs["gpu"][0].explain())
 # [/backends]
 
 # [graph]
+# requires: gpu
 g = m.simulate(N=(128, 64), scheme="RK443", dt=2e-4, backend="cuda", f_backend="fused")
 g.initial(T=T_init)
 g.solver.run_graph(20)                               # expert: capture one step, replay it
@@ -68,6 +70,7 @@ print(f"gpu + CUDA graph: {1e3 * (time.perf_counter() - t0) / 180:.2f} ms per st
 # [/graph]
 
 # [check]
+# requires: gpu
 Tc, Tg = early["cpu"], early["gpu"]
 diff_gpu = np.abs(Tc - Tg).max() / np.abs(Tc).max()
 diff_graph = np.abs(graph_early - Tg).max() / np.abs(Tg).max()

@@ -63,7 +63,7 @@ def _load_core():
         if not hits:
             raise _missing(f"CONATUS_CORE_PATH={explicit!r} contains no _core*.so",
                            where="conatus.runtime (CONATUS_CORE_PATH)",
-                           why="an explicit core path is never replaced by another copy; unset it "
+                           why="the explicit core path is used as given; unset it "
                                "to use the installed or development build")
         return _exec_from(name, hits[0]), "CONATUS_CORE_PATH"
     if importlib.util.find_spec(name) is not None:

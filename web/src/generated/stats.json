@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-20T23:09:22.591Z",
+ "generated": "2026-10-21T21:29:53.164Z",
  "commit": null,
  "counts": {
   "tests": 2268,
@@ -12,19 +12,19 @@
   "date": "2026-10-20"
  },
  "ledger": {
-  "entries": 59,
-  "verification": 59,
+  "entries": 52,
+  "verification": 52,
   "gallery": 0,
   "performance": 0,
   "domains": 12,
   "withRunId": 8,
-  "withDeviation": 27
+  "withDeviation": 21
  },
  "runsArchived": 0,
  "tutorials": {
-  "total": 14,
-  "passing": 14
+  "total": 15,
+  "passing": 15
  },
- "warnings": 36,
+ "warnings": 33,
  "divergences": 0
 }

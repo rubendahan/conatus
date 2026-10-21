@@ -15,13 +15,7 @@ log modulus, never the determinant itself: :mod:`conatus.contour.operators`). Be
 only the principal value of the phase increment is known, so the walk is adaptive: a step is
 accepted when
 
-* its principal increment and those of its two halves are at most ``phase_step`` (the
-  principal-increment bound: a full turn of the phase inside a step shows up in a half unless it
-  happens within one quarter of the step, which the next condition catches through the modulus;
-  an acceptance test on sampled values, not a proof; ``tests/contour/test_contour_count.py``
-  places clusters of zeros 1e-3 .. 1e-12 off an edge, between the initial points: each is
-  counted right or refused, never miscounted),
-  and
+* its principal increment and those of its two halves are at most ``phase_step``, and
 * ``log det T`` is resolved by the step: the second difference of ``log|det T| + i arg det T``
   over the two halves is at most ``phase_step`` as well (a zero close to the step makes the
   modulus dip between the points),
@@ -29,10 +23,22 @@ accepted when
 otherwise it is bisected. A zero of ``det T`` on (or within rounding of) the boundary, or a
 determinant that is not continuous (a branch-labelled product, a sign that depends on the order
 in which some factor was computed), makes the bisection stall: the walk is then refused with the
-place where it stalled, never reported. The winding of the accepted walk is an integer up to
-rounding by construction (the last point is the first one, evaluated again); a non-integer
-winding -- an evaluation of ``det T`` that does not return the same value at the same point --
-is refused.
+place where it stalled. The winding of the accepted walk is an integer up to rounding by
+construction (the last point is the first one, evaluated again); a non-integer winding -- an
+evaluation of ``det T`` that does not return the same value at the same point -- is refused.
+
+These are tests on sampled values, not a proof (external review of 0.1.1, F1). What they see:
+
+* a pencil ``L + z M`` or a Hill operator linear in the exponent has a polynomial determinant.
+  A zero closer to the boundary than the local step changes the phase by about pi across the
+  step, or makes ``log|det T|`` dip, and the step is refined.
+  ``tests/contour/test_contour_count.py`` places clusters of zeros 1e-3 .. 1e-12 off an edge,
+  between the initial points: each is counted right or refused.
+* a callable ``T`` (or a Hill operator nonlinear in the exponent) may have poles. A zero inside
+  and a pole outside (or the reverse), both closer to the boundary than the local step, leave
+  ``|det T|`` near 1 on the boundary and turn its phase by 2 pi between two samples: no sample
+  sees them, and the count is off by one. ``CountResult.poles_by_construction`` is False for
+  these operators, and the result says so.
 
 The count is the winding number of the *discretised* operator. It counts every eigenvalue of
 the matrix pencil in the region, the spurious ones of a discretisation included.
@@ -82,13 +88,28 @@ class CountResult:
     phase_step: float
     control: str = ""              # the control-box sentence, when one ran
     log: list[str] = field(default_factory=list)
+    #: True for a pencil and a Hill operator linear in the exponent (det T a polynomial); False
+    #: for a callable T, whose poles the walk cannot see (module docstring)
+    poles_by_construction: bool = False
+    #: (size of T, kind, ((s, phase, log|det|), ...)): det T at a few boundary points, which
+    #: beyn(counted=...) evaluates again to check that the count is of the same operator
+    reference: tuple = field(default=(), repr=False, compare=False)
+
+    @property
+    def scope(self) -> str:
+        """What the sampled walk can miss, for this kind of operator (module docstring)."""
+        if self.poles_by_construction:
+            return ("det T is a polynomial: a zero closer to the boundary than a step turns the "
+                    "phase or dips the modulus, and the step is refined")
+        return ("det T may have poles: a zero and a pole on opposite sides of the boundary, both "
+                "closer to it than the local step, cancel at every sample and are not counted")
 
     @property
     def count_method(self) -> str:
-        """How the count was certified, in words (walk, evaluations, increment bound)."""
-        return (f"argument principle: winding of det T along the boundary of the box "
+        """How the count was obtained, in words (walk, evaluations, increment bound, scope)."""
+        return (f"argument principle: winding of det T sampled along the boundary of the box "
                 f"({self.evaluations} evaluations, principal increment <= {self.phase_step:.3g} "
-                f"rad per step)")
+                f"rad per step; a test on samples, not a proof: {self.scope})")
 
     def __repr__(self) -> str:
         what = (f"Z = {self.count}" if self.count is not None else
@@ -111,9 +132,10 @@ class CountResult:
                  f"phase increment <= {self.phase_step:.3g} rad (and its two halves), log det T "
                  "resolved by every step",
                  f"  winding before rounding: off an integer by {self.winding_error:.1e} (a "
-                 "non-integer winding is refused, never reported)",
+                 "non-integer winding is refused)",
                  f"  shortest step {self.smallest_step:.1e} of the perimeter, at z = "
-                 f"{self.smallest_at:.6g} (where a zero comes closest to the boundary)"]
+                 f"{self.smallest_at:.6g} (where a zero comes closest to the boundary)",
+                 f"  scope: a test on samples, not a proof; {self.scope}"]
         if self.control:
             lines.append("  control: " + self.control)
         lines += ["  " + s for s in self.log]
@@ -199,8 +221,11 @@ def _walk(op: Operator, region: ContourBox, phase_step: float, initial_points: i
                 "labelled by their order); max_evaluations= raises the budget",
             doc=_DOC) from None
     w = total / (2 * math.pi)
+    keys = sorted(k for k in cache if k >= 0)
+    pick = [keys[i] for i in np.unique(np.linspace(0, len(keys) - 1, 8).round().astype(int))]
     return {"winding": w, "evaluations": len(cache), "smallest": smallest / _END,
-            "smallest_at": complex(region.point(smallest_at))}
+            "smallest_at": complex(region.point(smallest_at)),
+            "samples": tuple((float(k), complex(cache[k][0]), float(cache[k][1])) for k in pick)}
 
 
 def _closing(op: Operator, region: ContourBox, cache: dict) -> tuple[complex, float]:
@@ -224,7 +249,8 @@ def count(T: Any, region: ContourBox, *, poles: int | None = None, derivative: A
           control: tuple[ContourBox, int] | None = None, phase_step: float = PHASE_STEP_MAX,
           initial_points: int = INITIAL_POINTS, max_evaluations: int = MAX_EVALUATIONS) -> CountResult:
     """Number of eigenvalues of ``T(z)`` in ``region`` (a :func:`conatus.contour.box`) by the
-    argument principle, certified as an integer (module docstring).
+    argument principle, read off an adaptive sampled walk of the boundary (module docstring:
+    what the walk checks, and what it can miss for an operator with poles).
 
     ``T``: a pair ``(L, M)`` for the pencil ``L + z M``, a :class:`conatus.floquet.HillBlocks`,
     or a callable ``z -> matrix`` (or scalar). ``poles``: poles of ``det T`` inside the region,
@@ -273,4 +299,6 @@ def count(T: Any, region: ContourBox, *, poles: int | None = None, derivative: A
     return CountResult(count=None if P is None else n + P, winding=n, poles=P, region=region,
                        operator=op.explain(), evaluations=w["evaluations"],
                        smallest_step=w["smallest"], smallest_at=w["smallest_at"],
-                       winding_error=err, phase_step=phase_step, control=ctrl)
+                       winding_error=err, phase_step=phase_step, control=ctrl,
+                       poles_by_construction=bool(op.structural_poles),
+                       reference=(op.n, op.kind, w["samples"]))

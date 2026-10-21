@@ -1,4 +1,4 @@
-# t01_orr_sommerfeld: PASS (exit 0) in 29.6 s | 2026-10-20 | script sha256 60324eaa146e273f
+# t01_orr_sommerfeld: PASS (exit 0) in 32.3 s | 2026-10-21 | script sha256 2f9874f5c6622a51
 Model 'Orr-Sommerfeld'
 Geometry: Box(y=walls(-1, 1)) (Cartesian box)
   bases (fixed per geometry, sizes given at discretization):
@@ -45,26 +45,28 @@ c = 0.2375264888+0.0037396706j   backward residual 1.4e-16
 EVPMode 0 [single group (no Fourier direction)]: eigenvalue 0.237526488819+0.00373967062225j, residual 1.4e-16
   unknowns: v (complex grid values on the non-dealiased grid, y: 64; tau variables left out)
   normalisation: max |q| = 1 for the first non-zero unknown (declaration order), real and positive at its largest grid value; the other unknowns scaled by the same complex factor (here: v, max |v| = 1 at its largest grid value)
-CriticalPoint Re_c = 5772.221816 at alpha=1.020547442 (11 neutral-curve evaluations)
+CriticalPoint Re_c = 5772.221816 at alpha=1.02054745 (20 neutral-curve evaluations)
   start: Re = 6000 (bracket midpoint (default))
   tolerance: |dRe| <= 1e-09 |Re| + 2e-09
   growth = Im c, declared with the eigenvalue c
+  minimum over alpha: neutral Re at 9 points of (0.98, 1.06) (OVER_SCAN_POINTS = 9, spacing 0.01); a minimum narrower than the spacing is not seen (raise over_points)
+  local minima of the scan refined (1): Re = 5772.221816 at alpha = 1.02054745
   bracket ends (least stable admissible mode, full QZ): growth -1.513e-03 at Re = 5000, 1.578e-03 at Re = 7000: a sign change, so a neutral point lies inside
-  spectral-tail test passed 35 of 60 (SPURIOUS_TAIL_TOL = 0.001); the spectral-tail test set aside 2 mode(s) of larger growth than every mode it kept (largest: sigma = 0.01709588437+2424.532429j, growth 2.425e+03, tail 1.0e+00): spurious tau or unresolved modes; raise N, or spurious='none' to select them; drift test kept 13 of 60 (resolution drift <= 1e-06 against the finer pencil [single group (no Fourier direction)] size (100, 100)) finite modes (8 infinite)
-  at the critical point: spectral-tail test passed 35 of 60 (SPURIOUS_TAIL_TOL = 0.001); the spectral-tail test set aside 2 mode(s) of larger growth than every mode it kept (largest: sigma = 0.01678228628+2495.520313j, growth 2.496e+03, tail 1.0e+00): spurious tau or unresolved modes; raise N, or spurious='none' to select them; drift test kept 14 of 60 (resolution drift <= 1e-06 against the finer pencil [single group (no Fourier direction)] size (100, 100)) finite modes (8 infinite)
-  ParametricEVP [single group (no Fourier direction)] size (68, 68): Re: exponents -1..0 (nominal 10000.0), alpha: exponents -1..3 (nominal 1.0); 5 coefficient matrices from 10 plans at roots of unity (5 identically zero dropped); reconstruction error at an independent real point 1.5e-16 (refused above 1e-10); pencil L + sM: structural rank 68/68, regular at a generic s (equilibrated sigma_min/sigma_max = 1.1e-07); mode tracking: bordered Newton, declared defaults TRACK_TOL = 1e-13, TRACK_MAX_ITERATIONS = 30
-  verification: full QZ at the critical point, tracked mode is the least stable admissible one (max growth -1.7e-15), residual 5.2e-20
-  TrackedMode sigma = 2.640002595802e-01+8.153621244480e-18j at {'alpha': np.float64(1.0205474415859814), 'Re': np.float64(5772.221816217911)}: residual 5.2e-20 after 1 bordered-Newton iterations; left vector available (sensitivities)
+  spectral-tail test passed 35 of 60 (SPURIOUS_TAIL_TOL = 0.001); the spectral-tail test set aside 2 mode(s) of larger growth than every mode it kept (largest: sigma = 0.01803591734+2500.18117j, growth 2.500e+03, tail 1.0e+00): spurious tau or unresolved modes; raise N, or spurious='none' to select them; drift test kept 14 of 60 (resolution drift <= 1e-06 against the finer pencil [single group (no Fourier direction)] size (100, 100)) finite modes (8 infinite)
+  at the critical point: spectral-tail test passed 35 of 60 (SPURIOUS_TAIL_TOL = 0.001); the spectral-tail test set aside 2 mode(s) of larger growth than every mode it kept (largest: sigma = 0.01678227803+2495.520292j, growth 2.496e+03, tail 1.0e+00): spurious tau or unresolved modes; raise N, or spurious='none' to select them; drift test kept 14 of 60 (resolution drift <= 1e-06 against the finer pencil [single group (no Fourier direction)] size (100, 100)) finite modes (8 infinite)
+  ParametricEVP [single group (no Fourier direction)] size (68, 68): Re: exponents -1..0 (nominal 10000.0), alpha: exponents -1..3 (nominal 1.0); 5 coefficient matrices from 10 plans at roots of unity (5 matrices and 15399 entries at rounding level discarded: |entry| <= 1e-13 x its largest modulus over the plans; an evaluation where they could exceed RECON_TOL of the pencil is refused); reconstruction error at an independent real point 1.1e-16 (refused above 1e-10); pencil L + sM: structural rank 68/68, regular at a generic s (equilibrated sigma_min/sigma_max = 1.1e-07); mode tracking: bordered Newton, declared defaults TRACK_TOL = 1e-13, TRACK_MAX_ITERATIONS = 30
+  verification: full QZ at the critical point, tracked mode is the least stable admissible one (max growth 5.1e-16), residual 6.5e-20
+  TrackedMode sigma = 2.640002605979e-01+6.386968122467e-19j at {'alpha': 1.020547450306678, 'Re': np.float64(5772.221816218035)}: residual 6.5e-20 after 2 bordered-Newton iterations; left vector available (sensitivities)
 Re_c = 5772.2218   alpha_c = 1.020547
 dc/dRe = -4.213e-06+3.428e-07j
 Verification report: 9 checks, 0 to investigate by hand
-  [PASS] pencil reconstruction: 1.54e-16 (threshold 1e-10) — parametric L(p), M(p) vs a directly assembled plan
+  [PASS] pencil reconstruction: 1.15e-16 (threshold 1e-10) — parametric L(p), M(p) vs a directly assembled plan
   [PASS] pencil regular: 0.00e+00 (threshold 5e-01) — pencil L + sM: structural rank 68/68, regular at a generic s (equilibrated sigma_min/sigma_max = 1.1e-07)
-  [PASS] right residual: 5.16e-20 (threshold 1e-12) — ||(L + sigma M) x|| backward error
-  [PASS] left residual: 1.36e-20 (threshold 1e-12) — ||y^H (L + sigma M)|| backward error
-  [PASS] spectral tail: 1.72e-10 (threshold 1e-08) — last 4 Chebyshev coefficients / max (mode resolved in N)
+  [PASS] right residual: 6.49e-20 (threshold 1e-12) — ||(L + sigma M) x|| backward error, measured on the current vector
+  [PASS] left residual: 1.83e-20 (threshold 1e-12) — ||y^H (L + sigma M)|| backward error, measured on the current vector
+  [PASS] spectral tail: 1.72e-10 (threshold 1e-08) — last 4 Chebyshev coefficients / max, per component of each unknown (mode resolved in N; NaN: no component long enough, not measured)
   [PASS] d sigma/d Re Taylor test: 4.44e-09 (threshold 1e-05) — exact sensitivity vs central difference of tracked sigma
   [PASS] d sigma/d alpha Taylor test: 7.60e-09 (threshold 1e-05) — exact sensitivity vs central difference of tracked sigma
-  [PASS] critical point mode: 0.00e+00 (threshold 5e-01) — full QZ at the critical point confirms the tracked mode is the least stable
-  [PASS] critical growth: 8.15e-18 (threshold 1e-10) — growth of the tracked mode at the neutral value
+  [PASS] critical point mode: 0.00e+00 (threshold 5e-01) — recorded by critical(): its full QZ at the critical point found the tracked mode the least stable (not repeated here)
+  [PASS] critical growth: 6.39e-19 (threshold 1e-10) — growth of the critical mode at the neutral value, measured on its current eigenvalue
 OK: c and Re_c agree with Orszag (1971) to the published digits; alpha_c within 2e-5

@@ -109,8 +109,6 @@ class ConatusError(Exception):
         for label, text in (("where", self.where), ("why", self.why), ("fix", self.fix)):
             if text:
                 lines.append(f"  {label + ':':6s} " + str(text).replace("\n", "\n         "))
-        if self.fix:
-            lines.append("         (suggestion only: Conatus does not change your problem for you)")
         lines.append(f"  docs:  {doc_reference(self.doc)}")
         return "\n".join(lines)
 
@@ -410,7 +408,7 @@ def check_count(value, name: str, where: str, minimum: int = 1) -> int:
     value = _scalar_of(value)
     if isinstance(value, bool) or not isinstance(value, numbers.Integral) or value < minimum:
         raise OptionError(f"{where}: {name}={value!r} must be an integer >= {minimum}",
-                          why="sizes and iteration budgets are never rounded for you",
+                          why="sizes and iteration budgets must be integers",
                           fix=f"{name}={max(minimum, 8)}, for example")
     return int(value)
 
@@ -453,7 +451,7 @@ def check_real(value, name: str, where: str, *, positive: bool = False,
     if not ok:
         need = "> 0" if positive else ">= 0" if nonnegative else ""
         raise OptionError(f"{where}: {name}={value!r} must be a finite real number {need}".rstrip(),
-                          why="a numerical setting is never converted, clipped or guessed for you",
+                          why="a numerical setting must be a finite real number",
                           fix=f"a finite float for {name}" + (f" {need}" if need else ""))
     return float(value)
 
@@ -511,7 +509,7 @@ def explain() -> str:
 def catalogue() -> str:
     """Markdown catalogue (one anchor per class) for the documentation site's error guide."""
     lines = ["# Error guide", "",
-             "Every error names what is wrong, where, why, and a fix Conatus never applies for you.",
+             "Each error names what is wrong, where and why, and suggests a fix.",
              ""]
     seen: list[type] = []
 

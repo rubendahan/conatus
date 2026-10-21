@@ -52,7 +52,7 @@ def test_os_region_result_reads_like_an_evp_result(os_model):
     i = int(res.order()[0])
     assert abs(res.values[i] - (0.23752649 + 0.00373967j)) < 1e-6
     text = res.explain()
-    assert "count 1" in text and "certified" in text and "outside the region not computed" in text
+    assert "count 1" in text and "argument principle" in text and "outside the region not computed" in text
     assert "infinite (M singular" not in text
     assert "count 1" in repr(res)
     full = res.explain(full=True)

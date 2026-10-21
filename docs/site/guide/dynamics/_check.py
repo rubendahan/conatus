@@ -14,8 +14,6 @@ import sys
 import time
 import warnings
 
-import numpy as np
-
 
 def eigenvalues() -> None:
     # [eig-model]
@@ -392,6 +390,9 @@ def chaos() -> None:
 
 
 def manifolds() -> None:
+    # [man-setup]
+    import numpy as np
+
     import conatus as cn
     from conatus.expert import NewtonKrylovHookstep, find_equilibrium, find_travelling_wave
 
@@ -407,6 +408,7 @@ def manifolds() -> None:
     E1 = find_equilibrium(sim.solver, sim.solver.X.copy(), newton)
     sim.initial(u=lambda x: np.cos(q * x) + np.sin(2 * q * x))
     TW1 = find_travelling_wave(sim.solver, sim.solver.X.copy(), 0.7, newton)
+    # [/man-setup]
 
     # [man-unstable]
     from conatus.expert import ecs_system, unstable_manifold

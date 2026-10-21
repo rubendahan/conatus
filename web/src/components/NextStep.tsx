@@ -5,14 +5,15 @@ import { Link, useLocation } from "react-router-dom";
 import { findRoute } from "../routes";
 
 const NEXT: Record<string, [string, string]> = {
-  "/tutorials/getting-started": ["/tutorials", "The other tutorials, each a script that ends on a published result."],
+  "/tutorials/getting-started": ["/tutorials", "Step 3: a stability calculation, then the other tutorials by topic."],
   "/tutorials": ["/documentation", "The user guide, the API reference and the mathematics behind each method."],
   "/documentation": ["/capabilities", "Everything Conatus does, in one page."],
   "/capabilities": ["/dynamics", "Stability, bifurcations, periodic orbits and Floquet analysis."],
   "/dynamics": ["/gallery", "Flows computed with Conatus."],
   "/geometries": ["/gallery", "The disk, the pipe, the shell and the sphere, computed."],
-  "/gallery": ["/tutorials/getting-started", "From the equations to a first result, every step executed."],
-  "/install": ["/tutorials/getting-started", "Your first model, from the equations to the onset of convection."],
+  "/gallery": ["/tutorials/getting-started", "Write one equation, simulate it and measure its energy, in ten minutes."],
+  "/about": ["/tutorials/getting-started", "Write one equation, simulate it and measure its energy, in ten minutes."],
+  "/install": ["/tutorials/getting-started", "Step 2: write one equation, simulate it and measure its energy, in ten minutes."],
   "/citing": ["/validation", "Every published value Conatus reproduces."],
 };
 

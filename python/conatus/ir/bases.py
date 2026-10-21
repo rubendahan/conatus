@@ -39,15 +39,13 @@ def _check_dealias(dealias: Any, cls: str) -> float:
     if dealias is _REQUIRED:
         raise OptionError(
             f"{cls}: dealias must be given explicitly",
-            why="the dealiasing factor sets the grid of the nonlinear products; Conatus never "
-                "picks it for you",
+            why="the dealiasing factor sets the grid of the nonlinear products",
             fix="dealias=1 (no padding, linear problems) or dealias=3/2 (quadratic "
                 "nonlinearities)", doc="docs/site/guide/bases.md")
     if isinstance(dealias, bool):
         raise InputTypeError(
             f"{cls}: dealias=True/False is ambiguous; give the factor (1, 3/2, 2, ...)",
-            why="the dealiasing factor is a numerical choice (grid size = factor x N), never "
-                "hidden behind a flag",
+            why="the dealiasing factor is a number (grid size = factor x N)",
             fix="dealias=3/2 for quadratic nonlinearities (2 for cubic), dealias=1 for none")
     if not isinstance(dealias, numbers.Real):
         # text, None, a complex number (audit inputs: "1.5" was parsed, None and

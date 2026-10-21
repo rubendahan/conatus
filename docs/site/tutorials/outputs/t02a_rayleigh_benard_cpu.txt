@@ -1,4 +1,4 @@
-# t02a_rayleigh_benard_cpu: PASS (exit 0) in 32.2 s | 2026-10-20 | script sha256 90eb240188d497ff
+# t02a_rayleigh_benard_cpu: PASS (exit 0) in 30.4 s | 2026-10-21 | script sha256 90eb240188d497ff
 Model 'Rayleigh-Benard 2D': Box(x=periodic((0, 2)), z=walls(-0.5, 0.5)) (Cartesian box)
 Unknowns: u (velocity), p (pressure), T (scalar); parameters: Ra = 2500, Pr = 1
 Equations as written:
@@ -11,7 +11,7 @@ Boundary conditions: bottom: u = 0, T = 0.5; top: u = 0, T = -0.5 (tau method, p
 Gauge: the mean of p is fixed (integ(p) = 0)
 Dealiasing: x: 3/2, z: 3/2 (declared default for products of degree 2)
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
-(every decision, tau by tau and term by term: m.explain(full=True))
+(compiler decisions, tau by tau and term by term: m.explain(full=True))
 Linearization of 'Rayleigh-Benard 2D' about a base state, eigenvalue s (normal modes exp(s t)):
   u = 0 about the zero field
   T = T0(z), a non-constant coefficient
@@ -31,7 +31,7 @@ IVPSolver(scheme=RK443, dt=0.0005, constant step, backend=cpu)
   scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage Runge–Kutta on F; global order 3 (Ascher, Ruuth & Spiteri 1997, (4,4,3))
   finite-state check: every 100 steps (default), at the end of each run call and before each checkpoint/output write (NaN/inf -> NumericalError naming step, time and unknown; check_finite=False turns it off)
   resolution check: with the finite-state check, the relative spectral tail of each unknown and direction above 0.001 warns once (none so far)
-(every decision, tau by tau and term by term, and the solver layout: sim.explain(full=True))
+(compiler decisions, tau by tau and term by term, and the solver layout: sim.explain(full=True))
 CFL time step at safety 0.5: 2.18e+01  (a stability indicator, not an error)
 IVP: measured growth rate sigma = 5.5425080071 over t in [0.30, 0.80]
 Methods paragraph generated from the plan (edit before publishing):
@@ -40,7 +40,7 @@ The IVP 'Rayleigh-Benard 2D' for (u, p, T) was solved with Conatus. The domain i
 
 Citations: olver2013, burns2020, ascher1997
 Facts used: kind=IVP, groups=8, N_x=16, N_z=24, zbasis=Chebyshev, taus=4, dealias={'x': 1.5, 'z': 1.5}, scheme=RK443, dt=0.0005, backend=cpu, native=True, dealias_default=True
-resume_or_start('<path>/rb_chain_60ae2ffv/chk'): continued from checkpoint_000000600.h5 (iteration 600, t = 0.3); outputs without mode= continue their file (mode='resume')
-AnalysisFile <path>/rb_chain_60ae2ffv/rb.h5 (HDF5, conatus.analysis/1): every 100 steps (= 0.05 time units), 17 write(s) so far [mode 'resume' chosen by resume_or_start (restart)]
+resume_or_start('<path>/rb_chain_74068ski/chk'): continued from checkpoint_000000600.h5 (iteration 600, t = 0.3); outputs without mode= continue their file (mode='resume')
+AnalysisFile <path>/rb_chain_74068ski/rb.h5 (HDF5, conatus.analysis/1): every 100 steps (= 0.05 time units), 17 write(s) so far [mode 'resume' chosen by resume_or_start (restart)]
 17 rows, t = 0.00 ... 0.80, kinetic energy at the end 1.028e-06
 OK: the IVP grows at the EVP rate; the EVP matches the psi-theta formulation; the two-job chain is the uninterrupted run bit for bit

@@ -29,7 +29,7 @@ except TypeError as err:
 ```
 
 Linear problems (EVP, LBVP) use `dealias=1`; quadratic nonlinearities need `3/2`. The grid size is
-`floor(N * dealias)` (the Dedalus convention). With `grid="smooth7"` the grid is raised to the
+`floor(N * dealias)`. With `grid="smooth7"` the grid is raised to the
 smallest size whose FFT length has no prime factor larger than 7, so dealiasing stays exact and
 the FFTs avoid large-prime lengths:
 
@@ -73,7 +73,7 @@ print(MappedChebyshev(y, 96, TanhMap(L=4.0), dealias=1).explain())
 
 **Legendre, Jacobi and ultraspherical axes.** A wall-bounded axis can be expanded in any Jacobi
 family $P_n^{(a,b)}$ ($a, b > -1$; Legendre is $a = b = 0$, $C_n^{(\lambda)}$ the ultraspherical
-family, and `ChebyshevU`, `ChebyshevV` are $C^{(1)}$, $C^{(2)}$ as in Dedalus). An equation of
+family, and `ChebyshevU`, `ChebyshevV` are $C^{(1)}$, $C^{(2)}$). An equation of
 differential order $q$ is written in the family $P^{(a+q,\,b+q)}$, so its $q$ tau terms are lifted
 there: `lift(tau, basis, -1, lam=q)`. Every operator is sparse and exact on the retained modes, the
 grid is the Gauss–Jacobi grid of the family, and a non-constant coefficient reports its spectral
@@ -81,7 +81,7 @@ tail as on a Chebyshev axis. The checks: Poisson with an exact solution to round
 the eigenvalues of a string to $10^{-10}$, and a viscous Burgers run equal to the Chebyshev $T$ run
 to $5\times10^{-13}$. In the native layer `cn.walls` is Chebyshev $T$ by default, or a sine/cosine series with
 `cn.walls(a, b, basis="sincos")` ({doc}`geometries`); these Jacobi families are
-for the expert layer and for Dedalus scripts translated by `cn.from_dedalus` ({doc}`dedalus`). Their GPU path
+for the expert layer and for scripts imported with `cn.from_dedalus` ({doc}`dedalus`). Their GPU path
 (`backend="cuda"`) has run on an A100 only ({doc}`gpu`).
 
 Mapped bases put the resolution where a free shear layer or a critical layer is, without
@@ -96,8 +96,8 @@ domain of a plane channel with its base flow as an NCC; everything it chooses is
 ## Curvilinear geometries
 
 The same IR, the same `discretize → plan → eigenvalues / solve / IVPSolver` path; the bases are
-regular at the axis or centre by construction (no $1/r \to 1/(r+\varepsilon)$, no condition at
-$r = 0$).
+regular at the axis or centre. There is no $1/r \to 1/(r+\varepsilon)$ and no condition at
+$r = 0$.
 
 | Geometry | Coordinates | Bases | Notes |
 |---|---|---|---|
@@ -121,10 +121,10 @@ checked on every equation; an inconsistent declaration is refused. See
 ## Sine/cosine walls (native layer)
 
 `cn.walls(a, b, basis="sincos")` discretizes a wall axis with sine and cosine series,
-$\sin(n\pi(z-a)/L)$ and $\cos(n\pi(z-a)/L)$, $n < N_z$, $L = b - a$. It is exact for
-stress-free walls, fixed-temperature or insulating walls, hinged plates: every unknown is a pure
-sine or cosine series, so its wall conditions hold identically and **no tau term** is needed. The
-parity of each unknown is read off the wall conditions you already write (never guessed):
+$\sin(n\pi(z-a)/L)$ and $\cos(n\pi(z-a)/L)$, $n < N_z$, $L = b - a$. It suits stress-free
+walls, fixed-temperature or insulating walls and hinged plates. Each unknown is a pure sine or
+cosine series, so its wall conditions hold identically and **no tau term** is needed. The compiler
+derives each unknown's parity from its wall conditions and checks that they are consistent:
 
 | Condition (at both walls) | Series |
 |---|---|
@@ -171,8 +171,7 @@ How it is computed: the axis is the reflection-symmetric subspace (about $z = a$
 `SymmetrySubspace(Reflection(z, about=a), ...)`; plans, eigenvalues and `IVPSolver` run in that
 subspace (`reduced=True`, set explicitly; `reduced=False` is refused). The dealiasing factor
 applies to the doubled grid. `sim.initial(...)` evaluates your function on $[a, b]$ only and
-extends it by the parity (data of a sine field that do not vanish at the walls are refused, never
-truncated); `sim.grid(name)` and `sim.coordinate("z")` return the $N_z + 1$ points of $[a, b]$;
+extends it by the parity (data of a sine field that do not vanish at the walls are refused); `sim.grid(name)` and `sim.coordinate("z")` return the $N_z + 1$ points of $[a, b]$;
 `sim.coeffs(name)` and `sim.solver` (expert) keep the doubled-period layout.
 
 What is refused, with what to write instead: a non-homogeneous condition (`T=1` at a wall: write
@@ -180,7 +179,9 @@ the perturbation about the conduction profile, or use Chebyshev walls), a Robin 
 condition, conditions asking for both a sine and a cosine, no-slip velocity (normal and tangential
 components would need opposite parities: use `cn.free_slip` or Chebyshev walls), a coefficient or
 base state without parity (`m.given(U=lambda z: 1 - z)`: give it as a cosine/sine series or use
-Chebyshev walls), a source term of the wrong parity, and `drift=` (no tau, no spurious mode).
+Chebyshev walls), a source term of the wrong parity, and `drift=`. This basis needs no tau
+variables, so there are no tau modes to filter; check the spectral convergence of the computed
+modes instead.
 
 ## Whole line, half line, compound intervals
 
@@ -193,8 +194,8 @@ Three more axes for `cn.Box`, each discretized by a fixed basis printed by `expl
 | `cn.half_line(start=0, scale=s)` | Laguerre functions $L_n(y)e^{-y/2}$, $y=(x-a)/s$ | one wall: `"wall"`, `"bottom"`, `"x=a"` | `N_x` |
 | `cn.walls(a, c, ..., b)` | Chebyshev $T_n$ on each piece $[a, c], \dots$ | walls at $a$ and $b$; continuity at each $c$ is **automatic** | one size per piece, `N_x=(N_1, N_2, ...)` |
 
-`scale` is required: it is the width of the basis functions, a numerical choice like $N$, never
-picked for you (choose it of the order of the width of the solution). On the half line an
+`scale` is required. It is the width of the basis functions, a numerical choice like $N$; choose
+it of the order of the width of the solution. On the half line an
 equation of order $q$ is written in the derivative basis $L^{(q)}_n e^{-y/2}$ (bidiagonal
 derivative and conversions, the Laguerre analogue of the ultraspherical method) and takes $q/2$
 conditions at its wall. On a compound interval, for each unknown of order $q$ the value and the

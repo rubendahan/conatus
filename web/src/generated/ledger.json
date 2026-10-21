@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-20T23:09:22.591Z",
+ "generated": "2026-10-21T21:29:53.164Z",
  "commit": null,
  "sources": [],
  "counts": {
@@ -13,17 +13,17 @@
   "date": "2026-10-20"
  },
  "scorecard": "",
- "version": "0.1.1",
+ "version": "0.1.2",
  "domains": [
   {
    "id": "stability",
    "label": "Hydrodynamic stability",
-   "count": 6
+   "count": 5
   },
   {
    "id": "convection",
    "label": "Convection",
-   "count": 6
+   "count": 5
   },
   {
    "id": "shear",
@@ -63,7 +63,7 @@
   {
    "id": "geometry",
    "label": "Curvilinear geometries",
-   "count": 15
+   "count": 10
   },
   {
    "id": "operators",
@@ -166,28 +166,6 @@
    "order": 3
   },
   {
-   "id": "hagen-poiseuille-r-1000-8-eigenvalues",
-   "domain": "stability",
-   "test": "Hagen–Poiseuille, R = 1000, 8 eigenvalues",
-   "value": "9.4×10⁻¹⁴ from Dedalus",
-   "reference": "Dedalus",
-   "rich": {
-    "test": "Hagen–Poiseuille, R = 1000, 8 eigenvalues",
-    "value": "9.4×10⁻¹⁴ from Dedalus",
-    "reference": "Dedalus"
-   },
-   "referenceKey": null,
-   "deviation": "9.4×10⁻¹⁴",
-   "deviationLog10": -13.027,
-   "deviationNote": "as stated in the row",
-   "runIds": [],
-   "source": "",
-   "section": "Verification",
-   "script": null,
-   "lines": null,
-   "order": 4
-  },
-  {
    "id": "taylor-couette-0-5",
    "domain": "stability",
    "test": "Taylor–Couette, η = 0.5",
@@ -207,7 +185,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 5
+   "order": 4
   },
   {
    "id": "rayleigh-benard-onset-rigid",
@@ -229,7 +207,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 6
+   "order": 5
   },
   {
    "id": "rayleigh-benard-onset-rigid-bottom-stress-free-top",
@@ -251,17 +229,17 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 7
+   "order": 6
   },
   {
    "id": "stress-free-rayleigh-benard-k-c-2-sine-cosine-chebyshev-free",
    "domain": "convection",
    "test": "Stress-free Rayleigh–Bénard, k_c = π/√2 (sine/cosine; Chebyshev + free_slip)",
-   "value": "growth rate vs closed form 4.6×10⁻¹⁵; 3×10⁻¹³; Dedalus 3×10⁻¹²; Ra_c = 27π⁴/4 bracketed",
+   "value": "growth rate vs closed form 4.6×10⁻¹⁵; 3×10⁻¹³; Ra_c = 27π⁴/4 bracketed",
    "reference": "Chandrasekhar 1961",
    "rich": {
     "test": "Stress-free Rayleigh–Bénard, k_{c} = π/√2 (sine/cosine; Chebyshev + free_slip)",
-    "value": "growth rate vs closed form 4.6×10⁻¹⁵; 3×10⁻¹³; Dedalus 3×10⁻¹²; Ra_{c} = 27π⁴/4 bracketed",
+    "value": "growth rate vs closed form 4.6×10⁻¹⁵; 3×10⁻¹³; Ra_{c} = 27π⁴/4 bracketed",
     "reference": "Chandrasekhar 1961"
    },
    "referenceKey": "chandrasekhar1961",
@@ -273,29 +251,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 8
-  },
-  {
-   "id": "rayleigh-benard-2d-ra-105",
-   "domain": "convection",
-   "test": "Rayleigh–Bénard 2D, Ra = 10⁵",
-   "value": "Nu = 4.99432, agreement with Dedalus 10⁻⁸",
-   "reference": "Dedalus",
-   "rich": {
-    "test": "Rayleigh–Bénard 2D, Ra = 10⁵",
-    "value": "Nu = 4.99432, agreement with Dedalus 10⁻⁸",
-    "reference": "Dedalus"
-   },
-   "referenceKey": null,
-   "deviation": "10⁻⁸",
-   "deviationLog10": -8,
-   "deviationNote": "as stated in the row",
-   "runIds": [],
-   "source": "",
-   "section": "Verification",
-   "script": null,
-   "lines": null,
-   "order": 9
+   "order": 7
   },
   {
    "id": "rotating-convection-onset-shell-r-i-r-o-0-35-e-10-3-pr-1-chr",
@@ -317,7 +273,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 10
+   "order": 8
   },
   {
    "id": "same-equatorially-symmetric-subspace",
@@ -339,20 +295,20 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 11
+   "order": 9
   },
   {
    "id": "3d-channel",
    "domain": "shear",
    "test": "3D channel",
-   "value": "Orszag 8 digits, Squire 7×10⁻¹¹, Dedalus 3D 7.6×10⁻¹⁴",
-   "reference": "Dedalus",
+   "value": "Orszag 8 digits, Squire 7×10⁻¹¹",
+   "reference": "Orszag 1971",
    "rich": {
     "test": "3D channel",
-    "value": "Orszag 8 digits, Squire 7×10⁻¹¹, Dedalus 3D 7.6×10⁻¹⁴",
-    "reference": "Dedalus"
+    "value": "Orszag 8 digits, Squire 7×10⁻¹¹",
+    "reference": "Orszag 1971"
    },
-   "referenceKey": null,
+   "referenceKey": "orszag1971",
    "deviation": null,
    "deviationLog10": null,
    "deviationNote": null,
@@ -361,7 +317,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 12
+   "order": 10
   },
   {
    "id": "mathieu-equation",
@@ -383,7 +339,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 13
+   "order": 11
   },
   {
    "id": "pulsatile-scalar-m-2-harmonics",
@@ -405,7 +361,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 14
+   "order": 12
   },
   {
    "id": "discrete-adjoint",
@@ -427,7 +383,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 19
+   "order": 17
   },
   {
    "id": "exact-adjoint-in-the-spherical-shell-dot-product-and-taylor",
@@ -449,7 +405,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 21
+   "order": 19
   },
   {
    "id": "exact-adjoint-in-the-spherical-shell-self-adjoint-stokes-flo",
@@ -471,7 +427,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 22
+   "order": 20
   },
   {
    "id": "exact-adjoint-in-the-spherical-shell-rotation",
@@ -493,7 +449,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 23
+   "order": 21
   },
   {
    "id": "exact-adjoint-in-the-spherical-shell-nonlinear-optimal-pertu",
@@ -515,7 +471,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 24
+   "order": 22
   },
   {
    "id": "kuramoto-sivashinsky-l-22",
@@ -537,7 +493,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 25
+   "order": 23
   },
   {
    "id": "ks-shortest-pre-periodic-orbit-floquet-multipliers",
@@ -559,7 +515,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 26
+   "order": 24
   },
   {
    "id": "ks-one-cell-steady-state",
@@ -581,7 +537,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 27
+   "order": 25
   },
   {
    "id": "bratu-on-1-1",
@@ -603,7 +559,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 28
+   "order": 26
   },
   {
    "id": "ks-folds-of-e1-points-k-i",
@@ -625,7 +581,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 29
+   "order": 27
   },
   {
    "id": "ks-pitchfork-of-e3",
@@ -647,7 +603,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 30
+   "order": 28
   },
   {
    "id": "lane-emden-n-3",
@@ -669,7 +625,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 31
+   "order": 29
   },
   {
    "id": "heat-equation-sbdf1-4",
@@ -691,39 +647,17 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 32
+   "order": 30
   },
   {
    "id": "heat-equation-cnab1-cnab2-mcnab2-cnlf2-rksmr-rkgfy",
    "domain": "time-integration",
    "test": "Heat equation, CNAB1, CNAB2, MCNAB2, CNLF2, RKSMR, RKGFY",
-   "value": "1.07, 2.00, 2.00, 2.01, 2.01, 2.00; Dedalus to ≤ 1.1×10⁻¹⁴",
-   "reference": "theory, Dedalus",
-   "rich": {
-    "test": "Heat equation, CNAB1, CNAB2, MCNAB2, CNLF2, RKSMR, RKGFY",
-    "value": "1.07, 2.00, 2.00, 2.01, 2.01, 2.00; Dedalus to ≤ 1.1×10⁻¹⁴",
-    "reference": "theory, Dedalus"
-   },
-   "referenceKey": null,
-   "deviation": "1.1×10⁻¹⁴",
-   "deviationLog10": -13.959,
-   "deviationNote": "as stated in the row",
-   "runIds": [],
-   "source": "",
-   "section": "Verification",
-   "script": null,
-   "lines": null,
-   "order": 33
-  },
-  {
-   "id": "heat-equation-both-boundary-values-moving",
-   "domain": "time-integration",
-   "test": "Heat equation, both boundary values moving",
-   "value": "RK443 2.76, 2.81 (2.0 with g at the stage times, 1.05 in the Dedalus convention); RK222, RKSMR, RKGFY 2.00; disk 2.98, shell 2.85",
+   "value": "1.07, 2.00, 2.00, 2.01, 2.01, 2.00",
    "reference": "theory",
    "rich": {
-    "test": "Heat equation, both boundary values moving",
-    "value": "RK443 2.76, 2.81 (2.0 with g at the stage times, 1.05 in the Dedalus convention); RK222, RKSMR, RKGFY 2.00; disk 2.98, shell 2.85",
+    "test": "Heat equation, CNAB1, CNAB2, MCNAB2, CNLF2, RKSMR, RKGFY",
+    "value": "1.07, 2.00, 2.00, 2.01, 2.01, 2.00",
     "reference": "theory"
    },
    "referenceKey": null,
@@ -735,7 +669,29 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 34
+   "order": 31
+  },
+  {
+   "id": "heat-equation-both-boundary-values-moving",
+   "domain": "time-integration",
+   "test": "Heat equation, both boundary values moving",
+   "value": "RK443 2.76, 2.81 (2.0 with g at the stage times, 1.05 with g in the explicit part); RK222, RKSMR, RKGFY 2.00; disk 2.98, shell 2.85",
+   "reference": "theory",
+   "rich": {
+    "test": "Heat equation, both boundary values moving",
+    "value": "RK443 2.76, 2.81 (2.0 with g at the stage times, 1.05 with g in the explicit part); RK222, RKSMR, RKGFY 2.00; disk 2.98, shell 2.85",
+    "reference": "theory"
+   },
+   "referenceKey": null,
+   "deviation": null,
+   "deviationLog10": null,
+   "deviationNote": null,
+   "runIds": [],
+   "source": "",
+   "section": "Verification",
+   "script": null,
+   "lines": null,
+   "order": 32
   },
   {
    "id": "harmonic-oscillator-on-the-line-hermite",
@@ -757,7 +713,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 35
+   "order": 33
   },
   {
    "id": "heat-kernels-on-the-line-and-the-half-line-hermite-laguerre",
@@ -779,7 +735,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 36
+   "order": 34
   },
   {
    "id": "interior-layer-tanh-20x-compound-interval",
@@ -801,18 +757,18 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 37
+   "order": 35
   },
   {
    "id": "stress-free-curved-walls-disk-annulus-pipe-ball-shell",
    "domain": "geometry",
    "test": "Stress-free curved walls (disk, annulus, pipe, ball, shell)",
-   "value": "solid-body rotation steady to ≤ 8×10⁻¹⁴; Stokes rates ≤ 1.1×10⁻¹⁰; ball/shell vs Dedalus 3.2×10⁻¹³/3.3×10⁻¹³",
-   "reference": "Bessel, Dedalus",
+   "value": "solid-body rotation steady to ≤ 8×10⁻¹⁴; Stokes rates ≤ 1.1×10⁻¹⁰",
+   "reference": "Bessel",
    "rich": {
     "test": "Stress-free curved walls (disk, annulus, pipe, ball, shell)",
-    "value": "solid-body rotation steady to ≤ 8×10⁻¹⁴; Stokes rates ≤ 1.1×10⁻¹⁰; ball/shell vs Dedalus 3.2×10⁻¹³/3.3×10⁻¹³",
-    "reference": "Bessel, Dedalus"
+    "value": "solid-body rotation steady to ≤ 8×10⁻¹⁴; Stokes rates ≤ 1.1×10⁻¹⁰",
+    "reference": "Bessel"
    },
    "referenceKey": null,
    "deviation": null,
@@ -823,7 +779,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 38
+   "order": 36
   },
   {
    "id": "disk-zernike-basis",
@@ -845,7 +801,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 39
+   "order": 37
   },
   {
    "id": "annulus",
@@ -867,51 +823,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 40
-  },
-  {
-   "id": "nonlinear-diffusion-on-the-disk",
-   "domain": "geometry",
-   "test": "Nonlinear diffusion on the disk",
-   "value": "max|u−u_(Dedalus)| = 1.7×10⁻¹⁴ after 50 RK443 steps",
-   "reference": "Dedalus",
-   "rich": {
-    "test": "Nonlinear diffusion on the disk",
-    "value": "max|u−u_{Dedalus}| = 1.7×10⁻¹⁴ after 50 RK443 steps",
-    "reference": "Dedalus"
-   },
-   "referenceKey": null,
-   "deviation": "1.7×10⁻¹⁴",
-   "deviationLog10": -13.77,
-   "deviationNote": "as stated in the row",
-   "runIds": [],
-   "source": "",
-   "section": "Verification",
-   "script": null,
-   "lines": null,
-   "order": 41
-  },
-  {
-   "id": "navier-stokes-2d-on-the-disk",
-   "domain": "geometry",
-   "test": "Navier–Stokes 2D on the disk",
-   "value": "1.3×10⁻¹³ from Dedalus, |∇·u| ≤ 4×10⁻¹³",
-   "reference": "Dedalus",
-   "rich": {
-    "test": "Navier–Stokes 2D on the disk",
-    "value": "1.3×10⁻¹³ from Dedalus, |∇·u| ≤ 4×10⁻¹³",
-    "reference": "Dedalus"
-   },
-   "referenceKey": null,
-   "deviation": null,
-   "deviationLog10": null,
-   "deviationNote": null,
-   "runIds": [],
-   "source": "",
-   "section": "Verification",
-   "script": null,
-   "lines": null,
-   "order": 42
+   "order": 38
   },
   {
    "id": "sphere-spin-weighted-harmonics",
@@ -933,7 +845,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 43
+   "order": 39
   },
   {
    "id": "ball-3d-zernike",
@@ -955,7 +867,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 44
+   "order": 40
   },
   {
    "id": "shell",
@@ -977,73 +889,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 45
-  },
-  {
-   "id": "nonlinear-diffusion-sphere-and-ball",
-   "domain": "geometry",
-   "test": "Nonlinear diffusion, sphere and ball",
-   "value": "2×10⁻¹⁴ and 4×10⁻¹⁵ from Dedalus after 50 RK443 steps",
-   "reference": "Dedalus",
-   "rich": {
-    "test": "Nonlinear diffusion, sphere and ball",
-    "value": "2×10⁻¹⁴ and 4×10⁻¹⁵ from Dedalus after 50 RK443 steps",
-    "reference": "Dedalus"
-   },
-   "referenceKey": null,
-   "deviation": null,
-   "deviationLog10": null,
-   "deviationNote": null,
-   "runIds": [],
-   "source": "",
-   "section": "Verification",
-   "script": null,
-   "lines": null,
-   "order": 46
-  },
-  {
-   "id": "navier-stokes-ball-and-shell",
-   "domain": "geometry",
-   "test": "Navier–Stokes, ball and shell",
-   "value": "1.3×10⁻¹⁴ and 2.2×10⁻¹³ from Dedalus",
-   "reference": "Dedalus",
-   "rich": {
-    "test": "Navier–Stokes, ball and shell",
-    "value": "1.3×10⁻¹⁴ and 2.2×10⁻¹³ from Dedalus",
-    "reference": "Dedalus"
-   },
-   "referenceKey": null,
-   "deviation": null,
-   "deviationLog10": null,
-   "deviationNote": null,
-   "runIds": [],
-   "source": "",
-   "section": "Verification",
-   "script": null,
-   "lines": null,
-   "order": 47
-  },
-  {
-   "id": "shallow-water-on-the-sphere",
-   "domain": "geometry",
-   "test": "Shallow water on the sphere",
-   "value": "7.2×10⁻¹⁵ from Dedalus after 50 RK443 steps",
-   "reference": "Dedalus",
-   "rich": {
-    "test": "Shallow water on the sphere",
-    "value": "7.2×10⁻¹⁵ from Dedalus after 50 RK443 steps",
-    "reference": "Dedalus"
-   },
-   "referenceKey": null,
-   "deviation": "7.2×10⁻¹⁵",
-   "deviationLog10": -14.143,
-   "deviationNote": "as stated in the row",
-   "runIds": [],
-   "source": "",
-   "section": "Verification",
-   "script": null,
-   "lines": null,
-   "order": 48
+   "order": 41
   },
   {
    "id": "rossby-haurwitz-wave-r-4-williamson-et-al-1992",
@@ -1065,7 +911,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 49
+   "order": 42
   },
   {
    "id": "symmetry-subspaces-equatorial-m-0-fold-axial",
@@ -1087,7 +933,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 50
+   "order": 43
   },
   {
    "id": "exact-rates-every-way-into-m-and-l-24-cases",
@@ -1109,7 +955,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 51
+   "order": 44
   },
   {
    "id": "closed-forms-on-every-execution-path",
@@ -1131,29 +977,29 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 52
+   "order": 45
   },
   {
    "id": "imex-coefficients",
    "domain": "other",
    "test": "IMEX coefficients",
-   "value": "RK111, RK222, RK443 equal to the printed tableaux (2 ulp), SBDF1–4 exact; the coefficients of all thirteen schemes equal those of Dedalus to 4.5×10⁻¹⁶; explicit part alone (u_t = −u², RK443 start-up): SBDF1–4 1.01, 2.01, 3.00, 3.96, RK111/222/443 1.01, 2.03, 3.03",
+   "value": "RK111, RK222, RK443 equal to the printed tableaux (2 ulp), SBDF1–4 exact; explicit part alone (u_t = −u², RK443 start-up): SBDF1–4 1.01, 2.01, 3.00, 3.96, RK111/222/443 1.01, 2.03, 3.03",
    "reference": "Ascher et al. 1997; Wang & Ruuth 2008",
    "rich": {
     "test": "IMEX coefficients",
-    "value": "RK111, RK222, RK443 equal to the printed tableaux (2 ulp), SBDF1–4 exact; the coefficients of all thirteen schemes equal those of Dedalus to 4.5×10⁻¹⁶; explicit part alone (u_{t} = −u², RK443 start-up): SBDF1–4 1.01, 2.01, 3.00, 3.96, RK111/222/443 1.01, 2.03, 3.03",
+    "value": "RK111, RK222, RK443 equal to the printed tableaux (2 ulp), SBDF1–4 exact; explicit part alone (u_{t} = −u², RK443 start-up): SBDF1–4 1.01, 2.01, 3.00, 3.96, RK111/222/443 1.01, 2.03, 3.03",
     "reference": "Ascher et al. 1997; Wang & Ruuth 2008"
    },
    "referenceKey": "ascher1997",
-   "deviation": "4.5×10⁻¹⁶",
-   "deviationLog10": -15.347,
-   "deviationNote": "as stated in the row",
+   "deviation": null,
+   "deviationLog10": null,
+   "deviationNote": null,
    "runIds": [],
    "source": "",
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 53
+   "order": 46
   },
   {
    "id": "curvilinear-transforms",
@@ -1175,7 +1021,7 @@
    "section": "Verification",
    "script": null,
    "lines": null,
-   "order": 58
+   "order": 51
   }
  ]
 }

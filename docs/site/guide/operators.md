@@ -10,9 +10,8 @@ until you call `discretize`. Everything below comes from a single import:
 from conatus.expert import *        # IR, bases, problems, solvers, time stepping, dynamics toolkit
 ```
 
-`conatus.expert` re-exports the documented public objects of every user-facing module; name
-clashes are never resolved silently and are listed by `conatus.expert.explain()` (see
-{doc}`explain`). Helpers and result types that the guide does not show stay in their module
+`conatus.expert` re-exports the documented public objects of the user-facing modules.
+`conatus.expert.explain()` lists the name clashes and how each is handled (see {doc}`explain`). Helpers and result types that the guide does not show stay in their module
 (`conatus.<module>.<name>`).
 
 ## Fields and parameters
@@ -43,8 +42,8 @@ An NCC must be resolved on the grid: if the relative Chebyshev tail of its sampl
 resolve it. To accept it as it is, declare it: `ncc_cutoff=1e-6` drops its coefficients below
 $10^{-6}\max|a_k|$, `ncc_tail_tol=1e-6` keeps them all; `plan.explain()` reports either. The
 native calls take the same arguments (`m.simulate(N, ..., ncc_cutoff=1e-6)`, `m.eigenvalues`,
-`m.solve`, `lin.eigenvalues`). Coefficient data (`FieldData(..., "coeff")`) is exact and never
-refused. A tail below `conatus.tolerances.NCC_ROUNDING` ($10^3$) times the machine epsilon times the
+`m.solve`, `lin.eigenvalues`). Coefficient data (`FieldData(..., "coeff")`) is used as given and
+is not refused. A tail below `conatus.tolerances.NCC_ROUNDING` ($10^3$) times the machine epsilon times the
 scale of the data is the rounding of the coefficient's own computation, not under-resolution, and
 is accepted.
 
@@ -53,7 +52,7 @@ an accepted NCC tail of $10^{-9}$ is not a contradiction: the residual measures 
 *discrete* problem is solved, with each coefficient as represented by its truncated Chebyshev
 series; the tail bounds how far that representation is from the coefficient you gave. The answer
 of the continuous problem is known to about the larger of the two (times the conditioning of the
-problem), never to the residual alone, and the results say so: `NLBVPSolution.explain()` and
+problem), not to the residual alone. `NLBVPSolution.explain()` and
 `LBVPSolution.explain()` print an *accuracy floor* line with the largest sampled NCC tail
 (`conatus.tolerances.ncc_floor_text`). The refusal level $10^{-8}$ is where the coefficients of the
 suite fall either clearly resolved ($10^{-10}$ to $4\times10^{-9}$) or clearly not ($10^{-7}$ and
@@ -127,8 +126,8 @@ Four problem classes share one interface: a list of unknowns, then `add_equation
 | `IVP` | $M\,\partial_t X + L X = F(X, t)$ | `IVPSolver` ({doc}`timesteppers`, {doc}`../tutorials/02_rayleigh_benard`) |
 | `NLBVP` | $G(X) = 0$ | `NewtonSolver`, continuation ({doc}`../tutorials/04_bratu`) |
 
-The left-hand side must be linear in the unknowns: a nonlinear LHS term is **refused** with a
-message (`NonlinearLHSError`), never moved to the right-hand side for you. The RHS of an IVP is
+The left-hand side must be linear in the unknowns. A nonlinear left-hand side raises
+`NonlinearLHSError`; write the intended explicit term on the right-hand side. The RHS of an IVP is
 treated explicitly (IMEX).
 
 ```python
@@ -184,7 +183,8 @@ print(tr.adjoint)    # -dx(-dx(w))
 print(tr.boundary)   # (dx(u)*w)(x=1) + (-dx(w)*u)(x=1) - (dx(u)*w)(x=-1) - (-dx(w)*u)(x=-1)
 ```
 
-The pairing is bilinear, without conjugation. **A transpose is not an adjoint.**
+The pairing is bilinear, without conjugation. The physical adjoint, below, also needs the inner
+product: it is $W^{-1}$ times the conjugate transpose times $W$.
 
 ## Left eigenvectors and the physical adjoint
 
@@ -209,6 +209,6 @@ $\mathrm d\sigma/\mathrm dp = -y^H(\partial_p L + \sigma\,\partial_p M)x / (y^H 
 `verify` ({doc}`../tutorials/01_orr_sommerfeld`).
 
 For time-dependent problems, `FlowMap` gives the tangent (`jvp`) and discrete adjoint (`vjp`,
-`vjp_physical`) of the time-stepping map itself, exact by construction (transposition of the IR
-and of the IMEX step) and checked by dot-product and Taylor tests ({doc}`dynamics/index`); on the
+`vjp_physical`) of the discrete time-stepping map itself, obtained by transposing the IR and the
+IMEX step, and checked by dot-product and Taylor tests ({doc}`dynamics/index`); on the
 spherical shell and for optimal perturbations see {doc}`dynamics/optimal_perturbations`.

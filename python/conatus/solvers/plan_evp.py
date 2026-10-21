@@ -118,7 +118,7 @@ def eigenvalues(plan: Plan, group=None, *, reduced: bool | None = None, method: 
 
     ``region``: a ``cn.box(re=(a, b), im=(c, d))`` of the eigenvalue plane:
     every eigenvalue of the group in it, counted by the argument principle and computed by
-    Beyn's contour-integral method, each certified by its residual
+    Beyn's contour-integral method, each checked by its residual
     (:class:`conatus.contour.RegionEVPResult`: ``count``, ``count_method``, ``multiplicity``);
     ``method`` is then ``"contour"``. ``method=None`` (the default) means ``"dense"`` without a region
     and ``"contour"`` with one; any other method given with ``region=`` (``"dense"`` too: it would

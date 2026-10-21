@@ -5,22 +5,22 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { installTransitions } from "../lib/navigation";
 import NextStep from "./NextStep";
 import { findRoute, routes } from "../routes";
+import { PRIMARY } from "../content/nav";
 import Mark from "./Mark";
 import Search from "./Search";
 import ThemeToggle from "./ThemeToggle";
 import { SITE } from "../content/site";
 import { withBase } from "../lib/base";
 
-// Primary navigation in reading order: learn (the Tutorials, 0 = getting started), then reference (Documentation), then the rest.
-const ORDER = ["/tutorials", "/documentation", "/install", "/gallery"];
-const primary = routes.filter((r) => r.group === "primary").sort((a, b) => ORDER.indexOf(a.path) - ORDER.indexOf(b.path));
+// Primary navigation: content/nav.json, the file that also gives the documentation its links (one map
+// for the site and the Sphinx pages). "More" lists the remaining pages (routes.ts, group "more").
+const primary = PRIMARY.map((n) => ({ path: n.route, label: n.short ?? n.label }));
 
 // Site map by purpose: the footer columns and the groups of the mobile menu.
 const COLS: { title: string; links: [string, string][] }[] = [
   { title: "Learn", links: [["/tutorials/getting-started", "Getting started"], ["/tutorials", "Tutorials"], ["/install", "Install"]] },
-  { title: "Reference", links: [["/documentation", "Documentation"], ["/validation", "Validation"]] },
-  { title: "Explore", links: [["/capabilities", "Capabilities"], ["/dynamics", "Dynamics"], ["/geometries", "Geometries"], ["/gallery", "Gallery"]] },
-  { title: "About", links: [["/coming-next", "Coming next"], ["/citing", "Citing"]] },
+  { title: "Reference", links: [["/documentation", "Documentation"], ["/capabilities", "Capabilities"], ["/dynamics", "Dynamics"], ["/geometries", "Geometries"], ["/validation", "Validation"]] },
+  { title: "Project", links: [["/about", "About"], ["/gallery", "Gallery"], ["/citing", "Citing"], ["/coming-next", "Coming next"]] },
 ];
 
 const more = routes.filter((r) => r.group === "more");
@@ -83,7 +83,7 @@ function Header() {
         <nav className="nav-primary" aria-label="Primary">
           <ul>
             {primary.map((r) => (
-              <li key={r.path}><NavLink to={r.path}>{r.nav ?? r.title}</NavLink></li>
+              <li key={r.path}><NavLink to={r.path} end={r.path === "/tutorials"}>{r.label}</NavLink></li>
             ))}
             <li className="nav-more">
               <details ref={moreRef}>
@@ -127,11 +127,7 @@ function Footer() {
       <div className="wrap footer-inner">
         <div className="footer-brand">
           <Mark size={44} />
-          <p className="footer-tagline">Spectral PDEs and dynamical systems, native on GPUs.</p>
-          <p className="footer-epigraph">
-            <span lang="la">Unaquæque res, quantum in se est, in suo esse perseverare conatur.</span>
-            <span className="caption">Each thing, as far as it is in itself, strives to persevere in its being. Spinoza, <i>Ethica</i> III, 6: the origin of the name.</span>
-          </p>
+          <p className="footer-tagline">Spectral PDE and stability calculations in Python. Experimental research software.</p>
         </div>
         {COLS.map((c) => (
           <div key={c.title} className="footer-col">
@@ -142,7 +138,7 @@ function Footer() {
       </div>
       <div className="wrap footer-base">
         <span>{SITE.license} · Ruben Dahan, {SITE.year} · v{SITE.version}{SITE.docs && <> · <a href={withBase("/docs/")}>Reference documentation</a></>}</span>
-        <span>Built on the work of Dedalus, Olver–Townsend and many others.{!__HASH_ROUTER__ && <> <a href={withBase("/sitemap.xml")}>Sitemap</a></>}</span>
+        <span>{!__HASH_ROUTER__ && <a href={withBase("/sitemap.xml")}>Sitemap</a>}</span>
       </div>
     </footer>
   );

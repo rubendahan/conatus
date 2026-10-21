@@ -467,8 +467,7 @@ class Problem:
                        "(solved by Newton)")
             raise NonlinearLHSError(
                 f"LHS term '{t}' is not linear in the variables (degrees {sorted(d)}); "
-                "nonlinear terms belong on the RHS (treated explicitly). Conatus does not move "
-                "terms between sides for you.",
+                "nonlinear terms belong on the RHS (treated explicitly).",
                 where=f"equation '{eq}', term '{t}'",
                 why="the LHS is assembled once into sparse matrices (implicit part); a product "
                     "of unknowns has no matrix",

@@ -1,4 +1,4 @@
-# t04_bratu: PASS (exit 0) in 8.9 s | 2026-10-20 | script sha256 9c3b5128628b4e17
+# t04_bratu: PASS (exit 0) in 8.7 s | 2026-10-21 | script sha256 9c3b5128628b4e17
 Model 'Bratu': Box(x=walls(-1, 1)) (Cartesian box)
 Unknowns: u (scalar); parameters: lam = 0.3
 Equations as written:
@@ -8,7 +8,7 @@ Boundary conditions: walls (left: x=-1): u = 0; walls (right: x=1): u = 0 (tau m
 Dealiasing: x: 3/2 (declared default for products of degree 1)
   warning: not polynomial in the unknowns and given fields (no dealiasing factor removes their aliasing): exp(u)*lam
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
-(every decision, tau by tau and term by term: m.explain(full=True))
+(compiler decisions, tau by tau and term by term: m.explain(full=True))
 Newton on NLBVP 'Newton step of Bratu': converged in 3 iteration(s)
   settings: tolerance=1e-13, damping=1.0, max_iterations=20
   k= 0  |F|=3.000e-01  |F|/scale=1.000e+00  |dx|=8.568e-02

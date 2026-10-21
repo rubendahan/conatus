@@ -1,9 +1,8 @@
-# 12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins
+# Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins
 
-The tangent of the discrete step is exact, so the Lyapunov spectrum of a discretized flow is the
-spectrum of the map actually computed; and because many trajectories share one batch, the
-statistics that make an exponent trustworthy (independent trajectories, block errors) cost
-little more than one trajectory.
+The tangent used here is the derivative of the discrete step, so the Lyapunov spectrum is that of
+the map actually computed. Many trajectories share one batch, so the error estimates of an
+exponent (independent trajectories, block errors) cost little more than one trajectory.
 
 **Goal.** Compute the Lyapunov spectrum, the Kaplan–Yorke dimension and the covariant Lyapunov
 vectors of the Lorenz attractor from 32 trajectories in one batch; build the Lorenz map from a
@@ -31,7 +30,7 @@ maxima of $z$ on a one-dimensional cusp map (Lorenz 1963, Fig. 4). **Time:** abo
 
 An ODE has no geometry, so the Lorenz system is written with `ode_problem` from the expert layer:
 the same kind of problem object a native model compiles to, advanced by the same `IVPSolver`. The
-scheme and the time step are explicit choices, as always.
+scheme and the time step are arguments of the call.
 
 ## Lyapunov spectrum from 32 trajectories
 
@@ -41,18 +40,19 @@ scheme and the time step are explicit choices, as always.
 :end-before: "# [/lyapunov]"
 ```
 
-Every length is an argument: trajectory transient, tangent transient (the vectors align with the
-Oseledets directions before anything is averaged), averaging steps, QR interval, number of blocks
-for the error, inner product, seed. `explain()` prints each exponent with the standard error of the
+You supply the durations, in simulation time units or steps: the trajectory transient, the
+tangent transient (the vectors align with the Oseledets directions before anything is averaged)
+and the averaging steps. The QR interval, the number of blocks for the error, the inner product and
+the seed are arguments too. `explain()` prints each exponent with the standard error of the
 block means and the lag-1 correlation of those blocks (if it is large the blocks are too short).
 The sum is not exactly $-13.667$: it is the mean $\log|\det J|$ of the RK443 **map**, whose
 truncation at $dt = 0.01$ is $7.7\times10^{-3}$ ($9.2\times10^{-4}$ at $dt/2$: third order).
 
 ```{figure} media/t12_lyapunov.png
-:alt: Three panels, one per Lyapunov exponent: grey running estimates of 32 trajectories converge with time onto their red mean and the dashed published value.
+:alt: Three panels, one per Lyapunov exponent: a grey band of running estimates over the starts narrows with time around a red mean that settles on the dashed published value.
 :width: 100%
 
-Running estimates of the three exponents for the 32 starts of the page (grey), their mean (red) and the published values 0.906, 0 and −14.572 (dashed).
+Finite-time estimates of the three exponents, averaged from the start of the measurement, over the 32 starts of the page: the band holds the middle 80 % of the starts, the red line is their mean and the dashed lines are the published values 0.906, 0 and −14.572. The panel titles give the final mean and its standard error over the starts. Time is in the units of the Lorenz equations.
 ```
 
 ## Covariant vectors
@@ -94,14 +94,14 @@ The Poincaré section dz/dt = 0 of the page: each maximum of z against the next 
 :end-before: "# [/basins]"
 ```
 
-`ensemble_fate` asks the classifier every `check_every` steps and latches each member's verdict;
-members still undecided at the horizon stay 0 and are reported, never assigned.
+`ensemble_fate` asks the classifier every `check_every` steps and latches each member's verdict.
+Members undecided at the final time keep classification 0, and the result counts them.
 
 ```{figure} media/t12_basins.png
-:alt: A square map of starting points coloured red or green by the equilibrium they end on, forming interleaved spiral bands, with C+ and C- marked.
+:alt: A square map of starting points coloured red or blue by the equilibrium they end on, forming interleaved spiral bands, with C+ and C- marked and a legend below.
 :width: 100%
 
-Basins of C+ (red) and C− (green) at r = 20 for the 2304 starts of the ensemble (z₀ = 19); the rare starts still undecided at the horizon are black. The map is symmetric under (x, y) → (−x, −y).
+Basins of C+ (red) and C− (blue) at r = 20 for the 2304 starts of the ensemble (z₀ = 19); the rare starts still undecided at the horizon are black. The map is symmetric under (x, y) → (−x, −y).
 ```
 
 ## Check against the references

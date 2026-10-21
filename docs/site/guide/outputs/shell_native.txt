@@ -1,3 +1,3 @@
-Simulation of 'viscous shell' (native model) at N = phi: 8, theta: 5, r: 48
+Simulation of 'viscous shell' at N = phi: 8, theta: 5, r: 48: RK443, dt = 0.001, backend cpu
 spurious tau modes: none (representative groups checked)
 t = 0.200, max |u| = 1.117e-04

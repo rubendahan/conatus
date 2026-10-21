@@ -1,4 +1,4 @@
-# t16_particles_dye: PASS (exit 0) in 47.1 s | 2026-10-20 | script sha256 5421cf06aaa42843
+# t16_particles_dye: PASS (exit 0) in 45.4 s | 2026-10-21 | script sha256 5421cf06aaa42843
 dt = 0.1   : largest tracer error 6.46e-05
 dt = 0.05  : largest tracer error 8.40e-06
 dt = 0.025 : largest tracer error 1.07e-06
@@ -21,8 +21,8 @@ Boundary conditions: bottom: u = (-1, 0); top: u = (1, 0); walls (left: y=-1): d
 Gauge: the mean of p is fixed (integ(p) = 0)
 Dealiasing: x: 3/2, y: 3/2 (declared default for products of degree 2)
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
-(every decision, tau by tau and term by term: m.explain(full=True))
-Dye file <path>/tmp62lfbd_4/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (= 0.5 time units), 7 write(s) so far
+(compiler decisions, tau by tau and term by term: m.explain(full=True))
+Dye file <path>/tmp9363hz08/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (= 0.5 time units), 7 write(s) so far
   dye c (m.dye): dt(c) - 0.01*lap(c) = -div(c*u); no flux: dy(c) = 0 at the walls; advected by u, same scheme and dt as the flow
   c: grid values of c
   mass: integ(c) (integral of the spectral series)
@@ -32,7 +32,7 @@ Dye file <path>/tmp62lfbd_4/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (=
   tail: largest |coefficient| among the last two modes of each axis, relative to the largest
   the state at the start (iteration 0, t = 0) written as a row (initial=True, the default of sim.output)
   scales: sim_time, iteration, write_number, x, y; every array labelled with its dimensions (HDF5 dimension scales)
-  XDMF sidecar (ParaView): <path>/tmp62lfbd_4/dye.xmf
+  XDMF sidecar (ParaView): <path>/tmp9363hz08/dye.xmf
 [[-3.  -1. ]
  [-0.5 -0.5]
  [ 2.   0. ]

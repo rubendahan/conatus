@@ -59,7 +59,7 @@ class EnsembleFate:
         return (f"EnsembleFate: {self.labels.size} member(s); checks every {s['check_every']} steps "
                 f"(dt = {s['dt']:g}), no verdict before step {s['min_steps']}, horizon "
                 f"{s['max_steps']} steps; classifier: {s['classifier']}\n"
-                f"  outcomes {c} (0 = undecided, reported, never assigned)")
+                f"  outcomes {c} (0 = undecided at the final time)")
 
 
 def ensemble_fate(ens, classify: Callable, *, check_every: int, min_steps: int, max_steps: int,
@@ -93,7 +93,7 @@ def ensemble_fate(ens, classify: Callable, *, check_every: int, min_steps: int, 
         if not np.array_equal(lab, raw):
             raise OptionError("classify must return integer labels (0 = undecided); got "
                               f"non-integer values {raw[lab != raw][:3]!r}",
-                              why="a label is never truncated (finding 66)")
+                              why="a label must fit in full (finding 66)")
         if record is not None:
             hist.append(record(ens))
         if steps >= min_steps:

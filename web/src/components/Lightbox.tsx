@@ -249,6 +249,12 @@ export default function Lightbox({ items, index, morph, origin, onChange }: Ligh
           <div className="lb-info">
             <h2 id="lb-title" className="lb-title">{plainTitle(g)}</h2>
             <p className="lb-caption">{plainCaption(g)}</p>
+            {/* what the colours mean and where the picture comes from (external review of 0.1.1, figures) */}
+            <p className="lb-caption">{g.colormap === "signed"
+              ? "Colour: a signed field, red for negative, black at zero, glass green for positive, scaled to its largest magnitude."
+              : "Colour: a magnitude, from black at zero to light grey at its largest value."}
+              {g.validated?.value ? ` Check: ${g.validated.value} against ${g.validated.reference}.` : ""}
+              {" "}Script: <code>{g.script}</code>.</p>
             <p className="lb-hint" aria-hidden="true">{coarse
               ? (zoomed ? "Drag to pan · pinch or double-tap to fit" : "Double-tap or pinch to zoom · swipe for the next plate")
               : (zoomed ? "Drag to pan · click to fit" : "Click to zoom · ← → for the next plate · Esc to close")}</p>

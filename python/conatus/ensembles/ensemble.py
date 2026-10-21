@@ -67,7 +67,7 @@ class Ensemble:
         if rhs not in ("batched", "loop"):
             raise OptionError(f"Ensemble: rhs must be 'batched' or 'loop', got {rhs!r}",
                               why="the RHS path decides whether members are bit-identical to "
-                                  "single runs (loop) or vectorized (batched); not chosen for you",
+                                  "single runs (loop) or vectorized (batched)",
                               fix="rhs='batched' (vectorized) or rhs='loop' (oracle)")
         s0 = solvers[0]
         # The ensemble step mirrors the SBDF and RK arithmetic only: a CN multistep solver would

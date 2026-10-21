@@ -81,8 +81,7 @@ class SpectralProbe:
         if getattr(sim.solver.plan.layout, "complex", False):
             raise UnsupportedError("particles in a complex-valued problem (a periodic(..., "
                                    "complex=True) axis or complex data)",
-                                   why="a tracer moves with a real velocity; the real part of a "
-                                       "complex field is not taken for you",
+                                   why="a tracer moves with a real velocity",
                                    fix="periodic(L) (the real cos/sin series) for a real flow",
                                    doc=_DOC)
         self.sim, self.name = sim, name

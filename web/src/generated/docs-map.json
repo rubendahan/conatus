@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-20T23:09:22.591Z",
+ "generated": "2026-10-21T21:29:53.164Z",
  "source": "",
  "guide": [
   {
@@ -12,7 +12,7 @@
     },
     {
      "title": "Spherical shells",
-     "text": "The space between two concentric spheres, where planets and stars convect: simulations on a CPU or a GPU, rotating convection, exact adjoints and optimal perturbations, with the same model text as in a box.",
+     "text": "The space between two concentric spheres, where planets and stars convect: simulations on a CPU or a GPU, rotating convection, discrete adjoints and optimal perturbations, with the same model text as in a box.",
      "href": "guide/shells.html"
     },
     {
@@ -37,7 +37,7 @@
     },
     {
      "title": "Units and conventions",
-     "text": "Unit systems make every change of nondimensionalisation an explicit, checked call.",
+     "text": "Unit systems let you convert between nondimensionalisations with convert(), which checks the supplied unit systems and the scales it needs.",
      "href": "guide/units.html"
     }
    ]
@@ -72,12 +72,12 @@
     },
     {
      "title": "Input and output",
-     "text": "Two kinds of HDF5 files: analysis files, which hold what you asked to see (fields, derived quantities, numbers) at a fixed cadence, and checkpoints, which hold everything needed to continue a run exactly.",
+     "text": "Conatus writes two kinds of HDF5 files.",
      "href": "guide/io.html"
     },
     {
      "title": "The Studio",
-     "text": "The Studio shows a running simulation as a film, from a browser or a phone, and lets you pause, checkpoint, stop or fork it; watching never changes a bit of the computation.",
+     "text": "The Studio shows a running simulation as a film, from a browser or a phone, and lets you pause, checkpoint, stop or fork it.",
      "href": "guide/studio.html"
     },
     {
@@ -92,7 +92,7 @@
     },
     {
      "title": "Notebooks",
-     "text": "In Jupyter, Conatus objects display as formatted tables and cards.",
+     "text": "In Jupyter, Conatus objects display as tables and cards.",
      "href": "guide/notebook.html"
     }
    ]
@@ -112,7 +112,7 @@
    "entries": [
     {
      "title": "explain() and the Methods paragraph",
-     "text": "Every key object says, in plain text, what it is and which numerical choices it carries, and a simulation writes the Methods paragraph of your paper from what it actually ran.",
+     "text": "Models, results and solvers describe, in plain text, what they are and which numerical choices they carry.",
      "href": "guide/explain.html"
     },
     {
@@ -127,7 +127,7 @@
     },
     {
      "title": "Reproducibility and provenance",
-     "text": "A number is only useful if you can say which code, which numerics and which machine produced it; Conatus records this when the computation runs, not afterwards.",
+     "text": "A published number should say which code, which numerics and which machine produced it.",
      "href": "guide/reproducibility.html"
     },
     {
@@ -137,22 +137,22 @@
     },
     {
      "title": "Errors and what they mean",
-     "text": "Every error says what is wrong, where, why it is refused, and what to write instead.",
+     "text": "A ConatusError states what is wrong, where (equation, term, variable, group), why the call is refused, and a suggested fix.",
      "href": "guide/errors.html"
     },
     {
      "title": "Experimental features",
-     "text": "Most of Conatus is supported: its API changes only through a declared deprecation, and what the guide says about it is measured.",
+     "text": "Most of the Conatus API changes only through a declared deprecation.",
      "href": "guide/experimental.html"
     }
    ]
   },
   {
-   "caption": "Coming from Dedalus",
+   "caption": "Importing scripts",
    "entries": [
     {
-     "title": "Coming from Dedalus",
-     "text": "If you know Dedalus, you already know how to write a Conatus model; what changes is what you no longer write, and what you can do with the model afterwards.",
+     "title": "Importing Dedalus scripts",
+     "text": "cn.from_dedalus(script) reads a Dedalus 3 script and builds the same problem as a Conatus problem.",
      "href": "guide/dedalus.html"
     }
    ]
@@ -186,7 +186,7 @@
  "dynamics": [
   {
    "title": "Eigenvalues and stability",
-   "text": "Normal modes of a linear problem, each with its backward residual, with spurious modes removed only by a declared test.",
+   "text": "Normal modes of a linear problem, each with its backward residual, and the tests that flag or remove spurious modes.",
    "href": "guide/dynamics/eigenvalues.html"
   },
   {
@@ -216,7 +216,7 @@
   },
   {
    "title": "Eigenvalues in a region",
-   "text": "Every eigenvalue inside a box of the complex plane, with a count you can trust: how many there are, and which they are.",
+   "text": "The eigenvalues inside a box of the complex plane: how many there are, and which they are.",
    "href": "guide/dynamics/contour.html"
   },
   {
@@ -236,17 +236,17 @@
   },
   {
    "title": "Adjoints and sensitivity",
-   "text": "Exact tangent and adjoint of the discrete time stepper, adjoint eigenmodes in a declared inner product, the wavemaker and the sensitivity to the base flow.",
+   "text": "Tangent and adjoint of the discrete time stepper, adjoint eigenmodes in a declared inner product, the wavemaker and the sensitivity to the base flow.",
    "href": "guide/dynamics/adjoint.html"
   },
   {
    "title": "Tangent, adjoint and optimal perturbations",
-   "text": "FlowMap is the time-stepping map of a solver, X_0 ↦ X_N, with its exact discrete tangent (jvp) and adjoint (vjp): the same schemes, the same operators, the same linear factorizations, transposed.",
+   "text": "FlowMap is the time-stepping map of a solver, X_0 ↦ X_N, with its discrete tangent (jvp) and adjoint (vjp).",
    "href": "guide/dynamics/optimal_perturbations.html"
   },
   {
    "title": "Data-driven analysis",
-   "text": "Dynamic mode decomposition and spectral proper orthogonal decomposition of snapshots, in the inner product of the physics rather than that of the array.",
+   "text": "Dynamic mode decomposition and spectral proper orthogonal decomposition of snapshots, in a weighted inner product.",
    "href": "guide/dynamics/data.html"
   }
  ]

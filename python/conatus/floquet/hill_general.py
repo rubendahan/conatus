@@ -200,9 +200,9 @@ class HillBlocks:
         return self._block(mu, self.harmonics, self.harmonics)
 
     def winding(self, center: complex, radius: float, n_points: int) -> float:
-        """Winding number of det M on |μ - center| = radius (an integer, certified by the
-        adaptive walk of :func:`conatus.floquet.roots.adaptive_winding`; ConvergenceError when
-        the walk cannot certify it). ``n_points``: initial points on the circle."""
+        """Winding number of det M on |μ - center| = radius (an integer read off the adaptive
+        walk of :func:`conatus.floquet.roots.adaptive_winding`, a test on samples; ConvergenceError
+        when the walk cannot be completed). ``n_points``: initial points on the circle."""
         from .roots import adaptive_winding
         return adaptive_winding(self.slogdet, center, radius, n_points)
 

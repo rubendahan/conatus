@@ -8,7 +8,7 @@ If Conatus contributes to your work, please cite the software. The repository ca
   author  = {Dahan, Ruben},
   title   = {{Conatus: spectral PDEs and dynamical systems}},
   year    = {2026},
-  version = {0.1.1},
+  version = {0.1.2},
   license = {BSD-3-Clause},
   url     = {https://github.com/rubendahan/conatus},
 }
@@ -18,9 +18,9 @@ A paper describing the design and the validation tests is in preparation.
 
 ## Cite the methods too
 
-Conatus implements published methods; please cite them along with Conatus. You do not need to
-assemble the list by hand: `plan.methods()` writes a *Methods* paragraph for your run and returns
-the BibTeX entries of exactly the methods it used (for example Olver & Townsend 2013 for the
+Conatus implements published methods; please cite them along with Conatus. `plan.methods()`
+drafts a *Methods* paragraph for your run and returns the BibTeX entries of the methods it cites
+(for example Olver & Townsend 2013 for the
 ultraspherical operators, Burns et al. 2020 for the generalised tau method, Vasil et al. 2016 and
 2019 for polar and spherical bases, Ascher, Ruuth & Spiteri 1997 for the IMEX Runge–Kutta
 schemes). See {doc}`guide/explain`.

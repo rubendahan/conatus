@@ -39,7 +39,7 @@ grid.color: 77736B
 grid.alpha: 0.25
 grid.linewidth: 0.6
 
-axes.prop_cycle: cycler('color', ['C8463A', '4F8A68', 'A8864F', '6C7FA8', '8A8A86'])
+axes.prop_cycle: cycler('color', ['C8463A', '4C6FB0', 'A8864F', '77736B', '8A8A86']) + cycler('linestyle', ['-', '--', ':', '-.', '-'])
 lines.linewidth: 1.6
 lines.markersize: 5
 patch.edgecolor: none

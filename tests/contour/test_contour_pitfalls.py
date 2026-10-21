@@ -7,7 +7,8 @@
    included) counts right.
 2. Poles of det T count as negative zeros (N = Z - P): covered in test_contour_count/beyn.
 3. Coalescing eigenvalues and branch points inside the box: the count is unaffected (det T is
-   analytic there), and Beyn's roots add up to it with multiplicities.
+   analytic there), and Beyn's roots add up to it with multiplicities; each reported root is
+   checked against the analytic roots.
 """
 from __future__ import annotations
 
@@ -57,7 +58,10 @@ def test_branch_labelled_eigenvalue_is_refused_and_the_product_counts():
 
 @pytest.mark.parametrize("eps", [1e-2, 1e-8, 1e-14, 0.0, -1e-8])
 def test_coalescence_inside_the_box(eps):
-    # roots +-sqrt(eps): distinct, nearly double (a cluster), defective double, imaginary pair
+    # roots +-sqrt(eps): distinct, nearly double, defective double, imaginary pair.
+    # Oracle: the analytic roots. Distinct roots come back as two simple values, each within
+    # its forward error of exactly one true root (and F14: the former
+    # test required the merge of +-1e-7 as one root of multiplicity 2).
     def T(z):
         return np.array([[z, 1.0], [eps, z]], complex)
 
@@ -68,13 +72,20 @@ def test_coalescence_inside_the_box(eps):
     r = beyn(T, b, poles=0, derivative=dT)
     assert int(r.multiplicity.sum()) == 2 and (r.residuals <= 1e-10).all()
     s = np.sqrt(complex(eps))
-    if abs(s) > 1e-5:
-        assert r.values.size == 2
-        for z in (s, -s):
-            assert np.min(np.abs(r.values - z)) < 1e-10
-    else:                                              # one root of multiplicity 2
+    if eps != 0:
+        # two distinct roots, returned as two (external review of 0.1.1, F3: at eps = 1e-14 the
+        # roots +-1e-7 were one root of multiplicity 2 at their mean); the forward error of a
+        # nearly defective pair is about eps_machine / |s|
+        assert r.values.size == 2 and (r.multiplicity == 1).all(), (r.values, r.multiplicity)
+        exact = np.array([s, -s])
+        tol = max(1e-10, 1e-14 / abs(s))               # at most half the separation 2|s|
+        for v in r.values:                             # each value stands for exactly one true root
+            assert (np.abs(exact - v) < tol).sum() == 1, (v, exact)
+        for z in exact:                                # no true root left out
+            assert np.min(np.abs(r.values - z)) < tol
+    else:                                              # a defective double root: one value, 2 in its square
         assert r.values.size == 1 and r.multiplicity[0] == 2
-        assert abs(r.values[0]) < 1e-6
+        assert abs(r.values[0]) < 1e-6 and r.enclosure[0] > 0
 
 
 def test_semisimple_double_eigenvalue():

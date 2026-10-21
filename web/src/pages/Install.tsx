@@ -127,10 +127,10 @@ const gpuSteps = (
 );
 
 const extras: [string, string, string][] = [
-  ["tutorials", "matplotlib ≥ 3.7", "The figures of the tutorials (the optional Dedalus check of tutorial 14 needs Dedalus)."],
+  ["tutorials", "matplotlib ≥ 3.7", "The figures of the tutorials."],
   ["gpu", "cupy-cuda12x ≥ 13", "Device arrays, with the CUDA wheel (a source build also needs CONATUS_CUDA=ON)."],
   ["notebook", "ipywidgets ≥ 8", "Rich displays of explain() in Jupyter."],
-  ["dedalus-compare", "dedalus ≥ 3.0", "Side-by-side comparisons with Dedalus."],
+  ["dedalus-compare", "dedalus ≥ 3.0", "Dedalus 3, needed only by the optional check script of tutorial 14."],
   ["docs", "sphinx ≥ 7, myst-parser ≥ 2", "Building the documentation site."],
   ["dev", "pytest ≥ 8, ruff ≥ 0.5, mpmath ≥ 1.3", "Tests and lint."],
   ["all", "tutorials, notebook, gpu, docs, dev", "Everything above except dedalus-compare."],
@@ -202,11 +202,11 @@ export default function Install() {
           </div>
           <div className="prose">
             <p><code>doctor</code> tells you what this machine can run and how to fix what is missing. Conatus always says which
-              compiled core it loaded; it never switches to another copy behind your back.</p>
+              compiled core it loaded.</p>
             <p>An installed package writes nothing inside its environment: live-monitoring data go to{" "}
               <code>~/.cache/conatus</code> (or <code>$XDG_CACHE_HOME</code>, <code>CN_CACHE</code>, <code>CN_TMP</code>), and{" "}
               <code>doctor</code> prints these directories.</p>
-            <p>Then start the <Link to="/tutorials">tutorials</Link> with tutorial 0, getting started.</p>
+            <p>Next: <Link to="/tutorials/getting-started">first steps</Link>, the second step of the getting-started route.</p>
           </div>
         </div>
       </Section>

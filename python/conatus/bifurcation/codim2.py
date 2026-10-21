@@ -12,7 +12,12 @@ accepted point). g_z = −wᵀ J_z v with the exact IR forms: g_x = −(wᵀB(v,
 **Hopf curve** (M = I). z = (x, κ, p1, p2), κ = ω²; the bordered matrix of J² + κI with two
 columns B and rows Cᵀ gives a 2×2 G; the two entries of G used as conditions are chosen once at
 the start (the pair giving the best-conditioned augmented Jacobian, declared). Derivatives:
-(J²)_z v = J_z(J v) + J(J_z v), exact from B and J_p.
+(J²)_z v = J_z(J v) + J(J_z v), exact from B and J_p. The augmented system also holds where J
+has a real pair ±√(−κ) (κ < 0, a neutral saddle): a small residual does not make a point a Hopf
+point (external review of 0.1.1, F8). The curve stops where κ reaches 0 (the Bogdanov–Takens
+point, located as the ``bt`` event), and at every accepted point the eigenvalues of J, computed
+on their own (QZ), must hold the pair ±iω within ``HOPF_PAIR_TOL``; a point that fails either
+check ends the curve and is not kept.
 
 **Test functions** (located by secant):
 
@@ -43,6 +48,10 @@ L1_KERNEL_TOL = 1e-6
 #: A zero-Hopf test zero on a Hopf curve with |κ| = ω² <= BT_KAPPA_TOL x max(1, |λ|max²) is the
 #: Bogdanov–Takens point (ω → 0), not a fold–Hopf point (classification; declared).
 BT_KAPPA_TOL = 1e-6
+#: A point of a Hopf curve is kept only when the eigenvalues of J hold ±iω, ω = √κ, within
+#: HOPF_PAIR_TOL x max(1, |λ|max) (each of the pair; an independent check of the augmented
+#: system; declared).
+HOPF_PAIR_TOL = 1e-6
 
 __all__ = ["continue_codim2"]
 
@@ -250,7 +259,24 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
                 d["l1"] = np.nan
             sg, ld = np.linalg.slogdet(J)
             d["logdet"] = (float(sg), float(ld))
+            if kap > 0:          # distance of ±iω from the spectrum (independent of G = 0)
+                w = np.sqrt(kap)
+                d["hopf_pair_error"] = float(max(np.min(np.abs(ev - 1j * w)),
+                                                 np.min(np.abs(ev + 1j * w)))
+                                             / max(1.0, float(np.abs(ev).max())))
             return d
+
+        def stop(pt):
+            kap = float(pt.z[n])
+            if not kap > 0:
+                return (f"κ = ω² = {kap:.3e} <= 0: past the Bogdanov–Takens point J has a real "
+                        "pair, not a Hopf pair; the Hopf curve ends at the bt event")
+            err = pt.data.get("hopf_pair_error", np.inf)
+            if not err <= HOPF_PAIR_TOL:
+                return (f"the eigenvalues of J do not hold ±iω, ω = √κ = {np.sqrt(kap):.6g} "
+                        f"(distance {err:.1e} relative, above HOPF_PAIR_TOL = {HOPF_PAIR_TOL:g}): "
+                        "not a Hopf point; the curve ends before it")
+            return None
 
         ref = {}
 
@@ -313,12 +339,20 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
                           classify=classify, on_accept=on_accept)
     t0 = np.zeros(z0.size)
     t0[-1] = np.sign(direction) or 1.0
-    cv = drv.run(z0, t0, kind=f"{kind} (codim 2)", names=names, bounds=bounds)
+    cv = drv.run(z0, t0, kind=f"{kind} (codim 2)", names=names, bounds=bounds,
+                 stop=stop if kind == "hopf" else None)
+    why = stop(cv.points[-1]) if kind == "hopf" and len(cv.points) > 1 else None
+    if why:
+        last = cv.points.pop()            # the point that ended the curve is not a Hopf point
+        cv.notes.append(f"last continued point dropped ({p1} = {last.z[-2]:.6g}, {p2} = "
+                        f"{last.z[-1]:.6g}, κ = {last.z[n]:.3e}): {why}")
     cv.context = {"system": system, "parameters": parameters, "base": base, "state": state}
     cv.notes += [f"{kind} curve of {system.origin} in ({p1}, {p2}), minimally augmented system "
                  "(Govaerts 2000); bordering vectors refreshed after every accepted point",
                  f"tests: {', '.join(tests)}"]
     if kind == "hopf":
         cv.notes.append(f"Hopf conditions: entries {state['pick']} of the 2x2 bordered G (row-major), "
-                        "chosen once at the start for the best-conditioned augmented Jacobian")
+                        "chosen once at the start for the best-conditioned augmented Jacobian; "
+                        f"every point kept has κ > 0 and ±iω in the eigenvalues of J (QZ) within "
+                        f"HOPF_PAIR_TOL = {HOPF_PAIR_TOL:g}")
     return cv

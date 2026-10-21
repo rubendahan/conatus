@@ -1,10 +1,10 @@
 # User guide
 
-Each part of Conatus described once, with the choices you make and the ones Conatus will not make
-for you.
+This guide is organised by task. Use it to find the supported arguments, the returned fields and
+the failure conditions of each part of Conatus.
 
-The tutorials follow one problem from start to finish; this guide is organised by task. Every
-snippet runs against the current version of the library.
+The tutorials follow one problem from start to finish. The snippets of this guide are run against
+the current version of the library by the test suite.
 
 ## Writing a model
 
@@ -26,13 +26,14 @@ units
 - {doc}`mapped`: channels between two surfaces (wavy walls, bumps): the map, the chain rule,
   convergence and limits.
 - {doc}`shells`: spherical shells: simulation on a CPU or a GPU, rotating convection, adjoints,
-  and what Conatus checks for you.
+  and the checks Conatus runs.
 - {doc}`equations`: unknowns, parameters, known fields and equations as text; which terms are
   implicit.
 - {doc}`boundary_conditions`: conditions by boundary name, how Conatus places them, and what it
   refuses.
 - {doc}`problems`: canonical flows ready to solve, each with its published reference.
-- {doc}`units`: unit systems and study presets; every conversion is a call.
+- {doc}`units`: unit systems and study presets; use `convert()` to translate quantities between
+  declared unit systems.
 
 ## Running
 
@@ -91,26 +92,26 @@ errors
 experimental
 ```
 
-- {doc}`explain`: `explain()` on every key object, and the *Methods* paragraph of your paper.
+- {doc}`explain`: `explain()` on models, results and solvers, and a draft *Methods* paragraph.
 - {doc}`uncertainty`: a computed number with its error estimate, and the error of a time
   average.
 - {doc}`runs`: record, query, compare and reproduce runs.
 - {doc}`reproducibility`: the provenance record and what is deterministic.
 - {doc}`doctor`: what your installation can run.
 - {doc}`errors`: how to read an error message.
-- {doc}`experimental`: what is shipped but not promised, and the warning that says so.
+- {doc}`experimental`: the experimental APIs, their current limits, and the warning they emit.
 
-## Coming from Dedalus
+## Importing scripts
 
 ```{toctree}
-:caption: Coming from Dedalus
+:caption: Importing scripts
 :maxdepth: 1
 
 dedalus
 ```
 
-- {doc}`dedalus`: the same problem side by side, what you stop writing, and importing a Dedalus
-  script.
+- {doc}`dedalus`: `cn.from_dedalus` reads a Dedalus 3 script without running it and builds the
+  corresponding Conatus problem.
 
 ## Expert layer
 

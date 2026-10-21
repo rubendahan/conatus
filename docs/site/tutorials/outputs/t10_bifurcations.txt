@@ -1,4 +1,4 @@
-# t10_bifurcations: PASS (exit 0) in 28.7 s | 2026-10-20 | script sha256 1aeaf6f6d8fb15f0
+# t10_bifurcations: PASS (exit 0) in 4.6 s | 2026-10-21 | script sha256 6cba9156f3e55076
 DynamicalSystem: M dx/dt = G(x; p), n = 3, origin: IR: Lorenz (0-D: one constant Fourier mode)
   parameters: r = 0.5
   mass matrix: identity
@@ -59,15 +59,16 @@ fold (codim 2) curve: 15 points, b1 in [0.000137149, 0.58141], b2 in [-1, 1.5250
   events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(1, |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(1, |λ|))
   corrector failures (step halved): 0; max residual on the curve 1.4e-12
   bt at b1 = -6.7114253235e-16, b2 = 1.11699588465e-12 between points (7, 8), |test| = 5.6e-13, residual 6.7e-16 [located by |test bt| <= crossing_tol = 1e-11, secant budget 30]
-hopf (codim 2) curve: 17 points, b1 in [1.90168e-14, 2.38022e-14], b2 in [-1, 1.53084], kappa in [-1.53084, 1]; stop: b2 = 1.53084 left (-1.5, 1.5)
+hopf (codim 2) curve: 9 points, b1 in [1.90207e-14, 1.97369e-14], b2 in [-1, -0.166221], kappa in [0.166221, 1]; stop: κ = ω² = -4.591e-02 <= 0: past the Bogdanov–Takens point J has a real pair, not a Hopf pair; the Hopf curve ends at the bt event
+  last continued point dropped (b1 = 1.90264e-14, b2 = 0.0459113, κ = -4.591e-02): κ = ω² = -4.591e-02 <= 0: past the Bogdanov–Takens point J has a real pair, not a Hopf pair; the Hopf curve ends at the bt event
   hopf curve of IR: Bogdanov-Takens (0-D: one constant Fourier mode) in (b1, b2), minimally augmented system (Govaerts 2000); bordering vectors refreshed after every accepted point
   tests: bt, gh, zh, hh
-  Hopf conditions: entries (2, 3) of the 2x2 bordered G (row-major), chosen once at the start for the best-conditioned augmented Jacobian
+  Hopf conditions: entries (2, 3) of the 2x2 bordered G (row-major), chosen once at the start for the best-conditioned augmented Jacobian; every point kept has κ > 0 and ±iω in the eigenvalues of J (QZ) within HOPF_PAIR_TOL = 1e-06
   ds = 0.05 in [1e-09, 0.3], x1.3 (default) when the corrector takes <= 3 (default) its, /2 on failure
   corrector: tolerance 1e-11, budget 12 (default) its; G_p: analytic G_p (dp_fd=None)
   max points 40
   events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(1, |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(1, |λ|))
-  corrector failures (step halved): 0; max residual on the curve 1.4e-13
+  corrector failures (step halved): 0; max residual on the curve 2.0e-14
   bt at b1 = 1.90259931987e-14, b2 = -2.65065747129e-13, kappa = -5.55111512313e-17 between points (8, 9), |test| = 5.6e-17, residual 1.9e-14: κ = ω² = -5.55e-17 [located by |test bt| <= crossing_tol = 1e-11, secant budget 30]
   (rejected zh between (8, 9): det J = 0 with κ = ω² = -4.7e-16: the Bogdanov–Takens point)
 Landau equation (stationary) at r_c = 0: dA/dt = μ Δr A + g3 A³

@@ -425,7 +425,7 @@ class NewtonSolver:
                  f"{self.nonlinear_terms} nonlinear/constant (exact Fréchet derivative of the IR)",
                  "  update: x <- x + damping (X - x), with F'(U) X = F'(U) U - F(U)",
                  f"  tolerance (max |F_h| / scale, rows in their own unit) = {self.tolerance:g}, "
-                 f"damping = {self.damping:g} (fixed, never adapted), "
+                 f"damping = {self.damping:g} (fixed), "
                  f"max_iterations = {self.max_iterations}",
                  "  linear-only unknowns (taus...) start at 0: Newton solves for them exactly",
                  "  Newton system per iteration:"]

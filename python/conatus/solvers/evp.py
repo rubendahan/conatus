@@ -330,16 +330,82 @@ def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
         VL = VL / r            # y^H (L + s M) = 0  <=>  (D^-1 y)^H D (L + s M) = 0, D = 1/r
     else:
         VL, VR = None, vecs[0]
-    scale = max(_norm1(Le), 1e-300) / max(_norm1(Me), 1e-300)
-    finite = np.abs(b) * scale > INF_TOL * np.abs(a)
+    finite, note = _finite_eigenvalues(a, b, Le, Me, Md)
     w = a[finite] / b[finite]
     V = VR[:, finite]
     res = _residuals(Ld, Md, w, V)
     r = EVPResult(w, V, res, "dense QZ (scipy.linalg.eig)", label, int((~finite).sum()),
                   VL[:, finite] if left else None)
-    r.log.append(f"{int((~finite).sum())} infinite eigenvalues removed (|beta| <= {INF_TOL:.1e} "
-                 "|alpha| after scaling by ||L||/||M||, rows equilibrated)")
+    r.log.append(note)
     return r
+
+
+def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.ndarray,
+                        Md: np.ndarray):
+    """(mask of the finite eigenvalues alpha/beta of the QZ pairs, the sentence for the log).
+
+    A pair is "under the threshold" when beta = 0 exactly, or when |beta| <= INF_TOL |alpha|
+    after scaling by ||L|| / ||M|| (rows equilibrated). A regular pencil has at least
+    n - rank(M) infinite eigenvalues (more with Jordan blocks at infinity) and none when M is
+    nonsingular, so the threshold alone does not decide (external review of 0.1.1, F7:
+    L = -diag(1, 1e13), M = I lost its exact eigenvalue 1e13 as infinite).
+
+    The numerical rank of M counts its singular values above n eps sigma_max(M), on M as given.
+    An earlier version divided each row of M by its own largest entry first: a row of rounding
+    noise (1e-17 ||M|| where the exact M has a zero row) became a row of order one, M looked
+    nonsingular, and the infinite eigenvalue of that row was returned as a finite value near
+    1e17. An equation multiplied by a constant below n eps makes M look singular; the
+    classification then falls back to the threshold, as before F7.
+
+    With M of full rank every pair with beta != 0 is finite; the pairs under the threshold are
+    named in the log. With M singular, a pair is infinite when beta = 0, when it is one of the
+    n - rank(M) pairs of smallest |beta| / |alpha| under the threshold, or when its scaled
+    |beta| / |alpha| is below n eps (the rank tolerance). The other pairs under the threshold
+    (|beta| / |alpha| between n eps and INF_TOL) are kept as finite and named as ambiguous with
+    their modulus. When fewer pairs are under the threshold than n - rank(M), the pairs of
+    smallest |beta| / |alpha| that the rank says should be infinite are kept and named too."""
+    n = a.size
+    eps = np.finfo(float).eps
+    scale = max(_norm1(Le), 1e-300) / max(_norm1(Me), 1e-300)
+    ratio = np.abs(b) * scale / np.maximum(np.abs(a), np.finfo(float).tiny)
+    under = (b == 0) | (np.abs(b) * scale <= INF_TOL * np.abs(a))
+    sv = sl.svdvals(Md) if n else np.zeros(0)
+    rank_tol = n * eps
+    rank = int(np.count_nonzero(sv > rank_tol * sv[0])) if n and sv[0] > 0 else 0
+    deficiency = n - rank
+    rule = (f"|beta| <= {INF_TOL:.1e} |alpha| after scaling by ||L||/||M||, rows equilibrated; "
+            f"M has numerical rank {rank} of {n} (singular values above n eps sigma_max)")
+    if deficiency == 0:
+        infinite = b == 0
+        kept = under & ~infinite
+        note = (f"{int(infinite.sum())} infinite eigenvalue(s) removed (beta = 0); M is "
+                f"nonsingular ({rule}), so no other pair is infinite"
+                + (f": {int(kept.sum())} pair(s) under the threshold kept as finite eigenvalues "
+                   f"(|sigma| >= {np.abs(a[kept] / b[kept]).min():.3e})" if kept.any() else ""))
+        return ~infinite, note
+    order = np.argsort(np.where(under, ratio, np.inf), kind="stable")
+    by_rank = np.zeros(n, bool)
+    by_rank[order[:min(deficiency, int(under.sum()))]] = True
+    infinite = (b == 0) | by_rank | (under & (ratio <= rank_tol))
+    note = f"{int(infinite.sum())} infinite eigenvalue(s) removed ({rule})"
+    amb = np.nonzero(under & ~infinite)[0]
+    if amb.size:
+        sizes = np.abs(a[amb] / b[amb])
+        note += (f"; {amb.size} pair(s) under the threshold beyond n - rank(M) = {deficiency}, with "
+                 f"|beta|/|alpha| above n eps = {rank_tol:.1e}, are ambiguous (finite eigenvalues, "
+                 "or a Jordan block at infinity) and are kept as finite eigenvalues of modulus "
+                 f"{sizes.min():.3e} .. {sizes.max():.3e}")
+    short = deficiency - int(under.sum())
+    if short > 0:
+        rest = np.argsort(np.where(infinite, np.inf, ratio), kind="stable")[:short]
+        rest = rest[~infinite[rest]]
+        if rest.size:
+            sizes = np.abs(a[rest] / b[rest])
+            note += (f"; M has {deficiency} null direction(s) but only {int(under.sum())} pair(s) "
+                     f"are under the threshold: the {rest.size} pair(s) of smallest |beta|/|alpha| "
+                     f"(modulus {sizes.min():.3e} .. {sizes.max():.3e}) are ambiguous and kept as "
+                     "finite eigenvalues")
+    return ~infinite, note
 
 
 def check_target(target: Any) -> None:

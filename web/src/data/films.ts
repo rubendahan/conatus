@@ -6,6 +6,9 @@ export interface FilmItem {
   width: number; height: number; duration_s: number;
   run_id?: string; script: string; example_script: string | null; domain: string;   // run_id: private builds only
   loop?: string | null;                              // how the loop closes (display only, said in the caption)
+  legend?: string | null;                            // what the colours show (quantity and range)
+  details?: string | null;                           // physics and numerics of the run
+  span?: string | null;                              // simulated time shown, and the playback length
 }
 
 const found = import.meta.glob<FilmItem[]>("../../public/films/manifest.json", { eager: true, import: "default" });

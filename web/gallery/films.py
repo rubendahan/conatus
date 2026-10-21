@@ -602,6 +602,15 @@ def turbulence(a, out: Path) -> None:
 # ---- collect into the site ---------------------------------------------------------------------------
 FIELDS = ("slug", "title", "alt", "caption", "video_webm", "video_mp4", "poster", "width", "height",
           "duration_s", "run_id", "script", "example_script", "domain", "loop")   # loop: said in the caption
+# What the colours show (the vmin/vmax of the plotting code above) and the simulated time span, shown
+# under each film (external review of 0.1.1, figures: quantity, scale and time were not given together).
+LEGEND = {
+    "kelvin-helmholtz-film": "Colour: dye concentration, from 0 (dark) to 1 (light); the outline is "
+                             "concentration 1/2. Periodic box 4 × 2; the two shear layers are 1 apart, with half-thickness "
+                             "0.08 and velocity jump 2; time in these units.",
+    "rayleigh-taylor-film": "Colour: temperature, from −1/2 (dark, heavy fluid) to +1/2 (light fluid). "
+                            "Box 2 × 1 between rigid walls; time in thermal diffusion times of the depth.",
+}
 
 
 def collect(run_ids: list[str]) -> None:
@@ -622,6 +631,11 @@ def collect(run_ids: list[str]) -> None:
             for ext in ("webm", "mp4", "webp"):
                 shutil.copyfile(run / f"{m['slug']}.{ext}", PUBLIC / f"{m['slug']}.{ext}")
             found[m["slug"]] = {k: m[k] for k in FIELDS}
+            t = m.get("times")
+            found[m["slug"]].update(
+                legend=LEGEND.get(m["slug"]), details=m.get("details"),
+                span=(f"The film shows t = {t[0]:.3g} to {t[1]:.3g} (simulation time) in "
+                      f"{m['duration_s']:g} s of playback." if t else None))
     manifest = [found[s] for s in PUBLISHED if s in found]
     (PUBLIC / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     for e in manifest:

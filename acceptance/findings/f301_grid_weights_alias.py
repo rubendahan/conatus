@@ -14,6 +14,7 @@ start(301, "editing the returned quadrature weights never changes the grid's int
 g = Grid([Periodic(2 * np.pi, 16), Chebyshev(-1, 1, 12)])
 f = np.ones(g.shape)
 before = float(g.integrate(f))
+check(abs(before - 4 * np.pi) < 1e-12, f"integral of 1 over 2 pi x [-1, 1] is {before}, expected 4 pi")
 w = g.weights(1)
 w *= 2.0
 after = float(g.integrate(f))

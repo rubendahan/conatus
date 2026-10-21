@@ -1,0 +1,3 @@
+# critical_reynolds.py | script sha256 c3182fd158a0765412c2a039cb354973ffa38c47d2e705b028f190ed92688ab3 | conatus 0.1.2 | python 3.12.14 | 2026-10-21 | 58 s
+c = 0.23752649+0.00373967j   residual 1e-16
+Re_c = 5772.22   alpha_c = 1.02055

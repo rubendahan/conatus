@@ -25,7 +25,7 @@ was_refused, fate = refused(ensemble_fate, ens, lambda e: np.zeros(e.B, int), ch
                             min_steps=0, max_steps=10, classifier="never decides")
 if was_refused:
     passed("max_steps not a multiple of check_every refused")
-check(ens.steps <= 10, f"ran {ens.steps} steps with max_steps=10 (reported "
+check(ens.steps == 10, f"ran {ens.steps} steps with max_steps=10, expected exactly 10 (reported "
       f"{fate.settings.get('steps_run')})")
 check(fate.settings.get("steps_run") == ens.steps, f"reported {fate.settings.get('steps_run')}, ran {ens.steps}")
 passed(f"ran {ens.steps} steps")

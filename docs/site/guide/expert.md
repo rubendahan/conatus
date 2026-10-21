@@ -26,8 +26,8 @@ import conatus.expert as ex       # or: from conatus.expert import IVP, Chebyshe
 
 ## When to use it
 
-The native layer covers most problems. The expert layer is there for what it deliberately does
-not decide for you:
+The native layer covers most problems. Use the expert layer for the cases the native layer leaves
+to you:
 
 - conditions that couple several unknowns, or act on one component of a vector (free slip);
 - symmetry subspaces, where the parity of each tau must be declared by hand;
@@ -52,7 +52,7 @@ and any name that two modules would export with different meanings.
 | `time_parameter="t"` | `IVPSolver` | a `Parameter` set to the stage time in the right-hand side |
 | `backend=`, `f_backend=` | `IVPSolver`, `simulate` | CPU or GPU; evaluator or fused kernels ({doc}`gpu`) |
 
-Every option is opt-in and printed by `explain()`.
+You supply these options explicitly, and `explain()` lists the ones in use.
 
 The next pages describe the expert objects: {doc}`operators` (fields, operators, problem
 classes, linearisation and adjoints), {doc}`bases` (bases, dealiasing, symmetry subspaces) and

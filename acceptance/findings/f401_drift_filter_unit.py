@@ -14,6 +14,10 @@ import conatus as cn
 
 start(401, "drift filter is unit-free")
 
+# Independent anchor (review 2026-10-21, F14): Orszag's (1971) least stable mode at Re = 1e4,
+# alpha = 1, c = 0.23752649 + 0.00373967i, must be among the modes kept.
+ORSZAG = 0.23752649 + 0.00373967j
+
 
 def modes(unit):
     m = cn.Model(cn.Box(y=cn.walls(-1, 1)), name="OS", Re=1e4, alpha=1.0)
@@ -29,6 +33,8 @@ def modes(unit):
 
 
 ref = modes(1.0)
+check(ref.size >= 1 and np.min(np.abs(ref - ORSZAG)) < 1e-7,
+      f"unit 1: modes {ref} do not contain Orszag's c = {ORSZAG}")
 for unit in (1e-4, 1e4):
     got = modes(unit)
     check(got.size == ref.size, f"unit {unit:g}: {got.size} modes kept, {ref.size} in the unit of c")

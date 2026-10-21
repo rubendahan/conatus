@@ -2,8 +2,8 @@
 
 The site of Conatus: Vite + React + TypeScript, prerendered to static HTML (one `index.html` per
 page, readable without JavaScript, then hydrated). No server and no external service: fonts and
-MathJax are self-hosted. The hero animation is a real Kelvin–Helmholtz simulation running in the
-browser (WebGL), see `src/sim/README.md`.
+MathJax are self-hosted. The home page example is `home/critical_reynolds.py`; its output,
+`home/critical_reynolds.out`, is written by `home/run.sh`.
 
 ```bash
 cd web && npm ci

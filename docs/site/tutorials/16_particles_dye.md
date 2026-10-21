@@ -1,4 +1,4 @@
-# 16. Lagrangian tracers and a numerical dye
+# Lagrangian tracers and a numerical dye
 
 Tracers show where the fluid goes; a dye shows how it mixes. Both are only as good as the velocity
 they are given and the way they are advanced, so both are declared: the velocity at a tracer is the
@@ -14,6 +14,12 @@ Couette tracers $x(t) = x_0 + y_0 t$ to rounding; dye mass conserved. **Time:** 
 `tests/model/test_particles_dye.py`, `tests/model/test_particles_gpu.py`.
 
 ## Tracers in an exact Navier–Stokes solution
+
+```{literalinclude} code/t16_particles_dye.py
+:language: python
+:start-after: "# [imports]"
+:end-before: "# [/imports]"
+```
 
 ```{literalinclude} code/t16_particles_dye.py
 :language: python
@@ -37,10 +43,10 @@ The 32 tracers of the page in the decaying Taylor-Green vortices, t = 0 to 2 (dt
 ```
 
 ```{figure} media/t16_order.png
-:alt: The tracer error against the time step on log axes, three red points along a dashed line of slope 3.
-:width: 100%
+:alt: The tracer error against the time step on log axes, three red points close to a dashed line of slope 3.
+:width: 60%
 
-The tracer error against the reference path integrated to 10⁻¹³: third order in time, as stated for an unsteady flow.
+The largest tracer error against a reference path integrated to 10⁻¹³, for the three time steps of the page. Halving dt divides it by 7.7 then 7.8: observed orders 2.94 and 2.97, close to 3 in this unsteady flow.
 ```
 
 ## A dye in plane Couette flow

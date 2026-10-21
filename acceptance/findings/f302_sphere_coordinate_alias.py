@@ -17,6 +17,7 @@ m.equations("dt(T) - lap(T) = 0")
 s = m.simulate((16, 8), scheme="RK222", dt=1e-3)
 th = s.coordinate("theta")
 ref = th.copy()
+check(ref.size > 0 and np.all((ref > 0) & (ref < np.pi)), f"theta grid {ref} not in (0, pi)")
 try:
     th -= np.pi / 2
 except ValueError:

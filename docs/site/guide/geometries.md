@@ -55,7 +55,7 @@ Geometry: Annulus(inner=1, outer=2) (annulus)
 | Geometry | Expansion | Regularity |
 |---|---|---|
 | Box, Channel | real Fourier series (cos/sin) on periodic axes, Chebyshev polynomials on the wall axis | — |
-| Disk, Pipe | Fourier in $\varphi$ × Zernike-type polynomials $r^{\lvert m\rvert} P(2r^2-1)$ in $r$ | regular at the axis by construction: no axis condition, no $1/r$ regularisation |
+| Disk, Pipe | Fourier in $\varphi$ × Zernike-type polynomials $r^{\lvert m\rvert} P(2r^2-1)$ in $r$ | the basis enforces regularity at the axis |
 | Annulus, Taylor–Couette | Fourier in $\varphi$ (and in $z$) × Chebyshev in $r$ | — |
 | Sphere | Fourier in $\varphi$ × spin-weighted spherical harmonics | regular at the poles |
 | Ball | spherical harmonics × one-sided Jacobi polynomials in $r$ | regular at the centre |

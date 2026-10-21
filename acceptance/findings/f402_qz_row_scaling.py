@@ -15,6 +15,10 @@ import conatus as cn
 
 start(402, "eigenvalues invariant under the scaling of one equation")
 
+# Independent anchor (review 2026-10-21, F14): Orszag's (1971) least stable mode at Re = 1e4,
+# alpha = 1, c = 0.23752649 + 0.00373967i, must be among the modes kept.
+ORSZAG = 0.23752649 + 0.00373967j
+
 
 def modes(c_eq, c_bc):
     m = cn.Model(cn.Box(y=cn.walls(-1, 1)), name="OS", Re=1e4, alpha=1.0)
@@ -30,6 +34,8 @@ def modes(c_eq, c_bc):
 
 
 ref = modes(1.0, 1.0)
+check(ref.size >= 1 and np.min(np.abs(ref - ORSZAG)) < 1e-7,
+      f"unscaled: modes {ref} do not contain Orszag's c = {ORSZAG}")
 for c_eq, c_bc in ((1e-8, 1.0), (1.0, 1e6)):
     try:
         got = modes(c_eq, c_bc)

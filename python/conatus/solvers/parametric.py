@@ -5,12 +5,17 @@ the discrete matrices are Laurent polynomials in it:
 
     L(p) = sum_e (p/p0)^e C_e ,   M(p) = sum_e (p/p0)^e D_e .
 
-The exponent set of each parameter is read off the IR (``laurent_exponents``), never guessed.
-The coefficient matrices are recovered exactly from plans built at the roots of unity
+The exponent set of each parameter is read off the IR (``laurent_exponents``).
+The coefficient matrices are recovered from plans built at the roots of unity
 p = p0 exp(2 i pi k/m) (a discrete Fourier transform, perfectly conditioned), then checked
 against a directly assembled plan at an independent real point: the reconstruction error is
-reported and a mismatch is refused. A parameter entering non-polynomially is refused with a
-message (rebuild the plan per value instead).
+reported and a mismatch is refused. A coefficient entry is discarded only when it is at
+rounding level for that entry (``ENTRY_DROP_TOL`` times its largest modulus over the sample
+plans); the discarded entries are counted, and an evaluation where their largest possible
+contribution exceeds ``RECON_TOL`` of the pencil is refused (external review of 0.1.1, F2: a
+whole coefficient matrix 1e-14 times the largest entry of the pencil was deleted as
+"identically zero", and the eigenvalue 1e-14 r read 0 at r = 1e14). A parameter entering
+non-polynomially is refused with a message (rebuild the plan per value instead).
 
 ``ParametricEVP`` then evaluates spectra, tracks one eigenpair by bordered Newton, and gives
 exact matrix derivatives d/dp for sensitivities. ``critical`` finds a neutral parameter value
@@ -45,6 +50,10 @@ from .plan_evp import pencil_rank
 __all__ = ["laurent_exponents", "ParametricEVP", "TrackedMode", "CriticalPoint", "critical"]
 
 RECON_TOL = 1e-10
+#: A Laurent coefficient entry is discarded when its modulus is at most this times the largest
+#: modulus of the same matrix entry over the sample plans (rounding of the DFT). The threshold is
+#: per entry, not a global amplitude threshold (external review of 0.1.1, F2).
+ENTRY_DROP_TOL = 1e-13
 # Declared defaults (listed in conatus.tolerances.DECLARED, shown by explain()):
 TRACK_TOL = 1e-13               # bordered-Newton stop |d sigma| <= TRACK_TOL max(|sigma|, 1): at the
                                 # attainable floor, the residual of the tracked pair is returned
@@ -54,6 +63,7 @@ MODE_SWITCH_TOL = 1e-8          # critical(): another mode more unstable by more
 CRITICAL_MAX_ITERATIONS = 50    # critical(): Newton cap on the neutral parameter (raises when hit)
 BRACKET_SCAN_POINTS = 8         # critical(): interior points scanned to name sub-brackets of a refused bracket
 OVER_EDGE_FRACTION = 1e-6       # critical(over=): a minimum this close (x width) to an end of over is at the edge
+OVER_SCAN_POINTS = 9            # critical(over=): points of the over interval scanned before the local refinements
 
 
 def laurent_exponents(x: E.Expr, p: E.Parameter) -> frozenset[int] | None:
@@ -301,7 +311,7 @@ class ParametricEVP:
     def _build(self) -> None:
         names = [p.name for p in self._pen]
         ms = [len(self.exponents[n]) for n in names]
-        grids = [np.exp(2j * np.pi * np.arange(m) / m) for m in ms]
+        grids = [_unit_roots(m, 1) for m in ms]
         Ls = Ms = None
         self.n_plans = 0
         for idx in itertools.product(*(range(m) for m in ms)):
@@ -315,19 +325,33 @@ class ParametricEVP:
                 Ms = np.zeros(tuple(ms) + n, complex)
             Ls[idx] = gm.L.toarray()
             Ms[idx] = gm.M.toarray()
+        Lsamp, Msamp = Ls, Ms                  # the sample plans (entry sizes for ENTRY_DROP_TOL)
         # DFT along each parameter axis: C_e = (1/m) sum_k L(t_k) t_k^{-e}
         for ax, (n, m) in enumerate(zip(names, ms, strict=True)):
             e = np.array(self.exponents[n])
-            F = np.exp(-2j * np.pi * np.outer(e, np.arange(m)) / m) / m
+            F = _unit_roots(m, -1, e) / m
             Ls = np.moveaxis(np.tensordot(F, np.moveaxis(Ls, ax, 0), axes=(1, 0)), 0, ax)
             Ms = np.moveaxis(np.tensordot(F, np.moveaxis(Ms, ax, 0), axes=(1, 0)), 0, ax)
         self._coef = {}
         scale = max(np.abs(Ls).max(), np.abs(Ms).max(), 1e-300)
         dropped = 0
+        self.n_entries_dropped = 0
+        self._dropped_bound: dict[tuple, float] = {}    # exponent -> largest discarded |entry|
+        axes = tuple(range(len(ms)))
+        ampL, ampM = np.abs(Lsamp).max(axis=axes), np.abs(Msamp).max(axis=axes)
         for idx in itertools.product(*(range(m) for m in ms)):
             ex = tuple(self.exponents[n][i] for n, i in zip(names, idx, strict=True))
-            C, D = Ls[idx], Ms[idx]
-            if max(np.abs(C).max(), np.abs(D).max()) <= 1e-13 * scale:
+            C, D = Ls[idx].copy(), Ms[idx].copy()
+            big = 0.0
+            for X, amp in ((C, ampL), (D, ampM)):
+                low = (np.abs(X) <= ENTRY_DROP_TOL * amp) & (X != 0)
+                if low.any():
+                    big = max(big, float(np.abs(X[low]).max()))
+                    self.n_entries_dropped += int(low.sum())
+                    X[low] = 0
+            if big > 0:
+                self._dropped_bound[ex] = big
+            if not (C.any() or D.any()):
                 dropped += 1
                 continue
             self._coef[ex] = (C, D)
@@ -354,8 +378,7 @@ class ParametricEVP:
             raise ParameterError(
                 f"values missing for parameters {missing} (no default is assumed)",
                 where="ParametricEVP call with " + (", ".join(f"{k}=" for k in values) or "no values"),
-                why="the pencil parameters are declared symbols; a nominal value is never "
-                    "substituted in silence",
+                why="the pencil parameters are declared symbols without a nominal value",
                 fix="pass every pencil parameter by name, e.g. "
                     + ", ".join(f"{p.name}=..." for p in self.params)
                     + did_you_mean(next(iter(set(values) - {p.name for p in self.params}), ""),
@@ -391,7 +414,9 @@ class ParametricEVP:
         return {p.name: v[p.name] / self.p0[p.name] for p in self._pen}
 
     def matrices(self, **values) -> tuple[np.ndarray, np.ndarray]:
-        """Dense L, M at the given parameter values (all parameters must be given)."""
+        """Dense L, M at the given parameter values (all parameters must be given). Refused where
+        the coefficient entries discarded at rounding level (ENTRY_DROP_TOL) could contribute
+        more than RECON_TOL of the pencil."""
         t = self._t(values)
         names = [p.name for p in self._pen]
         L = np.zeros(self.gm0.shape, complex)
@@ -400,6 +425,20 @@ class ParametricEVP:
             w = np.prod([t[n] ** e for n, e in zip(names, ex, strict=True)])
             L += w * C
             M += w * D
+        if self._dropped_bound:
+            bound = sum(abs(np.prod([t[n] ** e for n, e in zip(names, ex, strict=True)])) * b
+                        for ex, b in self._dropped_bound.items())
+            size = max(float(np.abs(L).max()), float(np.abs(M).max()), 1e-300)
+            if not bound <= RECON_TOL * size:
+                raise ParameterError(
+                    f"parametric pencil at {values}: coefficient entries discarded at rounding "
+                    f"level could contribute up to {bound / size:.1e} of the pencil here (refused "
+                    f"above RECON_TOL = {RECON_TOL:.0e})",
+                    why="the pencil was reconstructed from plans at the nominal values "
+                        f"{ {p.name: p.value for p in self.params} }; entries below rounding "
+                        "there are amplified by the powers of the parameter ratios at these values",
+                    fix="build the pencil with nominal values closer to these (the model's "
+                        "parameter values), or solve this point directly")
         if self.real and all(np.isrealobj(v) for v in t.values()):
             return L.real, M.real
         return L, M
@@ -754,7 +793,10 @@ class ParametricEVP:
                   "along these directions is not used)")
         return (f"ParametricEVP [{self.gm0.label}] size {self.gm0.shape}: {ex}; "
                 f"{self.n_terms} coefficient matrices from {self.n_plans} plans at roots of unity "
-                f"({self.n_dropped} identically zero dropped); reconstruction error at an "
+                f"({self.n_dropped} matrices and {self.n_entries_dropped} entries at rounding level "
+                f"discarded: |entry| <= {ENTRY_DROP_TOL:g} x its largest modulus over the plans; "
+                "an evaluation where they could exceed RECON_TOL of the pencil is refused); "
+                "reconstruction error at an "
                 f"independent real point {self.recon_error:.1e} (refused above {RECON_TOL:.0e}); "
                 f"{self.rank_check}; mode tracking: bordered Newton, declared defaults "
                 f"TRACK_TOL = {TRACK_TOL:g}, TRACK_MAX_ITERATIONS = {TRACK_MAX_ITERATIONS}")
@@ -778,6 +820,9 @@ class CriticalPoint:
     # minimum over ``over`` at an end of its interval (audit "assurances"): "" or the
     # warning sentence (a constrained minimum, not the critical value over every value of over)
     edge_note: str = ""
+    # the growth convention used (a callable of sigma), so that verify() measures the growth of
+    # the critical mode instead of reading the recorded value
+    growth_rule: Callable[[complex], float] | None = dc_field(default=None, repr=False)
 
     def __repr__(self) -> str:
         # one line (the dataclass repr printed every eigenvector)
@@ -802,7 +847,7 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
              over: Mapping[str, tuple[float, float]] | None = None,
              values: Mapping[str, float] | None = None, xtol: float = REQUIRED,
              start: float | None = None, over_start: float | None = None,
-             atol: float | None = None) -> CriticalPoint:
+             atol: float | None = None, over_points: int = OVER_SCAN_POINTS) -> CriticalPoint:
     """Neutral ``parameter`` (growth(sigma) = 0 for the least stable selected mode).
 
     ``growth`` (None by default): the convention declared with the eigenvalue
@@ -815,12 +860,17 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
     tau modes, and/or ``select``; the counts are logged), then
     followed by bordered Newton; the neutral value is found by Newton on growth with the exact
     sensitivity, safeguarded by the bracket. With ``over`` the neutral value is minimized over
-    one other parameter (bounded Brent). The final mode is re-checked against a full QZ: if
-    another admissible mode is less stable there, the result is refused.
+    one other parameter: it is computed at ``over_points`` equally spaced points of the interval
+    (ends included; the least stable mode is selected afresh at each), every local minimum of
+    that scan is refined by bounded Brent between its neighbours, and the smallest refined value
+    is returned; the log lists the local minima found. A minimum narrower than the scan spacing
+    can be missed (raise ``over_points``). The final mode is re-checked against a full QZ: if
+    another admissible mode is less stable there, the result is refused. ``verified`` refers to
+    that check of the mode at the returned point.
 
     ``start`` is where the mode is first selected and Newton starts (default: the bracket
-    midpoint, logged as such); ``over_start`` likewise for the ``over`` parameter (default: the
-    midpoint of its bounds). Convergence: |dp| <= xtol |p| + atol, with atol = 1e-3 xtol (hi - lo)
+    midpoint, logged as such); ``over_start``, if given, is added to the points of the ``over``
+    scan. Convergence: |dp| <= xtol |p| + atol, with atol = 1e-3 xtol (hi - lo)
     unless given (declared in the log): a pure relative test never ends at p = 0. ``xtol`` has no
     default: it sets how many digits of the critical value are returned.
     """
@@ -886,6 +936,7 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
         (BRACKET_SCAN_POINTS) that names the sub-brackets holding neutral points."""
         g_lo = max_growth({**vals, parameter: lo})
         g_hi = max_growth({**vals, parameter: hi})
+        state["ends_g"] = (g_lo, g_hi)
         state["ends"] = (f"bracket ends (least stable admissible mode, full QZ): growth "
                          f"{g_lo:.3e} at {parameter} = {lo:.10g}, {g_hi:.3e} at {parameter} = "
                          f"{hi:.10g}: a sign change, so a neutral point lies inside")
@@ -901,20 +952,20 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
                              what="the least stable admissible mode", crossings=cross,
                              scan=len(qs))
 
-    def neutral(ov=None) -> tuple[float, TrackedMode]:
+    def neutral(ov=None, fresh: bool = False) -> tuple[float, TrackedMode]:
         count[0] += 1
         vals = dict(values)
         if oname is not None:
             vals[oname] = ov
+        if fresh:                        # a scan point: the mode is selected again, at p_start
+            state.pop("mode", None)
+            state.pop("p", None)
         check_ends(vals)
         p = state.get("p", p_start)
         vals[parameter] = p
         mode = state.get("mode")
-        if mode is None:                 # first selection, at the explicit start (over_start)
-            first = dict(vals)
-            if oname is not None and over_start is not None:
-                first[oname] = over_start
-            mode = least_stable(first)
+        if mode is None:                 # first selection, at p_start (selected afresh at each scan point)
+            mode = least_stable(dict(vals))
         mode = pevp.track(mode.sigma, mode.x, **vals)
         for _it in range(CRITICAL_MAX_ITERATIONS):
             g = growth(mode.sigma)
@@ -959,10 +1010,11 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
         ov_best = {}
     else:
         xatol_over = xtol * max(abs(olo), abs(ohi))
-        opt = so.minimize_scalar(lambda a: neutral(a)[0], bounds=(olo, ohi), method="bounded",
-                                 options={"xatol": xatol_over})
-        pc, mode = neutral(opt.x)
-        ov_best = {oname: float(opt.x)}
+        x_best, scan_log = _minimize_over(neutral, oname, parameter, olo, ohi, over_points,
+                                          over_start, xatol_over, lambda: state.get("ends_g"))
+        log += scan_log
+        pc, mode = neutral(x_best, fresh=True)
+        ov_best = {oname: float(x_best)}
         # a bounded minimizer that stops at an end of over found no interior minimum there (audit
         # "assurances": Swift-Hohenberg over q in (1.2, 1.5) returned r_c = 0.1936 at
         # q = 1.2 as the critical point, verified, for r_c = 0 at q = 1): said, never hidden
@@ -970,7 +1022,7 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
         # (3 (xatol + sqrt(eps) |end|), scipy fminbound) of it, so the edge test includes that
         # distance (review of the audit: with xtol = 1e-6 the minimum stopped 5.9e-7
         # from q = 1.2, beyond 1e-6 x the width 0.3, and was not said)
-        x_ov, width = float(opt.x), float(ohi - olo)
+        x_ov, width = float(x_best), float(ohi - olo)
         end = olo if x_ov - olo <= ohi - x_ov else ohi
         edge_tol = max(OVER_EDGE_FRACTION * width,
                        3 * (xatol_over + np.sqrt(np.finfo(float).eps) * abs(end)))
@@ -1018,7 +1070,95 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
                    f"UNRESOLVED_TAIL_TOL = {UNRESOLVED_TAIL_TOL:g}; the residual does not show it)")
     return CriticalPoint(parameter, float(pc), ov_best, mode, count[0], [s for s in log if s],
                          float(growth(mode.sigma)), True, mode.unresolved_note,
-                         edge_note if oname is not None else "")
+                         edge_note if oname is not None else "", growth)
+
+
+def _minimize_over(neutral: Callable, oname: str, parameter: str, olo: float, ohi: float,
+                   points: int, over_start: float | None, xatol: float,
+                   ends: Callable[[], tuple[float, float] | None] = lambda: None
+                   ) -> tuple[float, list[str]]:
+    """The ``over`` value minimizing ``neutral(q)[0]`` on [olo, ohi] and the log lines (review
+    0.1.1, F6: a single bounded Brent on the whole interval converged to the local minimum
+    r_c = 0.01098 at q = 0.496 and returned it, verified, while r_c = -2.1e-5 at q = -0.604).
+
+    The neutral value is computed at ``points`` equally spaced points (ends included, plus
+    ``over_start``), each with the least stable mode selected afresh; every local minimum of
+    the scan is refined by bounded Brent between its two neighbours, and the smallest refined
+    value wins. A scan point where no neutral value is found is logged and warned about (the
+    minimum is then unchecked there), unless the growth at both ends of the bracket has the
+    sign it has below the neutral value at the scan points that succeeded: the neutral value
+    there lies above the bracket, so it is not a lower minimum (logged only). ``ends()`` gives
+    the growth at the two ends of the bracket of the last evaluation. None at all re-raises
+    the first refusal."""
+    from ..errors import CorrectnessWarning, _warn_user, check_count
+    points = check_count(points, "over_points", "critical()", minimum=3)
+    qs = sorted(set(np.linspace(olo, ohi, points).tolist()
+                    + ([float(over_start)] if over_start is not None else [])))
+    vals, failed, first_err, below, failed_ends = [], [], None, set(), []
+    for q in qs:
+        try:
+            vals.append(neutral(q, fresh=True)[0])
+            e = ends()
+            if e is not None:
+                below.add(float(np.sign(e[0])))
+        except (ConvergenceError, ParameterError) as err:  # ParameterError: pencil refused there
+            vals.append(np.nan)
+            failed.append(q)
+            failed_ends.append(ends())
+            first_err = first_err or err
+    vals = np.array(vals, float)
+    if np.all(np.isnan(vals)):
+        raise first_err
+    spacing = (ohi - olo) / (points - 1)
+    log = [f"minimum over {oname}: neutral {parameter} at {len(qs)} points of ({olo:.10g}, "
+           f"{ohi:.10g}) (OVER_SCAN_POINTS = {points}, spacing {spacing:.3g}); a minimum "
+           "narrower than the spacing is not seen (raise over_points)"]
+    # a failed point whose growth has, at both ends, the sign found below the neutral value:
+    # its neutral value is above the bracket, not a lower minimum
+    sb = next(iter(below)) if len(below) == 1 else None
+    above = [q for q, e in zip(failed, failed_ends, strict=True)
+             if sb is not None and e is not None and np.sign(e[0]) == np.sign(e[1]) == sb]
+    unknown = [q for q in failed if q not in above]
+    if above:
+        log.append(f"no neutral {parameter} inside the bracket at {oname} = "
+                   + ", ".join(f"{q:.6g}" for q in above)
+                   + f": the growth there has, at both ends, its sign below the neutral value, "
+                     f"so the neutral {parameter} lies above the bracket (not a lower minimum)")
+    if unknown:
+        msg = (f"critical(over=): no neutral {parameter} found at {oname} = "
+               + ", ".join(f"{q:.6g}" for q in unknown)
+               + f" (bracket or pencil refused there): the minimum over {oname} is not checked at those "
+                 "points")
+        log.append(msg)
+        _warn_user(msg, CorrectnessWarning)
+    fin = np.where(np.isnan(vals), np.inf, vals)
+    cands = [i for i in range(len(qs)) if np.isfinite(fin[i])
+             and (i == 0 or fin[i] <= fin[i - 1]) and (i == len(qs) - 1 or fin[i] <= fin[i + 1])]
+    found = []
+    for i in cands:
+        a, b = qs[max(i - 1, 0)], qs[min(i + 1, len(qs) - 1)]
+        neutral(qs[i], fresh=True)                 # the mode of this minimum, then Brent
+        try:
+            opt = so.minimize_scalar(lambda q: neutral(q)[0], bounds=(a, b), method="bounded",
+                                     options={"xatol": xatol})
+        except (ConvergenceError, ParameterError) as err:  # the bracket reaches a refused point
+            log.append(f"refinement near {oname} = {qs[i]:.6g} stopped ({type(err).__name__}); "
+                       "the scan point is kept")
+            found.append((float(fin[i]), float(qs[i]), False))
+            continue
+        x, v = float(opt.x), float(opt.fun)
+        if fin[i] < v:                             # the scan point itself is lower: keep it
+            x, v = float(qs[i]), float(fin[i])
+        found.append((v, x, bool(opt.success)))
+    found.sort()
+    log.append(f"local minima of the scan refined ({len(found)}): " + "; ".join(
+        f"{parameter} = {v:.10g} at {oname} = {x:.10g}"
+        + ("" if ok else " (bounded Brent did not report success)") for v, x, ok in found)
+        + ("; the smallest is returned" if len(found) > 1 else ""))
+    if not found[0][2]:
+        _warn_user(f"critical(over=): the bounded minimizer did not converge near {oname} = "
+                   f"{found[0][1]:.6g}", CorrectnessWarning)
+    return found[0][1], log
 
 
 def _bracket_error(parameter: str, lo: float, hi: float, g_lo: float, g_hi: float,
@@ -1061,6 +1201,26 @@ def _bracket_error(parameter: str, lo: float, hi: float, g_lo: float, g_hi: floa
 
 
 # ---------------------------------------------------------------------- parameter expressions
+def _unit_roots(m: int, sign: int, e=None) -> np.ndarray:
+    """``exp(sign 2 i pi e k / m)`` (``e`` = 1 by default, k = 0..m-1) with the parts that are
+    0 or +-1 written exactly (np.exp(1j pi) = -1 + 1.2e-16 i): the DFT of an entry that does not
+    depend on the parameter is then exactly 0 for m = 1, 2, 4, rather than rounding noise that
+    ENTRY_DROP_TOL has to discard (and bound at every evaluation)."""
+    k = np.arange(m)
+    ph = np.outer(np.ones(1) if e is None else np.asarray(e), k)
+    w = np.exp(sign * 2j * np.pi * ph / m)
+    re, im = w.real.copy(), w.imag.copy()
+    for part in (re, im):
+        for v in (0.0, 1.0, -1.0):
+            part[np.abs(part - v) <= SNAP] = v
+    w = re + 1j * im
+    return w[0] if e is None else w
+
+
+#: |part - v| <= SNAP (v = 0, +-1) makes a part of a root of unity exactly v (_unit_roots)
+SNAP = 4 * np.finfo(float).eps
+
+
 def _eval_param_expr(d: E.Expr, values: Mapping[str, Any]) -> complex | float:
     """Numeric value of a parameter-only expression (constant folding by the IR builders)."""
     e = d.substitute({p: E.Constant(values[p.name]) for p in d.free_parameters()})

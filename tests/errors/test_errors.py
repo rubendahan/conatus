@@ -39,7 +39,8 @@ def assert_pedagogical(err, *needles, doc=None):
     assert isinstance(err.value, ce.ConatusError)
     for key in ("where:", "why:", "fix:", "docs:  guide/", "(python -m conatus docs "):
         assert key in text, (key, text)
-    assert "suggestion only" in text
+    # the boilerplate "(suggestion only: ...)" line repeated under every fix is gone (review of 0.1.1)
+    assert "suggestion only" not in text
     for n in needles:
         assert n in text, (n, text)
     if doc:

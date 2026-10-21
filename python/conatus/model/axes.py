@@ -55,15 +55,14 @@ def _scale(scale, where: str) -> float:
     if scale is None:
         raise InputTypeError(f"{where} needs scale=...",
                              why="the scale is the width of the basis functions' envelope, the one "
-                                 "length of these bases; it changes the discretization like N and "
-                                 "is never chosen for you",
+                                 "length of these bases; it changes the discretization like N",
                              fix=f"{where.split('(')[0]}(scale=1.0), of the order of the width of "
                                  "the solution (explain() prints it)", doc=_DOC)
     if isinstance(scale, bool) or not isinstance(scale, numbers.Real) or not (
             math.isfinite(scale) and scale > 0):
         raise InputTypeError(f"{where}: scale={scale!r} must be a finite number > 0",
                              why="the scale is the width of the basis functions' envelope (a "
-                                 "numerical choice, like N); it is declared, never guessed",
+                                 "numerical choice, like N)",
                              fix=f"{where.split('(')[0]}(scale=1.0), of the order of the width of "
                                  "the solution", doc=_DOC)
     return float(scale)

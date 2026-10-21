@@ -65,13 +65,28 @@ def test_ks_sbdf(scheme, startup, rng):
     assert min(orders) > 1.9
 
 
-def test_jvp_matches_forward_difference_scale():
-    """Tangent is the derivative of the *same* map IVPSolver computes (not of the PDE)."""
+def _central_difference_error(fm, X0, V, JV, h):
+    """|(Phi(X0 + h V) - Phi(X0 - h V)) / 2h - JV| / |JV|: an independent derivative of the map."""
+    fd = (fm(X0 + h * V) - fm(X0 - h * V)) / (2 * h)
+    return float(np.linalg.norm(fd - JV) / np.linalg.norm(JV))
+
+
+def test_jvp_matches_central_difference(rng):
+    """Tangent is the derivative of the *same* map IVPSolver computes (not of the PDE): jvp
+    against a central difference of the map (the former test only compared fm(X0) with the end
+    of its trajectory and never called jvp: axis 11)."""
     plan, u, _ = burgers_1d(N=16)
     s = IVPSolver(plan, "RK443", 1e-2)
     X0 = _state(s, lambda x: np.sin(x))
     fm = FlowMap(s, 3)
     assert np.array_equal(fm(X0), fm.trajectory(X0)[-1])
+    V = _rand(rng, fm)
+    JV = fm.jvp(X0, V)
+    assert np.linalg.norm(JV) > 0
+    err = _central_difference_error(fm, X0, V, JV, 1e-4)
+    assert err < 1e-7, err
+    # mutation check: a tangent off by 1e-4 (relative) is detected by the same oracle
+    assert _central_difference_error(fm, X0, V, JV * (1 + 1e-4), 1e-4) > 1e-5
 
 
 @pytest.mark.slow

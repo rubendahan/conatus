@@ -7,7 +7,7 @@ in the *conatus* environment (never the docs environment), in a scratch director
   <out>/<name>.txt     header (run_id, commit, host, elapsed, exit code, sha256 of the script that
                        ran) + stdout/stderr; the website shows an output only next to the script
                        whose hash it records (web/scripts/gen-data.mjs, external review 0.1.0, 72)
-  <out>/<name>/        files the script wrote (figures), via CN_TUTORIAL_OUT
+  <out>/<name>/        files the script wrote (figures): the script runs in this directory
   <out>/TUTORIALS.json one entry per tutorial: PASS | FAIL | SKIP (+ reason)  (not STATUS.json:
 
 With ``--sync`` the text outputs and figures are copied to ``docs/site/tutorials/outputs/`` (the
@@ -77,12 +77,27 @@ def _needs_gpu(script: Path) -> bool:
     return len(head) > 1 and "requires: gpu" in head[1]
 
 
+def _small_png(src: Path, dst: Path) -> None:
+    """Copy a figure of a tutorial, re-encoded with a 256-colour palette (transparency kept): the
+    plots lose nothing visible and the published files are several times smaller (lot H)."""
+    try:
+        from PIL import Image
+    except ImportError:                              # Pillow absent: the figure as the script wrote it
+        shutil.copy(src, dst)
+        return
+    with Image.open(src) as im:
+        q = im.convert("RGBA").quantize(colors=256, method=Image.Quantize.FASTOCTREE)
+    q.save(dst, optimize=True)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--only", default="", help="comma-separated prefixes (t01,t05b)")
     ap.add_argument("--gpu", action="store_true", help="also run scripts marked 'requires: gpu'")
     ap.add_argument("--out", default=os.environ.get("CN_OUT", str(ROOT / "scratch/output/tutorials_local")))
     ap.add_argument("--sync", action="store_true", help="copy outputs into docs/site/tutorials/outputs")
+    ap.add_argument("--figures-only", action="store_true",
+                    help="with --sync, copy only the figures (redrawn without touching the text outputs)")
     ap.add_argument("--timeout", type=float, default=1800.0, help="seconds per script")
     args = ap.parse_args()
 
@@ -124,11 +139,12 @@ def main() -> int:
         print(f"{verdict} {name} ({dt:.1f} s){'  [wrote to stderr]' if err else ''}", flush=True)
         if args.sync and verdict == "PASS":
             SYNC.mkdir(exist_ok=True)
-            shutil.copy(out / f"{name}.txt", SYNC / f"{name}.txt")
+            if not args.figures_only:
+                shutil.copy(out / f"{name}.txt", SYNC / f"{name}.txt")
             for f in figdir.glob("*.png"):
-                shutil.copy(f, SYNC / f"{name}_{f.name}")
+                _small_png(f, SYNC / f"{name}_{f.name}")
     status_path.write_text(json.dumps(status, indent=2))
-    if args.sync:
+    if args.sync and not args.figures_only:
         merged = SYNC / "STATUS.json"
         old = json.loads(merged.read_text()) if merged.exists() else {}
         old.update({k: v for k, v in status.items() if v["status"] != "SKIP" or k not in old})

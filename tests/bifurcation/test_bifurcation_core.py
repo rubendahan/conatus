@@ -163,6 +163,30 @@ def test_bogdanov_takens_curves():
     assert "minimally augmented" in hc.explain()
 
 
+def test_bogdanov_takens_hopf_curve_has_an_imaginary_pair():
+    """Defining condition of a Hopf point, from the analytic Jacobian [[0, 1], [b2 + 2x - y, -x]]
+    (independent of the augmented system): a pair +-i omega with omega > 0 at every point of the
+    Hopf curve away from the BT point (the tutorial checked only b1 = 0)."""
+    pb = ode_problem(["x", "y"], {"b1": -0.5, "b2": -1.0},
+                     lambda X, P: [X["y"], P["b1"] + P["b2"] * X["x"] + X["x"] * X["x"] - X["x"] * X["y"]], "BT")
+    ds = ir_system(pb, ["b1", "b2"])
+    cv = continue_equilibria(ds, np.array([(1 - np.sqrt(3)) / 2, 0.0]), "b1", cfg(), marginal_tol=1e-9,
+                             bounds=(-2, 2))
+    (h,) = cv.events_of("hopf")
+    hc = continue_codim2(ds, h.point.z[:-1], "hopf", ("b1", "b2"), cfg(), par={"b1": h.point.z[-1]},
+                         bounds={"b2": (-1.5, 1.5)})
+    b2 = hc.column("b2")
+    checked = 0
+    for pt, q in zip(hc.points, b2, strict=True):
+        if abs(q) < 1e-8:                              # the BT point itself: double zero
+            continue
+        x, y = pt.z[:2]
+        ev = np.linalg.eigvals(np.array([[0.0, 1.0], [q + 2 * x - y, -x]]))
+        assert np.max(np.abs(ev.real)) < 1e-8 and np.min(np.abs(ev.imag)) > 1e-8, (q, ev)
+        checked += 1
+    assert checked >= 3
+
+
 def test_cusp():
     """ẋ = β1 + β2 x − x³: fold curve 27 β1² = 4 β2³, cusp at (0, 0)."""
     ds = ir_system(ode_problem(["x"], {"b1": 0.0, "b2": 1.0},
@@ -251,6 +275,7 @@ def test_period_doubling_and_switch():
     new = branch_switch(oc, pd, cfg(ds=0.02, max_points=8, tolerance=1e-10), amplitude=0.05,
                         bounds={"mu": (-0.1, 0.3)})
     pb2 = new.context
+    assert len(new.points) > 2                  # the loop below must check something
     for pt in new.points[1:]:
         U, T, mu = pb2.split(pt.z)
         a2 = np.max(U[:, 2] ** 2 + U[:, 3] ** 2)
@@ -284,7 +309,7 @@ def test_unresolved_multipliers_do_not_trigger_events():
     U[:, 0], U[:, 1] = np.cos(2 * np.pi * tau), np.sin(2 * np.pi * tau)
     oc = continue_orbits(pb, np.concatenate([U.ravel(), [2 * np.pi, -0.3]]),
                          cfg(ds=0.1, max_points=6, tolerance=1e-10), bounds={"nu": (-1, 0.2)})
-    assert all(p.data["unresolved"] >= 1 for p in oc.points)
+    assert oc.points and all(p.data["unresolved"] >= 1 for p in oc.points)
     assert not oc.events_of("pd") and not oc.events_of("ns")
     assert "unresolved" in oc.explain()
 

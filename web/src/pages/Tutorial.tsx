@@ -1,10 +1,9 @@
-// Getting started: the ten-minute entry (one equation, one plot, one physical number, four guided
-// changes). The page is the documentation page docs/site/tutorials/first_steps.md, converted at build
+// First steps: the ten-minute entry of the getting-started route (content/nav.json, step 2). The page is the documentation page docs/site/tutorials/first_steps.md, converted at build
 // time by scripts/gen-data.mjs into src/generated/first-steps.json: the site and the documentation
 // tell the path once, from one source (external review 0.1.0, findings 62 and 80). Every code block is
 // a region of the executed script docs/site/tutorials/code/t00_first_steps.py and every output line
 // comes from its executed log (lib/snippet.ts: strict cuts, an output older than the script is never
-// shown). The longer path through one problem is tutorial 0 of the documentation.
+// shown). The longer path through one problem is the convection tutorial of the documentation.
 import type { ReactNode } from "react";
 import { Code, DocLink, PageHead, RepoPath } from "../components/ui";
 import { Rich } from "../components/Rich";
@@ -24,7 +23,8 @@ type Block =
   | { t: "fence"; lang: "bash" | "python"; text: string }
   | { t: "code"; script: string; region: string }
   | { t: "out"; script: string; startAt: string | null; endAt: string | null }
-  | { t: "img"; file: string; alt: string };
+  | { t: "img"; file: string; alt: string }
+  | { t: "details"; label: string; blocks: Block[] };
 const DOC = firstSteps as unknown as { title: string; source: string; blocks: Block[] };
 
 // The figures written by the scripts (synced next to their outputs); shown only with a fresh output.
@@ -77,6 +77,12 @@ function Body({ b }: { b: Block }): ReactNode {
       const src = Object.entries(FIGS).find(([k]) => k.endsWith("/" + b.file))?.[1];
       return fresh && src ? <figure className="tu-fig tu-fig-plot"><img src={src} loading="lazy" alt={b.alt} /></figure> : null;
     }
+    case "details": return (
+      <details className="tu-details">
+        <summary>{b.label}</summary>
+        {b.blocks.map((x, i) => <Body key={i} b={x} />)}
+      </details>
+    );
     default: return null;
   }
 }
@@ -92,7 +98,7 @@ for (const b of DOC.blocks) {
 export default function Tutorial() {
   return (
     <>
-      <PageHead eyebrow="Getting started" title={DOC.title}>
+      <PageHead eyebrow="Getting started, step 2 of 4" title={DOC.title}>
         {LEAD.filter((b) => b.t === "p").slice(0, 1).map((b, i) => <Body key={i} b={b} />)}
       </PageHead>
       <div className="wrap tu-layout">
@@ -109,7 +115,7 @@ export default function Tutorial() {
             </section>
           ))}
           <p className="tu-source">This page is the documentation page{" "}
-            <DocLink to="tutorials/first_steps.html">Getting started in ten minutes</DocLink>; its script is{" "}
+            <DocLink to="tutorials/first_steps.html">{DOC.title}</DocLink>; its script is{" "}
             <RepoPath path="docs/site/tutorials/code/t00_first_steps.py">t00_first_steps.py</RepoPath>.</p>
         </article>
       </div>

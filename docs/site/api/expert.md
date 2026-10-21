@@ -18,15 +18,16 @@ will be removed. Two names keep their former meaning only there: `sensitivity` (
 `Channel` (now `ChannelBaseFlow`; `cn.Channel` is the native geometry).
 
 `conatus.expert` re-exports, under their own names, the public objects of the user-facing modules
-that this documentation shows, and adds nothing. Since 0.2 the list is reviewed name by name: a
-helper, a constant or a result type that no page shows stays in its module
-(`conatus.nonmodal.ResolventModes`, `conatus.timestep.rk_tableau`); written as
-`conatus.expert.<name>` it still works in 0.2, with a `DeprecationWarning` that names the module, and
-stops working in 0.3. Every exception and warning class of `conatus.errors` is exported (each has its
-entry in {doc}`../guide/errors`). The Studio's telemetry and wire protocol are not part of the expert
-layer: they are `conatus.telemetry`. The modules themselves stay reachable
-as attributes (`conatus.expert.ecs`, `conatus.expert.provenance`), but their canonical name is
-`conatus.<module>`. Name clashes are never resolved silently; `conatus.expert.explain()` lists them:
+that this documentation shows. Since 0.1.1 the list is reviewed name by name. A helper, a constant
+or a result type that no page shows stays in its module (`conatus.contour.box`,
+`conatus.timestep.rk_tableau`). Written as `conatus.expert.<name>`, such a name still works in 0.1.x
+with a `DeprecationWarning` that names the module, and stops working in 0.3. Every exception and
+warning class of `conatus.errors` is exported (each has its entry in {doc}`../guide/errors`).
+
+The Studio's telemetry recorder and wire protocol are not part of the expert layer. Import them as
+`conatus.telemetry`. The modules themselves stay reachable as attributes (`conatus.expert.ecs`,
+`conatus.expert.provenance`), but their canonical name is `conatus.<module>`.
+`conatus.expert.explain()` lists the name clashes and how each one is handled:
 
 - two modules export different objects under the same name: the first one is kept, the other stays
   reachable as `conatus.<module>.<name>`;

@@ -95,8 +95,7 @@ def forward(f: np.ndarray, b: Basis, axis: int = 0, dealias: bool = True) -> np.
             # a complex state of a real problem is refused, never made real (audit inputs: it
             # surfaced as a bare TypeError from sim.initial(u=1+1j))
             raise DtypeError("RealFourier takes real data: complex values given for a real field",
-                             why="the problem was compiled real; the imaginary part is never "
-                                 "dropped for you",
+                             why="the problem was compiled real",
                              fix="real data, or a complex problem: periodic(L, complex=True)")
         F = np.fft.rfft(f, axis=0) / M
         K = N // 2

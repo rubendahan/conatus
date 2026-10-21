@@ -29,7 +29,7 @@ print(m.explain())
 | `m.velocity("u")`, `m.pressure("p")` | a vector and a scalar unknown with a role that Conatus checks (incompressibility, {doc}`boundary_conditions`) |
 | `m.given(U=lambda y: 1 - y**2)` | a known field; the argument names say which coordinates it depends on |
 | `m.define("L2(f) = dy(dy(f)) - alpha**2*f")` | a named operator, substituted where it is used |
-| `m.function("g", np.tanh, derivative=...)` | a pointwise function of a scalar field, used as `g(u)` (Dedalus's `GeneralFunction`); without `derivative` linearization and Newton are refused |
+| `m.function("g", np.tanh, derivative=...)` | a pointwise function of a scalar field, used as `g(u)`; without `derivative` linearization and Newton are refused |
 | `m.eigenvalue("c", growth="imag")` | the model is an eigenvalue problem in `c`; `growth=` declares how a mode grows (`"imag"`: phase speed of $e^{i\alpha(x-ct)}$, `"real"`: rate of $e^{st}$); left out, v0.1 guesses from the name (`c` → Im, `s` → Re) with a `DefaultChoiceWarning`, required from v0.2 |
 | `m.equations("...")` | equations, one per line, optionally labelled `name:` |
 | `m.at("bottom", T=0)` | boundary conditions ({doc}`boundary_conditions`) |
@@ -97,7 +97,7 @@ To override the rule, wrap a whole term: `explicit(-u)` treats a linear reaction
 
 Precedence is Python's: `-u·grad(u)` is the product of `-u` and `grad(u)`. A line ending with an
 operator or an open parenthesis continues on the next line; `#` starts a comment. The string is
-never passed to `eval`: a small parser reads it, and each name is looked up among your
+not passed to `eval`: a small parser reads it, and each name is looked up among your
 declarations.
 
 ## Errors point at the column
@@ -114,9 +114,9 @@ EquationSyntaxError: unexpected 'lap': an operator is missing
   fix:   write '*' for a product (Pr*lap(T), 2*u), '+' or '-' between terms
 ```
 
-The suggestion is never applied for you. A product of two vectors written `u*u` is refused
-(write `u·u` or `outer(u, u)`), and Dedalus spellings that Conatus does not have, such as
-`trace(grad(u))`, are refused with the equivalent form (`div(u)`).
+Conatus does not apply the suggestion for you. A product of two vectors written `u*u` is refused
+(write `u·u` or `outer(u, u)`). Spellings that Conatus does not have, such as `trace(grad(u))`,
+are refused with the equivalent form (`div(u)`).
 
 ## Behind the text
 

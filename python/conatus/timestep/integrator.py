@@ -301,7 +301,7 @@ def check_steps(nsteps: Any, where: str, name: str = "nsteps") -> int:
     import numbers
     if isinstance(nsteps, bool) or not isinstance(nsteps, numbers.Integral) or nsteps < 0:
         raise OptionError(f"{where}: {name}={nsteps!r} is not a number of steps",
-                          why="the number of steps is never rounded or truncated for you",
+                          why="steps must be an integer greater than or equal to zero",
                           fix=f"an integer >= 0, e.g. {name}=100"
                               + (f" (or {name}=round({nsteps!r}) if that is meant)"
                                  if isinstance(nsteps, float) and nsteps >= 0 else ""))
@@ -336,13 +336,12 @@ def check_dt_backend(dt: Any, backend: Any, where: str) -> None:
     if not (isinstance(dt, (int, float, np.floating, np.integer)) and not isinstance(dt, bool)
             and dt > 0 and np.isfinite(dt)):
         raise OptionError(f"{where}: dt={dt!r} must be a finite number > 0",
-                          why="the time step is part of the problem's numerics and is never "
-                              "chosen for you",
+                          why="the time step is part of the problem's numerics",
                           fix="dt=1e-3 (a CFL estimate is a stability indicator: sim.cfl('u', safety=0.5))")
     if backend not in ("cpu", "cuda"):
         raise OptionError("backend must be 'cpu' or 'cuda' (explicit choice)",
                           where=f"{where}, backend={backend!r}",
-                          why="the backend is never chosen for you",
+                          why="the backend is an explicit choice",
                           fix="backend='cpu', or backend='cuda' for an NVIDIA GPU (a job on "
                               "a GPU node)." + backend_hint(backend))
 
@@ -419,7 +418,7 @@ def check_callback(callback: Any, every: Any, where: str) -> None:
         raise OptionError(
             f"{where}: callback given without every= (callback and every go together)",
             why="the call frequency is part of the run (cost, what a monitor records); "
-                "it is not chosen for you",
+                "it has no default",
             fix="pass every=1 to call it after each step, or every=k for every k-th step")
     if callback is None and every is not None:
         raise OptionError(f"{where}: every= given without a callback (they go together)",
@@ -446,7 +445,7 @@ def setup_scheme(obj: Any, scheme: str, startup: str, *, where: str,
     if scheme not in SCHEMES:
         raise OptionError(f"unknown scheme {scheme!r}; available: {SCHEMES}",
                           where=where,
-                          why="the time scheme is an explicit choice, never defaulted",
+                          why="the time scheme is an explicit choice",
                           fix="pick one of the IMEX schemes listed (RK222/RK443/RKSMR/RKGFY "
                               "multistage, SBDF1-4/CNAB1-2/MCNAB2/CNLF2 multistep)."
                               + did_you_mean(scheme, SCHEMES))
@@ -465,7 +464,7 @@ def setup_scheme(obj: Any, scheme: str, startup: str, *, where: str,
     if fam not in families:
         ok = [s for s in SCHEMES if scheme_family(s) in families]
         raise OptionError(f"scheme {scheme} ({fam} family) is not implemented here",
-                          where=where, why="a scheme is never replaced by another one",
+                          where=where, why="the scheme is not supported here",
                           fix=fix or "use one of " + ", ".join(ok))
     obj.family = fam
     obj.order = int(scheme[4:]) if fam == "sbdf" else 0
@@ -480,7 +479,7 @@ def require_family(solver: Any, families: tuple[str, ...], where: str, fix: str)
     fam = getattr(solver, "family", None) or scheme_family(solver.scheme)
     if fam not in families:
         raise OptionError(f"{where}: scheme {solver.scheme} ({fam} family) is not supported",
-                          where=where, why="a scheme is never replaced by another one", fix=fix)
+                          where=where, why="the scheme is not supported here", fix=fix)
 
 
 def _equation_rows(host, k: int) -> np.ndarray:
@@ -1115,8 +1114,7 @@ class IVPSolver:
         ``every`` used to be silently never called (``every`` defaulted to 0). The call frequency
         costs time and changes what a monitor sees, so it is not chosen for the user; the
         refusal happens before any step is taken."""
-        check_callback(callback, every, "IVPSolver.run")
-        steps = check_steps(steps, "IVPSolver.run", "steps")
+        steps = self._run_arguments(steps, callback, every)
         if record is not None or cache:              # run registry (explicit opt-in only)
             from ..runs.integrations import ivp_run
             return ivp_run(self, steps, callback, every, record=record, cache=cache)
@@ -1129,6 +1127,13 @@ class IVPSolver:
                 callback(self)
         if fe and steps:
             self._check_finite("IVPSolver.run (end of the call)")
+
+    def _run_arguments(self, steps: int, callback: Callable[[IVPSolver], None] | None = None,
+                       every: int | None = None, *, record=None, cache: bool = False) -> int:
+        """The checks of :meth:`run` on its arguments, without side effects; returns the number
+        of steps. Shared by ``run`` and by ``python -m conatus agent check`` (review 0.1.1, F13)."""
+        check_callback(callback, every, "IVPSolver.run")
+        return check_steps(steps, "IVPSolver.run", "steps")
 
     @renames("conatus.timestep.integrator:IVPSolver.run_graph")
     def run_graph(self, steps: int) -> None:

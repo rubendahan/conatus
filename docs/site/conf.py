@@ -62,7 +62,8 @@ source_suffix = {".md": "markdown", ".rst": "restructuredtext"}
 root_doc = "index"
 exclude_patterns = ["_build", "tutorials/code", "tutorials/outputs", "README.md",
                     "gallery/_generated/table.md", "tutorials/_generated",
-                    "guide/_generated"]
+                    "guide/_generated",
+                    "tutorials/media"]   # tables written by tutorial_media_render.py, {include}d by the pages
 templates_path = ["_templates"]
 
 myst_enable_extensions = ["dollarmath", "amsmath", "colon_fence", "deflist", "attrs_inline",
@@ -151,3 +152,34 @@ html_theme_options = {
         **_FONTS,
     },
 }
+
+# -- One navigation with the website (lot F) ---------------------------------------------------
+# web/src/content/nav.json is the single map: the site's header and Home page read it, and so do the
+# sidebar of these pages (_templates/sidebar/site.html) and the "Start here" list of the docs home page
+# (tutorials/_generated/start.md, included by index.md). A route is a page of the website, one level
+# above the docs root; the portable builds rewrite links marked data-cn-route to hash routes.
+import html as _html  # noqa: E402
+import json as _json  # noqa: E402
+
+_NAV = _json.loads((ROOT / "web" / "src" / "content" / "nav.json").read_text())
+html_context = {"cn_nav": _NAV["primary"]}
+
+
+def _start_list() -> str:
+    """The getting-started route as an HTML list, for the docs home page (a page at the docs root)."""
+    items = []
+    for step in _NAV["start"]:
+        if "route" in step:
+            href = "../" + step["route"].strip("/") + "/"
+            attr = f' data-cn-route="{_html.escape(step["route"])}"'
+        else:
+            href, attr = step["docs"], ""
+        items.append(f'<li><a href="{_html.escape(href)}"{attr}><strong>{_html.escape(step["title"])}</strong></a>'
+                     f'<br>{_html.escape(step["text"])}</li>')
+    return '<ol class="cn-start">\n' + "\n".join(items) + "\n</ol>\n"
+
+
+(SITE / "tutorials" / "_generated").mkdir(exist_ok=True)
+_start = SITE / "tutorials" / "_generated" / "start.md"
+if not _start.exists() or _start.read_text() != _start_list():
+    _start.write_text(_start_list())

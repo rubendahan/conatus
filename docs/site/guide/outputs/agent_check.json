@@ -35,5 +35,12 @@
   "call": "Model.eigenvalues",
   "line": 10
  },
+ "validated": [
+  {
+   "call": "Model.eigenvalues",
+   "checked": "signature, conditional tolerances and discretization; the argument values are checked only when the call runs",
+   "values": "not checked"
+  }
+ ],
  "warnings": []
 }

@@ -104,8 +104,7 @@ class FlowProperties:
                 raise DtypeError(
                     f"property {name!r}: complex grid values (max|Im| = {im:.2e} > "
                     f"{IMAG_ROUNDOFF:.1e} x max(1, max|values|), the declared round-off)",
-                    why="max, min and the averages are defined for real quantities; the imaginary "
-                        "part is never dropped for you",
+                    why="max, min and the averages are defined for real quantities",
                     fix=f"declare a real quantity, e.g. {name}=lambda s: abs(...) or "
                         "lambda s: (...).real if the real part is what you mean", doc=_DOC)
             a = a.real

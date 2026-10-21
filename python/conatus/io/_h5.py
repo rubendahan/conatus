@@ -30,7 +30,7 @@ def require_file(path: str | Path, what: str) -> Path:
     near = sorted(q.name for q in p.parent.glob(f"*{p.suffix}"))[:5] if p.parent.is_dir() else []
     raise MissingFileError(
         f"{what}: {str(path)!r} " + ("is a directory" if p.is_dir() else "does not exist"),
-        why="the file is read, never created, by this call",
+        why="this call reads an existing file; it does not create one",
         fix=("cn.io.latest(directory) gives the newest checkpoint of a directory"
              if p.is_dir() else
              "check the path (relative paths start from the working directory "
@@ -76,6 +76,6 @@ def positive(n: Any, where: str, name: str) -> int:
     if isinstance(n, bool) or not isinstance(n, numbers.Integral) or n < 1:
         from ..errors import OptionError
         raise OptionError(f"{where}: {name}={n!r} must be an integer >= 1",
-                          why="cadences and counts are never rounded for you",
+                          why="cadences and counts must be integers",
                           fix=f"{name}=10, for example", doc=DOC)
     return int(n)
