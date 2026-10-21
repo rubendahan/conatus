@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Geometries" href="geometries.html"><link rel="prev" title="16. Lagrangian tracers and a numerical dye" href="../tutorials/16_particles_dye.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Geometries" href="geometries.html"><link rel="prev" title="Importing a Dedalus script" href="../tutorials/14_from_dedalus.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -680,10 +685,10 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="user-guide">
 <h1>User guide<a class="headerlink" href="#user-guide" title="Link to this heading">¶</a></h1>
-<p>Each part of Conatus described once, with the choices you make and the ones Conatus will not make
-for you.</p>
-<p>The tutorials follow one problem from start to finish; this guide is organised by task. Every
-snippet runs against the current version of the library.</p>
+<p>This guide is organised by task. Use it to find the supported arguments, the returned fields and
+the failure conditions of each part of Conatus.</p>
+<p>The tutorials follow one problem from start to finish. The snippets of this guide are run against
+the current version of the library by the test suite.</p>
 <section id="writing-a-model">
 <h2>Writing a model<a class="headerlink" href="#writing-a-model" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -704,13 +709,14 @@ named boundaries.</p></li>
 <li><p><a class="reference internal" href="mapped.html"><span class="doc">Channels between two surfaces</span></a>: channels between two surfaces (wavy walls, bumps): the map, the chain rule,
 convergence and limits.</p></li>
 <li><p><a class="reference internal" href="shells.html"><span class="doc">Spherical shells</span></a>: spherical shells: simulation on a CPU or a GPU, rotating convection, adjoints,
-and what Conatus checks for you.</p></li>
+and the checks Conatus runs.</p></li>
 <li><p><a class="reference internal" href="equations.html"><span class="doc">Equations</span></a>: unknowns, parameters, known fields and equations as text; which terms are
 implicit.</p></li>
 <li><p><a class="reference internal" href="boundary_conditions.html"><span class="doc">Boundary conditions</span></a>: conditions by boundary name, how Conatus places them, and what it
 refuses.</p></li>
 <li><p><a class="reference internal" href="problems.html"><span class="doc">Ready problems</span></a>: canonical flows ready to solve, each with its published reference.</p></li>
-<li><p><a class="reference internal" href="units.html"><span class="doc">Units and conventions</span></a>: unit systems and study presets; every conversion is a call.</p></li>
+<li><p><a class="reference internal" href="units.html"><span class="doc">Units and conventions</span></a>: unit systems and study presets; use <code class="docutils literal notranslate"><span class="pre">convert()</span></code> to translate quantities between
+declared unit systems.</p></li>
 </ul>
 </section>
 <section id="running">
@@ -772,27 +778,27 @@ bifurcations, Floquet and Lyapunov analysis, adjoints, symmetry subspaces.</p></
 </ul>
 </div>
 <ul class="simple">
-<li><p><a class="reference internal" href="explain.html"><span class="doc">explain() and the Methods paragraph</span></a>: <code class="docutils literal notranslate"><span class="pre">explain()</span></code> on every key object, and the <em>Methods</em> paragraph of your paper.</p></li>
+<li><p><a class="reference internal" href="explain.html"><span class="doc">explain() and the Methods paragraph</span></a>: <code class="docutils literal notranslate"><span class="pre">explain()</span></code> on models, results and solvers, and a draft <em>Methods</em> paragraph.</p></li>
 <li><p><a class="reference internal" href="uncertainty.html"><span class="doc">Numerical uncertainty</span></a>: a computed number with its error estimate, and the error of a time
 average.</p></li>
 <li><p><a class="reference internal" href="runs.html"><span class="doc">The run registry</span></a>: record, query, compare and reproduce runs.</p></li>
 <li><p><a class="reference internal" href="reproducibility.html"><span class="doc">Reproducibility and provenance</span></a>: the provenance record and what is deterministic.</p></li>
 <li><p><a class="reference internal" href="doctor.html"><span class="doc">Checking an installation</span></a>: what your installation can run.</p></li>
 <li><p><a class="reference internal" href="errors.html"><span class="doc">Errors and what they mean</span></a>: how to read an error message.</p></li>
-<li><p><a class="reference internal" href="experimental.html"><span class="doc">Experimental features</span></a>: what is shipped but not promised, and the warning that says so.</p></li>
+<li><p><a class="reference internal" href="experimental.html"><span class="doc">Experimental features</span></a>: the experimental APIs, their current limits, and the warning they emit.</p></li>
 </ul>
 </section>
-<section id="coming-from-dedalus">
-<h2>Coming from Dedalus<a class="headerlink" href="#coming-from-dedalus" title="Link to this heading">¶</a></h2>
+<section id="importing-scripts">
+<h2>Importing scripts<a class="headerlink" href="#importing-scripts" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Coming from Dedalus</span></p>
+<p class="caption" role="heading"><span class="caption-text">Importing scripts</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 </ul>
 </div>
 <ul class="simple">
-<li><p><a class="reference internal" href="dedalus.html"><span class="doc">Coming from Dedalus</span></a>: the same problem side by side, what you stop writing, and importing a Dedalus
-script.</p></li>
+<li><p><a class="reference internal" href="dedalus.html"><span class="doc">Importing Dedalus scripts</span></a>: <code class="docutils literal notranslate"><span class="pre">cn.from_dedalus</span></code> reads a Dedalus 3 script without running it and builds the
+corresponding Conatus problem.</p></li>
 </ul>
 </section>
 <section id="expert-layer">
@@ -829,14 +835,14 @@ script.</p></li>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../tutorials/16_particles_dye.html">
+          <a class="prev-page" href="../tutorials/14_from_dedalus.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">16. Lagrangian tracers and a numerical dye</div>
+                <div class="title">Importing a Dedalus script</div>
                 
               </div>
             </a>
@@ -875,7 +881,7 @@ script.</p></li>
 <li><a class="reference internal" href="#running">Running</a></li>
 <li><a class="reference internal" href="#dynamics">Dynamics</a></li>
 <li><a class="reference internal" href="#trust-and-provenance">Trust and provenance</a></li>
-<li><a class="reference internal" href="#coming-from-dedalus">Coming from Dedalus</a></li>
+<li><a class="reference internal" href="#importing-scripts">Importing scripts</a></li>
 <li><a class="reference internal" href="#expert-layer">Expert layer</a></li>
 </ul>
 </li>
@@ -888,7 +894,7 @@ script.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

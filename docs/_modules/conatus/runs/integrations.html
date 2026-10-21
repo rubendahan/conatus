@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -227,11 +227,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../../">&larr; Conatus website</a>
-  <a href="../../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -241,21 +246,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -302,7 +307,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/bases.html">Bases and domains</a></li>
@@ -764,7 +769,7 @@
     <span class="n">series</span><span class="p">,</span> <span class="n">series_every</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"series"</span><span class="p">),</span> <span class="n">o</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"series_every"</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">series</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">series_every</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"record=: 'series' and 'series_every' go together"</span><span class="p">,</span>
-                          <span class="n">why</span><span class="o">=</span><span class="s2">"how often series are evaluated is part of the run's cost, never chosen for you"</span><span class="p">,</span>
+                          <span class="n">why</span><span class="o">=</span><span class="s2">"how often series are evaluated is part of the run's cost"</span><span class="p">,</span>
                           <span class="n">fix</span><span class="o">=</span><span class="s2">"record=dict(series={'energy': f}, series_every=10)"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">series_every</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>        <span class="c1"># a float used to be truncated for the callback period and</span>
         <span class="n">check_count</span><span class="p">(</span><span class="n">series_every</span><span class="p">,</span> <span class="s2">"series_every"</span><span class="p">,</span> <span class="s2">"record="</span><span class="p">)</span>   <span class="c1"># kept in the modulo (2.5: every 10 steps)</span>
@@ -1133,7 +1138,7 @@
             <span class="n">res</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"residual_max"</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">residuals</span><span class="p">)))</span>
     <span class="k">if</span> <span class="n">arrays</span> <span class="ow">and</span> <span class="n">compression</span> <span class="ow">is</span> <span class="n">_REQUIRED</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"record(): arrays to store but no compression= declared"</span><span class="p">,</span>
-                          <span class="n">why</span><span class="o">=</span><span class="s2">"storage choices are declared, never chosen for you"</span><span class="p">,</span>
+                          <span class="n">why</span><span class="o">=</span><span class="s2">"storage choices are declared explicitly"</span><span class="p">,</span>
                           <span class="n">fix</span><span class="o">=</span><span class="s2">"compression=None (as is), 'gzip' or 'lzf' (all lossless)"</span><span class="p">)</span>
     <span class="n">lengths</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">series</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">lengths</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -1388,7 +1393,7 @@
         <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s2">"changed"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span> <span class="o">+</span> \
                 <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> missing now"</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s2">"only_a"</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> new"</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="s2">"only_b"</span><span class="p">]]</span>
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"reproduce(</span><span class="si">{</span><span class="n">run</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">): numerics differ from the recorded run: "</span>
-                          <span class="o">+</span> <span class="s2">"; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">[:</span><span class="mi">8</span><span class="p">]),</span> <span class="n">why</span><span class="o">=</span><span class="s2">"reproduce never adapts the numerics"</span><span class="p">,</span>
+                          <span class="o">+</span> <span class="s2">"; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">[:</span><span class="mi">8</span><span class="p">]),</span> <span class="n">why</span><span class="o">=</span><span class="s2">"reproduce uses the recorded numerical settings"</span><span class="p">,</span>
                           <span class="n">fix</span><span class="o">=</span><span class="s2">"build the solver with the recorded configuration (run.explain())"</span><span class="p">)</span>
     <span class="n">solver</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
     <span class="n">new</span> <span class="o">=</span> <span class="n">ivp_run</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">inputs</span><span class="p">[</span><span class="s2">"nsteps"</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">rec_opts</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">if</span> <span class="n">record</span> \
@@ -1504,7 +1509,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

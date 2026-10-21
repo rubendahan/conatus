@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -680,8 +685,9 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="explain-and-the-methods-paragraph">
 <h1>explain() and the Methods paragraph<a class="headerlink" href="#explain-and-the-methods-paragraph" title="Link to this heading">¶</a></h1>
-<p>Every key object says, in plain text, what it is and which numerical choices it carries, and a
-simulation writes the <em>Methods</em> paragraph of your paper from what it actually ran.</p>
+<p>Models, results and solvers describe, in plain text, what they are and which numerical choices
+they carry. A simulation can also draft the <em>Methods</em> paragraph of a paper from the settings it ran
+with.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
@@ -691,7 +697,7 @@ simulation writes the <em>Methods</em> paragraph of your paper from what it actu
 <span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>        <span class="c1"># the model in a few lines: equations, conditions, decisions, warnings</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>      <span class="c1"># the same at the chosen resolution, plus the scheme and the checks</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>      <span class="c1"># an eigenvalue result: filters, growth convention, modes, residuals</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>   <span class="c1"># every automatic decision, tau by tau and term by term</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>   <span class="c1"># compiler decisions, tau by tau and term by term</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">explain()</span></code> is short by default: a summary of about ten lines in the words of your model. For a
@@ -705,18 +711,18 @@ Dealiasing: x: 3/2, z: 3/2 (declared default for products of degree 2)
 IVPSolver(scheme=RK443, dt=0.0005, constant step, backend=cpu)
   scheme: RK443: IMEX Runge–Kutta (4 stages), ... global order 3 (Ascher, Ruuth &amp; Spiteri 1997, (4,4,3))
   finite-state check: every 100 steps (default), ...
-(every decision, tau by tau and term by term, and the solver layout: sim.explain(full=True))
+(compiler decisions, tau by tau and term by term, and the solver layout: sim.explain(full=True))
 </pre></div>
 </div>
-<p>Warnings always stay in the short text (terms that are not polynomial in the unknowns, parameter
-values given for one call, a symmetry subspace that hides symmetry-breaking instabilities, the
-m = 0 projection of curvilinear solvers, spurious tau modes of a shell, the order of the scheme
-with time-dependent boundary values, fallbacks and first-order modes of the right-hand side,
-eigenproblem checks that were skipped). <code class="docutils literal notranslate"><span class="pre">explain(full=True)</span></code> is
-the complete record.</p>
-<p>This is how “no silent substitution” is made checkable (<a class="reference internal" href="../principles.html"><span class="doc">Principles</span></a>): if a choice is not
-in <code class="docutils literal notranslate"><span class="pre">explain(full=True)</span></code>, it is a bug. For a native model, the full text lists the term placement
-(implicit or explicit) term by term, each boundary condition and the tau that imposes it, the
+<p>Warnings stay in the short text. They cover terms that are not polynomial in the unknowns,
+parameter values given for one call, a symmetry subspace that hides symmetry-breaking
+instabilities, the m = 0 projection of curvilinear solvers, spurious tau modes of a shell, the
+order of the scheme with time-dependent boundary values, fallbacks and first-order modes of the
+right-hand side, and eigenproblem checks that were skipped. <code class="docutils literal notranslate"><span class="pre">explain(full=True)</span></code> adds the full
+record that the object holds.</p>
+<p><code class="docutils literal notranslate"><span class="pre">explain(full=True)</span></code> includes the compiler decisions and the solver layout recorded by the object
+(<a class="reference internal" href="../principles.html"><span class="doc">Principles</span></a>). A missing automatic choice is treated as a bug. For a native model, the
+full text lists the term placement (implicit or explicit) term by term, each boundary condition and the tau that imposes it, the
 pressure gauge, the dealiasing factors with their origin (yours or the declared default) and the
 bases chosen by the geometry; for a solver, the system layout (groups, buckets, bands), how <span class="math notranslate nohighlight">\(F\)</span> is
 evaluated and what runs where.</p>
@@ -735,7 +741,7 @@ distributed forms):</p>
 <td><p>problem, discretisation, scheme, the defaults and tolerances that matter, warnings</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">explain(full=True)</span></code></p></td>
-<td><p>the complete record: every decision, the logs, the solver layout</p></td>
+<td><p>the recorded compiler decisions, the logs, the solver layout</p></td>
 </tr>
 </tbody>
 </table>
@@ -772,7 +778,7 @@ distributed forms):</p>
 <td><p>scheme, dt, start-up, backend, band structure, how <span class="math notranslate nohighlight">\(F\)</span> is evaluated; what a controller does and does not do</p></td>
 </tr>
 <tr class="row-odd"><td><p>a native model, a compiled model, a <code class="docutils literal notranslate"><span class="pre">Simulation</span></code></p></td>
-<td><p>the declarations, every automatic decision, the resolution, the solver</p></td>
+<td><p>the declarations, the automatic decisions, the resolution, the solver</p></td>
 </tr>
 <tr class="row-even"><td><p>unit systems, presets, base flows</p></td>
 <td><p>definitions, conventions, the defaults that were used</p></td>
@@ -789,9 +795,9 @@ would export with different meanings (<a class="reference internal" href="expert
 <section id="a-methods-paragraph-for-your-paper">
 <h2>A <em>Methods</em> paragraph for your paper<a class="headerlink" href="#a-methods-paragraph-for-your-paper" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">sim.methods()</span></code> (in the expert layer <code class="docutils literal notranslate"><span class="pre">methods(plan,</span> <span class="pre">solver=None,</span> <span class="pre">eigen_solver=None)</span></code>, also
-<code class="docutils literal notranslate"><span class="pre">plan.methods(...)</span></code>) writes a Methods paragraph <strong>only from what the objects hold</strong>: bases and sizes, the tau method and number
-of taus, dealias per basis, NCC truncation, symmetry subspace, rank check, scheme, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, start-up,
-solver and backend, dtype. Nothing is paraphrased from defaults. For an EVP, pass
+<code class="docutils literal notranslate"><span class="pre">plan.methods(...)</span></code>) drafts a Methods paragraph from the settings the objects hold: bases and
+sizes, the tau method and number of taus, dealias per basis, NCC truncation, symmetry subspace,
+rank check, scheme, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, start-up, solver and backend, dtype. For an EVP, pass
 <code class="docutils literal notranslate"><span class="pre">eigen_solver=&quot;dense&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;shift-invert&quot;</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
@@ -822,14 +828,15 @@ its integral constraint were placed by fixed, declared rules (listed by explain(
 dealiasing factor 3/2 is the declared default of the native layer.
 </pre></div>
 </div>
-<p>The text is a starting point to edit, not a substitute for describing your study. Pair it with the
+<p>The text is a draft. Add your study’s validation and interpretation, and pair it with the
 provenance record of the run (<a class="reference internal" href="reproducibility.html"><span class="doc">Reproducibility and provenance</span></a>) and cite Conatus itself (see the
 <em>Citing Conatus</em> page).</p>
 </section>
 <section id="tolerances-yours-or-declared">
 <h2>Tolerances: yours, or declared<a class="headerlink" href="#tolerances-yours-or-declared" title="Link to this heading">¶</a></h2>
-<p>A tolerance that decides when an iterative solver stops, which modes are returned, or how the time step
-adapts has no default: leaving it out is an error that proposes a value and says what it controls.</p>
+<p>You must supply a tolerance that decides when an iterative solver stops, which modes are returned,
+or how the time step adapts. Leaving it out raises an error that proposes a value and says what it
+controls.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="n">critical</span>
@@ -844,9 +851,10 @@ adapts has no default: leaving it out is an error that proposes a value and says
 <span class="n">dt</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">cfl</span><span class="p">(</span><span class="s2">"u"</span><span class="p">,</span> <span class="n">safety</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>                                   <span class="c1"># your margin on the advective limit</span>
 </pre></div>
 </div>
-<p>Thresholds that only detect or refuse, iteration caps that raise, and stopping tests at the attainable
-floor (the residual is returned) keep a named default. <code class="docutils literal notranslate"><span class="pre">cn.tolerances.explain()</span></code> lists all of them with
-their value and why a default is safe; the <code class="docutils literal notranslate"><span class="pre">explain()</span></code> of the object that uses one repeats it.</p>
+<p>Other thresholds keep a named default: those that only detect or refuse, iteration caps that
+raise, and stopping tests at the attainable floor (the residual is returned).
+<code class="docutils literal notranslate"><span class="pre">cn.tolerances.explain()</span></code> lists them with their values and the reason for each default. The
+<code class="docutils literal notranslate"><span class="pre">explain()</span></code> of the object that uses one repeats it.</p>
 </section>
 </section>
 
@@ -920,7 +928,7 @@ their value and why a default is safe; the <code class="docutils literal notrans
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

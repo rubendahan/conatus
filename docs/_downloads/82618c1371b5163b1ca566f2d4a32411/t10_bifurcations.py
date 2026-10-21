@@ -6,7 +6,8 @@ Expected values (checked at the end of the script):
   Hopf on C+- at r_H = sigma (sigma + b + 3) / (sigma - b - 1) = 470/19, omega^2 = b (sigma + r_H),
   subcritical (Marsden & McCracken 1976)
   Bogdanov-Takens normal form x' = y, y' = b1 + b2 x + x^2 - x y (Kuznetsov 2004, sec. 8.4):
-  fold curve b1 = b2^2 / 4, Hopf curve b1 = 0, both ending at the BT point (0, 0)
+  fold curve b1 = b2^2 / 4 through the BT point (0, 0); Hopf curve b1 = 0 for b2 < 0, ending there
+  (for b2 > 0 the Jacobian [[0, 1], [b2, 0]] has a real pair: no Hopf point)
   Swift-Hohenberg u_t = r u - (1 + d_xx)^2 u - u^3: rolls A^2 = 4 r / 3, xi0^2 = 4, g0 = 3
   (Cross & Hohenberg 1993)
 The ODEs are written as Python right-hand sides (ode_problem); the PDE (Swift-Hohenberg) is a
@@ -112,6 +113,11 @@ assert hf.l1 > 0                                                          # subc
 assert cycles.column("r").max() < rH                                      # cycles exist for r < r_H
 assert np.abs(fold_curve.column("b1") - fold_curve.column("b2") ** 2 / 4).max() < 1e-10
 assert np.abs(hopf_curve.column("b1")).max() < 1e-12
+for p in hopf_curve.points:            # every Hopf point: a pair +-i omega of the Jacobian (numpy)
+    x_, y_ = p.z[0], p.z[1]
+    lam = np.linalg.eigvals([[0.0, 1.0], [p.z[-1] + 2 * x_ - y_, -x_]])
+    assert np.abs(lam.real).max() < 1e-9 and np.abs(lam.imag).min() > 0, (p.z, lam)
+assert hopf_curve.column("b2").max() < 0                                  # stops at the BT point
 assert np.abs(hopf_curve.events_of("bt")[0].point.z[-2:]).max() < 1e-10
 assert abs(landau.g3 + 0.75) < 1e-12 and abs(gl.xi0_sq - 4) < 1e-9 and abs(gl.g0 - 3) < 1e-12
 print(f"CHECK r_H = {hopf.point.z[-1]:.12f} (470/19 = {rH:.12f}), l1 = {hf.l1:.6e} > 0; "

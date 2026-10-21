@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../">&larr; Conatus website</a>
-  <a href="../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../bases.html">Bases and domains</a></li>
@@ -680,7 +685,7 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="eigenvalues-and-stability">
 <h1>Eigenvalues and stability<a class="headerlink" href="#eigenvalues-and-stability" title="Link to this heading">¶</a></h1>
-<p>Normal modes of a linear problem, each with its backward residual, with spurious modes removed only by a declared test.</p>
+<p>Normal modes of a linear problem, each with its backward residual, and the tests that flag or remove spurious modes.</p>
 <p>A linear model with an eigenvalue, or the linearization of a nonlinear model about a base
 state, is discretised into the generalized eigenvalue problem</p>
 <div class="math-wrapper docutils container">
@@ -689,7 +694,9 @@ state, is discretised into the generalized eigenvalue problem</p>
 </div>
 <p>for each wavenumber. All finite eigenvalues are computed (dense QZ) unless you ask for a few near
 a target (shift-invert Arnoldi). Infinite eigenvalues (rows of boundary conditions) are counted
-and removed; every finite mode reports its relative backward residual
+and removed. The dense solver classifies an eigenvalue as infinite when <span class="math notranslate nohighlight">\(|\beta|\)</span> is small
+relative to <span class="math notranslate nohighlight">\(|\alpha|\)</span> in its QZ pair <span class="math notranslate nohighlight">\((\alpha, \beta)\)</span>; the threshold is printed by
+<code class="docutils literal notranslate"><span class="pre">res.explain(full=True)</span></code>. Each finite mode reports its relative backward residual
 <span class="math notranslate nohighlight">\(\|(L+\sigma M)x\| / ((\|L\| + |\sigma|\,\|M\|)\,\|x\|)\)</span>.</p>
 <section id="an-eigenvalue-problem-written-as-on-paper">
 <h2>An eigenvalue problem written as on paper<a class="headerlink" href="#an-eigenvalue-problem-written-as-on-paper" title="Link to this heading">¶</a></h2>
@@ -717,10 +724,10 @@ flow <code class="docutils literal notranslate"><span class="pre">U(y)</span></c
 <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">res</span><span class="o">.</span><span class="n">residuals</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>Spectral tau methods can produce spurious finite eigenvalues. Conatus never removes them by a
-hidden threshold: <code class="docutils literal notranslate"><span class="pre">drift=96</span></code> recomputes the spectrum at a second resolution and keeps only the
-modes found again within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code>. The filter, and how many modes it removed, appear in
-<code class="docutils literal notranslate"><span class="pre">res.explain()</span></code>. Without <code class="docutils literal notranslate"><span class="pre">drift=</span></code>, every finite mode is returned, and <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code> and the
+<p>Spectral tau methods can produce spurious finite eigenvalues. <code class="docutils literal notranslate"><span class="pre">drift=96</span></code> recomputes the spectrum
+at a second resolution and keeps only the modes found again within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code>. The filter, and
+how many modes it removed, appear in <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code>. Without <code class="docutils literal notranslate"><span class="pre">drift=</span></code>, all finite modes are
+returned, and <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code> and the
 one-line <code class="docutils literal notranslate"><span class="pre">repr(res)</span></code> say so once (“no spurious-mode filter: tau modes may appear”).</p>
 <p>A cheaper test runs on every result, with or without <code class="docutils literal notranslate"><span class="pre">drift=</span></code>: the <strong>spectral tail</strong> of each
 eigenvector. A spurious tau mode, or a mode the resolution does not hold, has its energy in the
@@ -731,10 +738,10 @@ mode). A mode whose tail energy in the last 10 % of the coefficients
 <code class="docutils literal notranslate"><span class="pre">cn.tolerances.SPURIOUS_SIGNIFICANT</span></code> <span class="math notranslate nohighlight">\(= 10^{-12}\)</span> of the most excited one holds round-off and is not
 judged) exceeds <code class="docutils literal notranslate"><span class="pre">cn.tolerances.SPURIOUS_TAIL_TOL</span></code> (<span class="math notranslate nohighlight">\(10^{-3}\)</span>, declared) is <em>flagged</em>: it stays in <code class="docutils literal notranslate"><span class="pre">res.values</span></code> and
 <code class="docutils literal notranslate"><span class="pre">res.mode(i)</span></code>, is listed by <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code> with its tail, its indices are <code class="docutils literal notranslate"><span class="pre">res.flagged</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">res.order()</span></code> ranks it after every mode that passes, so <code class="docutils literal notranslate"><span class="pre">res.order()[0]</span></code> is the least stable mode
-that passes. <code class="docutils literal notranslate"><span class="pre">critical</span></code> and <code class="docutils literal notranslate"><span class="pre">least_stable</span></code> select only modes that pass. The flag removes nothing
-(<code class="docutils literal notranslate"><span class="pre">drift=</span></code> remains the filter that removes modes); <code class="docutils literal notranslate"><span class="pre">spurious=&quot;none&quot;</span></code> turns it off, and the result
-says so.</p>
+<code class="docutils literal notranslate"><span class="pre">res.order()</span></code> ranks it after the modes that pass, so <code class="docutils literal notranslate"><span class="pre">res.order()[0]</span></code> is the least stable mode
+that passes. <code class="docutils literal notranslate"><span class="pre">critical</span></code> and <code class="docutils literal notranslate"><span class="pre">least_stable</span></code> select only modes that pass. The flag keeps the mode in
+the result; <code class="docutils literal notranslate"><span class="pre">drift=</span></code> is the filter that removes modes. <code class="docutils literal notranslate"><span class="pre">spurious=&quot;none&quot;</span></code> turns the flag off, and
+the result says so.</p>
 <p>A mode can pass the flag and still be under-resolved: for Orr–Sommerfeld at <span class="math notranslate nohighlight">\(Re = 10^4\)</span> and
 <span class="math notranslate nohighlight">\(N = 24\)</span> the least stable mode that passes is <span class="math notranslate nohighlight">\(c = 0.580 + 0.024i\)</span> (the converged value is
 <span class="math notranslate nohighlight">\(0.2375 + 0.0037i\)</span>), with a tail of <span class="math notranslate nohighlight">\(3.7\times10^{-4}\)</span> and a residual of <span class="math notranslate nohighlight">\(10^{-16}\)</span>. So the mode a
@@ -748,8 +755,8 @@ of its eigenvalue: the tail is an energy, so the truncated coefficients are abou
 error of the eigenvalue (<span class="math notranslate nohighlight">\(\sqrt{10^{-8}} = 10^{-4}\)</span> at <span class="math notranslate nohighlight">\(N = 32\)</span>, for an error of <span class="math notranslate nohighlight">\(4\times10^{-5}\)</span>;
 not a bound: the drift test measures it), in <code class="docutils literal notranslate"><span class="pre">repr(res)</span></code> and
 <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code>, and one <code class="docutils literal notranslate"><span class="pre">cn.errors.ResolutionWarning</span></code>; <code class="docutils literal notranslate"><span class="pre">res.unresolved</span></code> lists every passing mode
-above the level. Nothing is removed or re-ranked. With <code class="docutils literal notranslate"><span class="pre">drift=</span></code> the drift test is the evidence and
-no tail warning is given. <code class="docutils literal notranslate"><span class="pre">critical()</span></code> without a drift pencil prints the tail of the critical mode
+above the level. These modes stay in the result, in the same order. With <code class="docutils literal notranslate"><span class="pre">drift=</span></code>, the drift test
+replaces the tail warning. <code class="docutils literal notranslate"><span class="pre">critical()</span></code> without a drift pencil prints the tail of the critical mode
 and warns when it is above the level (the case above gives <span class="math notranslate nohighlight">\(Re_c = 5037.6\)</span> instead of <span class="math notranslate nohighlight">\(5772.2\)</span>).</p>
 <p>The drift test itself is checked before any solve: <code class="docutils literal notranslate"><span class="pre">drift</span></code> must be finer than <code class="docutils literal notranslate"><span class="pre">N</span></code> (equal keeps every
 mode, coarser removes resolved ones), <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code> must lie in <span class="math notranslate nohighlight">\((0, 10^{-2}]\)</span>
@@ -768,12 +775,12 @@ drift test that removes every mode raises <code class="docutils literal notransl
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">res.mode(i)</span></code> unpacks eigenvector <code class="docutils literal notranslate"><span class="pre">i</span></code> into the named unknowns on the physical (non-dealiased) grid,
 tau variables (the fields lifted by a <code class="docutils literal notranslate"><span class="pre">lift(...)</span></code> term) left out: <code class="docutils literal notranslate"><span class="pre">mode[&quot;v&quot;]</span></code> (complex values; a vector unknown has its components first),
-<code class="docutils literal notranslate"><span class="pre">mode.coeffs(&quot;v&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">mode.coordinate(&quot;y&quot;)</span></code>, and <code class="docutils literal notranslate"><span class="pre">mode.at(&quot;v&quot;,</span> <span class="pre">y=points)</span></code> for the exact value of the
+<code class="docutils literal notranslate"><span class="pre">mode.coeffs(&quot;v&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">mode.coordinate(&quot;y&quot;)</span></code>, and <code class="docutils literal notranslate"><span class="pre">mode.at(&quot;v&quot;,</span> <span class="pre">y=points)</span></code> for the value of the
 expansion at any point (the walls included). An eigenvector is defined up to a complex factor; the
 declared normalisation (<code class="docutils literal notranslate"><span class="pre">mode.explain()</span></code>) makes the first non-zero unknown have <span class="math notranslate nohighlight">\(\max|q| = 1\)</span>, real
 and positive where <span class="math notranslate nohighlight">\(|q|\)</span> is largest, the other unknowns scaled by the same factor; an unknown whose
-largest coefficient is below <span class="math notranslate nohighlight">\(10^{-10}\)</span> of the eigenvector’s counts as zero (round-off is never
-scaled to 1). The same works on
+largest coefficient is below <span class="math notranslate nohighlight">\(10^{-10}\)</span> of the eigenvector’s counts as zero, so that round-off is
+not scaled to 1. The same works on
 <code class="docutils literal notranslate"><span class="pre">lin.eigenvalues(...)</span></code> (unknown names, not the perturbation variables) and on the expert
 <code class="docutils literal notranslate"><span class="pre">conatus.expert.eigenvalues(plan,</span> <span class="pre">...)</span></code> of a Cartesian plan.</p>
 </section>
@@ -859,7 +866,7 @@ without a periodic direction keeps that former meaning with a <code class="docut
 <section id="critical-parameters">
 <h2>Critical parameters<a class="headerlink" href="#critical-parameters" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">m.parametric(N,</span> <span class="pre">over=...)</span></code> keeps the parameters symbolic in the matrices, so that the neutral
-curve and its minimum are found by root finding on exact derivatives (a linearization has the same
+curve and its minimum are found by root finding on derivatives with respect to the parameters (a linearization has the same
 call, with its wavenumber <code class="docutils literal notranslate"><span class="pre">k</span></code> as a parameter: <a class="reference internal" href="onset.html"><span class="doc">Onset of convection</span></a>):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="n">critical</span>
 
@@ -870,9 +877,10 @@ call, with its wavenumber <code class="docutils literal notranslate"><span class
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Re_c = </span><span class="si">{</span><span class="n">crit</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, alpha_c = </span><span class="si">{</span><span class="n">crit</span><span class="o">.</span><span class="n">over</span><span class="p">[</span><span class="s1">'alpha'</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Which modes may be the least stable one is decided by the drift test of <code class="docutils literal notranslate"><span class="pre">drift=96</span></code> (as for
-<code class="docutils literal notranslate"><span class="pre">eigenvalues</span></code>), never by a hand-written bound on <span class="math notranslate nohighlight">\(|c|\)</span>; <code class="docutils literal notranslate"><span class="pre">select=</span></code> remains available for a physical
-restriction, logged; modes flagged by the spectral-tail test never compete. The growth of a mode
+<p>The drift test of <code class="docutils literal notranslate"><span class="pre">drift=96</span></code> (as for <code class="docutils literal notranslate"><span class="pre">eigenvalues</span></code>) decides which modes may be the least stable
+one. The finite/infinite classification of QZ is a separate filter with its own threshold.
+<code class="docutils literal notranslate"><span class="pre">select=</span></code> remains available for a physical restriction, and is logged. Modes flagged by the
+spectral-tail test are not candidates. The growth of a mode
 is declared with the eigenvalue: <code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code> for a phase speed (mode
 <span class="math notranslate nohighlight">\(e^{i\alpha(x - ct)}\)</span>, growth <span class="math notranslate nohighlight">\(\operatorname{Im} c\)</span>), <code class="docutils literal notranslate"><span class="pre">growth=&quot;real&quot;</span></code> for a rate (mode <span class="math notranslate nohighlight">\(e^{st}\)</span>),
 or <code class="docutils literal notranslate"><span class="pre">critical(growth=...)</span></code> for one call; a linearization’s eigenvalue is the <span class="math notranslate nohighlight">\(s\)</span> of <span class="math notranslate nohighlight">\(e^{st}\)</span>
@@ -900,13 +908,13 @@ found from its own bracket.</p>
 give the derivative of an eigenvalue with respect to any parameter,
 <span class="math notranslate nohighlight">\(\mathrm d\sigma/\mathrm dp = -\,y^H (\partial_p L + \sigma\,\partial_p M)\,x \,/\, (y^H M x)\)</span>.</p>
 </section>
-<section id="what-you-choose-what-conatus-refuses-to-choose">
-<h2>What you choose, what Conatus refuses to choose<a class="headerlink" href="#what-you-choose-what-conatus-refuses-to-choose" title="Link to this heading">¶</a></h2>
+<section id="what-you-choose">
+<h2>What you choose<a class="headerlink" href="#what-you-choose" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>The resolution <code class="docutils literal notranslate"><span class="pre">N</span></code>, the second resolution of the drift test and its tolerance.</p></li>
 <li><p>The growth convention of the eigenvalue (<code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code>).</p></li>
 <li><p>Whether flagged modes are flagged (<code class="docutils literal notranslate"><span class="pre">spurious=&quot;tail&quot;</span></code>, the default, or <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>).</p></li>
-<li><p>Dense or sparse solution (<code class="docutils literal notranslate"><span class="pre">method=</span></code>, <code class="docutils literal notranslate"><span class="pre">target=</span></code>, <code class="docutils literal notranslate"><span class="pre">n_modes=</span></code>): never switched for you.</p></li>
+<li><p>Dense or sparse solution (<code class="docutils literal notranslate"><span class="pre">method=</span></code>, <code class="docutils literal notranslate"><span class="pre">target=</span></code>, <code class="docutils literal notranslate"><span class="pre">n_modes=</span></code>).</p></li>
 <li><p>The wavenumber <code class="docutils literal notranslate"><span class="pre">k=</span></code> of a periodic direction (or <code class="docutils literal notranslate"><span class="pre">m=</span></code>, <code class="docutils literal notranslate"><span class="pre">kz=</span></code>, <code class="docutils literal notranslate"><span class="pre">ell=</span></code> of a curvilinear one).</p></li>
 <li><p>A singular pencil (a missing or extra boundary condition) is refused with a rank report.</p></li>
 </ul>
@@ -915,7 +923,7 @@ give the derivative of an eigenvalue with respect to any parameter,
 <h2>Validation<a class="headerlink" href="#validation" title="Link to this heading">¶</a></h2>
 <p>Read the residual of the mode you use and its drift between two resolutions. The spectral tail
 of the eigenvector is checked by <code class="docutils literal notranslate"><span class="pre">verify</span></code> (see <a class="reference internal" href="../resolution.html"><span class="doc">Resolution</span></a>).</p>
-<p><strong>See also:</strong> tutorial <a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html"><span class="doc">1. A first eigenvalue problem: Orr–Sommerfeld</span></a> (Orszag 1971);
+<p><strong>See also:</strong> tutorial <a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html"><span class="doc">A first eigenvalue problem: Orr–Sommerfeld</span></a> (Orszag 1971);
 <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.eigenvalues.html"><span class="doc">eigenvalues</span></a>, <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.EVPResult.html"><span class="doc">EVPResult</span></a>,
 <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.ParametricEVP.html"><span class="doc">ParametricEVP</span></a>, <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.critical.html"><span class="doc">critical</span></a>.</p>
 </section>
@@ -985,7 +993,7 @@ of the eigenvector is checked by <code class="docutils literal notranslate"><spa
 <li><a class="reference internal" href="#what-a-linearization-holds">What a linearization holds</a></li>
 <li><a class="reference internal" href="#critical-parameters">Critical parameters</a></li>
 <li><a class="reference internal" href="#left-eigenvectors-and-sensitivity">Left eigenvectors and sensitivity</a></li>
-<li><a class="reference internal" href="#what-you-choose-what-conatus-refuses-to-choose">What you choose, what Conatus refuses to choose</a></li>
+<li><a class="reference internal" href="#what-you-choose">What you choose</a></li>
 <li><a class="reference internal" href="#validation">Validation</a></li>
 </ul>
 </li>
@@ -998,7 +1006,7 @@ of the eigenvector is checked by <code class="docutils literal notranslate"><spa
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

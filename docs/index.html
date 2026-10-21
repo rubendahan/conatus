@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="./../">&larr; Conatus website</a>
-  <a href="tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="./../" data-cn-route="/">Conatus</a>
+  <a href="./../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="./../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="./../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="./../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="./../install/" data-cn-route="/install">Install</a>
+  <a href="./../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/bases.html">Bases and domains</a></li>
@@ -680,41 +685,59 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="conatus">
 <h1>Conatus<a class="headerlink" href="#conatus" title="Link to this heading">¶</a></h1>
-<p>Conatus solves partial differential equations with spectral methods, on CPUs and GPUs, from
-equations written as on paper, and studies the dynamical systems they define.</p>
-<p><strong>Status: 0.1.0.</strong> CPU supported, GPU (CUDA 12) in beta. Install with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">conatus</span></code> (<a class="reference internal" href="install.html"><span class="doc">Installation</span></a>), then
-start with <a class="reference internal" href="tutorials/first_steps.html"><span class="doc">Getting started in ten minutes</span></a> (ten minutes) or, for the whole path through one
-problem, <a class="reference internal" href="tutorials/00_getting_started.html"><span class="doc">0. Getting started: convection between two plates</span></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<p>Spectral PDE and stability calculations in Python. Conatus is experimental research software for
+defining PDE models, computing eigenmodes and running time-dependent simulations. Its examples
+focus on fluid instability and dynamical systems.</p>
+<p><strong>Status.</strong> CPU wheels for Linux x86-64 (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">conatus</span></code>); CUDA support is experimental. The
+interface can still change; changes come with a deprecation warning and a changelog entry.</p>
+<section id="start-here">
+<h2>Start here<a class="headerlink" href="#start-here" title="Link to this heading">¶</a></h2>
+<ol class="cn-start">
+<li><a href="../install/" data-cn-route="/install"><strong>Install</strong></a><br>pip install conatus, then python -m conatus doctor to see what this machine can run.</li>
+<li><a href="../tutorials/getting-started/" data-cn-route="/tutorials/getting-started"><strong>First steps: the Burgers equation</strong></a><br>Ten minutes: write one equation, simulate it, plot it and measure its energy.</li>
+<li><a href="tutorials/01_orr_sommerfeld.html"><strong>A stability calculation: Orr–Sommerfeld</strong></a><br>The calculation of the home page, with the eigenfunction, a resolution check and the critical Reynolds number.</li>
+<li><a href="tutorials/00_getting_started.html"><strong>One problem from onset to simulation: convection</strong></a><br>Rayleigh–Bénard convection: the onset by linear stability, then a simulation and its heat flux.</li>
+</ol>
+</section>
+<section id="a-first-calculation">
+<h2>A first calculation<a class="headerlink" href="#a-first-calculation" title="Link to this heading">¶</a></h2>
+<p>When does flow between two plates become unstable? The script below writes the Orr–Sommerfeld
+equation for plane Poiseuille flow, computes the least stable mode at <span class="math notranslate nohighlight">\(Re = 10\,000\)</span>, <span class="math notranslate nohighlight">\(\alpha = 1\)</span>,
+then searches for the critical Reynolds number. It is the example of the website’s home page.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linear stability of plane Poiseuille flow U(y) = 1 - y^2 between walls at y = -1 and y = 1.</span>
+<span class="c1"># Orr-Sommerfeld equation for v(y) exp(i alpha (x - c t)): a mode grows when Im(c) &gt; 0.</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="n">critical</span>
 
-<span class="n">box</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">periodic</span><span class="p">(</span><span class="mf">2.0</span><span class="p">),</span> <span class="n">z</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">walls</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Rayleigh-Benard 2D"</span><span class="p">,</span> <span class="n">Ra</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span> <span class="n">Pr</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">velocity</span><span class="p">(</span><span class="s2">"u"</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="s2">"p"</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
-<span class="n">m</span><span class="o">.</span><span class="n">equations</span><span class="p">(</span><span class="s2">"""</span>
-<span class="s2">    dt(u) + grad(p) - Pr*lap(u) = Pr*Ra*T*ez - u·grad(u)</span>
-<span class="s2">    div(u) = 0</span>
-<span class="s2">    dt(T) - lap(T) = -u·grad(T)</span>
-<span class="s2">"""</span><span class="p">)</span>
-<span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"bottom"</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">=+</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"top"</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">cn</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">walls</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"plane Poiseuille"</span><span class="p">,</span> <span class="n">Re</span><span class="o">=</span><span class="mf">1e4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">"v"</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">given</span><span class="p">(</span><span class="n">U</span><span class="o">=</span><span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">eigenvalue</span><span class="p">(</span><span class="s2">"c"</span><span class="p">,</span> <span class="n">growth</span><span class="o">=</span><span class="s2">"imag"</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="s2">"L2(f) = dy(dy(f)) - alpha**2*f"</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">equations</span><span class="p">(</span><span class="s2">"L2(L2(v))/(1j*alpha*Re) - U*L2(v) + dy(dy(U))*v + c*L2(v) = 0"</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"walls"</span><span class="p">,</span> <span class="s2">"v = 0"</span><span class="p">,</span> <span class="s2">"dy(v) = 0"</span><span class="p">)</span>
 
-<span class="n">sim</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">"RK443"</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">)</span>     <span class="c1"># backend="cuda" for a GPU</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">initial</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="o">-</span><span class="n">z</span> <span class="o">+</span> <span class="mf">1e-3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">z</span><span class="p">))</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="c1"># Least stable mode at Re = 10000, alpha = 1 (modes kept only if found again at N = 96)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">drift</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">drift_tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">i</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">imag</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"c = </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">   residual </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">residuals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.0e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-<span class="n">modes</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">linearize</span><span class="p">(</span><span class="n">about</span><span class="o">=</span><span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="o">-</span><span class="n">z</span><span class="p">})</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">modes</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>     <span class="c1"># growth rates, with residuals</span>
+<span class="c1"># Critical Reynolds number: the lowest Re at which Im(c) = 0 for some alpha</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">parametric</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">over</span><span class="o">=</span><span class="p">(</span><span class="s2">"Re"</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">),</span> <span class="n">drift</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span> <span class="n">drift_tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+<span class="n">crit</span> <span class="o">=</span> <span class="n">critical</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="s2">"Re"</span><span class="p">,</span> <span class="n">bracket</span><span class="o">=</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="mi">7000</span><span class="p">),</span> <span class="n">over</span><span class="o">=</span><span class="p">{</span><span class="s2">"alpha"</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.98</span><span class="p">,</span> <span class="mf">1.06</span><span class="p">)},</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Re_c = </span><span class="si">{</span><span class="n">crit</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">   alpha_c = </span><span class="si">{</span><span class="n">crit</span><span class="o">.</span><span class="n">over</span><span class="p">[</span><span class="s1">'alpha'</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You write the geometry, the unknowns, the equations and the boundary conditions. Conatus chooses
-the spectral bases of the geometry, places each boundary condition, splits the terms into
-implicit and explicit parts, and prints every one of these decisions with <code class="docutils literal notranslate"><span class="pre">explain()</span></code>. The
-numerical choices that are yours (resolution, time stepper, time step, backend) are written in the
-call; nothing is changed behind your back.</p>
-<p>The same model gives a simulation, its linear stability, a Newton search for a steady state, a
-travelling wave or a periodic orbit, a continuation through folds and bifurcations, a Floquet or
-Lyapunov analysis, an adjoint or an optimal perturbation.</p>
+<p>What it printed:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>c = 0.23752649+0.00373967j   residual 1e-16
+Re_c = 5772.22   alpha_c = 1.02055
+</pre></div>
+</div>
+<p>Orszag (1971) gives <span class="math notranslate nohighlight">\(c = 0.23752649 + 0.00373967i\)</span> and <span class="math notranslate nohighlight">\(Re_c = 5772.22\)</span> at <span class="math notranslate nohighlight">\(\alpha_c = 1.02056\)</span>
+(the script’s 1.02055 differs in the last digit).
+The residual is the backward error of the computed eigenpair; <code class="docutils literal notranslate"><span class="pre">drift=96</span></code> keeps only the modes found
+again with 96 Chebyshev polynomials instead of 64. The <a class="reference internal" href="tutorials/01_orr_sommerfeld.html"><span class="doc">stability tutorial</span></a> continues from this script.</p>
+</section>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
@@ -724,7 +747,7 @@ Lyapunov analysis, an adjoint or an optimal perturbation.</p>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 Installation</div>
-<p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">conatus</span></code> (CPU), the CUDA 12 wheel (beta) or from source; check what your machine can run.</p>
+<p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">conatus</span></code>, the CUDA wheel (experimental) or from source; check what your machine can run.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="install.html"><span class="doc">Installation</span></a></div>
 </div>
@@ -733,7 +756,7 @@ Installation</div>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 Tutorials</div>
-<p class="sd-card-text">Executed tutorials, from getting started to bifurcations, chaos and Lagrangian tracers, each ending on a result from the literature.</p>
+<p class="sd-card-text">Executed tutorials by topic, each ending on a published value or a closed form.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="tutorials/index.html"><span class="doc">Tutorials</span></a></div>
 </div>
@@ -750,17 +773,8 @@ User guide</div>
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-Coming from Dedalus</div>
-<p class="sd-card-text">The same problem side by side, and what you stop writing.</p>
-</div>
-<a class="sd-stretched-link sd-hide-link-text reference internal" href="guide/dedalus.html"><span class="doc">Coming from Dedalus</span></a></div>
-</div>
-<div class="sd-col sd-d-flex-row docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
-<div class="sd-card-body docutils">
-<div class="sd-card-title sd-font-weight-bold docutils">
 API reference</div>
-<p class="sd-card-text">Every public object, from its docstring.</p>
+<p class="sd-card-text">The public objects, from their docstrings.</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="api/index.html"><span class="doc">API reference</span></a></div>
 </div>
@@ -779,30 +793,26 @@ Mathematics</div>
 <section id="principles">
 <h2>Principles<a class="headerlink" href="#principles" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>No silent substitution.</strong> Basis, resolution, boundary treatment, dealiasing, time stepper,
-tolerances and inner product are written by you or printed by <code class="docutils literal notranslate"><span class="pre">explain()</span></code>; Conatus suggests,
-it never modifies (<a class="reference internal" href="principles.html"><span class="doc">Principles</span></a>).</p></li>
-<li><p><strong>Validation by residual.</strong> Every eigenvalue, steady state or orbit comes with its residual,
-never as a bare number. A check against a finer resolution is computed when you ask for it
-(<code class="docutils literal notranslate"><span class="pre">drift=</span></code> for eigenvalues, a second resolution for a solution): it is not automatic.</p></li>
-<li><p><strong>Every capability tied to a published value.</strong> Each method is tested against a published
-table or a closed form, and each tutorial ends on one.</p></li>
+<li><p><strong>Declared choices.</strong> Basis, resolution, boundary treatment, dealiasing, time stepper,
+tolerances and inner product are either written by you or shown by <code class="docutils literal notranslate"><span class="pre">explain()</span></code>
+(<a class="reference internal" href="principles.html"><span class="doc">Principles</span></a>).</p></li>
+<li><p><strong>Residuals with results.</strong> An eigenvalue, steady state or orbit is returned with its residual.
+A check against a finer resolution runs when you ask for it (<code class="docutils literal notranslate"><span class="pre">drift=</span></code> for eigenvalues, a second
+resolution for a solution).</p></li>
+<li><p><strong>Published references.</strong> Each method is tested against a published table or a closed form,
+and each tutorial ends on one.</p></li>
 </ul>
 </section>
 <section id="who-it-is-for">
 <h2>Who it is for<a class="headerlink" href="#who-it-is-for" title="Link to this heading">¶</a></h2>
 <p>Researchers and students in fluid dynamics and applied mathematics who study stability,
-transition, pattern formation and invariant solutions, and who want to go from an equation to a
-validated number, then to a GPU simulation, with the same script.</p>
+transition, pattern formation and invariant solutions.</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
 </div>
-<hr class="docutils" />
-<p><em>Unaquæque res, quantum in se est, in suo esse perseverare conatur</em>: each thing, as far as it is in
-itself, strives to persevere in its being (Spinoza, <em>Ethica</em> III, 6). The origin of the name.</p>
 </section>
 </section>
 
@@ -852,6 +862,8 @@ itself, strives to persevere in its being (Spinoza, <em>Ethica</em> III, 6). The
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Conatus</a><ul>
+<li><a class="reference internal" href="#start-here">Start here</a></li>
+<li><a class="reference internal" href="#a-first-calculation">A first calculation</a></li>
 <li><a class="reference internal" href="#documentation">Documentation</a></li>
 <li><a class="reference internal" href="#principles">Principles</a></li>
 <li><a class="reference internal" href="#who-it-is-for">Who it is for</a><ul>
@@ -868,13 +880,42 @@ itself, strives to persevere in its being (Spinoza, <em>Ethica</em> III, 6). The
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="_static/documentation_options.js?v=92734c54"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=fd10adb8"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script>// MathJax 4 configuration of the documentation (docs/site/conf.py: mathjax_config_path).
+// - Self-hosted: the font is loaded from the vendored package next to MathJax ([mathjax] = the
+//   folder of tex-chtml.js under _static/vendor), never from the CDN default.
+// - Semantic enrichment, speech and Braille (the speech-rule engine) are off by default: they ran on
+//   the main thread for every formula; the reader turns them on in MathJax's menu. Screen readers
+//   get the hidden MathML copy (assistiveMml).
+// - Typesetting is spread over the page's idle time, one formula per task, instead of one long
+//   task at load: Lighthouse measured MathJax as the main-thread cost of the long tutorial pages
+//   (performance 41 on the getting-started tutorial). Every formula is typeset,
+//   on- or off-screen (so search in the page and printing see them), in document order.
+window.MathJax = {
+  loader: { paths: { fonts: "[mathjax]/../@mathjax" } },
+  options: { menuOptions: { settings: { enrich: false, speech: false, braille: false, assistiveMml: true } } },
+  startup: {
+    typeset: false,
+    pageReady() {
+      return MathJax.startup.defaultPageReady().then(async () => {
+        const items = Array.from(document.querySelectorAll(".math"));
+        for (const el of items) {
+          await new Promise((r) => setTimeout(r, 0));     // yield: input stays responsive
+          await MathJax.typesetPromise([el]);
+        }
+      });
+    },
+  },
+};
+</script>
+    <script defer="defer" src="_static/vendor/mathjax/tex-chtml.js?v=4ea4c670"></script>
     <script defer="defer" src="_static/tutorial_films.js?v=57865db1"></script>
     </body>
 </html>

@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="1. A first eigenvalue problem: Orr–Sommerfeld" href="01_orr_sommerfeld.html"><link rel="prev" title="Getting started in ten minutes" href="first_steps.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU" href="02_rayleigh_benard.html"><link rel="prev" title="A first eigenvalue problem: Orr–Sommerfeld" href="01_orr_sommerfeld.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>0. Getting started: convection between two plates - Conatus</title>
+        <title>Convection between two plates: from onset to simulation - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -678,12 +683,12 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="getting-started-convection-between-two-plates">
-<h1>0. Getting started: convection between two plates<a class="headerlink" href="#getting-started-convection-between-two-plates" title="Link to this heading">¶</a></h1>
+          <section class="tex2jax_ignore mathjax_ignore" id="convection-between-two-plates-from-onset-to-simulation">
+<h1>Convection between two plates: from onset to simulation<a class="headerlink" href="#convection-between-two-plates-from-onset-to-simulation" title="Link to this heading">¶</a></h1>
 <p>One problem from beginning to end: a layer of fluid heated from below. You write its equations as
 on paper, ask whether the fluid at rest is stable, find where convection starts (the published
 value to <span class="math notranslate nohighlight">\(2\times10^{-4}\)</span> in <span class="math notranslate nohighlight">\(Ra_c\)</span> and <span class="math notranslate nohighlight">\(7\times10^{-4}\)</span> in <span class="math notranslate nohighlight">\(k_c\)</span>), then simulate the rolls that appear above onset and measure the heat they
-carry. New to Conatus? The ten-minute <a class="reference internal" href="first_steps.html"><span class="doc">Getting started in ten minutes</span></a> comes before this one.</p>
+carry. New to Conatus? The ten-minute <a class="reference internal" href="first_steps.html"><span class="doc">First steps: the Burgers equation in ten minutes</span></a> comes before this one.</p>
 <p><strong>Expected.</strong> Onset at <span class="math notranslate nohighlight">\(Ra_c = 1707.762\)</span>, <span class="math notranslate nohighlight">\(k_c = 3.117\)</span> between rigid plates (Reid &amp; Harris 1958;
 Chandrasekhar 1961); the script finds <span class="math notranslate nohighlight">\(Ra_c = 1707.7618\)</span> (absolute difference <span class="math notranslate nohighlight">\(2\times10^{-4}\)</span>,
 relative <span class="math notranslate nohighlight">\(10^{-7}\)</span>: the published value is rounded) and <span class="math notranslate nohighlight">\(k_c = 3.11632\)</span> (difference <span class="math notranslate nohighlight">\(7\times10^{-4}\)</span>,
@@ -728,11 +733,11 @@ same heat through both plates and across the layer.
 <span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>The domain names its boundaries (<code class="docutils literal notranslate"><span class="pre">bottom</span></code>, <code class="docutils literal notranslate"><span class="pre">top</span></code>); conditions are stated where they hold. There is
-no basis to choose and nothing to say about how the conditions are imposed: <code class="docutils literal notranslate"><span class="pre">m.explain()</span></code> sums up
-the implicit–explicit split, the conditions by wall, the pressure gauge and the dealiasing, all
-placed by fixed rules (see the output at the end of the page); <code class="docutils literal notranslate"><span class="pre">m.explain(full=True)</span></code> lists every
-decision, tau by tau and term by term.</p>
+<p>The domain names its boundaries (<code class="docutils literal notranslate"><span class="pre">bottom</span></code>, <code class="docutils literal notranslate"><span class="pre">top</span></code>), and conditions are stated where they hold. The
+native layer chooses the bases and imposes the conditions by fixed rules. <code class="docutils literal notranslate"><span class="pre">m.explain()</span></code> sums up the
+implicit–explicit split, the conditions by wall, the pressure gauge and the dealiasing (see the
+output at the end of the page). <code class="docutils literal notranslate"><span class="pre">m.explain(full=True)</span></code> lists the compiler decisions tau by tau and
+term by term.</p>
 </section>
 <section id="is-the-fluid-at-rest-stable">
 <h2>Is the fluid at rest stable?<a class="headerlink" href="#is-the-fluid-at-rest-stable" title="Link to this heading">¶</a></h2>
@@ -773,10 +778,10 @@ only if the same pencil at 48 modes has it too, within <code class="docutils lit
 does not move; a spurious one jumps). The growth of <span class="math notranslate nohighlight">\(s\)</span> is its real part, read off its name and
 printed by <code class="docutils literal notranslate"><span class="pre">crit.explain()</span></code>.</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t00_neutral_curve.png"><img alt="The neutral curve in the plane of wavenumber and Rayleigh number: a U-shaped red line with its minimum marked at Ra about 1708 and k about 3.12; the region above it is shaded." loading="lazy" src="../_images/t00_neutral_curve.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t00_neutral_curve.png"><img alt="The neutral curve in the plane of wavenumber and Rayleigh number: a U-shaped red line with its minimum marked at Ra about 1708 and k about 3.12; the region above it, where modes grow, is shaded; two crosses at k = pi mark Ra = 1500 and 2500." loading="lazy" src="../_images/t00_neutral_curve.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Growth rate of the least stable mode over a grid of (k, Ra), from the parametric pencil of the onset block. The red line is where it vanishes; its minimum is the critical point the script finds, Ra_c = 1707.762 at k_c = 3.1163.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Rayleigh-Bénard onset between rigid plates, Pr = 1: growth rate of the least stable mode over a grid of (k, Ra), from the parametric pencil of the onset block. The red line is where it vanishes; modes grow in the shaded region. Its minimum is the critical point Ra_c = 1707.762 at k_c = 3.1163. The crosses are the two runs of the page, Ra = 1500 (stable) and 2500 (unstable) at k = π.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -806,7 +811,7 @@ they agree.</p>
 <a class="reference internal image-reference" href="../_images/t00_growth_saturation.png"><img alt="Left: the roll amplitude on a log scale rises along a straight dashed line, then levels off. Right: the Nusselt number stays at 1, rises to a peak and settles to a constant." loading="lazy" src="../_images/t00_growth_saturation.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The simulation of the page. Left: the rolls grow at the rate of the eigenvalue (dashed) until the nonlinear terms stop them. Right: the heat carried across the layer, in units of conduction, settles to a steady value.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The simulation of the page at Ra = 2500, Pr = 1; time in thermal diffusion units d²/κ. Left: the roll amplitude grows at the rate σ = 5.543 of the leading eigenvalue (dashed line, drawn through the run at t = 0.3) until the nonlinear terms stop it. Right: the heat flux across the layer in units of conduction, Nu = 1.474 at t = 6 (it varies by 4×10⁻¹⁵ over the last time unit).</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -840,7 +845,7 @@ they agree.</p>
 </div>
 <p>In a steady state the heat entering through the hot plate crosses every level and leaves through
 the cold one: the three values of <span class="math notranslate nohighlight">\(Nu\)</span> agree.</p>
-<a class="reference internal image-reference" href="../_images/t00_getting_started_rolls.png"><img alt="The saturated rolls: warm fluid rising at the sides (red), cool fluid sinking in the middle (green), with isotherms." loading="lazy" src="../_images/t00_getting_started_rolls.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t00_getting_started_rolls.png"><img alt="The saturated rolls in the (x, z) plane: warm fluid rising at the sides (red), cool fluid sinking in the middle (blue), isotherms, and a colour bar of the departure from conduction T + z." loading="lazy" src="../_images/t00_getting_started_rolls.png" style="width: 100%;" />
 </a>
 </section>
 <section id="the-checks">
@@ -858,7 +863,7 @@ the cold one: the three values of <span class="math notranslate nohighlight">\(N
 </section>
 <section id="output">
 <h2>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t00_getting_started: PASS (exit 0) in 138.6 s | 2026-10-20 | script sha256 f95681b44467db9d
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t00_getting_started: PASS (exit 0) in 167.7 s | 2026-10-21 | script sha256 aa3c621c10b74264
 Model 'Rayleigh-Benard': Box(x=periodic((0, 2)), z=walls(-0.5, 0.5)) (Cartesian box)
 Unknowns: u (velocity), p (pressure), T (scalar); parameters: Ra = 2500, Pr = 1
 Equations as written:
@@ -871,13 +876,13 @@ Boundary conditions: bottom: u = 0, T = 0.5; top: u = 0, T = -0.5 (tau method, p
 Gauge: the mean of p is fixed (integ(p) = 0)
 Dealiasing: x: 3/2, z: 3/2 (declared default for products of degree 2)
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
-(every decision, tau by tau and term by term: m.explain(full=True))
+(compiler decisions, tau by tau and term by term: m.explain(full=True))
 Ra = 1500: largest growth rate -1.637012
 Ra = 2500: largest growth rate +5.542506
 Ra_c = 1707.7618   k_c = 3.11632
 measured growth rate 5.542508   eigenvalue 5.542506
 t = 6.0: Nu = 1.474455 (layer)  1.474455 (bottom plate)  1.474455 (top plate)
-Run (rb_Ra2500): state completed, status provisional, 87.8 s
+Run (rb_Ra2500): state completed, status provisional, 91.1 s
 Methods paragraph generated from the plan (edit before publishing):
 
 The IVP 'Rayleigh-Benard' for (u, p, T) was solved with Conatus. The domain is discretized as follows: x ∈ [0, 2) is periodic and expanded in a real (cosine/sine) Fourier series of 32 modes; z ∈ [-0.5, 0.5] is expanded in 24 Chebyshev polynomials of the first kind. Derivatives, basis conversions and multiplications by non-constant coefficients use the sparse, banded ultraspherical operators of Olver &amp; Townsend, and boundary conditions are imposed with the generalized tau method (4 tau variable(s), each entering through a lift polynomial), following Burns et al. The Fourier directions decouple, giving 16 independent systems, one per wavenumber. Nonlinear terms are evaluated pseudospectrally with dealiasing factors 3/2 in x, 3/2 in z. The structural rank of every system was checked before factorization. Time integration uses the third-order, four-stage IMEX Runge–Kutta scheme (4,4,3) of Ascher, Ruuth &amp; Spiteri, whose implicit diagonal is constant so that a single factorization serves all stages, with a constant step Δt = 0.0005. The implicit systems are solved by banded LU factorization with a low-rank (Woodbury) correction for the tau rows, batched over wavenumbers on CPU, in float64 arithmetic. The equations were declared in the native layer of Conatus as written on paper; the implicit-explicit split, the 4 tau term(s) (each in the equation where its unknown has its highest wall-normal order) and the pressure gauge and its integral constraint were placed by fixed, declared rules (listed by explain()). The dealiasing factor 3/2 is the declared default of the native layer ((p+1)/2 for the highest polynomial degree p = 2 of the equations in the unknowns and given fields, at least 3/2).
@@ -887,7 +892,7 @@ Facts used: kind=IVP, groups=16, N_x=32, N_z=24, zbasis=Chebyshev, taus=4, deali
 OK: onset at Reid &amp; Harris' Ra_c and k_c; the simulation grows at the eigenvalue's rate and saturates into rolls carrying the same heat through both plates
 </pre></div>
 </div>
-<p>Next: tutorials 1 to 14, starting with <a class="reference internal" href="01_orr_sommerfeld.html"><span class="doc">1. A first eigenvalue problem: Orr–Sommerfeld</span></a>.</p>
+<p>Next: tutorials 1 to 14, starting with <a class="reference internal" href="01_orr_sommerfeld.html"><span class="doc">A first eigenvalue problem: Orr–Sommerfeld</span></a>.</p>
 </section>
 </section>
 
@@ -896,23 +901,23 @@ OK: onset at Reid &amp; Harris' Ra_c and k_c; the simulation grows at the eigenv
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="01_orr_sommerfeld.html">
+          <a class="next-page" href="02_rayleigh_benard.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">1. A first eigenvalue problem: Orr–Sommerfeld</div>
+                <div class="title">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="first_steps.html">
+          <a class="prev-page" href="01_orr_sommerfeld.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Getting started in ten minutes</div>
+                <div class="title">A first eigenvalue problem: Orr–Sommerfeld</div>
                 
               </div>
             </a>
@@ -946,7 +951,7 @@ OK: onset at Reid &amp; Harris' Ra_c and k_c; the simulation grows at the eigenv
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">0. Getting started: convection between two plates</a><ul>
+<li><a class="reference internal" href="#">Convection between two plates: from onset to simulation</a><ul>
 <li><a class="reference internal" href="#the-model">The model</a></li>
 <li><a class="reference internal" href="#is-the-fluid-at-rest-stable">Is the fluid at rest stable?</a></li>
 <li><a class="reference internal" href="#where-convection-starts">Where convection starts</a></li>
@@ -965,7 +970,7 @@ OK: onset at Reid &amp; Harris' Ra_c and k_c; the simulation grows at the eigenv
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

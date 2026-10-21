@@ -22,7 +22,7 @@ carries the residual that validates it and an `explain()` that lists the choices
 | {doc}`symmetry` | How to compute in a symmetry subspace, and what that hides |
 | {doc}`adjoint` | Gradients, adjoint modes, the wavemaker and base-flow sensitivity |
 | {doc}`optimal_perturbations` | Which initial perturbation grows most, linearly or not (Cartesian and spherical shell)? |
-| {doc}`data` | What do snapshots of a flow say? DMD and SPOD in the exact norm |
+| {doc}`data` | What do snapshots of a flow say? DMD and SPOD in a weighted norm |
 
 The snippets on these pages are executed as they are shown, at small resolutions so that they run
 in seconds; the tutorials carry each method to a published value.

@@ -1,8 +1,8 @@
 # Numerical uncertainty
 
 A number computed by a simulation (a growth rate, a mean, a value at a point) depends on the
-resolution and on the time step. `cn.uncertainty` reports it with an error estimate from studies
-that you declare: three resolutions and three time steps, nothing chosen for you.
+resolution and on the time step. `cn.uncertainty` reports it with an error estimate. Supply three
+resolutions and three time steps to estimate the spatial and temporal errors.
 
 ## A value with its error
 
@@ -17,8 +17,8 @@ that you declare: three resolutions and three time steps, nothing chosen for you
 :language: text
 ```
 
-The last line is the check made after the example: the exact value of this problem (a series of
-Bessel functions) lies inside the reported interval.
+The check script compares the result with the exact value of this problem (a series of Bessel
+functions): it lies inside the reported interval.
 
 ## What is computed
 
@@ -34,9 +34,10 @@ three resolutions at the finest time step (the finest run is shared).
   $1.25\,|d_2|/(e^{a h_2}-1)$ with $h_2$ the last increment of $N$ (equal increments:
   $1.25\,|d_2|\,\rho/(1-\rho)$). Differences that do not decrease geometrically, and tuple
   resolutions refined in different proportions, are flagged.
-- **Result**: the value at the finest resolution and time step (the Richardson value is never
-  substituted for it), the sum of both estimates, and the interval. `rep.trusted` is false as soon
-  as a study is flagged (also without `scheme_order`: the asymptotic range is then unchecked), and `rep.explain()` prints every number and assumption.
+- **Result**: the value at the finest resolution and time step (not the Richardson value), the
+  sum of both estimates, and the interval. `rep.trusted` is false when a study is flagged, and also
+  without `scheme_order`, because the asymptotic range is then unchecked. `rep.explain()` prints
+  the numbers and assumptions behind the estimate.
 
 The time steps must have a constant ratio and the resolutions must increase, the finest last;
 anything else is refused.

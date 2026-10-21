@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../">&larr; Conatus website</a>
-  <a href="../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../bases.html">Bases and domains</a></li>
@@ -680,10 +685,10 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="data-driven-analysis">
 <h1>Data-driven analysis<a class="headerlink" href="#data-driven-analysis" title="Link to this heading">¶</a></h1>
-<p>Dynamic mode decomposition and spectral proper orthogonal decomposition of snapshots, in the inner product of the physics rather than that of the array.</p>
-<p>Snapshots are vectors of values on a grid. Every decomposition takes a <code class="docutils literal notranslate"><span class="pre">DataInnerProduct</span></code>, built
-from the quadrature weights of the grid and per-component weights, so that modes are orthogonal in
-the energy norm of the flow. The example uses snapshots of the linear Ginzburg–Landau equation.</p>
+<p>Dynamic mode decomposition and spectral proper orthogonal decomposition of snapshots, in a weighted inner product.</p>
+<p>Snapshots are vectors of values on a grid. Each decomposition takes a <code class="docutils literal notranslate"><span class="pre">DataInnerProduct</span></code>, built
+from the quadrature weights of the grid and the weights you give each component. The modes are
+then orthogonal in that norm, for example the energy norm of the flow. The example uses snapshots of the linear Ginzburg–Landau equation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sla</span>
 
@@ -718,8 +723,8 @@ to observables of the state.</p>
 <section id="spectral-pod">
 <h2>Spectral POD<a class="headerlink" href="#spectral-pod" title="Link to this heading">¶</a></h2>
 <p>The Welch segmentation (<code class="docutils literal notranslate"><span class="pre">nfft</span></code>, <code class="docutils literal notranslate"><span class="pre">noverlap</span></code>, <code class="docutils literal notranslate"><span class="pre">window</span></code>), the treatment of the mean and one- or
-two-sided spectra are all arguments.</p>
-<p><strong>See also:</strong> tutorial <a class="reference internal" href="../../tutorials/13_sensitivity_data.html"><span class="doc">13. Where a global mode is born, and what the data say about it</span></a> (Towne et al. 2018);
+two-sided spectra are arguments.</p>
+<p><strong>See also:</strong> tutorial <a class="reference internal" href="../../tutorials/13_sensitivity_data.html"><span class="doc">Where a global mode is born, and what the data say about it</span></a> (Towne et al. 2018);
 <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.dmd.html"><span class="doc">dmd</span></a>, <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.spod.html"><span class="doc">spod</span></a>, <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.pod.html"><span class="doc">pod</span></a>,
 <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.DataInnerProduct.html"><span class="doc">DataInnerProduct</span></a>.</p>
 </section>
@@ -794,7 +799,7 @@ two-sided spectra are all arguments.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

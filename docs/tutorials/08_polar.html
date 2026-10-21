@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="10. Bifurcations: branch switching, cycles, codimension 2, normal forms" href="10_bifurcations.html"><link rel="prev" title="5. Invariant solutions: Kuramoto–Sivashinsky, L = 22" href="05_ks_orbits.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Lagrangian tracers and a numerical dye" href="16_particles_dye.html"><link rel="prev" title="A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU" href="02_rayleigh_benard.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>8. Polar geometry: a drum, a pipe, two rotating cylinders - Conatus</title>
+        <title>Polar geometry: a drum, a pipe, two rotating cylinders - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,9 +684,9 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="polar-geometry-a-drum-a-pipe-two-rotating-cylinders">
-<h1>8. Polar geometry: a drum, a pipe, two rotating cylinders<a class="headerlink" href="#polar-geometry-a-drum-a-pipe-two-rotating-cylinders" title="Link to this heading">¶</a></h1>
-<p>The same workflow runs on the disk, the annulus and the cylinder, on regular bases, with nothing
-divided by <span class="math notranslate nohighlight">\(r\)</span>.</p>
+<h1>Polar geometry: a drum, a pipe, two rotating cylinders<a class="headerlink" href="#polar-geometry-a-drum-a-pipe-two-rotating-cylinders" title="Link to this heading">¶</a></h1>
+<p>The same workflow runs on the disk, the annulus and the cylinder, on bases that are regular at the
+axis.</p>
 <p><strong>Goal.</strong> Solve three classical eigenvalue problems in polar and cylindrical geometry: the modes of
 a vibrating drum, written as a native model on <code class="docutils literal notranslate"><span class="pre">cn.Disk</span></code>; the linear stability of Hagen–Poiseuille
 flow in a pipe; and the onset of Taylor vortices between rotating cylinders. The last two come from
@@ -693,14 +698,13 @@ form). Pipe, <span class="math notranslate nohighlight">\(R = 1000\)</span>: rig
 1993, <em>Phys. Rev. E</em> 48, 4444, Table I).
 <strong>Time:</strong> under a minute on one CPU core.
 <strong>Script:</strong> <a class="reference download internal" download="" href="../_downloads/1e0352ed2dbb6fb96c3642c2918fb7be/t08_polar.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t08_polar.py</span></code></span></a> · <strong>Tests behind it:</strong> <code class="docutils literal notranslate"><span class="pre">tests/polar/</span></code>,
-<code class="docutils literal notranslate"><span class="pre">tests/problems/test_problems_cylinders.py</span></code> (also against Dedalus to <span class="math notranslate nohighlight">\(10^{-13}\)</span>).</p>
-<section id="regular-bases-nothing-divided-by-r">
-<h2>Regular bases, nothing divided by r<a class="headerlink" href="#regular-bases-nothing-divided-by-r" title="Link to this heading">¶</a></h2>
+<code class="docutils literal notranslate"><span class="pre">tests/problems/test_problems_cylinders.py</span></code>.</p>
+<section id="regular-bases-at-the-axis">
+<h2>Regular bases at the axis<a class="headerlink" href="#regular-bases-at-the-axis" title="Link to this heading">¶</a></h2>
 <p>On the disk each component is expanded in a regular (Zernike-type) basis
 <span class="math notranslate nohighlight">\(\rho^{|m|}\,P_n^{(a,|m|)}(2\rho^2 - 1)\)</span>, vectors are stored in spin components
-<span class="math notranslate nohighlight">\(u_\pm = u_r \pm i u_\varphi\)</span> (regular as <span class="math notranslate nohighlight">\(\rho^{|m\pm1|}\)</span>), and every operator is a sparse map between these bases (Vasil et al.
-2016). There is no axis condition to impose and no <span class="math notranslate nohighlight">\(1/(r + \varepsilon)\)</span>: regularity at <span class="math notranslate nohighlight">\(r = 0\)</span> is
-built in. You name the geometry and its wall; <code class="docutils literal notranslate"><span class="pre">explain()</span></code> prints the bases it chose.</p>
+<span class="math notranslate nohighlight">\(u_\pm = u_r \pm i u_\varphi\)</span> (regular as <span class="math notranslate nohighlight">\(\rho^{|m\pm1|}\)</span>), and each operator is a sparse map between these bases (Vasil et al.
+2016). The basis enforces regularity at <span class="math notranslate nohighlight">\(r = 0\)</span>, so no axis condition is imposed. You name the geometry and its wall; <code class="docutils literal notranslate"><span class="pre">explain()</span></code> prints the bases it chose.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">jn_zeros</span>
@@ -738,10 +742,10 @@ the block; without it v0.1 solves the first block and says so in a <code class="
 wall condition picks the zeros <span class="math notranslate nohighlight">\(j_{m,n}\)</span> of <span class="math notranslate nohighlight">\(J_m\)</span>.</p></li>
 </ul>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t08_drum.png"><img alt="Left: the computed eigenvalues of the drum for m = 0, 1, 2 as coloured dots, each on a black tick of the squared Bessel zeros. Right: their relative errors on a log scale, at rounding for the first modes and growing for the last ones." loading="lazy" src="../_images/t08_drum.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t08_drum.png"><img alt="The computed eigenvalues of the drum for m = 0, 1, 2 as coloured markers, each on a black tick of the squared Bessel zeros, rising with the radial index." loading="lazy" src="../_images/t08_drum.png" style="width: 85%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The vibrating drum at N = 32 radial modes: the eight slowest modes of each azimuthal group against the closed form −j²ₘ,ₙ. The first ones agree to rounding; the error grows with n as the modes become finer than the grid.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The vibrating drum at N = 32 radial modes: the eight slowest modes of each azimuthal number m against the closed form −j²ₘ,ₙ (ticks). Over these 24 modes the largest relative error is 3×10⁻¹⁵, the level of rounding error.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -766,14 +770,14 @@ wall condition picks the zeros <span class="math notranslate nohighlight">\(j_{m
 plan. Each block gets its own rank report before any solve.</p></li>
 <li><p>Sign convention: Meseguer &amp; Trefethen’s Table 1 lists <span class="math notranslate nohighlight">\(\operatorname{Im}\lambda\)</span> with the opposite
 sign to the one implied by their own eq. (15) and <span class="math notranslate nohighlight">\(V_t = \mathcal{L}V\)</span> (the centre mode advected by
-<span class="math notranslate nohighlight">\(W \approx 1\)</span> must have <span class="math notranslate nohighlight">\(\operatorname{Im}\lambda \approx -k\)</span>); Dedalus agrees with Conatus. The
-comparison is made with the conjugate, and that is written in the check.</p></li>
+<span class="math notranslate nohighlight">\(W \approx 1\)</span> must have <span class="math notranslate nohighlight">\(\operatorname{Im}\lambda \approx -k\)</span>). The comparison is made with the
+conjugate, and the check says so.</p></li>
 </ul>
 <figure class="align-default" id="id2">
-<a class="reference internal image-reference" href="../_images/t08_pipe_spectrum.png"><img alt="The spectrum of pipe flow at Re = 1000 for (m, k) = (1, 1): eigenvalues on three branches in the left half of the complex plane, the two rightmost marked red." loading="lazy" src="../_images/t08_pipe_spectrum.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t08_pipe_spectrum.png"><img alt="The spectrum of pipe flow at Re = 1000 for (m, k) = (1, 1): eigenvalues on three branches in the left half of the complex plane; the two rightmost are marked, a red dot and a blue square." loading="lazy" src="../_images/t08_pipe_spectrum.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Hagen-Poiseuille flow, R = 1000, (m, k) = (1, 1): the spectrum of the pipe block. All modes decay; the two least stable (red) are the centre and wall modes of Meseguer and Trefethen.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Hagen-Poiseuille flow, R = 1000, (m, k) = (1, 1): the spectrum of the pipe block, modes growing as exp(st). All modes decay. The two least stable are the centre mode, s = -0.0709 − 0.8467i, and the wall mode, s = -0.0911 − 0.4691i, of Meseguer and Trefethen (2003).</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -815,7 +819,7 @@ Meseguer &amp; Trefethen’s to the 10 published decimals. The Taylor–Couette 
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t08_polar: PASS (exit 0) in 33.7 s | 2026-10-20 | script sha256 b188c872c8126df9
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t08_polar: PASS (exit 0) in 8.8 s | 2026-10-21 | script sha256 b188c872c8126df9
 Model 'vibrating drum': Disk(radius=1) (disk)
 Unknowns: T (scalar)
 Eigenvalue: s; growth = Re s, declared with the eigenvalue s
@@ -825,7 +829,7 @@ Problem: EVP (eigenvalue s declared)
 Boundary conditions: wall: T = 0 (tau method, placed automatically)
 Dealiasing: phi: 3/2, r: 3/2 (declared default for products of degree 1)
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
-(every decision, tau by tau and term by term: m.explain(full=True))
+(compiler decisions, tau by tau and term by term: m.explain(full=True))
 m = 0: s = [ -5.78318596 -30.47126234 -74.88700679]  backward residual 7.8e-15
 m = 1: s = [ -14.68197064  -49.21845632 -103.4994539 ]  backward residual 3.8e-15
 m = 2: s = [ -26.37461643  -70.84999892 -135.02070887]  backward residual 2.1e-15
@@ -853,23 +857,23 @@ nonlinear versions of these flows.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="10_bifurcations.html">
+          <a class="next-page" href="16_particles_dye.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</div>
+                <div class="title">Lagrangian tracers and a numerical dye</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="05_ks_orbits.html">
+          <a class="prev-page" href="02_rayleigh_benard.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</div>
+                <div class="title">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</div>
                 
               </div>
             </a>
@@ -903,8 +907,8 @@ nonlinear versions of these flows.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">8. Polar geometry: a drum, a pipe, two rotating cylinders</a><ul>
-<li><a class="reference internal" href="#regular-bases-nothing-divided-by-r">Regular bases, nothing divided by r</a></li>
+<li><a class="reference internal" href="#">Polar geometry: a drum, a pipe, two rotating cylinders</a><ul>
+<li><a class="reference internal" href="#regular-bases-at-the-axis">Regular bases at the axis</a></li>
 <li><a class="reference internal" href="#a-vibrating-drum">A vibrating drum</a></li>
 <li><a class="reference internal" href="#hagenpoiseuille">Hagen–Poiseuille</a></li>
 <li><a class="reference internal" href="#taylorcouette">Taylor–Couette</a></li>
@@ -922,7 +926,7 @@ nonlinear versions of these flows.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

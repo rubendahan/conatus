@@ -40,10 +40,6 @@ y, v = mode.coordinate("y"), mode["v"]         # Chebyshev points, complex v(y)
 # [/mode]
 
 # [figure]
-import os
-
-import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(figsize=(6.4, 3.2), dpi=150)
@@ -51,12 +47,9 @@ ax.plot(y, v.real, label="Re v")
 ax.plot(y, v.imag, label="Im v")
 ax.plot(y, abs(v), "k--", lw=0.8, label="|v|")
 ax.set_xlabel("y")
-ax.set_title(f"Orr-Sommerfeld mode, Re = 1e4, alpha = 1: c = {res.values[i]:.6f}")
+ax.set_title("Least stable Orr-Sommerfeld mode, Re = 10⁴, α = 1")
 ax.legend()
-out = os.environ.get("CN_TUTORIAL_OUT", ".")
-os.makedirs(out, exist_ok=True)                # a CN_TUTORIAL_OUT that does not exist yet
-fig.savefig(os.path.join(out, "mode.png"),
-            bbox_inches="tight")
+fig.savefig("mode.png", bbox_inches="tight")
 # [/figure]
 
 # [critical]

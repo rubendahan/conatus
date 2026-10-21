@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU" href="02_rayleigh_benard.html"><link rel="prev" title="0. Getting started: convection between two plates" href="00_getting_started.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Convection between two plates: from onset to simulation" href="00_getting_started.html"><link rel="prev" title="First steps: the Burgers equation in ten minutes" href="first_steps.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>1. A first eigenvalue problem: Orr–Sommerfeld - Conatus</title>
+        <title>A first eigenvalue problem: Orr–Sommerfeld - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,7 +684,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="a-first-eigenvalue-problem-orrsommerfeld">
-<h1>1. A first eigenvalue problem: Orr–Sommerfeld<a class="headerlink" href="#a-first-eigenvalue-problem-orrsommerfeld" title="Link to this heading">¶</a></h1>
+<h1>A first eigenvalue problem: Orr–Sommerfeld<a class="headerlink" href="#a-first-eigenvalue-problem-orrsommerfeld" title="Link to this heading">¶</a></h1>
 <p><strong>Goal.</strong> Compute the least stable mode of plane Poiseuille flow at <span class="math notranslate nohighlight">\(Re = 10^4\)</span>, <span class="math notranslate nohighlight">\(\alpha = 1\)</span>, and
 the critical Reynolds number, with a residual for every number.
 <strong>Expected.</strong> <span class="math notranslate nohighlight">\(c = 0.23752649 + 0.00373967\,i\)</span> and <span class="math notranslate nohighlight">\(Re_c = 5772.22\)</span>, <span class="math notranslate nohighlight">\(\alpha_c = 1.02056\)</span>
@@ -717,9 +722,12 @@ the critical Reynolds number, with a residual for every number.
 </div>
 <p>Things to notice:</p>
 <ul class="simple">
-<li><p>No basis, no size, no tau: <code class="docutils literal notranslate"><span class="pre">cn.Box(y=cn.walls(-1,</span> <span class="pre">1))</span></code> names the geometry, <code class="docutils literal notranslate"><span class="pre">m.given(U=lambda</span> <span class="pre">y:</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">y**2)</span></code> the base flow (its argument names say it depends on <span class="math notranslate nohighlight">\(y\)</span> only), <code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code>
-the eigenvalue and how a mode grows (Im <span class="math notranslate nohighlight">\(c\)</span> for a phase speed; <code class="docutils literal notranslate"><span class="pre">growth=&quot;real&quot;</span></code> for <span class="math notranslate nohighlight">\(e^{st}\)</span>), <code class="docutils literal notranslate"><span class="pre">m.define</span></code> the operator <span class="math notranslate nohighlight">\(\mathcal{L}_2\)</span>. The resolution is chosen when solving
-(<code class="docutils literal notranslate"><span class="pre">N=64</span></code>).</p></li>
+<li><p>The model declares the geometry and the equations. The native compiler chooses the bases and
+the tau terms when you give <code class="docutils literal notranslate"><span class="pre">N</span></code> at the solve (<code class="docutils literal notranslate"><span class="pre">N=64</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cn.Box(y=cn.walls(-1,</span> <span class="pre">1))</span></code> names the geometry, and <code class="docutils literal notranslate"><span class="pre">m.given(U=lambda</span> <span class="pre">y:</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">y**2)</span></code> the base
+flow (its argument names say it depends on <span class="math notranslate nohighlight">\(y\)</span> only). <code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code> declares
+the eigenvalue and how a mode grows (Im <span class="math notranslate nohighlight">\(c\)</span> for a phase speed; <code class="docutils literal notranslate"><span class="pre">growth=&quot;real&quot;</span></code> for <span class="math notranslate nohighlight">\(e^{st}\)</span>).
+<code class="docutils literal notranslate"><span class="pre">m.define</span></code> names the operator <span class="math notranslate nohighlight">\(\mathcal{L}_2\)</span>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">m.at(&quot;walls&quot;,</span> <span class="pre">&quot;v</span> <span class="pre">=</span> <span class="pre">0&quot;,</span> <span class="pre">&quot;dy(v)</span> <span class="pre">=</span> <span class="pre">0&quot;)</span></code> gives four conditions; each tau is placed by a fixed rule
 (in the equation where <span class="math notranslate nohighlight">\(v\)</span> has its highest order, modes <span class="math notranslate nohighlight">\(N-1, \dots, N-4\)</span>) and
 <code class="docutils literal notranslate"><span class="pre">m.explain(full=True)</span></code> prints them (<code class="docutils literal notranslate"><span class="pre">m.explain()</span></code> is the short summary). The matrices are <strong>bit-identical</strong> to the hand-written IR version
@@ -734,15 +742,17 @@ the eigenvalue and how a mode grows (Im <span class="math notranslate nohighligh
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"c = </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.10f</span><span class="si">}</span><span class="s2">   backward residual </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">residuals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The tau method produces spurious eigenvalues with huge <span class="math notranslate nohighlight">\(|c|\)</span>. Conatus never hides them behind a
-threshold: <code class="docutils literal notranslate"><span class="pre">drift=96</span></code> (i.e. <code class="docutils literal notranslate"><span class="pre">drift_plan=</span></code>) solves the same problem at a finer resolution and keeps only modes that
-reappear within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code>. <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code> says how many modes were removed and why, and every
-kept mode carries its backward residual <span class="math notranslate nohighlight">\(\|(L + cM)x\|\)</span> and its drift.</p>
+<p>The tau method produces spurious eigenvalues with huge <span class="math notranslate nohighlight">\(|c|\)</span>. The drift filter compares
+eigenvalues at two resolutions: <code class="docutils literal notranslate"><span class="pre">drift=96</span></code> (i.e. <code class="docutils literal notranslate"><span class="pre">drift_plan=</span></code>) solves the same problem at a finer
+resolution and keeps only the modes that reappear within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code>. The dense solver also
+classifies eigenvalues as finite or infinite, with a separate threshold. <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code> says how
+many modes were removed and why. Each kept mode carries its backward residual <span class="math notranslate nohighlight">\(\|(L + cM)x\|\)</span> and
+its drift.</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t01_spectrum.png"><img alt="A few eigenvalues in the plane of phase speed and growth, all below the zero line except one red point just above it near Re c = 0.24." loading="lazy" src="../_images/t01_spectrum.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t01_spectrum.png"><img alt="A few eigenvalues in the plane of phase speed and growth, all below the zero line except one red point just above it near Re c = 0.24." loading="lazy" src="../_images/t01_spectrum.png" style="width: 90%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The modes kept by the drift test of the page (found again at N = 96), in the plane of phase speed and growth. Only one lies above the dashed line: the Tollmien-Schlichting wave, unstable at Re = 10⁴.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Plane Poiseuille flow at Re = 10⁴, α = 1: the 7 modes kept by the drift test of the page (found again at N = 96). A mode varies as exp(iα(x − ct)), so Re c is its phase speed and α Im c its growth rate. Only the Tollmien-Schlichting wave (red), c = 0.23753 + 0.00374i, lies above the dashed line Im c = 0.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -760,10 +770,10 @@ defined up to a complex factor, so the normalisation is declared and printed by 
 the first unknown has <span class="math notranslate nohighlight">\(\max|v| = 1\)</span>, real and positive where <span class="math notranslate nohighlight">\(|v|\)</span> is largest (here the centre of
 the channel). The physical perturbation is <span class="math notranslate nohighlight">\(\operatorname{Re}[v(y)\,e^{i\alpha(x - ct)}]\)</span>.</p>
 <figure class="align-default" id="id2">
-<a class="reference internal image-reference" href="../_images/t01_coefficients.png"><img alt="The magnitudes of the 64 Chebyshev coefficients of the mode on a log scale: one sequence falls steadily from 1 to about 1e-12, the other stays near 1e-12." loading="lazy" src="../_images/t01_coefficients.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t01_coefficients.png"><img alt="The magnitudes of the 64 Chebyshev coefficients of the mode on a log scale, even indices as red dots and odd indices as open blue squares: the even ones fall from 1 to about 4×10⁻¹⁰; the odd ones stay near 3×10⁻¹⁶." loading="lazy" src="../_images/t01_coefficients.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The Chebyshev coefficients of the mode (mode.coeffs(“v”)). The even ones fall to about 10⁻¹² by the last index, the level of the odd ones, which v, even in y, does not need: 64 modes resolve it.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The Chebyshev coefficients of the mode (mode.coeffs(“v”)), even and odd indices apart. v is even in y, so only the even coefficients carry it: they fall to 4×10⁻¹⁰ at the last even index. The odd ones stay at the rounding level, about 3×10⁻¹⁶. The largest of the last 10 % of the coefficients is 6×10⁻⁹ of the largest one, the spectral-tail measure that the eigenvalue result reports.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -780,23 +790,24 @@ the channel). The physical perturbation is <span class="math notranslate nohighl
 <span class="nb">print</span><span class="p">(</span><span class="n">verify</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">crit</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="n">crit</span><span class="p">)</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>  <span class="c1"># residuals, spectral tail, Taylor tests</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">ParametricEVP</span></code> builds <span class="math notranslate nohighlight">\(L(Re, \alpha)\)</span> and <span class="math notranslate nohighlight">\(M(Re, \alpha)\)</span> once, as exact Laurent polynomials in the
-parameters. <code class="docutils literal notranslate"><span class="pre">drift=96</span></code> builds the same pencil at <span class="math notranslate nohighlight">\(N = 96\)</span>: as for <code class="docutils literal notranslate"><span class="pre">eigenvalues(drift=)</span></code>, only the
-modes found again there within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code> are candidates, so the spurious tau modes never compete
-with the physical ones (no hand-written bound on <span class="math notranslate nohighlight">\(|c|\)</span>). The growth of a mode is
+<p><code class="docutils literal notranslate"><span class="pre">ParametricEVP</span></code> builds <span class="math notranslate nohighlight">\(L(Re, \alpha)\)</span> and <span class="math notranslate nohighlight">\(M(Re, \alpha)\)</span> once, as Laurent polynomials in the
+parameters reconstructed from plans at a few parameter values. <code class="docutils literal notranslate"><span class="pre">P.explain()</span></code> reports the
+reconstruction error and the coefficient entries discarded at rounding level. <code class="docutils literal notranslate"><span class="pre">drift=96</span></code>
+builds the same pencil at <span class="math notranslate nohighlight">\(N = 96\)</span>. As for <code class="docutils literal notranslate"><span class="pre">eigenvalues(drift=)</span></code>, only the modes found again there
+within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code> are candidates, so the spurious tau modes are not selected. The growth of a mode is
 <span class="math notranslate nohighlight">\(\operatorname{Im} c\)</span> because <span class="math notranslate nohighlight">\(c\)</span> is a phase speed: <code class="docutils literal notranslate"><span class="pre">critical</span></code> and <code class="docutils literal notranslate"><span class="pre">least_stable</span></code> read this off the
 declared eigenvalue (<code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code>) and print it in <code class="docutils literal notranslate"><span class="pre">crit.explain()</span></code>. <code class="docutils literal notranslate"><span class="pre">critical</span></code> follows the least
 stable mode by bordered Newton to <span class="math notranslate nohighlight">\(\operatorname{Im} c = 0\)</span> and minimises over <span class="math notranslate nohighlight">\(\alpha\)</span>; a call that
 leaves out a parameter of the pencil uses the value declared in the model (logged).
 <code class="docutils literal notranslate"><span class="pre">P.sensitivity</span></code> gives <span class="math notranslate nohighlight">\(\partial c / \partial Re\)</span> from the left and right eigenvectors (no finite
 differences). <code class="docutils literal notranslate"><span class="pre">verify</span></code> then <em>reports</em> residuals, the spectral tail of the eigenvector (is <span class="math notranslate nohighlight">\(N = 64\)</span>
-enough?) and Taylor tests of the exact derivatives. A bracket in which the growth does not change
+enough?) and Taylor tests of the parameter derivatives. A bracket in which the growth does not change
 sign is refused with the growth at both ends and a suggested bracket.</p>
 <figure class="align-default" id="id3">
 <a class="reference internal image-reference" href="../_images/t01_neutral_curve.png"><img alt="The neutral curve of plane Poiseuille flow: a red tongue opening to the right in the plane of Reynolds number (log scale) and wavenumber, its nose marked at Re about 5772 and alpha about 1.02." loading="lazy" src="../_images/t01_neutral_curve.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Im c of the least stable mode on a grid of (Re, α), from the parametric pencil of the page. Inside the red line the flow is unstable; its nose is the critical point the script finds.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Im c of the least stable mode on a grid of (Re, α), from the parametric pencil of the page. Inside the red line the flow is unstable. Its nose is the critical point the script finds, Re_c = 5772.2 at α_c = 1.0205.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -817,7 +828,7 @@ sign is refused with the growth at both ends and a suggested bracket.</p>
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t01_orr_sommerfeld: PASS (exit 0) in 29.6 s | 2026-10-20 | script sha256 60324eaa146e273f
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t01_orr_sommerfeld: PASS (exit 0) in 32.3 s | 2026-10-21 | script sha256 2f9874f5c6622a51
 Model 'Orr-Sommerfeld'
 Geometry: Box(y=walls(-1, 1)) (Cartesian box)
   bases (fixed per geometry, sizes given at discretization):
@@ -864,28 +875,30 @@ c = 0.2375264888+0.0037396706j   backward residual 1.4e-16
 EVPMode 0 [single group (no Fourier direction)]: eigenvalue 0.237526488819+0.00373967062225j, residual 1.4e-16
   unknowns: v (complex grid values on the non-dealiased grid, y: 64; tau variables left out)
   normalisation: max |q| = 1 for the first non-zero unknown (declaration order), real and positive at its largest grid value; the other unknowns scaled by the same complex factor (here: v, max |v| = 1 at its largest grid value)
-CriticalPoint Re_c = 5772.221816 at alpha=1.020547442 (11 neutral-curve evaluations)
+CriticalPoint Re_c = 5772.221816 at alpha=1.02054745 (20 neutral-curve evaluations)
   start: Re = 6000 (bracket midpoint (default))
   tolerance: |dRe| &lt;= 1e-09 |Re| + 2e-09
   growth = Im c, declared with the eigenvalue c
+  minimum over alpha: neutral Re at 9 points of (0.98, 1.06) (OVER_SCAN_POINTS = 9, spacing 0.01); a minimum narrower than the spacing is not seen (raise over_points)
+  local minima of the scan refined (1): Re = 5772.221816 at alpha = 1.02054745
   bracket ends (least stable admissible mode, full QZ): growth -1.513e-03 at Re = 5000, 1.578e-03 at Re = 7000: a sign change, so a neutral point lies inside
-  spectral-tail test passed 35 of 60 (SPURIOUS_TAIL_TOL = 0.001); the spectral-tail test set aside 2 mode(s) of larger growth than every mode it kept (largest: sigma = 0.01709588437+2424.532429j, growth 2.425e+03, tail 1.0e+00): spurious tau or unresolved modes; raise N, or spurious='none' to select them; drift test kept 13 of 60 (resolution drift &lt;= 1e-06 against the finer pencil [single group (no Fourier direction)] size (100, 100)) finite modes (8 infinite)
-  at the critical point: spectral-tail test passed 35 of 60 (SPURIOUS_TAIL_TOL = 0.001); the spectral-tail test set aside 2 mode(s) of larger growth than every mode it kept (largest: sigma = 0.01678228628+2495.520313j, growth 2.496e+03, tail 1.0e+00): spurious tau or unresolved modes; raise N, or spurious='none' to select them; drift test kept 14 of 60 (resolution drift &lt;= 1e-06 against the finer pencil [single group (no Fourier direction)] size (100, 100)) finite modes (8 infinite)
-  ParametricEVP [single group (no Fourier direction)] size (68, 68): Re: exponents -1..0 (nominal 10000.0), alpha: exponents -1..3 (nominal 1.0); 5 coefficient matrices from 10 plans at roots of unity (5 identically zero dropped); reconstruction error at an independent real point 1.5e-16 (refused above 1e-10); pencil L + sM: structural rank 68/68, regular at a generic s (equilibrated sigma_min/sigma_max = 1.1e-07); mode tracking: bordered Newton, declared defaults TRACK_TOL = 1e-13, TRACK_MAX_ITERATIONS = 30
-  verification: full QZ at the critical point, tracked mode is the least stable admissible one (max growth -1.7e-15), residual 5.2e-20
-  TrackedMode sigma = 2.640002595802e-01+8.153621244480e-18j at {'alpha': np.float64(1.0205474415859814), 'Re': np.float64(5772.221816217911)}: residual 5.2e-20 after 1 bordered-Newton iterations; left vector available (sensitivities)
+  spectral-tail test passed 35 of 60 (SPURIOUS_TAIL_TOL = 0.001); the spectral-tail test set aside 2 mode(s) of larger growth than every mode it kept (largest: sigma = 0.01803591734+2500.18117j, growth 2.500e+03, tail 1.0e+00): spurious tau or unresolved modes; raise N, or spurious='none' to select them; drift test kept 14 of 60 (resolution drift &lt;= 1e-06 against the finer pencil [single group (no Fourier direction)] size (100, 100)) finite modes (8 infinite)
+  at the critical point: spectral-tail test passed 35 of 60 (SPURIOUS_TAIL_TOL = 0.001); the spectral-tail test set aside 2 mode(s) of larger growth than every mode it kept (largest: sigma = 0.01678227803+2495.520292j, growth 2.496e+03, tail 1.0e+00): spurious tau or unresolved modes; raise N, or spurious='none' to select them; drift test kept 14 of 60 (resolution drift &lt;= 1e-06 against the finer pencil [single group (no Fourier direction)] size (100, 100)) finite modes (8 infinite)
+  ParametricEVP [single group (no Fourier direction)] size (68, 68): Re: exponents -1..0 (nominal 10000.0), alpha: exponents -1..3 (nominal 1.0); 5 coefficient matrices from 10 plans at roots of unity (5 matrices and 15399 entries at rounding level discarded: |entry| &lt;= 1e-13 x its largest modulus over the plans; an evaluation where they could exceed RECON_TOL of the pencil is refused); reconstruction error at an independent real point 1.1e-16 (refused above 1e-10); pencil L + sM: structural rank 68/68, regular at a generic s (equilibrated sigma_min/sigma_max = 1.1e-07); mode tracking: bordered Newton, declared defaults TRACK_TOL = 1e-13, TRACK_MAX_ITERATIONS = 30
+  verification: full QZ at the critical point, tracked mode is the least stable admissible one (max growth 5.1e-16), residual 6.5e-20
+  TrackedMode sigma = 2.640002605979e-01+6.386968122467e-19j at {'alpha': 1.020547450306678, 'Re': np.float64(5772.221816218035)}: residual 6.5e-20 after 2 bordered-Newton iterations; left vector available (sensitivities)
 Re_c = 5772.2218   alpha_c = 1.020547
 dc/dRe = -4.213e-06+3.428e-07j
 Verification report: 9 checks, 0 to investigate by hand
-  [PASS] pencil reconstruction: 1.54e-16 (threshold 1e-10) — parametric L(p), M(p) vs a directly assembled plan
+  [PASS] pencil reconstruction: 1.15e-16 (threshold 1e-10) — parametric L(p), M(p) vs a directly assembled plan
   [PASS] pencil regular: 0.00e+00 (threshold 5e-01) — pencil L + sM: structural rank 68/68, regular at a generic s (equilibrated sigma_min/sigma_max = 1.1e-07)
-  [PASS] right residual: 5.16e-20 (threshold 1e-12) — ||(L + sigma M) x|| backward error
-  [PASS] left residual: 1.36e-20 (threshold 1e-12) — ||y^H (L + sigma M)|| backward error
-  [PASS] spectral tail: 1.72e-10 (threshold 1e-08) — last 4 Chebyshev coefficients / max (mode resolved in N)
+  [PASS] right residual: 6.49e-20 (threshold 1e-12) — ||(L + sigma M) x|| backward error, measured on the current vector
+  [PASS] left residual: 1.83e-20 (threshold 1e-12) — ||y^H (L + sigma M)|| backward error, measured on the current vector
+  [PASS] spectral tail: 1.72e-10 (threshold 1e-08) — last 4 Chebyshev coefficients / max, per component of each unknown (mode resolved in N; NaN: no component long enough, not measured)
   [PASS] d sigma/d Re Taylor test: 4.44e-09 (threshold 1e-05) — exact sensitivity vs central difference of tracked sigma
   [PASS] d sigma/d alpha Taylor test: 7.60e-09 (threshold 1e-05) — exact sensitivity vs central difference of tracked sigma
-  [PASS] critical point mode: 0.00e+00 (threshold 5e-01) — full QZ at the critical point confirms the tracked mode is the least stable
-  [PASS] critical growth: 8.15e-18 (threshold 1e-10) — growth of the tracked mode at the neutral value
+  [PASS] critical point mode: 0.00e+00 (threshold 5e-01) — recorded by critical(): its full QZ at the critical point found the tracked mode the least stable (not repeated here)
+  [PASS] critical growth: 6.39e-19 (threshold 1e-10) — growth of the critical mode at the neutral value, measured on its current eigenvalue
 OK: c and Re_c agree with Orszag (1971) to the published digits; alpha_c within 2e-5
 </pre></div>
 </div>
@@ -895,7 +908,7 @@ OK: c and Re_c agree with Orszag (1971) to the published digits; alpha_c within 
 <ul class="simple">
 <li><p>Same problem with shift-invert (<code class="docutils literal notranslate"><span class="pre">eigenvalues(plan,</span> <span class="pre">method=&quot;shift-invert&quot;,</span> <span class="pre">target=0.24,</span> <span class="pre">n_modes=4)</span></code>).</p></li>
 <li><p>Left eigenvectors and the physical adjoint: <a class="reference internal" href="../guide/operators.html"><span class="doc">IR and operators</span></a>.</p></li>
-<li><p>Symmetric subspaces of the same problem (half the cost): <a class="reference internal" href="03_symmetries.html"><span class="doc">3. Symmetries and symmetry subspaces</span></a>.</p></li>
+<li><p>Symmetric subspaces of the same problem (half the cost): <a class="reference internal" href="03_symmetries.html"><span class="doc">Symmetries and symmetry subspaces</span></a>.</p></li>
 </ul>
 </section>
 </section>
@@ -905,23 +918,23 @@ OK: c and Re_c agree with Orszag (1971) to the published digits; alpha_c within 
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="02_rayleigh_benard.html">
+          <a class="next-page" href="00_getting_started.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</div>
+                <div class="title">Convection between two plates: from onset to simulation</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="00_getting_started.html">
+          <a class="prev-page" href="first_steps.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">0. Getting started: convection between two plates</div>
+                <div class="title">First steps: the Burgers equation in ten minutes</div>
                 
               </div>
             </a>
@@ -955,7 +968,7 @@ OK: c and Re_c agree with Orszag (1971) to the published digits; alpha_c within 
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">1. A first eigenvalue problem: Orr–Sommerfeld</a><ul>
+<li><a class="reference internal" href="#">A first eigenvalue problem: Orr–Sommerfeld</a><ul>
 <li><a class="reference internal" href="#the-equation">The equation</a></li>
 <li><a class="reference internal" href="#write-the-problem">Write the problem</a></li>
 <li><a class="reference internal" href="#solve-and-reject-spurious-modes">Solve and reject spurious modes</a></li>
@@ -975,7 +988,7 @@ OK: c and Re_c agree with Orszag (1971) to the published digits; alpha_c within 
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

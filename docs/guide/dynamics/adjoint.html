@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../">&larr; Conatus website</a>
-  <a href="../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../bases.html">Bases and domains</a></li>
@@ -680,13 +685,13 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="adjoints-and-sensitivity">
 <h1>Adjoints and sensitivity<a class="headerlink" href="#adjoints-and-sensitivity" title="Link to this heading">¶</a></h1>
-<p>Exact tangent and adjoint of the discrete time stepper, adjoint eigenmodes in a declared inner product, the wavemaker and the sensitivity to the base flow.</p>
+<p>Tangent and adjoint of the discrete time stepper, adjoint eigenmodes in a declared inner product, the wavemaker and the sensitivity to the base flow.</p>
 <section id="tangent-and-adjoint-of-the-time-stepper">
 <h2>Tangent and adjoint of the time stepper<a class="headerlink" href="#tangent-and-adjoint-of-the-time-stepper" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">FlowMap</span></code> turns a time integration <span class="math notranslate nohighlight">\(X_N = \Phi(X_0)\)</span> into a differentiable map. <code class="docutils literal notranslate"><span class="pre">jvp</span></code> applies the
-tangent <span class="math notranslate nohighlight">\(\mathrm d\Phi\,V\)</span> and <code class="docutils literal notranslate"><span class="pre">vjp</span></code> its transpose <span class="math notranslate nohighlight">\(\mathrm d\Phi^{\mathsf T} W\)</span>, both exact for
-the discrete scheme (same stages, same solves, same dealiasing), so that the dot-product test holds
-to rounding:</p>
+tangent <span class="math notranslate nohighlight">\(\mathrm d\Phi\,V\)</span> and <code class="docutils literal notranslate"><span class="pre">vjp</span></code> its transpose <span class="math notranslate nohighlight">\(\mathrm d\Phi^{\mathsf T} W\)</span>. Both are the
+derivatives of the discrete scheme itself (same stages, same solves, same dealiasing), so the
+dot-product test holds to rounding:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
@@ -710,23 +715,23 @@ to rounding:</p>
 </pre></div>
 </div>
 <p>The transpose is taken in the plain pairing <span class="math notranslate nohighlight">\(\langle a, b\rangle = \sum_i a_i b_i\)</span> of the
-coefficients. <strong>A transpose is not the physical adjoint.</strong> In an inner product of weight <span class="math notranslate nohighlight">\(W\)</span> (the
-kinetic energy, for instance) the adjoint is</p>
+coefficients. In an inner product of weight <span class="math notranslate nohighlight">\(W\)</span> (the kinetic energy, for instance), the physical
+adjoint is</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
 \[ L^\dagger = W^{-1} L^{*} W , \]</div>
 </div>
-<p>which <code class="docutils literal notranslate"><span class="pre">vjp_physical(X0,</span> <span class="pre">W,</span> <span class="pre">weight)</span></code> applies. On the spherical shell the state is complex (stored
+<p>which <code class="docutils literal notranslate"><span class="pre">vjp_physical(X0,</span> <span class="pre">W,</span> <span class="pre">weight)</span></code> applies. The plain pairing is the case <span class="math notranslate nohighlight">\(W = I\)</span>. On the spherical shell the state is complex (stored
 modes <span class="math notranslate nohighlight">\(m \ge 0\)</span> of real fields) and the step only real-linear: there the pairing is
 <span class="math notranslate nohighlight">\(\langle a, b\rangle = \mathrm{Re}\sum_i \bar a_i b_i\)</span> (<code class="docutils literal notranslate"><span class="pre">fm.pair</span></code>, declared by <code class="docutils literal notranslate"><span class="pre">explain()</span></code>); see
 <a class="reference internal" href="optimal_perturbations.html"><span class="doc">Tangent, adjoint and optimal perturbations</span></a>. With <code class="docutils literal notranslate"><span class="pre">f_backend=&quot;fused&quot;</span></code> the shell adjoint follows the planned path of
 the forward step: the transposes of the same radial and angular GEMMs, phi FFTs and product program
-(one generated kernel per product tree on the GPU), so a <code class="docutils literal notranslate"><span class="pre">vjp</span></code> step costs 1.6 to 1.8 forward steps
-on one CPU core instead of 3.0 to 3.3; the adjoint is the same up to rounding as the term-by-term
-walk of the reference evaluator, which equations outside its scope keep (<code class="docutils literal notranslate"><span class="pre">fm.explain()</span></code> names
-them). Long trajectories are reversed with binomial
-checkpointing (<code class="docutils literal notranslate"><span class="pre">checkpoints=</span></code>). The gradient of any final-time objective costs one forward and one
-backward integration.</p>
+(one generated kernel per product tree on the GPU). A <code class="docutils literal notranslate"><span class="pre">vjp</span></code> step then costs 1.6 to 1.8 forward steps
+on one CPU core instead of 3.0 to 3.3. The result
+equals, up to rounding, the term-by-term walk of the reference evaluator. Equations outside the
+planned scope keep that walk, and <code class="docutils literal notranslate"><span class="pre">fm.explain()</span></code> names them. Long trajectories are reversed with
+binomial checkpointing (<code class="docutils literal notranslate"><span class="pre">checkpoints=</span></code>). The gradient of a final-time objective costs one forward
+and one backward integration.</p>
 <p>A term that is not differentiable in the state, <code class="docutils literal notranslate"><span class="pre">abs(T)</span></code> or <code class="docutils literal notranslate"><span class="pre">sign(T)</span></code>, is refused when the tangent
 is built (<code class="docutils literal notranslate"><span class="pre">UnsupportedError</span></code>, with the reason): the tangent and the adjoint do not exist where the
 argument changes sign, and a trajectory crosses that set. Write a smooth approximation into the
@@ -738,8 +743,8 @@ wherever the base does not vanish) and refuses <code class="docutils literal not
 <h2>Checkpoints off the GPU and sweeps longer than one job<a class="headerlink" href="#checkpoints-off-the-gpu-and-sweeps-longer-than-one-job" title="Link to this heading">¶</a></h2>
 <p>With Revolve (<code class="docutils literal notranslate"><span class="pre">checkpoints=k</span></code>) the checkpoints can live elsewhere than in device memory, and a
 reverse sweep (or an optimal-perturbation iteration) can be cut by a time budget and resumed by the
-next job. A copy moves bits unchanged: every store, and every cut-and-resume, gives the same result
-bit for bit as the uninterrupted device run.</p>
+next job. Each store, and each cut-and-resume, gives the same result bit for bit as the
+uninterrupted device run, because a copy moves the bits unchanged.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
@@ -769,7 +774,7 @@ disk at every step costs more than the step itself.</p></li>
 <li><p>The journal (position in the Revolve action list, partial cotangents, live checkpoints) is written
 atomically: a job killed while writing it leaves the previous one, which the next job resumes. A
 journal of another computation (other X0, W, map, operators, parameters or backend) is refused.
-The journal directory may hold other files: only its own are ever removed.</p></li>
+The journal directory may hold other files; the routine removes only its own.</p></li>
 <li><p>A suspension with <code class="docutils literal notranslate"><span class="pre">&quot;host&quot;</span></code> writes every live checkpoint to disk (up to k states, and two
 generations at once for a moment): leave that writing time between <code class="docutils literal notranslate"><span class="pre">budget_s</span></code> and the job’s time
 limit. Each call takes at least one step before looking at the budget. For optimal
@@ -814,8 +819,8 @@ any modification of it. On the linear Ginzburg–Landau equation both have close
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"d lambda / d mu_2 = </span><span class="si">{</span><span class="n">bfs</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Y</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">adjoint=</span></code> is a required choice (<code class="docutils literal notranslate"><span class="pre">&quot;continuous&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;discrete&quot;</span></code>), never implied.</p>
-<p><strong>See also:</strong> tutorial <a class="reference internal" href="../../tutorials/13_sensitivity_data.html"><span class="doc">13. Where a global mode is born, and what the data say about it</span></a> (Chomaz 2005);
+<p>Supply <code class="docutils literal notranslate"><span class="pre">adjoint=&quot;continuous&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">adjoint=&quot;discrete&quot;</span></code>; the argument is required.</p>
+<p><strong>See also:</strong> tutorial <a class="reference internal" href="../../tutorials/13_sensitivity_data.html"><span class="doc">Where a global mode is born, and what the data say about it</span></a> (Chomaz 2005);
 <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.FlowMap.html"><span class="doc">FlowMap</span></a>, <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.compare_adjoints.html"><span class="doc">compare_adjoints</span></a>,
 <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.InnerProduct.html"><span class="doc">InnerProduct</span></a>, <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.structural_sensitivity.html"><span class="doc">structural_sensitivity</span></a>,
 <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.base_flow_sensitivity.html"><span class="doc">base_flow_sensitivity</span></a>.</p>
@@ -893,7 +898,7 @@ any modification of it. On the linear Ginzburg–Landau equation both have close
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

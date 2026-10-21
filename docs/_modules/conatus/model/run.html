@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -227,11 +227,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../../">&larr; Conatus website</a>
-  <a href="../../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -241,21 +246,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -302,7 +307,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/bases.html">Bases and domains</a></li>
@@ -1061,11 +1066,8 @@
 <span class="sd">        (default, v0.1) raises ``cn.StopRun`` out of here; ``"return"`` ends the run where it is</span>
 <span class="sd">        and returns normally, so that the post-processing after ``run()`` still runs</span>
 <span class="sd">        (``sim.stopped`` then holds the reason)."""</span>
-        <span class="k">if</span> <span class="n">on_stop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"return"</span><span class="p">):</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">did_you_mean</span>
-            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"run(on_stop=</span><span class="si">{</span><span class="n">on_stop</span><span class="si">!r}</span><span class="s2">)"</span><span class="p">,</span>
-                              <span class="n">fix</span><span class="o">=</span><span class="s2">"on_stop='raise' (cn.StopRun out of run) or 'return'"</span>
-                                  <span class="o">+</span> <span class="n">did_you_mean</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">on_stop</span><span class="p">),</span> <span class="p">(</span><span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"return"</span><span class="p">)),</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_arguments</span><span class="p">(</span><span class="n">until</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="n">every</span><span class="p">,</span>
+                                <span class="n">record</span><span class="o">=</span><span class="n">record</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span> <span class="n">on_stop</span><span class="o">=</span><span class="n">on_stop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">on_stop</span> <span class="o">==</span> <span class="s2">"return"</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">..telemetry.sink</span><span class="w"> </span><span class="kn">import</span> <span class="n">StopRun</span>
@@ -1075,6 +1077,47 @@
             <span class="k">except</span> <span class="n">StopRun</span> <span class="k">as</span> <span class="n">stop</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">stop</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"stopped from the Studio"</span>
                 <span class="k">return</span> <span class="bp">self</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>                   <span class="c1"># the native callback sees the Simulation</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">callback</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_solver</span><span class="p">:</span> <span class="n">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># noqa: E731</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">watching</span>
+        <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">w</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="n">callback</span><span class="p">,</span> <span class="n">every</span> <span class="o">=</span> <span class="n">_combine</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="n">w</span><span class="o">.</span><span class="n">poll</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">every</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>                     <span class="c1"># particles: the velocity at the start</span>
+            <span class="n">begin</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s2">"begin_run"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">begin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">begin</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>                     <span class="c1"># the row of the start (output(initial=True))</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s2">"initial_pending"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">o</span><span class="o">.</span><span class="n">write_initial</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>                           <span class="c1"># cn.io files, each on its own cadence</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..io.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">_combine</span> <span class="k">as</span> <span class="n">_combine_io</span>
+            <span class="n">callback</span><span class="p">,</span> <span class="n">every</span> <span class="o">=</span> <span class="n">_combine_io</span><span class="p">([(</span><span class="n">callback</span><span class="p">,</span> <span class="n">every</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[(</span><span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">every</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">w</span><span class="o">.</span><span class="n">closed</span> <span class="ow">and</span> <span class="n">w</span><span class="o">.</span><span class="n">settable</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_settable</span><span class="p">(</span><span class="n">until</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">every</span><span class="p">,</span> <span class="n">w</span><span class="o">.</span><span class="n">poll</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_sidecars</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">every</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">record</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>                                   <span class="c1"># also after a stop or a NumericalError:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_sidecars</span><span class="p">()</span>                 <span class="c1"># the sidecar lists the rows written</span>
+        <span class="k">return</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">out</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_arguments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">until</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">every</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">record</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">on_stop</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"raise"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The checks of :meth:`run` on its arguments, without side effects; returns the number</span>
+<span class="sd">        of steps. Shared by ``run`` and by ``python -m conatus agent check`` (review 0.1.1, F13:</span>
+<span class="sd">        the dry run stopped at ``run(steps=-1)`` and reported ok)."""</span>
+        <span class="k">if</span> <span class="n">on_stop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"return"</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">did_you_mean</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"run(on_stop=</span><span class="si">{</span><span class="n">on_stop</span><span class="si">!r}</span><span class="s2">)"</span><span class="p">,</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="s2">"on_stop='raise' (cn.StopRun out of run) or 'return'"</span>
+                                  <span class="o">+</span> <span class="n">did_you_mean</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">on_stop</span><span class="p">),</span> <span class="p">(</span><span class="s2">"raise"</span><span class="p">,</span> <span class="s2">"return"</span><span class="p">)),</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..timestep.integrator</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_callback</span><span class="p">,</span> <span class="n">check_steps</span><span class="p">,</span> <span class="n">is_whole</span>
         <span class="n">check_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">every</span><span class="p">,</span> <span class="s2">"run()"</span><span class="p">)</span>   <span class="c1"># callback used to reach IVPSolver.run</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">until</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="n">steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>     <span class="c1"># without every and always raise there</span>
@@ -1104,42 +1147,16 @@
                 <span class="k">raise</span> <span class="n">ResolutionError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">"run(until=</span><span class="si">{</span><span class="n">until</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">until</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> is not a whole number of steps "</span>
                     <span class="sa">f</span><span class="s2">"dt = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
-                    <span class="n">why</span><span class="o">=</span><span class="s2">"the time step is never adjusted silently to land on a time"</span><span class="p">,</span>
+                    <span class="n">why</span><span class="o">=</span><span class="s2">"the stop time must be a whole number of time steps from the current time"</span><span class="p">,</span>
                     <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"run(steps=</span><span class="si">{</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="si">}</span><span class="s2">) or choose until = t + k*dt"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>                                      <span class="c1"># a float is refused, never truncated</span>
             <span class="n">steps</span> <span class="o">=</span> <span class="n">check_steps</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="s2">"run()"</span><span class="p">,</span> <span class="s2">"steps"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>                   <span class="c1"># the native callback sees the Simulation</span>
-            <span class="n">user</span> <span class="o">=</span> <span class="n">callback</span>
-            <span class="n">callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_solver</span><span class="p">:</span> <span class="n">user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># noqa: E731</span>
         <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">watching</span>
-        <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">w</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
-            <span class="n">callback</span><span class="p">,</span> <span class="n">every</span> <span class="o">=</span> <span class="n">_combine</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="n">w</span><span class="o">.</span><span class="n">poll</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">every</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>                     <span class="c1"># particles: the velocity at the start</span>
-            <span class="n">begin</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s2">"begin_run"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">begin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">begin</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>                     <span class="c1"># the row of the start (output(initial=True))</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s2">"initial_pending"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                <span class="n">o</span><span class="o">.</span><span class="n">write_initial</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>                           <span class="c1"># cn.io files, each on its own cadence</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">..io.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">_combine</span> <span class="k">as</span> <span class="n">_combine_io</span>
-            <span class="n">callback</span><span class="p">,</span> <span class="n">every</span> <span class="o">=</span> <span class="n">_combine_io</span><span class="p">([(</span><span class="n">callback</span><span class="p">,</span> <span class="n">every</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[(</span><span class="n">o</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">every</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">w</span><span class="o">.</span><span class="n">closed</span> <span class="ow">and</span> <span class="n">w</span><span class="o">.</span><span class="n">settable</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">record</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">cache</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"run(record=...): this run's dt may be changed from the Studio "</span>
-                                  <span class="s2">"(watch(settable=...)); the registry records one constant dt"</span><span class="p">,</span>
-                                  <span class="n">fix</span><span class="o">=</span><span class="s2">"drop record=/cache=, or watch without settable="</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_run_settable</span><span class="p">(</span><span class="n">until</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">every</span><span class="p">,</span> <span class="n">w</span><span class="o">.</span><span class="n">poll</span><span class="p">)</span>
-            <span class="k">finally</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_write_sidecars</span><span class="p">()</span>
-            <span class="k">return</span> <span class="bp">self</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">every</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">record</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
-        <span class="k">finally</span><span class="p">:</span>                                   <span class="c1"># also after a stop or a NumericalError:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_write_sidecars</span><span class="p">()</span>                 <span class="c1"># the sidecar lists the rows written</span>
-        <span class="k">return</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">out</span></div>
-
+        <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">w</span><span class="o">.</span><span class="n">closed</span> <span class="ow">and</span> <span class="n">w</span><span class="o">.</span><span class="n">settable</span> <span class="ow">and</span> <span class="p">(</span><span class="n">record</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">cache</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"run(record=...): this run's dt may be changed from the Studio "</span>
+                              <span class="s2">"(watch(settable=...)); the registry records one constant dt"</span><span class="p">,</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="s2">"drop record=/cache=, or watch without settable="</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">steps</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_write_sidecars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""XDMF sidecars of the analysis files: rewritten at the end of each run call;</span>
@@ -1719,7 +1736,7 @@
                 <span class="n">o</span><span class="p">,</span> <span class="s2">"chain_note"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">watching</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">watching</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
                 <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">watching</span><span class="o">.</span><span class="n">explain</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"(every decision, tau by tau and term by term, and the solver layout: "</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"(compiler decisions, tau by tau and term by term, and the solver layout: "</span>
                          <span class="s2">"sim.explain(full=True))"</span><span class="p">)</span>
             <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"Simulation of '</span><span class="si">{</span><span class="n">comp</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' (native model) at N = "</span>
@@ -2711,7 +2728,7 @@
         <span class="c1"># left=True was overwritten silently (eigenvectors are dropped here)</span>
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"left=True on a sine/cosine axis: the gathered result has no "</span>
                           <span class="s2">"eigenvectors (their sizes differ per group)"</span><span class="p">,</span>
-                          <span class="n">why</span><span class="o">=</span><span class="s2">"an argument is never ignored"</span><span class="p">,</span>
+                          <span class="n">why</span><span class="o">=</span><span class="s2">"every argument given must be used"</span><span class="p">,</span>
                           <span class="n">fix</span><span class="o">=</span><span class="s2">"pick one group with n=... and use the IR plan "</span>
                               <span class="s2">"(conatus.eigenvalues(plan, group, left=True))"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_LIN_DOC</span><span class="p">)</span>
     <span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">kw</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -2757,7 +2774,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

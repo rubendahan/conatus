@@ -1,13 +1,13 @@
 # Adjoints and sensitivity
 
-Exact tangent and adjoint of the discrete time stepper, adjoint eigenmodes in a declared inner product, the wavemaker and the sensitivity to the base flow.
+Tangent and adjoint of the discrete time stepper, adjoint eigenmodes in a declared inner product, the wavemaker and the sensitivity to the base flow.
 
 ## Tangent and adjoint of the time stepper
 
 `FlowMap` turns a time integration $X_N = \Phi(X_0)$ into a differentiable map. `jvp` applies the
-tangent $\mathrm d\Phi\,V$ and `vjp` its transpose $\mathrm d\Phi^{\mathsf T} W$, both exact for
-the discrete scheme (same stages, same solves, same dealiasing), so that the dot-product test holds
-to rounding:
+tangent $\mathrm d\Phi\,V$ and `vjp` its transpose $\mathrm d\Phi^{\mathsf T} W$. Both are the
+derivatives of the discrete scheme itself (same stages, same solves, same dealiasing), so the
+dot-product test holds to rounding:
 
 ```{literalinclude} _check.py
 :language: python
@@ -17,22 +17,22 @@ to rounding:
 ```
 
 The transpose is taken in the plain pairing $\langle a, b\rangle = \sum_i a_i b_i$ of the
-coefficients. **A transpose is not the physical adjoint.** In an inner product of weight $W$ (the
-kinetic energy, for instance) the adjoint is
+coefficients. In an inner product of weight $W$ (the kinetic energy, for instance), the physical
+adjoint is
 
 $$ L^\dagger = W^{-1} L^{*} W , $$
 
-which `vjp_physical(X0, W, weight)` applies. On the spherical shell the state is complex (stored
+which `vjp_physical(X0, W, weight)` applies. The plain pairing is the case $W = I$. On the spherical shell the state is complex (stored
 modes $m \ge 0$ of real fields) and the step only real-linear: there the pairing is
 $\langle a, b\rangle = \mathrm{Re}\sum_i \bar a_i b_i$ (`fm.pair`, declared by `explain()`); see
 {doc}`optimal_perturbations`. With `f_backend="fused"` the shell adjoint follows the planned path of
 the forward step: the transposes of the same radial and angular GEMMs, phi FFTs and product program
-(one generated kernel per product tree on the GPU), so a `vjp` step costs 1.6 to 1.8 forward steps
-on one CPU core instead of 3.0 to 3.3; the adjoint is the same up to rounding as the term-by-term
-walk of the reference evaluator, which equations outside its scope keep (`fm.explain()` names
-them). Long trajectories are reversed with binomial
-checkpointing (`checkpoints=`). The gradient of any final-time objective costs one forward and one
-backward integration.
+(one generated kernel per product tree on the GPU). A `vjp` step then costs 1.6 to 1.8 forward steps
+on one CPU core instead of 3.0 to 3.3. The result
+equals, up to rounding, the term-by-term walk of the reference evaluator. Equations outside the
+planned scope keep that walk, and `fm.explain()` names them. Long trajectories are reversed with
+binomial checkpointing (`checkpoints=`). The gradient of a final-time objective costs one forward
+and one backward integration.
 
 A term that is not differentiable in the state, `abs(T)` or `sign(T)`, is refused when the tangent
 is built (`UnsupportedError`, with the reason): the tangent and the adjoint do not exist where the
@@ -45,8 +45,8 @@ wherever the base does not vanish) and refuses `sign`.
 
 With Revolve (`checkpoints=k`) the checkpoints can live elsewhere than in device memory, and a
 reverse sweep (or an optimal-perturbation iteration) can be cut by a time budget and resumed by the
-next job. A copy moves bits unchanged: every store, and every cut-and-resume, gives the same result
-bit for bit as the uninterrupted device run.
+next job. Each store, and each cut-and-resume, gives the same result bit for bit as the
+uninterrupted device run, because a copy moves the bits unchanged.
 
 ```python
 import numpy as np
@@ -77,7 +77,7 @@ except VJPSuspended:
 * The journal (position in the Revolve action list, partial cotangents, live checkpoints) is written
   atomically: a job killed while writing it leaves the previous one, which the next job resumes. A
   journal of another computation (other X0, W, map, operators, parameters or backend) is refused.
-  The journal directory may hold other files: only its own are ever removed.
+  The journal directory may hold other files; the routine removes only its own.
 * A suspension with `"host"` writes every live checkpoint to disk (up to k states, and two
   generations at once for a moment): leave that writing time between `budget_s` and the job's time
   limit. Each call takes at least one step before looking at the budget. For optimal
@@ -111,7 +111,7 @@ any modification of it. On the linear Ginzburg–Landau equation both have close
 :dedent: 4
 ```
 
-`adjoint=` is a required choice (`"continuous"` or `"discrete"`), never implied.
+Supply `adjoint="continuous"` or `adjoint="discrete"`; the argument is required.
 
 **See also:** tutorial {doc}`../../tutorials/13_sensitivity_data` (Chomaz 2005);
 {doc}`FlowMap <../../api/_generated/_stubs/conatus.expert.FlowMap>`, {doc}`compare_adjoints <../../api/_generated/_stubs/conatus.expert.compare_adjoints>`,

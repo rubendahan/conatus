@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="13. Where a global mode is born, and what the data say about it" href="13_sensitivity_data.html"><link rel="prev" title="11. Record, query, reproduce: the run registry" href="11_runs.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes" href="15_ks_covariant.html"><link rel="prev" title="Bifurcations: branch switching, cycles, codimension 2, normal forms" href="10_bifurcations.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins - Conatus</title>
+        <title>Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,11 +684,10 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="chaos-and-ensembles-lyapunov-spectrum-covariant-vectors-poincare-map-basins">
-<h1>12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins<a class="headerlink" href="#chaos-and-ensembles-lyapunov-spectrum-covariant-vectors-poincare-map-basins" title="Link to this heading">¶</a></h1>
-<p>The tangent of the discrete step is exact, so the Lyapunov spectrum of a discretized flow is the
-spectrum of the map actually computed; and because many trajectories share one batch, the
-statistics that make an exponent trustworthy (independent trajectories, block errors) cost
-little more than one trajectory.</p>
+<h1>Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins<a class="headerlink" href="#chaos-and-ensembles-lyapunov-spectrum-covariant-vectors-poincare-map-basins" title="Link to this heading">¶</a></h1>
+<p>The tangent used here is the derivative of the discrete step, so the Lyapunov spectrum is that of
+the map actually computed. Many trajectories share one batch, so the error estimates of an
+exponent (independent trajectories, block errors) cost little more than one trajectory.</p>
 <p><strong>Goal.</strong> Compute the Lyapunov spectrum, the Kaplan–Yorke dimension and the covariant Lyapunov
 vectors of the Lorenz attractor from 32 trajectories in one batch; build the Lorenz map from a
 Poincaré section located on the scheme; map the basins of the two stable foci at <span class="math notranslate nohighlight">\(r = 20\)</span> with
@@ -695,9 +699,7 @@ maxima of <span class="math notranslate nohighlight">\(z\)</span> on a one-dimen
 <code class="docutils literal notranslate"><span class="pre">tests/chaos/</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/ensembles/</span></code>.</p>
 <section id="write-the-system">
 <h2>Write the system<a class="headerlink" href="#write-the-system" title="Link to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">conatus.chaos</span><span class="w"> </span><span class="kn">import</span> <span class="n">lyapunov_spectrum</span><span class="p">,</span> <span class="n">poincare_section</span>
@@ -721,7 +723,7 @@ maxima of <span class="math notranslate nohighlight">\(z\)</span> on a one-dimen
 </div>
 <p>An ODE has no geometry, so the Lorenz system is written with <code class="docutils literal notranslate"><span class="pre">ode_problem</span></code> from the expert layer:
 the same kind of problem object a native model compiles to, advanced by the same <code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code>. The
-scheme and the time step are explicit choices, as always.</p>
+scheme and the time step are arguments of the call.</p>
 </section>
 <section id="lyapunov-spectrum-from-32-trajectories">
 <h2>Lyapunov spectrum from 32 trajectories<a class="headerlink" href="#lyapunov-spectrum-from-32-trajectories" title="Link to this heading">¶</a></h2>
@@ -733,17 +735,18 @@ scheme and the time step are explicit choices, as always.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>Every length is an argument: trajectory transient, tangent transient (the vectors align with the
-Oseledets directions before anything is averaged), averaging steps, QR interval, number of blocks
-for the error, inner product, seed. <code class="docutils literal notranslate"><span class="pre">explain()</span></code> prints each exponent with the standard error of the
+<p>You supply the durations, in simulation time units or steps: the trajectory transient, the
+tangent transient (the vectors align with the Oseledets directions before anything is averaged)
+and the averaging steps. The QR interval, the number of blocks for the error, the inner product and
+the seed are arguments too. <code class="docutils literal notranslate"><span class="pre">explain()</span></code> prints each exponent with the standard error of the
 block means and the lag-1 correlation of those blocks (if it is large the blocks are too short).
 The sum is not exactly <span class="math notranslate nohighlight">\(-13.667\)</span>: it is the mean <span class="math notranslate nohighlight">\(\log|\det J|\)</span> of the RK443 <strong>map</strong>, whose
 truncation at <span class="math notranslate nohighlight">\(dt = 0.01\)</span> is <span class="math notranslate nohighlight">\(7.7\times10^{-3}\)</span> (<span class="math notranslate nohighlight">\(9.2\times10^{-4}\)</span> at <span class="math notranslate nohighlight">\(dt/2\)</span>: third order).</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t12_lyapunov.png"><img alt="Three panels, one per Lyapunov exponent: grey running estimates of 32 trajectories converge with time onto their red mean and the dashed published value." loading="lazy" src="../_images/t12_lyapunov.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t12_lyapunov.png"><img alt="Three panels, one per Lyapunov exponent: a grey band of running estimates over the starts narrows with time around a red mean that settles on the dashed published value." loading="lazy" src="../_images/t12_lyapunov.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Running estimates of the three exponents for the 32 starts of the page (grey), their mean (red) and the published values 0.906, 0 and −14.572 (dashed).</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Finite-time estimates of the three exponents, averaged from the start of the measurement, over the 32 starts of the page: the band holds the middle 80 % of the starts, the red line is their mean and the dashed lines are the published values 0.906, 0 and −14.572. The panel titles give the final mean and its standard error over the starts. Time is in the units of the Lorenz equations.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -806,13 +809,13 @@ assumed; a crossing that is not located is refused.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">ensemble_fate</span></code> asks the classifier every <code class="docutils literal notranslate"><span class="pre">check_every</span></code> steps and latches each member’s verdict;
-members still undecided at the horizon stay 0 and are reported, never assigned.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ensemble_fate</span></code> asks the classifier every <code class="docutils literal notranslate"><span class="pre">check_every</span></code> steps and latches each member’s verdict.
+Members undecided at the final time keep classification 0, and the result counts them.</p>
 <figure class="align-default" id="id3">
-<a class="reference internal image-reference" href="../_images/t12_basins.png"><img alt="A square map of starting points coloured red or green by the equilibrium they end on, forming interleaved spiral bands, with C+ and C- marked." loading="lazy" src="../_images/t12_basins.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t12_basins.png"><img alt="A square map of starting points coloured red or blue by the equilibrium they end on, forming interleaved spiral bands, with C+ and C- marked and a legend below." loading="lazy" src="../_images/t12_basins.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Basins of C+ (red) and C− (green) at r = 20 for the 2304 starts of the ensemble (z₀ = 19); the rare starts still undecided at the horizon are black. The map is symmetric under (x, y) → (−x, −y).</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Basins of C+ (red) and C− (blue) at r = 20 for the 2304 starts of the ensemble (z₀ = 19); the rare starts still undecided at the horizon are black. The map is symmetric under (x, y) → (−x, −y).</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -841,7 +844,7 @@ basins exchanged exactly by <span class="math notranslate nohighlight">\((x, y) 
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t12_chaos_ensembles: PASS (exit 0) in 165.3 s | 2026-10-20 | script sha256 3111592b18e09a94
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t12_chaos_ensembles: PASS (exit 0) in 136.6 s | 2026-10-21 | script sha256 26241358f979bb75
 Lyapunov spectrum of the discrete map (RK443, dt = 0.01, backend = cpu): 3 vector(s), 32 trajectory(ies)
   transient 1000 steps, tangent transient 1000 steps, average over T = 100 per trajectory (1000 QR every 10 steps = 0.1)
   inner product: Euclidean on the coefficient vector; projection: none; seed 1
@@ -862,7 +865,7 @@ Poincaré section (g decreasing through 0), 8 member(s), 530 crossing(s) over 50
   location: τ* in (0, dt] with g(Φ_τ*(X_n)) = 0 on the scheme (Illinois regula falsi), |g| &lt;= 1e-10, max 30 iterations; observed max |g| 8.2e-11, mean iterations 4.9
 Lorenz map: 522 pairs (z_k, z_k+1), z in [29.29, 45.38]
 EnsembleFate: 2304 member(s); checks every 100 steps (dt = 0.01), no verdict before step 100, horizon 10000 steps; classifier: |X - C+-| &lt; 1
-  outcomes {-1: 1152, 1: 1152} (0 = undecided, reported, never assigned)
+  outcomes {-1: 1152, 1: 1152} (0 = undecided at the final time)
 Ensemble(2304 member(s), 1 parameter set(s), scheme=RK443, dt=0.01, backend=cpu)
   step: IVPSolver arithmetic on (B, n) arrays (same stages, same order)
   BatchedRHS(polynomial form, CPU/NumPy): 7 term(s), 0 with per-member coefficients; transforms, derivatives and products vectorized over a leading member axis (same operations as the fused/linearized forms; equal to IVPSolver.F to rounding, not bit for bit)
@@ -878,23 +881,23 @@ CHECK lambda = (0.9085 +- 0.0068, -0.0004 +- 0.0033, -14.5825 +- 0.0048), sum = 
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="13_sensitivity_data.html">
+          <a class="next-page" href="15_ks_covariant.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">13. Where a global mode is born, and what the data say about it</div>
+                <div class="title">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="11_runs.html">
+          <a class="prev-page" href="10_bifurcations.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">11. Record, query, reproduce: the run registry</div>
+                <div class="title">Bifurcations: branch switching, cycles, codimension 2, normal forms</div>
                 
               </div>
             </a>
@@ -928,7 +931,7 @@ CHECK lambda = (0.9085 +- 0.0068, -0.0004 +- 0.0033, -14.5825 +- 0.0048), sum = 
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a><ul>
+<li><a class="reference internal" href="#">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a><ul>
 <li><a class="reference internal" href="#write-the-system">Write the system</a></li>
 <li><a class="reference internal" href="#lyapunov-spectrum-from-32-trajectories">Lyapunov spectrum from 32 trajectories</a></li>
 <li><a class="reference internal" href="#covariant-vectors">Covariant vectors</a></li>
@@ -947,7 +950,7 @@ CHECK lambda = (0.9085 +- 0.0068, -0.0004 +- 0.0033, -14.5825 +- 0.0048), sum = 
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

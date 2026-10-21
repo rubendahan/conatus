@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -681,8 +686,8 @@
           <section class="tex2jax_ignore mathjax_ignore" id="numerical-uncertainty">
 <h1>Numerical uncertainty<a class="headerlink" href="#numerical-uncertainty" title="Link to this heading">¶</a></h1>
 <p>A number computed by a simulation (a growth rate, a mean, a value at a point) depends on the
-resolution and on the time step. <code class="docutils literal notranslate"><span class="pre">cn.uncertainty</span></code> reports it with an error estimate from studies
-that you declare: three resolutions and three time steps, nothing chosen for you.</p>
+resolution and on the time step. <code class="docutils literal notranslate"><span class="pre">cn.uncertainty</span></code> reports it with an error estimate. Supply three
+resolutions and three time steps to estimate the spatial and temporal errors.</p>
 <section id="a-value-with-its-error">
 <h2>A value with its error<a class="headerlink" href="#a-value-with-its-error" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -708,11 +713,10 @@ that you declare: three resolutions and three time steps, nothing chosen for you
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>u(0, T) = 2.32103549 +- 3.8e-06   trusted: True
 observed order in time: 2.01 (scheme order 2)
-exact value 2.32103854: inside the interval: True
 </pre></div>
 </div>
-<p>The last line is the check made after the example: the exact value of this problem (a series of
-Bessel functions) lies inside the reported interval.</p>
+<p>The check script compares the result with the exact value of this problem (a series of Bessel
+functions): it lies inside the reported interval.</p>
 </section>
 <section id="what-is-computed">
 <h2>What is computed<a class="headerlink" href="#what-is-computed" title="Link to this heading">¶</a></h2>
@@ -728,9 +732,10 @@ actually given; the ratio <span class="math notranslate nohighlight">\(\rho\)</s
 <span class="math notranslate nohighlight">\(1.25\,|d_2|/(e^{a h_2}-1)\)</span> with <span class="math notranslate nohighlight">\(h_2\)</span> the last increment of <span class="math notranslate nohighlight">\(N\)</span> (equal increments:
 <span class="math notranslate nohighlight">\(1.25\,|d_2|\,\rho/(1-\rho)\)</span>). Differences that do not decrease geometrically, and tuple
 resolutions refined in different proportions, are flagged.</p></li>
-<li><p><strong>Result</strong>: the value at the finest resolution and time step (the Richardson value is never
-substituted for it), the sum of both estimates, and the interval. <code class="docutils literal notranslate"><span class="pre">rep.trusted</span></code> is false as soon
-as a study is flagged (also without <code class="docutils literal notranslate"><span class="pre">scheme_order</span></code>: the asymptotic range is then unchecked), and <code class="docutils literal notranslate"><span class="pre">rep.explain()</span></code> prints every number and assumption.</p></li>
+<li><p><strong>Result</strong>: the value at the finest resolution and time step (not the Richardson value), the
+sum of both estimates, and the interval. <code class="docutils literal notranslate"><span class="pre">rep.trusted</span></code> is false when a study is flagged, and also
+without <code class="docutils literal notranslate"><span class="pre">scheme_order</span></code>, because the asymptotic range is then unchecked. <code class="docutils literal notranslate"><span class="pre">rep.explain()</span></code> prints
+the numbers and assumptions behind the estimate.</p></li>
 </ul>
 <p>The time steps must have a constant ratio and the resolutions must increase, the finest last;
 anything else is refused.</p>
@@ -826,7 +831,7 @@ check, and a series shorter than about 50 correlation times is flagged.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

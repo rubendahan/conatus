@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../">&larr; Conatus website</a>
-  <a href="../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../bases.html">Bases and domains</a></li>
@@ -684,8 +689,8 @@
 <p>An invariant solution is a state that the flow maps to itself, up to a symmetry: an equilibrium
 <span class="math notranslate nohighlight">\(v(u) = 0\)</span>, a travelling wave <span class="math notranslate nohighlight">\(u(x - ct)\)</span>, a relative periodic orbit
 <span class="math notranslate nohighlight">\(\tau_\ell\,\Phi_T(u) = u\)</span>. Conatus solves these equations with a Newton–Krylov method and a
-trust-region (hookstep) step. The Jacobian is never formed: each Krylov vector costs one
-linearized evaluation or time integration, exact for the discrete scheme.</p>
+trust-region (hookstep) step. The Jacobian is not formed. Each Krylov vector costs one linearized
+evaluation or time integration of the discrete scheme.</p>
 <section id="the-flow-map">
 <h2>The flow map<a class="headerlink" href="#the-flow-map" title="Link to this heading">¶</a></h2>
 <p>The searches use the time stepper of the model, here Kuramoto–Sivashinsky on a periodic domain of
@@ -708,8 +713,9 @@ length 22:</p>
 </div>
 <p>The tolerance of the Newton–Krylov solver is required (it decides the digits of the solution);
 its algorithm controls (iteration budget, Krylov tolerance and size, initial, minimum and maximum
-trust radius) have declared defaults, printed by <code class="docutils literal notranslate"><span class="pre">newton.explain()</span></code> and marked “(default)”: they
-change how fast the residual reaches the tolerance, not the answer, whose residual is returned.</p>
+trust radius) have declared defaults, printed by <code class="docutils literal notranslate"><span class="pre">newton.explain()</span></code> and marked “(default)”. These
+controls affect convergence. Different controls or seeds can also converge to different
+solutions, so check the returned residual and which solution was reached.</p>
 <p><strong>Scope.</strong> <code class="docutils literal notranslate"><span class="pre">find_equilibrium</span></code>, <code class="docutils literal notranslate"><span class="pre">find_travelling_wave</span></code> and <code class="docutils literal notranslate"><span class="pre">find_relative_periodic_orbit</span></code> work on
 problems with <strong>one periodic direction</strong> (a real Fourier basis, no other axis): Kuramoto–Sivashinsky,
 1D Swift–Hohenberg and similar. They accept the <code class="docutils literal notranslate"><span class="pre">Simulation</span></code> (or its <code class="docutils literal notranslate"><span class="pre">sim.solver</span></code>; a <code class="docutils literal notranslate"><span class="pre">cn.Model</span></code>
@@ -717,7 +723,8 @@ with <code class="docutils literal notranslate"><span class="pre">N=</span></cod
 is refused with this scope and the alternatives: steady states of large problems in symmetry
 subspaces (plane Couette, <code class="docutils literal notranslate"><span class="pre">conatus.ecs.steady.AffineSteadyProblem</span></code>), pipe travelling waves
 (<code class="docutils literal notranslate"><span class="pre">conatus.ecs.pipe.PipeTravellingWave</span></code>, experimental: <a class="reference internal" href="../experimental.html"><span class="doc">Experimental features</span></a>), 2D Kolmogorov flow
-(<code class="docutils literal notranslate"><span class="pre">conatus.ecs.kolmogorov</span></code>). A generalisation to every geometry is planned, not available.</p>
+(<code class="docutils literal notranslate"><span class="pre">conatus.ecs.kolmogorov</span></code>). This release supports the cases listed here; broader geometry support
+is planned.</p>
 <p>The seed <code class="docutils literal notranslate"><span class="pre">x0</span></code> of every finder is the state vector of the solver (<code class="docutils literal notranslate"><span class="pre">sim.solver.X</span></code>), the simulation
 itself (its current state), or the grid values of the unknown (<code class="docutils literal notranslate"><span class="pre">sim.grid(&quot;u&quot;)</span></code>), converted to the
 state vector; the conversion and the size of the round trip are in the result’s notes, and any
@@ -764,13 +771,13 @@ the wanted answer).</p>
 <code class="docutils literal notranslate"><span class="pre">reflect=True</span></code> gives pre-periodic orbits <span class="math notranslate nohighlight">\(R\,\tau_\ell\,\Phi_T(u) = u\)</span>. The number of time steps
 over one period is part of the problem. <code class="docutils literal notranslate"><span class="pre">floquet_multipliers</span></code> returns the multipliers of the orbit
 and identifies its marginal directions. Seeds come from near-recurrences of a long run; tutorial
-<a class="reference internal" href="../../tutorials/05_ks_orbits.html"><span class="doc">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</span></a> carries one to the published Floquet exponents.</p>
+<a class="reference internal" href="../../tutorials/05_ks_orbits.html"><span class="doc">Invariant solutions: Kuramoto–Sivashinsky, L = 22</span></a> carries one to the published Floquet exponents.</p>
 </section>
 <section id="thresholds-and-edge-states">
 <h2>Thresholds and edge states<a class="headerlink" href="#thresholds-and-edge-states" title="Link to this heading">¶</a></h2>
 <p>The boundary between initial states that decay and those that become turbulent is located by
-bisection on an amplitude. Conatus returns the threshold as a bracket and never counts an
-undecided run on either side:</p>
+bisection on an amplitude. Conatus returns the threshold as a bracket. A run that stays undecided
+is not counted on either side:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThresholdBisection</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">fate</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
@@ -795,7 +802,7 @@ that seeds such a bisection.</p>
 <p>A solution is accepted on its residual, reported with the iteration history (<code class="docutils literal notranslate"><span class="pre">explain()</span></code>). Its
 stability is a separate computation (eigenvalues or Floquet multipliers in the full space). A
 solution found in a symmetry subspace may be unstable outside it (see <a class="reference internal" href="symmetry.html"><span class="doc">Symmetry subspaces</span></a>).</p>
-<p><strong>See also:</strong> tutorial <a class="reference internal" href="../../tutorials/05_ks_orbits.html"><span class="doc">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</span></a> (Cvitanović et al. 2010);
+<p><strong>See also:</strong> tutorial <a class="reference internal" href="../../tutorials/05_ks_orbits.html"><span class="doc">Invariant solutions: Kuramoto–Sivashinsky, L = 22</span></a> (Cvitanović et al. 2010);
 <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.NewtonKrylovHookstep.html"><span class="doc">NewtonKrylovHookstep</span></a>, <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.find_equilibrium.html"><span class="doc">find_equilibrium</span></a>,
 <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.find_travelling_wave.html"><span class="doc">find_travelling_wave</span></a>,
 <a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.find_relative_periodic_orbit.html"><span class="doc">find_relative_periodic_orbit</span></a>,
@@ -876,7 +883,7 @@ solution found in a symmetry subspace may be unstable outside it (see <a class="
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

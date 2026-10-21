@@ -19,7 +19,7 @@ the equation text override the rule for one term (an `implicit` nonlinear term i
 
 ## Schemes
 
-Two families are available, with Dedalus's names so that results can be compared:
+Two families are available:
 
 - **IMEX Runge–Kutta** `RK111`, `RK222`, `RK443` (Ascher, Ruuth and Spiteri 1997). A stage reads
   $$ (M + k H_{ii} L)\, X_i = M X_0 + k \sum_{j<i} A_{ij} F(X_j, t_j) - k \sum_{j<i} H_{ij} L X_j , $$
@@ -28,9 +28,9 @@ Two families are available, with Dedalus's names so that results can be compared
 - **Semi-implicit BDF** `SBDF1` to `SBDF4` (Wang and Ruuth 2008): multistep, one solve per step;
   the first steps are taken with a declared start-up procedure, printed by `explain()`.
 
-The time step is fixed and chosen by you. A CFL estimate (`sim.cfl("u", safety=0.5)`, the safety factor yours) is an indicator of
-stability, not a control of the time error; asking a run to stop at a time that is not a whole
-number of steps is refused rather than silently changing the last step.
+The time step is fixed and chosen by you. The CFL estimate (`sim.cfl("u", safety=0.5)`, with your
+safety factor) limits the step for stability. It does not estimate the time error. The stop time
+must be a whole number of fixed time steps from the current time.
 
 ## Factorisations
 

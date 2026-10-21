@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -684,7 +689,7 @@
 their numerics, code and machine.</p>
 <p>It needs no service: an SQLite index plus one directory per run (a JSON record, an HDF5 file for
 series and fields, solver checkpoints) under a root you declare. Tutorial:
-<a class="reference internal" href="../tutorials/11_runs.html"><span class="doc">11. Record, query, reproduce: the run registry</span></a>.</p>
+<a class="reference internal" href="../tutorials/11_runs.html"><span class="doc">Record, query, reproduce: the run registry</span></a>.</p>
 <section id="where-runs-go">
 <h2>Where runs go<a class="headerlink" href="#where-runs-go" title="Link to this heading">¶</a></h2>
 <p>Set <code class="docutils literal notranslate"><span class="pre">$CN_RUNS</span></code> to the directory you choose (or pass <code class="docutils literal notranslate"><span class="pre">root=</span></code>); without it, a scratch directory
@@ -744,17 +749,18 @@ belong on scratch storage. <code class="docutils literal notranslate"><span clas
 </tbody>
 </table>
 </div>
-<p>What is recorded, always: the structural hash of the problem, the <strong>values</strong> of its parameters, the
-full numerical configuration and <code class="docutils literal notranslate"><span class="pre">explain()</span></code> text, the executed code (commit, dirty paths, sha256 of
-the imported tree and of the compiled core), versions, host, GPU, batch job, the command line. Nothing is guessed: an unreadable field is recorded as such.</p>
-<p><strong>Recording never blocks or breaks the computation.</strong> Scalars and series are kept in memory; fields,
-files and states are copied and written by a background thread through a bounded queue (a full
-queue drops and counts, never waits); a disk error is recorded and reported by a
-<code class="docutils literal notranslate"><span class="pre">RegistryWriteWarning</span></code> when the run closes, and the numbers are bit-for-bit those of an unrecorded
-run (tested with an unwritable root).</p>
+<p>Each record holds the structural hash of the problem, the <strong>values</strong> of its parameters, the
+numerical configuration and <code class="docutils literal notranslate"><span class="pre">explain()</span></code> text, the executed code (commit, dirty paths, sha256 of
+the imported tree and of the compiled core), versions, host, GPU, batch job and the command line.
+A field that cannot be read is recorded as unreadable.</p>
+<p>Scalars and series are kept in memory. Fields, files and states are copied and written by a
+background thread through a bounded queue. When the queue is full, the item is dropped and the
+drop is counted (<code class="docutils literal notranslate"><span class="pre">run.dropped</span></code>); the computation does not wait. A disk error is recorded and
+reported by a <code class="docutils literal notranslate"><span class="pre">RegistryWriteWarning</span></code> when the run closes. The computed numbers are bit-for-bit
+those of an unrecorded run (tested with an unwritable root).</p>
 <p>Statuses: <code class="docutils literal notranslate"><span class="pre">provisional</span></code> (default), <code class="docutils literal notranslate"><span class="pre">certified</span></code>, <code class="docutils literal notranslate"><span class="pre">retracted</span></code>. Changing one needs a reason (and
-optional evidence such as residuals); the history is kept, a retracted run is never deleted and never
-reused. A run failing inside a <code class="docutils literal notranslate"><span class="pre">with</span></code> block is recorded as <code class="docutils literal notranslate"><span class="pre">failed</span></code> and the exception propagates.</p>
+optional evidence such as residuals). The history is kept. A retracted run stays in the registry
+and is not reused. A run failing inside a <code class="docutils literal notranslate"><span class="pre">with</span></code> block is recorded as <code class="docutils literal notranslate"><span class="pre">failed</span></code> and the exception propagates.</p>
 </section>
 <section id="querying">
 <h2>Querying<a class="headerlink" href="#querying" title="Link to this heading">¶</a></h2>
@@ -799,7 +805,7 @@ reused. A run failing inside a <code class="docutils literal notranslate"><span 
 <p>Filters are <code class="docutils literal notranslate"><span class="pre">key=value</span></code> or <code class="docutils literal notranslate"><span class="pre">key__op=value</span></code> with <code class="docutils literal notranslate"><span class="pre">op</span></code> in <code class="docutils literal notranslate"><span class="pre">eq,</span> <span class="pre">ne,</span> <span class="pre">gt,</span> <span class="pre">ge,</span> <span class="pre">lt,</span> <span class="pre">le,</span> <span class="pre">in,</span> <span class="pre">contains</span></code>. A key
 is an index column (<code class="docutils literal notranslate"><span class="pre">host</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">git_head</span></code>, <code class="docutils literal notranslate"><span class="pre">slurm_job</span></code>, <code class="docutils literal notranslate"><span class="pre">telemetry_id</span></code>, …), else a parameter,
 else a result. A key that is both a parameter and a result is refused (write <code class="docutils literal notranslate"><span class="pre">param_Re</span></code> or
-<code class="docutils literal notranslate"><span class="pre">result_Re</span></code>), and an unknown key raises with a suggestion: a typo never returns an empty list.</p>
+<code class="docutils literal notranslate"><span class="pre">result_Re</span></code>). An unknown key raises an error that suggests the supported names.</p>
 </section>
 <section id="reproducing">
 <h2>Reproducing<a class="headerlink" href="#reproducing" title="Link to this heading">¶</a></h2>
@@ -826,8 +832,8 @@ else a result. A key that is both a parameter and a result is refused (write <co
 <span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>               <span class="c1"># bit-for-bit identical?  code identical?</span>
 </pre></div>
 </div>
-<p>The solver must have the same problem hash, parameter values and numerics; any difference is
-refused with the list, never adapted. The recorded start state is loaded, the same number of steps
+<p>Reproduction requires the recorded problem hash, parameter values and numerical settings. A
+mismatch raises an error that lists the differences. The recorded start state is loaded, the same number of steps
 is taken in a new run (<code class="docutils literal notranslate"><span class="pre">relation=&quot;reproduce&quot;</span></code>), and the whole end state (the state, every multistep
 history array, the time and the iteration) is compared bit for bit: same dtype and same bytes, so
 <code class="docutils literal notranslate"><span class="pre">-0.0</span></code> differs from <code class="docutils literal notranslate"><span class="pre">0.0</span></code>. A run recorded by 0.1.0 does not hold the given-field data, the user
@@ -873,8 +879,12 @@ module globals its code names (by content; library modules, functions and classe
 version; the attributes it names of a user module or a user class, such as <code class="docutils literal notranslate"><span class="pre">cfg.A</span></code> or <code class="docutils literal notranslate"><span class="pre">Cfg.A</span></code>, by
 content), followed into the user functions it calls, so two closures <code class="docutils literal notranslate"><span class="pre">make(1)</span></code> and <code class="docutils literal notranslate"><span class="pre">make(2)</span></code> of
 one factory, or one function under <code class="docutils literal notranslate"><span class="pre">&#64;scale(2)</span></code> and <code class="docutils literal notranslate"><span class="pre">&#64;scale(3)</span></code>, are two computations (your own
-decorators under <code class="docutils literal notranslate"><span class="pre">&#64;track</span></code> are part of what is called and of the key). The cache is off by default; it needs <code class="docutils literal notranslate"><span class="pre">record=</span></code>; it is refused
-with a callback (a hit would never call it); retracted runs are never reused; an argument, or a
+decorators under <code class="docutils literal notranslate"><span class="pre">&#64;track</span></code> are part of what is called and of the key). The identity is read from
+the code, so a read whose target is chosen at run time cannot be followed: a function (or a user
+function it calls) whose code uses <code class="docutils literal notranslate"><span class="pre">getattr</span></code>, <code class="docutils literal notranslate"><span class="pre">hasattr</span></code>, <code class="docutils literal notranslate"><span class="pre">vars</span></code>, <code class="docutils literal notranslate"><span class="pre">globals</span></code>, <code class="docutils literal notranslate"><span class="pre">eval</span></code>, <code class="docutils literal notranslate"><span class="pre">exec</span></code>,
+<code class="docutils literal notranslate"><span class="pre">os.environ</span></code>, <code class="docutils literal notranslate"><span class="pre">os.getenv</span></code>, <code class="docutils literal notranslate"><span class="pre">open</span></code>, <code class="docutils literal notranslate"><span class="pre">np.load</span></code> or another name of
+<code class="docutils literal notranslate"><span class="pre">conatus.io._identity.DYNAMIC_READS</span></code> is uncachable, and the warning names the read. The cache is off by default; it needs <code class="docutils literal notranslate"><span class="pre">record=</span></code>; it is refused
+with a callback, since a hit would not call it; retracted runs are not reused; an argument, or a
 value read by the function or by a user pointwise function, without a content hash makes the
 call uncachable (said with a <code class="docutils literal notranslate"><span class="pre">CacheReuseWarning</span></code> naming it, then computed). A hit returns values of
 the recorded type (a NumPy scalar keeps its dtype, the string <code class="docutils literal notranslate"><span class="pre">&quot;nan&quot;</span></code> stays a string), and its
@@ -1546,7 +1556,7 @@ same rows, e.g. “t”), also “x” aligned on the rows both have (no interpo
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

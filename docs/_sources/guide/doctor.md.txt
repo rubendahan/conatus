@@ -27,14 +27,14 @@ The **first line** says how Conatus is installed. In a *development checkout* (t
 checked; for an *installed package* the advice is pip's (`pip install .`, the CUDA build option)
 and the line names the directories it writes to: the telemetry spool and the user cache
 (`$XDG_CACHE_HOME/conatus`, by default `~/.cache/conatus`; `CN_TELEMETRY`, `CN_CACHE`, `CN_TMP`
-override), never the Python environment itself.
+override). The command does not install or change packages.
 
 | Check | What is looked at |
 |---|---|
 | compiled core (CPU / CUDA) | the `_core` module; built with CUDA; CUDA architectures read from the build (for example `sm_80`, `sm_89`), "unknown" for an installed wheel |
 | GPU (`backend='cuda'`) | `conatus.gpu.gpu_report()`: CuPy sees a device **and** the core has CUDA with a device; warns if the device's `sm` is not among the built archs |
 | CuPy | version |
-| Dedalus | optional cross-check oracle (never imported by Conatus) |
+| Dedalus | optional, for the comparison script of tutorial 14 (not imported by Conatus) |
 | install | development checkout or installed package; telemetry spool and user cache directories |
 | h5py | required: `sim.output`, `sim.checkpoints`, `cn.io` |
 | matplotlib (tutorials) | the tutorials' figures; the install line if missing |

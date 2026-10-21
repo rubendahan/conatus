@@ -35,7 +35,7 @@ Equations (LHS implicit/linear | RHS explicit):
 
 `add_bc` creates one tau per condition and lifts them into modes $N-1, N-2, \dots$ of the target
 equation, in the order of the conditions. The target is the only bulk equation along that
-coordinate, or the one named with `into=` when there are several: it is never guessed. With a
+coordinate. When more than one target is possible, specify it with `into=`. With a
 symmetry subspace, `add_bc` refuses and asks you to declare the taus and their parities.
 
 ## The explicit way
@@ -58,8 +58,7 @@ pb.add_equation((interp(u, x, "right"), 0))
 ```
 
 `lift(tau, basis, n, lam=q)` can also lift into the ultraspherical basis $C^{(q)}$ of an order-$q$
-equation, which puts the taus in its last $q$ rows (Dedalus's `derivative_basis(q)`); curvilinear
-geometries use this form.
+equation, which puts the taus in its last $q$ rows. Curvilinear geometries use this form.
 
 ## The rank report refuses ill-posed systems
 
@@ -88,7 +87,7 @@ Two checks run before any factorisation:
 ## Watching the taus during a run
 
 `TauWatch(solver, growth_limit=1e3)` records the largest coefficient of each tau variable and
-warns, naming the tau, when one grows by more than the declared factor. It never changes the
+warns, naming the tau, when one grows by more than the declared factor. It does not change the
 solver:
 
 ```python

@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="8. Polar geometry: a drum, a pipe, two rotating cylinders" href="08_polar.html"><link rel="prev" title="4. Nonlinear boundary-value problems and continuation: Bratu" href="04_bratu.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Bifurcations: branch switching, cycles, codimension 2, normal forms" href="10_bifurcations.html"><link rel="prev" title="Nonlinear boundary-value problems and continuation: Bratu" href="04_bratu.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>5. Invariant solutions: Kuramoto–Sivashinsky, L = 22 - Conatus</title>
+        <title>Invariant solutions: Kuramoto–Sivashinsky, L = 22 - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,7 +684,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="invariant-solutions-kuramotosivashinsky-l-22">
-<h1>5. Invariant solutions: Kuramoto–Sivashinsky, L = 22<a class="headerlink" href="#invariant-solutions-kuramotosivashinsky-l-22" title="Link to this heading">¶</a></h1>
+<h1>Invariant solutions: Kuramoto–Sivashinsky, L = 22<a class="headerlink" href="#invariant-solutions-kuramotosivashinsky-l-22" title="Link to this heading">¶</a></h1>
 <p><strong>Goal.</strong> Find the equilibria, a travelling wave and the shortest pre-periodic orbit of the
 Kuramoto–Sivashinsky equation on the <span class="math notranslate nohighlight">\(L = 22\)</span> domain by Newton–Krylov–hookstep on the time-stepper’s
 flow map, with their stability.
@@ -738,9 +743,9 @@ u_t + u u_x + u_{xx} + u_{xxxx} = 0, \qquad x \in (0, 22) \ \text{periodic}.
 </pre></div>
 </div>
 <p>The model is one line: <code class="docutils literal notranslate"><span class="pre">m.explain()</span></code> would show the split (the linear terms implicit, <span class="math notranslate nohighlight">\(u u_x\)</span>
-explicit) and the declared default dealiasing 3/2. The searches never see the equation: they see the
-flow map <span class="math notranslate nohighlight">\(\Phi_T\)</span> of the simulation’s time stepper (<code class="docutils literal notranslate"><span class="pre">sim.solver</span></code>, RK443 at <span class="math notranslate nohighlight">\(dt = 0.01\)</span>) and its exact
-tangent (Jacobian–vector products through the same stepper). Any model with <code class="docutils literal notranslate"><span class="pre">dt()</span></code> can be searched
+explicit) and the declared default dealiasing 3/2. The searches work on the flow map <span class="math notranslate nohighlight">\(\Phi_T\)</span> of the
+simulation’s time stepper (<code class="docutils literal notranslate"><span class="pre">sim.solver</span></code>, RK443 at <span class="math notranslate nohighlight">\(dt = 0.01\)</span>) and its tangent (Jacobian–vector
+products through the same stepper), not on the equation directly. Any model with <code class="docutils literal notranslate"><span class="pre">dt()</span></code> can be searched
 the same way, within the scope of these finders: one periodic direction (1D problems such as KS;
 flows with walls use the drivers listed in <a class="reference internal" href="../guide/dynamics/invariant_solutions.html"><span class="doc">Invariant solutions</span></a>).
 <code class="docutils literal notranslate"><span class="pre">NewtonKrylovHookstep</span></code> is a trust-region (hookstep) Newton with GMRES: its accuracy target <code class="docutils literal notranslate"><span class="pre">tol</span></code>
@@ -760,7 +765,7 @@ the searches start from.</p>
 </pre></div>
 </div>
 <p>The seeds are single sine modes, <span class="math notranslate nohighlight">\(u_0 = \sin(2\pi n x/L)\)</span>. A seed that falls back to <span class="math notranslate nohighlight">\(u = 0\)</span> is marked <code class="docutils literal notranslate"><span class="pre">retracted</span></code> (the
-trivial-state threshold is declared in <code class="docutils literal notranslate"><span class="pre">explain()</span></code>), never reported as a new solution. The stability
+trivial-state threshold is declared in <code class="docutils literal notranslate"><span class="pre">explain()</span></code>) and is not reported as a new solution. The stability
 eigenvalues come from the linearised flow at the equilibrium.</p>
 </section>
 <section id="a-travelling-wave">
@@ -826,7 +831,7 @@ computed. The Floquet multipliers come from the dense monodromy matrix; the time
 relative to the stored seed because <span class="math notranslate nohighlight">\(\mu_1\)</span> moves by <span class="math notranslate nohighlight">\(2\times10^{-6}\)</span> between <span class="math notranslate nohighlight">\(dt \approx 0.04\)</span> and
 <span class="math notranslate nohighlight">\(0.02\)</span> (time-discretisation error).</p>
 <figure class="cn-film">
-<video class="cn-film" muted loop playsinline preload="none" poster="../_static/tutorial_films/t05_orbit.webp" width="720" height="480" aria-label="A yellow-green curve u(x) wriggles in the upper part of the frame while, below, its history fills a red and green space-time map from the bottom up over two periods of the orbit.">
+<video class="cn-film" muted loop playsinline preload="none" poster="../_static/tutorial_films/t05_orbit.webp" width="720" height="480" aria-label="A yellow-green curve u(x) wriggles in the upper part of the frame while, below, its history fills a red and blue space-time map from the bottom up over two periods of the orbit.">
 <source src="../_static/tutorial_films/t05_orbit.webm" type="video/webm">
 <source src="../_static/tutorial_films/t05_orbit.mp4" type="video/mp4">
 </video>
@@ -836,7 +841,7 @@ relative to the stored seed because <span class="math notranslate nohighlight">\
 <a class="reference internal image-reference" href="../_images/t05_stability.png"><img alt="Left: Floquet multipliers of the orbit with the unit circle; a red pair lies just outside it. Right: the leading eigenvalues of E1, two red complex pairs with positive real part." loading="lazy" src="../_images/t05_stability.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Stability of the solutions. Left: the multipliers of the orbit; the red pair outside the unit circle is the unstable direction, μ₁ = log|Λ|/T. Right: the leading eigenvalues of E1.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Stability of the solutions. Left: the multipliers Λ of the orbit; the red pair outside the unit circle is the unstable direction, with Floquet exponent μ₁ = log|Λ|/T = 0.0332. Right: the eigenvalues λ of E1, modes growing as exp(λt); the red ones are the four with the largest real part.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -858,7 +863,7 @@ is reported with its Newton residual.</p>
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t05_ks_orbits: PASS (exit 0) in 68.7 s | 2026-10-20 | script sha256 1481734c97ed43b4
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t05_ks_orbits: PASS (exit 0) in 66.6 s | 2026-10-21 | script sha256 1481734c97ed43b4
 equilibrium: space=antisymmetric subspace R u = u (cos components frozen at 0), mean frozen
   relative residual 1.385e-16 (7 Newton iterations), energy E = 0.260873, status provisional
   note: residual = ‖v(u)‖/‖u‖ with v = M⁻¹(F − L u), evaluated in the full space
@@ -877,7 +882,7 @@ OK: E1, E2, TW1 and ppo_10.25 agree with the published digits
 <li><p>Continuation of the equilibria in <span class="math notranslate nohighlight">\(L\)</span> and their bifurcation points (<code class="docutils literal notranslate"><span class="pre">KSDomainContinuation</span></code>,
 <code class="docutils literal notranslate"><span class="pre">tests/continuation/test_ks_L.py</span></code>).</p></li>
 <li><p>Is an instability of a symmetric solution symmetry-breaking? <code class="docutils literal notranslate"><span class="pre">symmetry_breaking_check</span></code>
-(<a class="reference internal" href="03_symmetries.html"><span class="doc">3. Symmetries and symmetry subspaces</span></a>).</p></li>
+(<a class="reference internal" href="03_symmetries.html"><span class="doc">Symmetries and symmetry subspaces</span></a>).</p></li>
 <li><p>Kolmogorov flow in 2D: <code class="docutils literal notranslate"><span class="pre">tests/ecs/test_kolmogorov.py</span></code>.</p></li>
 </ul>
 </section>
@@ -888,12 +893,12 @@ OK: E1, E2, TW1 and ppo_10.25 agree with the published digits
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="08_polar.html">
+          <a class="next-page" href="10_bifurcations.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">8. Polar geometry: a drum, a pipe, two rotating cylinders</div>
+                <div class="title">Bifurcations: branch switching, cycles, codimension 2, normal forms</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -904,7 +909,7 @@ OK: E1, E2, TW1 and ppo_10.25 agree with the published digits
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">4. Nonlinear boundary-value problems and continuation: Bratu</div>
+                <div class="title">Nonlinear boundary-value problems and continuation: Bratu</div>
                 
               </div>
             </a>
@@ -938,7 +943,7 @@ OK: E1, E2, TW1 and ppo_10.25 agree with the published digits
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a><ul>
+<li><a class="reference internal" href="#">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a><ul>
 <li><a class="reference internal" href="#the-system">The system</a></li>
 <li><a class="reference internal" href="#the-equation-as-written">The equation, as written</a></li>
 <li><a class="reference internal" href="#equilibria-and-their-stability">Equilibria and their stability</a></li>
@@ -958,7 +963,7 @@ OK: E1, E2, TW1 and ppo_10.25 agree with the published digits
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

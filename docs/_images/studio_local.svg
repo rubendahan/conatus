@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="IBM Plex Sans, DejaVu Sans, Arial, sans-serif" font-size="13">
+  <title>The local Studio: processes, files and trust boundary</title>
+  <desc>Inside your user account: the simulation writes frames to a spool directory; the Studio server reads the spool, writes a one-session token to a 0600 file whose path it prints, and serves a page on a loopback port. The browser on the same machine, or on a laptop through an ssh tunnel, opens that page and logs in with the token.</desc>
+  <rect x="0" y="0" width="760" height="330" fill="#EFEAE0"/>
+  <rect x="14" y="14" width="512" height="300" rx="4" fill="none" stroke="#77736B" stroke-dasharray="6 4"/>
+  <text x="26" y="36" fill="#5E5A52">your user account (one machine, or one compute job)</text>
+  <rect x="34" y="60" width="180" height="70" rx="3" fill="#FFFFFF" stroke="#77736B"/>
+  <text x="46" y="84" fill="#2B2A27" font-weight="600">simulation</text>
+  <text x="46" y="104" fill="#2B2A27">sim.watch("run", film=...)</text>
+  <text x="46" y="121" fill="#5E5A52">frames, scalars, events</text>
+  <rect x="34" y="200" width="180" height="70" rx="3" fill="#FFFFFF" stroke="#77736B"/>
+  <text x="46" y="224" fill="#2B2A27" font-weight="600">spool directory</text>
+  <text x="46" y="244" fill="#2B2A27">--spool &lt;dir&gt;</text>
+  <text x="46" y="261" fill="#5E5A52">a directory you choose</text>
+  <rect x="300" y="60" width="200" height="90" rx="3" fill="#FFFFFF" stroke="#C8463A"/>
+  <text x="312" y="84" fill="#2B2A27" font-weight="600">Studio server</text>
+  <text x="312" y="104" fill="#2B2A27">hub serve --local</text>
+  <text x="312" y="121" fill="#2B2A27">127.0.0.1:8765 only</text>
+  <text x="312" y="138" fill="#5E5A52">reads the spool, sends commands</text>
+  <rect x="300" y="200" width="200" height="70" rx="3" fill="#FFFFFF" stroke="#77736B"/>
+  <text x="312" y="224" fill="#2B2A27" font-weight="600">token file (mode 0600)</text>
+  <text x="312" y="244" fill="#2B2A27">path printed at start</text>
+  <text x="312" y="261" fill="#5E5A52">--state ./hub_state to keep it</text>
+  <rect x="566" y="60" width="180" height="90" rx="3" fill="#FFFFFF" stroke="#4C6FB0"/>
+  <text x="578" y="84" fill="#2B2A27" font-weight="600">browser</text>
+  <text x="578" y="104" fill="#2B2A27">localhost:8765/login</text>
+  <text x="578" y="121" fill="#5E5A52">session cookie after login</text>
+  <text x="578" y="138" fill="#5E5A52">with the token</text>
+  <g stroke="#2B2A27" stroke-width="1.4" fill="none">
+    <path d="M124 130 V198"/><path d="M118 190 l6 8 l6 -8"/>
+    <path d="M216 235 H298" stroke-dasharray="3 3"/><path d="M226 229 l-8 6 l8 6"/>
+    <path d="M400 150 V198"/><path d="M394 190 l6 8 l6 -8"/>
+    <path d="M502 105 H564"/><path d="M512 99 l-8 6 l8 6"/><path d="M556 99 l8 6 l-8 6"/>
+    <path d="M216 95 H298" stroke-dasharray="3 3"/><path d="M226 89 l-8 6 l8 6"/>
+  </g>
+  <text x="130" y="170" fill="#5E5A52">writes</text>
+  <text x="228" y="226" fill="#5E5A52">reads</text>
+  <text x="228" y="86" fill="#5E5A52">commands</text>
+  <text x="406" y="180" fill="#5E5A52">writes</text>
+  <text x="506" y="96" fill="#5E5A52">HTTP</text>
+  <text x="566" y="190" fill="#5E5A52">On a cluster the browser runs on</text>
+  <text x="566" y="208" fill="#5E5A52">your laptop and reaches the port</text>
+  <text x="566" y="226" fill="#5E5A52">through an ssh tunnel:</text>
+  <text x="566" y="244" fill="#2B2A27" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="11">ssh -J login -L 8765:</text>
+  <text x="566" y="260" fill="#2B2A27" font-family="JetBrains Mono, DejaVu Sans Mono, monospace" font-size="11">localhost:8765 node</text>
+</svg>

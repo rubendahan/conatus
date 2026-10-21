@@ -1,4 +1,4 @@
-"""Tutorial 14 -- coming from Dedalus: a convection cell as a native model, then read from a Dedalus script.
+"""Tutorial 14 -- importing a script: a convection cell as a native model, then translated from a Dedalus 3 script.
 
 Expected values (checked at the end of the script):
   the Dedalus script rb_cell_dedalus.py (written for this tutorial, next to this file) is

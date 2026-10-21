@@ -1,20 +1,18 @@
 # Input and output
 
-Two kinds of HDF5 files: **analysis files**, which hold what you asked to see (fields, derived
-quantities, numbers) at a fixed cadence, and **checkpoints**, which hold everything needed to
-continue a run exactly. Both are readable with `h5py` alone, and both carry the provenance record
-of the run (code version, environment, every numerical choice: {doc}`reproducibility`).
+Conatus writes two kinds of HDF5 files. **Analysis files** hold what you asked to see (fields,
+derived quantities, numbers) at a fixed cadence. **Checkpoints** hold everything needed to continue
+a run exactly. Both are readable with `h5py` alone. Both carry the provenance record of the run
+({doc}`reproducibility`).
 
-## A run split over two jobs
+The recipes come first. The rules behind them are in the reference sections after.
+
+## Recipe: a run split over several jobs
 
 On a cluster a long run is a chain of jobs, and every job runs the same script.
-`sim.resume_or_start(directory, u=...)` continues from the latest checkpoint of `directory` when
-there is one, and starts from the given initial state otherwise (first job; the directory is
-created). An `output` without `mode=` then follows the same branch: its file is created on a fresh
-start (an existing file is refused there: `mode="w"` replaces it explicitly, e.g. after a first
-job killed before its first checkpoint) and continued after a restart (`mode="resume"`: rows written after the checkpoint are
-dropped, the restarted run writes them again). `sim.explain()` says which branch was taken and
-which mode each file got:
+`sim.resume_or_start(directory, u=...)` continues from the latest checkpoint of `directory`, or
+starts from the given initial state when there is none. An output without `mode=` follows the same
+branch: its file is created on a fresh start and continued after a restart.
 
 ```{literalinclude} _check_features.py
 :language: python
@@ -27,18 +25,66 @@ which mode each file got:
 :language: text
 ```
 
-The last line is the check made after the example: the two jobs give the same numbers as one
-uninterrupted run, bit for bit.
+The second job starts from the checkpoint of step 300. `sim.explain()` says which branch each job
+took and which mode each file got. Delete `burgers_chain/` to start the chain again from t = 0.
+The check script compares these two jobs with one uninterrupted run of 500 steps: the final states
+are equal bit for bit.
 
-## Analysis files
+## Recipe: continue a state with another parameter
 
-`sim.output(path, tasks=..., every=k)` writes every `k` steps, and the state at the start of the
-next run first (`initial=True`, the default: a time series starts from the initial condition, as
-in Dedalus; a restarted job does not write that row again, and a start between two multiples of
-`k` writes none; `initial=False` starts at step `k`; the output's `explain()` says which). A task is the name of an unknown or
-of a component (`"u"`, `"u.z"`), an expression written as in the equations (`"dx(u)"`,
-`"0.5*u@u"`), or a function of the simulation in a dictionary (`{"KE": lambda s: ...}`) for
-anything else.
+A restart refuses a checkpoint written with another parameter value. To continue the state at a
+new value on purpose, name the change with `allow=`:
+
+```{literalinclude} _check_features.py
+:language: python
+:start-after: "# [io-allow]"
+:end-before: "# [/io-allow]"
+:dedent: 4
+```
+
+```{literalinclude} outputs/io_allow.txt
+:language: text
+```
+
+The allowed change is printed by `later.explain()` and recorded in every later checkpoint.
+
+## Recipe: a run that starts at a time other than zero
+
+`sim.initial(u=..., t=t0)` gives the state at the time `t0`. Forcing, boundary data, outputs and
+checkpoints then use that clock:
+
+```{literalinclude} _check_features.py
+:language: python
+:start-after: "# [initial-time]"
+:end-before: "# [/initial-time]"
+:dedent: 4
+```
+
+```{literalinclude} outputs/initial_time.txt
+:language: text
+```
+
+## Recipe: a long adjoint computation
+
+The reverse sweep of an adjoint over a long time can also be split over several jobs, with its own
+checkpoints kept on the GPU, in host memory or on disk: see {doc}`dynamics/adjoint`.
+
+## Reference
+
+### Analysis files
+
+`sim.output(path, tasks=..., every=k)` writes one row every `k` steps.
+
+- By default (`initial=True`) the first row is the state at the start of the run, so a time series
+  starts from the initial condition. A restarted job does not write that row again. A start
+  between two multiples of `k` writes none.
+- With `initial=False` the first row is at step `k`. The output's `explain()` says which applies.
+
+A task is one of:
+
+- the name of an unknown or of a component (`"u"`, `"u.z"`);
+- an expression written as in the equations (`"dx(u)"`, `"0.5*u@u"`);
+- a function of the simulation, in a dictionary (`{"KE": lambda s: ...}`), for anything else.
 
 | In the file | Content |
 |---|---|
@@ -51,7 +97,7 @@ anything else.
 `cn.io.read(path)` returns the times, iterations and tasks as arrays, and `explain()` describes
 the file.
 
-## Reading the files with other tools
+### Reading the files with other tools
 
 The files describe themselves with plain HDF5 means, so other tools see named arrays on
 coordinates:
@@ -82,87 +128,115 @@ these labels: they still read and restart, and `to_xarray()` names only the dime
 length identifies a coordinate (the rest are `<name>_dim<k>`). Native models declare no units, so
 no unit attribute is written.
 
-Conatus does not decide for you:
+### Modes of an existing output file
 
-- `every` is a whole number of steps: the time step is never adjusted to land on an output time;
-- an existing file is never replaced or extended without your saying so: `mode="w"` (replace),
-  `mode="a"` (append: time must go forward) or `mode="resume"`. One file holds one computation:
-  an append is refused, with the list of what differs, when the model, equations, parameters,
-  given-field data, resolution, box, scheme, `dt`, `every` or the source of any task differs from
-  the computation the file records (a task function is compared by its code and the values it
-  reads; one reading an object without a content hash is compared by its code only, said by
-  `explain()`);
-- `mode="resume"` is for a job that restarts from a checkpoint older than the last rows of the file
-  (the previous job was killed between two checkpoints): the rows after the restart are dropped
-  first, their number is printed by `explain()`, and the restarted run writes them again;
-- the file is closed after each write, so a job killed during a write leaves every completed row
-  readable.
+An existing file is replaced or extended only when you say so:
 
-## Checkpoints and exact restarts
+- `mode="w"` replaces it;
+- `mode="a"` appends to it (time must go forward);
+- `mode="resume"` continues it after a restart from a checkpoint older than its last rows (the
+  previous job was killed between two checkpoints). The rows after the restart are dropped first,
+  `explain()` prints their number, and the restarted run writes them again.
 
-`sim.save(path)` writes a checkpoint now; `sim.checkpoints(directory, every=k, keep=n)` writes one
-every `k` steps and keeps the `n` most recent (`keep=2` by default: the latest and the one before
-it, in case a job is killed while writing). `sim.restart(path)` continues from a checkpoint and
-`cn.io.latest(directory)` finds the most recent complete one, in either format:
-`checkpoint_<iteration>.h5` (written by `sim.checkpoints`) and `checkpoint_<iteration>.npz`
-(`sim.save(directory / f"checkpoint_{sim.iteration:09d}.npz")`). The iteration is read from the file, a file still being written is ignored, two files of the
-same iteration in the two formats are refused (keep one format per chain), an empty directory gives
-`None`, and a directory that does not exist is refused: a misspelt path never restarts a chain from
-t = 0. `resume_or_start` uses the same search.
+On a fresh start of `resume_or_start`, an existing file is refused. Use `mode="w"` to replace it,
+for example after a first job killed before its first checkpoint.
 
-A checkpoint holds the state, the history of a multistep scheme and the clock, so the restarted run
-is the uninterrupted run bit for bit, for every scheme ({doc}`timesteppers`), on the CPU and on a
-GPU: both formats are tested bit for bit on a device, including periodic `.h5` checkpoints restarted
-from `cn.io.latest` with a one-step and a multistep scheme and the CUDA graph replayed after a
-restart. The restarting simulation must use the same numerics (scheme, `dt`, resolution, start-up,
-options): a difference is refused with the option to change, never adapted. It must also be the same
-problem: every checkpoint records the model name, a hash of the compiled equations, the parameter
-values, the data of every given field (by content: a forcing `f = 1` is not `f = 2`), the user
-functions (`m.function`, by their code), the resolution and the bounds of every direction, and a
-restart refuses any difference with the list of what differs (`parameter kappa: 1 in the
-checkpoint, 5 now`; `given field f: its data differ ...`; `geometry along x: ...`;
-`equations: hash ... (another equation, term or sign)`), so a job chain whose script was edited
-between two jobs cannot mix two problems in one output. To continue a state at another value
-deliberately, name it: `sim.restart(path, allow=("kappa",))` (a parameter, given-field or function
-name, or `allow="parameters"`, `"data"`, `"functions"`, `"model"`, `"equations"`, `"geometry"`; the
-resolution can never be allowed). The allowed change is printed by
-`explain()` and recorded in every later checkpoint. A checkpoint written before this record restarts
-with a `CheckpointWarning` saying that only the problem name and the numerics could be compared (one
-written by 0.1.0: that its given-field data were not compared). A checkpoint directory that holds
-files of another run is refused as well: every checkpoint already in the directory is checked
-against the one the run restarted from before anything is written or deleted, and a refused
-write is refused again on every retry. `cn.io.latest` considers only complete Conatus checkpoints
-(an HDF5 file of another format, or a `.npz` without the state, is ignored). With `grids=True` a checkpoint also stores the
-grid values of each unknown, for reading with `h5py`. The suffix chooses the format: `.h5` or `.npz`
-(NumPy), which restart to the same numbers.
+One file holds one computation. An append is refused, with the list of what differs, when any of
+these differs from the computation the file records: the model, equations, parameters, given-field
+data, resolution, box, scheme, `dt`, `every`, or the source of a task. A task function is compared
+by its code and the values it reads. A function that reads an object without a content hash is
+compared by its code only, and `explain()` says so.
 
-## A run that starts at a time other than zero
+`every` is a whole number of steps. The time step is not adjusted to land on an output time.
 
-`sim.initial(u=..., t=t0)` gives the state at the time `t0` (default 0). Time-dependent forcing and
-boundary data are then evaluated from `t0`, `sim.t` starts there, `run(until=...)` is read on that
-clock, every output row and checkpoint carries the times `t0 + k dt`, and `explain()` states the
-start time. Every checkpoint records the start time of its chain: `resume_or_start(directory,
-u=..., t=t0)` refuses to continue a chain that started at another time (the two scripts would not
-describe the same run), and a checkpoint written before this record is continued only without `t=`
-(native runs started at t = 0 until then). A non-finite or non-real `t` is refused. In a model
-with an unknown named `t` there is no time `t`, and `initial(t=...)` gives that unknown's data, as
-before. Restarted from a checkpoint, `explain()` also says when the chain started.
+The file is closed after each write, so a job killed during a write leaves every completed row
+readable.
 
-```{literalinclude} _check_features.py
-:language: python
-:start-after: "# [initial-time]"
-:end-before: "# [/initial-time]"
-:dedent: 4
-```
+### Writing and finding checkpoints
 
-```{literalinclude} outputs/initial_time.txt
-:language: text
-```
+- `sim.save(path)` writes a checkpoint now. The suffix chooses the format: `.h5` (HDF5) or `.npz`
+  (NumPy). Both restart to the same numbers.
+- `sim.checkpoints(directory, every=k, keep=n)` writes `checkpoint_<iteration>.h5` every `k` steps
+  and keeps the `n` most recent. The default `keep=2` keeps the one before the latest, in case a
+  job is killed while writing.
+- `sim.restart(path)` continues from a checkpoint.
+- `cn.io.latest(directory)` returns the most recent complete checkpoint of a directory.
+  `resume_or_start` uses the same search.
 
-## Long adjoint computations
+How `cn.io.latest` chooses:
 
-The reverse sweep of an adjoint over a long time can also be split over several jobs, with its own
-checkpoints kept on the GPU, in host memory or on disk: see {doc}`dynamics/adjoint`.
+- it reads the iteration from the file, not from the file name;
+- it finds both `checkpoint_<iteration>.h5` and `checkpoint_<iteration>.npz` (written with
+  `sim.save(directory / f"checkpoint_{sim.iteration:09d}.npz")`);
+- it ignores a file still being written, an HDF5 file of another format, and a `.npz` without the
+  state;
+- it refuses two files of the same iteration in the two formats (keep one format per chain);
+- it returns `None` for an empty directory and refuses a directory that does not exist, so a
+  misspelt path does not restart a chain from t = 0.
+
+With `grids=True` a checkpoint also stores the grid values of each unknown, for reading with
+`h5py`.
+
+### What a restart continues
+
+A checkpoint holds the state, the history of a multistep scheme and the clock. The restarted run
+gives the same numbers as the uninterrupted run, bit for bit, for every scheme
+({doc}`timesteppers`), on the CPU and on a GPU.
+
+The restarting simulation must use the same numerics: scheme, `dt`, resolution, start-up and
+options. Restart rejects incompatible numerical settings and lists the differences.
+
+### What a restart compares
+
+Every checkpoint records the problem it belongs to:
+
+- the model name and a hash of the compiled equations;
+- the parameter values;
+- the data of every given field, by content (a forcing `f = 1` is not `f = 2`);
+- the user functions (`m.function`), by their code;
+- the resolution and the bounds of every direction;
+- the start time of its chain.
+
+A restart refuses any difference and lists what differs, for example
+`parameter kappa: 1 in the checkpoint, 5 now`, `given field f: its data differ ...`,
+`geometry along x: ...` or `equations: hash ... (another equation, term or sign)`. A job chain
+whose script was edited between two jobs therefore cannot mix two problems in one output.
+
+### Allowing a change
+
+`sim.restart(path, allow=...)` and `resume_or_start(directory, ..., allow=...)` accept:
+
+- a parameter, given-field or function name, such as `allow=("kappa",)`;
+- a group: `"parameters"`, `"data"`, `"functions"`, `"model"`, `"equations"` or `"geometry"`.
+
+A change of resolution cannot be allowed. The allowed change is printed by `explain()` and recorded in
+every later checkpoint.
+
+### A checkpoint directory used by two runs
+
+Before anything is written or deleted, every checkpoint already in the directory is checked against
+the one the run restarted from. A directory that holds checkpoints of another run is refused. A
+refused write is refused again on every retry.
+
+### Checkpoints written by earlier versions
+
+A checkpoint written before the problem record restarts with a `CheckpointWarning`. The warning
+says that only the problem name and the numerics could be compared. For a checkpoint written by
+0.1.0, it says that its given-field data were not compared.
+
+### Start time
+
+- With `sim.initial(u=..., t=t0)`, time-dependent forcing and boundary data are evaluated from
+  `t0`, and `sim.t` starts there.
+- `run(until=...)` is read on that clock. Output rows and checkpoints carry the times `t0 + k dt`.
+- `explain()` states the start time, also after a restart.
+- `resume_or_start(directory, u=..., t=t0)` refuses to continue a chain that started at another
+  time, since the two scripts would describe different runs.
+- A checkpoint written before the start time was recorded is continued only without `t=`. Native
+  runs started at t = 0 until then.
+- A non-finite or non-real `t` is refused.
+- In a model with an unknown named `t`, there is no time `t`: `initial(t=...)` gives that unknown's
+  data.
 
 ## Not yet
 

@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -227,11 +227,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../../">&larr; Conatus website</a>
-  <a href="../../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -241,21 +246,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -302,7 +307,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/bases.html">Bases and domains</a></li>
@@ -677,7 +682,8 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for conatus.contour.evp</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""``m.eigenvalues(N, ..., region=cn.box(...))``: every eigenvalue of one group in a region, with a</span>
-<span class="sd">certified count (argument principle) and Beyn's method on the pencil ``L + s M`` of the group."""</span>
+<span class="sd">count (argument principle on a sampled boundary walk) and Beyn's method on the pencil ``L + s M``</span>
+<span class="sd">of the group."""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
@@ -700,8 +706,9 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">RegionEVPResult</span><span class="p">(</span><span class="n">EVPResult</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""An :class:`~conatus.solvers.evp.EVPResult` restricted to a region of the eigenvalue plane:</span>
 <span class="sd">    ``values`` are every eigenvalue of the discrete pencil in ``region`` (one entry per distinct</span>
-<span class="sd">    eigenvalue, ``multiplicity`` gives the algebraic multiplicity) and ``count`` their number,</span>
-<span class="sd">    multiplicities included, certified by the argument principle (``count_method``)."""</span>
+<span class="sd">    eigenvalue, ``multiplicity`` the eigenvalues counted in a small square around it: a multiple</span>
+<span class="sd">    eigenvalue or a cluster not separated at that size) and ``count`` their number,</span>
+<span class="sd">    multiplicities included, by the argument principle (``count_method``)."""</span>
 
     <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">count_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
@@ -729,16 +736,16 @@
 <div class="viewcode-block" id="RegionEVPResult.explain">
 <a class="viewcode-back" href="../../../api/_generated/_stubs/conatus.expert.RegionEVPResult.html#conatus.expert.RegionEVPResult.explain">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"growth"</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">full</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""The certified count of the region, then the usual eigenvalue explanation of the modes."""</span>
+<span class="w">        </span><span class="sd">"""The count of the region, then the usual eigenvalue explanation of the modes."""</span>
         <span class="n">kept</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span>
         <span class="n">total</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplicity</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"region </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="si">}</span><span class="s2">: count </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2"> (multiplicities included), "</span>
-                 <span class="sa">f</span><span class="s2">"certified by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count_method</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+                 <span class="sa">f</span><span class="s2">"by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count_method</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">total</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">:</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">kept</span><span class="si">}</span><span class="s2"> of the modes kept by the filters below (multiplicities "</span>
                          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplicity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"  multiple eigenvalues: "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"  several eigenvalues in one square (multiple or not separated): "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.10g</span><span class="si">}</span><span class="s2"> (x</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s2">)"</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplicity</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
         <span class="n">body</span> <span class="o">=</span> <span class="n">EVPResult</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="n">full</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
@@ -755,18 +762,18 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">region_eigenvalues</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">ContourBox</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
                        <span class="n">residual_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">RESIDUAL_TOL</span><span class="p">,</span> <span class="o">**</span><span class="n">beyn_options</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RegionEVPResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Every eigenvalue ``s`` of ``(L + s M) x = 0`` in ``region`` (count by the argument</span>
-<span class="sd">    principle, roots by Beyn's method, certified; :func:`conatus.contour.beyn`)."""</span>
+<span class="sd">    principle, roots by Beyn's method, each checked by its residual; :func:`conatus.contour.beyn`)."""</span>
     <span class="n">op</span> <span class="o">=</span> <span class="n">Pencil</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">beyn</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">residual_tol</span><span class="o">=</span><span class="n">residual_tol</span><span class="p">,</span> <span class="o">**</span><span class="n">beyn_options</span><span class="p">)</span>
     <span class="n">V</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">vectors</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">_residuals</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span> <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">method</span> <span class="o">=</span> <span class="s2">"contour: argument-principle count + Beyn's method (polished, certified)"</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="s2">"contour: argument-principle count + Beyn's method (polished, residual-checked)"</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">RegionEVPResult</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">b</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
                         <span class="n">count_method</span><span class="o">=</span><span class="n">b</span><span class="o">.</span><span class="n">count_method</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span> <span class="n">multiplicity</span><span class="o">=</span><span class="n">b</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">,</span>
                         <span class="n">contour</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
     <span class="n">r</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"region </span><span class="si">{</span><span class="n">region</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="si">}</span><span class="s2">: Z = </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2"> eigenvalue(s) of the discrete "</span>
                  <span class="sa">f</span><span class="s2">"pencil (spurious ones of the discretisation included), </span><span class="si">{</span><span class="n">b</span><span class="o">.</span><span class="n">counted</span><span class="o">.</span><span class="n">evaluations</span><span class="si">}</span><span class="s2">"</span>
-                 <span class="sa">f</span><span class="s2">" determinant evaluations; residual certification &lt;= </span><span class="si">{</span><span class="n">residual_tol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                 <span class="sa">f</span><span class="s2">" determinant evaluations; roots accepted at residual &lt;= </span><span class="si">{</span><span class="n">residual_tol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">r</span><span class="o">.</span><span class="n">log</span> <span class="o">+=</span> <span class="n">b</span><span class="o">.</span><span class="n">log</span>
     <span class="k">return</span> <span class="n">r</span>
 </pre></div>
@@ -801,7 +808,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

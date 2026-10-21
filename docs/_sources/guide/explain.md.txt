@@ -1,7 +1,8 @@
 # explain() and the Methods paragraph
 
-Every key object says, in plain text, what it is and which numerical choices it carries, and a
-simulation writes the *Methods* paragraph of your paper from what it actually ran.
+Models, results and solvers describe, in plain text, what they are and which numerical choices
+they carry. A simulation can also draft the *Methods* paragraph of a paper from the settings it ran
+with.
 
 ```python
 import numpy as np
@@ -13,7 +14,7 @@ res = m.linearize(about={"u": 0, "T": lambda z: -z}).eigenvalues(N=24, k=np.pi)
 print(m.explain())        # the model in a few lines: equations, conditions, decisions, warnings
 print(sim.explain())      # the same at the chosen resolution, plus the scheme and the checks
 print(res.explain())      # an eigenvalue result: filters, growth convention, modes, residuals
-print(sim.explain(full=True))   # every automatic decision, tau by tau and term by term
+print(sim.explain(full=True))   # compiler decisions, tau by tau and term by term
 ```
 
 `explain()` is short by default: a summary of about ten lines in the words of your model. For a
@@ -29,19 +30,19 @@ Dealiasing: x: 3/2, z: 3/2 (declared default for products of degree 2)
 IVPSolver(scheme=RK443, dt=0.0005, constant step, backend=cpu)
   scheme: RK443: IMEX Runge–Kutta (4 stages), ... global order 3 (Ascher, Ruuth & Spiteri 1997, (4,4,3))
   finite-state check: every 100 steps (default), ...
-(every decision, tau by tau and term by term, and the solver layout: sim.explain(full=True))
+(compiler decisions, tau by tau and term by term, and the solver layout: sim.explain(full=True))
 ```
 
-Warnings always stay in the short text (terms that are not polynomial in the unknowns, parameter
-values given for one call, a symmetry subspace that hides symmetry-breaking instabilities, the
-m = 0 projection of curvilinear solvers, spurious tau modes of a shell, the order of the scheme
-with time-dependent boundary values, fallbacks and first-order modes of the right-hand side,
-eigenproblem checks that were skipped). `explain(full=True)` is
-the complete record.
+Warnings stay in the short text. They cover terms that are not polynomial in the unknowns,
+parameter values given for one call, a symmetry subspace that hides symmetry-breaking
+instabilities, the m = 0 projection of curvilinear solvers, spurious tau modes of a shell, the
+order of the scheme with time-dependent boundary values, fallbacks and first-order modes of the
+right-hand side, and eigenproblem checks that were skipped. `explain(full=True)` adds the full
+record that the object holds.
 
-This is how "no silent substitution" is made checkable ({doc}`../principles`): if a choice is not
-in `explain(full=True)`, it is a bug. For a native model, the full text lists the term placement
-(implicit or explicit) term by term, each boundary condition and the tau that imposes it, the
+`explain(full=True)` includes the compiler decisions and the solver layout recorded by the object
+({doc}`../principles`). A missing automatic choice is treated as a bug. For a native model, the
+full text lists the term placement (implicit or explicit) term by term, each boundary condition and the tau that imposes it, the
 pressure gauge, the dealiasing factors with their origin (yours or the declared default) and the
 bases chosen by the geometry; for a solver, the system layout (groups, buckets, bands), how $F$ is
 evaluated and what runs where.
@@ -53,7 +54,7 @@ distributed forms):
 | Call | What it prints |
 |---|---|
 | `explain()` | problem, discretisation, scheme, the defaults and tolerances that matter, warnings |
-| `explain(full=True)` | the complete record: every decision, the logs, the solver layout |
+| `explain(full=True)` | the recorded compiler decisions, the logs, the solver layout |
 
 ## What has `explain()`
 
@@ -66,7 +67,7 @@ distributed forms):
 | an EVP result | method, finite and infinite modes, pencil regularity, modes removed by the drift test, residual and drift of every kept mode |
 | a verification report | each check with its value and threshold (`[PASS]` / to investigate) |
 | `IVPSolver`, `CFL`, `EmbeddedError`, `TauWatch` | scheme, dt, start-up, backend, band structure, how $F$ is evaluated; what a controller does and does not do |
-| a native model, a compiled model, a `Simulation` | the declarations, every automatic decision, the resolution, the solver |
+| a native model, a compiled model, a `Simulation` | the declarations, the automatic decisions, the resolution, the solver |
 | unit systems, presets, base flows | definitions, conventions, the defaults that were used |
 | `conatus.expert` | what the single import contains and which names are shadowed |
 
@@ -76,9 +77,9 @@ would export with different meanings ({doc}`expert`).
 ## A *Methods* paragraph for your paper
 
 `sim.methods()` (in the expert layer `methods(plan, solver=None, eigen_solver=None)`, also
-`plan.methods(...)`) writes a Methods paragraph **only from what the objects hold**: bases and sizes, the tau method and number
-of taus, dealias per basis, NCC truncation, symmetry subspace, rank check, scheme, `dt`, start-up,
-solver and backend, dtype. Nothing is paraphrased from defaults. For an EVP, pass
+`plan.methods(...)`) drafts a Methods paragraph from the settings the objects hold: bases and
+sizes, the tau method and number of taus, dealias per basis, NCC truncation, symmetry subspace,
+rank check, scheme, `dt`, start-up, solver and backend, dtype. For an EVP, pass
 `eigen_solver="dense"` or `"shift-invert"`.
 
 ```python
@@ -112,14 +113,15 @@ its integral constraint were placed by fixed, declared rules (listed by explain(
 dealiasing factor 3/2 is the declared default of the native layer.
 ```
 
-The text is a starting point to edit, not a substitute for describing your study. Pair it with the
+The text is a draft. Add your study's validation and interpretation, and pair it with the
 provenance record of the run ({doc}`reproducibility`) and cite Conatus itself (see the
 *Citing Conatus* page).
 
 ## Tolerances: yours, or declared
 
-A tolerance that decides when an iterative solver stops, which modes are returned, or how the time step
-adapts has no default: leaving it out is an error that proposes a value and says what it controls.
+You must supply a tolerance that decides when an iterative solver stops, which modes are returned,
+or how the time step adapts. Leaving it out raises an error that proposes a value and says what it
+controls.
 
 ```python
 import numpy as np
@@ -136,6 +138,7 @@ sim = cn.problems.native.rayleigh_benard(Lx=2.0, Ra=2500, Pr=1).simulate(
 dt = sim.cfl("u", safety=0.5)                                   # your margin on the advective limit
 ```
 
-Thresholds that only detect or refuse, iteration caps that raise, and stopping tests at the attainable
-floor (the residual is returned) keep a named default. `cn.tolerances.explain()` lists all of them with
-their value and why a default is safe; the `explain()` of the object that uses one repeats it.
+Other thresholds keep a named default: those that only detect or refuse, iteration caps that
+raise, and stopping tests at the attainable floor (the residual is returned).
+`cn.tolerances.explain()` lists them with their values and the reason for each default. The
+`explain()` of the object that uses one repeats it.

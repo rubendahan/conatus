@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="3. Symmetries and symmetry subspaces" href="03_symmetries.html"><link rel="prev" title="1. A first eigenvalue problem: Orr–Sommerfeld" href="01_orr_sommerfeld.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Polar geometry: a drum, a pipe, two rotating cylinders" href="08_polar.html"><link rel="prev" title="Convection between two plates: from onset to simulation" href="00_getting_started.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU - Conatus</title>
+        <title>A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,7 +684,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="a-first-initial-value-problem-rayleighbenard-2d-cpu-then-gpu">
-<h1>2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU<a class="headerlink" href="#a-first-initial-value-problem-rayleighbenard-2d-cpu-then-gpu" title="Link to this heading">¶</a></h1>
+<h1>A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU<a class="headerlink" href="#a-first-initial-value-problem-rayleighbenard-2d-cpu-then-gpu" title="Link to this heading">¶</a></h1>
 <p><strong>Goal.</strong> Write the Boussinesq equations once, time-step them on the CPU, check that a small
 perturbation grows at the rate predicted by the eigenvalue problem of the <em>same</em> equations, then
 run the same plan on a GPU.
@@ -725,8 +730,7 @@ the split (override with <code class="docutils literal notranslate"><span class=
 </div>
 <ul class="simple">
 <li><p>The geometry names its boundaries (<code class="docutils literal notranslate"><span class="pre">bottom</span></code>, <code class="docutils literal notranslate"><span class="pre">top</span></code>); conditions are given there by unknown.
-No basis, no size, no tau variable, no lift: <code class="docutils literal notranslate"><span class="pre">m.explain()</span></code> prints what the native layer placed:
-two taus per second-order equation (modes <span class="math notranslate nohighlight">\(N_z-1\)</span>, <span class="math notranslate nohighlight">\(N_z-2\)</span> of the equation where the unknown has
+<code class="docutils literal notranslate"><span class="pre">m.explain()</span></code> shows the bases and tau terms selected by the native compiler: two taus per second-order equation (modes <span class="math notranslate nohighlight">\(N_z-1\)</span>, <span class="math notranslate nohighlight">\(N_z-2\)</span> of the equation where the unknown has
 its highest <span class="math notranslate nohighlight">\(z\)</span>-order), the pressure gauge <code class="docutils literal notranslate"><span class="pre">tau_p</span></code> with <code class="docutils literal notranslate"><span class="pre">integ(p)</span> <span class="pre">=</span> <span class="pre">0</span></code> and the divergence tau
 <code class="docutils literal notranslate"><span class="pre">dot(ez,</span> <span class="pre">lift(tau_u2,</span> <span class="pre">z,</span> <span class="pre">-1))</span></code>, recognized from the structure (<span class="math notranslate nohighlight">\(p\)</span> only under <code class="docutils literal notranslate"><span class="pre">grad</span></code>, <code class="docutils literal notranslate"><span class="pre">div(u)</span> <span class="pre">=</span> <span class="pre">0</span></code>
 without time derivative), and the declared default dealiasing 3/2.</p></li>
@@ -745,7 +749,8 @@ order of the unknowns.</p></li>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">m.linearize(about=...)</span></code> takes the Fréchet derivative of the same model around the conduction state
-<span class="math notranslate nohighlight">\(T_0 = -z\)</span> and turns <span class="math notranslate nohighlight">\(\partial_t\)</span> into the eigenvalue <span class="math notranslate nohighlight">\(s\)</span>. No second copy of the equations exists.
+<span class="math notranslate nohighlight">\(T_0 = -z\)</span> and turns <span class="math notranslate nohighlight">\(\partial_t\)</span> into the eigenvalue <span class="math notranslate nohighlight">\(s\)</span>. The perturbation equations come from
+this model and the supplied base state.
 <code class="docutils literal notranslate"><span class="pre">eigenvalues(N=24,</span> <span class="pre">k=np.pi)</span></code> gives 24 Chebyshev modes in <span class="math notranslate nohighlight">\(z\)</span> and the smallest Fourier size holding
 <span class="math notranslate nohighlight">\(k = \pi\)</span> (declared: the matrices of one wavenumber do not depend on the others).</p>
 </section>
@@ -770,10 +775,10 @@ order of the unknowns.</p></li>
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">m.simulate(N=(16,</span> <span class="pre">24),</span> <span class="pre">scheme=&quot;RK443&quot;,</span> <span class="pre">dt=5e-4)</span></code>: resolution, scheme and step are explicit. The
-catalogue matches Dedalus (SBDF1–4, CNAB, RK111/222/443, …); see <a class="reference internal" href="../guide/timesteppers.html"><span class="doc">Simulations and time steppers</span></a>.
-<code class="docutils literal notranslate"><span class="pre">run(until=0.8)</span></code> refuses a time that is not a whole number of steps (the step is never adjusted).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sim.cfl(&quot;u&quot;,</span> <span class="pre">0.5)</span></code> is a <em>stability indicator</em> built from the velocity, not an error estimate;
-the temporal error estimate (<code class="docutils literal notranslate"><span class="pre">EmbeddedError(sim.solver)</span></code>) and everything else of the expert
+schemes (SBDF1–4, CNAB, RK111/222/443, …) are listed in <a class="reference internal" href="../guide/timesteppers.html"><span class="doc">Simulations and time steppers</span></a>.
+<code class="docutils literal notranslate"><span class="pre">run(until=0.8)</span></code> needs a stop time that is a whole number of steps from the current time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sim.cfl(&quot;u&quot;,</span> <span class="pre">0.5)</span></code> is a <em>stability indicator</em> built from the velocity. The temporal error
+estimate (<code class="docutils literal notranslate"><span class="pre">EmbeddedError(sim.solver)</span></code>) and everything else of the expert
 <code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code> stay available through <code class="docutils literal notranslate"><span class="pre">sim.solver</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sim.explain()</span></code> shows the automatic decisions, then the systems (one per Fourier wavenumber),
 their bands and how they are solved.</p></li>
@@ -791,10 +796,10 @@ their bands and how they are solved.</p></li>
 sizes, tau method, dealiasing, scheme, step), with the citations it relies on, and states what the
 native layer decided.</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t02_growth.png"><img alt="The roll amplitude on a log scale against time: after a short shaded start the dots follow a straight red line." loading="lazy" src="../_images/t02_growth.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t02_growth.png"><img alt="The roll amplitude on a log scale against time: the dots bend during a short start, then follow a straight red line over the shaded interval." loading="lazy" src="../_images/t02_growth.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The initial-value problem against the eigenvalue problem. After t = 0.3 the amplitude grows at σ = 5.5425080, the EVP’s 5.5425059: a relative difference of 4×10⁻⁷, within the 10⁻⁵ the script checks.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The initial-value problem against the eigenvalue problem. Before t = 0.3 faster modes are still decaying; over the shaded interval the amplitude grows at σ = 5.5425080, the eigenvalue’s 5.5425059: a relative difference of 4×10⁻⁷, within the 10⁻⁵ the script checks.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -803,10 +808,10 @@ native layer decided.</p>
 <p>A cluster job has a time limit, so a long run is a chain of jobs, and each job runs the same
 script. <code class="docutils literal notranslate"><span class="pre">sim.resume_or_start(directory,</span> <span class="pre">T=...)</span></code> continues from the latest checkpoint of
 <code class="docutils literal notranslate"><span class="pre">directory</span></code> when there is one and starts from the initial state otherwise; <code class="docutils literal notranslate"><span class="pre">checkpoints</span></code> writes
-exact restart files; <code class="docutils literal notranslate"><span class="pre">output</span></code> writes the fields and numbers you ask for. Without <code class="docutils literal notranslate"><span class="pre">mode=</span></code>, the output
-file is created on a fresh start (an existing one is refused rather than replaced: give
-<code class="docutils literal notranslate"><span class="pre">mode=&quot;w&quot;</span></code> to replace it) and continued after a restart (rows written after the checkpoint
-are dropped and written again by the restarted run).</p>
+bit-for-bit restart files; <code class="docutils literal notranslate"><span class="pre">output</span></code> writes the fields and numbers you ask for. Without <code class="docutils literal notranslate"><span class="pre">mode=</span></code>, the
+output file is created on a fresh start and continued after a restart. On a fresh start an existing
+file is refused; give <code class="docutils literal notranslate"><span class="pre">mode=&quot;w&quot;</span></code> to replace it. After a restart, rows written after the checkpoint
+are dropped and written again by the restarted run.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
@@ -841,10 +846,10 @@ the formats).</p>
 <p><strong>Check.</strong> EVP: <span class="math notranslate nohighlight">\(\sigma = 5.5425059231\)</span> (the streamfunction formulation gives <span class="math notranslate nohighlight">\(5.542505923\)</span>); IVP from a
 <span class="math notranslate nohighlight">\(10^{-6}\)</span> perturbation: <span class="math notranslate nohighlight">\(\sigma = 5.5425080\)</span> over <span class="math notranslate nohighlight">\(t \in [0.3, 0.8]\)</span>, i.e. <span class="math notranslate nohighlight">\(4\times10^{-7}\)</span> relative.</p>
 <figure class="align-default" id="id2">
-<a class="reference internal image-reference" href="../_images/t02_chain.png"><img alt="Kinetic energy against time on a log scale, black circles up to t = 0.3 and red squares after, continuing the same straight line." loading="lazy" src="../_images/t02_chain.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t02_restart.png"><img alt="Two horizontal bars over time: the upper one in two parts, job 1 then job 2, joined at a checkpoint marker at t = 0.3; the lower one a single uninterrupted run to the same end time." loading="lazy" src="../_images/t02_restart.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The kinetic energy written to rb.h5 by the two jobs of the chain: the second starts from the checkpoint of the first and continues the same file. One run, bit for bit.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The jobs block of the page: job 2 resumes from the checkpoint that job 1 wrote at iteration 600 (t = 0.3) and runs to t = 0.8 (iteration 1600). Its final state is identical to that of the uninterrupted run: np.array_equal is True over the 1531 coefficients, largest difference 0. The output file holds 17 rows, t = 0 included.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SIGMA</span> <span class="o">=</span> <span class="mf">5.5425059</span>                            <span class="c1"># EVP of the same equations (tests/ivp/test_psi_theta.py)</span>
@@ -857,7 +862,7 @@ the formats).</p>
 </div>
 <section id="output-as-executed">
 <h3>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h3>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t02a_rayleigh_benard_cpu: PASS (exit 0) in 32.2 s | 2026-10-20 | script sha256 90eb240188d497ff
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t02a_rayleigh_benard_cpu: PASS (exit 0) in 30.4 s | 2026-10-21 | script sha256 90eb240188d497ff
 Model 'Rayleigh-Benard 2D': Box(x=periodic((0, 2)), z=walls(-0.5, 0.5)) (Cartesian box)
 Unknowns: u (velocity), p (pressure), T (scalar); parameters: Ra = 2500, Pr = 1
 Equations as written:
@@ -870,7 +875,7 @@ Boundary conditions: bottom: u = 0, T = 0.5; top: u = 0, T = -0.5 (tau method, p
 Gauge: the mean of p is fixed (integ(p) = 0)
 Dealiasing: x: 3/2, z: 3/2 (declared default for products of degree 2)
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
-(every decision, tau by tau and term by term: m.explain(full=True))
+(compiler decisions, tau by tau and term by term: m.explain(full=True))
 Linearization of 'Rayleigh-Benard 2D' about a base state, eigenvalue s (normal modes exp(s t)):
   u = 0 about the zero field
   T = T0(z), a non-constant coefficient
@@ -890,7 +895,7 @@ IVPSolver(scheme=RK443, dt=0.0005, constant step, backend=cpu)
   scheme: RK443: IMEX Runge–Kutta (4 stages), implicit L-stable SDIRK3 on L, explicit 4-stage Runge–Kutta on F; global order 3 (Ascher, Ruuth &amp; Spiteri 1997, (4,4,3))
   finite-state check: every 100 steps (default), at the end of each run call and before each checkpoint/output write (NaN/inf -&gt; NumericalError naming step, time and unknown; check_finite=False turns it off)
   resolution check: with the finite-state check, the relative spectral tail of each unknown and direction above 0.001 warns once (none so far)
-(every decision, tau by tau and term by term, and the solver layout: sim.explain(full=True))
+(compiler decisions, tau by tau and term by term, and the solver layout: sim.explain(full=True))
 CFL time step at safety 0.5: 2.18e+01  (a stability indicator, not an error)
 IVP: measured growth rate sigma = 5.5425080071 over t in [0.30, 0.80]
 Methods paragraph generated from the plan (edit before publishing):
@@ -899,8 +904,8 @@ The IVP 'Rayleigh-Benard 2D' for (u, p, T) was solved with Conatus. The domain i
 
 Citations: olver2013, burns2020, ascher1997
 Facts used: kind=IVP, groups=8, N_x=16, N_z=24, zbasis=Chebyshev, taus=4, dealias={'x': 1.5, 'z': 1.5}, scheme=RK443, dt=0.0005, backend=cpu, native=True, dealias_default=True
-resume_or_start('&lt;path&gt;/rb_chain_60ae2ffv/chk'): continued from checkpoint_000000600.h5 (iteration 600, t = 0.3); outputs without mode= continue their file (mode='resume')
-AnalysisFile &lt;path&gt;/rb_chain_60ae2ffv/rb.h5 (HDF5, conatus.analysis/1): every 100 steps (= 0.05 time units), 17 write(s) so far [mode 'resume' chosen by resume_or_start (restart)]
+resume_or_start('&lt;path&gt;/rb_chain_74068ski/chk'): continued from checkpoint_000000600.h5 (iteration 600, t = 0.3); outputs without mode= continue their file (mode='resume')
+AnalysisFile &lt;path&gt;/rb_chain_74068ski/rb.h5 (HDF5, conatus.analysis/1): every 100 steps (= 0.05 time units), 17 write(s) so far [mode 'resume' chosen by resume_or_start (restart)]
 17 rows, t = 0.00 ... 0.80, kinetic energy at the end 1.028e-06
 OK: the IVP grows at the EVP rate; the EVP matches the psi-theta formulation; the two-job chain is the uninterrupted run bit for bit
 </pre></div>
@@ -914,7 +919,37 @@ OK: the IVP grows at the EVP rate; the EVP matches the psi-theta formulation; th
 state, the batched banded solves and the transforms to the device; <code class="docutils literal notranslate"><span class="pre">f_backend=&quot;fused&quot;</span></code> evaluates the
 nonlinear terms with fused kernels (the NumPy <code class="docutils literal notranslate"><span class="pre">&quot;evaluator&quot;</span></code> remains the oracle). <code class="docutils literal notranslate"><span class="pre">sim.solver.run_graph(n)</span></code>
 captures one step as a CUDA graph and replays it, which removes the launch latency.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">runs</span><span class="p">,</span> <span class="n">early</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
+<p>The GPU script starts from the same model, at <span class="math notranslate nohighlight">\(Ra = 10^5\)</span>. Its last three blocks need a CUDA device.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">rayleigh_benard</span><span class="p">(</span><span class="n">Ra</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The model of tutorial 2a (same equations, same conditions), at Rayleigh number Ra."""</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">cn</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">periodic</span><span class="p">(</span><span class="mf">2.0</span><span class="p">),</span> <span class="n">z</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">walls</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Rayleigh-Benard 2D"</span><span class="p">,</span>
+                 <span class="n">Ra</span><span class="o">=</span><span class="n">Ra</span><span class="p">,</span> <span class="n">Pr</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">velocity</span><span class="p">(</span><span class="s2">"u"</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="s2">"p"</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">equations</span><span class="p">(</span><span class="s2">"""</span>
+<span class="s2">        momentum:   dt(u) + grad(p) - Pr*lap(u) = Pr*Ra*T*ez - u·grad(u)</span>
+<span class="s2">        continuity: div(u) = 0</span>
+<span class="s2">        heat:       dt(T) - lap(T) = -u·grad(T)</span>
+<span class="s2">    """</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"bottom"</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">=+</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"top"</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">m</span>
+
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">rayleigh_benard</span><span class="p">(</span><span class="n">Ra</span><span class="o">=</span><span class="mf">1e5</span><span class="p">)</span>
+<span class="n">T_init</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="o">-</span><span class="n">z</span> <span class="o">+</span> <span class="mf">1e-2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>  <span class="c1"># noqa: E731</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># requires: gpu</span>
+<span class="n">runs</span><span class="p">,</span> <span class="n">early</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
 <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">kw</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">"cpu"</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"cpu"</span><span class="p">)),</span>
                   <span class="p">(</span><span class="s2">"gpu"</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">,</span> <span class="n">f_backend</span><span class="o">=</span><span class="s2">"fused"</span><span class="p">))]:</span>   <span class="c1"># both choices explicit</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">"RK443"</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">2e-4</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
@@ -928,7 +963,8 @@ captures one step as a CUDA graph and replays it, which removes the launch laten
 <span class="nb">print</span><span class="p">(</span><span class="n">runs</span><span class="p">[</span><span class="s2">"gpu"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">"RK443"</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">2e-4</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">,</span> <span class="n">f_backend</span><span class="o">=</span><span class="s2">"fused"</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># requires: gpu</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">"RK443"</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">2e-4</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">"cuda"</span><span class="p">,</span> <span class="n">f_backend</span><span class="o">=</span><span class="s2">"fused"</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">initial</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="n">T_init</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">run_graph</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>                               <span class="c1"># expert: capture one step, replay it</span>
 <span class="n">graph_early</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -937,7 +973,8 @@ captures one step as a CUDA graph and replays it, which removes the launch laten
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"gpu + CUDA graph: </span><span class="si">{</span><span class="mf">1e3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t0</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">180</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ms per step"</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Tc</span><span class="p">,</span> <span class="n">Tg</span> <span class="o">=</span> <span class="n">early</span><span class="p">[</span><span class="s2">"cpu"</span><span class="p">],</span> <span class="n">early</span><span class="p">[</span><span class="s2">"gpu"</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># requires: gpu</span>
+<span class="n">Tc</span><span class="p">,</span> <span class="n">Tg</span> <span class="o">=</span> <span class="n">early</span><span class="p">[</span><span class="s2">"cpu"</span><span class="p">],</span> <span class="n">early</span><span class="p">[</span><span class="s2">"gpu"</span><span class="p">]</span>
 <span class="n">diff_gpu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Tc</span> <span class="o">-</span> <span class="n">Tg</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Tc</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
 <span class="n">diff_graph</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">graph_early</span> <span class="o">-</span> <span class="n">Tg</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Tg</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
 <span class="n">late</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">runs</span><span class="p">[</span><span class="s2">"cpu"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span> <span class="o">-</span> <span class="n">runs</span><span class="p">[</span><span class="s2">"gpu"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="s2">"T"</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
@@ -1026,7 +1063,7 @@ OK: CPU and GPU agree to rounding; the graph replay is the same computation
 <section id="going-further">
 <h2>Going further<a class="headerlink" href="#going-further" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Half the unknowns with a reflection symmetry: <a class="reference internal" href="03_symmetries.html"><span class="doc">3. Symmetries and symmetry subspaces</span></a>.</p></li>
+<li><p>Half the unknowns with a reflection symmetry: <a class="reference internal" href="03_symmetries.html"><span class="doc">Symmetries and symmetry subspaces</span></a>.</p></li>
 <li><p>Checkpoints and exact restart (multistep history included): <a class="reference internal" href="../guide/reproducibility.html"><span class="doc">Reproducibility and provenance</span></a>.</p></li>
 </ul>
 </section>
@@ -1037,23 +1074,23 @@ OK: CPU and GPU agree to rounding; the graph replay is the same computation
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="03_symmetries.html">
+          <a class="next-page" href="08_polar.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">3. Symmetries and symmetry subspaces</div>
+                <div class="title">Polar geometry: a drum, a pipe, two rotating cylinders</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="01_orr_sommerfeld.html">
+          <a class="prev-page" href="00_getting_started.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">1. A first eigenvalue problem: Orr–Sommerfeld</div>
+                <div class="title">Convection between two plates: from onset to simulation</div>
                 
               </div>
             </a>
@@ -1087,7 +1124,7 @@ OK: CPU and GPU agree to rounding; the graph replay is the same computation
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a><ul>
+<li><a class="reference internal" href="#">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a><ul>
 <li><a class="reference internal" href="#the-equations">The equations</a></li>
 <li><a class="reference internal" href="#write-the-problem">Write the problem</a></li>
 <li><a class="reference internal" href="#the-eigenvalue-problem-of-the-same-equations">The eigenvalue problem of the same equations</a></li>
@@ -1113,7 +1150,7 @@ OK: CPU and GPU agree to rounding; the graph replay is the same computation
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

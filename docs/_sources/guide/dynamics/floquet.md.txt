@@ -30,10 +30,9 @@ carrying the last iterate (`err.result`) unless `allow_unconverged=True`, which 
 ## A discretised time-periodic problem
 
 For a time-periodic flow given as a discretised problem, `hill_from_plan` builds the Hill operator
-from the harmonics of the base flow, and checks that the operator is linear in it: the blocks
-$L_m$ of the formula above are read from the plan, not written by hand. No resolution is chosen
-for you: the spatial resolution, the number of harmonics `Nh` and the number of base-flow harmonics
-kept are all arguments.
+from the harmonics of the base flow and checks that the operator is linear in it. The compiler
+extracts the harmonic matrices $L_m$ of the formula above from the plan. The spatial resolution,
+the number of harmonics `Nh` and the number of base-flow harmonics kept are arguments of the call.
 
 ## Any model about a periodic base flow
 

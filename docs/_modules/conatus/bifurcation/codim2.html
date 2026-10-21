@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -227,11 +227,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../../">&larr; Conatus website</a>
-  <a href="../../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -241,21 +246,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -302,7 +307,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/bases.html">Bases and domains</a></li>
@@ -690,7 +695,12 @@
 <span class="sd">**Hopf curve** (M = I). z = (x, κ, p1, p2), κ = ω²; the bordered matrix of J² + κI with two</span>
 <span class="sd">columns B and rows Cᵀ gives a 2×2 G; the two entries of G used as conditions are chosen once at</span>
 <span class="sd">the start (the pair giving the best-conditioned augmented Jacobian, declared). Derivatives:</span>
-<span class="sd">(J²)_z v = J_z(J v) + J(J_z v), exact from B and J_p.</span>
+<span class="sd">(J²)_z v = J_z(J v) + J(J_z v), exact from B and J_p. The augmented system also holds where J</span>
+<span class="sd">has a real pair ±√(−κ) (κ &lt; 0, a neutral saddle): a small residual does not make a point a Hopf</span>
+<span class="sd">point (external review of 0.1.1, F8). The curve stops where κ reaches 0 (the Bogdanov–Takens</span>
+<span class="sd">point, located as the ``bt`` event), and at every accepted point the eigenvalues of J, computed</span>
+<span class="sd">on their own (QZ), must hold the pair ±iω within ``HOPF_PAIR_TOL``; a point that fails either</span>
+<span class="sd">check ends the curve and is not kept.</span>
 
 <span class="sd">**Test functions** (located by secant):</span>
 
@@ -721,6 +731,10 @@
 <span class="c1">#: A zero-Hopf test zero on a Hopf curve with |κ| = ω² &lt;= BT_KAPPA_TOL x max(1, |λ|max²) is the</span>
 <span class="c1">#: Bogdanov–Takens point (ω → 0), not a fold–Hopf point (classification; declared).</span>
 <span class="n">BT_KAPPA_TOL</span> <span class="o">=</span> <span class="mf">1e-6</span>
+<span class="c1">#: A point of a Hopf curve is kept only when the eigenvalues of J hold ±iω, ω = √κ, within</span>
+<span class="c1">#: HOPF_PAIR_TOL x max(1, |λ|max) (each of the pair; an independent check of the augmented</span>
+<span class="c1">#: system; declared).</span>
+<span class="n">HOPF_PAIR_TOL</span> <span class="o">=</span> <span class="mf">1e-6</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"continue_codim2"</span><span class="p">]</span>
 
@@ -930,7 +944,24 @@
                 <span class="n">d</span><span class="p">[</span><span class="s2">"l1"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="n">sg</span><span class="p">,</span> <span class="n">ld</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">slogdet</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
             <span class="n">d</span><span class="p">[</span><span class="s2">"logdet"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">sg</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">ld</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">kap</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>          <span class="c1"># distance of ±iω from the spectrum (independent of G = 0)</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">kap</span><span class="p">)</span>
+                <span class="n">d</span><span class="p">[</span><span class="s2">"hopf_pair_error"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ev</span> <span class="o">-</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">w</span><span class="p">)),</span>
+                                                 <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ev</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">w</span><span class="p">)))</span>
+                                             <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">())))</span>
             <span class="k">return</span> <span class="n">d</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="n">pt</span><span class="p">):</span>
+            <span class="n">kap</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">kap</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"κ = ω² = </span><span class="si">{</span><span class="n">kap</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> &lt;= 0: past the Bogdanov–Takens point J has a real "</span>
+                        <span class="s2">"pair, not a Hopf pair; the Hopf curve ends at the bt event"</span><span class="p">)</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hopf_pair_error"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">err</span> <span class="o">&lt;=</span> <span class="n">HOPF_PAIR_TOL</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"the eigenvalues of J do not hold ±iω, ω = √κ = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">kap</span><span class="p">)</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2"> "</span>
+                        <span class="sa">f</span><span class="s2">"(distance </span><span class="si">{</span><span class="n">err</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> relative, above HOPF_PAIR_TOL = </span><span class="si">{</span><span class="n">HOPF_PAIR_TOL</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">): "</span>
+                        <span class="s2">"not a Hopf point; the curve ends before it"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">ref</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -993,14 +1024,22 @@
                           <span class="n">classify</span><span class="o">=</span><span class="n">classify</span><span class="p">,</span> <span class="n">on_accept</span><span class="o">=</span><span class="n">on_accept</span><span class="p">)</span>
     <span class="n">t0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">z0</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
     <span class="n">t0</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">1.0</span>
-    <span class="n">cv</span> <span class="o">=</span> <span class="n">drv</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2"> (codim 2)"</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+    <span class="n">cv</span> <span class="o">=</span> <span class="n">drv</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2"> (codim 2)"</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+                 <span class="n">stop</span><span class="o">=</span><span class="n">stop</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"hopf"</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">why</span> <span class="o">=</span> <span class="n">stop</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"hopf"</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">why</span><span class="p">:</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>            <span class="c1"># the point that ended the curve is not a Hopf point</span>
+        <span class="n">cv</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"last continued point dropped (</span><span class="si">{</span><span class="n">p1</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">last</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">p2</span><span class="si">}</span><span class="s2"> = "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">last</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">, κ = </span><span class="si">{</span><span class="n">last</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">why</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">cv</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"system"</span><span class="p">:</span> <span class="n">system</span><span class="p">,</span> <span class="s2">"parameters"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span> <span class="s2">"base"</span><span class="p">:</span> <span class="n">base</span><span class="p">,</span> <span class="s2">"state"</span><span class="p">:</span> <span class="n">state</span><span class="p">}</span>
     <span class="n">cv</span><span class="o">.</span><span class="n">notes</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2"> curve of </span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">origin</span><span class="si">}</span><span class="s2"> in (</span><span class="si">{</span><span class="n">p1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">p2</span><span class="si">}</span><span class="s2">), minimally augmented system "</span>
                  <span class="s2">"(Govaerts 2000); bordering vectors refreshed after every accepted point"</span><span class="p">,</span>
                  <span class="sa">f</span><span class="s2">"tests: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"hopf"</span><span class="p">:</span>
         <span class="n">cv</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Hopf conditions: entries </span><span class="si">{</span><span class="n">state</span><span class="p">[</span><span class="s1">'pick'</span><span class="p">]</span><span class="si">}</span><span class="s2"> of the 2x2 bordered G (row-major), "</span>
-                        <span class="s2">"chosen once at the start for the best-conditioned augmented Jacobian"</span><span class="p">)</span>
+                        <span class="s2">"chosen once at the start for the best-conditioned augmented Jacobian; "</span>
+                        <span class="sa">f</span><span class="s2">"every point kept has κ &gt; 0 and ±iω in the eigenvalues of J (QZ) within "</span>
+                        <span class="sa">f</span><span class="s2">"HOPF_PAIR_TOL = </span><span class="si">{</span><span class="n">HOPF_PAIR_TOL</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cv</span></div>
 
 </pre></div>
@@ -1035,7 +1074,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

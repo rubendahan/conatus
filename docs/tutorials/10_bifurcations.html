@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="11. Record, query, reproduce: the run registry" href="11_runs.html"><link rel="prev" title="8. Polar geometry: a drum, a pipe, two rotating cylinders" href="08_polar.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins" href="12_chaos_ensembles.html"><link rel="prev" title="Invariant solutions: Kuramoto–Sivashinsky, L = 22" href="05_ks_orbits.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>10. Bifurcations: branch switching, cycles, codimension 2, normal forms - Conatus</title>
+        <title>Bifurcations: branch switching, cycles, codimension 2, normal forms - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,7 +684,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="bifurcations-branch-switching-cycles-codimension-2-normal-forms">
-<h1>10. Bifurcations: branch switching, cycles, codimension 2, normal forms<a class="headerlink" href="#bifurcations-branch-switching-cycles-codimension-2-normal-forms" title="Link to this heading">¶</a></h1>
+<h1>Bifurcations: branch switching, cycles, codimension 2, normal forms<a class="headerlink" href="#bifurcations-branch-switching-cycles-codimension-2-normal-forms" title="Link to this heading">¶</a></h1>
 <p><strong>Goal.</strong> Build the bifurcation diagram of the Lorenz system (pitchfork with a declared symmetry,
 Hopf point, its first Lyapunov coefficient, the cycles born there), follow fold and Hopf curves of
 the Bogdanov–Takens normal form in two parameters, and derive the Landau and Ginzburg–Landau
@@ -691,8 +696,25 @@ Hopf curve <span class="math notranslate nohighlight">\(\beta_1 = 0\)</span>, bo
 <span class="math notranslate nohighlight">\(A^2 = 4r/3\)</span>, <span class="math notranslate nohighlight">\(\tau_0 = 1\)</span>, <span class="math notranslate nohighlight">\(\xi_0^2 = 4\)</span>, <span class="math notranslate nohighlight">\(g_0 = 3\)</span>. <strong>Time:</strong> under a minute on one CPU core.
 <strong>Script:</strong> <a class="reference download internal" download="" href="../_downloads/82618c1371b5163b1ca566f2d4a32411/t10_bifurcations.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t10_bifurcations.py</span></code></span></a> · <strong>Tests behind it:</strong>
 <code class="docutils literal notranslate"><span class="pre">tests/bifurcation/test_bifurcation_core.py</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/bifurcation/test_amplitude.py</span></code>.</p>
+<p>The page has three parts, which can be read separately:</p>
+<ol class="arabic simple">
+<li><p><strong>The Lorenz system, one parameter</strong>: equilibria, branch switching, normal forms and the cycles
+born at the Hopf point (from “Write the system” to “Cycles from the Hopf point”).</p></li>
+<li><p><strong>The Bogdanov–Takens normal form, two parameters</strong>: fold and Hopf curves (“Two parameters”).</p></li>
+<li><p><strong>Swift–Hohenberg rolls</strong>: the Landau and Ginzburg–Landau coefficients of a PDE.</p></li>
+</ol>
+<p>“Check against the closed forms” tests the defining values of all three parts.</p>
 <section id="write-the-system">
 <h2>Write the system<a class="headerlink" href="#write-the-system" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">EVEN</span><span class="p">,</span> <span class="n">IVP</span><span class="p">,</span> <span class="n">CollocationMesh</span><span class="p">,</span> <span class="n">ContinuationSettings</span><span class="p">,</span> <span class="n">Reflection</span><span class="p">,</span>
+                            <span class="n">SymmetrySubspace</span><span class="p">,</span> <span class="n">amplitude_equation</span><span class="p">,</span> <span class="n">branch_switch</span><span class="p">,</span> <span class="n">continue_codim2</span><span class="p">,</span>
+                            <span class="n">continue_equilibria</span><span class="p">,</span> <span class="n">cos_mode_observable</span><span class="p">,</span> <span class="n">ginzburg_landau</span><span class="p">,</span> <span class="n">ir_system</span><span class="p">,</span>
+                            <span class="n">normal_form</span><span class="p">,</span> <span class="n">ode_problem</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lorenz</span> <span class="o">=</span> <span class="n">ode_problem</span><span class="p">([</span><span class="s2">"x"</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">,</span> <span class="s2">"z"</span><span class="p">],</span> <span class="p">{</span><span class="s2">"sigma"</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"b"</span><span class="p">:</span> <span class="mi">8</span> <span class="o">/</span> <span class="mi">3</span><span class="p">},</span>
                      <span class="k">lambda</span> <span class="n">X</span><span class="p">,</span> <span class="n">P</span><span class="p">:</span> <span class="p">[</span><span class="n">P</span><span class="p">[</span><span class="s2">"sigma"</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span> <span class="o">-</span> <span class="n">X</span><span class="p">[</span><span class="s2">"x"</span><span class="p">]),</span>
                                    <span class="n">P</span><span class="p">[</span><span class="s2">"r"</span><span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="s2">"x"</span><span class="p">]</span> <span class="o">-</span> <span class="n">X</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span> <span class="o">-</span> <span class="n">X</span><span class="p">[</span><span class="s2">"x"</span><span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="s2">"z"</span><span class="p">],</span>
@@ -705,8 +727,9 @@ Hopf curve <span class="math notranslate nohighlight">\(\beta_1 = 0\)</span>, bo
 <li><p><code class="docutils literal notranslate"><span class="pre">ode_problem</span></code> writes an ODE from its right-hand side, given as a Python function of the state
 and the parameters. A PDE written as a native model works the same way (Swift–Hohenberg below).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ir_system</span></code> discretizes once and exposes <span class="math notranslate nohighlight">\(M\dot x = G(x;p)\)</span>. The Jacobian and the multilinear forms
-<span class="math notranslate nohighlight">\(B = F''\)</span>, <span class="math notranslate nohighlight">\(C = F'''\)</span> are exact symbolic Fréchet derivatives of the equations: <strong>no finite differences in <span class="math notranslate nohighlight">\(x\)</span></strong>.
-<span class="math notranslate nohighlight">\(\partial G/\partial r\)</span> is exact too: the equations say that <span class="math notranslate nohighlight">\(r\)</span> enters linearly, and <code class="docutils literal notranslate"><span class="pre">explain()</span></code> says so.</p></li>
+<span class="math notranslate nohighlight">\(B = F''\)</span>, <span class="math notranslate nohighlight">\(C = F'''\)</span> are symbolic Fréchet derivatives of the equations, with no finite
+differences in <span class="math notranslate nohighlight">\(x\)</span>. <span class="math notranslate nohighlight">\(\partial G/\partial r\)</span> is symbolic too: <span class="math notranslate nohighlight">\(r\)</span> enters linearly, and <code class="docutils literal notranslate"><span class="pre">explain()</span></code>
+says so.</p></li>
 </ul>
 </section>
 <section id="equilibria-and-branch-switching-with-a-declared-symmetry">
@@ -721,17 +744,18 @@ and the parameters. A PDE written as a native model works the same way (Swift–
 <span class="p">(</span><span class="n">hopf</span><span class="p">,)</span> <span class="o">=</span> <span class="n">cplus</span><span class="o">.</span><span class="n">events_of</span><span class="p">(</span><span class="s2">"hopf"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">continue_equilibria</span></code> evaluates three test functions at every point (fold: the parameter component of
+<p><code class="docutils literal notranslate"><span class="pre">continue_equilibria</span></code> evaluates three test functions at each point (fold: the parameter component of
 the tangent; branch point: the determinant of the bordered Jacobian; Hopf: a product over eigenvalue
 pairs) and <strong>locates</strong> each sign change by a secant, reporting the residual there. <code class="docutils literal notranslate"><span class="pre">branch_switch</span></code>
-solves the algebraic branching equation with the exact second derivatives; the declared
+solves the algebraic branching equation with the second derivatives. The declared
 <span class="math notranslate nohighlight">\(S = \mathrm{diag}(-1,-1,1)\)</span> classifies the point as a <em>symmetry-breaking pitchfork</em>: the kernel is
-<span class="math notranslate nohighlight">\(S\)</span>-odd, and the two half-branches <span class="math notranslate nohighlight">\(C^\pm\)</span> are images of each other. Nothing is guessed from a plot.</p>
+<span class="math notranslate nohighlight">\(S\)</span>-odd, and the two half-branches <span class="math notranslate nohighlight">\(C^\pm\)</span> are images of each other. The symmetry declaration and
+the branching equation determine the two branch directions.</p>
 <figure class="align-default" id="id1">
 <a class="reference internal image-reference" href="../_images/t10_lorenz.png"><img alt="Bifurcation diagram of the Lorenz system, x against r: a black line along x = 0 that turns dashed at r = 1, where two red branches split off; they turn dashed at the Hopf points near r = 24.7, from which brass lines of cycles bend back." loading="lazy" src="../_images/t10_lorenz.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The equilibria of the Lorenz system and their stability, as continued by the page: the origin, the pitchfork at r = 1, the branches C± and their subcritical Hopf points, and the cycles born there.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The equilibria of the Lorenz system and their stability, as continued by the page (solid: stable, dashed: unstable): the origin, the pitchfork at r = 1, the branches C± and their subcritical Hopf points at r = 24.736842, and the unstable cycles born there.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -745,7 +769,7 @@ solves the algebraic branching equation with the exact second derivatives; the d
 </div>
 <p>The centre-manifold projection (Kuznetsov) gives the pitchfork cubic coefficient and, at the Hopf
 point, <span class="math notranslate nohighlight">\(c_1\)</span> and the <strong>first Lyapunov coefficient</strong> <span class="math notranslate nohighlight">\(\ell_1 = \mathrm{Re}\,c_1/\omega\)</span>: positive
-here, so the Hopf bifurcation of Lorenz is subcritical. Every quantity is reported with its checks
+here, so the Hopf bifurcation of Lorenz is subcritical. Each quantity is reported with its checks
 (residuals of the eigenvectors and of the bordered solves); the normalization <span class="math notranslate nohighlight">\(\|q\| = 1\)</span> is declared.</p>
 </section>
 <section id="cycles-from-the-hopf-point">
@@ -758,14 +782,14 @@ here, so the Hopf bifurcation of Lorenz is subcritical. Every quantity is report
 </pre></div>
 </div>
 <p>The first cycle is <em>predicted by the normal form</em> (amplitude declared, <span class="math notranslate nohighlight">\(\Delta r = -\mathrm{Re}\,c_1|z|^2/\alpha'\)</span>),
-corrected by orthogonal collocation (AUTO’s method) and continued. Subcritical: the cycles exist for
+corrected by orthogonal collocation and continued (Doedel, Keller &amp; Kernévez 1991; <a class="reference internal" href="../math/continuation.html"><span class="doc">Continuation and bifurcations</span></a>). Subcritical: the cycles exist for
 <span class="math notranslate nohighlight">\(r &lt; r_H\)</span>. Followed further, their period diverges at
 the homoclinic explosion <span class="math notranslate nohighlight">\(r \approx 13.926\)</span>.</p>
 <figure class="align-default" id="id2">
 <a class="reference internal image-reference" href="../_images/t10_cycles.png"><img alt="Nested closed loops in the (x, z) plane around the point C+, small ones near it and larger ones further out." loading="lazy" src="../_images/t10_cycles.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of degree 4) for r from 24.735 down to 22.335: born at the Hopf point around the equilibrium of the continued branch (cross), they grow as r decreases.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of degree 4) for r from 24.735 down to 22.335 (colour bar): born at the Hopf point around the equilibrium of the continued branch (cross), they grow as r decreases.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -789,13 +813,17 @@ the homoclinic explosion <span class="math notranslate nohighlight">\(r \approx 
 </div>
 <p>Minimally augmented systems (Govaerts): one scalar condition <span class="math notranslate nohighlight">\(g = 0\)</span> from a bordered matrix (fold), two
 for Hopf (bordered <span class="math notranslate nohighlight">\(J^2 + \kappa I\)</span>, <span class="math notranslate nohighlight">\(\kappa = \omega^2\)</span>). Along the curves, test functions detect cusp,
-Bogdanov–Takens, Bautin, fold–Hopf and Hopf–Hopf points; here both curves end at the BT point, and the
-vanishing determinant there is <em>not</em> reported as a fold–Hopf point (rejected with its reason).</p>
+Bogdanov–Takens, Bautin, fold–Hopf and Hopf–Hopf points. The fold curve passes through the BT point.
+The Hopf curve ends there: <span class="math notranslate nohighlight">\(\kappa = \omega^2\)</span> reaches 0, and for <span class="math notranslate nohighlight">\(\beta_2 &gt; 0\)</span> the equilibrium has a
+real pair of eigenvalues <span class="math notranslate nohighlight">\(\pm\sqrt{\beta_2}\)</span>, which the augmented equations also satisfy with
+<span class="math notranslate nohighlight">\(\kappa &lt; 0\)</span>. The continuation stops at <span class="math notranslate nohighlight">\(\kappa = 0\)</span>, and every point it keeps is checked against
+the eigenvalues of the Jacobian, computed on their own. The vanishing determinant at the BT point is
+<em>not</em> reported as a fold–Hopf point (rejected with its reason).</p>
 <figure class="align-default" id="id3">
-<a class="reference internal image-reference" href="../_images/t10_bogdanov_takens.png"><img alt="Two curves in the parameter plane: a red parabola of folds and a green line of Hopf points at beta1 = 0, meeting at the Bogdanov-Takens point at the origin." loading="lazy" src="../_images/t10_bogdanov_takens.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t10_bogdanov_takens.png"><img alt="Two curves in the parameter plane: a red parabola of folds through the origin, and a green line of Hopf points at beta1 = 0 for beta2 &lt; 0 that ends at the Bogdanov-Takens point at the origin." loading="lazy" src="../_images/t10_bogdanov_takens.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Codimension two: the fold and Hopf curves of the Bogdanov-Takens normal form, continued in (β₁, β₂). The fold curve follows β₁ = β₂²/4, the Hopf curve β₁ = 0; both end at the BT point.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Codimension two: the fold and Hopf curves of the Bogdanov-Takens normal form, continued in (β₁, β₂). The fold curve follows β₁ = β₂²/4 through the BT point; the Hopf curve β₁ = 0 exists for β₂ &lt; 0 and ends at the BT point.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -841,7 +869,8 @@ with spectral convergence in <span class="math notranslate nohighlight">\(N_z\)<
 <h2>Check against the closed forms<a class="headerlink" href="#check-against-the-closed-forms" title="Link to this heading">¶</a></h2>
 <p>The pitchfork at <span class="math notranslate nohighlight">\(r = 1\)</span>, the branch <span class="math notranslate nohighlight">\(x^2 = b(r-1)\)</span>, the Hopf point <span class="math notranslate nohighlight">\(r_H = 470/19\)</span> with its
 frequency and a positive first Lyapunov coefficient, the fold and Hopf curves of the
-Bogdanov–Takens normal form, and the Swift–Hohenberg coefficients <span class="math notranslate nohighlight">\(A^2/r = 4/3\)</span>, <span class="math notranslate nohighlight">\(\xi_0^2 = 4\)</span>,
+Bogdanov–Takens normal form (each Hopf point with the pair <span class="math notranslate nohighlight">\(\pm i\sqrt{-\beta_2}\)</span> in the eigenvalues
+of its Jacobian), and the Swift–Hohenberg coefficients <span class="math notranslate nohighlight">\(A^2/r = 4/3\)</span>, <span class="math notranslate nohighlight">\(\xi_0^2 = 4\)</span>,
 <span class="math notranslate nohighlight">\(g_0 = 3\)</span> are all recovered to rounding.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">8</span> <span class="o">/</span> <span class="mi">3</span>
 <span class="n">rH</span> <span class="o">=</span> <span class="n">sig</span> <span class="o">*</span> <span class="p">(</span><span class="n">sig</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">sig</span> <span class="o">-</span> <span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>                        <span class="c1"># 470/19, Lorenz (1963)</span>
@@ -853,6 +882,11 @@ Bogdanov–Takens normal form, and the Swift–Hohenberg coefficients <span clas
 <span class="k">assert</span> <span class="n">cycles</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">"r"</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">rH</span>                                      <span class="c1"># cycles exist for r &lt; r_H</span>
 <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fold_curve</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">"b1"</span><span class="p">)</span> <span class="o">-</span> <span class="n">fold_curve</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">"b2"</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1e-10</span>
 <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">hopf_curve</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">"b1"</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1e-12</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">hopf_curve</span><span class="o">.</span><span class="n">points</span><span class="p">:</span>            <span class="c1"># every Hopf point: a pair +-i omega of the Jacobian (numpy)</span>
+    <span class="n">x_</span><span class="p">,</span> <span class="n">y_</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">lam</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x_</span> <span class="o">-</span> <span class="n">y_</span><span class="p">,</span> <span class="o">-</span><span class="n">x_</span><span class="p">]])</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">lam</span><span class="o">.</span><span class="n">real</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1e-9</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">lam</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">lam</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">hopf_curve</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">"b2"</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span>                                  <span class="c1"># stops at the BT point</span>
 <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">hopf_curve</span><span class="o">.</span><span class="n">events_of</span><span class="p">(</span><span class="s2">"bt"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1e-10</span>
 <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">landau</span><span class="o">.</span><span class="n">g3</span> <span class="o">+</span> <span class="mf">0.75</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-12</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">gl</span><span class="o">.</span><span class="n">xi0_sq</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-9</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">gl</span><span class="o">.</span><span class="n">g0</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-12</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"CHECK r_H = </span><span class="si">{</span><span class="n">hopf</span><span class="o">.</span><span class="n">point</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.12f</span><span class="si">}</span><span class="s2"> (470/19 = </span><span class="si">{</span><span class="n">rH</span><span class="si">:</span><span class="s2">.12f</span><span class="si">}</span><span class="s2">), l1 = </span><span class="si">{</span><span class="n">hf</span><span class="o">.</span><span class="n">l1</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2"> &gt; 0; "</span>
@@ -862,7 +896,7 @@ Bogdanov–Takens normal form, and the Swift–Hohenberg coefficients <span clas
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t10_bifurcations: PASS (exit 0) in 28.7 s | 2026-10-20 | script sha256 1aeaf6f6d8fb15f0
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t10_bifurcations: PASS (exit 0) in 4.6 s | 2026-10-21 | script sha256 6cba9156f3e55076
 DynamicalSystem: M dx/dt = G(x; p), n = 3, origin: IR: Lorenz (0-D: one constant Fourier mode)
   parameters: r = 0.5
   mass matrix: identity
@@ -923,15 +957,16 @@ fold (codim 2) curve: 15 points, b1 in [0.000137149, 0.58141], b2 in [-1, 1.5250
   events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(1, |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(1, |λ|))
   corrector failures (step halved): 0; max residual on the curve 1.4e-12
   bt at b1 = -6.7114253235e-16, b2 = 1.11699588465e-12 between points (7, 8), |test| = 5.6e-13, residual 6.7e-16 [located by |test bt| &lt;= crossing_tol = 1e-11, secant budget 30]
-hopf (codim 2) curve: 17 points, b1 in [1.90168e-14, 2.38022e-14], b2 in [-1, 1.53084], kappa in [-1.53084, 1]; stop: b2 = 1.53084 left (-1.5, 1.5)
+hopf (codim 2) curve: 9 points, b1 in [1.90207e-14, 1.97369e-14], b2 in [-1, -0.166221], kappa in [0.166221, 1]; stop: κ = ω² = -4.591e-02 &lt;= 0: past the Bogdanov–Takens point J has a real pair, not a Hopf pair; the Hopf curve ends at the bt event
+  last continued point dropped (b1 = 1.90264e-14, b2 = 0.0459113, κ = -4.591e-02): κ = ω² = -4.591e-02 &lt;= 0: past the Bogdanov–Takens point J has a real pair, not a Hopf pair; the Hopf curve ends at the bt event
   hopf curve of IR: Bogdanov-Takens (0-D: one constant Fourier mode) in (b1, b2), minimally augmented system (Govaerts 2000); bordering vectors refreshed after every accepted point
   tests: bt, gh, zh, hh
-  Hopf conditions: entries (2, 3) of the 2x2 bordered G (row-major), chosen once at the start for the best-conditioned augmented Jacobian
+  Hopf conditions: entries (2, 3) of the 2x2 bordered G (row-major), chosen once at the start for the best-conditioned augmented Jacobian; every point kept has κ &gt; 0 and ±iω in the eigenvalues of J (QZ) within HOPF_PAIR_TOL = 1e-06
   ds = 0.05 in [1e-09, 0.3], x1.3 (default) when the corrector takes &lt;= 3 (default) its, /2 on failure
   corrector: tolerance 1e-11, budget 12 (default) its; G_p: analytic G_p (dp_fd=None)
   max points 40
   events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(1, |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(1, |λ|))
-  corrector failures (step halved): 0; max residual on the curve 1.4e-13
+  corrector failures (step halved): 0; max residual on the curve 2.0e-14
   bt at b1 = 1.90259931987e-14, b2 = -2.65065747129e-13, kappa = -5.55111512313e-17 between points (8, 9), |test| = 5.6e-17, residual 1.9e-14: κ = ω² = -5.55e-17 [located by |test bt| &lt;= crossing_tol = 1e-11, secant budget 30]
   (rejected zh between (8, 9): det J = 0 with κ = ω² = -4.7e-16: the Bogdanov–Takens point)
 Landau equation (stationary) at r_c = 0: dA/dt = μ Δr A + g3 A³
@@ -964,23 +999,23 @@ multipliers).</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="11_runs.html">
+          <a class="next-page" href="12_chaos_ensembles.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">11. Record, query, reproduce: the run registry</div>
+                <div class="title">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="08_polar.html">
+          <a class="prev-page" href="05_ks_orbits.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">8. Polar geometry: a drum, a pipe, two rotating cylinders</div>
+                <div class="title">Invariant solutions: Kuramoto–Sivashinsky, L = 22</div>
                 
               </div>
             </a>
@@ -1014,7 +1049,7 @@ multipliers).</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a><ul>
+<li><a class="reference internal" href="#">Bifurcations: branch switching, cycles, codimension 2, normal forms</a><ul>
 <li><a class="reference internal" href="#write-the-system">Write the system</a></li>
 <li><a class="reference internal" href="#equilibria-and-branch-switching-with-a-declared-symmetry">Equilibria and branch switching with a declared symmetry</a></li>
 <li><a class="reference internal" href="#normal-forms">Normal forms</a></li>
@@ -1035,7 +1070,7 @@ multipliers).</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

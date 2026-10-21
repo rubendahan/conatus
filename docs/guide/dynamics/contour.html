@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../">&larr; Conatus website</a>
-  <a href="../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../bases.html">Bases and domains</a></li>
@@ -680,20 +685,34 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="eigenvalues-in-a-region">
 <h1>Eigenvalues in a region<a class="headerlink" href="#eigenvalues-in-a-region" title="Link to this heading">¶</a></h1>
-<p>Every eigenvalue inside a box of the complex plane, with a count you can trust: how many there
-are, and which they are.</p>
-<p>A dense eigenvalue solver gives every eigenvalue of a small problem; shift-invert gives a few near
-a target, and says nothing about the ones it did not return. A <em>region</em> asks a different question:
-<strong>which eigenvalues lie in this box, and are there any others?</strong> Conatus answers it in two steps
-that check each other:</p>
+<p>The eigenvalues inside a box of the complex plane: how many there are, and which they are.</p>
+<p>A dense eigenvalue solver gives every eigenvalue of a small problem. Shift-invert gives a few near
+a target and says nothing about the others. A <em>region</em> asks which eigenvalues lie in a given box.
+Conatus answers in two steps that check each other:</p>
 <ol class="arabic simple">
-<li><p><strong>the count</strong>, by the argument principle: the number of eigenvalues inside a closed contour is
-the number of times <span class="math notranslate nohighlight">\(\det T(z)\)</span> winds around zero as <span class="math notranslate nohighlight">\(z\)</span> goes once around it;</p></li>
-<li><p><strong>the eigenvalues</strong>, by Beyn’s contour-integral method: integrals of <span class="math notranslate nohighlight">\(T(z)^{-1}\)</span> along the
-same contour hold exactly the eigenvalues inside. Each one is refined and validated by its
-residual, and together they must account for the count.</p></li>
+<li><p><strong>the count</strong>, by the argument principle. The number of eigenvalues inside a closed contour is
+the number of times <span class="math notranslate nohighlight">\(\det T(z)\)</span> winds around zero as <span class="math notranslate nohighlight">\(z\)</span> goes once around it. The routine
+estimates this winding by sampling the determinant around the box;</p></li>
+<li><p><strong>the eigenvalues</strong>, by Beyn’s contour-integral method. Integrals of <span class="math notranslate nohighlight">\(T(z)^{-1}\)</span> along the
+same contour carry the eigenvalues inside. Each one is refined and checked by its residual,
+and together they must account for the count.</p></li>
 </ol>
-<p>Either step that cannot conclude refuses with the reason: no count is ever guessed.</p>
+<p>When the implemented sampling checks fail, the routine refuses and gives the reason. Passing those
+checks is not a mathematical certificate: the samples can miss a narrow excursion of the phase.
+The scope of the count is stated with the result (below).</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../../_images/contour_sampling.png"><img alt="Left, a rectangle in the complex plane with blue sampling points along its edges, dense near one red cross that sits just inside the right edge; other red crosses inside and outside the box. Right, the phase of the determinant along the boundary, in turns, rising in steps to 4." loading="lazy" src="../../_images/contour_sampling.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">How the count samples the boundary, for a 6 × 6 pencil with known eigenvalues (crosses), four of
+them in the box, one 2 × 10⁻³ inside its right edge. Left: the points where the walk evaluated
+the determinant. Its shortest step, 2.6 × 10⁻⁴ of the perimeter, is next to the eigenvalue close
+to the edge. Right: the phase of det T
+along the boundary, in turns; it closes on 4, the count. The walk accepts a step from sampled
+values, so this picture shows a test that passed, not a proof. The figure is made by
+<code class="docutils literal notranslate"><span class="pre">docs/site/guide/_fig_contour.py</span></code>.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 <section id="in-a-native-model">
 <h2>In a native model<a class="headerlink" href="#in-a-native-model" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
@@ -708,7 +727,7 @@ residual, and together they must account for the count.</p></li>
 
 <span class="n">box</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">box</span><span class="p">(</span><span class="n">re</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">im</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">))</span>       <span class="c1"># a region of the c plane</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">box</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">count_method</span><span class="p">)</span>                  <span class="c1"># certified number of eigenvalues inside</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">count_method</span><span class="p">)</span>                  <span class="c1"># number of eigenvalues inside, and how</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>                                <span class="c1"># every mode inside, with its residual</span>
 </pre></div>
 </div>
@@ -720,26 +739,30 @@ dense solver), restricted to the box, with three additions:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">res.count</span></code>: the number of eigenvalues of the discretised problem in the box, multiplicities
 included;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">res.count_method</span></code>: how it was certified (the argument principle, the number of evaluations of
-the determinant);</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">res.multiplicity</span></code>: the algebraic multiplicity of each eigenvalue returned, its own
-argument-principle count on a small square around it (a double eigenvalue appears once, with
-multiplicity 2; a defective eigenvalue, which rounding splits into a small circle of values, is
-returned once, at their mean, with its multiplicity).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">res.count_method</span></code>: how it was obtained (the argument principle, the number of evaluations of
+the determinant, and what the sampled walk can miss);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">res.multiplicity</span></code>: for each eigenvalue returned, the number of eigenvalues counted by the
+argument principle in a small square around it. Close values are first separated, each on
+its own square; 1 means a separated eigenvalue. A value above 1 means a multiple eigenvalue or
+a cluster not separated at that size (a double eigenvalue appears once, with 2; a defective
+eigenvalue, which rounding splits into a small circle of values, is returned once, at their
+mean). The half-side of each square is in <code class="docutils literal notranslate"><span class="pre">res.contour.enclosure</span></code>.</p></li>
 </ul>
-<p>The count is that of the <em>discrete</em> pencil, spurious modes of the discretisation included: filter
-them as usual (<code class="docutils literal notranslate"><span class="pre">drift=N2,</span> <span class="pre">drift_tol=1e-6</span></code>); <code class="docutils literal notranslate"><span class="pre">res.count</span></code> then still says how many the box held
-before the filter. Only the eigenvalues in the box are computed: on a large problem this is far
-cheaper than the full spectrum. With <code class="docutils literal notranslate"><span class="pre">region=</span></code> the method is the contour method: leave <code class="docutils literal notranslate"><span class="pre">method=</span></code>
-out (or write <code class="docutils literal notranslate"><span class="pre">method=&quot;contour&quot;</span></code>); <code class="docutils literal notranslate"><span class="pre">method=&quot;dense&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">method=&quot;shift-invert&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">target=</span></code> and
-<code class="docutils literal notranslate"><span class="pre">left=True</span></code> contradict a region and are refused, never replaced.</p>
+<p>The count is that of the <em>discrete</em> pencil, spurious modes of the discretisation included. Filter
+them as usual (<code class="docutils literal notranslate"><span class="pre">drift=N2,</span> <span class="pre">drift_tol=1e-6</span></code>); <code class="docutils literal notranslate"><span class="pre">res.count</span></code> still gives how many the box held before
+the filter. Only the eigenvalues in the box are computed, which on a large problem costs much less
+than the full spectrum. With <code class="docutils literal notranslate"><span class="pre">region=</span></code> the method is the contour method: leave <code class="docutils literal notranslate"><span class="pre">method=</span></code> out (or
+write <code class="docutils literal notranslate"><span class="pre">method=&quot;contour&quot;</span></code>). <code class="docutils literal notranslate"><span class="pre">method=&quot;dense&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">method=&quot;shift-invert&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">target=</span></code> and <code class="docutils literal notranslate"><span class="pre">left=True</span></code>
+contradict a region and raise an error.</p>
 </section>
 <section id="any-operator-cn-contour-count-and-cn-contour-beyn">
 <h2>Any operator: <code class="docutils literal notranslate"><span class="pre">cn.contour.count</span></code> and <code class="docutils literal notranslate"><span class="pre">cn.contour.beyn</span></code><a class="headerlink" href="#any-operator-cn-contour-count-and-cn-contour-beyn" title="Link to this heading">¶</a></h2>
 <p>The same two steps take an operator directly: a pair <code class="docutils literal notranslate"><span class="pre">(L,</span> <span class="pre">M)</span></code> for the pencil <span class="math notranslate nohighlight">\(L + zM\)</span>, a
-Floquet–Hill operator (<code class="docutils literal notranslate"><span class="pre">HillBlocks</span></code>, never assembled), or any function <code class="docutils literal notranslate"><span class="pre">z</span> <span class="pre">-&gt;</span> <span class="pre">T(z)</span></code> returning a
+Floquet–Hill operator (<code class="docutils literal notranslate"><span class="pre">HillBlocks</span></code>, not assembled), or any function <code class="docutils literal notranslate"><span class="pre">z</span> <span class="pre">-&gt;</span> <span class="pre">T(z)</span></code> returning a
 matrix or a scalar.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="n">HillBlocks</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="n">HillBlocks</span>
 
 <span class="n">a</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span>                      <span class="c1"># Mathieu x'' + (a - 2q cos 2t) x = 0, period pi</span>
 <span class="n">L0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="nb">complex</span><span class="p">)</span>
@@ -751,18 +774,19 @@ matrix or a scalar.</p>
 <span class="n">gap</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">box</span><span class="p">(</span><span class="n">re</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">im</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">))</span>         <span class="c1"># known to hold none</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">pair</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="p">(</span><span class="n">gap</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
-<span class="n">roots</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">beyn</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">pair</span><span class="p">,</span> <span class="n">counted</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>          <span class="c1"># the two exponents, certified</span>
+<span class="n">roots</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">beyn</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">pair</span><span class="p">,</span> <span class="n">counted</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>          <span class="c1"># the two exponents, residual-checked</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">roots</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">roots</span><span class="o">.</span><span class="n">residuals</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The Floquet exponents of Mathieu’s equation at a stable point are a neutral pair <span class="math notranslate nohighlight">\(\pm i\nu\)</span>
 (modulo <span class="math notranslate nohighlight">\(2i\)</span>). The box around the pair holds two; <code class="docutils literal notranslate"><span class="pre">control=(gap,</span> <span class="pre">0)</span></code> first counts a box known to
 hold none and refuses to go on if it does not find zero, which checks the operator and the walk
-before any count is trusted. <code class="docutils literal notranslate"><span class="pre">beyn(...,</span> <span class="pre">counted=n)</span></code> reuses the count.</p>
+before any count is used. <code class="docutils literal notranslate"><span class="pre">beyn(...,</span> <span class="pre">counted=n)</span></code> reuses the count; it evaluates <span class="math notranslate nohighlight">\(\det T\)</span> again at
+points the count recorded and refuses a count of another operator.</p>
 <p><code class="docutils literal notranslate"><span class="pre">count</span></code> returns the winding number <span class="math notranslate nohighlight">\(N = Z - P\)</span> of <span class="math notranslate nohighlight">\(\det T\)</span>, zeros minus poles inside. A pencil
 and a Hill operator linear in the exponent have no pole. For a function you supply, you declare
 its poles in the box with <code class="docutils literal notranslate"><span class="pre">poles=</span></code> (<code class="docutils literal notranslate"><span class="pre">poles=0</span></code>: holomorphic there); without it, <code class="docutils literal notranslate"><span class="pre">count</span></code> gives the
-winding but <code class="docutils literal notranslate"><span class="pre">count=None</span></code>, and <code class="docutils literal notranslate"><span class="pre">beyn</span></code> refuses to start, since it validates its roots against the
+winding but <code class="docutils literal notranslate"><span class="pre">count=None</span></code>, and <code class="docutils literal notranslate"><span class="pre">beyn</span></code> refuses to start, since it checks its roots against the
 number of zeros.</p>
 </section>
 <section id="nonlinear-eigenproblems">
@@ -781,13 +805,36 @@ a polynomial eigenproblem).</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">derivative=</span></code> gives <span class="math notranslate nohighlight">\(T'(z)\)</span>, used only to refine each root (Newton-type inverse iteration);
-without it a central difference is used, which slows the refinement but not the validation:
-every root is accepted only if its relative backward residual
-<span class="math notranslate nohighlight">\(\|T(z)v\| / (\|T(z)\|\,\|v\|)\)</span> is at most <code class="docutils literal notranslate"><span class="pre">residual_tol</span></code> (default <span class="math notranslate nohighlight">\(10^{-13}\)</span>) and a small square
-around it, counted by the argument principle, holds an eigenvalue. The residual is a backward
-error: the root is an eigenvalue of an operator within <span class="math notranslate nohighlight">\(10^{-13}\)</span> of <span class="math notranslate nohighlight">\(T\)</span>; how far it is from the
-eigenvalue of <span class="math notranslate nohighlight">\(T\)</span> itself depends on the conditioning (about <span class="math notranslate nohighlight">\(10^{-8}\)</span> on the non-normal
-Orr–Sommerfeld branch below).</p>
+without it a central difference is used, which slows the refinement but not the checks.
+A root is accepted only if its residual <span class="math notranslate nohighlight">\(\|T(z)v\| / (s(z)\,\|v\|)\)</span> is at most <code class="docutils literal notranslate"><span class="pre">residual_tol</span></code>
+(default <span class="math notranslate nohighlight">\(10^{-13}\)</span>) and a small square around it, counted by the argument principle, holds an
+eigenvalue. The scale <span class="math notranslate nohighlight">\(s(z)\)</span> depends on the operator and is stated in <code class="docutils literal notranslate"><span class="pre">residual_definition</span></code>:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operator</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(s(z)\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>pencil <span class="math notranslate nohighlight">\(L + zM\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(|L|_1 + \lvert z\rvert\,|M|_1\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Hill operator linear in the exponent</p></td>
+<td><p>an upper bound of <span class="math notranslate nohighlight">\(|T(z)|_1\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>function <span class="math notranslate nohighlight">\(T(z)\)</span>, nonlinear Hill operator</p></td>
+<td><p><span class="math notranslate nohighlight">\(\max(|T(z)|_1, s_\mathrm{ref})\)</span>, <span class="math notranslate nohighlight">\(s_\mathrm{ref}\)</span> the median of <span class="math notranslate nohighlight">\(|T|_1\)</span> at the corners and edge midpoints of the box</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For a pencil the residual is a backward error relative to its coefficients: the root is an
+eigenvalue of a pencil within that distance of <span class="math notranslate nohighlight">\(L + zM\)</span>. For a function the floor
+<span class="math notranslate nohighlight">\(s_\mathrm{ref}\)</span> keeps a scalar <span class="math notranslate nohighlight">\(f\)</span> from scoring <span class="math notranslate nohighlight">\(|f(z)|/|f(z)| = 1\)</span>; the residual is then relative
+to the size of <span class="math notranslate nohighlight">\(T\)</span> on the boundary, not a relative perturbation of the near-singular <span class="math notranslate nohighlight">\(T(z)\)</span>.
+How far a root is from the exact eigenvalue depends on the conditioning (about <span class="math notranslate nohighlight">\(10^{-8}\)</span> on the
+non-normal Orr–Sommerfeld branch below).</p>
 </section>
 <section id="what-is-checked-and-what-is-refused">
 <h2>What is checked, and what is refused<a class="headerlink" href="#what-is-checked-and-what-is-refused" title="Link to this heading">¶</a></h2>
@@ -799,7 +846,7 @@ Orr–Sommerfeld branch below).</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>the phase of <span class="math notranslate nohighlight">\(\det T\)</span> is followed with increments of at most <span class="math notranslate nohighlight">\(\pi/4\)</span> per step (and per half step); <span class="math notranslate nohighlight">\(\log\det T\)</span> is resolved by every step</p></td>
+<tr class="row-even"><td><p>the phase of <span class="math notranslate nohighlight">\(\det T\)</span> is followed with increments of at most <span class="math notranslate nohighlight">\(\pi/4\)</span> per step (and per half step); <span class="math notranslate nohighlight">\(\log\det T\)</span> is resolved by each step</p></td>
 <td><p>the step is halved, down to <span class="math notranslate nohighlight">\(10^{-12}\)</span> of the perimeter</p></td>
 </tr>
 <tr class="row-odd"><td><p>the walk closes on its starting point, evaluated again: the winding is an integer</p></td>
@@ -817,12 +864,24 @@ Orr–Sommerfeld branch below).</p>
 <tr class="row-odd"><td><p>every root returned (or group of roots split by rounding) holds its own argument-principle count on a small square, at least 1, and these multiplicities add up to the count</p></td>
 <td><p>more quadrature nodes and moments (three rounds), then the box is cut in two, then refused with what was found</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">counted=</span></code>: <span class="math notranslate nohighlight">\(\det T\)</span> at the points the count recorded is that of the operator given</p></td>
+<td><p>refused</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-<p>The determinant is never formed: its phase and the logarithm of its modulus are read off the LU
-factorisation of <span class="math notranslate nohighlight">\(T(z)\)</span>, so it cannot overflow, whatever the size. The row and column permutations
-of the factorisation enter with their signs, so the result does not depend on the pivot order.</p>
+<p>What the sampled walk can miss. The phase and modulus tests see a zero of <span class="math notranslate nohighlight">\(\det T\)</span> that comes
+close to the boundary, because the modulus dips or the phase turns by about <span class="math notranslate nohighlight">\(\pi\)</span> across a step.
+They cannot see a zero and a pole on opposite sides of the boundary, both closer to it than the
+local step: <span class="math notranslate nohighlight">\(|\det T|\)</span> stays near 1 there and the phase turns by <span class="math notranslate nohighlight">\(2\pi\)</span> between two samples. A
+pencil and a Hill operator linear in the exponent have no poles
+(<code class="docutils literal notranslate"><span class="pre">CountResult.poles_by_construction</span></code> is True). For a function with poles near the box the count
+can be off by one; <code class="docutils literal notranslate"><span class="pre">count_method</span></code>, <code class="docutils literal notranslate"><span class="pre">explain()</span></code> and <code class="docutils literal notranslate"><span class="pre">CountResult.scope</span></code> say so. Keep the edges of the box away from
+the poles of <span class="math notranslate nohighlight">\(T\)</span>.</p>
+<p>The routine does not form the determinant. It reads the phase and the logarithm of the modulus
+off the LU factorisation of <span class="math notranslate nohighlight">\(T(z)\)</span>, which avoids the overflow of multiplying the factors. The row
+and column permutations of the factorisation enter with their signs, so the result does not depend
+on the pivot order.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">conatus.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConvergenceError</span>
 
 <span class="k">try</span><span class="p">:</span>                                                 <span class="c1"># the pair sits on the edge Re mu = 0</span>
@@ -833,16 +892,17 @@ of the factorisation enter with their signs, so the result does not depend on th
 </div>
 <p>A user-supplied determinant must be a continuous function of <span class="math notranslate nohighlight">\(z\)</span>: a product of factors picked by
 their order (one eigenvalue “the one with largest real part”, pivots without their permutation
-sign) jumps where the order changes, and the count is refused rather than read off a jump. Use
+sign) jumps where the order changes, and the count is then refused. Use
 the determinant of the whole matrix, or pass the matrix itself.</p>
 </section>
 <section id="validation">
 <h2>Validation<a class="headerlink" href="#validation" title="Link to this heading">¶</a></h2>
 <p>On the Orr–Sommerfeld problem above (<span class="math notranslate nohighlight">\(Re = 10^4\)</span>, <span class="math notranslate nohighlight">\(\alpha = 1\)</span>; <span class="math notranslate nohighlight">\(N = 48\)</span> to <span class="math notranslate nohighlight">\(128\)</span>), the counts of
 five boxes, from the single unstable mode to 63 eigenvalues, equal the number of eigenvalues of the
-full dense spectrum inside them, and every root agrees with the dense eigenvalue to <span class="math notranslate nohighlight">\(5\times10^{-8}\)</span>
+full dense spectrum inside them. Each root agrees with the dense eigenvalue to <span class="math notranslate nohighlight">\(5\times10^{-8}\)</span>
 (to <span class="math notranslate nohighlight">\(10^{-11}\)</span> away from the ill-conditioned lower branch), with residuals below <span class="math notranslate nohighlight">\(10^{-13}\)</span>. One
-large box at <span class="math notranslate nohighlight">\(N = 128\)</span> whose edge crosses that branch is refused: a refusal, never a wrong root. The neutral Floquet pair of
+large box at <span class="math notranslate nohighlight">\(N = 128\)</span> whose edge crosses that branch is refused. Other contours need their own
+resolution and conditioning checks. The neutral Floquet pair of
 Mathieu’s equation, a nonlinear problem with known roots, a pencil of size 4000 whose determinant
 is about <span class="math notranslate nohighlight">\(10^{12000}\)</span>, and the refusals above are checked by the test suite.</p>
 <p>References: the argument principle (e.g. Ahlfors, <em>Complex Analysis</em>); W.-J. Beyn, An integral
@@ -923,7 +983,7 @@ method for solving nonlinear eigenvalue problems, <em>Linear Algebra Appl.</em> 
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

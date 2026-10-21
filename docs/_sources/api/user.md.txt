@@ -174,8 +174,9 @@ result (guide: {doc}`../guide/diagnostics`).
 
 ## Regions of the complex plane: `cn.box`, `cn.contour`
 
-`m.eigenvalues(N, ..., region=cn.box(re=(a, b), im=(c, d)))` returns every eigenvalue in the box
-with a certified count; `cn.contour.count` and `cn.contour.beyn` take any operator
+`m.eigenvalues(N, ..., region=cn.box(re=(a, b), im=(c, d)))` returns the eigenvalues in the box,
+with a count estimated by the argument principle from samples of the determinant on the boundary.
+`cn.contour.count` and `cn.contour.beyn` take any operator
 ({doc}`../guide/dynamics/contour`).
 
 ```{eval-rst}

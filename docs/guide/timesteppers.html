@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -686,7 +691,7 @@ time step written in the call.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
 <span class="n">m</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">problems</span><span class="o">.</span><span class="n">native</span><span class="o">.</span><span class="n">rayleigh_benard</span><span class="p">(</span><span class="n">Lx</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">Ra</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span> <span class="n">Pr</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">sim</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">"RK443"</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">)</span>       <span class="c1"># nothing numerical is guessed</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">"RK443"</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">)</span>       <span class="c1"># N, scheme and dt are required</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">initial</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="o">-</span><span class="n">z</span> <span class="o">+</span> <span class="mf">1e-3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">z</span><span class="p">))</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>                                           <span class="c1"># or sim.run(steps=200)</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="s2">"T"</span><span class="p">),</span> <span class="n">sim</span><span class="o">.</span><span class="n">coeffs</span><span class="p">(</span><span class="s2">"T"</span><span class="p">),</span> <span class="n">sim</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">iteration</span>
@@ -694,20 +699,19 @@ time step written in the call.</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">initial(...)</span></code> takes callables of the coordinate names, numbers, explicit data, or arrays of grid
-values with exactly the shape of <code class="docutils literal notranslate"><span class="pre">sim.grid(name)</span></code> (for instance the state of another simulation at
-the same resolution: never broadcast nor interpolated, another shape is refused); unknowns not
-given start at zero, and <code class="docutils literal notranslate"><span class="pre">explain()</span></code> says so. An array is read in the layout of <code class="docutils literal notranslate"><span class="pre">sim.grid</span></code>
-(components first, then the coordinates in the order of the geometry: <code class="docutils literal notranslate"><span class="pre">np.meshgrid(x,</span> <span class="pre">z,</span> <span class="pre">indexing=&quot;ij&quot;)</span></code>). On a grid with two axes of the same size the shape cannot tell this from
-NumPy’s default <code class="docutils literal notranslate"><span class="pre">indexing=&quot;xy&quot;</span></code> (the transpose), so a raw array is refused there unless it was
-returned by <code class="docutils literal notranslate"><span class="pre">sim.grid(...)</span></code> or you declare <code class="docutils literal notranslate"><span class="pre">initial(T=array,</span> <span class="pre">layout=&quot;ij&quot;)</span></code>; a callable
-<code class="docutils literal notranslate"><span class="pre">T=lambda</span> <span class="pre">x,</span> <span class="pre">z:</span> <span class="pre">...</span></code> is never ambiguous and is the preferred form. A parameter changed after
-<code class="docutils literal notranslate"><span class="pre">simulate()</span></code> (<code class="docutils literal notranslate"><span class="pre">m.kappa</span> <span class="pre">=</span> <span class="pre">2</span></code>) reaches the next <code class="docutils literal notranslate"><span class="pre">simulate()</span></code>, not an existing simulation: Conatus
+values with exactly the shape of <code class="docutils literal notranslate"><span class="pre">sim.grid(name)</span></code>, for instance the state of another simulation at
+the same resolution. Arrays are not broadcast or interpolated: another shape is refused. Unknowns
+not given start at zero, and <code class="docutils literal notranslate"><span class="pre">explain()</span></code> says so. An array is read in the layout of <code class="docutils literal notranslate"><span class="pre">sim.grid</span></code>
+(components first, then the coordinates in the order of the geometry: <code class="docutils literal notranslate"><span class="pre">np.meshgrid(x,</span> <span class="pre">z,</span> <span class="pre">indexing=&quot;ij&quot;)</span></code>). On a grid with two axes of the same size, the shape cannot tell this layout from
+NumPy’s default <code class="docutils literal notranslate"><span class="pre">indexing=&quot;xy&quot;</span></code> (the transpose). A raw array is then refused unless it was
+returned by <code class="docutils literal notranslate"><span class="pre">sim.grid(...)</span></code> or you declare <code class="docutils literal notranslate"><span class="pre">initial(T=array,</span> <span class="pre">layout=&quot;ij&quot;)</span></code>. A callable
+<code class="docutils literal notranslate"><span class="pre">T=lambda</span> <span class="pre">x,</span> <span class="pre">z:</span> <span class="pre">...</span></code> has no such ambiguity and is the preferred form. A parameter changed after
+<code class="docutils literal notranslate"><span class="pre">simulate()</span></code> (<code class="docutils literal notranslate"><span class="pre">m.kappa</span> <span class="pre">=</span> <span class="pre">2</span></code>) reaches the next <code class="docutils literal notranslate"><span class="pre">simulate()</span></code>, not an existing simulation. Conatus
 warns and names the simulations that keep the old value, and <code class="docutils literal notranslate"><span class="pre">sim.explain()</span></code> lists the values in
 use. <code class="docutils literal notranslate"><span class="pre">sim.evaluate(&quot;dz(T)&quot;)</span></code> gives grid values of an
 expression written as in the equations; an expression constant in space (<code class="docutils literal notranslate"><span class="pre">&quot;integ(u&#64;u)/2&quot;</span></code>) is
-returned as a number. <code class="docutils literal notranslate"><span class="pre">run(until=t)</span></code> must land on a whole number of
-steps: the time step is never adjusted to reach a time, and a mismatch is refused with the number
-of steps to use instead.</p>
+returned as a number. The stop time of <code class="docutils literal notranslate"><span class="pre">run(until=t)</span></code> must be a whole number of time steps from
+the current time. Otherwise the call is refused and the message gives the number of steps to use.</p>
 <p>Callable initial data are checked before the run starts. The callable is sampled a second time on
 a grid twice as fine along each direction in turn, and the part of the data that the resolution
 cannot hold is measured (the largest Fourier coefficient at <code class="docutils literal notranslate"><span class="pre">|k|</span> <span class="pre">&gt;=</span> <span class="pre">N/2</span></code>, or Chebyshev coefficient
@@ -791,12 +795,9 @@ are explicit (<a class="reference internal" href="equations.html"><span class="d
 </tbody>
 </table>
 </div>
-<p>Their names are listed by <code class="docutils literal notranslate"><span class="pre">conatus.expert.SCHEMES</span></code>. All thirteen schemes are in Dedalus 3 too, and give the same numbers to round-off for the same
-problem, basis, resolution, <code class="docutils literal notranslate"><span class="pre">dt</span></code> and start-up (relative differences <span class="math notranslate nohighlight">\(\le 10^{-15}\)</span> with Fourier and
-<span class="math notranslate nohighlight">\(\le 1.1\times10^{-14}\)</span> with Chebyshev and tau rows after 20 steps; with time-dependent boundary data, under
-<code class="docutils literal notranslate"><span class="pre">bc_time=&quot;step&quot;</span></code>, below). Conatus implements them from the papers; Dedalus is only an external
-oracle. Order conditions are checked exactly and the observed orders are tested (heat equation,
-<span class="math notranslate nohighlight">\(u_t=-u^2\)</span> with <span class="math notranslate nohighlight">\(L=0\)</span>, Burgers/Cole–Hopf); <code class="docutils literal notranslate"><span class="pre">explain()</span></code> prints the line of the table for the chosen
+<p>Their names are listed by <code class="docutils literal notranslate"><span class="pre">conatus.expert.SCHEMES</span></code>. Each scheme is implemented from its paper.
+The tests check the order conditions exactly and measure the observed orders (heat equation,
+<span class="math notranslate nohighlight">\(u_t=-u^2\)</span> with <span class="math notranslate nohighlight">\(L=0\)</span>, Burgers/Cole–Hopf). <code class="docutils literal notranslate"><span class="pre">explain()</span></code> prints the line of the table for the chosen
 scheme. The CN family keeps a history of <span class="math notranslate nohighlight">\(MX\)</span>, <span class="math notranslate nohighlight">\(LX\)</span> and <span class="math notranslate nohighlight">\(F\)</span> (saved in checkpoints); <code class="docutils literal notranslate"><span class="pre">set_dt</span></code> is
 refused for every multistep scheme. The ensembles run SBDF and
 Runge–Kutta schemes only and refuse the CN family with an explicit <code class="docutils literal notranslate"><span class="pre">OptionError</span></code>.</p>
@@ -834,47 +835,104 @@ MCNAB2: error 1.10e-06 at dt = 0.01, observed order 2.03
 <section id="time-dependent-boundary-data">
 <h3>Time-dependent boundary data<a class="headerlink" href="#time-dependent-boundary-data" title="Link to this heading">¶</a></h3>
 <p>A boundary condition whose value depends on time (<span class="math notranslate nohighlight">\(u(\pm1, t) = g(t)\)</span>) is a row of the system
-without time derivative. When it is imposed changes the order of the schemes, so it is a declared
-choice, <code class="docutils literal notranslate"><span class="pre">bc_time</span></code>, printed by <code class="docutils literal notranslate"><span class="pre">explain()</span></code> with the equations it concerns:</p>
+without a time derivative. The moment at which it is imposed changes the order of the schemes, so
+it is a declared choice, <code class="docutils literal notranslate"><span class="pre">bc_time</span></code>. <code class="docutils literal notranslate"><span class="pre">explain()</span></code> prints it with the equations it concerns.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">bc_time</span></code></p></th>
 <th class="head"><p>What a stage imposes</p></th>
-<th class="head"><p>Observed orders (<span class="math notranslate nohighlight">\(u_t = u_{yy}/2\)</span>, both walls moving)</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> (default)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rk&quot;</span></code> when <span class="math notranslate nohighlight">\(g'(t)\)</span> is exact, otherwise <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code> (the reason is printed)</p></td>
-<td><p>as below</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;rk&quot;</span></code> when <span class="math notranslate nohighlight">\(g'(t)\)</span> is known exactly, otherwise <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code> (the reason is printed)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;rk&quot;</span></code></p></td>
 <td><p><span class="math notranslate nohighlight">\(g_i = g(t_n) + dt\sum_j H_{ij}\, g'(t_n + c_j dt)\)</span>: the implicit tableau applied to <span class="math notranslate nohighlight">\(g'\)</span></p></td>
-<td><p>RK443 2.8, RK222 / RKSMR / RKGFY 2.00, RK111 1</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code></p></td>
 <td><p><span class="math notranslate nohighlight">\(g(t_n + c_i dt)\)</span> at every stage</p></td>
-<td><p>RK443 2.0 (stage order of its implicit part), RK222 / RKSMR / RKGFY 2</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;step&quot;</span></code></p></td>
-<td><p><span class="math notranslate nohighlight">\(g\)</span> carried by the explicit part (Dedalus)</p></td>
-<td><p>RK111/222/443, RKSMR, CNAB1/2 about 1</p></td>
+<td><p><span class="math notranslate nohighlight">\(g\)</span> carried by the explicit part, with the explicit weights</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Moving boundaries do not raise the order of a scheme. A first-order scheme stays first order in
+every mode. The table gives the observed orders on one test problem: <span class="math notranslate nohighlight">\(u_t = u_{yy}/2\)</span> on
+<span class="math notranslate nohighlight">\([0, 5]\)</span> with both walls moving, exact solution <span class="math notranslate nohighlight">\(u = e^{-y}\cos(t - y)\)</span>, Chebyshev <span class="math notranslate nohighlight">\(N = 32\)</span>, error
+at <span class="math notranslate nohighlight">\(t = 1\)</span>, for <span class="math notranslate nohighlight">\(dt = 0.02 \to 0.01 \to 0.005\)</span> (<code class="docutils literal notranslate"><span class="pre">tests/ivp/test_bc_time.py</span></code>).</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Scheme</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">&quot;rk&quot;</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">&quot;step&quot;</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RK111</span></code></p></td>
+<td><p>1.0</p></td>
+<td><p>1.0</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RK222</span></code></p></td>
+<td><p>2.0</p></td>
+<td><p>2.0</p></td>
+<td><p>1.05–1.2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RK443</span></code></p></td>
+<td><p>2.8</p></td>
+<td><p>2.0</p></td>
+<td><p>1.05–1.2</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RKSMR</span></code></p></td>
+<td><p>2.0</p></td>
+<td><p>1.9</p></td>
+<td><p>1.05–1.2</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RKGFY</span></code></p></td>
+<td><p>2.0</p></td>
+<td><p>2.0</p></td>
+<td><p>not measured</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SBDF1</span></code>–<code class="docutils literal notranslate"><span class="pre">SBDF4</span></code></p></td>
+<td><p>as <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code></p></td>
+<td><p>1.0, 2.0, 3.0, 4.0</p></td>
+<td><p>not measured</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CNAB1</span></code></p></td>
+<td><p>as <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code></p></td>
+<td><p>2.0 (no explicit term here)</p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CNAB2</span></code>, <code class="docutils literal notranslate"><span class="pre">MCNAB2</span></code></p></td>
+<td><p>as <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code></p></td>
+<td><p>2.0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CNAB2</span></code>: 1.3 then 0.7</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CNLF2</span></code></p></td>
+<td><p>as <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code></p></td>
+<td><p>2.0</p></td>
+<td><p>2.8 then 1.4</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p>Multistep schemes (SBDF, CN family) solve once per step and impose <span class="math notranslate nohighlight">\(g(t_{n+1})\)</span> in the first three
-modes (SBDF1–4: 1, 2, 3, 4; CN: 2); their RK443 start-up substeps follow the mode. <span class="math notranslate nohighlight">\(g'(t)\)</span> is the
-symbolic derivative of the boundary right-hand side (sums, products, powers, <code class="docutils literal notranslate"><span class="pre">exp</span></code>, <code class="docutils literal notranslate"><span class="pre">sin</span></code>, <code class="docutils literal notranslate"><span class="pre">cos</span></code>,
-<code class="docutils literal notranslate"><span class="pre">tanh</span></code>, <code class="docutils literal notranslate"><span class="pre">sqrt</span></code>, <code class="docutils literal notranslate"><span class="pre">log</span></code>, any linear spatial operator); a value without derivative (<code class="docutils literal notranslate"><span class="pre">sign(t)</span></code>) makes
-<code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> fall back to <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code> with the reason in <code class="docutils literal notranslate"><span class="pre">explain()</span></code>, and an explicit <code class="docutils literal notranslate"><span class="pre">bc_time=&quot;rk&quot;</span></code> is
-then refused. With <code class="docutils literal notranslate"><span class="pre">&quot;rk&quot;</span></code> the wall value of the state at <span class="math notranslate nohighlight">\(t_n\)</span> is <span class="math notranslate nohighlight">\(g(t_n)\)</span> up to the local error
-of the quadrature of <span class="math notranslate nohighlight">\(g'\)</span> (not accumulated: each step starts from <span class="math notranslate nohighlight">\(g(t_n)\)</span>); with <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code> it is
-exact. <code class="docutils literal notranslate"><span class="pre">&quot;step&quot;</span></code> reproduces Dedalus to round-off; constant boundary data give the same numbers in
-every mode, bit for bit. Checkpoints record the mode (a restart in another mode is refused); the
-tangent and adjoint maps of <code class="docutils literal notranslate"><span class="pre">FlowMap</span></code> stay exact (the boundary rows do not depend on the state).
-The polar and spherical solvers follow the same rule.</p>
+modes. Their RK443 start-up substeps follow the mode. <span class="math notranslate nohighlight">\(g'(t)\)</span> is the symbolic derivative of the
+boundary right-hand side (sums, products, powers, <code class="docutils literal notranslate"><span class="pre">exp</span></code>, <code class="docutils literal notranslate"><span class="pre">sin</span></code>, <code class="docutils literal notranslate"><span class="pre">cos</span></code>, <code class="docutils literal notranslate"><span class="pre">tanh</span></code>, <code class="docutils literal notranslate"><span class="pre">sqrt</span></code>, <code class="docutils literal notranslate"><span class="pre">log</span></code>, any
+linear spatial operator). A value without a derivative (<code class="docutils literal notranslate"><span class="pre">sign(t)</span></code>) makes <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> fall back to
+<code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code> with the reason in <code class="docutils literal notranslate"><span class="pre">explain()</span></code>, and an explicit <code class="docutils literal notranslate"><span class="pre">bc_time=&quot;rk&quot;</span></code> is then refused. With
+<code class="docutils literal notranslate"><span class="pre">&quot;rk&quot;</span></code>, the wall value of the state at <span class="math notranslate nohighlight">\(t_n\)</span> is <span class="math notranslate nohighlight">\(g(t_n)\)</span> up to the local error of the quadrature
+of <span class="math notranslate nohighlight">\(g'\)</span>. This error does not accumulate, because each step starts from <span class="math notranslate nohighlight">\(g(t_n)\)</span>. With <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code>
+the wall value is exact. Constant boundary data give the same numbers in every mode, bit for bit.
+Checkpoints record the mode, and a restart in another mode is refused. The tangent and adjoint
+maps of <code class="docutils literal notranslate"><span class="pre">FlowMap</span></code> are unaffected, because the boundary rows do not depend on the state. The polar
+and spherical solvers follow the same rule.</p>
 <p>In the native layer <code class="docutils literal notranslate"><span class="pre">t</span></code> is the time: a boundary value is written as text or as a function of <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
@@ -886,7 +944,7 @@ The polar and spherical solvers follow the same rule.</p>
 <span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"top"</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">5</span><span class="p">))</span>       <span class="c1"># numpy functions of t</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">"RK443"</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">dealias</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>     <span class="c1"># "boundary data: ... (bc_time='rk', default 'auto'; RK443 about order 2.8 ..."</span>
-<span class="n">sim_d</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">"RK443"</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">dealias</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bc_time</span><span class="o">=</span><span class="s2">"step"</span><span class="p">)</span>   <span class="c1"># as Dedalus</span>
+<span class="n">sim_d</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">"RK443"</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">dealias</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bc_time</span><span class="o">=</span><span class="s2">"step"</span><span class="p">)</span>   <span class="c1"># data in the explicit part</span>
 </pre></div>
 </div>
 <p>In the expert layer the same problem reads</p>
@@ -921,12 +979,12 @@ Runge–Kutta methods on stiff forced problems.</p>
 </section>
 <section id="choosing-the-time-step">
 <h2>Choosing the time step<a class="headerlink" href="#choosing-the-time-step" title="Link to this heading">¶</a></h2>
-<p>Conatus never changes <code class="docutils literal notranslate"><span class="pre">dt</span></code>. Two indicators help you choose it, and they answer different
-questions:</p>
+<p><code class="docutils literal notranslate"><span class="pre">dt</span></code> stays at the value you give unless you ask for adaptive stepping. Two indicators help you
+choose it, and they answer different questions:</p>
 <ul class="simple">
 <li><p><strong>CFL</strong> (<code class="docutils literal notranslate"><span class="pre">sim.cfl(&quot;u&quot;,</span> <span class="pre">safety=0.5)</span></code>) is the advective stability limit of the current state,
-<span class="math notranslate nohighlight">\(\Delta t_{\rm cfl} = \text{safety} / \max \sum_i |u_i|/\Delta x_i\)</span>. It is a stability bound,
-not an error estimate.</p></li>
+<span class="math notranslate nohighlight">\(\Delta t_{\rm cfl} = \text{safety} / \max \sum_i |u_i|/\Delta x_i\)</span>. It limits the step for
+stability. It does not estimate the temporal error.</p></li>
 <li><p><strong>Temporal error</strong>: <code class="docutils literal notranslate"><span class="pre">EmbeddedError(sim.solver)</span></code> compares one step with a lower-order companion
 on the same data (SBDF<span class="math notranslate nohighlight">\(q\)</span> against SBDF<span class="math notranslate nohighlight">\(q{-}1\)</span>, RK443 against RK222, RKSMR or RKGFY against
 RK111; refused for the CN family, which has no companion) and reports the
@@ -934,7 +992,7 @@ difference. It adapts <code class="docutils literal notranslate"><span class="pr
 <code class="docutils literal notranslate"><span class="pre">safety=</span></code> (Runge–Kutta schemes): a step whose estimate exceeds <code class="docutils literal notranslate"><span class="pre">tol</span></code> is rejected, the state
 restored and the step retried with a smaller <code class="docutils literal notranslate"><span class="pre">dt</span></code>; an accepted step proposes the next <code class="docutils literal notranslate"><span class="pre">dt</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">tol</span></code> cannot be met at <code class="docutils literal notranslate"><span class="pre">dt_min</span></code> (or after 20 rejections in a row) a <code class="docutils literal notranslate"><span class="pre">ConvergenceError</span></code> is
-raised: no step above <code class="docutils literal notranslate"><span class="pre">tol</span></code> is ever kept.</p></li>
+raised, so no step above <code class="docutils literal notranslate"><span class="pre">tol</span></code> is kept.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
@@ -951,11 +1009,11 @@ raised: no step above <code class="docutils literal notranslate"><span class="pr
 </section>
 <section id="a-run-that-blows-up-stops">
 <h2>A run that blows up stops<a class="headerlink" href="#a-run-that-blows-up-stops" title="Link to this heading">¶</a></h2>
-<p>A diverging run (time step too large, an instability the resolution cannot follow) is stopped,
-never stepped on in NaN: the state is tested for NaN or inf every 100 steps, at the end of every
-<code class="docutils literal notranslate"><span class="pre">run</span></code> call and before every checkpoint or output write, and a <code class="docutils literal notranslate"><span class="pre">cn.errors.NumericalError</span></code> names
-the iteration, the time, the unknown and the last iteration checked finite, with fixes (smaller
-<code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">sim.cfl</span></code>, higher <code class="docutils literal notranslate"><span class="pre">N</span></code>). One reduction over the state per check (one host synchronisation on
+<p>A diverging run (time step too large, an instability the resolution cannot follow) is stopped.
+The state is tested for NaN or inf every 100 steps, at the end of each <code class="docutils literal notranslate"><span class="pre">run</span></code> call and before each
+checkpoint or output write. A <code class="docutils literal notranslate"><span class="pre">cn.errors.NumericalError</span></code> then names the iteration, the time, the
+unknown and the last iteration checked finite, and suggests fixes (smaller <code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">sim.cfl</span></code>,
+higher <code class="docutils literal notranslate"><span class="pre">N</span></code>). One reduction over the state per check (one host synchronisation on
 the GPU, none inside a replayed CUDA graph): measured at about 0.1 % of the step cost on one CPU core (Kuramoto–Sivashinsky N = 64 and Rayleigh–Bénard up to 256×64). <code class="docutils literal notranslate"><span class="pre">check_finite=10</span></code> checks more
 often, <code class="docutils literal notranslate"><span class="pre">check_finite=False</span></code> turns the check off; <code class="docutils literal notranslate"><span class="pre">sim.explain()</span></code> says which.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -973,8 +1031,8 @@ largest coefficient among the last 10 % of the mode numbers over the largest one
 <a class="reference internal" href="resolution.html"><span class="doc">Resolution</span></a>) is measured on the coefficients in memory. Above <code class="docutils literal notranslate"><span class="pre">RUN_TAIL_TOL</span> <span class="pre">=</span> <span class="pre">1e-3</span></code> (a ratio of
 amplitudes: a tail coefficient then carries about <span class="math notranslate nohighlight">\(10^{-6}\)</span> of the energy of the largest one; <code class="docutils literal notranslate"><span class="pre">1e-4</span></code> warned on the resolved flagship run, KS <code class="docutils literal notranslate"><span class="pre">L</span> <span class="pre">=</span> <span class="pre">22</span></code>,
 <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">32</span></code>, tutorial 5) a <code class="docutils literal notranslate"><span class="pre">cn.errors.UnderResolvedWarning</span></code> names the
-unknown, the direction, the tail and the time, once per run, and <code class="docutils literal notranslate"><span class="pre">sim.explain()</span></code> repeats it. Nothing
-is changed. Kuramoto–Sivashinsky on <code class="docutils literal notranslate"><span class="pre">L</span> <span class="pre">=</span> <span class="pre">22</span></code> with <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">8</span></code> (where <code class="docutils literal notranslate"><span class="pre">max|u|</span></code> reaches 64 instead of
+unknown, the direction, the tail and the time, once per run, and <code class="docutils literal notranslate"><span class="pre">sim.explain()</span></code> repeats it. The
+run itself is not modified. Kuramoto–Sivashinsky on <code class="docutils literal notranslate"><span class="pre">L</span> <span class="pre">=</span> <span class="pre">22</span></code> with <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">8</span></code> (where <code class="docutils literal notranslate"><span class="pre">max|u|</span></code> reaches 64 instead of
 staying below 3) warns at <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">=</span> <span class="pre">1</span></code> with a tail of 0.76; at <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">64</span></code> it does not. Cost: about 6 ms for
 Rayleigh–Bénard 256×64 on one CPU core, 1.5 % of one step, so about 0.015 % at the default cadence
 (on the GPU the small envelopes return in one transfer, at the synchronisation the finite check
@@ -993,8 +1051,8 @@ did you mean -kappa*lap(T) on the left side, that is dt(T) = kappa*lap(T) + ...?
 </div>
 <p>Lower-order terms of the destabilising sign are physics and are not reported (the <code class="docutils literal notranslate"><span class="pre">+lap(u)</span></code> of
 Kuramoto–Sivashinsky is dominated by <code class="docutils literal notranslate"><span class="pre">+lap(lap(u))</span></code>); a term whose symbol is not read (non-constant
-coefficient, <code class="docutils literal notranslate"><span class="pre">grad</span></code>/<code class="docutils literal notranslate"><span class="pre">div</span></code>/<code class="docutils literal notranslate"><span class="pre">curl</span></code>, another unknown) of the leading order makes the check silent for
-that equation rather than guess.</p>
+coefficient, <code class="docutils literal notranslate"><span class="pre">grad</span></code>/<code class="docutils literal notranslate"><span class="pre">div</span></code>/<code class="docutils literal notranslate"><span class="pre">curl</span></code>, another unknown) of the leading order skips the check for that
+equation.</p>
 </section>
 <section id="restarting-exactly">
 <h2>Restarting exactly<a class="headerlink" href="#restarting-exactly" title="Link to this heading">¶</a></h2>
@@ -1024,7 +1082,7 @@ checkpoints, snapshots and runs split over several jobs: <a class="reference int
 <h2>Watching during a run<a class="headerlink" href="#watching-during-a-run" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">sim.run(steps=n,</span> <span class="pre">callback=f,</span> <span class="pre">every=10)</span></code> calls <code class="docutils literal notranslate"><span class="pre">f(sim)</span></code> every 10 steps (the expert
 <code class="docutils literal notranslate"><span class="pre">sim.solver.run(n,</span> <span class="pre">callback=f,</span> <span class="pre">every=10)</span></code> calls <code class="docutils literal notranslate"><span class="pre">f(sim.solver)</span></code>); the period is part of the run and
-has no default, and a number of steps or a period that is not an integer is refused, never rounded.
+has no default. The number of steps and the period must be integers.
 <code class="docutils literal notranslate"><span class="pre">sim.run(...,</span> <span class="pre">record=True)</span></code> records the run in the registry and returns it (<a class="reference internal" href="runs.html"><span class="doc">The run registry</span></a>).
 A callback ends a run early by raising <code class="docutils literal notranslate"><span class="pre">cn.StopRun</span></code> (the Studio’s <em>stop</em> raises the same); with
 <code class="docutils literal notranslate"><span class="pre">on_stop=&quot;return&quot;</span></code> the run returns and <code class="docutils literal notranslate"><span class="pre">sim.stopped</span></code> says why, with the default <code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code> the
@@ -1046,7 +1104,7 @@ exception leaves <code class="docutils literal notranslate"><span class="pre">ru
 <p>To keep a run so that you can find, compare and reproduce it, see <a class="reference internal" href="runs.html"><span class="doc">The run registry</span></a>.</p>
 <ul class="simple">
 <li><p><strong>Watching a run.</strong> For anything you want to see while the run goes on (fields, curves,
-controls), use the <a class="reference internal" href="studio.html"><span class="doc">The Studio</span></a>: it never slows or changes the computation.</p></li>
+controls), use the <a class="reference internal" href="studio.html"><span class="doc">The Studio</span></a>. Watching does not change the computed numbers.</p></li>
 </ul>
 </section>
 <section id="on-a-gpu">
@@ -1150,7 +1208,7 @@ out (<code class="docutils literal notranslate"><span class="pre">&quot;auto&quo
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

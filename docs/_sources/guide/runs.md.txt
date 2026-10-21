@@ -52,19 +52,20 @@ Other ways in:
 | `cn.runs.record(obj, name=..., results=..., fields=..., compression=...)` | a finished object in one call; an `EVPResult` gives eigenvalues, residuals, `growth_max`, `residual_max` |
 | `@cn.runs.track("name")` on a function | one run per call: arguments as parameters, the return value as results / fields |
 
-What is recorded, always: the structural hash of the problem, the **values** of its parameters, the
-full numerical configuration and `explain()` text, the executed code (commit, dirty paths, sha256 of
-the imported tree and of the compiled core), versions, host, GPU, batch job, the command line. Nothing is guessed: an unreadable field is recorded as such.
+Each record holds the structural hash of the problem, the **values** of its parameters, the
+numerical configuration and `explain()` text, the executed code (commit, dirty paths, sha256 of
+the imported tree and of the compiled core), versions, host, GPU, batch job and the command line.
+A field that cannot be read is recorded as unreadable.
 
-**Recording never blocks or breaks the computation.** Scalars and series are kept in memory; fields,
-files and states are copied and written by a background thread through a bounded queue (a full
-queue drops and counts, never waits); a disk error is recorded and reported by a
-`RegistryWriteWarning` when the run closes, and the numbers are bit-for-bit those of an unrecorded
-run (tested with an unwritable root).
+Scalars and series are kept in memory. Fields, files and states are copied and written by a
+background thread through a bounded queue. When the queue is full, the item is dropped and the
+drop is counted (`run.dropped`); the computation does not wait. A disk error is recorded and
+reported by a `RegistryWriteWarning` when the run closes. The computed numbers are bit-for-bit
+those of an unrecorded run (tested with an unwritable root).
 
 Statuses: `provisional` (default), `certified`, `retracted`. Changing one needs a reason (and
-optional evidence such as residuals); the history is kept, a retracted run is never deleted and never
-reused. A run failing inside a `with` block is recorded as `failed` and the exception propagates.
+optional evidence such as residuals). The history is kept. A retracted run stays in the registry
+and is not reused. A run failing inside a `with` block is recorded as `failed` and the exception propagates.
 
 ## Querying
 
@@ -111,7 +112,7 @@ print(cn.runs.lineage(a).explain())                  # parents, forks, reproduct
 Filters are `key=value` or `key__op=value` with `op` in `eq, ne, gt, ge, lt, le, in, contains`. A key
 is an index column (`host`, `gpu`, `git_head`, `slurm_job`, `telemetry_id`, ...), else a parameter,
 else a result. A key that is both a parameter and a result is refused (write `param_Re` or
-`result_Re`), and an unknown key raises with a suggestion: a typo never returns an empty list.
+`result_Re`). An unknown key raises an error that suggests the supported names.
 
 ## Reproducing
 
@@ -139,8 +140,8 @@ report = run.reproduce(solver)
 print(report.explain())               # bit-for-bit identical?  code identical?
 ```
 
-The solver must have the same problem hash, parameter values and numerics; any difference is
-refused with the list, never adapted. The recorded start state is loaded, the same number of steps
+Reproduction requires the recorded problem hash, parameter values and numerical settings. A
+mismatch raises an error that lists the differences. The recorded start state is loaded, the same number of steps
 is taken in a new run (`relation="reproduce"`), and the whole end state (the state, every multistep
 history array, the time and the iteration) is compared bit for bit: same dtype and same bytes, so
 `-0.0` differs from `0.0`. A run recorded by 0.1.0 does not hold the given-field data, the user
@@ -187,8 +188,12 @@ module globals its code names (by content; library modules, functions and classe
 version; the attributes it names of a user module or a user class, such as `cfg.A` or `Cfg.A`, by
 content), followed into the user functions it calls, so two closures `make(1)` and `make(2)` of
 one factory, or one function under `@scale(2)` and `@scale(3)`, are two computations (your own
-decorators under `@track` are part of what is called and of the key). The cache is off by default; it needs `record=`; it is refused
-with a callback (a hit would never call it); retracted runs are never reused; an argument, or a
+decorators under `@track` are part of what is called and of the key). The identity is read from
+the code, so a read whose target is chosen at run time cannot be followed: a function (or a user
+function it calls) whose code uses `getattr`, `hasattr`, `vars`, `globals`, `eval`, `exec`,
+`os.environ`, `os.getenv`, `open`, `np.load` or another name of
+`conatus.io._identity.DYNAMIC_READS` is uncachable, and the warning names the read. The cache is off by default; it needs `record=`; it is refused
+with a callback, since a hit would not call it; retracted runs are not reused; an argument, or a
 value read by the function or by a user pointwise function, without a content hash makes the
 call uncachable (said with a `CacheReuseWarning` naming it, then computed). A hit returns values of
 the recorded type (a NumPy scalar keeps its dtype, the string `"nan"` stays a string), and its

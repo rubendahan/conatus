@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="User guide" href="../guide/index.html"><link rel="prev" title="15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes" href="15_ks_covariant.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Symmetries and symmetry subspaces" href="03_symmetries.html"><link rel="prev" title="Polar geometry: a drum, a pipe, two rotating cylinders" href="08_polar.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>16. Lagrangian tracers and a numerical dye - Conatus</title>
+        <title>Lagrangian tracers and a numerical dye - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,7 +684,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="lagrangian-tracers-and-a-numerical-dye">
-<h1>16. Lagrangian tracers and a numerical dye<a class="headerlink" href="#lagrangian-tracers-and-a-numerical-dye" title="Link to this heading">¶</a></h1>
+<h1>Lagrangian tracers and a numerical dye<a class="headerlink" href="#lagrangian-tracers-and-a-numerical-dye" title="Link to this heading">¶</a></h1>
 <p>Tracers show where the fluid goes; a dye shows how it mixes. Both are only as good as the velocity
 they are given and the way they are advanced, so both are declared: the velocity at a tracer is the
 spectral series itself, the time integration has a stated order that the tutorial measures, and the
@@ -693,6 +698,15 @@ Couette tracers <span class="math notranslate nohighlight">\(x(t) = x_0 + y_0 t\
 <code class="docutils literal notranslate"><span class="pre">tests/model/test_particles_dye.py</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/model/test_particles_gpu.py</span></code>.</p>
 <section id="tracers-in-an-exact-navierstokes-solution">
 <h2>Tracers in an exact Navier–Stokes solution<a class="headerlink" href="#tracers-in-an-exact-navierstokes-solution" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_ivp</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nu</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">2.0</span>
 
 
@@ -748,10 +762,10 @@ over a step it would be 1.</p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id2">
-<a class="reference internal image-reference" href="../_images/t16_order.png"><img alt="The tracer error against the time step on log axes, three red points along a dashed line of slope 3." loading="lazy" src="../_images/t16_order.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t16_order.png"><img alt="The tracer error against the time step on log axes, three red points close to a dashed line of slope 3." loading="lazy" src="../_images/t16_order.png" style="width: 60%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The tracer error against the reference path integrated to 10⁻¹³: third order in time, as stated for an unsteady flow.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The largest tracer error against a reference path integrated to 10⁻¹³, for the three time steps of the page. Halving dt divides it by 7.7 then 7.8: observed orders 2.94 and 2.97, close to 3 in this unsteady flow.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -805,7 +819,7 @@ its mass, variance, extrema and spectral tail; <code class="docutils literal not
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t16_particles_dye: PASS (exit 0) in 47.1 s | 2026-10-20 | script sha256 5421cf06aaa42843
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t16_particles_dye: PASS (exit 0) in 45.4 s | 2026-10-21 | script sha256 5421cf06aaa42843
 dt = 0.1   : largest tracer error 6.46e-05
 dt = 0.05  : largest tracer error 8.40e-06
 dt = 0.025 : largest tracer error 1.07e-06
@@ -828,8 +842,8 @@ Boundary conditions: bottom: u = (-1, 0); top: u = (1, 0); walls (left: y=-1): d
 Gauge: the mean of p is fixed (integ(p) = 0)
 Dealiasing: x: 3/2, y: 3/2 (declared default for products of degree 2)
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
-(every decision, tau by tau and term by term: m.explain(full=True))
-Dye file &lt;path&gt;/tmp62lfbd_4/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (= 0.5 time units), 7 write(s) so far
+(compiler decisions, tau by tau and term by term: m.explain(full=True))
+Dye file &lt;path&gt;/tmp9363hz08/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (= 0.5 time units), 7 write(s) so far
   dye c (m.dye): dt(c) - 0.01*lap(c) = -div(c*u); no flux: dy(c) = 0 at the walls; advected by u, same scheme and dt as the flow
   c: grid values of c
   mass: integ(c) (integral of the spectral series)
@@ -839,7 +853,7 @@ Dye file &lt;path&gt;/tmp62lfbd_4/dye.h5 (HDF5, conatus.analysis/1): every 50 st
   tail: largest |coefficient| among the last two modes of each axis, relative to the largest
   the state at the start (iteration 0, t = 0) written as a row (initial=True, the default of sim.output)
   scales: sim_time, iteration, write_number, x, y; every array labelled with its dimensions (HDF5 dimension scales)
-  XDMF sidecar (ParaView): &lt;path&gt;/tmp62lfbd_4/dye.xmf
+  XDMF sidecar (ParaView): &lt;path&gt;/tmp9363hz08/dye.xmf
 [[-3.  -1. ]
  [-0.5 -0.5]
  [ 2.   0. ]
@@ -864,23 +878,23 @@ checks passed: order 3 in time, Couette tracers exact, dye mass conserved
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../guide/index.html">
+          <a class="next-page" href="03_symmetries.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">User guide</div>
+                <div class="title">Symmetries and symmetry subspaces</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="15_ks_covariant.html">
+          <a class="prev-page" href="08_polar.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</div>
+                <div class="title">Polar geometry: a drum, a pipe, two rotating cylinders</div>
                 
               </div>
             </a>
@@ -914,7 +928,7 @@ checks passed: order 3 in time, Couette tracers exact, dye mass conserved
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">16. Lagrangian tracers and a numerical dye</a><ul>
+<li><a class="reference internal" href="#">Lagrangian tracers and a numerical dye</a><ul>
 <li><a class="reference internal" href="#tracers-in-an-exact-navierstokes-solution">Tracers in an exact Navier–Stokes solution</a></li>
 <li><a class="reference internal" href="#a-dye-in-plane-couette-flow">A dye in plane Couette flow</a></li>
 <li><a class="reference internal" href="#check">Check</a></li>
@@ -931,7 +945,7 @@ checks passed: order 3 in time, Couette tracers exact, dye mass conserved
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

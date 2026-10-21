@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -680,10 +685,9 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="notebooks">
 <h1>Notebooks<a class="headerlink" href="#notebooks" title="Link to this heading">¶</a></h1>
-<p>In Jupyter, Conatus objects display as formatted tables and cards.</p>
-<p>Conatus objects display as formatted HTML in Jupyter. In a terminal, <code class="docutils literal notranslate"><span class="pre">print(obj.explain())</span></code> gives
-the same content as text. Nothing about the notebook is required: neither IPython nor ipywidgets
-is a dependency, and <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> / <code class="docutils literal notranslate"><span class="pre">explain()</span></code> are unchanged.</p>
+<p>In Jupyter, Conatus objects display as tables and cards. In a terminal, <code class="docutils literal notranslate"><span class="pre">print(obj.explain())</span></code>
+gives the same content as text. Neither IPython nor ipywidgets is a dependency, and <code class="docutils literal notranslate"><span class="pre">__repr__</span></code> and
+<code class="docutils literal notranslate"><span class="pre">explain()</span></code> are the same with or without a notebook.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -725,8 +729,8 @@ is a dependency, and <code class="docutils literal notranslate"><span class="pre
 </tbody>
 </table>
 </div>
-<p>A status badge appears only where the object computes that status itself. The EVP table shows
-residuals but no invented pass threshold.</p>
+<p>A status badge appears only where the object computes that status itself. The EVP table
+displays residual values without a pass or fail classification.</p>
 <section id="parameter-widgets-optional">
 <h2>Parameter widgets (optional)<a class="headerlink" href="#parameter-widgets-optional" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">IVP</span><span class="p">,</span> <span class="n">CartesianCoordinates</span><span class="p">,</span> <span class="n">Chebyshev</span><span class="p">,</span> <span class="n">Domain</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
@@ -745,11 +749,11 @@ residuals but no invented pass threshold.</p>
 </pre></div>
 </div>
 <p>If ipywidgets is not installed, <code class="docutils literal notranslate"><span class="pre">parameter_widgets</span></code> returns <code class="docutils literal notranslate"><span class="pre">None</span></code> and says so with a
-<code class="docutils literal notranslate"><span class="pre">UserWarning</span></code>. Nothing else changes. The widgets <strong>never modify the IR or a plan</strong>: IR objects are
-immutable. Each edit passes the full <code class="docutils literal notranslate"><span class="pre">{name:</span> <span class="pre">value}</span></code> dict to your <code class="docutils literal notranslate"><span class="pre">on_change</span></code>, which re-discretizes
-or re-solves as you decide, and <code class="docutils literal notranslate"><span class="pre">w.values()</span></code> returns the same dict. The boxes are plain text boxes
-rather than sliders, because a slider range would be an invented bound. Text that is not a number
-is refused (<code class="docutils literal notranslate"><span class="pre">ParameterError</span></code>) in the widget, without calling your function.</p>
+<code class="docutils literal notranslate"><span class="pre">UserWarning</span></code>. The widgets do not modify the IR or a plan, since IR objects are immutable. Each
+edit passes the full <code class="docutils literal notranslate"><span class="pre">{name:</span> <span class="pre">value}</span></code> dict to your <code class="docutils literal notranslate"><span class="pre">on_change</span></code>, which re-discretizes or re-solves as
+you decide. <code class="docutils literal notranslate"><span class="pre">w.values()</span></code> returns the same dict. The inputs are text boxes, so a parameter value
+does not need a preset slider interval. Text that is not a number is refused (<code class="docutils literal notranslate"><span class="pre">ParameterError</span></code>) in
+the widget, and your function is not called.</p>
 <p>Implementation: <code class="docutils literal notranslate"><span class="pre">python/conatus/notebook.py</span></code> (HTML with escaped text, inline CSS readable in light
 and dark themes, no JavaScript).</p>
 </section>
@@ -823,7 +827,7 @@ and dark themes, no JavaScript).</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

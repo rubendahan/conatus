@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="4. Nonlinear boundary-value problems and continuation: Bratu" href="04_bratu.html"><link rel="prev" title="2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU" href="02_rayleigh_benard.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Where a global mode is born, and what the data say about it" href="13_sensitivity_data.html"><link rel="prev" title="Lagrangian tracers and a numerical dye" href="16_particles_dye.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>3. Symmetries and symmetry subspaces - Conatus</title>
+        <title>Symmetries and symmetry subspaces - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,7 +684,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="symmetries-and-symmetry-subspaces">
-<h1>3. Symmetries and symmetry subspaces<a class="headerlink" href="#symmetries-and-symmetry-subspaces" title="Link to this heading">¶</a></h1>
+<h1>Symmetries and symmetry subspaces<a class="headerlink" href="#symmetries-and-symmetry-subspaces" title="Link to this heading">¶</a></h1>
 <p><strong>Goal.</strong> Compute the Rayleigh–Bénard onset mode in the subspace of solutions symmetric about
 mid-depth, with half the unknowns, and see what the subspace hides.
 <strong>Expected.</strong> At <span class="math notranslate nohighlight">\((Ra_c, k_c) = (1707.762, 3.1163)\)</span> (Reid &amp; Harris 1958; Chandrasekhar 1961) the
@@ -690,10 +695,10 @@ rounding with half the unknowns. The complementary class decays.
 <code class="docutils literal notranslate"><span class="pre">tests/evp/test_rayleigh_benard.py</span></code>.</p>
 <section id="the-idea">
 <h2>The idea<a class="headerlink" href="#the-idea" title="Link to this heading">¶</a></h2>
-<p>A symmetry is declared, never guessed. You give a group (here the reflection <span class="math notranslate nohighlight">\(z \to -z\)</span>) and the
-parity of each field; Conatus then</p>
+<p>You declare the symmetry: a group (here the reflection <span class="math notranslate nohighlight">\(z \to -z\)</span>) and the parity of each field.
+Conatus then</p>
 <ol class="arabic simple">
-<li><p>checks that every equation is <strong>equivariant</strong> and refuses otherwise, naming the offending term;</p></li>
+<li><p>checks that each equation is <strong>equivariant</strong> and refuses otherwise, naming the offending term;</p></li>
 <li><p>builds bases of the invariant subspace (even or odd Chebyshev polynomials, cosines or sines) and
 drops the boundary conditions that became mirror images of each other;</p></li>
 <li><p>solves only there, on CPU or GPU.</p></li>
@@ -703,8 +708,17 @@ reflected direction changes sign, the others do not (<code class="docutils liter
 </section>
 <section id="the-problem">
 <h2>The problem<a class="headerlink" href="#the-problem" title="Link to this heading">¶</a></h2>
-<p>The Boussinesq equations of <a class="reference internal" href="02_rayleigh_benard.html"><span class="doc">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</span></a>, written as on paper, on one wavelength
+<p>The Boussinesq equations of <a class="reference internal" href="02_rayleigh_benard.html"><span class="doc">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</span></a>, written as on paper, on one wavelength
 <span class="math notranslate nohighlight">\(2\pi/k_c\)</span>, and their linearization about the conduction state <span class="math notranslate nohighlight">\(T_0 = -z\)</span>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">EVEN</span><span class="p">,</span> <span class="n">ODD</span><span class="p">,</span> <span class="n">Reflection</span><span class="p">,</span> <span class="n">SymmetryBreakingError</span><span class="p">,</span> <span class="n">SymmetrySubspace</span><span class="p">,</span>
+                            <span class="n">discretize</span><span class="p">,</span> <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">linearize</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RA_C</span><span class="p">,</span> <span class="n">K_C</span> <span class="o">=</span> <span class="mf">1707.762</span><span class="p">,</span> <span class="mf">3.1163</span>                  <span class="c1"># Reid &amp; Harris (1958)</span>
 <span class="n">box</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">periodic</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">K_C</span><span class="p">),</span> <span class="n">z</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">walls</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>   <span class="c1"># one wavelength at k_c</span>
 <span class="n">m</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Boussinesq RB"</span><span class="p">,</span> <span class="n">Ra</span><span class="o">=</span><span class="n">RA_C</span><span class="p">,</span> <span class="n">Pr</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -776,25 +790,50 @@ like the physical fields.</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">linearize</span></code> rebuilds the perturbation problem with <code class="docutils literal notranslate"><span class="pre">symmetry=</span></code>; everything downstream (plan,
-eigenvalues, residuals) is unchanged. <code class="docutils literal notranslate"><span class="pre">symmetry_report()</span></code> lists the parity of every component, the equivariance of every
-equation and the boundary conditions dropped as mirror images, and always warns that the subspace
-<strong>hides symmetry-breaking instabilities</strong>. Here the other class is the check: its leading mode decays
-strongly, so the onset mode found in the symmetric class is the leading mode of the
-full problem. A dense QZ costs <span class="math notranslate nohighlight">\(O(n^3)\)</span>; halving <span class="math notranslate nohighlight">\(n\)</span> saves 2–8× depending on the size.</p>
+eigenvalues, residuals) is unchanged. <code class="docutils literal notranslate"><span class="pre">symmetry_report()</span></code> lists the parity of each component, the
+equivariance of each equation and the boundary conditions dropped as mirror images. It also warns
+that the subspace <strong>hides symmetry-breaking instabilities</strong>. Here the other class is the check: its
+leading mode decays strongly, so the onset mode found in the symmetric class is the leading mode
+of the full problem. A dense QZ costs <span class="math notranslate nohighlight">\(O(n^3)\)</span>, so halving <span class="math notranslate nohighlight">\(n\)</span> can save at most 8×. In the
+recorded run below (table), the median solve took 15 ms for each class against 74 ms for the full
+space: at this size the saving is about 5×.</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t03_spectra.png"><img alt="Eigenvalues of the full problem as grey rings; each ring holds either a red dot (onset class) or a green cross (other class), and the rightmost, at zero, holds a red dot." loading="lazy" src="../_images/t03_spectra.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t03_spectra.png"><img alt="Three rows of eigenvalues along the growth-rate axis: open circles for the full space, red dots for the onset class, blue crosses for the other class; thin lines join each circle to the class row that holds it, and the rightmost circle, at zero, joins a red dot." loading="lazy" src="../_images/t03_spectra.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Every eigenvalue of the full space (rings) is found in exactly one of the two symmetry classes, each solved with half the unknowns. The neutral mode at the onset point belongs to the onset class.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The 12 eigenvalues of the full space with σ &gt; −160, each joined to the symmetry class that holds the same value (largest relative gap 3×10⁻¹³). All are real (largest |Im σ| 1×10⁻¹⁶). The neutral mode at the onset point, σ ≈ 0, is in the onset class.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<figure class="align-default" id="id2">
-<a class="reference internal image-reference" href="../_images/t03_cost.png"><img alt="Two bar charts: the number of unknowns, 268 for the full space and 134 for each class; and the time of the dense eigenvalue solve, several times shorter for each class." loading="lazy" src="../_images/t03_cost.png" style="width: 100%;" />
-</a>
-<figcaption>
-<p><span class="caption-text">Size and cost of each eigenproblem as measured in this run. Halving the unknowns makes the dense QZ solve several times cheaper (it scales as n³).</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
-</figcaption>
-</figure>
+<!-- written by docs/site/tutorial_media_render.py from the captured data; do not edit -->
+<div class="table-wrapper colwidths-auto docutils container" id="t03-cost">
+<table class="docutils align-default" id="t03-cost">
+<caption><span class="caption-text">Size of each eigenproblem and wall time of its dense QZ solve, 7 timings each (median and range), from one run on AMD EPYC 9654 96-Core Processor with 2 threads (NumPy 2.5.3, SciPy 1.17.1). Halving the unknowns made the solve 5.0 times faster here; the n³ operation count bounds the saving at 8.</span><a class="headerlink" href="#t03-cost" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>problem</p></th>
+<th class="head text-right"><p>unknowns n</p></th>
+<th class="head text-right"><p>QZ time, median (ms)</p></th>
+<th class="head text-right"><p>range (ms)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>full space</p></td>
+<td class="text-right"><p>268</p></td>
+<td class="text-right"><p>74</p></td>
+<td class="text-right"><p>70 – 75</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>onset class</p></td>
+<td class="text-right"><p>134</p></td>
+<td class="text-right"><p>15</p></td>
+<td class="text-right"><p>15 – 67</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>other class</p></td>
+<td class="text-right"><p>134</p></td>
+<td class="text-right"><p>15</p></td>
+<td class="text-right"><p>15 – 60</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="a-wrong-declaration-is-refused">
 <h2>A wrong declaration is refused<a class="headerlink" href="#a-wrong-declaration-is-refused" title="Link to this heading">¶</a></h2>
@@ -809,9 +848,9 @@ full problem. A dense QZ costs <span class="math notranslate nohighlight">\(O(n^
 </section>
 <section id="check">
 <h2>Check<a class="headerlink" href="#check" title="Link to this heading">¶</a></h2>
-<p>At Reid &amp; Harris’ <span class="math notranslate nohighlight">\((Ra_c, k_c)\)</span> the leading growth rate is <span class="math notranslate nohighlight">\(1.7\times10^{-6}\)</span> (zero within the rounding of the published <span class="math notranslate nohighlight">\(Ra_c\)</span> and <span class="math notranslate nohighlight">\(k_c\)</span>), the
-onset class gives the same eigenvalue to rounding with half the unknowns, and the other class
-decays.</p>
+<p>At Reid &amp; Harris’ <span class="math notranslate nohighlight">\((Ra_c, k_c)\)</span> the leading growth rate is <span class="math notranslate nohighlight">\(1.7\times10^{-6}\)</span>, zero within the
+rounding of the published <span class="math notranslate nohighlight">\(Ra_c\)</span> and <span class="math notranslate nohighlight">\(k_c\)</span>. The onset class gives the same eigenvalue to rounding
+with half the unknowns, and the other class decays.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">so</span><span class="p">,</span> <span class="n">no</span><span class="p">),</span> <span class="p">(</span><span class="n">sa</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">"onset class"</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="s2">"other class"</span><span class="p">]</span>
 <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-4</span><span class="p">,</span> <span class="n">sf</span>                     <span class="c1"># neutral at (Ra_c, k_c) to the published digits</span>
 <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">so</span> <span class="o">-</span> <span class="n">sf</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-10</span>                   <span class="c1"># the onset class carries the leading mode ...</span>
@@ -823,8 +862,8 @@ decays.</p>
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t03_symmetries: PASS (exit 0) in 3.5 s | 2026-10-20 | script sha256 06b9053531b4dd1f
- full space: leading sigma = +1.6955e-06   n = 268   QZ 130.5 ms   residual 5.3e-17
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t03_symmetries: PASS (exit 0) in 5.1 s | 2026-10-21 | script sha256 06b9053531b4dd1f
+ full space: leading sigma = +1.6955e-06   n = 268   QZ 578.9 ms   residual 5.3e-17
 unknowns of the perturbation problem: du, dp, dT, dtau_u1, dtau_u2, dtau_T1, dtau_T2, dtau_p
 Symmetry subspace: Z2 (order 2)
   generator: Reflection(z -&gt; -z): reflection of z about z = 0; vector components along it change sign, others do not
@@ -839,7 +878,7 @@ Symmetry subspace: Z2 (order 2)
   du         odd under Reflection(z -&gt; -z)
   expected reduction: up to x2 per reflection, x m0 per m0-fold rotation (adapted bases: parity blocks, kept azimuthal classes, docs/site/tutorials/03_symmetries.md)
   WARNING: computing in the invariant subspace hides symmetry-breaking instabilities; a symmetric solution is not declared stable before symmetry_breaking_check().
-onset class: leading sigma = +1.6955e-06   n = 134   QZ  67.2 ms   residual 9.8e-18
+onset class: leading sigma = +1.6955e-06   n = 134   QZ  89.1 ms   residual 9.8e-18
 Symmetry subspace: Z2 (order 2)
   generator: Reflection(z -&gt; -z): reflection of z about z = 0; vector components along it change sign, others do not
   T0         odd under Reflection(z -&gt; -z)
@@ -873,7 +912,7 @@ Under Reflection(z -&gt; -z):
   dtau_p     odd -&gt; constant along the mirror direction and odd: vanishes identically
   BC [3] and [5] are mirror images under Reflection(z -&gt; -z): redundant in the subspace, one of them (and its tau) is dropped at discretization
   BC [4] and [6] are mirror images under Reflection(z -&gt; -z): redundant in the subspace, one of them (and its tau) is dropped at discretization
-other class: leading sigma = -4.2627e+01   n = 134   QZ  66.7 ms   residual 1.5e-16
+other class: leading sigma = -4.2627e+01   n = 134   QZ  88.1 ms   residual 1.5e-16
 refused: equation 's*du - Pr*lap(du) + lift(dtau_u1, z, -1) + grad(dp) + lift(dtau_u2, z, -2) - Ra*dT*Pr*ez = 0' is not equivariant under Reflection(z -&gt; -z): term '-Ra*dT*Pr*ez' is odd but 's*du' is even. The term breaks the declared symmetry (fix the parities or drop the symmetry).
   docs:  guide/errors#symmetrybreakingerror  (python -m conatus docs guide/errors)
 OK: neutral mode at Reid &amp; Harris' (Ra_c, k_c) in the onset class, n = 134 vs 268
@@ -888,7 +927,7 @@ OK: neutral mode at Reid &amp; Harris' (Ra_c, k_c) in the onset class, n = 134 v
 initial data outside the subspace is refused.</p></li>
 <li><p>Shift-reflect, m-fold rotations, equatorial parity: <code class="docutils literal notranslate"><span class="pre">ShiftReflect</span></code>, <code class="docutils literal notranslate"><span class="pre">AzimuthalMFold</span></code>,
 <code class="docutils literal notranslate"><span class="pre">EquatorialParity</span></code> (see <a class="reference internal" href="../guide/bases.html"><span class="doc">Bases and domains</span></a>).</p></li>
-<li><p>Symmetric orbits of Kuramoto–Sivashinsky: <a class="reference internal" href="05_ks_orbits.html"><span class="doc">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</span></a>.</p></li>
+<li><p>Symmetric orbits of Kuramoto–Sivashinsky: <a class="reference internal" href="05_ks_orbits.html"><span class="doc">Invariant solutions: Kuramoto–Sivashinsky, L = 22</span></a>.</p></li>
 </ul>
 </section>
 </section>
@@ -898,23 +937,23 @@ initial data outside the subspace is refused.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="04_bratu.html">
+          <a class="next-page" href="13_sensitivity_data.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">4. Nonlinear boundary-value problems and continuation: Bratu</div>
+                <div class="title">Where a global mode is born, and what the data say about it</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="02_rayleigh_benard.html">
+          <a class="prev-page" href="16_particles_dye.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</div>
+                <div class="title">Lagrangian tracers and a numerical dye</div>
                 
               </div>
             </a>
@@ -948,7 +987,7 @@ initial data outside the subspace is refused.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">3. Symmetries and symmetry subspaces</a><ul>
+<li><a class="reference internal" href="#">Symmetries and symmetry subspaces</a><ul>
 <li><a class="reference internal" href="#the-idea">The idea</a></li>
 <li><a class="reference internal" href="#the-problem">The problem</a></li>
 <li><a class="reference internal" href="#the-full-space-first">The full space first</a></li>
@@ -969,7 +1008,7 @@ initial data outside the subspace is refused.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="5. Invariant solutions: Kuramoto–Sivashinsky, L = 22" href="05_ks_orbits.html"><link rel="prev" title="3. Symmetries and symmetry subspaces" href="03_symmetries.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Invariant solutions: Kuramoto–Sivashinsky, L = 22" href="05_ks_orbits.html"><link rel="prev" title="Where a global mode is born, and what the data say about it" href="13_sensitivity_data.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>4. Nonlinear boundary-value problems and continuation: Bratu - Conatus</title>
+        <title>Nonlinear boundary-value problems and continuation: Bratu - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,7 +684,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="nonlinear-boundary-value-problems-and-continuation-bratu">
-<h1>4. Nonlinear boundary-value problems and continuation: Bratu<a class="headerlink" href="#nonlinear-boundary-value-problems-and-continuation-bratu" title="Link to this heading">¶</a></h1>
+<h1>Nonlinear boundary-value problems and continuation: Bratu<a class="headerlink" href="#nonlinear-boundary-value-problems-and-continuation-bratu" title="Link to this heading">¶</a></h1>
 <p><strong>Goal.</strong> Solve the Bratu problem <span class="math notranslate nohighlight">\(u'' + \lambda e^u = 0\)</span> by Newton, see quadratic convergence
 reported, then follow the solution branch by pseudo-arclength continuation through its fold.
 <strong>Expected.</strong> The closed form <span class="math notranslate nohighlight">\(u = 2\ln(\cosh a / \cosh a x)\)</span>, <span class="math notranslate nohighlight">\(\lambda = 2a^2/\cosh^2 a\)</span> (Bratu 1914;
@@ -695,9 +700,9 @@ Gelfand 1963), with the fold at <span class="math notranslate nohighlight">\(a \
 u'' + \lambda\, e^{u} = 0 \quad \text{on } [-1, 1], \qquad u(\pm 1) = 0 .
 \]</div>
 </div>
-<p>For <span class="math notranslate nohighlight">\(\lambda &lt; \lambda_c\)</span> there are two solutions (lower and upper branch); they merge at the fold
-<span class="math notranslate nohighlight">\(\lambda_c\)</span> and none exists beyond. A Newton solver alone cannot pass the fold: the Jacobian is singular
-there. Pseudo-arclength continuation parametrises the branch by its arclength instead.</p>
+<p>For <span class="math notranslate nohighlight">\(0 &lt; \lambda &lt; \lambda_c\)</span> the problem has two solutions (lower and upper branch). They merge
+at the fold <span class="math notranslate nohighlight">\(\lambda_c\)</span>, and none exists beyond. A Newton solver alone cannot pass the fold,
+because the Jacobian is singular there. Pseudo-arclength continuation parametrises the branch by its arclength instead.</p>
 </section>
 <section id="write-the-problem">
 <h2>Write the problem<a class="headerlink" href="#write-the-problem" title="Link to this heading">¶</a></h2>
@@ -740,15 +745,37 @@ left to the native default; resolution is then checked by convergence in <span c
 full Newton steps) and the iteration budget (default 50) have declared defaults; the script gives
 both explicitly (1 and 20). All three are printed with the result. <code class="docutils literal notranslate"><span class="pre">sol.explain()</span></code> lists the residual of every iteration and the <strong>observed</strong> order of
 convergence <span class="math notranslate nohighlight">\(q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})\)</span>, about 2 here, the signature of an exact
-Jacobian. Non-convergence raises <code class="docutils literal notranslate"><span class="pre">NewtonNotConverged</span></code> with the history; it never returns the last
-iterate silently.</p>
-<figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t04_newton.png"><img alt="The relative residual of Newton's method on a log scale, dropping faster at each iteration below the dashed tolerance line." loading="lazy" src="../_images/t04_newton.png" style="width: 100%;" />
-</a>
-<figcaption>
-<p><span class="caption-text">Newton from u = 0 at λ = 0.3, as printed by sol.explain(): the number of correct digits doubles at each step (quadratic convergence) down to the declared tolerance.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
-</figcaption>
-</figure>
+Jacobian. Non-convergence raises <code class="docutils literal notranslate"><span class="pre">NewtonNotConverged</span></code> with the history of the iterations.</p>
+<!-- written by docs/site/tutorial_media_render.py from the captured data; do not edit -->
+<div class="table-wrapper colwidths-auto docutils container" id="t04-newton">
+<table class="docutils align-default" id="t04-newton">
+<caption><span class="caption-text">Newton from u = 0 at λ = 0.3, as printed by sol.explain(): the relative residual after each iteration, 3 iterations down to 3e-14, below the declared tolerance 1e-13. The observed order log(r(k+1)/r(k)) / log(r(k)/r(k−1)) is 1.99, 2.00 (2 for quadratic convergence).</span><a class="headerlink" href="#t04-newton" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>iteration k</p></th>
+<th class="head text-right"><p>relative residual r(k)</p></th>
+<th class="head text-right"><p>−log₁₀ r(k)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>0</p></td>
+<td class="text-right"><p>1.0e+00</p></td>
+<td class="text-right"><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>1</p></td>
+<td class="text-right"><p>1.1e-02</p></td>
+<td class="text-right"><p>1.9</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>2</p></td>
+<td class="text-right"><p>1.6e-06</p></td>
+<td class="text-right"><p>5.8</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>3</p></td>
+<td class="text-right"><p>2.9e-14</p></td>
+<td class="text-right"><p>13.5</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="continuation-through-the-fold">
 <h2>Continuation through the fold<a class="headerlink" href="#continuation-through-the-fold" title="Link to this heading">¶</a></h2>
@@ -766,17 +793,18 @@ its bounds, corrector tolerance, number of points); the algorithm controls (adap
 corrector budget, finite-difference step for <span class="math notranslate nohighlight">\(\partial G/\partial\lambda\)</span>) have declared defaults,
 marked “(default)” by <code class="docutils literal notranslate"><span class="pre">explain()</span></code>. The branch starts on the
 lower branch at <span class="math notranslate nohighlight">\(\lambda = 0.3\)</span>, passes the fold and comes back down the upper branch for a few
-points (<code class="docutils literal notranslate"><span class="pre">max_points</span></code>). Up there <span class="math notranslate nohighlight">\(u\)</span> grows and <span class="math notranslate nohighlight">\(e^u\)</span> needs more modes: at 64 modes its Chebyshev tail
-stays below <span class="math notranslate nohighlight">\(10^{-12}\)</span> along the whole branch; at too few modes Conatus refuses the step (a
-non-constant coefficient whose Chebyshev tail exceeds <code class="docutils literal notranslate"><span class="pre">ncc_tail_tol</span></code>, <span class="math notranslate nohighlight">\(10^{-8}\)</span> by default, is never
-used or truncated silently: the error gives the resolution to use, or the <code class="docutils literal notranslate"><span class="pre">ncc_cutoff=</span></code> to declare). Folds are <em>located</em> (the <span class="math notranslate nohighlight">\(\lambda\)</span>-component of the tangent changes sign,
-refined to <span class="math notranslate nohighlight">\(|t_\lambda| \approx 10^{-16}\)</span>), not read off the nearest point; <code class="docutils literal notranslate"><span class="pre">branch.explain()</span></code> reports
-the residual at the located point and every step-size change.</p>
-<figure class="align-default" id="id2">
+points (<code class="docutils literal notranslate"><span class="pre">max_points</span></code>). Up there <span class="math notranslate nohighlight">\(u\)</span> grows and <span class="math notranslate nohighlight">\(e^u\)</span> needs more modes. At 64 modes its Chebyshev
+tail stays below <span class="math notranslate nohighlight">\(10^{-12}\)</span> along the whole branch. At too few modes Conatus refuses the step: a
+non-constant coefficient whose Chebyshev tail exceeds <code class="docutils literal notranslate"><span class="pre">ncc_tail_tol</span></code> (<span class="math notranslate nohighlight">\(10^{-8}\)</span> by default) raises
+an error that gives the resolution to use, or the <code class="docutils literal notranslate"><span class="pre">ncc_cutoff=</span></code> to declare. The continuation routine
+refines the fold by solving for a zero <span class="math notranslate nohighlight">\(\lambda\)</span>-component of the tangent (to
+<span class="math notranslate nohighlight">\(|t_\lambda| \approx 10^{-16}\)</span>). <code class="docutils literal notranslate"><span class="pre">branch.explain()</span></code> reports the residual at the located point and
+each step-size change.</p>
+<figure class="align-default" id="id1">
 <a class="reference internal image-reference" href="../_images/t04_branch.png"><img alt="The solution branch of the Bratu problem: u(0) rises with lambda, turns back at a red fold near lambda = 0.878 and climbs on the upper branch, the dots lying on a thin closed-form curve." loading="lazy" src="../_images/t04_branch.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The branch followed by pseudo-arclength continuation (the page’s settings, run for more points), on the closed form u(0) = 2 ln cosh a. The fold is located by bisection on the tangent.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The branch followed by pseudo-arclength continuation (the page’s settings, run for more points), on the closed form u(0) = 2 ln cosh a. The fold, located by bisection on the tangent, is at λ_c = 0.8784576798.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -799,7 +827,7 @@ agrees with the root of <span class="math notranslate nohighlight">\(a\tanh a = 
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t04_bratu: PASS (exit 0) in 8.9 s | 2026-10-20 | script sha256 9c3b5128628b4e17
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t04_bratu: PASS (exit 0) in 8.7 s | 2026-10-21 | script sha256 9c3b5128628b4e17
 Model 'Bratu': Box(x=walls(-1, 1)) (Cartesian box)
 Unknowns: u (scalar); parameters: lam = 0.3
 Equations as written:
@@ -809,7 +837,7 @@ Boundary conditions: walls (left: x=-1): u = 0; walls (right: x=1): u = 0 (tau m
 Dealiasing: x: 3/2 (declared default for products of degree 1)
   warning: not polynomial in the unknowns and given fields (no dealiasing factor removes their aliasing): exp(u)*lam
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
-(every decision, tau by tau and term by term: m.explain(full=True))
+(compiler decisions, tau by tau and term by term: m.explain(full=True))
 Newton on NLBVP 'Newton step of Bratu': converged in 3 iteration(s)
   settings: tolerance=1e-13, damping=1.0, max_iterations=20
   k= 0  |F|=3.000e-01  |F|/scale=1.000e+00  |dx|=8.568e-02
@@ -835,7 +863,7 @@ OK: lam_c within 1.1e-16 of the closed form 0.87845767978129
 <ul class="simple">
 <li><p>Continuation of an eigenvalue problem’s solutions in a domain length (KS equilibria in <span class="math notranslate nohighlight">\(L\)</span>,
 <code class="docutils literal notranslate"><span class="pre">KSDomainContinuation</span></code>) and bifurcation points located against Kevrekidis, Nicolaenko &amp; Scovel
-(1990): <code class="docutils literal notranslate"><span class="pre">tests/continuation/test_ks_L.py</span></code>, <a class="reference internal" href="05_ks_orbits.html"><span class="doc">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</span></a>.</p></li>
+(1990): <code class="docutils literal notranslate"><span class="pre">tests/continuation/test_ks_L.py</span></code>, <a class="reference internal" href="05_ks_orbits.html"><span class="doc">Invariant solutions: Kuramoto–Sivashinsky, L = 22</span></a>.</p></li>
 <li><p>Periodic NLBVPs (a Fourier direction coupled by the nonlinearity, declared phase condition):
 <code class="docutils literal notranslate"><span class="pre">PeriodicNewtonSolver</span></code>, see the Swift–Hohenberg example in the gallery.</p></li>
 <li><p>Newton, continuation and bifurcations in the user guide: <a class="reference internal" href="../guide/index.html"><span class="doc">User guide</span></a>.</p></li>
@@ -853,18 +881,18 @@ OK: lam_c within 1.1e-16 of the closed form 0.87845767978129
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</div>
+                <div class="title">Invariant solutions: Kuramoto–Sivashinsky, L = 22</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="03_symmetries.html">
+          <a class="prev-page" href="13_sensitivity_data.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">3. Symmetries and symmetry subspaces</div>
+                <div class="title">Where a global mode is born, and what the data say about it</div>
                 
               </div>
             </a>
@@ -898,7 +926,7 @@ OK: lam_c within 1.1e-16 of the closed form 0.87845767978129
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">4. Nonlinear boundary-value problems and continuation: Bratu</a><ul>
+<li><a class="reference internal" href="#">Nonlinear boundary-value problems and continuation: Bratu</a><ul>
 <li><a class="reference internal" href="#the-problem">The problem</a></li>
 <li><a class="reference internal" href="#write-the-problem">Write the problem</a></li>
 <li><a class="reference internal" href="#newton">Newton</a></li>
@@ -917,7 +945,7 @@ OK: lam_c within 1.1e-16 of the closed form 0.87845767978129
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -103,3 +103,20 @@ figure.cn-film { margin: 1.5rem 0; }
 .cn-film-btn:focus-visible { outline: 2px solid var(--color-brand-primary, #A8281E); outline-offset: 2px; }
 figure.cn-film video { display: block; width: 100%; height: auto; background: var(--cn-lab); border-radius: var(--cn-radius); }
 figure.cn-film figcaption { font-size: var(--cn-size-caption); color: var(--color-foreground-secondary, var(--cn-muted)); margin-top: 0.5rem; }
+
+/* Docs home: the getting-started route of web/src/content/nav.json (conf.py writes the list) */
+.cn-start { padding-left: 1.4rem; }
+.cn-start li { margin: 0 0 0.6rem; }
+.cn-site-link a { white-space: nowrap; }
+/* Tutorial figures in the dark theme: the transparent plots keep their mid-tone ink, which is faint
+   on laboratory black, so they sit on a paper panel there (external review of 0.1.1, figures). */
+body[data-theme="dark"] img[src*="tutorials/media/"],
+body[data-theme="dark"] img[src*="tutorials/outputs/"] {
+  background: var(--cn-paper); border-radius: var(--cn-radius); padding: 0.5rem;
+}
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme="light"]) img[src*="tutorials/media/"],
+  body:not([data-theme="light"]) img[src*="tutorials/outputs/"] {
+    background: var(--cn-paper); border-radius: var(--cn-radius); padding: 0.5rem;
+  }
+}

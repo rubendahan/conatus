@@ -13,8 +13,6 @@ kind of problem object a native model compiles to, time-stepped by the same IVPS
 Run: python t12_chaos_ensembles.py   (about 1 min of CPU)
 """
 # [imports]
-import os
-
 import numpy as np
 
 import conatus as cn
@@ -89,17 +87,15 @@ print(ens.explain())
 # [/basins]
 
 # [figures]
-out = os.environ.get("CN_TUTORIAL_OUT")
-if out:
-    import matplotlib.pyplot as plt
-    os.makedirs(out, exist_ok=True)            # a CN_TUTORIAL_OUT that does not exist yet
-    fig, ax = plt.subplots(1, 2, figsize=(9, 4))
-    ax[0].plot(zk, zk1, ".", ms=2)
-    ax[0].set(xlabel="$z_k$", ylabel="$z_{k+1}$", title="Lorenz map (maxima of z)")
-    ax[1].imshow(basin, origin="lower", extent=[-20, 20, -20, 20], cmap="coolwarm")
-    ax[1].set(xlabel="x", ylabel="y", title="basins of $C^\\pm$, r = 20, z = 19")
-    fig.tight_layout()
-    fig.savefig(os.path.join(out, "t12_lorenz_map_basins.png"), dpi=120)
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(1, 2, figsize=(9, 4))
+ax[0].plot(zk, zk1, ".", ms=2)
+ax[0].set(xlabel="$z_k$", ylabel="$z_{k+1}$", title="Lorenz map (maxima of z)")
+ax[1].imshow(basin, origin="lower", extent=[-20, 20, -20, 20], cmap="coolwarm")
+ax[1].set(xlabel="x", ylabel="y", title="basins of $C^\\pm$, r = 20, z = 19")
+fig.tight_layout()
+fig.savefig("t12_lorenz_map_basins.png", dpi=120)
 # [/figures]
 
 # [check]

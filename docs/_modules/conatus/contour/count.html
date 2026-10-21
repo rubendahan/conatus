@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -227,11 +227,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../../">&larr; Conatus website</a>
-  <a href="../../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -241,21 +246,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -302,7 +307,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/bases.html">Bases and domains</a></li>
@@ -693,13 +698,7 @@
 <span class="sd">only the principal value of the phase increment is known, so the walk is adaptive: a step is</span>
 <span class="sd">accepted when</span>
 
-<span class="sd">* its principal increment and those of its two halves are at most ``phase_step`` (the</span>
-<span class="sd">  principal-increment bound: a full turn of the phase inside a step shows up in a half unless it</span>
-<span class="sd">  happens within one quarter of the step, which the next condition catches through the modulus;</span>
-<span class="sd">  an acceptance test on sampled values, not a proof; ``tests/contour/test_contour_count.py``</span>
-<span class="sd">  places clusters of zeros 1e-3 .. 1e-12 off an edge, between the initial points: each is</span>
-<span class="sd">  counted right or refused, never miscounted),</span>
-<span class="sd">  and</span>
+<span class="sd">* its principal increment and those of its two halves are at most ``phase_step``, and</span>
 <span class="sd">* ``log det T`` is resolved by the step: the second difference of ``log|det T| + i arg det T``</span>
 <span class="sd">  over the two halves is at most ``phase_step`` as well (a zero close to the step makes the</span>
 <span class="sd">  modulus dip between the points),</span>
@@ -707,10 +706,22 @@
 <span class="sd">otherwise it is bisected. A zero of ``det T`` on (or within rounding of) the boundary, or a</span>
 <span class="sd">determinant that is not continuous (a branch-labelled product, a sign that depends on the order</span>
 <span class="sd">in which some factor was computed), makes the bisection stall: the walk is then refused with the</span>
-<span class="sd">place where it stalled, never reported. The winding of the accepted walk is an integer up to</span>
-<span class="sd">rounding by construction (the last point is the first one, evaluated again); a non-integer</span>
-<span class="sd">winding -- an evaluation of ``det T`` that does not return the same value at the same point --</span>
-<span class="sd">is refused.</span>
+<span class="sd">place where it stalled. The winding of the accepted walk is an integer up to rounding by</span>
+<span class="sd">construction (the last point is the first one, evaluated again); a non-integer winding -- an</span>
+<span class="sd">evaluation of ``det T`` that does not return the same value at the same point -- is refused.</span>
+
+<span class="sd">These are tests on sampled values, not a proof (external review of 0.1.1, F1). What they see:</span>
+
+<span class="sd">* a pencil ``L + z M`` or a Hill operator linear in the exponent has a polynomial determinant.</span>
+<span class="sd">  A zero closer to the boundary than the local step changes the phase by about pi across the</span>
+<span class="sd">  step, or makes ``log|det T|`` dip, and the step is refined.</span>
+<span class="sd">  ``tests/contour/test_contour_count.py`` places clusters of zeros 1e-3 .. 1e-12 off an edge,</span>
+<span class="sd">  between the initial points: each is counted right or refused.</span>
+<span class="sd">* a callable ``T`` (or a Hill operator nonlinear in the exponent) may have poles. A zero inside</span>
+<span class="sd">  and a pole outside (or the reverse), both closer to the boundary than the local step, leave</span>
+<span class="sd">  ``|det T|`` near 1 on the boundary and turn its phase by 2 pi between two samples: no sample</span>
+<span class="sd">  sees them, and the count is off by one. ``CountResult.poles_by_construction`` is False for</span>
+<span class="sd">  these operators, and the result says so.</span>
 
 <span class="sd">The count is the winding number of the *discretised* operator. It counts every eigenvalue of</span>
 <span class="sd">the matrix pencil in the region, the spurious ones of a discretisation included.</span>
@@ -762,13 +773,28 @@
     <span class="n">phase_step</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">control</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>              <span class="c1"># the control-box sentence, when one ran</span>
     <span class="n">log</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="c1">#: True for a pencil and a Hill operator linear in the exponent (det T a polynomial); False</span>
+    <span class="c1">#: for a callable T, whose poles the walk cannot see (module docstring)</span>
+    <span class="n">poles_by_construction</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1">#: (size of T, kind, ((s, phase, log|det|), ...)): det T at a few boundary points, which</span>
+    <span class="c1">#: beyn(counted=...) evaluates again to check that the count is of the same operator</span>
+    <span class="n">reference</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">(),</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scope</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""What the sampled walk can miss, for this kind of operator (module docstring)."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">poles_by_construction</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="s2">"det T is a polynomial: a zero closer to the boundary than a step turns the "</span>
+                    <span class="s2">"phase or dips the modulus, and the step is refined"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s2">"det T may have poles: a zero and a pole on opposite sides of the boundary, both "</span>
+                <span class="s2">"closer to it than the local step, cancel at every sample and are not counted"</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">count_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""How the count was certified, in words (walk, evaluations, increment bound)."""</span>
-        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"argument principle: winding of det T along the boundary of the box "</span>
+<span class="w">        </span><span class="sd">"""How the count was obtained, in words (walk, evaluations, increment bound, scope)."""</span>
+        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"argument principle: winding of det T sampled along the boundary of the box "</span>
                 <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="si">}</span><span class="s2"> evaluations, principal increment &lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phase_step</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2"> "</span>
-                <span class="sa">f</span><span class="s2">"rad per step)"</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">"rad per step; a test on samples, not a proof: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">what</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"Z = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span>
@@ -793,9 +819,10 @@
                  <span class="sa">f</span><span class="s2">"phase increment &lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phase_step</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2"> rad (and its two halves), log det T "</span>
                  <span class="s2">"resolved by every step"</span><span class="p">,</span>
                  <span class="sa">f</span><span class="s2">"  winding before rounding: off an integer by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">winding_error</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> (a "</span>
-                 <span class="s2">"non-integer winding is refused, never reported)"</span><span class="p">,</span>
+                 <span class="s2">"non-integer winding is refused)"</span><span class="p">,</span>
                  <span class="sa">f</span><span class="s2">"  shortest step </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">smallest_step</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> of the perimeter, at z = "</span>
-                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">smallest_at</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2"> (where a zero comes closest to the boundary)"</span><span class="p">]</span>
+                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">smallest_at</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2"> (where a zero comes closest to the boundary)"</span><span class="p">,</span>
+                 <span class="sa">f</span><span class="s2">"  scope: a test on samples, not a proof; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scope</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">:</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"  control: "</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">)</span>
         <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">"  "</span> <span class="o">+</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">]</span>
@@ -883,8 +910,11 @@
                 <span class="s2">"labelled by their order); max_evaluations= raises the budget"</span><span class="p">,</span>
             <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
     <span class="n">w</span> <span class="o">=</span> <span class="n">total</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">cache</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">pick</span> <span class="o">=</span> <span class="p">[</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))]</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">"winding"</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span> <span class="s2">"evaluations"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cache</span><span class="p">),</span> <span class="s2">"smallest"</span><span class="p">:</span> <span class="n">smallest</span> <span class="o">/</span> <span class="n">_END</span><span class="p">,</span>
-            <span class="s2">"smallest_at"</span><span class="p">:</span> <span class="nb">complex</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="n">smallest_at</span><span class="p">))}</span>
+            <span class="s2">"smallest_at"</span><span class="p">:</span> <span class="nb">complex</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="n">smallest_at</span><span class="p">)),</span>
+            <span class="s2">"samples"</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="nb">complex</span><span class="p">(</span><span class="n">cache</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">cache</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">pick</span><span class="p">)}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_closing</span><span class="p">(</span><span class="n">op</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">ContourBox</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">complex</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
@@ -910,7 +940,8 @@
           <span class="n">control</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ContourBox</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">phase_step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">PHASE_STEP_MAX</span><span class="p">,</span>
           <span class="n">initial_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">INITIAL_POINTS</span><span class="p">,</span> <span class="n">max_evaluations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">MAX_EVALUATIONS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CountResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Number of eigenvalues of ``T(z)`` in ``region`` (a :func:`conatus.contour.box`) by the</span>
-<span class="sd">    argument principle, certified as an integer (module docstring).</span>
+<span class="sd">    argument principle, read off an adaptive sampled walk of the boundary (module docstring:</span>
+<span class="sd">    what the walk checks, and what it can miss for an operator with poles).</span>
 
 <span class="sd">    ``T``: a pair ``(L, M)`` for the pencil ``L + z M``, a :class:`conatus.floquet.HillBlocks`,</span>
 <span class="sd">    or a callable ``z -&gt; matrix`` (or scalar). ``poles``: poles of ``det T`` inside the region,</span>
@@ -959,7 +990,9 @@
     <span class="k">return</span> <span class="n">CountResult</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">P</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">n</span> <span class="o">+</span> <span class="n">P</span><span class="p">,</span> <span class="n">winding</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">poles</span><span class="o">=</span><span class="n">P</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="n">region</span><span class="p">,</span>
                        <span class="n">operator</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">explain</span><span class="p">(),</span> <span class="n">evaluations</span><span class="o">=</span><span class="n">w</span><span class="p">[</span><span class="s2">"evaluations"</span><span class="p">],</span>
                        <span class="n">smallest_step</span><span class="o">=</span><span class="n">w</span><span class="p">[</span><span class="s2">"smallest"</span><span class="p">],</span> <span class="n">smallest_at</span><span class="o">=</span><span class="n">w</span><span class="p">[</span><span class="s2">"smallest_at"</span><span class="p">],</span>
-                       <span class="n">winding_error</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">phase_step</span><span class="o">=</span><span class="n">phase_step</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="n">ctrl</span><span class="p">)</span></div>
+                       <span class="n">winding_error</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">phase_step</span><span class="o">=</span><span class="n">phase_step</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="n">ctrl</span><span class="p">,</span>
+                       <span class="n">poles_by_construction</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">structural_poles</span><span class="p">),</span>
+                       <span class="n">reference</span><span class="o">=</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span> <span class="n">w</span><span class="p">[</span><span class="s2">"samples"</span><span class="p">]))</span></div>
 
 </pre></div>
         </article>
@@ -993,7 +1026,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

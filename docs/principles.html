@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="./../">&larr; Conatus website</a>
-  <a href="tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="./../" data-cn-route="/">Conatus</a>
+  <a href="./../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="./../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="./../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="./../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="./../install/" data-cn-route="/install">Install</a>
+  <a href="./../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/bases.html">Bases and domains</a></li>
@@ -680,47 +685,51 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="principles">
 <h1>Principles<a class="headerlink" href="#principles" title="Link to this heading">¶</a></h1>
-<p>Conatus is written for people who publish the numbers it computes, and its code enforces the rules
-that follow rather than recommending them.</p>
-<section id="no-silent-substitution">
-<h2>1. No silent substitution<a class="headerlink" href="#no-silent-substitution" title="Link to this heading">¶</a></h2>
+<p>Conatus is written for people who publish the numbers it computes. This page lists the library’s
+design goals. Each section says which checks the code implements for them.</p>
+<section id="numerical-choices-are-declared">
+<h2>1. Numerical choices are declared<a class="headerlink" href="#numerical-choices-are-declared" title="Link to this heading">¶</a></h2>
 <p>A numerical method is a list of choices: basis and resolution, boundary treatment (tau and lift
 positions), dealiasing factor, time stepper and step, tolerances, inner product, definition of the
-adjoint. <strong>Conatus never changes one of these for you.</strong> It may <em>suggest</em>; it never <em>modifies</em>.</p>
-<p>Concretely:</p>
+adjoint. The compiler records the choices it makes automatically. You can override the ones the
+API exposes. Where Conatus has a better option to offer, it suggests it in a message and leaves
+the problem as you wrote it.</p>
+<p>In practice:</p>
 <ul class="simple">
 <li><p><strong>Dealiasing is declared.</strong> Unless you give <code class="docutils literal notranslate"><span class="pre">dealias=</span></code>, a native model uses the factor
 <span class="math notranslate nohighlight">\((p+1)/2\)</span> for the highest polynomial degree <span class="math notranslate nohighlight">\(p\)</span> of its equations in the unknowns and the given
-fields (each given coefficient counts as one factor), never below 3/2
-(3/2 for quadratic terms, 2 for cubic ones), and says so in <code class="docutils literal notranslate"><span class="pre">explain()</span></code> and in the <em>Methods</em>
-paragraph; a value you give always wins; an expert basis requires the factor. There
-is no opaque <code class="docutils literal notranslate"><span class="pre">dealias=True</span></code>, and <code class="docutils literal notranslate"><span class="pre">explain()</span></code> warns when a nonlinear term (<code class="docutils literal notranslate"><span class="pre">exp</span></code>, <code class="docutils literal notranslate"><span class="pre">tanh</span></code>…) is not
-alias-free at the declared factor.</p></li>
-<li><p><strong>Automatic means a fixed rule, printed.</strong> Each boundary condition, the pressure gauge and the
-implicit or explicit treatment of each term are placed by deterministic rules and listed by
-<code class="docutils literal notranslate"><span class="pre">explain()</span></code>; when a rule cannot decide, the model is refused with the way to say it. A
-structural rank report refuses an under- or over-determined system <em>before</em> any factorisation.</p></li>
-<li><p><strong>No hidden cut-offs.</strong> Truncations of non-constant coefficients and removed matrix entries are
-counted and reported; filters on eigenvalues are written by the user and logged with the number
-of modes they remove.</p></li>
-<li><p><strong>No regularisation of singularities.</strong> Curvilinear geometries use regular bases (Zernike-type
-polynomials on the disk, spin-weighted harmonics on the sphere); there is no <code class="docutils literal notranslate"><span class="pre">1/r</span> <span class="pre">→</span> <span class="pre">1/(r</span> <span class="pre">+</span> <span class="pre">ε)</span></code>.</p></li>
-<li><p><strong>Transpose is not adjoint.</strong> The physical adjoint is <span class="math notranslate nohighlight">\(L^\dagger = W^{-1} L^* W\)</span> for the inner
-product <span class="math notranslate nohighlight">\(W\)</span> you declare; a plain matrix transpose is never presented as an adjoint.</p></li>
-<li><p><strong>CFL is not error control.</strong> A stability-limited step (<code class="docutils literal notranslate"><span class="pre">CFL</span></code>) and an accuracy-controlled step
-(<code class="docutils literal notranslate"><span class="pre">EmbeddedError</span></code>) are different objects; neither is chosen for you.</p></li>
-<li><p><strong>Name clashes are reported.</strong> <code class="docutils literal notranslate"><span class="pre">conatus.expert.explain()</span></code> lists every name that two modules export
-with different meanings, instead of letting the last import win.</p></li>
+fields (each given coefficient counts as one factor), with a floor of 3/2. This gives 3/2 for
+quadratic terms and 2 for cubic ones. <code class="docutils literal notranslate"><span class="pre">explain()</span></code> and the <em>Methods</em> paragraph state the factor.
+A value you give takes precedence, and an expert basis requires one. <code class="docutils literal notranslate"><span class="pre">explain()</span></code> warns when a
+nonlinear term (<code class="docutils literal notranslate"><span class="pre">exp</span></code>, <code class="docutils literal notranslate"><span class="pre">tanh</span></code>…) is not alias-free at the declared factor.</p></li>
+<li><p><strong>Automatic choices follow fixed rules.</strong> Each boundary condition, the pressure gauge and the
+implicit or explicit treatment of each term are placed by deterministic rules. <code class="docutils literal notranslate"><span class="pre">explain()</span></code> lists
+them. When a rule cannot decide, the model is refused with a message that says what to declare.
+A structural rank report refuses an under- or over-determined system before any factorisation.</p></li>
+<li><p><strong>Cut-offs are counted.</strong> Truncations of non-constant coefficients and removed matrix entries
+are counted and reported. The drift filter on eigenvalues is requested by the user and logs the
+number of modes it removes. The dense eigensolver also classifies eigenvalues as finite or
+infinite with its own threshold (<a class="reference internal" href="math/eigenproblems.html"><span class="doc">Eigenproblems, residuals and the physical adjoint</span></a>).</p></li>
+<li><p><strong>Singular coordinates use regular bases.</strong> Curvilinear geometries use bases that are regular at
+the axis and the poles (Zernike-type polynomials on the disk, spin-weighted harmonics on the
+sphere). There is no <code class="docutils literal notranslate"><span class="pre">1/r</span> <span class="pre">→</span> <span class="pre">1/(r</span> <span class="pre">+</span> <span class="pre">ε)</span></code>.</p></li>
+<li><p><strong>The adjoint uses your inner product.</strong> The physical adjoint is <span class="math notranslate nohighlight">\(L^\dagger = W^{-1} L^* W\)</span> for
+the inner product <span class="math notranslate nohighlight">\(W\)</span> you declare. The plain matrix transpose corresponds to <span class="math notranslate nohighlight">\(W\)</span> equal to the
+identity.</p></li>
+<li><p><strong>Stability and accuracy are separate controls.</strong> The CFL controller limits the step for
+stability. <code class="docutils literal notranslate"><span class="pre">EmbeddedError</span></code> estimates the temporal error. You choose which one to use.</p></li>
+<li><p><strong>Name clashes are listed.</strong> <code class="docutils literal notranslate"><span class="pre">conatus.expert.explain()</span></code> lists every name that two modules export
+with different meanings, and how each clash is handled.</p></li>
 </ul>
-<p>Every silent substitution found in the code is treated as a bug and fixed with a test that failed
-before the fix: for example, an eigenvalue problem whose eigenvalue appeared in no equation once
-returned an empty spectrum instead of an error, and a Newton solver dropped an imaginary part
+<p>A silent substitution found in the code is treated as a bug and fixed with a test that failed
+before the fix. One example: an eigenvalue problem whose eigenvalue appeared in no equation once
+returned an empty spectrum instead of an error. Another: a Newton solver dropped an imaginary part
 without checking it.</p>
 </section>
-<section id="validation-by-residual-never-by-a-bare-number">
-<h2>2. Validation by residual, never by a bare number<a class="headerlink" href="#validation-by-residual-never-by-a-bare-number" title="Link to this heading">¶</a></h2>
-<p>An eigenvalue, a steady state or a periodic orbit is not “correct” because it looks right. Each
-solver returns what is needed to judge it:</p>
+<section id="results-come-with-their-checks">
+<h2>2. Results come with their checks<a class="headerlink" href="#results-come-with-their-checks" title="Link to this heading">¶</a></h2>
+<p>Each solver returns the quantities needed to judge its result. Validate with residuals,
+refinement studies and independent reference values together:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -733,13 +742,13 @@ solver returns what is needed to judge it:</p>
 <td><p>backward residual <span class="math notranslate nohighlight">\(|(L + \sigma M)x|\)</span>; on request, the left residual (<code class="docutils literal notranslate"><span class="pre">left=</span></code>) and the drift against a finer plan (<code class="docutils literal notranslate"><span class="pre">drift=</span></code>); spectral tail of the eigenvector</p></td>
 </tr>
 <tr class="row-odd"><td><p>Sensitivity <span class="math notranslate nohighlight">\(\partial\sigma/\partial p\)</span></p></td>
-<td><p>Taylor test of the exact derivative against a central difference</p></td>
+<td><p>Taylor test of the derivative against a central difference</p></td>
 </tr>
 <tr class="row-even"><td><p>Newton solution (NLBVP, equilibria, orbits)</p></td>
 <td><p>residual history (quadratic convergence visible), spectral tail</p></td>
 </tr>
 <tr class="row-odd"><td><p>Time integration</p></td>
-<td><p>observed order of convergence, manufactured solutions, exact decay rates of known modes</p></td>
+<td><p>observed order of convergence, manufactured solutions, decay rates of known modes</p></td>
 </tr>
 <tr class="row-even"><td><p>Floquet exponent</p></td>
 <td><p>convergence in resolution and in number of harmonics, determinant winding</p></td>
@@ -750,30 +759,32 @@ solver returns what is needed to judge it:</p>
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">verify(...)</span></code> gathers these into a report whose lines say <em>PASS</em> with the measured value and
-threshold, or ask for an inspection by hand. There is no <code class="docutils literal notranslate"><span class="pre">CORRECT</span> <span class="pre">=</span> <span class="pre">True</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">verify(...)</span></code> gathers these checks into a report. Each line gives the measurement, the threshold
+and the scope of the check, or asks for an inspection by hand.</p>
 <p>For example, the first tutorial returns the least stable Orr–Sommerfeld eigenvalue with its
 backward residual, its drift against a finer resolution, and the number of spurious modes that the
-drift test removed (<a class="reference internal" href="tutorials/01_orr_sommerfeld.html"><span class="doc">1. A first eigenvalue problem: Orr–Sommerfeld</span></a>).</p>
+drift test removed (<a class="reference internal" href="tutorials/01_orr_sommerfeld.html"><span class="doc">A first eigenvalue problem: Orr–Sommerfeld</span></a>).</p>
 </section>
-<section id="every-capability-is-tied-to-a-published-value">
-<h2>3. Every capability is tied to a published value<a class="headerlink" href="#every-capability-is-tied-to-a-published-value" title="Link to this heading">¶</a></h2>
+<section id="methods-are-tested-against-published-values">
+<h2>3. Methods are tested against published values<a class="headerlink" href="#methods-are-tested-against-published-values" title="Link to this heading">¶</a></h2>
 <p>Each method enters the library with a test against a published table or a closed form: Orszag
-(1971) for Orr–Sommerfeld, Reid &amp; Harris (1958) for Rayleigh–Bénard onset, Cvitanović, Davidchack
-&amp; Siminos (2010) for the Kuramoto–Sivashinsky orbits, and so on for every method. A test that only compares two backends of Conatus can hide an error common to
-both: each compiler and problem class also checks a <em>non-zero</em> dynamical quantity against an exact
-value. The tutorials follow the same rule: each ends on an <code class="docutils literal notranslate"><span class="pre">assert</span></code> against its reference.</p>
+(1971) for Orr–Sommerfeld, Reid &amp; Harris (1958) for Rayleigh–Bénard onset, and Cvitanović,
+Davidchack &amp; Siminos (2010) for the Kuramoto–Sivashinsky orbits, among others.</p>
+<p>A test that only compares two backends of Conatus can hide an error common to both. Each compiler
+and problem class therefore also checks a non-zero dynamical quantity against an exact value. Each
+tutorial ends on an <code class="docutils literal notranslate"><span class="pre">assert</span></code> against its reference.</p>
 </section>
-<section id="everything-explains-itself">
-<h2>4. Everything explains itself<a class="headerlink" href="#everything-explains-itself" title="Link to this heading">¶</a></h2>
-<p>Models, simulations, plans, solvers and results have <code class="docutils literal notranslate"><span class="pre">explain()</span></code>. A simulation also writes the
-<em>Methods</em> paragraph of a paper (<code class="docutils literal notranslate"><span class="pre">sim.methods()</span></code>), built only from what the objects hold, with the
-BibTeX of the cited methods. See <a class="reference internal" href="guide/explain.html"><span class="doc">explain() and the Methods paragraph</span></a>.</p>
+<section id="inspecting-objects">
+<h2>4. Inspecting objects<a class="headerlink" href="#inspecting-objects" title="Link to this heading">¶</a></h2>
+<p>Models, simulations, plans, solvers and results have <code class="docutils literal notranslate"><span class="pre">explain()</span></code>. The API reference lists the
+fields each one reports. A simulation can also draft the <em>Methods</em> paragraph of a paper
+(<code class="docutils literal notranslate"><span class="pre">sim.methods()</span></code>) from the settings it holds, with the BibTeX of the cited methods. See
+<a class="reference internal" href="guide/explain.html"><span class="doc">explain() and the Methods paragraph</span></a>.</p>
 </section>
 <section id="provenance">
 <h2>5. Provenance<a class="headerlink" href="#provenance" title="Link to this heading">¶</a></h2>
-<p>A run records its commit (and whether the tree was dirty), environment, parameters, tolerances and
-inner product. See <a class="reference internal" href="guide/runs.html"><span class="doc">The run registry</span></a> and <a class="reference internal" href="guide/reproducibility.html"><span class="doc">Reproducibility and provenance</span></a>.</p>
+<p>When you ask for it, a run records its commit (and whether the tree was dirty), environment,
+parameters, tolerances and inner product. See <a class="reference internal" href="guide/runs.html"><span class="doc">The run registry</span></a> and <a class="reference internal" href="guide/reproducibility.html"><span class="doc">Reproducibility and provenance</span></a>.</p>
 </section>
 </section>
 
@@ -833,10 +844,10 @@ inner product. See <a class="reference internal" href="guide/runs.html"><span cl
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Principles</a><ul>
-<li><a class="reference internal" href="#no-silent-substitution">1. No silent substitution</a></li>
-<li><a class="reference internal" href="#validation-by-residual-never-by-a-bare-number">2. Validation by residual, never by a bare number</a></li>
-<li><a class="reference internal" href="#every-capability-is-tied-to-a-published-value">3. Every capability is tied to a published value</a></li>
-<li><a class="reference internal" href="#everything-explains-itself">4. Everything explains itself</a></li>
+<li><a class="reference internal" href="#numerical-choices-are-declared">1. Numerical choices are declared</a></li>
+<li><a class="reference internal" href="#results-come-with-their-checks">2. Results come with their checks</a></li>
+<li><a class="reference internal" href="#methods-are-tested-against-published-values">3. Methods are tested against published values</a></li>
+<li><a class="reference internal" href="#inspecting-objects">4. Inspecting objects</a></li>
 <li><a class="reference internal" href="#provenance">5. Provenance</a></li>
 </ul>
 </li>
@@ -849,7 +860,7 @@ inner product. See <a class="reference internal" href="guide/runs.html"><span cl
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="_static/documentation_options.js?v=92734c54"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

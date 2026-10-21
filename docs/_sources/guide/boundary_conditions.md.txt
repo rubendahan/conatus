@@ -50,13 +50,12 @@ BoundaryConditionError T: 1 boundary condition(s) for 2 needed (order 2 along x,
   where: at(...) calls: at('x=0', T = 0)
   why:   missing conditions leave the discrete system singular
   fix:   declare 2 condition(s) on T (boundaries: 'bottom', 'top', 'x=0', 'x=1', 'walls')
-         (suggestion only: Conatus does not change your problem for you)
 ```
 
 ## What Conatus does with them
 
 Conatus imposes conditions with the tau method: each condition adds one unknown constant along the
-wall, which enters one equation through a fixed polynomial. You never write these terms. They are
+wall, which enters one equation through a fixed polynomial. You do not write these terms. They are
 placed by one deterministic rule:
 
 - each condition constrains **one** unknown;
@@ -72,15 +71,15 @@ Boundary conditions -> tau terms (automatic, deterministic):
   T = 0 at walls (right: x=1): tau_T2 lifted into mode N_x-2 of [0] eq0 -- T has its highest x-order (2) there
 ```
 
-**Incompressibility** is recognised from the structure of the equations, never from a name: a
-scalar that appears only under `grad(·)` and has no condition, paired with the single equation
-without a time derivative that contains `div(u)`. Conatus then fixes the mean pressure
+**Incompressibility** is recognised from the structure of the equations, from a divergence
+constraint. The pattern is a scalar that appears only under `grad(·)` and has no condition,
+paired with the single equation without a time derivative that contains `div(u)`. Conatus then fixes the mean pressure
 (`integ(p) = 0`) and adds the divergence correction of the geometry. `m.pressure("p")` only asks
 Conatus to check that this structure is there.
 
 ## When the rule cannot decide
 
-Conatus refuses rather than guesses. Each message names the condition and the way out:
+When the rule cannot decide, Conatus raises an error. Each message names the condition and what to write:
 
 | Situation | What to write |
 |---|---|
@@ -135,8 +134,24 @@ $$ B(u) = (I - n n)\cdot\partial_z u + n\,(n\cdot u) = 0, $$
 whose normal component is $u_z = 0$ and whose tangential components are $\partial_z u_x = 0$
 ($\partial_z u_y = 0$ in 3D). It therefore reuses the vector-tau rule unchanged: one vector tau per
 wall in the equation where $u$ has its highest $z$-order (momentum), and the divergence tau of the
-Cartesian recipe in the continuity equation. `m.explain()` prints, for the stress-free
-Rayleigh–Bénard model of {doc}`bases` (*Sine/cosine walls*) with Chebyshev walls:
+Cartesian recipe in the continuity equation. For the stress-free Rayleigh–Bénard model of
+{doc}`bases` (*Sine/cosine walls*):
+
+```{literalinclude} _check_features.py
+:language: python
+:start-after: "# [sincos]"
+:end-before: "# [/sincos]"
+:dedent: 4
+```
+
+`m.explain(full=True)` prints the choices; with Chebyshev walls, the taus are:
+
+```{literalinclude} _check_features.py
+:language: python
+:start-after: "# [sincos-explain]"
+:end-before: "# [/sincos-explain]"
+:dedent: 4
+```
 
 ```{literalinclude} outputs/sincos_free_slip.txt
 :language: text
@@ -157,9 +172,7 @@ the curved tangential directions; along the pipe axis the condition is $\partial
 taus are those of no-slip. Checks: a solid-body rotation is
 a steady solution (drift $4\times10^{-15}$ in the ball, $2\times10^{-14}$ in the shell over 100 steps,
 while no-slip does not even admit it), Stokes decay rates match their Bessel closed forms to
-$2\times10^{-12}$ (disk, pipe, ball), $8\times10^{-13}$ (annulus), $10^{-10}$ (shell), and a Navier--Stokes run
-in the ball and the shell matches Dedalus with the conditions of its ball convection example to
-$3\times10^{-13}$ and $9\times10^{-13}$. The rank report flags the rigid rotations (groups $\ell=1$ or
+$2\times10^{-12}$ (disk, pipe, ball), $8\times10^{-13}$ (annulus) and $10^{-10}$ (shell). The rank report flags the rigid rotations (groups $\ell=1$ or
 $m=0$): a physical kernel, angular momentum is conserved with stress-free walls.
 
 ## Interfaces, half lines and the whole line
@@ -224,7 +237,7 @@ separable form to write instead: a coordinate itself is not smooth data on a per
 an implicit term (`t*u` on the left) or in a model without `dt()` is refused. Such values are
 imposed by default with the stage values that the scheme gives for $g'(t)$, exact here
 (`bc_time="auto"` → `"rk"`), so that the Runge–Kutta schemes keep their order (RK443 2.8 instead
-of 2.0 with $g$ at the stage times); `bc_time="stage"` and `bc_time="step"` (Dedalus) are the other
+of 2.0 with $g$ at the stage times). `bc_time="stage"` and `bc_time="step"` are the other
 conventions. See {doc}`timesteppers`. In the expert layer the same holds for
 `pb.add_bc((interp(u, y, 0), cos(t)))` with `IVPSolver(..., time_parameter="t")`.
 

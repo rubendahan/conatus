@@ -1,8 +1,8 @@
 # Curvilinear geometries: regular bases
 
 Disks, annuli, pipes, spheres, balls and spherical shells are discretised with bases that are
-smooth at the axis and at the poles by construction. No condition is imposed at $r = 0$, and no
-term is ever regularised as $1/(r + \varepsilon)$.
+regular at the axis and at the poles. No condition is imposed at $r = 0$, and no term is
+regularised as $1/(r + \varepsilon)$.
 
 ## Disk, annulus and pipe
 
@@ -11,9 +11,9 @@ disk of radius $R$ has the form
 
 $$ f_m(r) = \rho^{|m|}\, w(\rho^2), \qquad \rho = r/R, $$
 
-with $w$ a polynomial. A vector is written in spin components $u_\pm = u_r \pm i u_\phi$, which are
-smooth when $u_\pm = \rho^{|m\pm1|} \times$ (polynomial in $\rho^2$). Conatus expands the
-polynomial parts in normalised Jacobi polynomials of $z = 2\rho^2 - 1$ (a Zernike basis), which
+with $w$ smooth. The discretisation approximates $w$ by a finite polynomial in $\rho^2$. A vector is written in spin components $u_\pm = u_r \pm i u_\phi$, which are
+smooth when $u_\pm = \rho^{|m\pm1|} \times$ (a smooth function of $\rho^2$). Conatus expands these
+factors in normalised Jacobi polynomials of $z = 2\rho^2 - 1$ (a Zernike basis), which
 stays well conditioned at large $|m|$ where a monomial-weighted Chebyshev basis does not.
 Gradient, divergence, curl and Laplacian map these spaces into each other with banded matrices.
 The disk has one boundary, $r = R$, so a second-order equation takes one condition there.

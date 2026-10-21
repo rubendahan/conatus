@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -705,7 +710,7 @@ let the time step be changed too, declare it with its bounds:</p>
 <li><p>The new value is applied between two steps and recorded in the run (event <code class="docutils literal notranslate"><span class="pre">param_set</span></code>, with the
 old value, the step and who asked).</p></li>
 <li><p>A value outside the bounds, or a parameter that was not declared, is refused (event
-<code class="docutils literal notranslate"><span class="pre">set_refused</span></code>, with the reason); nothing is clipped or rounded.</p></li>
+<code class="docutils literal notranslate"><span class="pre">set_refused</span></code>, with the reason). The value is not clipped or rounded to fit.</p></li>
 <li><p>With <code class="docutils literal notranslate"><span class="pre">run(until=T)</span></code> the time left must stay a whole number of steps: a step that would miss <code class="docutils literal notranslate"><span class="pre">T</span></code>
 is refused, and the refusal gives the nearest step that lands on it. With <code class="docutils literal notranslate"><span class="pre">run(steps=n)</span></code>, <code class="docutils literal notranslate"><span class="pre">n</span></code>
 steps are taken in all.</p></li>
@@ -780,31 +785,35 @@ parameters and their bounds), and the tail of the log and of the events.</p>
 <section id="where-the-command-line-talks">
 <h2>Where the command line talks<a class="headerlink" href="#where-the-command-line-talks" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>On the cluster</strong> (a session in a job, the spool on the shared file system): nothing to start.
-The command line reads the spool and appends the command to the run’s control file itself, with
+<li><p><strong>On the cluster</strong> (a session in a job, the spool on the shared file system): no server is
+needed. The command line reads the spool and appends the command to the run’s control file itself, with
 the same checks; file permissions are the authentication, and commands are logged in
 <code class="docutils literal notranslate"><span class="pre">&lt;spool&gt;/studio_audit.jsonl</span></code>. Control files are created <code class="docutils literal notranslate"><span class="pre">0600</span></code>, and a run ignores (with an
 error in its log) a control file that belongs to another account or that group or others can
-write: nobody else on the cluster can pause, stop or re-time your run.</p></li>
+write: nobody else on the cluster can pause, stop or re-time your run.
+The spool directory is created <code class="docutils literal notranslate"><span class="pre">0700</span></code>, and the telemetry files and the audit log in it are
+<code class="docutils literal notranslate"><span class="pre">0600</span></code>, whatever your umask. Other accounts cannot read the logs, numbers or films written from this version on. To
+share them with your group, copy them or change their mode yourself.</p></li>
 <li><p><strong>Through a hub</strong>: <code class="docutils literal notranslate"><span class="pre">--hub</span> <span class="pre">https://…</span></code> (or <code class="docutils literal notranslate"><span class="pre">$CN_STUDIO_URL</span></code>) with a token in a file
 (<code class="docutils literal notranslate"><span class="pre">--token-file</span></code>, <code class="docutils literal notranslate"><span class="pre">$CN_STUDIO_TOKEN</span></code>, or <code class="docutils literal notranslate"><span class="pre">~/.config/conatus/studio_token</span></code>). Plain <code class="docutils literal notranslate"><span class="pre">http://</span></code> is
-accepted only to <code class="docutils literal notranslate"><span class="pre">localhost</span></code>, through an ssh tunnel to a hub running in a job; a token never
-travels in clear.</p></li>
+accepted only to <code class="docutils literal notranslate"><span class="pre">localhost</span></code>, through an ssh tunnel to a hub running in a job, so the token does
+not cross the network in clear text.</p></li>
 </ul>
 </section>
 <section id="tokens-for-agents">
 <h2>Tokens for agents<a class="headerlink" href="#tokens-for-agents" title="Link to this heading">¶</a></h2>
-<p>An agent gets its own token, never a person’s password:</p>
+<p>Create a separate scoped token for each agent:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">H</span><span class="o">=</span><span class="s2">"python -m conatus.studio.hub --state ~/.config/conatus/hub"</span>
 <span class="nv">$H</span><span class="w"> </span>addagent<span class="w"> </span>watcher<span class="w"> </span>--scope<span class="w"> </span><span class="nb">read</span><span class="w"> </span>--token-out<span class="w"> </span>~/.config/conatus/watcher_token
 <span class="nv">$H</span><span class="w"> </span>addagent<span class="w"> </span>claude<span class="w"> </span>--scope<span class="w"> </span><span class="nb">command</span><span class="w"> </span>--runs<span class="w"> </span><span class="s1">'local:rb_*'</span><span class="w"> </span>--token-out<span class="w"> </span>~/.config/conatus/studio_token
-<span class="nv">$H</span><span class="w"> </span>agents<span class="w">                      </span><span class="c1"># names, scopes, run patterns (never the tokens)</span>
+<span class="nv">$H</span><span class="w"> </span>agents<span class="w">                      </span><span class="c1"># names, scopes, run patterns (tokens are not shown)</span>
 <span class="nv">$H</span><span class="w"> </span>delagent<span class="w"> </span>claude<span class="w">             </span><span class="c1"># revoke</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">read</span></code>: state, scalars, log, pictures. Every command is refused (and logged).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">command</span></code>: also the declared run commands. Never job submission, never the audit log.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">command</span></code>: also the declared run commands. The command scope excludes job submission and access
+to the audit log.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--runs</span></code>: the run keys the token can reach at all (patterns); other runs do not exist for it.</p></li>
 </ul>
 <p>The token is written to a file readable only by you and shown nowhere else; the hub keeps only
@@ -826,8 +835,10 @@ its digest.</p>
 <span class="n">run</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="s2">"rb_demo"</span><span class="p">)[</span><span class="s2">"run"</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">run</span><span class="p">[</span><span class="s2">"state"</span><span class="p">],</span> <span class="n">run</span><span class="p">[</span><span class="s2">"t"</span><span class="p">],</span> <span class="n">run</span><span class="p">[</span><span class="s2">"alerts"</span><span class="p">])</span>
 <span class="n">blown_up</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">"code"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"non_finite"</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">run</span><span class="p">[</span><span class="s2">"alerts"</span><span class="p">])</span>
-<span class="n">first</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">"rb_demo"</span><span class="p">,</span> <span class="s2">"stop"</span><span class="p">)</span>               <span class="c1"># (on blown_up, say) refused once, with a token</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">cl</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">"rb_demo"</span><span class="p">,</span> <span class="s2">"stop"</span><span class="p">,</span> <span class="n">confirm</span><span class="o">=</span><span class="n">first</span><span class="p">[</span><span class="s2">"confirm_token"</span><span class="p">])[</span><span class="s2">"note"</span><span class="p">])</span>
+<span class="n">answer</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">"rb_demo"</span><span class="p">,</span> <span class="s2">"stop"</span><span class="p">)</span>              <span class="c1"># (on blown_up, say) a live run: refused once</span>
+<span class="k">if</span> <span class="n">answer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"needs_confirmation"</span><span class="p">):</span>             <span class="c1"># ... with a token to send it again</span>
+    <span class="n">answer</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">"rb_demo"</span><span class="p">,</span> <span class="s2">"stop"</span><span class="p">,</span> <span class="n">confirm</span><span class="o">=</span><span class="n">answer</span><span class="p">[</span><span class="s2">"confirm_token"</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">answer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ok"</span><span class="p">),</span> <span class="n">answer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"error"</span><span class="p">,</span> <span class="s2">""</span><span class="p">))</span>  <span class="c1"># a finished run refuses the stop</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">unwatch</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -920,7 +931,7 @@ documentation (<code class="docutils literal notranslate"><span class="pre">cona
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

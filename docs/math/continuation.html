@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -688,13 +693,13 @@ privileged parameter (Keller 1977). From a converged point <span class="math not
 <li><p><strong>predictor</strong> <span class="math notranslate nohighlight">\(z_{\text{pred}} = z_k + \Delta s\, t_k\)</span>;</p></li>
 <li><p><strong>corrector</strong>: Newton on the bordered system
 $$</p>
-<div class="math-wrapper amsmath docutils container" id="equation-0097d16a-2de7-4de9-af9e-43ab3e49ac93">
-<div class="amsmath math notranslate nohighlight" id="equation-0097d16a-2de7-4de9-af9e-43ab3e49ac93">
-<span class="eqno">(1)<a class="headerlink" href="#equation-0097d16a-2de7-4de9-af9e-43ab3e49ac93" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix} G_x &amp; G_p \\ t_x^T W &amp; t_p \end{pmatrix}\]</div>
+<div class="math-wrapper amsmath docutils container" id="equation-ace0963d-e901-4a35-b449-1be8908275a9">
+<div class="amsmath math notranslate nohighlight" id="equation-ace0963d-e901-4a35-b449-1be8908275a9">
+<span class="eqno">(1)<a class="headerlink" href="#equation-ace0963d-e901-4a35-b449-1be8908275a9" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix} G_x &amp; G_p \\ t_x^T W &amp; t_p \end{pmatrix}\]</div>
 </div>
-<div class="math-wrapper amsmath docutils container" id="equation-f63e336b-a977-4ffa-a902-484fe5f7ab71">
-<div class="amsmath math notranslate nohighlight" id="equation-f63e336b-a977-4ffa-a902-484fe5f7ab71">
-<span class="eqno">(2)<a class="headerlink" href="#equation-f63e336b-a977-4ffa-a902-484fe5f7ab71" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix} \delta x \\ \delta p \end{pmatrix}\]</div>
+<div class="math-wrapper amsmath docutils container" id="equation-7627f97a-1617-4b7c-bfbd-678afaa6dcc0">
+<div class="amsmath math notranslate nohighlight" id="equation-7627f97a-1617-4b7c-bfbd-678afaa6dcc0">
+<span class="eqno">(2)<a class="headerlink" href="#equation-7627f97a-1617-4b7c-bfbd-678afaa6dcc0" title="Permalink to this equation">¶</a></span>\[\begin{pmatrix} \delta x \\ \delta p \end{pmatrix}\]</div>
 </div>
 <p>= - \begin{pmatrix} G \ t_k \cdot (z - z_{\text{pred}}) \end{pmatrix};
 $$</p>
@@ -704,7 +709,8 @@ oriented like the previous one.</p></li>
 </ul>
 <p>At a fold <span class="math notranslate nohighlight">\(G_x\)</span> is singular but the bordered matrix is not, so the branch passes through the fold
 and <span class="math notranslate nohighlight">\(t_p\)</span> changes sign exactly there. The weights <span class="math notranslate nohighlight">\(W\)</span> of the norm, the step bounds, the adaptation
-factor, the tolerances and the budgets are all arguments; no step size is chosen for you.</p>
+factor, the tolerances and the budgets are arguments. You supply the initial step and its bounds;
+the algorithm adapts the step within them using the documented controls.</p>
 </section>
 <section id="events">
 <h2>Events<a class="headerlink" href="#events" title="Link to this heading">¶</a></h2>
@@ -727,9 +733,11 @@ point of an orbit the doubled orbit is started from the Floquet vector.</p>
 <section id="periodic-orbits-by-collocation">
 <h2>Periodic orbits by collocation<a class="headerlink" href="#periodic-orbits-by-collocation" title="Link to this heading">¶</a></h2>
 <p>Periodic orbits of low-dimensional systems (and of Galerkin truncations) are computed by orthogonal
-collocation on a mesh in time, with the period as unknown and an integral phase condition, as in
-AUTO and MatCont. Their Floquet multipliers detect limit points of cycles, branch points,
-period doubling and Neimark–Sacker bifurcations.</p>
+collocation. The orbit is a piecewise polynomial on a mesh in time, and the differential equation
+holds at the Gauss points of each mesh interval. The period is an unknown, and an integral phase
+condition fixes the time origin (Doedel, Keller and Kernévez 1991). The Floquet multipliers of the
+orbit detect limit points of cycles, branch points, period doubling and Neimark–Sacker
+bifurcations.</p>
 </section>
 <section id="codimension-two">
 <h2>Codimension two<a class="headerlink" href="#codimension-two" title="Link to this heading">¶</a></h2>
@@ -836,7 +844,7 @@ problems</em>, Int. J. Bifurcation Chaos 1 (1991) (AUTO).</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

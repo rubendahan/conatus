@@ -1,4 +1,4 @@
-"""First steps -- one equation, one plot, one physical number (about ten minutes).
+"""First steps -- the viscous Burgers equation: simulate, plot, measure the energy (about ten minutes).
 
 Viscous Burgers equation u_t + u u_x = nu u_xx on [0, 2 pi), periodic, from u(x, 0) = sin(x): the
 wave steepens into a front that viscosity holds at a finite width. The physical number is the
@@ -20,7 +20,7 @@ print(m.explain())
 # [/model]
 
 # [simulate]
-sim = m.simulate(N=128, scheme="RK443", dt=1e-3)    # resolution, scheme, time step: your choices
+sim = m.simulate(N=128, scheme="RK443", dt=1e-3)    # resolution, scheme, time step
 sim.initial(u=lambda x: np.sin(x))
 x = sim.coordinate("x")
 profiles = {}
@@ -30,27 +30,26 @@ for t in (0.0, 0.5, 1.0, 1.5, 2.0):
     profiles[t] = sim.grid("u").copy()
 # [/simulate]
 
-# [energy]
-u = sim.grid("u")
-energy = np.pi * np.mean(u**2)                     # E = 1/2 int u^2 dx (grid mean, exact here)
-print(f"kinetic energy at t = {sim.t:g}: E = {energy:.12f} (E(0) = pi/2 = {np.pi / 2:.12f})")
-# [/energy]
-
 # [plot]
-import os
-
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(figsize=(6.4, 3.2), dpi=150)
-for t, ut in profiles.items():
-    ax.plot(x, ut, label=f"t = {t:g}")
+styles = ["-", "--", ":", "-."]                # the site's figure palette, one line style per curve
+colours = ["#6C7FA8", "#C8463A", "#A8864F", "#77736B"]
+for k, (t, ut) in enumerate(profiles.items()):
+    ax.plot(x, ut, styles[k % 4], color=colours[k % 4], label=f"t = {t:g}")
 ax.set_xlabel("x")
 ax.set_ylabel("u")
+ax.spines[["top", "right"]].set_visible(False)
 ax.legend(frameon=False)
-out = os.environ.get("CN_TUTORIAL_OUT", ".")
-os.makedirs(out, exist_ok=True)
-fig.savefig(os.path.join(out, "burgers.png"), bbox_inches="tight")
+fig.savefig("burgers.png", bbox_inches="tight", transparent=True)
 # [/plot]
+
+# [energy]
+u = sim.grid("u")
+energy = np.pi * np.mean(u**2)                     # E = 1/2 int u^2 dx (grid mean, exact here)
+print(f"kinetic energy at t = {sim.t:g}: E = {energy:.6f}")
+# [/energy]
 
 # [check]
 from scipy.special import ive
@@ -68,7 +67,6 @@ def cole_hopf_energy(nu, t, n=4096, kmax=400):
 
 
 exact = cole_hopf_energy(0.1, sim.t)
-print(f"Cole-Hopf: E = {exact:.12f}, relative error {abs(energy - exact) / exact:.1e}")
+print(f"exact (Cole-Hopf): E = {exact:.6f}, relative error {abs(energy - exact) / exact:.1e}")
 assert abs(energy - exact) < 1e-9 * exact, (energy, exact)
-print("OK: the kinetic energy of the simulation equals the exact Cole-Hopf value")
 # [/check]

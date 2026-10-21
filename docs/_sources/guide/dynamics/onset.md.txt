@@ -43,7 +43,7 @@ of the one periodic axis (`kx`, `ky` with several: `lin.wavenumber_names()`).
 ```
 
 `res.order()` ranks the modes from the least stable by the growth convention of the eigenvalue.
-`md.at("T", z=...)` evaluates the spectral expansion of the eigenfunction exactly at any point,
+`md.at("T", z=...)` evaluates the spectral expansion of the eigenfunction at any point,
 the walls included (the Chebyshev grid points of `md["T"]` do not reach them): here $T = 0$ and
 $u = 0$ on both walls to round-off. Along the complex periodic axis the values are those of
 $T(z)\,e^{ikx}$ at the grid points of $x$; the row $x = 0$ is $T(z)$ itself. The normalisation is

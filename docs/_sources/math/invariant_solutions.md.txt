@@ -2,11 +2,12 @@
 
 Equilibria, travelling waves, periodic orbits and relative periodic orbits are fixed points of a
 map built from the time stepper. Conatus finds them by a matrix-free Newton method with a trust
-region, and certifies each one by its residual.
+region. The solver reports the residual of the discretized equations; check spatial and temporal
+convergence separately.
 
 ## Formulations
 
-Write the discrete flow map over a time $T$ as $\Phi_T$ (the exact map of the time stepper, with
+Write the discrete flow map over a time $T$ as $\Phi_T$ (the map of the time stepper itself, with
 $dt = T/n$), and the velocity field of the semi-discrete system as
 $v(u) = M^{-1}(F(u) - L u)$.
 
@@ -18,13 +19,13 @@ $v(u) = M^{-1}(F(u) - L u)$.
 - **Relative or pre-periodic orbit**: $S\,\tau_\ell\,\Phi_T(u) = u$ with a shift $\tau_\ell$ and
   optionally a reflection $S$, unknowns $(u, T, \ell)$, with both phase conditions.
 
-Because $\Phi_T$ is the discrete map, the reported residual is that of the discrete problem, with
-no time-discretisation error hidden in it.
+Because $\Phi_T$ is the discrete map, the reported residual is that of the discrete time-stepper
+problem. It does not estimate the time-discretisation error.
 
 ## Newton–Krylov
 
-The Newton correction solves $J\,\delta z = -R(z)$ by GMRES. The Jacobian is never formed: its
-products with a vector use the exact tangent of the time stepper ({doc}`chaos` and the adjoint
+The Newton correction solves $J\,\delta z = -R(z)$ by GMRES. The Jacobian is not formed. Its
+products with a vector use the tangent of the discrete time stepper ({doc}`chaos` and the adjoint
 pages describe the same tangent), and the derivative with respect to $T$ is the velocity at the end
 point.
 

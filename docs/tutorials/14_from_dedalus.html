@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes" href="15_ks_covariant.html"><link rel="prev" title="13. Where a global mode is born, and what the data say about it" href="13_sensitivity_data.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="User guide" href="../guide/index.html"><link rel="prev" title="Record, query, reproduce: the run registry" href="11_runs.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>14. Coming from Dedalus - Conatus</title>
+        <title>Importing a Dedalus script - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -678,29 +683,29 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="coming-from-dedalus">
-<h1>14. Coming from Dedalus<a class="headerlink" href="#coming-from-dedalus" title="Link to this heading">¶</a></h1>
-<p>Write a convection cell as a Conatus model, read the same cell from a Dedalus script, and check
-that the two agree.</p>
+          <section class="tex2jax_ignore mathjax_ignore" id="importing-a-dedalus-script">
+<h1>Importing a Dedalus script<a class="headerlink" href="#importing-a-dedalus-script" title="Link to this heading">¶</a></h1>
+<p>Write a convection cell as a Conatus model, import the same cell from a Dedalus 3 script, and
+check that the two agree.</p>
 <p><strong>Goal.</strong> The onset of two-dimensional Boussinesq convection between a hot and a cold wall:</p>
 <ul class="simple">
 <li><p>write it as a native Conatus model: equations as on paper, conditions by wall name, no tau
 terms;</p></li>
 <li><p>give a Dedalus 3 script of the same cell to <code class="docutils literal notranslate"><span class="pre">cn.from_dedalus</span></code> and read its line-by-line report;</p></li>
 <li><p>run the translation and compare it with the native model as the wall-normal resolution grows;</p></li>
-<li><p>optionally, run the script with Dedalus itself and compare it with the translation.</p></li>
+<li><p>optionally, run the original script and compare its result with the translation.</p></li>
 </ul>
 <p><strong>Expected.</strong> The report has no unsupported line. The native model and the translation are two
 tau formulations of the same equations, so they differ by a truncation error that decays
-spectrally with <span class="math notranslate nohighlight">\(N_z\)</span>, down to rounding at <span class="math notranslate nohighlight">\(N_z = 32\)</span>. With Dedalus installed, the check script
-finds the translation equal to Dedalus to rounding (<span class="math notranslate nohighlight">\(&lt; 10^{-10}\)</span> relative after 40 steps of
-SBDF2).
-<strong>Time:</strong> about 5 s of CPU; the Dedalus check takes under a minute, most of it importing Dedalus.
+spectrally with <span class="math notranslate nohighlight">\(N_z\)</span>, down to rounding at <span class="math notranslate nohighlight">\(N_z = 32\)</span>. When the original script can be run, the
+check script finds the translation equal to its result to rounding (<span class="math notranslate nohighlight">\(&lt; 10^{-10}\)</span> relative after
+40 steps of SBDF2).
+<strong>Time:</strong> about 5 s of CPU; the optional check takes under a minute, most of it at import.
 <strong>Scripts:</strong> <a class="reference download internal" download="" href="../_downloads/212c578fd716482a203721a9bf79a6da/t14_from_dedalus.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t14_from_dedalus.py</span></code></span></a> (no Dedalus needed),
 <a class="reference download internal" download="" href="../_downloads/c1a491ef3dcb75ed9f2af997a8faf2d7/rb_cell_dedalus.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">rb_cell_dedalus.py</span></code></span></a> (the Dedalus script, written for this tutorial),
-<a class="reference download internal" download="" href="../_downloads/4173a53d5c87e09bc40662006f2e6840/t14b_dedalus_check.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t14b_dedalus_check.py</span></code></span></a> (the comparison with Dedalus).
+<a class="reference download internal" download="" href="../_downloads/4173a53d5c87e09bc40662006f2e6840/t14b_dedalus_check.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t14b_dedalus_check.py</span></code></span></a> (runs the original script and compares).
 <strong>Tests behind it:</strong> <code class="docutils literal notranslate"><span class="pre">tests/translate/</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/parse/</span></code>.
-<strong>Guide:</strong> <a class="reference internal" href="../guide/dedalus.html"><span class="doc">Coming from Dedalus</span></a>, <a class="reference internal" href="../guide/equations.html"><span class="doc">Equations</span></a>.</p>
+<strong>Guide:</strong> <a class="reference internal" href="../guide/dedalus.html"><span class="doc">Importing Dedalus scripts</span></a>, <a class="reference internal" href="../guide/equations.html"><span class="doc">Equations</span></a>.</p>
 <section id="the-cell-as-a-native-model">
 <h2>The cell as a native model<a class="headerlink" href="#the-cell-as-a-native-model" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Onset of convection in diffusive units: th is the temperature minus the conduction profile 1 - z,</span>
@@ -735,18 +740,17 @@ SBDF2).
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"native model: t = </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">t</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, max|u| = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="s1">'u'</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You name the unknowns by their role and write the equations as you would on paper; <code class="docutils literal notranslate"><span class="pre">lap</span></code>, <code class="docutils literal notranslate"><span class="pre">div</span></code>
-and <code class="docutils literal notranslate"><span class="pre">grad</span></code> are the operators of the box’s coordinates. The unknown <code class="docutils literal notranslate"><span class="pre">th</span></code> is the temperature minus
-the conduction profile <span class="math notranslate nohighlight">\(1 - z\)</span>, so it vanishes on both walls, and <code class="docutils literal notranslate"><span class="pre">u·ez</span></code> is the advection of that
-profile; lengths are in units of the depth and times of the thermal diffusion time. The walls are <code class="docutils literal notranslate"><span class="pre">bottom</span></code> and <code class="docutils literal notranslate"><span class="pre">top</span></code>. There is
-no tau field and no lift: the native layer adds one tau term per wall condition by a fixed rule,
-which <code class="docutils literal notranslate"><span class="pre">explain()</span></code> prints.</p>
+<p>You name the unknowns by their role and write the equations as on paper. <code class="docutils literal notranslate"><span class="pre">lap</span></code>, <code class="docutils literal notranslate"><span class="pre">div</span></code> and <code class="docutils literal notranslate"><span class="pre">grad</span></code>
+are the operators of the box’s coordinates. The unknown <code class="docutils literal notranslate"><span class="pre">th</span></code> is the temperature minus the
+conduction profile <span class="math notranslate nohighlight">\(1 - z\)</span>, so it vanishes on both walls, and <code class="docutils literal notranslate"><span class="pre">u·ez</span></code> is the advection of that
+profile. Lengths are in units of the depth and times in units of the thermal diffusion time. The
+walls are <code class="docutils literal notranslate"><span class="pre">bottom</span></code> and <code class="docutils literal notranslate"><span class="pre">top</span></code>. The native layer adds one tau term per wall condition by a fixed
+rule, and <code class="docutils literal notranslate"><span class="pre">explain()</span></code> prints them.</p>
 </section>
-<section id="the-same-cell-in-dedalus">
-<h2>The same cell in Dedalus<a class="headerlink" href="#the-same-cell-in-dedalus" title="Link to this heading">¶</a></h2>
-<p><a class="reference download internal" download="" href="../_downloads/c1a491ef3dcb75ed9f2af997a8faf2d7/rb_cell_dedalus.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">rb_cell_dedalus.py</span></code></span></a> is the script a Dedalus user would write for this
-cell. It reduces the equations to first order, so it declares the tau fields and the lifts
-itself:</p>
+<section id="the-same-cell-as-a-dedalus-script">
+<h2>The same cell as a Dedalus script<a class="headerlink" href="#the-same-cell-as-a-dedalus-script" title="Link to this heading">¶</a></h2>
+<p><a class="reference download internal" download="" href="../_downloads/c1a491ef3dcb75ed9f2af997a8faf2d7/rb_cell_dedalus.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">rb_cell_dedalus.py</span></code></span></a> is a Dedalus 3 script written for this tutorial.
+It reduces the equations to first order and declares its own tau fields and lifts:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plane</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">CartesianCoordinates</span><span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="s1">'z'</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">Distributor</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 <span class="n">horiz</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">RealFourier</span><span class="p">(</span><span class="n">plane</span><span class="p">[</span><span class="s1">'x'</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">N_x</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">period</span><span class="p">),</span> <span class="n">dealias</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
@@ -786,9 +790,9 @@ itself:</p>
     <span class="n">run</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">tstep</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>It uses a fixed time step and a deterministic start. Conatus never adapts <code class="docutils literal notranslate"><span class="pre">dt</span></code> by itself, and
-<code class="docutils literal notranslate"><span class="pre">fill_random</span></code> cannot be repeated outside Dedalus. Given a script with a <code class="docutils literal notranslate"><span class="pre">CFL</span></code> or a <code class="docutils literal notranslate"><span class="pre">fill_random</span></code>
-line, the translator marks that line <strong>unsupported</strong> and says what to write instead.</p>
+<p>It uses a fixed time step and a deterministic start. The translator marks a <code class="docutils literal notranslate"><span class="pre">CFL</span></code> or a
+<code class="docutils literal notranslate"><span class="pre">fill_random</span></code> line <strong>unsupported</strong> and says what to write instead: Conatus runs with a fixed
+<code class="docutils literal notranslate"><span class="pre">dt</span></code>, and the random layout of <code class="docutils literal notranslate"><span class="pre">fill_random</span></code> cannot be reproduced.</p>
 </section>
 <section id="translate-and-read-the-report">
 <h2>Translate and read the report<a class="headerlink" href="#translate-and-read-the-report" title="Link to this heading">¶</a></h2>
@@ -798,15 +802,15 @@ line, the translator marks that line <strong>unsupported</strong> and says what 
 <span class="n">counts</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">counts</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The script is parsed with <code class="docutils literal notranslate"><span class="pre">ast</span></code> and read statement by statement by a restricted interpreter.
-Nothing in it is executed, and Dedalus is not imported. In the output below, look for:</p>
+<p>The translator parses the script with <code class="docutils literal notranslate"><span class="pre">ast</span></code> and reads it statement by statement with a restricted
+interpreter. It does not execute the script or import Dedalus. In the output below, look for:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">e_z*tau_z(u_bot)</span></code>: a product of two vectors, which Dedalus reads as a tensor product. The
-report says <code class="docutils literal notranslate"><span class="pre">outer</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">e_z*tau_z(u_bot)</span></code>: a product of two vectors, which the source language reads as a tensor
+product. The report says <code class="docutils literal notranslate"><span class="pre">outer</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">trace(Gu)</span></code>: it becomes <code class="docutils literal notranslate"><span class="pre">div(u)</span></code> plus the tau term, and <code class="docutils literal notranslate"><span class="pre">div(outer(ez,</span> <span class="pre">...))</span></code> becomes <code class="docutils literal notranslate"><span class="pre">dz(...)</span></code>.
 Both are exact identities, and both are listed.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dealias=1.5</span></code>, written in the script. When a script leaves <code class="docutils literal notranslate"><span class="pre">dealias</span></code> out, the translator writes
-the Dedalus default of 1 explicitly and reports it.</p></li>
+the source default of 1 explicitly and reports it.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">while</span></code> loop: it becomes <code class="docutils literal notranslate"><span class="pre">solver.run(n)</span></code> with the script’s fixed <code class="docutils literal notranslate"><span class="pre">dt</span></code>.</p></li>
 </ul>
 </section>
@@ -819,8 +823,8 @@ the Dedalus default of 1 explicitly and reports it.</p></li>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">tr.ivp_solver</span></code> takes the script’s scheme and <code class="docutils literal notranslate"><span class="pre">dt</span></code>, and replays its <code class="docutils literal notranslate"><span class="pre">th['g']</span> <span class="pre">=</span> <span class="pre">...</span></code> line on the
-Conatus grid. SBDF2 is a two-step scheme: <code class="docutils literal notranslate"><span class="pre">startup=&quot;lower_order&quot;</span></code> is the start-up Dedalus uses
-(one first-order step), written here explicitly.</p>
+Conatus grid. SBDF2 is a two-step scheme. <code class="docutils literal notranslate"><span class="pre">startup=&quot;lower_order&quot;</span></code> starts it with one first-order
+step, as the source script does.</p>
 </section>
 <section id="native-model-and-translation-side-by-side">
 <h2>Native model and translation, side by side<a class="headerlink" href="#native-model-and-translation-side-by-side" title="Link to this heading">¶</a></h2>
@@ -844,25 +848,25 @@ Conatus grid. SBDF2 is a two-step scheme: <code class="docutils literal notransl
           <span class="sa">f</span><span class="s2">"u </span><span class="si">{</span><span class="n">gap</span><span class="p">[</span><span class="n">nz</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The translation keeps the script’s tau terms; the native model places its own. These are two
-discretisations of the same equations, so they agree up to the truncation error, not to
-rounding. The difference falls spectrally as <span class="math notranslate nohighlight">\(N_z\)</span> grows and reaches rounding at <span class="math notranslate nohighlight">\(N_z = 32\)</span>:
-both converge to the same solution, and the difference measures how far the coarser grids are
-from it. <code class="docutils literal notranslate"><span class="pre">overrides={&quot;N_z&quot;:</span> <span class="pre">nz}</span></code> changes one top-level assignment of the script, and the report
-lists the change.</p>
+<p>The translation keeps the script’s tau terms, and the native model places its own. These are two
+discretisations of the same equations, so they agree up to the truncation error. The difference
+falls spectrally as <span class="math notranslate nohighlight">\(N_z\)</span> grows and reaches rounding at <span class="math notranslate nohighlight">\(N_z = 32\)</span>. Both converge to the same
+solution, and the difference measures how far the coarser grids are from it.
+<code class="docutils literal notranslate"><span class="pre">overrides={&quot;N_z&quot;:</span> <span class="pre">nz}</span></code> changes one top-level assignment of the script, and the report lists the
+change.</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t14_convergence.png"><img alt="The relative difference between the native model and the translated Dedalus script on a log scale, falling steeply with the number of wall-normal modes down to rounding." loading="lazy" src="../_images/t14_convergence.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t14_convergence.png"><img alt="The relative difference between the native model and the translated script on a log scale, falling steeply with the number of wall-normal modes down to rounding." loading="lazy" src="../_images/t14_convergence.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Native model against the translated Dedalus script after 40 SBDF2 steps: two tau formulations of the same equations, whose difference falls spectrally with nz down to rounding.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Relative difference between the native model and the translated script after 40 SBDF2 steps, against nz. The two tau formulations of the same equations differ by an amount that falls spectrally down to rounding.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
-<section id="compare-with-dedalus">
-<h2>Compare with Dedalus<a class="headerlink" href="#compare-with-dedalus" title="Link to this heading">¶</a></h2>
-<p><a class="reference download internal" download="" href="../_downloads/4173a53d5c87e09bc40662006f2e6840/t14b_dedalus_check.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t14b_dedalus_check.py</span></code></span></a> runs the same file with Dedalus, if
-Dedalus is installed (<code class="docutils literal notranslate"><span class="pre">micromamba</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">dedalus</span></code>), and compares the result with
-the translation:</p>
+<section id="optional-run-the-original-script">
+<h2>Optional: run the original script<a class="headerlink" href="#optional-run-the-original-script" title="Link to this heading">¶</a></h2>
+<p><a class="reference download internal" download="" href="../_downloads/4173a53d5c87e09bc40662006f2e6840/t14b_dedalus_check.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t14b_dedalus_check.py</span></code></span></a> runs the original script, if Dedalus is
+installed (<code class="docutils literal notranslate"><span class="pre">micromamba</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">dedalus</span></code>), and compares its result with the
+translation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"OMP_NUM_THREADS"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">)</span>      <span class="c1"># Dedalus asks for it before its import</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">dedalus</span>  <span class="c1"># noqa: F401  (comparison oracle only; the conatus package never imports it)</span>
@@ -884,12 +888,12 @@ the translation:</p>
           <span class="sa">f</span><span class="s2">"u </span><span class="si">{</span><span class="n">rel_u</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Both codes now use the same method: the same bases, tau terms, lifts, scheme, start-up and
-dealiasing. So the difference is rounding.</p>
+<p>The translation keeps the script’s bases, tau terms, lifts, scheme, start-up and dealiasing, so
+the difference is rounding.</p>
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14_from_dedalus: PASS (exit 0) in 10.8 s | 2026-10-20 | script sha256 fe7119efa6854020
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14_from_dedalus: PASS (exit 0) in 5.5 s | 2026-10-21 | script sha256 835f55b72051bfc6
 native model: t = 0.020, max|u| = 4.225e-02
 Dedalus -&gt; Conatus: rb_cell_dedalus.py
   39 translated, 0 approximated, 0 unsupported, 0 skipped (output only)
@@ -951,11 +955,11 @@ nz = 32: native vs translated, relative difference th 3.8e-15, u 2.8e-15
 PASS
 </pre></div>
 </div>
-<p>The Dedalus check:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14b_dedalus_check: PASS (exit 0) in 21.8 s | 2026-10-20 | script sha256 763cece2d005a63e
+<p>The optional check:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14b_dedalus_check: PASS (exit 0) in 13.3 s | 2026-10-21 | script sha256 763cece2d005a63e
 Conatus: t = 0.020 after 40 steps
-2026-10-20 13:30:36,614 dedalus 0/1 WARNING :: Threading has not been disabled. This may massively degrade Dedalus performance.
-2026-10-20 13:30:36,614 dedalus 0/1 WARNING :: We strongly suggest setting the "OMP_NUM_THREADS" environment variable to "1".
+2026-10-21 19:47:52,019 dedalus 0/1 WARNING :: Threading has not been disabled. This may massively degrade Dedalus performance.
+2026-10-21 19:47:52,020 dedalus 0/1 WARNING :: We strongly suggest setting the "OMP_NUM_THREADS" environment variable to "1".
 Dedalus: t = 0.020; relative difference th 3.0e-14, u 3.8e-15
 PASS
 </pre></div>
@@ -966,9 +970,10 @@ PASS
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">print(tr.to_script())</span></code> writes a runnable Conatus program (it replays the translation and runs it), with the report as comments.</p></li>
 <li><p>For a problem built inside a function, use <code class="docutils literal notranslate"><span class="pre">cn.from_dedalus(script,</span> <span class="pre">entry=(&quot;f&quot;,</span> <span class="pre">{...}))</span></code>.</p></li>
-<li><p><a class="reference internal" href="../guide/dedalus.html"><span class="doc">Coming from Dedalus</span></a> lists the translated subset and the comparisons on the official Dedalus
-examples. These include KdV–Burgers (1.3e-15), Poisson (7e-16), shear flow (1.3e-15), the
-Rayleigh–Bénard eigenvalue problem (4e-16) and the pipe-flow eigenvalues on the disk (5e-14).</p></li>
+<li><p><a class="reference internal" href="../guide/dedalus.html"><span class="doc">Importing Dedalus scripts</span></a> lists the translated subset and the translator’s tests on the official
+examples. The relative differences between translated and original results are 1.3e-15 for
+KdV–Burgers, 7e-16 for Poisson, 1.3e-15 for the shear flow, 4e-16 for the Rayleigh–Bénard
+eigenvalue problem and 5e-14 for the pipe-flow eigenvalues on the disk.</p></li>
 </ul>
 </section>
 </section>
@@ -978,23 +983,23 @@ Rayleigh–Bénard eigenvalue problem (4e-16) and the pipe-flow eigenvalues on t
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="15_ks_covariant.html">
+          <a class="next-page" href="../guide/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</div>
+                <div class="title">User guide</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="13_sensitivity_data.html">
+          <a class="prev-page" href="11_runs.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">13. Where a global mode is born, and what the data say about it</div>
+                <div class="title">Record, query, reproduce: the run registry</div>
                 
               </div>
             </a>
@@ -1028,13 +1033,13 @@ Rayleigh–Bénard eigenvalue problem (4e-16) and the pipe-flow eigenvalues on t
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">14. Coming from Dedalus</a><ul>
+<li><a class="reference internal" href="#">Importing a Dedalus script</a><ul>
 <li><a class="reference internal" href="#the-cell-as-a-native-model">The cell as a native model</a></li>
-<li><a class="reference internal" href="#the-same-cell-in-dedalus">The same cell in Dedalus</a></li>
+<li><a class="reference internal" href="#the-same-cell-as-a-dedalus-script">The same cell as a Dedalus script</a></li>
 <li><a class="reference internal" href="#translate-and-read-the-report">Translate and read the report</a></li>
 <li><a class="reference internal" href="#run-the-translation">Run the translation</a></li>
 <li><a class="reference internal" href="#native-model-and-translation-side-by-side">Native model and translation, side by side</a></li>
-<li><a class="reference internal" href="#compare-with-dedalus">Compare with Dedalus</a></li>
+<li><a class="reference internal" href="#optional-run-the-original-script">Optional: run the original script</a></li>
 <li><a class="reference internal" href="#output-as-executed">Output (as executed)</a></li>
 <li><a class="reference internal" href="#going-further">Going further</a></li>
 </ul>
@@ -1048,7 +1053,7 @@ Rayleigh–Bénard eigenvalue problem (4e-16) and the pipe-flow eigenvalues on t
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

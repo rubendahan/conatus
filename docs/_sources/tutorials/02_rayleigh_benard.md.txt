@@ -1,4 +1,4 @@
-# 2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU
+# A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU
 
 **Goal.** Write the Boussinesq equations once, time-step them on the CPU, check that a small
 perturbation grows at the rate predicted by the eigenvalue problem of the *same* equations, then
@@ -38,8 +38,7 @@ the split (override with `implicit(...)` / `explicit(...)`).
 ```
 
 - The geometry names its boundaries (`bottom`, `top`); conditions are given there by unknown.
-  No basis, no size, no tau variable, no lift: `m.explain()` prints what the native layer placed:
-  two taus per second-order equation (modes $N_z-1$, $N_z-2$ of the equation where the unknown has
+  `m.explain()` shows the bases and tau terms selected by the native compiler: two taus per second-order equation (modes $N_z-1$, $N_z-2$ of the equation where the unknown has
   its highest $z$-order), the pressure gauge `tau_p` with `integ(p) = 0` and the divergence tau
   `dot(ez, lift(tau_u2, z, -1))`, recognized from the structure ($p$ only under `grad`, `div(u) = 0`
   without time derivative), and the declared default dealiasing 3/2.
@@ -56,7 +55,8 @@ the split (override with `implicit(...)` / `explicit(...)`).
 ```
 
 `m.linearize(about=...)` takes the Fréchet derivative of the same model around the conduction state
-$T_0 = -z$ and turns $\partial_t$ into the eigenvalue $s$. No second copy of the equations exists.
+$T_0 = -z$ and turns $\partial_t$ into the eigenvalue $s$. The perturbation equations come from
+this model and the supplied base state.
 `eigenvalues(N=24, k=np.pi)` gives 24 Chebyshev modes in $z$ and the smallest Fourier size holding
 $k = \pi$ (declared: the matrices of one wavenumber do not depend on the others).
 
@@ -69,10 +69,10 @@ $k = \pi$ (declared: the matrices of one wavenumber do not depend on the others)
 ```
 
 - `m.simulate(N=(16, 24), scheme="RK443", dt=5e-4)`: resolution, scheme and step are explicit. The
-  catalogue matches Dedalus (SBDF1–4, CNAB, RK111/222/443, ...); see {doc}`../guide/timesteppers`.
-  `run(until=0.8)` refuses a time that is not a whole number of steps (the step is never adjusted).
-- `sim.cfl("u", 0.5)` is a *stability indicator* built from the velocity, not an error estimate;
-  the temporal error estimate (`EmbeddedError(sim.solver)`) and everything else of the expert
+  schemes (SBDF1–4, CNAB, RK111/222/443, ...) are listed in {doc}`../guide/timesteppers`.
+  `run(until=0.8)` needs a stop time that is a whole number of steps from the current time.
+- `sim.cfl("u", 0.5)` is a *stability indicator* built from the velocity. The temporal error
+  estimate (`EmbeddedError(sim.solver)`) and everything else of the expert
   `IVPSolver` stay available through `sim.solver`.
 - `sim.explain()` shows the automatic decisions, then the systems (one per Fourier wavenumber),
   their bands and how they are solved.
@@ -90,10 +90,10 @@ sizes, tau method, dealiasing, scheme, step), with the citations it relies on, a
 native layer decided.
 
 ```{figure} media/t02_growth.png
-:alt: The roll amplitude on a log scale against time: after a short shaded start the dots follow a straight red line.
+:alt: The roll amplitude on a log scale against time: the dots bend during a short start, then follow a straight red line over the shaded interval.
 :width: 100%
 
-The initial-value problem against the eigenvalue problem. After t = 0.3 the amplitude grows at σ = 5.5425080, the EVP's 5.5425059: a relative difference of 4×10⁻⁷, within the 10⁻⁵ the script checks.
+The initial-value problem against the eigenvalue problem. Before t = 0.3 faster modes are still decaying; over the shaded interval the amplitude grows at σ = 5.5425080, the eigenvalue's 5.5425059: a relative difference of 4×10⁻⁷, within the 10⁻⁵ the script checks.
 ```
 
 ## A run over several jobs
@@ -101,10 +101,10 @@ The initial-value problem against the eigenvalue problem. After t = 0.3 the ampl
 A cluster job has a time limit, so a long run is a chain of jobs, and each job runs the same
 script. `sim.resume_or_start(directory, T=...)` continues from the latest checkpoint of
 `directory` when there is one and starts from the initial state otherwise; `checkpoints` writes
-exact restart files; `output` writes the fields and numbers you ask for. Without `mode=`, the output
-file is created on a fresh start (an existing one is refused rather than replaced: give
-`mode="w"` to replace it) and continued after a restart (rows written after the checkpoint
-are dropped and written again by the restarted run).
+bit-for-bit restart files; `output` writes the fields and numbers you ask for. Without `mode=`, the
+output file is created on a fresh start and continued after a restart. On a fresh start an existing
+file is refused; give `mode="w"` to replace it. After a restart, rows written after the checkpoint
+are dropped and written again by the restarted run.
 
 ```{literalinclude} code/t02a_rayleigh_benard_cpu.py
 :language: python
@@ -120,11 +120,11 @@ the formats).
 **Check.** EVP: $\sigma = 5.5425059231$ (the streamfunction formulation gives $5.542505923$); IVP from a
 $10^{-6}$ perturbation: $\sigma = 5.5425080$ over $t \in [0.3, 0.8]$, i.e. $4\times10^{-7}$ relative.
 
-```{figure} media/t02_chain.png
-:alt: Kinetic energy against time on a log scale, black circles up to t = 0.3 and red squares after, continuing the same straight line.
+```{figure} media/t02_restart.png
+:alt: Two horizontal bars over time: the upper one in two parts, job 1 then job 2, joined at a checkpoint marker at t = 0.3; the lower one a single uninterrupted run to the same end time.
 :width: 100%
 
-The kinetic energy written to rb.h5 by the two jobs of the chain: the second starts from the checkpoint of the first and continues the same file. One run, bit for bit.
+The jobs block of the page: job 2 resumes from the checkpoint that job 1 wrote at iteration 600 (t = 0.3) and runs to t = 0.8 (iteration 1600). Its final state is identical to that of the uninterrupted run: np.array_equal is True over the 1531 coefficients, largest difference 0. The output file holds 17 rows, t = 0 included.
 ```
 
 ```{literalinclude} code/t02a_rayleigh_benard_cpu.py
@@ -146,6 +146,20 @@ The model does not change. Only the backend is chosen, explicitly: `backend="cud
 state, the batched banded solves and the transforms to the device; `f_backend="fused"` evaluates the
 nonlinear terms with fused kernels (the NumPy `"evaluator"` remains the oracle). `sim.solver.run_graph(n)`
 captures one step as a CUDA graph and replays it, which removes the launch latency.
+
+The GPU script starts from the same model, at $Ra = 10^5$. Its last three blocks need a CUDA device.
+
+```{literalinclude} code/t02b_rayleigh_benard_gpu.py
+:language: python
+:start-after: "# [imports]"
+:end-before: "# [/imports]"
+```
+
+```{literalinclude} code/t02b_rayleigh_benard_gpu.py
+:language: python
+:start-after: "# [problem]"
+:end-before: "# [/problem]"
+```
 
 ```{literalinclude} code/t02b_rayleigh_benard_gpu.py
 :language: python

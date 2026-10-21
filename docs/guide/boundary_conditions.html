@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -723,14 +728,13 @@ structure (below).</p>
   where: at(...) calls: at('x=0', T = 0)
   why:   missing conditions leave the discrete system singular
   fix:   declare 2 condition(s) on T (boundaries: 'bottom', 'top', 'x=0', 'x=1', 'walls')
-         (suggestion only: Conatus does not change your problem for you)
 </pre></div>
 </div>
 </section>
 <section id="what-conatus-does-with-them">
 <h2>What Conatus does with them<a class="headerlink" href="#what-conatus-does-with-them" title="Link to this heading">¶</a></h2>
 <p>Conatus imposes conditions with the tau method: each condition adds one unknown constant along the
-wall, which enters one equation through a fixed polynomial. You never write these terms. They are
+wall, which enters one equation through a fixed polynomial. You do not write these terms. They are
 placed by one deterministic rule:</p>
 <ul class="simple">
 <li><p>each condition constrains <strong>one</strong> unknown;</p></li>
@@ -744,15 +748,15 @@ coordinate;</p></li>
   T = 0 at walls (right: x=1): tau_T2 lifted into mode N_x-2 of [0] eq0 -- T has its highest x-order (2) there
 </pre></div>
 </div>
-<p><strong>Incompressibility</strong> is recognised from the structure of the equations, never from a name: a
-scalar that appears only under <code class="docutils literal notranslate"><span class="pre">grad(·)</span></code> and has no condition, paired with the single equation
-without a time derivative that contains <code class="docutils literal notranslate"><span class="pre">div(u)</span></code>. Conatus then fixes the mean pressure
+<p><strong>Incompressibility</strong> is recognised from the structure of the equations, from a divergence
+constraint. The pattern is a scalar that appears only under <code class="docutils literal notranslate"><span class="pre">grad(·)</span></code> and has no condition,
+paired with the single equation without a time derivative that contains <code class="docutils literal notranslate"><span class="pre">div(u)</span></code>. Conatus then fixes the mean pressure
 (<code class="docutils literal notranslate"><span class="pre">integ(p)</span> <span class="pre">=</span> <span class="pre">0</span></code>) and adds the divergence correction of the geometry. <code class="docutils literal notranslate"><span class="pre">m.pressure(&quot;p&quot;)</span></code> only asks
 Conatus to check that this structure is there.</p>
 </section>
 <section id="when-the-rule-cannot-decide">
 <h2>When the rule cannot decide<a class="headerlink" href="#when-the-rule-cannot-decide" title="Link to this heading">¶</a></h2>
-<p>Conatus refuses rather than guesses. Each message names the condition and the way out:</p>
+<p>When the rule cannot decide, Conatus raises an error. Each message names the condition and what to write:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -788,7 +792,7 @@ expert layer is there when you want to do it by hand (<a class="reference intern
 filter them with a hidden threshold. <code class="docutils literal notranslate"><span class="pre">m.eigenvalues(N=64,</span> <span class="pre">drift=96,</span> <span class="pre">drift_tol=1e-6)</span></code> solves the problem again
 at 96 modes and keeps only the eigenvalues found at both resolutions within the drift tolerance
 (yours, required: it decides which modes are returned); the result says how many were removed. A physical filter is allowed, but it is yours and it is logged:
-<code class="docutils literal notranslate"><span class="pre">res.select(np.flatnonzero(abs(res.values)</span> <span class="pre">&lt;</span> <span class="pre">2),</span> <span class="pre">why=&quot;|c|</span> <span class="pre">&lt;</span> <span class="pre">2&quot;)</span></code>. Worked example: <a class="reference internal" href="../tutorials/01_orr_sommerfeld.html"><span class="doc">1. A first eigenvalue problem: Orr–Sommerfeld</span></a>.</p>
+<code class="docutils literal notranslate"><span class="pre">res.select(np.flatnonzero(abs(res.values)</span> <span class="pre">&lt;</span> <span class="pre">2),</span> <span class="pre">why=&quot;|c|</span> <span class="pre">&lt;</span> <span class="pre">2&quot;)</span></code>. Worked example: <a class="reference internal" href="../tutorials/01_orr_sommerfeld.html"><span class="doc">A first eigenvalue problem: Orr–Sommerfeld</span></a>.</p>
 </section>
 <section id="free-slip-walls-in-the-native-layer">
 <h2>Free-slip walls in the native layer<a class="headerlink" href="#free-slip-walls-in-the-native-layer" title="Link to this heading">¶</a></h2>
@@ -823,8 +827,44 @@ unknown <span class="math notranslate nohighlight">\(u\)</span>,</p>
 <p>whose normal component is <span class="math notranslate nohighlight">\(u_z = 0\)</span> and whose tangential components are <span class="math notranslate nohighlight">\(\partial_z u_x = 0\)</span>
 (<span class="math notranslate nohighlight">\(\partial_z u_y = 0\)</span> in 3D). It therefore reuses the vector-tau rule unchanged: one vector tau per
 wall in the equation where <span class="math notranslate nohighlight">\(u\)</span> has its highest <span class="math notranslate nohighlight">\(z\)</span>-order (momentum), and the divergence tau of the
-Cartesian recipe in the continuity equation. <code class="docutils literal notranslate"><span class="pre">m.explain()</span></code> prints, for the stress-free
-Rayleigh–Bénard model of <a class="reference internal" href="bases.html"><span class="doc">Bases and domains</span></a> (<em>Sine/cosine walls</em>) with Chebyshev walls:</p>
+Cartesian recipe in the continuity equation. For the stress-free Rayleigh–Bénard model of
+<a class="reference internal" href="bases.html"><span class="doc">Bases and domains</span></a> (<em>Sine/cosine walls</em>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+
+<span class="n">kc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>                     <span class="c1"># critical wavenumber of stress-free RB</span>
+<span class="n">Ra_c</span> <span class="o">=</span> <span class="mi">27</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">4</span> <span class="o">/</span> <span class="mi">4</span>                    <span class="c1"># 657.511...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">Ra</span><span class="p">):</span>
+    <span class="n">box</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">periodic</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">kc</span><span class="p">),</span> <span class="n">z</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">walls</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">box</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"RB stress-free"</span><span class="p">,</span> <span class="n">Ra</span><span class="o">=</span><span class="n">Ra</span><span class="p">,</span> <span class="n">Pr</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">velocity</span><span class="p">(</span><span class="s2">"u"</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="s2">"p"</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">equations</span><span class="p">(</span><span class="s2">"""</span>
+<span class="s2">        momentum:   dt(u) + grad(p) - Pr*lap(u) - Pr*Ra*T*ez = -u·grad(u)</span>
+<span class="s2">        continuity: div(u) = 0</span>
+<span class="s2">        heat:       dt(T) - lap(T) - u·ez = -u·grad(T)</span>
+<span class="s2">    """</span><span class="p">)</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"walls"</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">free_slip</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>      <span class="c1"># stress-free, fixed temperature (perturbation)</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">T</span>
+
+<span class="k">for</span> <span class="n">Ra</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.99</span> <span class="o">*</span> <span class="n">Ra_c</span><span class="p">,</span> <span class="mf">1.01</span> <span class="o">*</span> <span class="n">Ra_c</span><span class="p">):</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="s2">"sincos"</span><span class="p">,</span> <span class="n">Ra</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">linearize</span><span class="p">(</span><span class="n">about</span><span class="o">=</span><span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">kc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"sincos     Ra/Ra_c = </span><span class="si">{</span><span class="n">Ra</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">Ra_c</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">: s = </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">+.15f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="s2">"chebyshev"</span><span class="p">,</span> <span class="n">Ra</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">linearize</span><span class="p">(</span><span class="n">about</span><span class="o">=</span><span class="p">{</span><span class="n">u</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">kc</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"chebyshev  Ra/Ra_c = </span><span class="si">{</span><span class="n">Ra</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">Ra_c</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">: s = </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">+.15f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">m.explain(full=True)</span></code> prints the choices; with Chebyshev walls, the taus are:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="s2">"sincos"</span><span class="p">,</span> <span class="n">Ra_c</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"z:"</span><span class="p">,</span> <span class="s2">"u:"</span><span class="p">,</span> <span class="s2">"p:"</span><span class="p">,</span> <span class="s2">"T:"</span><span class="p">))))</span>
+<span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="s2">"chebyshev"</span><span class="p">,</span> <span class="n">Ra_c</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">"free-slip"</span> <span class="ow">in</span> <span class="n">l</span> <span class="ow">and</span> <span class="s2">"tau"</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)</span> <span class="ow">or</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"divergence tau"</span><span class="p">)))</span>
+</pre></div>
+</div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>u: free-slip (u·n = 0, dz(u_t) = 0) at walls (left: z=0): tau_u1 lifted into mode N_z-1 of [0] momentum -- u has its highest z-order (2) there; Chebyshev lift into the last modes
 u: free-slip (u·n = 0, dz(u_t) = 0) at walls (right: z=1): tau_u2 lifted into mode N_z-2 of [0] momentum -- u has its highest z-order (2) there; Chebyshev lift into the last modes
 divergence tau dot(ez, lift(tau_u2, z, -1)) (the velocity tau of the lowest lifted mode)
@@ -843,9 +883,7 @@ the curved tangential directions; along the pipe axis the condition is <span cla
 taus are those of no-slip. Checks: a solid-body rotation is
 a steady solution (drift <span class="math notranslate nohighlight">\(4\times10^{-15}\)</span> in the ball, <span class="math notranslate nohighlight">\(2\times10^{-14}\)</span> in the shell over 100 steps,
 while no-slip does not even admit it), Stokes decay rates match their Bessel closed forms to
-<span class="math notranslate nohighlight">\(2\times10^{-12}\)</span> (disk, pipe, ball), <span class="math notranslate nohighlight">\(8\times10^{-13}\)</span> (annulus), <span class="math notranslate nohighlight">\(10^{-10}\)</span> (shell), and a Navier–Stokes run
-in the ball and the shell matches Dedalus with the conditions of its ball convection example to
-<span class="math notranslate nohighlight">\(3\times10^{-13}\)</span> and <span class="math notranslate nohighlight">\(9\times10^{-13}\)</span>. The rank report flags the rigid rotations (groups <span class="math notranslate nohighlight">\(\ell=1\)</span> or
+<span class="math notranslate nohighlight">\(2\times10^{-12}\)</span> (disk, pipe, ball), <span class="math notranslate nohighlight">\(8\times10^{-13}\)</span> (annulus) and <span class="math notranslate nohighlight">\(10^{-10}\)</span> (shell). The rank report flags the rigid rotations (groups <span class="math notranslate nohighlight">\(\ell=1\)</span> or
 <span class="math notranslate nohighlight">\(m=0\)</span>): a physical kernel, angular momentum is conserved with stress-free walls.</p>
 </section>
 <section id="interfaces-half-lines-and-the-whole-line">
@@ -905,7 +943,7 @@ separable form to write instead: a coordinate itself is not smooth data on a per
 an implicit term (<code class="docutils literal notranslate"><span class="pre">t*u</span></code> on the left) or in a model without <code class="docutils literal notranslate"><span class="pre">dt()</span></code> is refused. Such values are
 imposed by default with the stage values that the scheme gives for <span class="math notranslate nohighlight">\(g'(t)\)</span>, exact here
 (<code class="docutils literal notranslate"><span class="pre">bc_time=&quot;auto&quot;</span></code> → <code class="docutils literal notranslate"><span class="pre">&quot;rk&quot;</span></code>), so that the Runge–Kutta schemes keep their order (RK443 2.8 instead
-of 2.0 with <span class="math notranslate nohighlight">\(g\)</span> at the stage times); <code class="docutils literal notranslate"><span class="pre">bc_time=&quot;stage&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">bc_time=&quot;step&quot;</span></code> (Dedalus) are the other
+of 2.0 with <span class="math notranslate nohighlight">\(g\)</span> at the stage times). <code class="docutils literal notranslate"><span class="pre">bc_time=&quot;stage&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">bc_time=&quot;step&quot;</span></code> are the other
 conventions. See <a class="reference internal" href="timesteppers.html"><span class="doc">Simulations and time steppers</span></a>. In the expert layer the same holds for
 <code class="docutils literal notranslate"><span class="pre">pb.add_bc((interp(u,</span> <span class="pre">y,</span> <span class="pre">0),</span> <span class="pre">cos(t)))</span></code> with <code class="docutils literal notranslate"><span class="pre">IVPSolver(...,</span> <span class="pre">time_parameter=&quot;t&quot;)</span></code>.</p>
 <p>On a disk, an annulus, a pipe or a sphere, a given field of the wall coordinate used in a wall
@@ -989,7 +1027,7 @@ is refused: declare the wall value as a function of the other coordinates.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

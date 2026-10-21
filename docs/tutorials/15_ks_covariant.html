@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="16. Lagrangian tracers and a numerical dye" href="16_particles_dye.html"><link rel="prev" title="14. Coming from Dedalus" href="14_from_dedalus.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Record, query, reproduce: the run registry" href="11_runs.html"><link rel="prev" title="Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins" href="12_chaos_ensembles.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes - Conatus</title>
+        <title>Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,21 +684,28 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="covariant-lyapunov-vectors-of-kuramotosivashinsky-tangencies-and-the-physical-modes">
-<h1>15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes<a class="headerlink" href="#covariant-lyapunov-vectors-of-kuramotosivashinsky-tangencies-and-the-physical-modes" title="Link to this heading">¶</a></h1>
-<p>The Lyapunov exponents say how fast perturbations grow; the covariant Lyapunov vectors say in
-which directions, and the angles between them say whether the tangent space splits cleanly. In the
-Kuramoto–Sivashinsky equation on <span class="math notranslate nohighlight">\(L = 22\)</span> the first eight vectors keep touching each other while
-the rest stay apart: eight “physical” modes carry the dynamics.</p>
+<h1>Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes<a class="headerlink" href="#covariant-lyapunov-vectors-of-kuramotosivashinsky-tangencies-and-the-physical-modes" title="Link to this heading">¶</a></h1>
+<p>The Lyapunov exponents say how fast perturbations grow. The covariant Lyapunov vectors say in which
+directions, and the angles between them say whether the tangent space splits cleanly. For
+Kuramoto–Sivashinsky on <span class="math notranslate nohighlight">\(L = 22\)</span>, the finite-time analysis of this page finds eight entangled
+modes, separated from the rest. Ding et al. (2016) call these the “physical” modes. The count is
+an empirical result for these trajectory lengths and thresholds; check how it changes with them.</p>
 <p><strong>Goal.</strong> Compute the twelve leading exponents and covariant vectors of KS <span class="math notranslate nohighlight">\(L = 22\)</span> from a native
 model with <code class="docutils literal notranslate"><span class="pre">sim.lyapunov</span></code>, check their covariance, and count the entangled modes from the
 domination of the Oseledets splitting.
-<strong>Expected.</strong> Cvitanović, Davidchack &amp; Siminos (2010, p. 12): <span class="math notranslate nohighlight">\((0.048, 0, 0, -0.003, -0.189,
--0.256, -0.290, -0.310, -1.963, -1.967, \dots)\)</span> in the zero-mean subspace; Ding, Chaté, Cvitanović,
+<strong>Expected.</strong> Cvitanović, Davidchack &amp; Siminos (2010, p. 12) tabulate ten values, <span class="math notranslate nohighlight">\((0.048, 0, 0,
+-0.003, -0.189, -0.256, -0.290, -0.310, -1.963, -1.967)\)</span>, in the zero-mean subspace; the page
+compares its first ten estimates with them; Ding, Chaté, Cvitanović,
 Siminos &amp; Takeuchi (2016): eight physical modes. <strong>Time:</strong> about two minutes on one CPU core.
 <strong>Script:</strong> <a class="reference download internal" download="" href="../_downloads/cf5a628015e1e275e9a322367fd9c6f7/t15_ks_covariant.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t15_ks_covariant.py</span></code></span></a> · <strong>Tests behind it:</strong>
 <code class="docutils literal notranslate"><span class="pre">tests/chaos/</span></code>.</p>
 <section id="the-model-and-four-starts">
 <h2>The model and four starts<a class="headerlink" href="#the-model-and-four-starts" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">L</span> <span class="o">=</span> <span class="mf">22.0</span>
 <span class="n">m</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">cn</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">periodic</span><span class="p">(</span><span class="n">L</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"Kuramoto-Sivashinsky L=22"</span><span class="p">)</span>
 <span class="n">m</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">"u"</span><span class="p">)</span>
@@ -723,23 +735,23 @@ simulation’s own state is left as it was.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>Every length is a time of the problem: <code class="docutils literal notranslate"><span class="pre">transient</span></code> (trajectory only), <code class="docutils literal notranslate"><span class="pre">align</span></code> (the tangent vectors
+<p>The durations are times of the problem: <code class="docutils literal notranslate"><span class="pre">transient</span></code> (trajectory only), <code class="docutils literal notranslate"><span class="pre">align</span></code> (the tangent vectors
 align with the Oseledets directions), <code class="docutils literal notranslate"><span class="pre">T</span></code> (averaging), <code class="docutils literal notranslate"><span class="pre">clv_window</span></code> and <code class="docutils literal notranslate"><span class="pre">clv_backward</span></code> (the
 covariant vectors are computed over a window that ends 40 time units before the end, the time the
-backward iteration needs to converge). Each must be a whole number of steps or of intervals
-<code class="docutils literal notranslate"><span class="pre">reortho_every</span> <span class="pre">*</span> <span class="pre">dt</span></code>; nothing is rounded. <code class="docutils literal notranslate"><span class="pre">zero_mean=&quot;u&quot;</span></code> keeps the tangent vectors in the
+backward iteration needs to converge). Each duration must be a whole number of steps and of
+intervals <code class="docutils literal notranslate"><span class="pre">reortho_every</span> <span class="pre">*</span> <span class="pre">dt</span></code>; otherwise the call is refused. <code class="docutils literal notranslate"><span class="pre">zero_mean=&quot;u&quot;</span></code> keeps the tangent vectors in the
 invariant zero-mean subspace, as in the references. <code class="docutils literal notranslate"><span class="pre">clv_checkpoints=8</span></code> stores 8 checkpoints instead
 of every interval and recomputes them once; <code class="docutils literal notranslate"><span class="pre">explain()</span></code> gives the memory used, the difference
 between recomputed and stored factors (zero), the <strong>backward convergence</strong> (the vectors obtained
 from two independent random starts of the backward iteration, compared: small except inside nearly
 degenerate pairs such as the two zero exponents, which converge slowly) and the <strong>covariance
-residual</strong>: each vector advanced by the exact tangent over one interval must be parallel to the
-vector there, to its rounding floor.</p>
+residual</strong>: each vector advanced by the tangent of the step over one interval must be parallel to
+the vector there, to its rounding floor.</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t15_exponents.png"><img alt="Twelve Lyapunov exponents with error bars, close to zero for the first eight and dropping near -2 after, each on a red tick of the published values." loading="lazy" src="../_images/t15_exponents.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t15_exponents.png"><img alt="Twelve Lyapunov exponents with error bars, close to zero for the first eight and dropping near -2 after; the first 10 sit on red ticks of the published values." loading="lazy" src="../_images/t15_exponents.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors, on the published values. The first eight are the physical modes.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors. Red ticks mark the 10 published values (Cvitanović et al. 2010), so exponents 11 to 12 have no reference tick. The first eight are the entangled modes.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -754,15 +766,15 @@ vector there, to its rounding floor.</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">domination(tau)</span></code> compares the local growth rates of the vectors over windows of length <span class="math notranslate nohighlight">\(\tau\)</span>:
-whenever <span class="math notranslate nohighlight">\(\Lambda_i &lt; \Lambda_j\)</span> for <span class="math notranslate nohighlight">\(i &lt; j\)</span> the splitting is not dominated there. Modes joined by
+when <span class="math notranslate nohighlight">\(\Lambda_i &lt; \Lambda_j\)</span> for <span class="math notranslate nohighlight">\(i &lt; j\)</span>, the splitting is not dominated there. Modes joined by
 such violations form clusters; the leading cluster is the set of physical modes. The principal
 angles tell the same story: the split <span class="math notranslate nohighlight">\(8 \mid 9\)</span> keeps a finite angle, the split <span class="math notranslate nohighlight">\(4 \mid 5\)</span> inside the
 physical block has near-tangencies.</p>
 <figure class="align-default" id="id2">
-<a class="reference internal image-reference" href="../_images/t15_angles.png"><img alt="Two histograms of angles on a log axis: the red one, inside the physical modes, reaches very small angles; the green one, at the split after eight modes, stays well away from zero." loading="lazy" src="../_images/t15_angles.png" style="width: 100%;" />
+<a class="reference internal image-reference" href="../_images/t15_angles.png"><img alt="Two histograms of angles on a log axis: the filled red one, inside the entangled modes, reaches very small angles; the blue outline, at the split after eight modes, stays well away from zero." loading="lazy" src="../_images/t15_angles.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Angles between the span of the first j covariant vectors and the rest, at every sample. Inside the physical modes (j = 4) near-tangencies are frequent; at j = 8 the split never closes.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Angles between the span of the first j covariant vectors and the rest, at each sample. Inside the entangled modes (j = 4) near-tangencies are frequent; at j = 8 the smallest angle stays away from zero over this run.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id3">
@@ -789,7 +801,7 @@ physical block has near-tangencies.</p>
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t15_ks_covariant: PASS (exit 0) in 52.4 s | 2026-10-20 | script sha256 77224d7831ae3936
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t15_ks_covariant: PASS (exit 0) in 45.4 s | 2026-10-21 | script sha256 77224d7831ae3936
 Lyapunov spectrum of the discrete map (RK443, dt = 0.05, backend = cpu): 12 vector(s), 4 trajectory(ies)
   transient 2000 steps, tangent transient 1000 steps, average over T = 200 per trajectory (400 QR every 10 steps = 0.5)
   inner product: Euclidean on the coefficient vector; projection: zero mean: the wavenumber-zero coefficient of u set to 0 in every tangent vector (1 component(s) of the state vector); seed 1
@@ -830,7 +842,7 @@ checks passed: exponents within their errors of CDS 2010, eight physical modes
 <section id="going-further">
 <h2>Going further<a class="headerlink" href="#going-further" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>The same call on the GPU: <code class="docutils literal notranslate"><span class="pre">m.simulate(...,</span> <span class="pre">backend=&quot;cuda&quot;)</span></code>, nothing else changes (not yet
+<li><p>The same call on the GPU: <code class="docutils literal notranslate"><span class="pre">m.simulate(...,</span> <span class="pre">backend=&quot;cuda&quot;)</span></code>, with no other change (not yet
 verified against the CPU on GPU hardware: experimental until <code class="docutils literal notranslate"><span class="pre">tests/model/test_particles_gpu.py</span></code> has run).</p></li>
 </ul>
 </section>
@@ -841,23 +853,23 @@ verified against the CPU on GPU hardware: experimental until <code class="docuti
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="16_particles_dye.html">
+          <a class="next-page" href="11_runs.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">16. Lagrangian tracers and a numerical dye</div>
+                <div class="title">Record, query, reproduce: the run registry</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="14_from_dedalus.html">
+          <a class="prev-page" href="12_chaos_ensembles.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">14. Coming from Dedalus</div>
+                <div class="title">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</div>
                 
               </div>
             </a>
@@ -891,7 +903,7 @@ verified against the CPU on GPU hardware: experimental until <code class="docuti
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a><ul>
+<li><a class="reference internal" href="#">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a><ul>
 <li><a class="reference internal" href="#the-model-and-four-starts">The model and four starts</a></li>
 <li><a class="reference internal" href="#exponents-and-covariant-vectors">Exponents and covariant vectors</a></li>
 <li><a class="reference internal" href="#tangencies-and-domination">Tangencies and domination</a></li>
@@ -909,7 +921,7 @@ verified against the CPU on GPU hardware: experimental until <code class="docuti
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

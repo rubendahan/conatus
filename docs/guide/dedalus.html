@@ -8,7 +8,7 @@
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Coming from Dedalus - Conatus</title>
+        <title>Importing Dedalus scripts - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Coming from Dedalus</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -678,120 +683,14 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="coming-from-dedalus">
-<h1>Coming from Dedalus<a class="headerlink" href="#coming-from-dedalus" title="Link to this heading">¶</a></h1>
-<p>If you know Dedalus, you already know how to write a Conatus model; what changes is what you no
-longer write, and what you can do with the model afterwards.</p>
-<section id="the-same-problem-side-by-side">
-<h2>The same problem, side by side<a class="headerlink" href="#the-same-problem-side-by-side" title="Link to this heading">¶</a></h2>
-<p>Two-dimensional Boussinesq convection between a hot and a cold wall, periodic sideways
-(<a class="reference internal" href="../tutorials/14_from_dedalus.html"><span class="doc">14. Coming from Dedalus</span></a> runs both and compares them). On the left, the problem
-part of a Dedalus 3 script written for that tutorial (<a class="reference download internal" download="" href="../_downloads/c1a491ef3dcb75ed9f2af997a8faf2d7/rb_cell_dedalus.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">rb_cell_dedalus.py</span></code></span></a>);
-on the right, the same cell as a Conatus model:</p>
-<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
-<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 docutils">
-<div class="sd-col sd-d-flex-column docutils">
-<p><strong>Dedalus</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plane</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">CartesianCoordinates</span><span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="s1">'z'</span><span class="p">)</span>
-<span class="n">mesh</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">Distributor</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="n">horiz</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">RealFourier</span><span class="p">(</span><span class="n">plane</span><span class="p">[</span><span class="s1">'x'</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">N_x</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">period</span><span class="p">),</span> <span class="n">dealias</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
-<span class="n">vert</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">ChebyshevT</span><span class="p">(</span><span class="n">plane</span><span class="p">[</span><span class="s1">'z'</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">N_z</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dealias</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
-<span class="n">u</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">VectorField</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'u'</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="p">(</span><span class="n">horiz</span><span class="p">,</span> <span class="n">vert</span><span class="p">))</span>
-<span class="n">p</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'p'</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="p">(</span><span class="n">horiz</span><span class="p">,</span> <span class="n">vert</span><span class="p">))</span>
-<span class="n">th</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'th'</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="p">(</span><span class="n">horiz</span><span class="p">,</span> <span class="n">vert</span><span class="p">))</span>
-<span class="n">u_bot</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">VectorField</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'u_bot'</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="n">horiz</span><span class="p">)</span>    <span class="c1"># tau terms, one per wall condition</span>
-<span class="n">u_top</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">VectorField</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'u_top'</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="n">horiz</span><span class="p">)</span>
-<span class="n">th_bot</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'th_bot'</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="n">horiz</span><span class="p">)</span>
-<span class="n">th_top</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'th_top'</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="n">horiz</span><span class="p">)</span>
-<span class="n">gauge</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'gauge'</span><span class="p">)</span>                               <span class="c1"># constant tau of the pressure</span>
-
-<span class="c1"># Tau terms live in the first-derivative basis of z; the bottom ones enter through the gradients</span>
-<span class="n">e_x</span><span class="p">,</span> <span class="n">e_z</span> <span class="o">=</span> <span class="n">plane</span><span class="o">.</span><span class="n">unit_vector_fields</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
-<span class="n">dz_basis</span> <span class="o">=</span> <span class="n">vert</span><span class="o">.</span><span class="n">derivative_basis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">tau_z</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">d3</span><span class="o">.</span><span class="n">Lift</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">dz_basis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># noqa: E731 (a Dedalus idiom)</span>
-<span class="n">Gu</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">+</span> <span class="n">e_z</span><span class="o">*</span><span class="n">tau_z</span><span class="p">(</span><span class="n">u_bot</span><span class="p">)</span>
-<span class="n">Gth</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">th</span><span class="p">)</span> <span class="o">+</span> <span class="n">e_z</span><span class="o">*</span><span class="n">tau_z</span><span class="p">(</span><span class="n">th_bot</span><span class="p">)</span>
-
-<span class="n">onset</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">IVP</span><span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">th</span><span class="p">,</span> <span class="n">u_bot</span><span class="p">,</span> <span class="n">u_top</span><span class="p">,</span> <span class="n">th_bot</span><span class="p">,</span> <span class="n">th_top</span><span class="p">,</span> <span class="n">gauge</span><span class="p">],</span> <span class="n">namespace</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
-<span class="n">onset</span><span class="o">.</span><span class="n">add_equation</span><span class="p">(</span><span class="s2">"dt(u) - Pr*div(Gu) + grad(p) - Ra*Pr*th*e_z + tau_z(u_top) = -u@grad(u)"</span><span class="p">)</span>
-<span class="n">onset</span><span class="o">.</span><span class="n">add_equation</span><span class="p">(</span><span class="s2">"trace(Gu) + gauge = 0"</span><span class="p">)</span>
-<span class="n">onset</span><span class="o">.</span><span class="n">add_equation</span><span class="p">(</span><span class="s2">"dt(th) - div(Gth) - u@e_z + tau_z(th_top) = -u@grad(th)"</span><span class="p">)</span>
-<span class="n">onset</span><span class="o">.</span><span class="n">add_equation</span><span class="p">(</span><span class="s2">"u(z=0) = 0"</span><span class="p">)</span>
-<span class="n">onset</span><span class="o">.</span><span class="n">add_equation</span><span class="p">(</span><span class="s2">"th(z=0) = 0"</span><span class="p">)</span>
-<span class="n">onset</span><span class="o">.</span><span class="n">add_equation</span><span class="p">(</span><span class="s2">"u(z=1) = 0"</span><span class="p">)</span>
-<span class="n">onset</span><span class="o">.</span><span class="n">add_equation</span><span class="p">(</span><span class="s2">"th(z=1) = 0"</span><span class="p">)</span>
-<span class="n">onset</span><span class="o">.</span><span class="n">add_equation</span><span class="p">(</span><span class="s2">"integ(p) = 0"</span><span class="p">)</span>
-
-</pre></div>
-</div>
-</div>
-<div class="sd-col sd-d-flex-column docutils">
-<p><strong>Conatus</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Onset of convection in diffusive units: th is the temperature minus the conduction profile 1 - z,</span>
-<span class="c1"># so it vanishes on both walls; u.ez carries the conduction profile into the heat equation.</span>
-<span class="n">RA</span><span class="p">,</span> <span class="n">PR</span><span class="p">,</span> <span class="n">PERIOD</span><span class="p">,</span> <span class="n">NX</span><span class="p">,</span> <span class="n">DT</span> <span class="o">=</span> <span class="mf">3000.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mf">5e-4</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""One roll of the temperature deviation."""</span>
-    <span class="k">return</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="n">PERIOD</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">native</span><span class="p">(</span><span class="n">nz</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""The cell as a Conatus model: unknowns by role, equations as written on paper, conditions by</span>
-<span class="sd">    wall name. No tau field and no lift: the native layer places one tau per condition."""</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">cn</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">periodic</span><span class="p">(</span><span class="n">PERIOD</span><span class="p">),</span> <span class="n">z</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">walls</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"convection onset"</span><span class="p">,</span>
-                 <span class="n">Ra</span><span class="o">=</span><span class="n">RA</span><span class="p">,</span> <span class="n">Pr</span><span class="o">=</span><span class="n">PR</span><span class="p">)</span>
-    <span class="n">m</span><span class="o">.</span><span class="n">velocity</span><span class="p">(</span><span class="s2">"u"</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="s2">"p"</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">"th"</span><span class="p">)</span>
-    <span class="n">m</span><span class="o">.</span><span class="n">equations</span><span class="p">(</span><span class="s2">"""</span>
-<span class="s2">        momentum:  dt(u) - Pr*lap(u) + grad(p) - Ra*Pr*th*ez = -u·grad(u)</span>
-<span class="s2">        mass:      div(u) = 0</span>
-<span class="s2">        heat:      dt(th) - lap(th) - u·ez = -u·grad(th)</span>
-<span class="s2">    """</span><span class="p">)</span>
-    <span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"bottom"</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"top"</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">sim</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="p">(</span><span class="n">NX</span><span class="p">,</span> <span class="n">nz</span><span class="p">),</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">"SBDF2"</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">DT</span><span class="p">)</span>
-    <span class="n">sim</span><span class="o">.</span><span class="n">initial</span><span class="p">(</span><span class="n">th</span><span class="o">=</span><span class="n">start</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
-
-
-<span class="n">cell</span> <span class="o">=</span> <span class="n">native</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"native model: t = </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">t</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, max|u| = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="s1">'u'</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="what-you-stop-writing">
-<h2>What you stop writing<a class="headerlink" href="#what-you-stop-writing" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><strong>Tau fields and lifts.</strong> Each condition is placed by a fixed rule, printed by <code class="docutils literal notranslate"><span class="pre">explain()</span></code>
-(<a class="reference internal" href="boundary_conditions.html"><span class="doc">Boundary conditions</span></a>); the pressure gauge is recognised from the structure.</p></li>
-<li><p><strong>Bases with sizes.</strong> The geometry fixes the bases; the number of modes is given when you solve.</p></li>
-<li><p><strong>The split into left and right sides.</strong> Linear terms are implicit, nonlinear terms explicit,
-wherever you wrote them (<a class="reference internal" href="equations.html"><span class="doc">Equations</span></a>).</p></li>
-<li><p><strong>The time loop.</strong> <code class="docutils literal notranslate"><span class="pre">sim.run(until=t)</span></code> with a fixed <code class="docutils literal notranslate"><span class="pre">dt</span></code>; Conatus never adapts <code class="docutils literal notranslate"><span class="pre">dt</span></code> for you.</p></li>
-</ul>
-<p>What stays the same: the spectral method itself (Fourier, Chebyshev and curvilinear bases with
-sparse ultraspherical operators, the generalised tau method, IMEX schemes with Dedalus’s
-coefficients), the string syntax of the equations, and the dealiasing convention. On the problems
-where both codes apply the same method, they agree to round-off.</p>
-<p>What is added: the GPU backend, and the dynamics toolkit on the same model: eigenvalues with
-residuals, adjoints, Newton–Krylov searches for invariant solutions, continuation, Floquet and
-Lyapunov analysis (<a class="reference internal" href="dynamics/index.html"><span class="doc">Dynamics</span></a>).</p>
-<p>Bases and conditions you may know from Dedalus 2 are declarations of the axis in the native
-layer: sine and cosine series between stress-free or fixed-value walls
-(<code class="docutils literal notranslate"><span class="pre">cn.walls(0,</span> <span class="pre">1,</span> <span class="pre">basis=&quot;sincos&quot;)</span></code>, the parity of each field read from its conditions), Hermite
-functions on the whole line (<code class="docutils literal notranslate"><span class="pre">cn.line(scale=...)</span></code>), Laguerre functions on the half line
-(<code class="docutils literal notranslate"><span class="pre">cn.half_line(scale=...)</span></code>) and compound Chebyshev intervals (<code class="docutils literal notranslate"><span class="pre">cn.walls(a,</span> <span class="pre">c,</span> <span class="pre">b)</span></code>, continuity at
-the cuts added for you); a stress-free wall is <code class="docutils literal notranslate"><span class="pre">u=cn.free_slip</span></code>, on plane and curved walls
-(<a class="reference internal" href="bases.html"><span class="doc">Bases and domains</span></a>, <a class="reference internal" href="boundary_conditions.html"><span class="doc">Boundary conditions</span></a>). All thirteen time steppers of Dedalus 3 are there,
-with the same coefficients (<a class="reference internal" href="timesteppers.html"><span class="doc">Simulations and time steppers</span></a>).</p>
-</section>
-<section id="importing-a-dedalus-script">
-<h2>Importing a Dedalus script<a class="headerlink" href="#importing-a-dedalus-script" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">cn.from_dedalus(script)</span></code> translates a Dedalus 3 script into Conatus. You get back:</p>
+          <section class="tex2jax_ignore mathjax_ignore" id="importing-dedalus-scripts">
+<h1>Importing Dedalus scripts<a class="headerlink" href="#importing-dedalus-scripts" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">cn.from_dedalus(script)</span></code> reads a Dedalus 3 script and builds the same problem as a Conatus
+problem. It reports, line by line, what it translated. <a class="reference internal" href="../tutorials/14_from_dedalus.html"><span class="doc">Importing a Dedalus script</span></a> goes
+through one complete example.</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<p>The call returns:</p>
 <ul class="simple">
 <li><p>the Conatus problem;</p></li>
 <li><p>the declared time stepping;</p></li>
@@ -830,20 +729,19 @@ with the same coefficients (<a class="reference internal" href="timesteppers.htm
 <span class="nb">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">to_script</span><span class="p">())</span>                             <span class="c1"># a runnable program, report as comments</span>
 </pre></div>
 </div>
-<p>In a notebook, <code class="docutils literal notranslate"><span class="pre">tr</span></code> displays the report as a colour-coded table. <a class="reference internal" href="../tutorials/14_from_dedalus.html"><span class="doc">14. Coming from Dedalus</span></a>
-goes through a complete example and compares the result with Dedalus.</p>
+<p>In a notebook, <code class="docutils literal notranslate"><span class="pre">tr</span></code> displays the report as a colour-coded table.</p>
 </section>
-<section id="what-happens-to-your-script">
-<h2>What happens to your script<a class="headerlink" href="#what-happens-to-your-script" title="Link to this heading">¶</a></h2>
-<p>The script is <strong>read, not run</strong>. Python’s <code class="docutils literal notranslate"><span class="pre">ast</span></code> module parses it, and a restricted interpreter
-walks it statement by statement. It understands:</p>
+<section id="how-the-script-is-read">
+<h2>How the script is read<a class="headerlink" href="#how-the-script-is-read" title="Link to this heading">¶</a></h2>
+<p>The translator does not execute the script. Python’s <code class="docutils literal notranslate"><span class="pre">ast</span></code> module parses it, and a restricted
+interpreter walks it statement by statement. It understands:</p>
 <ul class="simple">
 <li><p>literals, arithmetic, tuples and lambdas;</p></li>
 <li><p>the <code class="docutils literal notranslate"><span class="pre">dedalus.public</span></code> names it knows;</p></li>
 <li><p>a whitelist of NumPy/SciPy functions, used for constants and initial data;</p></li>
 <li><p>the equation strings, which go through the <a class="reference internal" href="equations.html"><span class="doc">Equations</span></a> parser.</p></li>
 </ul>
-<p>No statement of the script is executed by Python, and Dedalus is never imported.</p>
+<p>Python executes no statement of the script, and the translator does not import Dedalus.</p>
 <p>Each statement gets one of four statuses:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -854,7 +752,7 @@ walks it statement by statement. It understands:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><strong>translated</strong></p></td>
-<td><p>same mathematics and same method; the note lists any declared rewrite (<code class="docutils literal notranslate"><span class="pre">trace(grad(u))</span> <span class="pre">-&gt;</span> <span class="pre">div(u)</span></code>) or Dedalus default made explicit (<code class="docutils literal notranslate"><span class="pre">dealias=1</span></code>)</p></td>
+<td><p>same mathematics and same method; the note lists any declared rewrite (<code class="docutils literal notranslate"><span class="pre">trace(grad(u))</span> <span class="pre">-&gt;</span> <span class="pre">div(u)</span></code>) or default of the source script made explicit (<code class="docutils literal notranslate"><span class="pre">dealias=1</span></code>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>approximated</strong></p></td>
 <td><p>translated, but the method differs in a way that can change digits; the note says how</p></td>
@@ -870,11 +768,12 @@ walks it statement by statement. It understands:</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">tr.complete</span></code> is true only when a problem was translated with no line unsupported and none
 approximated. A time loop whose body changes the simulation (writes field data, calls a mutating
-method, stops on a condition) is unsupported: <code class="docutils literal notranslate"><span class="pre">solver.run(n)</span></code> would not do it. <code class="docutils literal notranslate"><span class="pre">**options</span></code> in a
-call are expanded, and a problem’s own <code class="docutils literal notranslate"><span class="pre">namespace={...}</span></code> alone resolves the names of its equations,
-as in Dedalus. <code class="docutils literal notranslate"><span class="pre">tr.to_script()</span></code> is a runnable program: it translates the embedded script again,
-refuses to run if a line is unsupported, then runs the IVP or solves the LBVP (an EVP or NLBVP stops
-at the discretized plan: the group or the initial guess is your choice).</p>
+method, stops on a condition) is unsupported, because <code class="docutils literal notranslate"><span class="pre">solver.run(n)</span></code> cannot reproduce it.
+<code class="docutils literal notranslate"><span class="pre">**options</span></code> in a call are expanded. A problem’s own <code class="docutils literal notranslate"><span class="pre">namespace={...}</span></code> alone resolves the names of
+its equations. <code class="docutils literal notranslate"><span class="pre">tr.to_script()</span></code> returns a runnable program. It translates the embedded script
+again and refuses to run if a line is unsupported. It then runs the IVP or solves the LBVP. For an
+EVP or NLBVP it stops at the discretized plan, because the group or the initial guess is your
+choice.</p>
 </section>
 <section id="the-translated-subset">
 <h2>The translated subset<a class="headerlink" href="#the-translated-subset" title="Link to this heading">¶</a></h2>
@@ -893,15 +792,15 @@ at the discretized plan: the group or the initial guess is your choice).</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">RealFourier</span></code>, <code class="docutils literal notranslate"><span class="pre">ChebyshevT</span></code>/<code class="docutils literal notranslate"><span class="pre">Chebyshev</span></code>, <code class="docutils literal notranslate"><span class="pre">Legendre</span></code>, <code class="docutils literal notranslate"><span class="pre">Jacobi(a,</span> <span class="pre">b)</span></code></p></td>
 <td><p>same bases</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">dealias</span></code> omitted means Dedalus’s default of 1, <strong>written explicitly</strong></p></td>
+<td><p>an omitted <code class="docutils literal notranslate"><span class="pre">dealias</span></code> takes the source default of 1, <strong>written explicitly</strong></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ComplexFourier(N)</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">ComplexFourier(N)</span></code></p></td>
-<td><p><strong>approximated</strong>: Dedalus keeps the Nyquist mode <span class="math notranslate nohighlight">\(k=-N/2\)</span>, Conatus drops it; that group is absent</p></td>
+<td><p><strong>approximated</strong>: the source basis keeps the Nyquist mode <span class="math notranslate nohighlight">\(k=-N/2\)</span>; Conatus drops it, so that group is absent</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DiskBasis(coords,</span> <span class="pre">shape=(Nphi,</span> <span class="pre">Nr))</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">RealFourier</span></code>/<code class="docutils literal notranslate"><span class="pre">ComplexFourier(phi)</span></code> × <code class="docutils literal notranslate"><span class="pre">DiskBasis(r)</span></code></p></td>
-<td><p>same polynomial space for each <span class="math notranslate nohighlight">\(m\)</span>; the pipe-flow eigenvalues equal Dedalus’s to round-off</p></td>
+<td><p>same polynomial space for each <span class="math notranslate nohighlight">\(m\)</span></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AnnulusBasis</span></code></p></td>
 <td><p>× <code class="docutils literal notranslate"><span class="pre">AnnulusBasis(r)</span></code></p></td>
@@ -921,7 +820,7 @@ at the discretized plan: the group or the initial guess is your choice).</p>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">add_equation(&quot;...&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">add_equation((lhs,</span> <span class="pre">rhs))</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">add_equation</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">u*v</span></code> of two tensors is <code class="docutils literal notranslate"><span class="pre">outer(u,</span> <span class="pre">v)</span></code> (Dedalus convention, reported)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">u*v</span></code> of two tensors is <code class="docutils literal notranslate"><span class="pre">outer(u,</span> <span class="pre">v)</span></code> (as in the source language, reported)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Lift(A,</span> <span class="pre">basis.derivative_basis(q),</span> <span class="pre">n)</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">lift(A,</span> <span class="pre">basis,</span> <span class="pre">n,</span> <span class="pre">lam=q)</span></code></p></td>
@@ -933,7 +832,7 @@ at the discretized plan: the group or the initial guess is your choice).</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SBDF1-4</span></code>, <code class="docutils literal notranslate"><span class="pre">CNAB1</span></code>, <code class="docutils literal notranslate"><span class="pre">CNAB2</span></code>, <code class="docutils literal notranslate"><span class="pre">MCNAB2</span></code>, <code class="docutils literal notranslate"><span class="pre">CNLF2</span></code>, <code class="docutils literal notranslate"><span class="pre">RK111</span></code>, <code class="docutils literal notranslate"><span class="pre">RK222</span></code>, <code class="docutils literal notranslate"><span class="pre">RK443</span></code>, <code class="docutils literal notranslate"><span class="pre">RKSMR</span></code>, <code class="docutils literal notranslate"><span class="pre">RKGFY</span></code></p></td>
 <td><p>same schemes, same start-up (lower order first)</p></td>
-<td><p>results agree with Dedalus to round-off; time-dependent boundary data: <code class="docutils literal notranslate"><span class="pre">tr.ivp_solver()</span></code> keeps the Dedalus convention (<code class="docutils literal notranslate"><span class="pre">bc_time=&quot;step&quot;</span></code>, said by <code class="docutils literal notranslate"><span class="pre">explain()</span></code>), while a solver built by hand imposes them so that each Runge–Kutta scheme keeps its order (<code class="docutils literal notranslate"><span class="pre">bc_time=&quot;auto&quot;</span></code>, which is <code class="docutils literal notranslate"><span class="pre">&quot;rk&quot;</span></code>: the implicit tableau applied to <span class="math notranslate nohighlight">\(g'\)</span>; <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code> imposes <span class="math notranslate nohighlight">\(g\)</span> at the stage times; pass either to <code class="docutils literal notranslate"><span class="pre">ivp_solver</span></code>; <a class="reference internal" href="timesteppers.html"><span class="doc">Simulations and time steppers</span></a>); <code class="docutils literal notranslate"><span class="pre">SBDF2_R</span></code>, <code class="docutils literal notranslate"><span class="pre">RK443_IMEX</span></code> are unsupported</p></td>
+<td><p>time-dependent boundary data: <code class="docutils literal notranslate"><span class="pre">tr.ivp_solver()</span></code> carries them in the explicit part, as the source script does (<code class="docutils literal notranslate"><span class="pre">bc_time=&quot;step&quot;</span></code>, said by <code class="docutils literal notranslate"><span class="pre">explain()</span></code>); pass <code class="docutils literal notranslate"><span class="pre">bc_time=&quot;auto&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;stage&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">ivp_solver</span></code> for the other conventions (<a class="reference internal" href="timesteppers.html"><span class="doc">Simulations and time steppers</span></a>); <code class="docutils literal notranslate"><span class="pre">SBDF2_R</span></code>, <code class="docutils literal notranslate"><span class="pre">RK443_IMEX</span></code> are unsupported</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">solver.step(dt)</span></code> in <code class="docutils literal notranslate"><span class="pre">while</span> <span class="pre">solver.proceed</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">solver.run(n)</span></code> with fixed <code class="docutils literal notranslate"><span class="pre">dt</span></code></p></td>
@@ -941,7 +840,7 @@ at the discretized plan: the group or the initial guess is your choice).</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CFL(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">compute_timestep()</span></code></p></td>
 <td><p>—</p></td>
-<td><p><strong>unsupported</strong>: Conatus never changes <code class="docutils literal notranslate"><span class="pre">dt</span></code> by itself; give <code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">conatus.expert.CFL</span></code> reports the CFL step</p></td>
+<td><p><strong>unsupported</strong>: Conatus runs with a fixed <code class="docutils literal notranslate"><span class="pre">dt</span></code>; give <code class="docutils literal notranslate"><span class="pre">dt</span></code>, and <code class="docutils literal notranslate"><span class="pre">conatus.expert.CFL</span></code> reports the CFL step</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">f['g']</span> <span class="pre">=</span> <span class="pre">...</span></code>, <code class="docutils literal notranslate"><span class="pre">f['g'][i]</span> <span class="pre">+=</span> <span class="pre">...</span></code> with grids from <code class="docutils literal notranslate"><span class="pre">local_grids</span></code></p></td>
 <td><p>grid functions <code class="docutils literal notranslate"><span class="pre">tr.data</span></code>, used by <code class="docutils literal notranslate"><span class="pre">set_state</span></code> / <code class="docutils literal notranslate"><span class="pre">ncc</span></code></p></td>
@@ -949,7 +848,7 @@ at the discretized plan: the group or the initial guess is your choice).</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fill_random</span></code>, <code class="docutils literal notranslate"><span class="pre">low_pass_filter</span></code>, <code class="docutils literal notranslate"><span class="pre">f['c']</span> <span class="pre">=</span> <span class="pre">...</span></code></p></td>
 <td><p>—</p></td>
-<td><p><strong>unsupported</strong>: Dedalus’s random layout cannot be reproduced; write an explicit initial condition</p></td>
+<td><p><strong>unsupported</strong>: the random layout of the source cannot be reproduced; write an explicit initial condition</p></td>
 </tr>
 <tr class="row-even"><td><p>file handlers, <code class="docutils literal notranslate"><span class="pre">GlobalFlowProperty</span></code></p></td>
 <td><p>—</p></td>
@@ -957,7 +856,7 @@ at the discretized plan: the group or the initial guess is your choice).</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">solve_dense</span></code> / <code class="docutils literal notranslate"><span class="pre">solve_sparse(subproblems[i])</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">eigenvalues(plan,</span> <span class="pre">group)</span></code></p></td>
-<td><p><strong>approximated</strong>: a Dedalus subproblem index is not a Conatus group; select the group by wavenumber</p></td>
+<td><p><strong>approximated</strong>: a subproblem index of the source is not a Conatus group; select the group by wavenumber</p></td>
 </tr>
 </tbody>
 </table>
@@ -966,15 +865,16 @@ at the discretized plan: the group or the initial guess is your choice).</p>
 translated with <code class="docutils literal notranslate"><span class="pre">from_dedalus(script,</span> <span class="pre">entry=(&quot;max_growth_rate&quot;,</span> <span class="pre">dict(Rayleigh=1710,</span> <span class="pre">...)))</span></code>.
 <code class="docutils literal notranslate"><span class="pre">overrides={&quot;Nx&quot;:</span> <span class="pre">64}</span></code> replaces top-level assignments (also a name bound by unpacking, <code class="docutils literal notranslate"><span class="pre">Nx,</span> <span class="pre">Nz</span> <span class="pre">=</span> <span class="pre">256,</span> <span class="pre">64</span></code>), and each override is listed in the report; an override that matches no top-level assignment is refused with the names that can be overridden.</p>
 </section>
-<section id="the-official-dedalus-examples">
-<h2>The official Dedalus examples<a class="headerlink" href="#the-official-dedalus-examples" title="Link to this heading">¶</a></h2>
-<p>Every official Dedalus 3 example was translated unmodified, which tests the coverage of the
-translator. Where the comparison is possible, both codes then ran the same script (smaller sizes,
-a short time, a deterministic initial condition instead of <code class="docutils literal notranslate"><span class="pre">fill_random</span></code>, a fixed <code class="docutils literal notranslate"><span class="pre">dt</span></code> instead of
-the CFL): KdV–Burgers, Rayleigh–Bénard, the 2D shear flow, the Poisson problem, the Rayleigh–Bénard
-eigenvalue problem and the pipe-flow eigenvalues agree to round-off. The spherical examples
-(sphere, shell, ball) use geometries that Conatus has, but their translation is not automatic yet:
-write them as native models (<a class="reference internal" href="geometries.html"><span class="doc">Geometries</span></a>).</p>
+<section id="checking-a-translation">
+<h2>Checking a translation<a class="headerlink" href="#checking-a-translation" title="Link to this heading">¶</a></h2>
+<p>The translator is tested on every official Dedalus 3 example, read unmodified. Six of them were
+also run in both forms on a reduced case (smaller sizes, a short time, a deterministic initial
+condition, a fixed <code class="docutils literal notranslate"><span class="pre">dt</span></code>): KdV–Burgers, Rayleigh–Bénard, the 2D shear flow, the Poisson problem, the
+Rayleigh–Bénard eigenvalue problem and the pipe-flow eigenvalues. The two results agree to
+rounding. The spherical examples (sphere, shell, ball) are not translated automatically; write
+them as native models (<a class="reference internal" href="geometries.html"><span class="doc">Geometries</span></a>). To check your own translation, run the original script
+and the translated problem on a small case and compare one output quantity, as the optional
+check script of <a class="reference internal" href="../tutorials/14_from_dedalus.html"><span class="doc">Importing a Dedalus script</span></a> does.</p>
 </section>
 </section>
 
@@ -1033,13 +933,11 @@ write them as native models (<a class="reference internal" href="geometries.html
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Coming from Dedalus</a><ul>
-<li><a class="reference internal" href="#the-same-problem-side-by-side">The same problem, side by side</a></li>
-<li><a class="reference internal" href="#what-you-stop-writing">What you stop writing</a></li>
-<li><a class="reference internal" href="#importing-a-dedalus-script">Importing a Dedalus script</a></li>
-<li><a class="reference internal" href="#what-happens-to-your-script">What happens to your script</a></li>
+<li><a class="reference internal" href="#">Importing Dedalus scripts</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#how-the-script-is-read">How the script is read</a></li>
 <li><a class="reference internal" href="#the-translated-subset">The translated subset</a></li>
-<li><a class="reference internal" href="#the-official-dedalus-examples">The official Dedalus examples</a></li>
+<li><a class="reference internal" href="#checking-a-translation">Checking a translation</a></li>
 </ul>
 </li>
 </ul>
@@ -1051,7 +949,7 @@ write them as native models (<a class="reference internal" href="geometries.html
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

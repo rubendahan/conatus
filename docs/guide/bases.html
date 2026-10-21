@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Bases and domains</a></li>
@@ -705,7 +710,7 @@ number <span class="math notranslate nohighlight">\(m\)</span> in polar geometry
 </pre></div>
 </div>
 <p>Linear problems (EVP, LBVP) use <code class="docutils literal notranslate"><span class="pre">dealias=1</span></code>; quadratic nonlinearities need <code class="docutils literal notranslate"><span class="pre">3/2</span></code>. The grid size is
-<code class="docutils literal notranslate"><span class="pre">floor(N</span> <span class="pre">*</span> <span class="pre">dealias)</span></code> (the Dedalus convention). With <code class="docutils literal notranslate"><span class="pre">grid=&quot;smooth7&quot;</span></code> the grid is raised to the
+<code class="docutils literal notranslate"><span class="pre">floor(N</span> <span class="pre">*</span> <span class="pre">dealias)</span></code>. With <code class="docutils literal notranslate"><span class="pre">grid=&quot;smooth7&quot;</span></code> the grid is raised to the
 smallest size whose FFT length has no prime factor larger than 7, so dealiasing stays exact and
 the FFTs avoid large-prime lengths:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -770,7 +775,7 @@ the FFTs avoid large-prime lengths:</p>
 </div>
 <p><strong>Legendre, Jacobi and ultraspherical axes.</strong> A wall-bounded axis can be expanded in any Jacobi
 family <span class="math notranslate nohighlight">\(P_n^{(a,b)}\)</span> (<span class="math notranslate nohighlight">\(a, b &gt; -1\)</span>; Legendre is <span class="math notranslate nohighlight">\(a = b = 0\)</span>, <span class="math notranslate nohighlight">\(C_n^{(\lambda)}\)</span> the ultraspherical
-family, and <code class="docutils literal notranslate"><span class="pre">ChebyshevU</span></code>, <code class="docutils literal notranslate"><span class="pre">ChebyshevV</span></code> are <span class="math notranslate nohighlight">\(C^{(1)}\)</span>, <span class="math notranslate nohighlight">\(C^{(2)}\)</span> as in Dedalus). An equation of
+family, and <code class="docutils literal notranslate"><span class="pre">ChebyshevU</span></code>, <code class="docutils literal notranslate"><span class="pre">ChebyshevV</span></code> are <span class="math notranslate nohighlight">\(C^{(1)}\)</span>, <span class="math notranslate nohighlight">\(C^{(2)}\)</span>). An equation of
 differential order <span class="math notranslate nohighlight">\(q\)</span> is written in the family <span class="math notranslate nohighlight">\(P^{(a+q,\,b+q)}\)</span>, so its <span class="math notranslate nohighlight">\(q\)</span> tau terms are lifted
 there: <code class="docutils literal notranslate"><span class="pre">lift(tau,</span> <span class="pre">basis,</span> <span class="pre">-1,</span> <span class="pre">lam=q)</span></code>. Every operator is sparse and exact on the retained modes, the
 grid is the Gauss–Jacobi grid of the family, and a non-constant coefficient reports its spectral
@@ -778,7 +783,7 @@ tail as on a Chebyshev axis. The checks: Poisson with an exact solution to round
 the eigenvalues of a string to <span class="math notranslate nohighlight">\(10^{-10}\)</span>, and a viscous Burgers run equal to the Chebyshev <span class="math notranslate nohighlight">\(T\)</span> run
 to <span class="math notranslate nohighlight">\(5\times10^{-13}\)</span>. In the native layer <code class="docutils literal notranslate"><span class="pre">cn.walls</span></code> is Chebyshev <span class="math notranslate nohighlight">\(T\)</span> by default, or a sine/cosine series with
 <code class="docutils literal notranslate"><span class="pre">cn.walls(a,</span> <span class="pre">b,</span> <span class="pre">basis=&quot;sincos&quot;)</span></code> (<a class="reference internal" href="geometries.html"><span class="doc">Geometries</span></a>); these Jacobi families are
-for the expert layer and for Dedalus scripts translated by <code class="docutils literal notranslate"><span class="pre">cn.from_dedalus</span></code> (<a class="reference internal" href="dedalus.html"><span class="doc">Coming from Dedalus</span></a>). Their GPU path
+for the expert layer and for scripts imported with <code class="docutils literal notranslate"><span class="pre">cn.from_dedalus</span></code> (<a class="reference internal" href="dedalus.html"><span class="doc">Importing Dedalus scripts</span></a>). Their GPU path
 (<code class="docutils literal notranslate"><span class="pre">backend=&quot;cuda&quot;</span></code>) has run on an A100 only (<a class="reference internal" href="gpu.html"><span class="doc">GPU</span></a>).</p>
 <p>Mapped bases put the resolution where a free shear layer or a critical layer is, without
 truncating the line to <span class="math notranslate nohighlight">\([-L, L]\)</span>: the Taylor–Goldstein example of the gallery reaches
@@ -791,8 +796,8 @@ domain of a plane channel with its base flow as an NCC; everything it chooses is
 <section id="curvilinear-geometries">
 <h2>Curvilinear geometries<a class="headerlink" href="#curvilinear-geometries" title="Link to this heading">¶</a></h2>
 <p>The same IR, the same <code class="docutils literal notranslate"><span class="pre">discretize</span> <span class="pre">→</span> <span class="pre">plan</span> <span class="pre">→</span> <span class="pre">eigenvalues</span> <span class="pre">/</span> <span class="pre">solve</span> <span class="pre">/</span> <span class="pre">IVPSolver</span></code> path; the bases are
-regular at the axis or centre by construction (no <span class="math notranslate nohighlight">\(1/r \to 1/(r+\varepsilon)\)</span>, no condition at
-<span class="math notranslate nohighlight">\(r = 0\)</span>).</p>
+regular at the axis or centre. There is no <span class="math notranslate nohighlight">\(1/r \to 1/(r+\varepsilon)\)</span> and no condition at
+<span class="math notranslate nohighlight">\(r = 0\)</span>.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -832,7 +837,7 @@ regular at the axis or centre by construction (no <span class="math notranslate 
 </table>
 </div>
 <p>Taylor–Couette and pipe flow are written with these bases in the expert layer (see
-<a class="reference internal" href="../tutorials/08_polar.html"><span class="doc">8. Polar geometry: a drum, a pipe, two rotating cylinders</span></a>); the native geometries <code class="docutils literal notranslate"><span class="pre">cn.Annulus</span></code> and <code class="docutils literal notranslate"><span class="pre">cn.Pipe</span></code> choose them for
+<a class="reference internal" href="../tutorials/08_polar.html"><span class="doc">Polar geometry: a drum, a pipe, two rotating cylinders</span></a>); the native geometries <code class="docutils literal notranslate"><span class="pre">cn.Annulus</span></code> and <code class="docutils literal notranslate"><span class="pre">cn.Pipe</span></code> choose them for
 you (<a class="reference internal" href="geometries.html"><span class="doc">Geometries</span></a>).</p>
 </section>
 <section id="symmetry-subspaces">
@@ -840,15 +845,15 @@ you (<a class="reference internal" href="geometries.html"><span class="doc">Geom
 <p>A <code class="docutils literal notranslate"><span class="pre">SymmetrySubspace(Reflection(z),</span> <span class="pre">T=EVEN,</span> <span class="pre">...)</span></code> passed to a problem (<code class="docutils literal notranslate"><span class="pre">symmetry=</span></code>) restricts every
 field to a declared parity, and each system shrinks to the size of the subspace. Parities are
 checked on every equation; an inconsistent declaration is refused. See
-<a class="reference internal" href="../tutorials/03_symmetries.html"><span class="doc">3. Symmetries and symmetry subspaces</span></a> and <a class="reference internal" href="dynamics/index.html"><span class="doc">Dynamics</span></a>.</p>
+<a class="reference internal" href="../tutorials/03_symmetries.html"><span class="doc">Symmetries and symmetry subspaces</span></a> and <a class="reference internal" href="dynamics/index.html"><span class="doc">Dynamics</span></a>.</p>
 </section>
 <section id="sine-cosine-walls-native-layer">
 <h2>Sine/cosine walls (native layer)<a class="headerlink" href="#sine-cosine-walls-native-layer" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">cn.walls(a,</span> <span class="pre">b,</span> <span class="pre">basis=&quot;sincos&quot;)</span></code> discretizes a wall axis with sine and cosine series,
-<span class="math notranslate nohighlight">\(\sin(n\pi(z-a)/L)\)</span> and <span class="math notranslate nohighlight">\(\cos(n\pi(z-a)/L)\)</span>, <span class="math notranslate nohighlight">\(n &lt; N_z\)</span>, <span class="math notranslate nohighlight">\(L = b - a\)</span>. It is exact for
-stress-free walls, fixed-temperature or insulating walls, hinged plates: every unknown is a pure
-sine or cosine series, so its wall conditions hold identically and <strong>no tau term</strong> is needed. The
-parity of each unknown is read off the wall conditions you already write (never guessed):</p>
+<span class="math notranslate nohighlight">\(\sin(n\pi(z-a)/L)\)</span> and <span class="math notranslate nohighlight">\(\cos(n\pi(z-a)/L)\)</span>, <span class="math notranslate nohighlight">\(n &lt; N_z\)</span>, <span class="math notranslate nohighlight">\(L = b - a\)</span>. It suits stress-free
+walls, fixed-temperature or insulating walls and hinged plates. Each unknown is a pure sine or
+cosine series, so its wall conditions hold identically and <strong>no tau term</strong> is needed. The compiler
+derives each unknown’s parity from its wall conditions and checks that they are consistent:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -906,10 +911,10 @@ Rayleigh–Bénard onset, at <span class="math notranslate nohighlight">\(k_c = 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"chebyshev  Ra/Ra_c = </span><span class="si">{</span><span class="n">Ra</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">Ra_c</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">: s = </span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">+.15f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sincos     Ra/Ra_c = 0.99: s = -0.074208019189858
-chebyshev  Ra/Ra_c = 0.99: s = -0.074208019189862
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sincos     Ra/Ra_c = 0.99: s = -0.074208019189859
+chebyshev  Ra/Ra_c = 0.99: s = -0.074208019189847
 sincos     Ra/Ra_c = 1.01: s = +0.073837897458271
-chebyshev  Ra/Ra_c = 1.01: s = +0.073837897458291
+chebyshev  Ra/Ra_c = 1.01: s = +0.073837897458280
 </pre></div>
 </div>
 <p>The closed form <span class="math notranslate nohighlight">\((s/Pr + K^2)(s + K^2)K^2 = Ra\,k^2\)</span>, <span class="math notranslate nohighlight">\(K^2 = k^2 + \pi^2\)</span>, gives
@@ -917,9 +922,9 @@ chebyshev  Ra/Ra_c = 1.01: s = +0.073837897458291
 group holds one vertical wavenumber, <code class="docutils literal notranslate"><span class="pre">n=1</span></code> selects it; without <code class="docutils literal notranslate"><span class="pre">n=</span></code> all of them are gathered),
 the Chebyshev one is spectrally accurate. <code class="docutils literal notranslate"><span class="pre">m.explain()</span></code> declares the choices:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="s2">"sincos"</span><span class="p">,</span> <span class="n">Ra_c</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">explain</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"z:"</span><span class="p">,</span> <span class="s2">"u:"</span><span class="p">,</span> <span class="s2">"p:"</span><span class="p">,</span> <span class="s2">"T:"</span><span class="p">))))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"z:"</span><span class="p">,</span> <span class="s2">"u:"</span><span class="p">,</span> <span class="s2">"p:"</span><span class="p">,</span> <span class="s2">"T:"</span><span class="p">))))</span>
 <span class="n">m</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="s2">"chebyshev"</span><span class="p">,</span> <span class="n">Ra_c</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">explain</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">"free-slip"</span> <span class="ow">in</span> <span class="n">l</span> <span class="ow">and</span> <span class="s2">"tau"</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)</span> <span class="ow">or</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"divergence tau"</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">explain</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="s2">"free-slip"</span> <span class="ow">in</span> <span class="n">l</span> <span class="ow">and</span> <span class="s2">"tau"</span> <span class="ow">in</span> <span class="n">l</span><span class="p">)</span> <span class="ow">or</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"divergence tau"</span><span class="p">)))</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>z: walls at 0, 1 -&gt; sine/cosine bases (N_z wavenumbers n pi/L, n &lt; N_z, L = 1), realised as the reflection subspace of RealFourier(2 N_z) on [0, 2); no tau
@@ -933,15 +938,16 @@ p: cosine series (deduced from the equivariance of momentum)
 <code class="docutils literal notranslate"><span class="pre">SymmetrySubspace(Reflection(z,</span> <span class="pre">about=a),</span> <span class="pre">...)</span></code>; plans, eigenvalues and <code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code> run in that
 subspace (<code class="docutils literal notranslate"><span class="pre">reduced=True</span></code>, set explicitly; <code class="docutils literal notranslate"><span class="pre">reduced=False</span></code> is refused). The dealiasing factor
 applies to the doubled grid. <code class="docutils literal notranslate"><span class="pre">sim.initial(...)</span></code> evaluates your function on <span class="math notranslate nohighlight">\([a, b]\)</span> only and
-extends it by the parity (data of a sine field that do not vanish at the walls are refused, never
-truncated); <code class="docutils literal notranslate"><span class="pre">sim.grid(name)</span></code> and <code class="docutils literal notranslate"><span class="pre">sim.coordinate(&quot;z&quot;)</span></code> return the <span class="math notranslate nohighlight">\(N_z + 1\)</span> points of <span class="math notranslate nohighlight">\([a, b]\)</span>;
+extends it by the parity (data of a sine field that do not vanish at the walls are refused); <code class="docutils literal notranslate"><span class="pre">sim.grid(name)</span></code> and <code class="docutils literal notranslate"><span class="pre">sim.coordinate(&quot;z&quot;)</span></code> return the <span class="math notranslate nohighlight">\(N_z + 1\)</span> points of <span class="math notranslate nohighlight">\([a, b]\)</span>;
 <code class="docutils literal notranslate"><span class="pre">sim.coeffs(name)</span></code> and <code class="docutils literal notranslate"><span class="pre">sim.solver</span></code> (expert) keep the doubled-period layout.</p>
 <p>What is refused, with what to write instead: a non-homogeneous condition (<code class="docutils literal notranslate"><span class="pre">T=1</span></code> at a wall: write
 the perturbation about the conduction profile, or use Chebyshev walls), a Robin or coupled
 condition, conditions asking for both a sine and a cosine, no-slip velocity (normal and tangential
 components would need opposite parities: use <code class="docutils literal notranslate"><span class="pre">cn.free_slip</span></code> or Chebyshev walls), a coefficient or
 base state without parity (<code class="docutils literal notranslate"><span class="pre">m.given(U=lambda</span> <span class="pre">z:</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">z)</span></code>: give it as a cosine/sine series or use
-Chebyshev walls), a source term of the wrong parity, and <code class="docutils literal notranslate"><span class="pre">drift=</span></code> (no tau, no spurious mode).</p>
+Chebyshev walls), a source term of the wrong parity, and <code class="docutils literal notranslate"><span class="pre">drift=</span></code>. This basis needs no tau
+variables, so there are no tau modes to filter; check the spectral convergence of the computed
+modes instead.</p>
 </section>
 <section id="whole-line-half-line-compound-intervals">
 <h2>Whole line, half line, compound intervals<a class="headerlink" href="#whole-line-half-line-compound-intervals" title="Link to this heading">¶</a></h2>
@@ -975,8 +981,8 @@ Chebyshev walls), a source term of the wrong parity, and <code class="docutils l
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">scale</span></code> is required: it is the width of the basis functions, a numerical choice like <span class="math notranslate nohighlight">\(N\)</span>, never
-picked for you (choose it of the order of the width of the solution). On the half line an
+<p><code class="docutils literal notranslate"><span class="pre">scale</span></code> is required. It is the width of the basis functions, a numerical choice like <span class="math notranslate nohighlight">\(N\)</span>; choose
+it of the order of the width of the solution. On the half line an
 equation of order <span class="math notranslate nohighlight">\(q\)</span> is written in the derivative basis <span class="math notranslate nohighlight">\(L^{(q)}_n e^{-y/2}\)</span> (bidiagonal
 derivative and conversions, the Laguerre analogue of the ultraspherical method) and takes <span class="math notranslate nohighlight">\(q/2\)</span>
 conditions at its wall. On a compound interval, for each unknown of order <span class="math notranslate nohighlight">\(q\)</span> the value and the
@@ -1034,13 +1040,7 @@ is below <span class="math notranslate nohighlight">\(10^{-9}\)</span> at <span 
                 <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"x:"</span><span class="p">,</span> <span class="s2">"u = "</span><span class="p">,</span> <span class="s2">"u continuous"</span><span class="p">,</span> <span class="s2">"dx(u) continuous"</span><span class="p">))))</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>x: compound interval [-1, -0.15], [-0.15, 0.15], [0.15, 1] -&gt; Chebyshev T per piece (N_x = one size per piece), continuity of value and derivatives at x = -0.15, x = 0.15 (automatic)
-u = -1 at bottom: tau_u1 lifted into mode 63 (N_x,0-1) of piece 0 of [0] eq0 -- u has its highest x-order (2) there; Chebyshev lift into the last modes of piece 0
-u continuous at interface x=-0.15: tau_u2 lifted into mode 62 (N_x,0-2) of piece 0 of [0] eq0 -- continuity of u across the interface (order 2 of u); Chebyshev lift into the last modes of piece 0
-dx(u) continuous at interface x=-0.15: tau_u3 lifted into mode 63 (N_x,1-1) of piece 1 of [0] eq0 -- continuity of dx(u) across the interface (order 2 of u); Chebyshev lift into the last modes of piece 1
-u continuous at interface x=0.15: tau_u4 lifted into mode 62 (N_x,1-2) of piece 1 of [0] eq0 -- continuity of u across the interface (order 2 of u); Chebyshev lift into the last modes of piece 1
-dx(u) continuous at interface x=0.15: tau_u5 lifted into mode 63 (N_x,2-1) of piece 2 of [0] eq0 -- continuity of dx(u) across the interface (order 2 of u); Chebyshev lift into the last modes of piece 2
-u = 1 at top: tau_u6 lifted into mode 62 (N_x,2-2) of piece 2 of [0] eq0 -- u has its highest x-order (2) there; Chebyshev lift into the last modes of piece 2
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 <p>When to use which: a compound interval pays off for a <strong>localized</strong> feature (interior layer,
@@ -1132,7 +1132,7 @@ matrices on the device).</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

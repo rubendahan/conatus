@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins" href="12_chaos_ensembles.html"><link rel="prev" title="10. Bifurcations: branch switching, cycles, codimension 2, normal forms" href="10_bifurcations.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Importing a Dedalus script" href="14_from_dedalus.html"><link rel="prev" title="Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes" href="15_ks_covariant.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>11. Record, query, reproduce: the run registry - Conatus</title>
+        <title>Record, query, reproduce: the run registry - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/bases.html">Bases and domains</a></li>
@@ -679,8 +684,8 @@
         </div>
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="record-query-reproduce-the-run-registry">
-<h1>11. Record, query, reproduce: the run registry<a class="headerlink" href="#record-query-reproduce-the-run-registry" title="Link to this heading">¶</a></h1>
-<p>Every run can be found again, compared, re-run to the bit, and reused only when you ask.</p>
+<h1>Record, query, reproduce: the run registry<a class="headerlink" href="#record-query-reproduce-the-run-registry" title="Link to this heading">¶</a></h1>
+<p>Record a parameter scan, query its results and rerun a selected calculation. Recording is opt-in.</p>
 <p><strong>Goal.</strong> Record a small parameter scan, certify the runs that pass a closed-form check, query them,
 compare two of them, reproduce one bit for bit, and see the cache reuse an identical computation
 only when <code class="docutils literal notranslate"><span class="pre">cache=True</span></code> is given.
@@ -707,7 +712,7 @@ several processes writing at once, and an unwritable registry leaving the run bi
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"CN_RUNS"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">"conatus_t11_registry_"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The tutorial keeps its registry in a new temporary directory, so it never reads or deletes a
+<p>The tutorial keeps its registry in a new temporary directory, so it does not read or delete a
 registry of yours. Point <code class="docutils literal notranslate"><span class="pre">CN_RUNS</span></code> at a scratch disk for your own work: a registry holds states, and
 states can be large.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">T_END</span><span class="p">,</span> <span class="n">DT</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1e-3</span>
@@ -732,10 +737,13 @@ states can be large.</p>
 </div>
 <p>The heat equation is a native model on a periodic line; <code class="docutils literal notranslate"><span class="pre">kappa</span></code> is a model parameter. Its value is
 not part of the problem’s structural hash, but it is recorded as a run parameter and enters the cache
-key (two runs at different <span class="math notranslate nohighlight">\(\kappa\)</span> are never confused).</p>
+key, so two runs at different <span class="math notranslate nohighlight">\(\kappa\)</span> are kept apart.</p>
 </section>
 <section id="record-and-certify">
 <h2>Record and certify<a class="headerlink" href="#record-and-certify" title="Link to this heading">¶</a></h2>
+<p>This tutorial works one level below <code class="docutils literal notranslate"><span class="pre">sim.run</span></code>. A simulation wraps a time stepper, <code class="docutils literal notranslate"><span class="pre">sim.solver</span></code>,
+and the registry works with that object: <code class="docutils literal notranslate"><span class="pre">sim.solver.run(n,</span> <span class="pre">record=run)</span></code> records a run, and
+<code class="docutils literal notranslate"><span class="pre">run.reproduce(solver)</span></code> runs it again.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">runs</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="k">for</span> <span class="n">kappa</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">):</span>
     <span class="n">sim</span> <span class="o">=</span> <span class="n">simulation</span><span class="p">(</span><span class="n">kappa</span><span class="p">)</span>
@@ -752,19 +760,10 @@ key (two runs at different <span class="math notranslate nohighlight">\(\kappa\)
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">sim.solver.run(n,</span> <span class="pre">record=run)</span></code> records into the open run: problem hash, parameter values,
-numerics and <code class="docutils literal notranslate"><span class="pre">explain()</span></code>, the executed code, host, GPU, Slurm job, and the start and end states.
-<code class="docutils literal notranslate"><span class="pre">sim.solver</span></code> is the time stepper the simulation wraps; recording and the cache are options of its
-<code class="docutils literal notranslate"><span class="pre">run</span></code>.</p></li>
+numerics and <code class="docutils literal notranslate"><span class="pre">explain()</span></code>, the executed code, host, GPU, Slurm job, and the start and end states.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">run.result(...)</span></code> stores scalars you can query. <code class="docutils literal notranslate"><span class="pre">certify</span></code> needs a reason, and here carries the
 evidence (the relative error against the closed form); the history of statuses is kept.</p></li>
 </ul>
-<figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t11_decay.png"><img alt="Three straight lines on a log scale, the decay of sin 3x for three diffusivities, the coloured dots on thin grey closed-form lines." loading="lazy" src="../_images/t11_decay.png" style="width: 100%;" />
-</a>
-<figcaption>
-<p><span class="caption-text">The three recorded runs, sampled every five steps: each decays as exp(−9κt) (grey), the closed form the registry’s results are checked against.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
-</figcaption>
-</figure>
 </section>
 <section id="query-and-compare">
 <h2>Query and compare<a class="headerlink" href="#query-and-compare" title="Link to this heading">¶</a></h2>
@@ -775,8 +774,8 @@ evidence (the relative error against the closed form); the history of statuses i
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">kappa__gt=0.15</span></code> filters on a parameter; results, tags, statuses and index columns (<code class="docutils literal notranslate"><span class="pre">host</span></code>, <code class="docutils literal notranslate"><span class="pre">gpu</span></code>,
-<code class="docutils literal notranslate"><span class="pre">git_head</span></code>, <code class="docutils literal notranslate"><span class="pre">slurm_job</span></code>…) work the same way. An unknown key is an error with a suggestion, never an
-empty list.</p>
+<code class="docutils literal notranslate"><span class="pre">git_head</span></code>, <code class="docutils literal notranslate"><span class="pre">slurm_job</span></code>…) work the same way. An unknown search key raises an error that suggests
+supported names.</p>
 </section>
 <section id="reproduce">
 <h2>Reproduce<a class="headerlink" href="#reproduce" title="Link to this heading">¶</a></h2>
@@ -784,8 +783,9 @@ empty list.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">rep</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>The solver you pass must be the same problem with the same parameter values and numerics (checked,
-never adapted); the recorded start state is loaded and the end state compared bit for bit.</p>
+<p>The solver you pass must be the same problem with the same parameter values and numerics. A
+mismatch raises an error that lists the differences. The recorded start state is loaded and the end
+state compared bit for bit.</p>
 </section>
 <section id="the-cache-only-when-asked">
 <h2>The cache, only when asked<a class="headerlink" href="#the-cache-only-when-asked" title="Link to this heading">¶</a></h2>
@@ -800,6 +800,13 @@ never adapted); the recorded start state is loaded and the end state compared bi
 <span class="nb">print</span><span class="p">(</span><span class="n">cn</span><span class="o">.</span><span class="n">runs</span><span class="o">.</span><span class="n">lineage</span><span class="p">(</span><span class="n">again</span><span class="p">)</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>               <span class="c1"># the cached run is a descendant</span>
 </pre></div>
 </div>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/t11_registry.png"><img alt="A diagram of the registry: three run cards on the left, two of them outlined in red as certified, with arrows to a query box; on the right, a reproduction box reporting an identical end state and a cache box reporting that nothing was computed." loading="lazy" src="../_images/t11_registry.png" style="width: 100%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">The registry of the page when the script ends. Each run records its parameters and its measured error against the closed form exp(−9κt); the two certified ones (red) are what the query returns. reproduce() runs heat_k0.2 again and compares the end states: identical, largest difference 0. A repeated call with cache=True takes no step and reads the recorded state (200 steps in the original).</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
 </section>
 <section id="check">
 <h2>Check<a class="headerlink" href="#check" title="Link to this heading">¶</a></h2>
@@ -819,10 +826,10 @@ end state bit for bit, and the identical call without <code class="docutils lite
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t11_runs: PASS (exit 0) in 26.6 s | 2026-10-20 | script sha256 8a4e7db6a6b083fd
-Run (heat_k0.1): state completed, status provisional, 0.679 s
-Run (heat_k0.2): state completed, status provisional, 0.039 s
-Run (heat_k0.4): state completed, status provisional, 0.0382 s
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t11_runs: PASS (exit 0) in 6.8 s | 2026-10-21 | script sha256 8a4e7db6a6b083fd
+Run (heat_k0.1): state completed, status provisional, 0.158 s
+Run (heat_k0.2): state completed, status provisional, 0.0392 s
+Run (heat_k0.4): state completed, status provisional, 0.0384 s
   completed certified   rate=1.8000000002184402, rel_error=1.2135564158515738e-10
   completed certified   rate=3.600000003494189, rel_error=9.706080383864446e-10
 compare (a) vs (b)
@@ -831,13 +838,13 @@ compare (a) vs (b)
   numerics problem.parameters.kappa: 0.2 -&gt; 0.4
   result rate: a=1.8000000002184402 b=3.600000003494189 (rel. diff 5.000e-01)
   result rel_error: a=1.2135564158515738e-10 b=9.706080383864446e-10 (rel. diff 8.750e-01)
-  code: identical executed tree; git e9cbfabb96 -&gt; e9cbfabb96
+  code: identical executed tree; git 26127df40c -&gt; 26127df40c
 reproduce -&gt; bit-for-bit identical
   code: identical to the recorded code
   steps: 200
   compared: end state: X, multistep history (), t, iteration
   differ: nothing
-conatus.runs cache hit: nothing computed; state after 200 steps read from run (took 0.037866 s); key 1a1fd1de77be, report in run.cache_report
+conatus.runs cache hit: nothing computed; state after 200 steps read from run (took 0.037813 s); key 3b3d7b81ed5b, report in run.cache_report
 {'hit': True, 'reused_from': '', 'computed': 'nothing: 0 steps taken'}
  (this run)
   └─ (cache reuse)
@@ -861,23 +868,23 @@ return value as results) and reuses identical calls on request.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="12_chaos_ensembles.html">
+          <a class="next-page" href="14_from_dedalus.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</div>
+                <div class="title">Importing a Dedalus script</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="10_bifurcations.html">
+          <a class="prev-page" href="15_ks_covariant.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</div>
+                <div class="title">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</div>
                 
               </div>
             </a>
@@ -911,7 +918,7 @@ return value as results) and reuses identical calls on request.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">11. Record, query, reproduce: the run registry</a><ul>
+<li><a class="reference internal" href="#">Record, query, reproduce: the run registry</a><ul>
 <li><a class="reference internal" href="#the-problem">The problem</a></li>
 <li><a class="reference internal" href="#record-and-certify">Record and certify</a></li>
 <li><a class="reference internal" href="#query-and-compare">Query and compare</a></li>
@@ -931,7 +938,7 @@ return value as results) and reuses identical calls on request.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -687,9 +692,8 @@ until you call <code class="docutils literal notranslate"><span class="pre">disc
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>        <span class="c1"># IR, bases, problems, solvers, time stepping, dynamics toolkit</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">conatus.expert</span></code> re-exports the documented public objects of every user-facing module; name
-clashes are never resolved silently and are listed by <code class="docutils literal notranslate"><span class="pre">conatus.expert.explain()</span></code> (see
-<a class="reference internal" href="explain.html"><span class="doc">explain() and the Methods paragraph</span></a>). Helpers and result types that the guide does not show stay in their module
+<p><code class="docutils literal notranslate"><span class="pre">conatus.expert</span></code> re-exports the documented public objects of the user-facing modules.
+<code class="docutils literal notranslate"><span class="pre">conatus.expert.explain()</span></code> lists the name clashes and how each is handled (see <a class="reference internal" href="explain.html"><span class="doc">explain() and the Methods paragraph</span></a>). Helpers and result types that the guide does not show stay in their module
 (<code class="docutils literal notranslate"><span class="pre">conatus.&lt;module&gt;.&lt;name&gt;</span></code>).</p>
 <section id="fields-and-parameters">
 <h2>Fields and parameters<a class="headerlink" href="#fields-and-parameters" title="Link to this heading">¶</a></h2>
@@ -717,8 +721,8 @@ values you pass to <code class="docutils literal notranslate"><span class="pre">
 resolve it. To accept it as it is, declare it: <code class="docutils literal notranslate"><span class="pre">ncc_cutoff=1e-6</span></code> drops its coefficients below
 <span class="math notranslate nohighlight">\(10^{-6}\max|a_k|\)</span>, <code class="docutils literal notranslate"><span class="pre">ncc_tail_tol=1e-6</span></code> keeps them all; <code class="docutils literal notranslate"><span class="pre">plan.explain()</span></code> reports either. The
 native calls take the same arguments (<code class="docutils literal notranslate"><span class="pre">m.simulate(N,</span> <span class="pre">...,</span> <span class="pre">ncc_cutoff=1e-6)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.eigenvalues</span></code>,
-<code class="docutils literal notranslate"><span class="pre">m.solve</span></code>, <code class="docutils literal notranslate"><span class="pre">lin.eigenvalues</span></code>). Coefficient data (<code class="docutils literal notranslate"><span class="pre">FieldData(...,</span> <span class="pre">&quot;coeff&quot;)</span></code>) is exact and never
-refused. A tail below <code class="docutils literal notranslate"><span class="pre">conatus.tolerances.NCC_ROUNDING</span></code> (<span class="math notranslate nohighlight">\(10^3\)</span>) times the machine epsilon times the
+<code class="docutils literal notranslate"><span class="pre">m.solve</span></code>, <code class="docutils literal notranslate"><span class="pre">lin.eigenvalues</span></code>). Coefficient data (<code class="docutils literal notranslate"><span class="pre">FieldData(...,</span> <span class="pre">&quot;coeff&quot;)</span></code>) is used as given and
+is not refused. A tail below <code class="docutils literal notranslate"><span class="pre">conatus.tolerances.NCC_ROUNDING</span></code> (<span class="math notranslate nohighlight">\(10^3\)</span>) times the machine epsilon times the
 scale of the data is the rounding of the coefficient’s own computation, not under-resolution, and
 is accepted.</p>
 <p><strong>Residual digits and coefficient digits.</strong> A Newton or eigenvalue residual of <span class="math notranslate nohighlight">\(10^{-12}\)</span> next to
@@ -726,7 +730,7 @@ an accepted NCC tail of <span class="math notranslate nohighlight">\(10^{-9}\)</
 <em>discrete</em> problem is solved, with each coefficient as represented by its truncated Chebyshev
 series; the tail bounds how far that representation is from the coefficient you gave. The answer
 of the continuous problem is known to about the larger of the two (times the conditioning of the
-problem), never to the residual alone, and the results say so: <code class="docutils literal notranslate"><span class="pre">NLBVPSolution.explain()</span></code> and
+problem), not to the residual alone. <code class="docutils literal notranslate"><span class="pre">NLBVPSolution.explain()</span></code> and
 <code class="docutils literal notranslate"><span class="pre">LBVPSolution.explain()</span></code> print an <em>accuracy floor</em> line with the largest sampled NCC tail
 (<code class="docutils literal notranslate"><span class="pre">conatus.tolerances.ncc_floor_text</span></code>). The refusal level <span class="math notranslate nohighlight">\(10^{-8}\)</span> is where the coefficients of the
 suite fall either clearly resolved (<span class="math notranslate nohighlight">\(10^{-10}\)</span> to <span class="math notranslate nohighlight">\(4\times10^{-9}\)</span>) or clearly not (<span class="math notranslate nohighlight">\(10^{-7}\)</span> and
@@ -814,7 +818,7 @@ every implicit rotation term, and above 1 the solver warns once (<code class="do
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">caught</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">":"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">caught</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="p">)[:</span><span class="mi">72</span><span class="p">],</span> <span class="s2">"..."</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>implicit rotation 2*Om*cross(ez, u): |W| = 2, |W| dt = 0.02 (stable at any dt; its waves are resolved in time)
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>implicit rotation 2*Om*cross(ez, u): |W| = 2, |W| dt = 0.02 (stable at any dt; dt is below the rotation time 1/|W|; the scheme still damps and slows its waves by its own error, of order (|W| dt)^p: halve dt to measure it)
 UnderResolvedWarning: implicit rotation 2*Om*cross(ez, u): |W| = 100, |W| dt = 5 (stable at an ...
 </pre></div>
 </div>
@@ -858,21 +862,21 @@ Fréchet derivative and its formal transpose. <code class="docutils literal notr
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EVP</span></code></p></td>
 <td><p><span class="math notranslate nohighlight">\((L + \sigma M) X = 0\)</span>, eigenvalue a <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> appearing linearly</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">eigenvalues(plan)</span></code>, <code class="docutils literal notranslate"><span class="pre">ParametricEVP</span></code>, <code class="docutils literal notranslate"><span class="pre">critical</span></code> (<a class="reference internal" href="../tutorials/01_orr_sommerfeld.html"><span class="doc">1. A first eigenvalue problem: Orr–Sommerfeld</span></a>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">eigenvalues(plan)</span></code>, <code class="docutils literal notranslate"><span class="pre">ParametricEVP</span></code>, <code class="docutils literal notranslate"><span class="pre">critical</span></code> (<a class="reference internal" href="../tutorials/01_orr_sommerfeld.html"><span class="doc">A first eigenvalue problem: Orr–Sommerfeld</span></a>)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IVP</span></code></p></td>
 <td><p><span class="math notranslate nohighlight">\(M\,\partial_t X + L X = F(X, t)\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code> (<a class="reference internal" href="timesteppers.html"><span class="doc">Simulations and time steppers</span></a>, <a class="reference internal" href="../tutorials/02_rayleigh_benard.html"><span class="doc">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</span></a>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code> (<a class="reference internal" href="timesteppers.html"><span class="doc">Simulations and time steppers</span></a>, <a class="reference internal" href="../tutorials/02_rayleigh_benard.html"><span class="doc">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</span></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">NLBVP</span></code></p></td>
 <td><p><span class="math notranslate nohighlight">\(G(X) = 0\)</span></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">NewtonSolver</span></code>, continuation (<a class="reference internal" href="../tutorials/04_bratu.html"><span class="doc">4. Nonlinear boundary-value problems and continuation: Bratu</span></a>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NewtonSolver</span></code>, continuation (<a class="reference internal" href="../tutorials/04_bratu.html"><span class="doc">Nonlinear boundary-value problems and continuation: Bratu</span></a>)</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>The left-hand side must be linear in the unknowns: a nonlinear LHS term is <strong>refused</strong> with a
-message (<code class="docutils literal notranslate"><span class="pre">NonlinearLHSError</span></code>), never moved to the right-hand side for you. The RHS of an IVP is
+<p>The left-hand side must be linear in the unknowns. A nonlinear left-hand side raises
+<code class="docutils literal notranslate"><span class="pre">NonlinearLHSError</span></code>; write the intended explicit term on the right-hand side. The RHS of an IVP is
 treated explicitly (IMEX).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">IVP</span><span class="p">,</span> <span class="n">CartesianCoordinates</span><span class="p">,</span> <span class="n">Chebyshev</span><span class="p">,</span> <span class="n">Domain</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
                             <span class="n">dt</span><span class="p">,</span> <span class="n">interp</span><span class="p">,</span> <span class="n">lap</span><span class="p">)</span>
@@ -895,7 +899,7 @@ every equation, boundary condition and gauge symbolically and replaces <code cla
 result is an <code class="docutils literal notranslate"><span class="pre">EVP</span></code> whose eigenvalue is the temporal growth rate. Base states are fields (NCCs);
 perturbation unknowns are named <code class="docutils literal notranslate"><span class="pre">d&lt;name&gt;</span></code>. The symmetry of the nonlinear problem is <em>not</em>
 inherited (a perturbation may break it): pass <code class="docutils literal notranslate"><span class="pre">symmetry=</span></code> explicitly
-(<a class="reference internal" href="../tutorials/03_symmetries.html"><span class="doc">3. Symmetries and symmetry subspaces</span></a>). At the expression level:</p>
+(<a class="reference internal" href="../tutorials/03_symmetries.html"><span class="doc">Symmetries and symmetry subspaces</span></a>). At the expression level:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">conatus.expert</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">CartesianCoordinates</span><span class="p">,</span> <span class="n">Chebyshev</span><span class="p">,</span> <span class="n">Domain</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">RealFourier</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
                             <span class="n">exp</span><span class="p">)</span>
@@ -923,7 +927,8 @@ boundary term of the integration by parts:</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">boundary</span><span class="p">)</span>   <span class="c1"># (dx(u)*w)(x=1) + (-dx(w)*u)(x=1) - (dx(u)*w)(x=-1) - (-dx(w)*u)(x=-1)</span>
 </pre></div>
 </div>
-<p>The pairing is bilinear, without conjugation. <strong>A transpose is not an adjoint.</strong></p>
+<p>The pairing is bilinear, without conjugation. The physical adjoint, below, also needs the inner
+product: it is <span class="math notranslate nohighlight">\(W^{-1}\)</span> times the conjugate transpose times <span class="math notranslate nohighlight">\(W\)</span>.</p>
 </section>
 <section id="left-eigenvectors-and-the-physical-adjoint">
 <h2>Left eigenvectors and the physical adjoint<a class="headerlink" href="#left-eigenvectors-and-the-physical-adjoint" title="Link to this heading">¶</a></h2>
@@ -944,10 +949,10 @@ for eigenvalue sensitivities, or a tau-free (Galerkin) formulation.
 <p>Eigenvalue sensitivities do not need <span class="math notranslate nohighlight">\(W\)</span>: they use left eigenvectors,
 <span class="math notranslate nohighlight">\(\mathrm d\sigma/\mathrm dp = -y^H(\partial_p L + \sigma\,\partial_p M)x / (y^H M x)\)</span>, computed by
 <code class="docutils literal notranslate"><span class="pre">eigenvalues(plan,</span> <span class="pre">left=True)</span></code>, <code class="docutils literal notranslate"><span class="pre">ParametricEVP.sensitivity</span></code> and checked by a Taylor test in
-<code class="docutils literal notranslate"><span class="pre">verify</span></code> (<a class="reference internal" href="../tutorials/01_orr_sommerfeld.html"><span class="doc">1. A first eigenvalue problem: Orr–Sommerfeld</span></a>).</p>
+<code class="docutils literal notranslate"><span class="pre">verify</span></code> (<a class="reference internal" href="../tutorials/01_orr_sommerfeld.html"><span class="doc">A first eigenvalue problem: Orr–Sommerfeld</span></a>).</p>
 <p>For time-dependent problems, <code class="docutils literal notranslate"><span class="pre">FlowMap</span></code> gives the tangent (<code class="docutils literal notranslate"><span class="pre">jvp</span></code>) and discrete adjoint (<code class="docutils literal notranslate"><span class="pre">vjp</span></code>,
-<code class="docutils literal notranslate"><span class="pre">vjp_physical</span></code>) of the time-stepping map itself, exact by construction (transposition of the IR
-and of the IMEX step) and checked by dot-product and Taylor tests (<a class="reference internal" href="dynamics/index.html"><span class="doc">Dynamics</span></a>); on the
+<code class="docutils literal notranslate"><span class="pre">vjp_physical</span></code>) of the discrete time-stepping map itself, obtained by transposing the IR and the
+IMEX step, and checked by dot-product and Taylor tests (<a class="reference internal" href="dynamics/index.html"><span class="doc">Dynamics</span></a>); on the
 spherical shell and for optimal perturbations see <a class="reference internal" href="dynamics/optimal_perturbations.html"><span class="doc">Tangent, adjoint and optimal perturbations</span></a>.</p>
 </section>
 </section>
@@ -1024,7 +1029,7 @@ spherical shell and for optimal perturbations see <a class="reference internal" 
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

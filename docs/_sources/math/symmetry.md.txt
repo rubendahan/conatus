@@ -19,13 +19,12 @@ components follow: the component normal to the mirror changes sign), and the lib
 
 In curvilinear geometries each symmetry (azimuthal rotation by $2\pi/n$, equatorial reflection,
 axial reflection) acts on coefficients as a signed permutation; the subspace keeps one
-representative per orbit. Regularity at the axis is not a symmetry choice: it is always imposed by
-the basis.
+representative per orbit. Regularity at the axis is not a symmetry choice: the basis imposes it.
 
 ## What a subspace hides
 
-A computation in $V_S$ cannot see instabilities that break the symmetry. `explain()` always says so,
-and `symmetry_breaking_check` computes the leading eigenvalue (or Floquet multiplier) in each of
+A computation in $V_S$ cannot see instabilities that break the symmetry. `explain()` says so, and
+`symmetry_breaking_check` computes the leading eigenvalue (or Floquet multiplier) in each of
 the other isotypic components, reusing the same discretisation with the opposite parities. A
 symmetric solution is declared stable only after this check.
 

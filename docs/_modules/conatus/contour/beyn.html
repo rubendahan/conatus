@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/conatus.css?v=230279f1" />
     
     
 
@@ -227,11 +227,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../../../">&larr; Conatus website</a>
-  <a href="../../../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../../../" data-cn-route="/">Conatus</a>
+  <a href="../../../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../../../install/" data-cn-route="/install">Install</a>
+  <a href="../../../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -241,21 +246,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -302,7 +307,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/bases.html">Bases and domains</a></li>
@@ -676,7 +681,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for conatus.contour.beyn</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Every eigenvalue of ``T(z) v = 0`` in a region: Beyn's contour-integral method, certified.</span>
+<span></span><span class="sd">"""Every eigenvalue of ``T(z) v = 0`` in a region: Beyn's contour-integral method.</span>
 
 <span class="sd">Beyn (2012, Linear Algebra Appl. 436, 3839) for linear and nonlinear eigenproblems: with a random</span>
 <span class="sd">probe block ``V`` (n x l) and the scaled variable ``zeta = (z - c) / rho`` (box centre ``c``,</span>
@@ -692,23 +697,35 @@
 <span class="sd">The integrals are Gauss-Legendre sums on each edge of the box (exponentially convergent for the</span>
 <span class="sd">piecewise-analytic integrand; slower when an eigenvalue lies just outside an edge).</span>
 
-<span class="sd">What is returned is certified, root by root and as a whole:</span>
+<span class="sd">What is returned is checked root by root and as a whole:</span>
 
 <span class="sd">1. the number of eigenvalues inside, ``Z``, is counted first by the argument principle</span>
-<span class="sd">   (:func:`conatus.contour.count`); ``l p`` is chosen above it;</span>
+<span class="sd">   (:func:`conatus.contour.count`, a test on samples of the boundary: its scope is stated in</span>
+<span class="sd">   ``counted.scope``); ``l p`` is chosen above it;</span>
 <span class="sd">2. every Ritz value is polished by two-sided nonlinear inverse iteration (right and left vectors,</span>
 <span class="sd">   ``x &lt;- T(z)^{-1} T'(z) x``, ``y &lt;- T(z)^{-H} T'(z)^H y``, Newton step on ``y^H T(z) x = 0``: the</span>
 <span class="sd">   two-sided Rayleigh quotient of a pencil), or one-sided ``u = T(z)^{-1} T'(z) v``,</span>
 <span class="sd">   ``z &lt;- z - (c^H v) / (c^H u)`` when no adjoint solve is available (Hill operators); a polish</span>
 <span class="sd">   never leaves half the distance to the nearest other Ritz value;</span>
-<span class="sd">3. a root is kept when it lies in the box and its relative backward residual</span>
-<span class="sd">   ``||T(z) v|| / (||T(z)|| ||v||)`` is at most ``residual_tol``;</span>
-<span class="sd">4. roots closer than a millionth of the box size are one root; the multiplicity of such a</span>
-<span class="sd">   cluster (a double eigenvalue, a coalescence, two Ritz values polished onto one root) is its</span>
-<span class="sd">   own argument-principle count on a small box around it;</span>
+<span class="sd">3. a root is kept when it lies in the box and its residual ``||T(z) v|| / (s(z) ||v||)`` is at</span>
+<span class="sd">   most ``residual_tol``. The scale ``s(z)`` depends on the operator (``residual_definition``):</span>
+<span class="sd">   ``||L||_1 + |z| ||M||_1`` for a pencil (a backward error relative to the pencil's</span>
+<span class="sd">   coefficients); an upper bound of ``||T(z)||_1`` for a Hill operator; and, for a callable or a</span>
+<span class="sd">   Hill operator nonlinear in the exponent, ``max(||T(z)||_1, s_ref)`` with ``s_ref`` the median</span>
+<span class="sd">   ``||T||_1`` at the four corners and four edge midpoints of the box. The floor ``s_ref`` keeps</span>
+<span class="sd">   a scalar ``f`` from scoring ``|f(z)| / |f(z)| = 1``; such a residual is relative to the size of</span>
+<span class="sd">   ``T`` on the boundary, not a relative perturbation of the near-singular ``T(z)`` itself;</span>
+<span class="sd">4. polished roots closer than a millionth of the box size are grouped, and each group is counted</span>
+<span class="sd">   by the argument principle on a small square around it (``enclosure``: its half-side). A group</span>
+<span class="sd">   of k distinct values whose square holds k eigenvalues is then separated: each value gets its</span>
+<span class="sd">   own square, a quarter of the distance to its neighbours, and is returned on its own when that</span>
+<span class="sd">   square holds one eigenvalue. Otherwise the group is returned once, with ``multiplicity`` = the</span>
+<span class="sd">   number of eigenvalues its square holds: a multiple eigenvalue, or a cluster not separated at</span>
+<span class="sd">   that size (a defective eigenvalue, which rounding splits into a small circle of values, is</span>
+<span class="sd">   returned at their mean when the mean passes the residual test);</span>
 <span class="sd">5. the multiplicities must add up to ``Z``. If they do not, the moments are recomputed with more</span>
 <span class="sd">   quadrature nodes, columns and moments (``max_rounds``); if they still do not, the call is</span>
-<span class="sd">   refused with what was found. A partial or uncertified list is never returned.</span>
+<span class="sd">   refused with what was found. A partial list, or a root above ``residual_tol``, is not returned.</span>
 <span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -727,14 +744,15 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.region</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContourBox</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"beyn"</span><span class="p">,</span> <span class="s2">"BeynResult"</span><span class="p">,</span> <span class="s2">"RESIDUAL_TOL"</span><span class="p">,</span> <span class="s2">"QUADRATURE_POINTS"</span><span class="p">,</span> <span class="s2">"POLISH_MAX_ITERATIONS"</span><span class="p">,</span>
-           <span class="s2">"BEYN_MARGIN"</span><span class="p">,</span> <span class="s2">"BEYN_MAX_ROUNDS"</span><span class="p">,</span> <span class="s2">"BEYN_MAX_SPLITS"</span><span class="p">]</span>
+           <span class="s2">"BEYN_MARGIN"</span><span class="p">,</span> <span class="s2">"BEYN_MAX_ROUNDS"</span><span class="p">,</span> <span class="s2">"BEYN_MAX_SPLITS"</span><span class="p">,</span> <span class="s2">"SAME_OPERATOR_TOL"</span><span class="p">,</span>
+           <span class="s2">"SEPARATION_ROUNDING"</span><span class="p">]</span>
 
 <span class="n">_DOC</span> <span class="o">=</span> <span class="s2">"docs/site/guide/dynamics/contour.md"</span>
-<span class="c1">#: Certification threshold of a root: relative backward residual ||T(z) v|| / (||T(z)|| ||v||).</span>
+<span class="c1">#: Acceptance threshold of a root: residual ||T(z) v|| / (s(z) ||v||) (module docstring, point 3).</span>
 <span class="c1">#: The roots of the test suite (Orr-Sommerfeld, Hill, nonlinear) polish to 1e-19..1e-15 (dense QZ:</span>
 <span class="c1">#: about 1e-15). 1e-10 was too loose for a strongly non-normal operator: on Orr-Sommerfeld at</span>
 <span class="c1">#: Re = 1e4, N = 128, points 0.01..0.08 away from the S-branch eigenvalues passed it (residuals</span>
-<span class="c1">#: 1e-10..1e-11, pseudospectrum); at 1e-13 every certified root agrees with QZ to 5e-8.</span>
+<span class="c1">#: 1e-10..1e-11, pseudospectrum); at 1e-13 every accepted root agrees with QZ to 5e-8.</span>
 <span class="n">RESIDUAL_TOL</span> <span class="o">=</span> <span class="mf">1e-13</span>
 <span class="c1">#: Gauss-Legendre nodes per edge of the box for the moments (doubled at every new round).</span>
 <span class="n">QUADRATURE_POINTS</span> <span class="o">=</span> <span class="mi">32</span>
@@ -745,21 +763,32 @@
 <span class="n">BEYN_MARGIN</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="c1">#: Rounds of moments on one box before it is cut in two.</span>
 <span class="n">BEYN_MAX_ROUNDS</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="c1">#: Levels of cuts of a box whose rounds did not certify its roots (each half counted and solved;</span>
+<span class="c1">#: Levels of cuts of a box whose rounds did not account for its count (each half counted and solved;</span>
 <span class="c1">#: the counts of the halves must add up), before the method is refused.</span>
 <span class="n">BEYN_MAX_SPLITS</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="c1">#: beyn(counted=...): det T of the operator given must match, at the boundary points the count</span>
+<span class="c1">#: recorded, the unit phase (absolute) and log modulus (relative) of the counted operator's to</span>
+<span class="c1">#: this tolerance (external review of 0.1.1, F9; one evaluation of the same T agrees exactly).</span>
+<span class="n">SAME_OPERATOR_TOL</span> <span class="o">=</span> <span class="mf">1e-8</span>
+<span class="c1">#: A separation square (``_separate``) smaller than this x eps x max(box radius, largest |root|)</span>
+<span class="c1">#: is not tried: at that size det T is rounding noise (copies of one simple root, a defective</span>
+<span class="c1">#: eigenvalue's circle).</span>
+<span class="n">SEPARATION_ROUNDING</span> <span class="o">=</span> <span class="mf">1e3</span>
 
 
 <div class="viewcode-block" id="BeynResult">
 <a class="viewcode-back" href="../../../api/_generated/_stubs/conatus.expert.BeynResult.html#conatus.expert.BeynResult">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BeynResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Certified eigenvalues of ``T(z) v = 0`` in a region (:func:`beyn`)."""</span>
+<span class="w">    </span><span class="sd">"""Eigenvalues of ``T(z) v = 0`` in a region, each checked by its residual and a local count</span>
+<span class="sd">    (:func:`beyn`)."""</span>
 
     <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>            <span class="c1"># distinct roots in the box</span>
     <span class="n">vectors</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>           <span class="c1"># their right eigenvectors (columns, unit 2-norm)</span>
-    <span class="n">residuals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>         <span class="c1"># relative backward residual of each root</span>
-    <span class="n">multiplicity</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>      <span class="c1"># algebraic multiplicity (argument-principle count of a cluster)</span>
+    <span class="n">residuals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>         <span class="c1"># residual ||T(z) v|| / (s(z) ||v||) of each root (residual_definition)</span>
+    <span class="c1"># eigenvalues counted (argument principle) in the square of half-side enclosure[i] around</span>
+    <span class="c1"># values[i]: 1 for a separated root; &gt; 1 for a multiple eigenvalue or an unseparated cluster</span>
+    <span class="n">multiplicity</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="n">counted</span><span class="p">:</span> <span class="n">CountResult</span>          <span class="c1"># Z, by the argument principle on the whole box</span>
     <span class="n">region</span><span class="p">:</span> <span class="n">ContourBox</span>
     <span class="n">residual_tol</span><span class="p">:</span> <span class="nb">float</span>
@@ -773,6 +802,8 @@
     <span class="n">operator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">iterations</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))</span>
     <span class="n">log</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">enclosure</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>   <span class="c1"># half-side of each square</span>
+    <span class="n">residual_definition</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>      <span class="c1"># the scale s(z) of the residuals, in words</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -781,14 +812,15 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">count_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""How the count was certified, in words (the argument principle, matched by the roots)."""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">counted</span><span class="o">.</span><span class="n">count_method</span> <span class="o">+</span> <span class="s2">"; matched by the certified roots of Beyn's method"</span>
+<span class="w">        </span><span class="sd">"""How the count was obtained, in words (the argument principle, matched by the roots)."""</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counted</span><span class="o">.</span><span class="n">count_method</span> <span class="o">+</span> <span class="s2">"; the roots of Beyn's method, each within "</span>
+                <span class="s2">"residual_tol and counted on its own square, add up to it"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"BeynResult(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> certified root(s), count Z = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2"> in "</span>
+        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"BeynResult(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> root(s), count Z = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2"> in "</span>
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="si">}</span><span class="s2">; .explain())"</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BeynResult.explain">
@@ -811,19 +843,56 @@
                 <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Hankel singular values: rank </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2"> above 1e-10 sigma_1, "</span>
                              <span class="sa">f</span><span class="s2">"sigma_Z/sigma_1 = </span><span class="si">{</span><span class="n">sv</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">sv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}{</span><span class="n">gap</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span>
-                      <span class="s2">"  polish: inverse iteration on T(z)^-1 T'(z) (two-sided when adjoint solves exist); certified when "</span>
-                      <span class="sa">f</span><span class="s2">"||T(z) v|| / (||T(z)|| ||v||) &lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_tol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> and z in the box"</span><span class="p">]</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"  roots (multiplicity &gt; 1: a cluster counted on its own small box):"</span><span class="p">)</span>
+                      <span class="s2">"  polish: inverse iteration on T(z)^-1 T'(z) (two-sided when adjoint solves "</span>
+                      <span class="sa">f</span><span class="s2">"exist); a root is kept when ||T(z) v|| / (s(z) ||v||) &lt;= "</span>
+                      <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_tol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> and z is in the box, s(z) = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_definition</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"  roots, each with the eigenvalues counted in a square around it "</span>
+                         <span class="s2">"(&gt; 1: a multiple eigenvalue or a cluster not separated at that size):"</span><span class="p">)</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enclosure</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enclosure</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> \
+                <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"stable"</span><span class="p">)[:</span><span class="n">n</span><span class="p">]:</span>
                 <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    z = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2"> .12e</span><span class="si">}</span><span class="s2">  residual </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">residuals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">  "</span>
-                             <span class="sa">f</span><span class="s2">"multiplicity </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s2">  "</span>
-                             <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s2"> polish iteration(s)]"</span><span class="p">)</span>
+                             <span class="sa">f</span><span class="s2">"multiplicity </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s2"> in half-side "</span>
+                             <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">enc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">  [</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s2"> polish iteration(s)]"</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
                 <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    ... </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">n</span><span class="si">}</span><span class="s2"> more (explain(n=...))"</span><span class="p">)</span>
         <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">"  "</span> <span class="o">+</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">]</span>
         <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></div>
 </div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_same_operator</span><span class="p">(</span><span class="n">op</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">counted</span><span class="p">:</span> <span class="n">CountResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Refuse a count of another operator (external review of 0.1.1, F9): the size and kind of T,</span>
+<span class="sd">    its declared poles, and det T at the boundary points the count recorded must agree."""</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">counted</span><span class="o">.</span><span class="n">reference</span>
+    <span class="n">why</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ref</span><span class="p">:</span>
+        <span class="n">why</span> <span class="o">=</span> <span class="s2">"the count carries no record of its operator"</span>
+    <span class="k">elif</span> <span class="n">ref</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">op</span><span class="o">.</span><span class="n">n</span> <span class="ow">or</span> <span class="n">ref</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">op</span><span class="o">.</span><span class="n">kind</span> <span class="ow">or</span> <span class="p">(</span><span class="n">counted</span><span class="o">.</span><span class="n">poles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">counted</span><span class="o">.</span><span class="n">poles</span> <span class="o">!=</span> <span class="n">op</span><span class="o">.</span><span class="n">poles</span><span class="p">):</span>
+        <span class="n">why</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"the count is of a </span><span class="si">{</span><span class="n">ref</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> of size </span><span class="si">{</span><span class="n">ref</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> with P = </span><span class="si">{</span><span class="n">counted</span><span class="o">.</span><span class="n">poles</span><span class="si">}</span><span class="s2">, not of "</span>
+               <span class="sa">f</span><span class="s2">"this </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2"> of size </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">n</span><span class="si">}</span><span class="s2"> with P = </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">poles</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">logabs</span> <span class="ow">in</span> <span class="n">ref</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="nb">complex</span><span class="p">(</span><span class="n">counted</span><span class="o">.</span><span class="n">region</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ph</span><span class="p">,</span> <span class="n">la</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">slogdet</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">SingularPoint</span><span class="p">:</span>
+                <span class="n">why</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"det T is zero at z = </span><span class="si">{</span><span class="n">z</span><span class="si">:</span><span class="s2">.12g</span><span class="si">}</span><span class="s2">, where the counted operator was not"</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="nb">complex</span><span class="p">(</span><span class="n">ph</span><span class="p">)</span> <span class="o">-</span> <span class="n">phase</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">SAME_OPERATOR_TOL</span>
+                    <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">la</span> <span class="o">-</span> <span class="n">logabs</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">SAME_OPERATOR_TOL</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">logabs</span><span class="p">))):</span>
+                <span class="n">why</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"det T at z = </span><span class="si">{</span><span class="n">z</span><span class="si">:</span><span class="s2">.12g</span><span class="si">}</span><span class="s2"> differs from the counted operator's (phase "</span>
+                       <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">ph</span><span class="p">)</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">, log modulus </span><span class="si">{</span><span class="n">la</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2"> vs "</span>
+                       <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">logabs</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+                <span class="k">break</span>
+    <span class="k">if</span> <span class="n">why</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"beyn(counted=...): that count is of another operator: </span><span class="si">{</span><span class="n">why</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                          <span class="n">why</span><span class="o">=</span><span class="s2">"the roots are checked against the count Z; a count of another "</span>
+                              <span class="s2">"operator (another parameter value, another matrix) would accept "</span>
+                              <span class="s2">"a wrong root list"</span><span class="p">,</span>
+                          <span class="n">fix</span><span class="o">=</span><span class="s2">"count this operator (leave counted= out, or counted=count(T, "</span>
+                              <span class="s2">"region) with the same T)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_check_tol</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -970,16 +1039,16 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_certified_groups</span><span class="p">(</span><span class="n">op</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">ContourBox</span><span class="p">,</span> <span class="n">roots</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Z</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                      <span class="n">obstacles</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""(groups, multiplicities, half-sides) of the certified roots ``roots``, every multiplicity</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_counted_groups</span><span class="p">(</span><span class="n">op</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">ContourBox</span><span class="p">,</span> <span class="n">roots</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Z</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                    <span class="n">obstacles</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""(groups, multiplicities, half-sides) of the accepted roots ``roots``, every multiplicity</span>
 <span class="sd">    an argument-principle count on a small square around its group, the squares disjoint, inside</span>
 <span class="sd">    the region and clear of every other polished root (``obstacles``); a grouping is accepted</span>
 <span class="sd">    when every count is &gt;= 1 and they add up to ``Z`` (else the last one tried is returned, and</span>
 <span class="sd">    the round fails).</span>
 
 <span class="sd">    Every group, a single root too, is counted (critic review of L10: a defective eigenvalue of</span>
-<span class="sd">    order m &gt;= 3 was returned as m "certified" simple roots spread over eps^(1/m), each of</span>
+<span class="sd">    order m &gt;= 3 was returned as m simple roots spread over eps^(1/m), each of</span>
 <span class="sd">    backward residual 1e-16 but none an eigenvalue, multiplicity 1 each, adding up to Z). A</span>
 <span class="sd">    group's square has half-side ``max(2 r_g, 1e-3 rho)`` capped by a quarter of the distance to</span>
 <span class="sd">    the other roots and 0.9 of the distance to the boundary (``r_g``: the group's radius about</span>
@@ -1028,6 +1097,49 @@
     <span class="k">return</span> <span class="n">last</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_separate</span><span class="p">(</span><span class="n">op</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">ContourBox</span><span class="p">,</span> <span class="n">roots</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">mult</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+              <span class="n">halves</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">obstacles</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Split the groups of k distinct values whose square holds k eigenvalues into separated roots</span>
+<span class="sd">    (external review of 0.1.1, F3: 0.2 and 0.2000001, 1e-7 apart, were one root of multiplicity</span>
+<span class="sd">    2 at their mean). Each value gets a square of half-side a quarter of the distance to every</span>
+<span class="sd">    other polished root (and 0.9 of the distance to the boundary); the group is split when every</span>
+<span class="sd">    square holds exactly one eigenvalue. The squares are disjoint, so the k values are k distinct</span>
+<span class="sd">    eigenvalues. ``roots`` are the polished roots and ``obstacles`` the same array (``groups``</span>
+<span class="sd">    index both). A square below 1e3 eps of max(box radius, largest |root|) is not tried (rounding</span>
+<span class="sd">    noise: two copies of one simple root, or the rounding circle of a defective eigenvalue)."""</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">radius</span>
+    <span class="n">floor</span> <span class="o">=</span> <span class="n">SEPARATION_ROUNDING</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">roots</span><span class="p">),</span> <span class="n">initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)))</span>
+    <span class="n">out_g</span><span class="p">,</span> <span class="n">out_m</span><span class="p">,</span> <span class="n">out_h</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">halves</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+            <span class="n">split</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="nb">complex</span><span class="p">(</span><span class="n">roots</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">obstacles</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">-</span> <span class="n">z</span><span class="p">)</span>      <span class="c1"># obstacles[k] is this root</span>
+                <span class="n">hk</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.25</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)),</span>
+                         <span class="mf">0.9</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">region</span><span class="o">.</span><span class="n">distance_to_boundary</span><span class="p">(</span><span class="n">z</span><span class="p">)))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">hk</span> <span class="o">&gt;</span> <span class="n">floor</span><span class="p">:</span>
+                    <span class="n">split</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">break</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">hk</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+                    <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_local_count</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">hk</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">split</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">break</span>
+                <span class="n">split</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">split</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out_g</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+            <span class="n">out_m</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
+            <span class="n">out_h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">h</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out_g</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">g</span><span class="p">]</span>
+            <span class="n">out_m</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+            <span class="n">out_h</span> <span class="o">+=</span> <span class="n">split</span>
+    <span class="k">return</span> <span class="n">out_g</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">out_m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">out_h</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="beyn">
 <a class="viewcode-back" href="../../../api/_generated/user/conatus.contour.beyn.html#conatus.expert.beyn">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">beyn</span><span class="p">(</span><span class="n">T</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">ContourBox</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">poles</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">derivative</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1035,17 +1147,18 @@
          <span class="n">residual_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">RESIDUAL_TOL</span><span class="p">,</span> <span class="n">quadrature</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">QUADRATURE_POINTS</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
          <span class="n">max_rounds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">BEYN_MAX_ROUNDS</span><span class="p">,</span>
          <span class="n">polish_max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">POLISH_MAX_ITERATIONS</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BeynResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Every eigenvalue of ``T(z) v = 0`` in ``region``, certified (module docstring).</span>
+<span class="w">    </span><span class="sd">"""Every eigenvalue of ``T(z) v = 0`` in ``region`` (module docstring: what is checked).</span>
 
 <span class="sd">    ``T``: a pair ``(L, M)`` (the pencil ``L + z M``), a :class:`conatus.floquet.HillBlocks`, or a</span>
 <span class="sd">    callable ``z -&gt; matrix`` (or scalar) with, optionally, its ``derivative`` ``z -&gt; T'(z)``.</span>
 <span class="sd">    ``poles``: the poles of ``det T`` inside the region; required for a callable (0 when ``T`` is</span>
 <span class="sd">    holomorphic there), since the count of eigenvalues is ``Z = N_Gamma + P``. ``counted``: a</span>
 <span class="sd">    :class:`CountResult` of the same ``T`` and region already computed (else :func:`count` runs,</span>
-<span class="sd">    with ``control=``). ``residual_tol``: certification threshold of every root (declared default</span>
-<span class="sd">    ``RESIDUAL_TOL``). ``quadrature``: Gauss-Legendre nodes per edge; ``seed``: of the random</span>
-<span class="sd">    probe block (the result is reproducible). Raises ConvergenceError when the certified roots do</span>
-<span class="sd">    not account for the count after ``max_rounds`` rounds."""</span>
+<span class="sd">    with ``control=``); ``det T`` is evaluated again at the points it recorded and a count of</span>
+<span class="sd">    another operator is refused. ``residual_tol``: acceptance threshold of every root (declared</span>
+<span class="sd">    default ``RESIDUAL_TOL``). ``quadrature``: Gauss-Legendre nodes per edge; ``seed``: of the</span>
+<span class="sd">    random probe block (the result is reproducible). Raises ConvergenceError when the accepted</span>
+<span class="sd">    roots do not account for the count after ``max_rounds`` rounds."""</span>
     <span class="n">residual_tol</span> <span class="o">=</span> <span class="n">_check_tol</span><span class="p">(</span><span class="n">residual_tol</span><span class="p">,</span> <span class="s2">"residual_tol"</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"quadrature"</span><span class="p">,</span> <span class="n">quadrature</span><span class="p">),</span> <span class="p">(</span><span class="s2">"max_rounds"</span><span class="p">,</span> <span class="n">max_rounds</span><span class="p">),</span>
                     <span class="p">(</span><span class="s2">"polish_max_iterations"</span><span class="p">,</span> <span class="n">polish_max_iterations</span><span class="p">)):</span>
@@ -1054,13 +1167,19 @@
     <span class="n">op</span> <span class="o">=</span> <span class="n">as_operator</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">poles</span><span class="o">=</span><span class="n">poles</span><span class="p">,</span> <span class="n">derivative</span><span class="o">=</span><span class="n">derivative</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">counted</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">counted</span> <span class="o">=</span> <span class="n">count</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="n">control</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">counted</span><span class="p">,</span> <span class="n">CountResult</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"beyn(counted=</span><span class="si">{</span><span class="n">counted</span><span class="si">!r}</span><span class="s2">): a CountResult of cn.contour.count"</span><span class="p">,</span>
+                          <span class="n">fix</span><span class="o">=</span><span class="s2">"counted=cn.contour.count(T, region, ...), or leave it out"</span><span class="p">,</span>
+                          <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">counted</span><span class="o">.</span><span class="n">region</span> <span class="o">!=</span> <span class="n">region</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"beyn(counted=...): that count is of another region"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_check_same_operator</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">counted</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">counted</span><span class="o">.</span><span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"beyn(): the number of eigenvalues inside is not known: the winding "</span>
                           <span class="sa">f</span><span class="s2">"of det T is Z - P = </span><span class="si">{</span><span class="n">counted</span><span class="o">.</span><span class="n">winding</span><span class="si">}</span><span class="s2"> and P (the poles of det T in "</span>
                           <span class="s2">"the box) was not declared"</span><span class="p">,</span>
-                          <span class="n">why</span><span class="o">=</span><span class="s2">"the roots are certified by adding up to the count Z"</span><span class="p">,</span>
+                          <span class="n">why</span><span class="o">=</span><span class="s2">"the roots are checked by adding up to the count Z"</span><span class="p">,</span>
                           <span class="n">fix</span><span class="o">=</span><span class="s2">"poles=0 if T(z) is holomorphic in the box, poles=k if det T has "</span>
                               <span class="s2">"k poles there (multiplicities included)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
     <span class="n">Z</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">counted</span><span class="o">.</span><span class="n">count</span><span class="p">)</span>
@@ -1069,18 +1188,23 @@
     <span class="k">if</span> <span class="n">Z</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ConvergenceError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"count Z = </span><span class="si">{</span><span class="n">Z</span><span class="si">}</span><span class="s2"> &lt; 0 in </span><span class="si">{</span><span class="n">region</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="si">}</span><span class="s2">: the declared poles "</span>
                                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">counted</span><span class="o">.</span><span class="n">poles</span><span class="si">}</span><span class="s2">) exceed what the winding allows"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">Z</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">BeynResult</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">complex</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">op</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="nb">complex</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
-                          <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span> <span class="n">log</span><span class="o">=</span><span class="p">[</span><span class="s2">"no eigenvalue in the box: nothing to compute"</span><span class="p">],</span>
-                          <span class="o">**</span><span class="n">base</span><span class="p">)</span>
     <span class="n">log</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">needs_reference</span><span class="p">:</span>
         <span class="c1"># residual scale of an operator without a structural norm: never below the typical size</span>
         <span class="c1"># of T on the boundary (a scalar f vanishes at its roots: |f(z)| / |f(z)| = 1)</span>
         <span class="n">op</span><span class="o">.</span><span class="n">reference</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">op</span><span class="o">.</span><span class="n">reference</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">([</span><span class="n">op</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">region</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)]))</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"residual scale: max(||T(z)||_1, </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">reference</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">), the median ||T||_1 at "</span>
-                   <span class="s2">"the corners and edge midpoints of the box"</span><span class="p">)</span>
+        <span class="n">base</span><span class="p">[</span><span class="s2">"residual_definition"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"max(||T(z)||_1, s_ref), s_ref = </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">reference</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> the median ||T||_1 at the corners "</span>
+            <span class="s2">"and edge midpoints of the box (relative to the size of T on the boundary, not to "</span>
+            <span class="s2">"||T(z)|| itself)"</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"residual scale: </span><span class="si">{</span><span class="n">base</span><span class="p">[</span><span class="s1">'residual_definition'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">base</span><span class="p">[</span><span class="s2">"residual_definition"</span><span class="p">]</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">scale_definition</span>
+    <span class="k">if</span> <span class="n">Z</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">BeynResult</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">complex</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">op</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="nb">complex</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+                          <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span> <span class="n">log</span><span class="o">=</span><span class="p">[</span><span class="s2">"no eigenvalue in the box: nothing to compute"</span><span class="p">],</span>
+                          <span class="o">**</span><span class="n">base</span><span class="p">)</span>
     <span class="n">opts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">residual_tol</span><span class="o">=</span><span class="n">residual_tol</span><span class="p">,</span> <span class="n">quadrature</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">quadrature</span><span class="p">),</span> <span class="n">max_rounds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">max_rounds</span><span class="p">),</span>
                 <span class="n">polish_max_iterations</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">polish_max_iterations</span><span class="p">))</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">_solve</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">),</span> <span class="n">opts</span><span class="p">,</span> <span class="n">BEYN_MAX_SPLITS</span><span class="p">)</span>
@@ -1103,6 +1227,7 @@
     <span class="n">rounds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">iterations</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))</span>
     <span class="n">log</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">enclosure</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_rounds</span><span class="p">(</span><span class="n">op</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">ContourBox</span><span class="p">,</span> <span class="n">Z</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
@@ -1141,7 +1266,7 @@
             <span class="n">zj</span><span class="p">,</span> <span class="n">xj</span><span class="p">,</span> <span class="n">rj</span><span class="p">,</span> <span class="n">itj</span> <span class="o">=</span> <span class="n">_polish</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="nb">complex</span><span class="p">(</span><span class="n">cand</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">opts</span><span class="p">[</span><span class="s2">"polish_max_iterations"</span><span class="p">],</span>
                                       <span class="nb">float</span><span class="p">(</span><span class="n">reach</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">rj</span> <span class="o">&lt;=</span> <span class="n">residual_tol</span><span class="p">:</span>
-                <span class="c1"># not certified within its reach: polish on without the bound (a duplicate of a</span>
+                <span class="c1"># not accepted within its reach: polish on without the bound (a duplicate of a</span>
                 <span class="c1"># neighbour is merged by the clusters; a root it leaves behind is found again</span>
                 <span class="c1"># by the next round or a cut)</span>
                 <span class="n">zf</span><span class="p">,</span> <span class="n">xf</span><span class="p">,</span> <span class="n">rf</span><span class="p">,</span> <span class="n">itf</span> <span class="o">=</span> <span class="n">_polish</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">zj</span><span class="p">,</span> <span class="n">xj</span><span class="p">,</span> <span class="n">opts</span><span class="p">[</span><span class="s2">"polish_max_iterations"</span><span class="p">])</span>
@@ -1155,13 +1280,14 @@
             <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rj</span><span class="p">)</span>
             <span class="n">its</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">itj</span><span class="p">)</span>
         <span class="n">roots_a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">roots</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)</span>
-        <span class="c1"># only certified roots are grouped and reported (an uncertified one cannot be returned),</span>
+        <span class="c1"># only accepted roots are grouped and reported (one above residual_tol is not returned),</span>
         <span class="c1"># but every polished root bounds the squares of the others: a square must not reach a</span>
         <span class="c1"># root whose polish merely failed, else its eigenvalue would be counted as a multiplicity</span>
         <span class="n">ok_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;=</span> <span class="n">residual_tol</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">ok_idx</span><span class="p">:</span>
-            <span class="n">sub</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">half</span> <span class="o">=</span> <span class="n">_certified_groups</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">roots_a</span><span class="p">[</span><span class="n">ok_idx</span><span class="p">],</span> <span class="n">Z</span><span class="p">,</span> <span class="n">roots_a</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
+            <span class="n">sub</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">half</span> <span class="o">=</span> <span class="n">_counted_groups</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">roots_a</span><span class="p">[</span><span class="n">ok_idx</span><span class="p">],</span> <span class="n">Z</span><span class="p">,</span> <span class="n">roots_a</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
             <span class="n">groups</span> <span class="o">=</span> <span class="p">[[</span><span class="n">ok_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">g</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">sub</span><span class="p">]</span>
+            <span class="n">groups</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">half</span> <span class="o">=</span> <span class="n">_separate</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">roots_a</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">half</span><span class="p">,</span> <span class="n">roots_a</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">groups</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">half</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="c1"># one representative per group: the root of smallest residual, or, for a group of</span>
@@ -1180,7 +1306,7 @@
         <span class="n">uncert</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keep</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">residual_tol</span><span class="p">]</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"round </span><span class="si">{</span><span class="n">rnd</span><span class="si">}</span><span class="s2">: l = </span><span class="si">{</span><span class="n">ell</span><span class="si">}</span><span class="s2"> column(s), p = </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2"> nodes per edge; Hankel rank "</span>
                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2">; </span><span class="si">{</span><span class="n">K</span><span class="si">}</span><span class="s2"> Ritz value(s) polished, </span><span class="si">{</span><span class="n">outside</span><span class="si">}</span><span class="s2"> left the box, "</span>
-               <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">ok_idx</span><span class="p">)</span><span class="si">}</span><span class="s2"> above residual_tol, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">keep</span><span class="p">)</span><span class="si">}</span><span class="s2"> distinct certified "</span>
+               <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">roots</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">ok_idx</span><span class="p">)</span><span class="si">}</span><span class="s2"> above residual_tol, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">keep</span><span class="p">)</span><span class="si">}</span><span class="s2"> distinct accepted "</span>
                <span class="sa">f</span><span class="s2">"root(s) with multiplicities adding up to </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">mult</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">gi</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keep</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">mult</span><span class="p">[</span><span class="n">gi</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -1194,7 +1320,8 @@
             <span class="k">return</span> <span class="n">_Found</span><span class="p">(</span><span class="n">roots_a</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">vecs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
                           <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">]),</span> <span class="n">mult</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">ell</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
                           <span class="n">quadrature</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">singular_values</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span> <span class="n">rounds</span><span class="o">=</span><span class="n">rnd</span><span class="p">,</span>
-                          <span class="n">iterations</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">its</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">),</span> <span class="n">log</span><span class="p">,</span> <span class="n">seen</span><span class="p">,</span> <span class="n">found</span>
+                          <span class="n">iterations</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">its</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+                          <span class="n">enclosure</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">half</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)),</span> <span class="n">log</span><span class="p">,</span> <span class="n">seen</span><span class="p">,</span> <span class="n">found</span>
         <span class="n">margin</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">margin</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">q</span>
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">seen</span><span class="p">,</span> <span class="n">found</span>
 
@@ -1220,7 +1347,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_solve</span><span class="p">(</span><span class="n">op</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="n">ContourBox</span><span class="p">,</span> <span class="n">Z</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">splits</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Found</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Beyn on ``region`` holding ``Z`` eigenvalues; if its rounds do not certify them, the box is</span>
+<span class="w">    </span><span class="sd">"""Beyn on ``region`` holding ``Z`` eigenvalues; if its rounds do not find them, the box is</span>
 <span class="sd">    cut in two (each half counted, the counts adding up to Z) and each half solved, at most</span>
 <span class="sd">    ``splits`` times deep. Raises ConvergenceError when that fails too."""</span>
     <span class="k">if</span> <span class="n">Z</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1240,7 +1367,7 @@
             <span class="k">if</span> <span class="n">z1</span> <span class="o">+</span> <span class="n">z2</span> <span class="o">!=</span> <span class="n">Z</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">_solve</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">splits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">bb</span><span class="p">,</span> <span class="n">zz</span> <span class="ow">in</span> <span class="p">((</span><span class="n">b1</span><span class="p">,</span> <span class="n">z1</span><span class="p">),</span> <span class="p">(</span><span class="n">b2</span><span class="p">,</span> <span class="n">z2</span><span class="p">))]</span>
-            <span class="n">note</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">region</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="si">}</span><span class="s2">: the rounds did not certify the Z = </span><span class="si">{</span><span class="n">Z</span><span class="si">}</span><span class="s2"> roots "</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">region</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="si">}</span><span class="s2">: the rounds did not find the Z = </span><span class="si">{</span><span class="n">Z</span><span class="si">}</span><span class="s2"> roots "</span>
                     <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">log</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'no round'</span><span class="si">}</span><span class="s2">); cut at "</span>
                     <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'Re'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">b1</span><span class="o">.</span><span class="n">re</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">region</span><span class="o">.</span><span class="n">re</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'Im'</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.6g</span><span class="si">}</span><span class="s2"> into boxes of "</span>
                     <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">z1</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">z2</span><span class="si">}</span><span class="s2">, each counted and solved"</span><span class="p">)</span>
@@ -1255,12 +1382,13 @@
                           <span class="n">rank</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">rank</span> <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">),</span>
                           <span class="n">rounds</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">rounds</span> <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">),</span>
                           <span class="n">iterations</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">iterations</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">iterations</span><span class="p">],</span>
-                          <span class="n">log</span><span class="o">=</span><span class="p">[</span><span class="n">note</span><span class="p">]</span> <span class="o">+</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">log</span><span class="p">)</span>
+                          <span class="n">log</span><span class="o">=</span><span class="p">[</span><span class="n">note</span><span class="p">]</span> <span class="o">+</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
+                          <span class="n">enclosure</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">enclosure</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">enclosure</span><span class="p">])</span>
     <span class="n">roots_a</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">keep</span> <span class="o">=</span> <span class="n">found</span> <span class="ow">or</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">[],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">[])</span>
     <span class="n">listing</span> <span class="o">=</span> <span class="s2">"; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">roots_a</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">:</span><span class="s2">.10g</span><span class="si">}</span><span class="s2"> (residual </span><span class="si">{</span><span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">, multiplicity </span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">)"</span>
                         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keep</span><span class="p">,</span> <span class="n">mult</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span> <span class="ow">or</span> <span class="s2">"none"</span>
     <span class="k">raise</span> <span class="n">ConvergenceError</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">"Beyn's method refused in </span><span class="si">{</span><span class="n">region</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="si">}</span><span class="s2">: the certified roots do not account for "</span>
+        <span class="sa">f</span><span class="s2">"Beyn's method refused in </span><span class="si">{</span><span class="n">region</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="si">}</span><span class="s2">: the accepted roots do not account for "</span>
         <span class="sa">f</span><span class="s2">"the count Z = </span><span class="si">{</span><span class="n">Z</span><span class="si">}</span><span class="s2"> after </span><span class="si">{</span><span class="n">opts</span><span class="p">[</span><span class="s1">'max_rounds'</span><span class="p">]</span><span class="si">}</span><span class="s2"> round(s) and </span><span class="si">{</span><span class="n">BEYN_MAX_SPLITS</span><span class="si">}</span><span class="s2"> level(s) of "</span>
         <span class="s2">"box cuts"</span><span class="p">,</span>
         <span class="n">why</span><span class="o">=</span><span class="s2">"a root list that does not match the argument-principle count, or a root whose "</span>
@@ -1301,7 +1429,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../../../_static/documentation_options.js?v=92734c54"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

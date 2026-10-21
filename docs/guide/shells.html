@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=58773021" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
     
     
 
@@ -228,11 +228,16 @@
   
   <span class="sidebar-brand-text">Conatus</span>
   
-</a><div class="cn-site-link">
-  <a href="../../">&larr; Conatus website</a>
-  <a href="../tutorials/index.html">Tutorials</a>
-  <p class="cn-status">Conatus 0.1.1 &middot; CPU supported, GPU (CUDA 12) in beta</p>
-</div><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+</a><nav class="cn-site-link" aria-label="Website">
+  <a href="../../" data-cn-route="/">Conatus</a>
+  <a href="../../tutorials/getting-started/" data-cn-route="/tutorials/getting-started">Getting started</a>
+  <a href="../../tutorials/" data-cn-route="/tutorials">Tutorials</a>
+  <a href="../../documentation/" data-cn-route="/documentation">Documentation</a>
+  <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
+  <a href="../../install/" data-cn-route="/install">Install</a>
+  <a href="../../about/" data-cn-route="/about">About</a>
+  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+</nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
@@ -242,21 +247,21 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">Getting started in ten minutes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">0. Getting started: convection between two plates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">1. A first eigenvalue problem: Orr–Sommerfeld</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">2. A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">3. Symmetries and symmetry subspaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">4. Nonlinear boundary-value problems and continuation: Bratu</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">5. Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">8. Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">10. Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">11. Record, query, reproduce: the run registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">12. Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">13. Where a global mode is born, and what the data say about it</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">14. Coming from Dedalus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">15. Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">16. Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/first_steps.html">First steps: the Burgers equation in ten minutes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
 </ul>
 </li>
 </ul>
@@ -303,7 +308,7 @@
 <li class="toctree-l2"><a class="reference internal" href="doctor.html">Checking an installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="errors.html">Errors and what they mean</a></li>
 <li class="toctree-l2"><a class="reference internal" href="experimental.html">Experimental features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Coming from Dedalus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dedalus.html">Importing Dedalus scripts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="expert.html">The expert layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="operators.html">IR and operators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bases.html">Bases and domains</a></li>
@@ -681,7 +686,7 @@
           <section class="tex2jax_ignore mathjax_ignore" id="spherical-shells">
 <h1>Spherical shells<a class="headerlink" href="#spherical-shells" title="Link to this heading">¶</a></h1>
 <p>The space between two concentric spheres, where planets and stars convect: simulations on a CPU or
-a GPU, rotating convection, exact adjoints and optimal perturbations, with the same model text as in
+a GPU, rotating convection, discrete adjoints and optimal perturbations, with the same model text as in
 a box.</p>
 <section id="a-shell-in-a-few-lines">
 <h2>A shell in a few lines<a class="headerlink" href="#a-shell-in-a-few-lines" title="Link to this heading">¶</a></h2>
@@ -711,7 +716,7 @@ Chebyshev modes in <span class="math notranslate nohighlight">\(r\)</span>.</p>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"t = </span><span class="si">{</span><span class="n">sim</span><span class="o">.</span><span class="n">t</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, max |u| = </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="s1">'u'</span><span class="p">)))</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Simulation of 'viscous shell' (native model) at N = phi: 8, theta: 5, r: 48
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Simulation of 'viscous shell' at N = phi: 8, theta: 5, r: 48: RK443, dt = 0.001, backend cpu
 spurious tau modes: none (representative groups checked)
 t = 0.200, max |u| = 1.117e-04
 </pre></div>
@@ -721,11 +726,10 @@ a temperature or any other scalar takes its own values on <code class="docutils 
 </section>
 <section id="what-conatus-checks-before-the-first-step">
 <h2>What Conatus checks before the first step<a class="headerlink" href="#what-conatus-checks-before-the-first-step" title="Link to this heading">¶</a></h2>
-<p>The usual way of writing the wall conditions of a shell in a spectral code (the one of the Dedalus
-shell examples) creates, at fine radial resolution and small viscosity, a growing mode that belongs
-to the discretisation and not to the flow: the run blows up after a while, whatever the time step.
-The native layer writes the conditions in a form that has no such mode, at every resolution, and
-you do not have to know which.</p>
+<p>A common way of writing the wall conditions of a shell in a spectral code creates, at fine radial
+resolution and small viscosity, a growing mode that belongs to the discretisation and not to the
+flow. The run then blows up after a while, whatever the time step. The native layer writes the
+conditions in a form designed to avoid this mode, and checks for it as described below.</p>
 <p>Before the first step, Conatus looks for any growing artefact of this kind in the implicit
 operator and states the result (the <code class="docutils literal notranslate"><span class="pre">spurious</span> <span class="pre">tau</span> <span class="pre">modes</span></code> line above, also in <code class="docutils literal notranslate"><span class="pre">sim.explain()</span></code>). A
 problem written by hand in the <a class="reference internal" href="expert.html"><span class="doc">expert layer</span></a> that has one is refused with an error
@@ -772,7 +776,7 @@ numbers as <code class="docutils literal notranslate"><span class="pre">sim.run<
 </section>
 <section id="gradients-adjoints-and-optimal-perturbations">
 <h2>Gradients, adjoints and optimal perturbations<a class="headerlink" href="#gradients-adjoints-and-optimal-perturbations" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">sim.flowmap(T)</span></code> is the exact tangent and adjoint of the time stepper over a time <code class="docutils literal notranslate"><span class="pre">T</span></code>, and
+<p><code class="docutils literal notranslate"><span class="pre">sim.flowmap(T)</span></code> is the tangent and discrete adjoint of the time stepper over a time <code class="docutils literal notranslate"><span class="pre">T</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">sim.nlop(T=...,</span> <span class="pre">E0=...)</span></code> the search for the perturbation of given energy that grows most, in the
 shell as in a channel, on the CPU and on the GPU: see
 <a class="reference internal" href="dynamics/optimal_perturbations.html"><span class="doc">Tangent, adjoint and optimal perturbations</span></a> for the shell example and <a class="reference internal" href="dynamics/adjoint.html"><span class="doc">Adjoints and sensitivity</span></a> for the
@@ -876,7 +880,7 @@ period, and multistep schemes (their one-period map depends on the history).</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a58bc63e"></script>
+</div><script src="../_static/documentation_options.js?v=92734c54"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

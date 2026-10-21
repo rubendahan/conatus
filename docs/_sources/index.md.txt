@@ -1,44 +1,39 @@
 # Conatus
 
-Conatus solves partial differential equations with spectral methods, on CPUs and GPUs, from
-equations written as on paper, and studies the dynamical systems they define.
+Spectral PDE and stability calculations in Python. Conatus is experimental research software for
+defining PDE models, computing eigenmodes and running time-dependent simulations. Its examples
+focus on fluid instability and dynamical systems.
 
-**Status: 0.1.0.** CPU supported, GPU (CUDA 12) in beta. Install with `pip install conatus` ({doc}`install`), then
-start with {doc}`tutorials/first_steps` (ten minutes) or, for the whole path through one
-problem, {doc}`tutorials/00_getting_started`.
+**Status.** CPU wheels for Linux x86-64 (`pip install conatus`); CUDA support is experimental. The
+interface can still change; changes come with a deprecation warning and a changelog entry.
 
-```python
-import numpy as np
-import conatus as cn
+## Start here
 
-box = cn.Box(x=cn.periodic(2.0), z=cn.walls(-0.5, 0.5))
-m = cn.Model(box, name="Rayleigh-Benard 2D", Ra=2500, Pr=1)
-u, p, T = m.velocity("u"), m.pressure("p"), m.scalar("T")
-m.equations("""
-    dt(u) + grad(p) - Pr*lap(u) = Pr*Ra*T*ez - u·grad(u)
-    div(u) = 0
-    dt(T) - lap(T) = -u·grad(T)
-""")
-m.at("bottom", u=0, T=+0.5)
-m.at("top", u=0, T=-0.5)
-
-sim = m.simulate(N=(64, 32), scheme="RK443", dt=5e-4)     # backend="cuda" for a GPU
-sim.initial(T=lambda x, z: -z + 1e-3*np.cos(np.pi*x)*np.cos(np.pi*z))
-sim.run(until=1.0)
-
-modes = m.linearize(about={u: 0, T: lambda z: -z}).eigenvalues(N=32, k=np.pi)
-print(modes.explain())     # growth rates, with residuals
+```{include} tutorials/_generated/start.md
 ```
 
-You write the geometry, the unknowns, the equations and the boundary conditions. Conatus chooses
-the spectral bases of the geometry, places each boundary condition, splits the terms into
-implicit and explicit parts, and prints every one of these decisions with `explain()`. The
-numerical choices that are yours (resolution, time stepper, time step, backend) are written in the
-call; nothing is changed behind your back.
+## A first calculation
 
-The same model gives a simulation, its linear stability, a Newton search for a steady state, a
-travelling wave or a periodic orbit, a continuation through folds and bifurcations, a Floquet or
-Lyapunov analysis, an adjoint or an optimal perturbation.
+When does flow between two plates become unstable? The script below writes the Orr–Sommerfeld
+equation for plane Poiseuille flow, computes the least stable mode at $Re = 10\,000$, $\alpha = 1$,
+then searches for the critical Reynolds number. It is the example of the website's home page.
+
+```{literalinclude} ../../web/home/critical_reynolds.py
+:language: python
+```
+
+What it printed:
+
+```{literalinclude} ../../web/home/critical_reynolds.out
+:language: text
+:lines: 2-
+```
+
+Orszag (1971) gives $c = 0.23752649 + 0.00373967i$ and $Re_c = 5772.22$ at $\alpha_c = 1.02056$
+(the script's 1.02055 differs in the last digit).
+The residual is the backward error of the computed eigenpair; `drift=96` keeps only the modes found
+again with 96 Chebyshev polynomials instead of 64. The {doc}`stability tutorial
+<tutorials/01_orr_sommerfeld>` continues from this script.
 
 ## Documentation
 
@@ -48,13 +43,13 @@ Lyapunov analysis, an adjoint or an optimal perturbation.
 :::{grid-item-card} Installation
 :link: install
 :link-type: doc
-`pip install conatus` (CPU), the CUDA 12 wheel (beta) or from source; check what your machine can run.
+`pip install conatus`, the CUDA wheel (experimental) or from source; check what your machine can run.
 :::
 
 :::{grid-item-card} Tutorials
 :link: tutorials/index
 :link-type: doc
-Executed tutorials, from getting started to bifurcations, chaos and Lagrangian tracers, each ending on a result from the literature.
+Executed tutorials by topic, each ending on a published value or a closed form.
 :::
 
 :::{grid-item-card} User guide
@@ -63,16 +58,10 @@ Executed tutorials, from getting started to bifurcations, chaos and Lagrangian t
 Geometries, equations, boundary conditions, simulations, GPU, dynamics, provenance.
 :::
 
-:::{grid-item-card} Coming from Dedalus
-:link: guide/dedalus
-:link-type: doc
-The same problem side by side, and what you stop writing.
-:::
-
 :::{grid-item-card} API reference
 :link: api/index
 :link-type: doc
-Every public object, from its docstring.
+The public objects, from their docstrings.
 :::
 
 :::{grid-item-card} Mathematics
@@ -84,20 +73,19 @@ The methods behind each part of the library.
 
 ## Principles
 
-- **No silent substitution.** Basis, resolution, boundary treatment, dealiasing, time stepper,
-  tolerances and inner product are written by you or printed by `explain()`; Conatus suggests,
-  it never modifies ({doc}`principles`).
-- **Validation by residual.** Every eigenvalue, steady state or orbit comes with its residual,
-  never as a bare number. A check against a finer resolution is computed when you ask for it
-  (`drift=` for eigenvalues, a second resolution for a solution): it is not automatic.
-- **Every capability tied to a published value.** Each method is tested against a published
-  table or a closed form, and each tutorial ends on one.
+- **Declared choices.** Basis, resolution, boundary treatment, dealiasing, time stepper,
+  tolerances and inner product are either written by you or shown by `explain()`
+  ({doc}`principles`).
+- **Residuals with results.** An eigenvalue, steady state or orbit is returned with its residual.
+  A check against a finer resolution runs when you ask for it (`drift=` for eigenvalues, a second
+  resolution for a solution).
+- **Published references.** Each method is tested against a published table or a closed form,
+  and each tutorial ends on one.
 
 ## Who it is for
 
 Researchers and students in fluid dynamics and applied mathematics who study stability,
-transition, pattern formation and invariant solutions, and who want to go from an equation to a
-validated number, then to a GPU simulation, with the same script.
+transition, pattern formation and invariant solutions.
 
 ```{toctree}
 :hidden:
@@ -124,8 +112,3 @@ principles
 math/index
 citing
 ```
-
----
-
-*Unaquæque res, quantum in se est, in suo esse perseverare conatur*: each thing, as far as it is in
-itself, strives to persevere in its being (Spinoza, *Ethica* III, 6). The origin of the name.

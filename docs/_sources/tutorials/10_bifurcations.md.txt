@@ -1,4 +1,4 @@
-# 10. Bifurcations: branch switching, cycles, codimension 2, normal forms
+# Bifurcations: branch switching, cycles, codimension 2, normal forms
 
 **Goal.** Build the bifurcation diagram of the Lorenz system (pitchfork with a declared symmetry,
 Hopf point, its first Lyapunov coefficient, the cycles born there), follow fold and Hopf curves of
@@ -12,7 +12,22 @@ $A^2 = 4r/3$, $\tau_0 = 1$, $\xi_0^2 = 4$, $g_0 = 3$. **Time:** under a minute o
 **Script:** [`t10_bifurcations.py`](code/t10_bifurcations.py) · **Tests behind it:**
 `tests/bifurcation/test_bifurcation_core.py`, `tests/bifurcation/test_amplitude.py`.
 
+The page has three parts, which can be read separately:
+
+1. **The Lorenz system, one parameter**: equilibria, branch switching, normal forms and the cycles
+   born at the Hopf point (from "Write the system" to "Cycles from the Hopf point").
+2. **The Bogdanov–Takens normal form, two parameters**: fold and Hopf curves ("Two parameters").
+3. **Swift–Hohenberg rolls**: the Landau and Ginzburg–Landau coefficients of a PDE.
+
+"Check against the closed forms" tests the defining values of all three parts.
+
 ## Write the system
+
+```{literalinclude} code/t10_bifurcations.py
+:language: python
+:start-after: "# [imports]"
+:end-before: "# [/imports]"
+```
 
 ```{literalinclude} code/t10_bifurcations.py
 :language: python
@@ -23,8 +38,9 @@ $A^2 = 4r/3$, $\tau_0 = 1$, $\xi_0^2 = 4$, $g_0 = 3$. **Time:** under a minute o
 - `ode_problem` writes an ODE from its right-hand side, given as a Python function of the state
   and the parameters. A PDE written as a native model works the same way (Swift–Hohenberg below).
 - `ir_system` discretizes once and exposes $M\dot x = G(x;p)$. The Jacobian and the multilinear forms
-  $B = F''$, $C = F'''$ are exact symbolic Fréchet derivatives of the equations: **no finite differences in $x$**.
-  $\partial G/\partial r$ is exact too: the equations say that $r$ enters linearly, and `explain()` says so.
+  $B = F''$, $C = F'''$ are symbolic Fréchet derivatives of the equations, with no finite
+  differences in $x$. $\partial G/\partial r$ is symbolic too: $r$ enters linearly, and `explain()`
+  says so.
 
 ## Equilibria and branch switching with a declared symmetry
 
@@ -34,18 +50,19 @@ $A^2 = 4r/3$, $\tau_0 = 1$, $\xi_0^2 = 4$, $g_0 = 3$. **Time:** under a minute o
 :end-before: "# [/equilibria]"
 ```
 
-`continue_equilibria` evaluates three test functions at every point (fold: the parameter component of
+`continue_equilibria` evaluates three test functions at each point (fold: the parameter component of
 the tangent; branch point: the determinant of the bordered Jacobian; Hopf: a product over eigenvalue
 pairs) and **locates** each sign change by a secant, reporting the residual there. `branch_switch`
-solves the algebraic branching equation with the exact second derivatives; the declared
+solves the algebraic branching equation with the second derivatives. The declared
 $S = \mathrm{diag}(-1,-1,1)$ classifies the point as a *symmetry-breaking pitchfork*: the kernel is
-$S$-odd, and the two half-branches $C^\pm$ are images of each other. Nothing is guessed from a plot.
+$S$-odd, and the two half-branches $C^\pm$ are images of each other. The symmetry declaration and
+the branching equation determine the two branch directions.
 
 ```{figure} media/t10_lorenz.png
 :alt: Bifurcation diagram of the Lorenz system, x against r: a black line along x = 0 that turns dashed at r = 1, where two red branches split off; they turn dashed at the Hopf points near r = 24.7, from which brass lines of cycles bend back.
 :width: 100%
 
-The equilibria of the Lorenz system and their stability, as continued by the page: the origin, the pitchfork at r = 1, the branches C± and their subcritical Hopf points, and the cycles born there.
+The equilibria of the Lorenz system and their stability, as continued by the page (solid: stable, dashed: unstable): the origin, the pitchfork at r = 1, the branches C± and their subcritical Hopf points at r = 24.736842, and the unstable cycles born there.
 ```
 
 ## Normal forms
@@ -58,7 +75,7 @@ The equilibria of the Lorenz system and their stability, as continued by the pag
 
 The centre-manifold projection (Kuznetsov) gives the pitchfork cubic coefficient and, at the Hopf
 point, $c_1$ and the **first Lyapunov coefficient** $\ell_1 = \mathrm{Re}\,c_1/\omega$: positive
-here, so the Hopf bifurcation of Lorenz is subcritical. Every quantity is reported with its checks
+here, so the Hopf bifurcation of Lorenz is subcritical. Each quantity is reported with its checks
 (residuals of the eigenvectors and of the bordered solves); the normalization $\|q\| = 1$ is declared.
 
 ## Cycles from the Hopf point
@@ -70,7 +87,7 @@ here, so the Hopf bifurcation of Lorenz is subcritical. Every quantity is report
 ```
 
 The first cycle is *predicted by the normal form* (amplitude declared, $\Delta r = -\mathrm{Re}\,c_1|z|^2/\alpha'$),
-corrected by orthogonal collocation (AUTO's method) and continued. Subcritical: the cycles exist for
+corrected by orthogonal collocation and continued (Doedel, Keller & Kernévez 1991; {doc}`../math/continuation`). Subcritical: the cycles exist for
 $r < r_H$. Followed further, their period diverges at
 the homoclinic explosion $r \approx 13.926$.
 
@@ -78,7 +95,7 @@ the homoclinic explosion $r \approx 13.926$.
 :alt: Nested closed loops in the (x, z) plane around the point C+, small ones near it and larger ones further out.
 :width: 100%
 
-The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of degree 4) for r from 24.735 down to 22.335: born at the Hopf point around the equilibrium of the continued branch (cross), they grow as r decreases.
+The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of degree 4) for r from 24.735 down to 22.335 (colour bar): born at the Hopf point around the equilibrium of the continued branch (cross), they grow as r decreases.
 ```
 
 ## Two parameters: fold and Hopf curves
@@ -91,14 +108,18 @@ The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of
 
 Minimally augmented systems (Govaerts): one scalar condition $g = 0$ from a bordered matrix (fold), two
 for Hopf (bordered $J^2 + \kappa I$, $\kappa = \omega^2$). Along the curves, test functions detect cusp,
-Bogdanov–Takens, Bautin, fold–Hopf and Hopf–Hopf points; here both curves end at the BT point, and the
-vanishing determinant there is *not* reported as a fold–Hopf point (rejected with its reason).
+Bogdanov–Takens, Bautin, fold–Hopf and Hopf–Hopf points. The fold curve passes through the BT point.
+The Hopf curve ends there: $\kappa = \omega^2$ reaches 0, and for $\beta_2 > 0$ the equilibrium has a
+real pair of eigenvalues $\pm\sqrt{\beta_2}$, which the augmented equations also satisfy with
+$\kappa < 0$. The continuation stops at $\kappa = 0$, and every point it keeps is checked against
+the eigenvalues of the Jacobian, computed on their own. The vanishing determinant at the BT point is
+*not* reported as a fold–Hopf point (rejected with its reason).
 
 ```{figure} media/t10_bogdanov_takens.png
-:alt: Two curves in the parameter plane: a red parabola of folds and a green line of Hopf points at beta1 = 0, meeting at the Bogdanov-Takens point at the origin.
+:alt: Two curves in the parameter plane: a red parabola of folds through the origin, and a green line of Hopf points at beta1 = 0 for beta2 < 0 that ends at the Bogdanov-Takens point at the origin.
 :width: 100%
 
-Codimension two: the fold and Hopf curves of the Bogdanov-Takens normal form, continued in (β₁, β₂). The fold curve follows β₁ = β₂²/4, the Hopf curve β₁ = 0; both end at the BT point.
+Codimension two: the fold and Hopf curves of the Bogdanov-Takens normal form, continued in (β₁, β₂). The fold curve follows β₁ = β₂²/4 through the BT point; the Hopf curve β₁ = 0 exists for β₂ < 0 and ends at the BT point.
 ```
 
 ## Landau and Ginzburg–Landau equations of a PDE
@@ -124,7 +145,8 @@ with spectral convergence in $N_z$: `examples/bifurcation/weakly_nonlinear.py`.
 
 The pitchfork at $r = 1$, the branch $x^2 = b(r-1)$, the Hopf point $r_H = 470/19$ with its
 frequency and a positive first Lyapunov coefficient, the fold and Hopf curves of the
-Bogdanov–Takens normal form, and the Swift–Hohenberg coefficients $A^2/r = 4/3$, $\xi_0^2 = 4$,
+Bogdanov–Takens normal form (each Hopf point with the pair $\pm i\sqrt{-\beta_2}$ in the eigenvalues
+of its Jacobian), and the Swift–Hohenberg coefficients $A^2/r = 4/3$, $\xi_0^2 = 4$,
 $g_0 = 3$ are all recovered to rounding.
 
 ```{literalinclude} code/t10_bifurcations.py
