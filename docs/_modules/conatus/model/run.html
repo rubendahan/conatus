@@ -2449,8 +2449,8 @@
 <span class="sd">        linearization. Values left out of a call take the declared ones (logged): the model's</span>
 <span class="sd">        parameters, and for a wavenumber ``k=`` or, if not given, the fundamental 2 pi / L of the</span>
 <span class="sd">        box. A periodic axis not in ``over`` is fixed at ``k=`` (the group of that wavenumber, as</span>
-<span class="sd">        ``eigenvalues(N, k=)``). ``drift=N2`` with its required ``drift_tol`` rejects spurious</span>
-<span class="sd">        tau modes, as ``Model.parametric``."""</span>
+<span class="sd">        ``eigenvalues(N, k=)``). ``drift=N2`` with its required ``drift_tol`` keeps only the</span>
+<span class="sd">        modes found again at N2 (the others are not converged by this test), as ``Model.parametric``."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..solvers.parametric</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParametricEVP</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..tolerances</span><span class="w"> </span><span class="kn">import</span> <span class="n">REQUIRED</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_drift</span>

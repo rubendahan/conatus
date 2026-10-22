@@ -773,9 +773,9 @@ here as a model on a line with the eigenvalue <span class="math notranslate nohi
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">parametric</span></code> keeps <span class="math notranslate nohighlight">\(Ra\)</span> and <span class="math notranslate nohighlight">\(k\)</span> as live parameters; <code class="docutils literal notranslate"><span class="pre">critical</span></code> finds the neutral <span class="math notranslate nohighlight">\(Ra\)</span> and minimises
-it over <span class="math notranslate nohighlight">\(k\)</span>. <code class="docutils literal notranslate"><span class="pre">drift=48</span></code> sets aside the spurious modes of the boundary treatment: a mode is kept
-only if the same pencil at 48 modes has it too, within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code> (a physical mode is resolved and
-does not move; a spurious one jumps). The growth of <span class="math notranslate nohighlight">\(s\)</span> is its real part, read off its name and
+it over <span class="math notranslate nohighlight">\(k\)</span>. <code class="docutils literal notranslate"><span class="pre">drift=48</span></code> keeps a mode only if the same pencil at 48 modes has it too, within
+<code class="docutils literal notranslate"><span class="pre">drift_tol</span></code>. A mode that moves is not converged by this test and is set aside: the spurious modes of
+the boundary treatment jump, and so does a physical mode that 32 modes do not resolve. The growth of <span class="math notranslate nohighlight">\(s\)</span> is its real part, read off its name and
 printed by <code class="docutils literal notranslate"><span class="pre">crit.explain()</span></code>.</p>
 <figure class="align-default" id="id1">
 <a class="reference internal image-reference" href="../_images/t00_neutral_curve.png"><img alt="The neutral curve in the plane of wavenumber and Rayleigh number: a U-shaped red line with its minimum marked at Ra about 1708 and k about 3.12; the region above it, where modes grow, is shaded; two crosses at k = pi mark Ra = 1500 and 2500." loading="lazy" src="../_images/t00_neutral_curve.png" style="width: 100%;" />

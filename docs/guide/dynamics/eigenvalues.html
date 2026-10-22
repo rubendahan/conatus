@@ -725,7 +725,9 @@ flow <code class="docutils literal notranslate"><span class="pre">U(y)</span></c
 </pre></div>
 </div>
 <p>Spectral tau methods can produce spurious finite eigenvalues. <code class="docutils literal notranslate"><span class="pre">drift=96</span></code> recomputes the spectrum
-at a second resolution and keeps only the modes found again within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code>. The filter, and
+at a second resolution and keeps only the modes found again within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code>. A removed mode is
+not converged by this test; it is not necessarily spurious, since an under-resolved physical mode
+also moves between the two resolutions. The filter, and
 how many modes it removed, appear in <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code>. Without <code class="docutils literal notranslate"><span class="pre">drift=</span></code>, all finite modes are
 returned, and <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code> and the
 one-line <code class="docutils literal notranslate"><span class="pre">repr(res)</span></code> say so once (“no spurious-mode filter: tau modes may appear”).</p>

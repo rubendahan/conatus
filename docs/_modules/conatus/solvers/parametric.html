@@ -1307,7 +1307,8 @@
 <div class="viewcode-block" id="ParametricEVP.set_drift">
 <a class="viewcode-back" href="../../../api/_generated/_stubs/conatus.expert.ParametricEVP.html#conatus.expert.ParametricEVP.set_drift">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_drift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fine</span><span class="p">:</span> <span class="n">ParametricEVP</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">drift_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">REQUIRED</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParametricEVP</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Spurious-mode rejection by resolution drift: a mode is admissible</span>
+<span class="w">        </span><span class="sd">"""Resolution-drift test (it removes tau modes and also physical modes the</span>
+<span class="sd">        coarse pencil does not resolve): a mode is admissible</span>
 <span class="sd">        only if the pencil ``fine`` (same problem and parameters, finer resolution) has an</span>
 <span class="sd">        eigenvalue within ``drift_tol`` x max(|sigma|, DRIFT_FLOOR median |sigma_fine|) at the same</span>
 <span class="sd">        parameter values, as ``eigenvalues(drift=)``. Used by :meth:`least_stable` and :func:`critical` in place of a</span>
@@ -1580,8 +1581,8 @@
 <span class="sd">    of the pencil missing from ``values`` take the model's declared values (native layer, logged).</span>
 
 <span class="sd">    The least stable mode is chosen once by a full QZ among the admissible modes (the drift test</span>
-<span class="sd">    of ``m.parametric(N, over, drift=N2, drift_tol=)`` / ``P.set_drift``, which removes spurious</span>
-<span class="sd">    tau modes, and/or ``select``; the counts are logged), then</span>
+<span class="sd">    of ``m.parametric(N, over, drift=N2, drift_tol=)`` / ``P.set_drift``, which removes the modes not</span>
+<span class="sd">    found again at the finer resolution, and/or ``select``; the counts are logged), then</span>
 <span class="sd">    followed by bordered Newton; the neutral value is found by Newton on growth with the exact</span>
 <span class="sd">    sensitivity, safeguarded by the bracket. With ``over`` the neutral value is minimized over</span>
 <span class="sd">    one other parameter: it is computed at ``over_points`` equally spaced points of the interval</span>

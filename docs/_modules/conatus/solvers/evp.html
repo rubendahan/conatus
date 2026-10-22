@@ -1178,7 +1178,8 @@
 
 <span class="sd">    Drift ratio = |sigma_lo - nearest sigma_hi| / max(|sigma_lo|, DRIFT_FLOOR median |sigma_hi|)</span>
 <span class="sd">    (:func:`drift_ratios`: no unit of sigma enters). Spurious tau modes move by</span>
-<span class="sd">    orders of magnitude between resolutions; resolved physical modes do not.</span>
+<span class="sd">    orders of magnitude between resolutions; resolved physical modes do not. An under-resolved</span>
+<span class="sd">    physical mode also moves: a removed mode is not converged by this test, not necessarily spurious.</span>
 <span class="sd">    """</span>
     <span class="n">tol</span> <span class="o">=</span> <span class="n">check_drift_tol</span><span class="p">(</span><span class="n">tol</span><span class="p">,</span> <span class="s2">"drift_filter()"</span><span class="p">,</span> <span class="s2">"tol"</span><span class="p">)</span>      <span class="c1"># given and in range</span>
     <span class="k">if</span> <span class="n">hi</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>

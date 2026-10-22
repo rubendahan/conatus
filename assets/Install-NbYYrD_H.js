@@ -1,4 +1,4 @@
-import{i as e,l as t,s as n,t as r,u as i}from"./index-DYSViOE4.js";import{a,n as o,s}from"./ui-B-8F8Dzm.js";/* empty css             */var c=i(t(),1),l=e(),u=r.version,d=`$ python3.12 -m venv venv && . venv/bin/activate
+import{i as e,l as t,s as n,t as r,u as i}from"./index-UO5TOcCd.js";import{a,n as o,s}from"./ui-Bzr4dh96.js";/* empty css             */var c=i(t(),1),l=e(),u=r.version,d=`$ python3.12 -m venv venv && . venv/bin/activate
 $ pip install "conatus[tutorials]==${u}"     # CPU wheel from PyPI + matplotlib, xarray for the tutorials
 $ python -m conatus doctor                   # what this machine can run`,f=`# the CUDA wheel of the GitHub release (here for Python 3.12; cp311 and cp313 exist too)
 $ python3.12 -m venv venv && . venv/bin/activate

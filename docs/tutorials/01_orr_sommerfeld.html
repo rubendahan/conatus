@@ -744,7 +744,9 @@ the eigenvalue and how a mode grows (Im <span class="math notranslate nohighligh
 </div>
 <p>The tau method produces spurious eigenvalues with huge <span class="math notranslate nohighlight">\(|c|\)</span>. The drift filter compares
 eigenvalues at two resolutions: <code class="docutils literal notranslate"><span class="pre">drift=96</span></code> (i.e. <code class="docutils literal notranslate"><span class="pre">drift_plan=</span></code>) solves the same problem at a finer
-resolution and keeps only the modes that reappear within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code>. The dense solver also
+resolution and keeps only the modes that reappear within <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code>. A mode set aside is not
+converged by this test: it may be a tau mode or a physical mode that <span class="math notranslate nohighlight">\(N = 64\)</span> does not resolve. The
+dense solver also
 classifies eigenvalues as finite or infinite, with a separate threshold. <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code> says how
 many modes were removed and why. Each kept mode carries its backward residual <span class="math notranslate nohighlight">\(\|(L + cM)x\|\)</span> and
 its drift.</p>

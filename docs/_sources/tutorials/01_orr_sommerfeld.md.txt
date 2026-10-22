@@ -55,7 +55,9 @@ Things to notice:
 
 The tau method produces spurious eigenvalues with huge $|c|$. The drift filter compares
 eigenvalues at two resolutions: `drift=96` (i.e. `drift_plan=`) solves the same problem at a finer
-resolution and keeps only the modes that reappear within `drift_tol`. The dense solver also
+resolution and keeps only the modes that reappear within `drift_tol`. A mode set aside is not
+converged by this test: it may be a tau mode or a physical mode that $N = 64$ does not resolve. The
+dense solver also
 classifies eigenvalues as finite or infinite, with a separate threshold. `res.explain()` says how
 many modes were removed and why. Each kept mode carries its backward residual $\|(L + cM)x\|$ and
 its drift.

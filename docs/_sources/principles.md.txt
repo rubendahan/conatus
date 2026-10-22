@@ -61,8 +61,8 @@ refinement studies and independent reference values together:
 and the scope of the check, or asks for an inspection by hand.
 
 For example, the first tutorial returns the least stable Orr–Sommerfeld eigenvalue with its
-backward residual, its drift against a finer resolution, and the number of spurious modes that the
-drift test removed ({doc}`tutorials/01_orr_sommerfeld`).
+backward residual, its drift against a finer resolution, and the number of modes that the drift
+test set aside as not converged ({doc}`tutorials/01_orr_sommerfeld`).
 
 ## 3. Methods are tested against published values
 

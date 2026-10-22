@@ -694,8 +694,8 @@
 <code class="docutils literal notranslate"><span class="pre">sigma</span></code> -&gt; Re, phase speed <code class="docutils literal notranslate"><span class="pre">c</span></code> -&gt; Im), logged; an undeclared name is refused. Parameters
 of the pencil missing from <code class="docutils literal notranslate"><span class="pre">values</span></code> take the model’s declared values (native layer, logged).</p>
 <p>The least stable mode is chosen once by a full QZ among the admissible modes (the drift test
-of <code class="docutils literal notranslate"><span class="pre">m.parametric(N,</span> <span class="pre">over,</span> <span class="pre">drift=N2,</span> <span class="pre">drift_tol=)</span></code> / <code class="docutils literal notranslate"><span class="pre">P.set_drift</span></code>, which removes spurious
-tau modes, and/or <code class="docutils literal notranslate"><span class="pre">select</span></code>; the counts are logged), then
+of <code class="docutils literal notranslate"><span class="pre">m.parametric(N,</span> <span class="pre">over,</span> <span class="pre">drift=N2,</span> <span class="pre">drift_tol=)</span></code> / <code class="docutils literal notranslate"><span class="pre">P.set_drift</span></code>, which removes the modes not
+found again at the finer resolution, and/or <code class="docutils literal notranslate"><span class="pre">select</span></code>; the counts are logged), then
 followed by bordered Newton; the neutral value is found by Newton on growth with the exact
 sensitivity, safeguarded by the bracket. With <code class="docutils literal notranslate"><span class="pre">over</span></code> the neutral value is minimized over
 one other parameter: it is computed at <code class="docutils literal notranslate"><span class="pre">over_points</span></code> equally spaced points of the interval

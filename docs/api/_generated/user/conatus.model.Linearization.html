@@ -803,8 +803,8 @@ wavenumber (<code class="docutils literal notranslate"><span class="pre">&quot;k
 linearization. Values left out of a call take the declared ones (logged): the model’s
 parameters, and for a wavenumber <code class="docutils literal notranslate"><span class="pre">k=</span></code> or, if not given, the fundamental 2 pi / L of the
 box. A periodic axis not in <code class="docutils literal notranslate"><span class="pre">over</span></code> is fixed at <code class="docutils literal notranslate"><span class="pre">k=</span></code> (the group of that wavenumber, as
-<code class="docutils literal notranslate"><span class="pre">eigenvalues(N,</span> <span class="pre">k=)</span></code>). <code class="docutils literal notranslate"><span class="pre">drift=N2</span></code> with its required <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code> rejects spurious
-tau modes, as <code class="docutils literal notranslate"><span class="pre">Model.parametric</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">eigenvalues(N,</span> <span class="pre">k=)</span></code>). <code class="docutils literal notranslate"><span class="pre">drift=N2</span></code> with its required <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code> keeps only the
+modes found again at N2 (the others are not converged by this test), as <code class="docutils literal notranslate"><span class="pre">Model.parametric</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

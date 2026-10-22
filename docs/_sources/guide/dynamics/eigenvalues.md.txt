@@ -36,7 +36,9 @@ flow `U(y)` is a given field, the conditions are named by boundary.
 ```
 
 Spectral tau methods can produce spurious finite eigenvalues. `drift=96` recomputes the spectrum
-at a second resolution and keeps only the modes found again within `drift_tol`. The filter, and
+at a second resolution and keeps only the modes found again within `drift_tol`. A removed mode is
+not converged by this test; it is not necessarily spurious, since an under-resolved physical mode
+also moves between the two resolutions. The filter, and
 how many modes it removed, appear in `res.explain()`. Without `drift=`, all finite modes are
 returned, and `res.explain()` and the
 one-line `repr(res)` say so once ("no spurious-mode filter: tau modes may appear").

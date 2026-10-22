@@ -1739,7 +1739,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">eigenvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dealias</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">drift</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">n_modes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Eigenvalues of an EVP model (``m.eigenvalue("c")``); ``drift=N2`` keeps only the modes</span>
-<span class="sd">        found again at resolution N2 (tau-mode rejection, conatus.eigenvalues(drift_plan=)).</span>
+<span class="sd">        found again at resolution N2 (conatus.eigenvalues(drift_plan=)); a mode that moves is not</span>
+<span class="sd">        converged by this test (a tau mode, or a physical mode N does not resolve) and is set aside.</span>
 
 <span class="sd">        ``k``: the wavenumber of the periodic direction(s) (one number, a tuple in coordinate</span>
 <span class="sd">        order or a dict by name), as in ``lin.eigenvalues(N, k=)``: each wavenumber is its own</span>
