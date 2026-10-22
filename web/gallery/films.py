@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -607,9 +608,20 @@ FIELDS = ("slug", "title", "alt", "caption", "video_webm", "video_mp4", "poster"
 LEGEND = {
     "kelvin-helmholtz-film": "Colour: dye concentration, from 0 (dark) to 1 (light); the outline is "
                              "concentration 1/2. Periodic box 4 × 2; the two shear layers are 1 apart, with half-thickness "
-                             "0.08 and velocity jump 2; time in these units.",
+                             "δ = 0.08 and velocity jump 2U with U = 1; time in these units.",
     "rayleigh-taylor-film": "Colour: temperature, from −1/2 (dark, heavy fluid) to +1/2 (light fluid). "
                             "Box 2 × 1 between rigid walls; time in thermal diffusion times of the depth.",
+}
+
+# The two visible lines under each film (external review of the live 0.1.2 site): what is shown, then
+# the key parameter, read from the run's own parameters. Everything else (caption, legend, details,
+# span, loop) goes into the collapsed "Calculation details" of web/src/components/Film.tsx.
+SUPERSCRIPT = str.maketrans("0123456789-", "⁰¹²³⁴⁵⁶⁷⁸⁹⁻")
+SHOWN = {
+    "kelvin-helmholtz-film": ("Dye concentration between two shear layers rolling up into billows.",
+                              lambda p: f"Reynolds number Re = Uδ/ν = {p['Re']:g}."),
+    "rayleigh-taylor-film": ("Temperature as heavy fluid falls into light fluid.",
+                             lambda p: f"Rayleigh number Ra = 10{str(round(math.log10(p['Ra']))).translate(SUPERSCRIPT)}."),
 }
 
 
@@ -633,6 +645,8 @@ def collect(run_ids: list[str]) -> None:
             found[m["slug"]] = {k: m[k] for k in FIELDS}
             t = m.get("times")
             found[m["slug"]].update(
+                shows=SHOWN[m["slug"]][0] if m["slug"] in SHOWN else None,
+                key=SHOWN[m["slug"]][1](m["parameters"]) if m["slug"] in SHOWN else None,
                 legend=LEGEND.get(m["slug"]), details=m.get("details"),
                 span=(f"The film shows t = {t[0]:.3g} to {t[1]:.3g} (simulation time) in "
                       f"{m['duration_s']:g} s of playback." if t else None))

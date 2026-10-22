@@ -15,8 +15,8 @@ export interface RouteDef {
 }
 
 export const routes: RouteDef[] = [
-  { path: "/", title: "Conatus: spectral PDE and stability calculations in Python", nav: "Home", group: "none",
-    description: "Conatus is experimental research software for defining PDE models, computing eigenmodes and running time-dependent simulations, with examples in fluid instability and dynamical systems.",
+  { path: "/", title: "Conatus: one PDE model for simulation, stability and invariant solutions", nav: "Home", group: "none",
+    description: "Write a PDE model once, then simulate it, compute its stability and find its invariant solutions from the same object. Conatus is experimental research software for fluid instability and dynamical systems.",
     load: () => import("./pages/Home"), src: "src/pages/Home.tsx" },
   { path: "/tutorials/getting-started", title: "First steps: the Burgers equation in ten minutes", nav: "Getting started", group: "primary",
     description: "Getting started with Conatus in ten minutes: one equation written as on paper, a simulation, a plot and one physical number checked against the exact solution, then four guided changes.",

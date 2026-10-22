@@ -2,12 +2,15 @@
 // grouped by topic: value obtained, reference, deviation; each row says where it comes from (the
 // table of the Conatus paper in preparation, how its deviation was obtained) and, when there is one,
 // the script of this repository that reproduces it. The run records are not published: the page
-// labels the values as author-reported (external review 0.1.0, finding 70; review of 0.1.1, F24).
+// labels the values as author-reported (external review 0.1.0, finding 70; review of 0.1.1, F24),
+// except the rows whose number a public script of the release prints (src/content/reproduced.json:
+// script and output pinned to the release tag, command, printed text; review of the live 0.1.2 site).
 // Rows compare with published values only (cross-checks against other codes stay in the paper).
 // Data: src/generated/ledger.json (scripts/gen-data.mjs).
 // Self-contained: no other page imports anything from here, so it can be removed with its route.
 import { PageHead, RepoPath } from "../components/ui";
 import { Rich } from "../components/Rich";
+import { REPRODUCED_VERSION, Reproductions, reproductionsOf } from "../components/Reproduced";
 import { ledger, type LedgerEntry } from "../data";
 import "../styles/ledger.css";
 
@@ -29,14 +32,16 @@ const topicOf = (e: LedgerEntry) => TOPICS.find((t) => t.domains.includes(e.doma
 const rowsOf = (id: string) => ledger.entries.filter((e) => topicOf(e).id === id || (id === "other" && !known.has(e.domain)));
 
 function Row({ e }: { e: LedgerEntry }) {
+  const repro = reproductionsOf(e.id);
   return (
     <tr id={`t-${e.id}`}>
       <th scope="row" className="v-test">
         <Rich text={e.rich.test} />
         <details className="v-more">
-          <summary>Source</summary>
+          <summary>{repro.length ? "Source: public script" : "Source: author-reported"}</summary>
+          {repro.length ? <Reproductions items={repro} /> : null}
           <p>
-            {e.section} table of the Conatus paper (in preparation){e.deviationNote ? <>; deviation: {e.deviationNote}</> : null}
+            {repro.length ? "Also in the " : "Author-reported: "}{e.section} table of the Conatus paper (in preparation){e.deviationNote ? <>; deviation: {e.deviationNote}</> : null}
             {e.script && <> · reproduced by <RepoPath path={e.script}>{e.script}</RepoPath></>}
           </p>
         </details>
@@ -86,11 +91,13 @@ export default function Validation() {
         })}
         <section className="v-note" aria-labelledby="how-h">
           <h2 id="how-h">How these numbers are produced</h2>
-          <p>The values are measurements reported by the author. They are copied at each build of this site from the
-            Verification table of the Conatus paper (in preparation), for Conatus {ledger.version ?? ""}. A deviation is the
-            relative error of the measurement, or the one deviation the row states. A dash means the row states the
-            agreement in words. The run records (inputs, code revision, logs) are not published with this release. When a
-            row names a script, that script reproduces the value from this repository.</p>
+          <p>The values are copied at each build of this site from the Verification table of the Conatus paper (in
+            preparation), for Conatus {ledger.version ?? ""}. A deviation is the relative error of the measurement, or the one
+            deviation the row states. A dash means the row states the agreement in words.</p>
+          <p>A row marked "Source: public script" names a script of the public repository, pinned to the tag
+            v{REPRODUCED_VERSION}, that prints the row's number, with the command and the output it recorded. To run it, clone
+            the repository at that tag and install <code>conatus[tutorials]=={REPRODUCED_VERSION}</code>. The other rows are
+            author-reported: their run records (inputs, code revision, logs) are not published with this release.</p>
         </section>
       </div>
     </>

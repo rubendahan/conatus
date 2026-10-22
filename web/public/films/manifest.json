@@ -14,7 +14,9 @@
     "example_script": "examples/shear/kelvin_helmholtz.py",
     "domain": "shear",
     "loop": "run frames, then a 0.5 s cross-fade from the last frame to the first",
-    "legend": "Colour: dye concentration, from 0 (dark) to 1 (light); the outline is concentration 1/2. Periodic box 4 × 2; the two shear layers are 1 apart, with half-thickness 0.08 and velocity jump 2; time in these units.",
+    "shows": "Dye concentration between two shear layers rolling up into billows.",
+    "key": "Reynolds number Re = Uδ/ν = 400.",
+    "legend": "Colour: dye concentration, from 0 (dark) to 1 (light); the outline is concentration 1/2. Periodic box 4 × 2; the two shear layers are 1 apart, with half-thickness δ = 0.08 and velocity jump 2U with U = 1; time in these units.",
     "details": null,
     "span": "The film shows t = 2 to 9.95 (simulation time) in 7.17 s of playback."
   },
@@ -33,6 +35,8 @@
     "example_script": "docs/site/tutorials/code/t02b_rayleigh_benard_gpu.py",
     "domain": "convection",
     "loop": "fade from black over the first 7 frames and to black over the last 7 (the mixed end state is not the start state)",
+    "shows": "Temperature as heavy fluid falls into light fluid.",
+    "key": "Rayleigh number Ra = 10⁷.",
     "legend": "Colour: temperature, from −1/2 (dark, heavy fluid) to +1/2 (light fluid). Box 2 × 1 between rigid walls; time in thermal diffusion times of the depth.",
     "details": "Boussinesq, Pr = 1, from a rippled interface; 5.9 free-fall times. 512 × 256 Fourier × Chebyshev, RK443, dt = 7.5e-07, CPU.",
     "span": "The film shows t = 0.00015 to 0.00203 (simulation time) in 7.5 s of playback."

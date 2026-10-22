@@ -62,10 +62,11 @@ export function Stat({ value, label, source }: { value: ReactNode; label: ReactN
   );
 }
 
-/** A repository path; becomes a link once the repository is public (REPO_URL at build time). */
-export function RepoPath({ path, children }: { path: string; children?: ReactNode }) {
+/** A repository path; becomes a link once the repository is public (REPO_URL at build time).
+ *  `at`: a tag or branch to pin the link to (a release tag such as "v0.1.2"); default main. */
+export function RepoPath({ path, children, at = "main" }: { path: string; children?: ReactNode; at?: string }) {
   const label = children ?? path;
-  if (SITE.repo) return <a className="repo-path" href={`${SITE.repo}/blob/main/${path}`}><code>{label}</code></a>;
+  if (SITE.repo) return <a className="repo-path" href={`${SITE.repo}/blob/${at}/${path}`}><code>{label}</code></a>;
   return <code className="repo-path" title="Path in the Conatus repository">{label}</code>;
 }
 

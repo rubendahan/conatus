@@ -53,6 +53,7 @@ td.v-dev { text-align: right; padding-right: 0 !important; white-space: nowrap; 
 .v-note { margin-top: clamp(3rem, 7vw, 4.5rem); padding-top: 1.25rem; border-top: 1px solid var(--cn-rule); max-width: 42rem; }
 .v-note h2 { font-size: 1.3rem; margin-bottom: 0.5rem; }
 .v-note p { color: var(--cn-muted); font-size: 0.95rem; margin: 0; }
+.v-note p + p { margin-top: 0.6rem; }
 
 /* ---- phones: one block per test ---- */
 @media (max-width: 860px) {

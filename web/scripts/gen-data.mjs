@@ -30,6 +30,24 @@ const sources = new Set();
 const warnings = [];
 const divergences = [];
 
+/** Validation rows linked to a public script (src/content/reproduced.json; the page shows the link):
+ *  each row id must be a ledger row, each row number must be in its value, and each printed text in
+ *  the recorded output of the script (tests/docs/test_validation_sources.py checks the agreement of
+ *  the numbers). A row that changes in the paper fails the build here rather than keep a stale link. */
+function checkReproduced(entries) {
+  const data = JSON.parse(read("web/src/content/reproduced.json"));
+  const byId = new Map(entries.map((e) => [e.id, e]));
+  for (const [id, rs] of Object.entries(data.rows)) {
+    const e = byId.get(id);
+    if (!e) fail(`src/content/reproduced.json: no ledger row "${id}"`);
+    for (const r of rs) {
+      for (const [, v] of r.numbers) if (!e.value.includes(v)) fail(`src/content/reproduced.json: "${v}" is not in the value of row "${id}" (${e.value})`);
+      const out = read(r.output);
+      for (const p of r.printed) if (!out.includes(p)) fail(`src/content/reproduced.json: ${r.output} does not contain "${p}"`);
+      if (!fs.existsSync(path.join(ROOT, r.script))) fail(`src/content/reproduced.json: no script ${r.script}`);
+    }
+  }
+}
 function fail(msg) { console.error(`gen-data: ERROR: ${msg}`); process.exit(1); }
 function warn(msg) { warnings.push(msg); console.warn(`gen-data: warning: ${msg}`); }
 function read(rel, { optional = false } = {}) {
@@ -853,6 +871,7 @@ if (V) {
     tutorials: { total: tutorials.length, passing: tutorials.filter((t) => t.status === "pass").length },
     warnings: warnings.length, divergences: divergences.length,
   };
+  checkReproduced(ledger.entries);
   write("ledger.json", ledger);
   write("perf.json", { ...perf, sources: [...sources].filter((s) => s.startsWith("results/")).sort() });
   write("stats.json", stats);
@@ -865,6 +884,7 @@ if (V) {
   for (const f of ["ledger.json", "perf.json", "stats.json"]) {
     if (!fs.existsSync(path.join(OUT, f))) fail(`no paper/ in this tree and no shipped src/generated/${f}: the validation data cannot be made here`);
   }
+  checkReproduced(JSON.parse(fs.readFileSync(path.join(OUT, "ledger.json"), "utf8")).entries);
   console.log(`gen-data: no paper/ in this tree: the validation data shipped in src/generated/ is kept; tutorials ${tutorials.length}; ${warnings.length} warnings`);
 }
 

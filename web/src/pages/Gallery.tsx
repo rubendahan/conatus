@@ -1,5 +1,6 @@
 // Gallery: flows computed with Conatus, drawn as laboratory plates (brand charter III colour maps), each with
-// its name and one plain sentence; the lightbox shows the full-resolution image.
+// its name and the exact field it shows (manifest `field`, from web/gallery/fields.json); the lightbox shows the
+// full-resolution image, the colour scale and the script, linked at the release tag.
 // Data: public/gallery/manifest.json, written by web/gallery/collect.py (never by hand).
 // A plate opens in the lightbox (components/Lightbox.tsx) and its URL hash (#slug) opens it on
 // load; without JavaScript the plate is a plain link to the full-resolution image.
@@ -86,8 +87,9 @@ export default function Gallery() {
   return (
     <>
       <PageHead eyebrow="Gallery" title="Fluids, everywhere">
-        <p>Flows computed with Conatus, drawn like the photographs of <i>An Album of Fluid Motion</i>: magnitudes in smoke
-          greys, signed fields through black at zero, from red to glass green. The plates are illustrations. Open one to see
+        <p>Flows computed with Conatus, drawn like the photographs of <i>An Album of Fluid Motion</i>: some fields in smoke
+          greys from low to high, signed fields through black at zero, from red to glass green. Each plate names the field it
+          shows. The plates are illustrations. Open one to see
           it at full size, with its colour scale, the value it was checked against and the script that made it.</p>
       </PageHead>
       {films.length > 0 && (

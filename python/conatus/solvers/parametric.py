@@ -608,7 +608,8 @@ class ParametricEVP:
         return rows, note
 
     def set_drift(self, fine: ParametricEVP, *, drift_tol: float = REQUIRED) -> ParametricEVP:
-        """Spurious-mode rejection by resolution drift: a mode is admissible
+        """Resolution-drift test (it removes tau modes and also physical modes the
+        coarse pencil does not resolve): a mode is admissible
         only if the pencil ``fine`` (same problem and parameters, finer resolution) has an
         eigenvalue within ``drift_tol`` x max(|sigma|, DRIFT_FLOOR median |sigma_fine|) at the same
         parameter values, as ``eigenvalues(drift=)``. Used by :meth:`least_stable` and :func:`critical` in place of a
@@ -856,8 +857,8 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
     of the pencil missing from ``values`` take the model's declared values (native layer, logged).
 
     The least stable mode is chosen once by a full QZ among the admissible modes (the drift test
-    of ``m.parametric(N, over, drift=N2, drift_tol=)`` / ``P.set_drift``, which removes spurious
-    tau modes, and/or ``select``; the counts are logged), then
+    of ``m.parametric(N, over, drift=N2, drift_tol=)`` / ``P.set_drift``, which removes the modes not
+    found again at the finer resolution, and/or ``select``; the counts are logged), then
     followed by bordered Newton; the neutral value is found by Newton on growth with the exact
     sensitivity, safeguarded by the bracket. With ``over`` the neutral value is minimized over
     one other parameter: it is computed at ``over_points`` equally spaced points of the interval

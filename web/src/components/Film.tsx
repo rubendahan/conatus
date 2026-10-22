@@ -5,7 +5,9 @@
 // reader, and under prefers-reduced-motion it never plays (the poster stays, no button). The box
 // keeps the film's aspect ratio, so nothing moves when the video arrives. When the film loops through
 // a cross-fade or a fade through black, the caption says so: that transition is a display effect,
-// not part of the run (finding 77).
+// not part of the run (finding 77). The caption shows two short lines, what is shown and the key
+// parameter (manifest `shows`, `key`); the numerics, sizes, times and the loop note sit in a closed
+// "Calculation details" element (external review of the live 0.1.2 site).
 import { useEffect, useRef, useState } from "react";
 import { withBase } from "../lib/base";
 import type { FilmItem } from "../data/films";
@@ -80,12 +82,27 @@ export default function Film({ f }: { f: FilmItem }) {
           </button>
         )}
       </div>
-      <figcaption>
-        <strong>{f.title}</strong>
-        <span>{f.caption}{f.details && <> {f.details}</>}</span>
-        {(f.legend || f.span) && <span className="film-legend">{[f.legend, f.span].filter(Boolean).join(" ")}</span>}
-        {note && <span>{note}</span>}
-      </figcaption>
+      {f.shows ? (
+        <figcaption>
+          <strong>{f.title}</strong>
+          <span>{f.shows}</span>
+          {f.key && <span>{f.key}</span>}
+          <details className="film-details">
+            <summary>Calculation details</summary>
+            <p>{f.caption}{f.details && <> {f.details}</>}</p>
+            {f.legend && <p>{f.legend}</p>}
+            {f.span && <p>{f.span}</p>}
+            {note && <p>{note}</p>}
+          </details>
+        </figcaption>
+      ) : (
+        <figcaption>
+          <strong>{f.title}</strong>
+          <span>{f.caption}{f.details && <> {f.details}</>}</span>
+          {(f.legend || f.span) && <span className="film-legend">{[f.legend, f.span].filter(Boolean).join(" ")}</span>}
+          {note && <span>{note}</span>}
+        </figcaption>
+      )}
     </figure>
   );
 }

@@ -6,6 +6,8 @@
 // a horizontal swipe or the arrow keys go to the previous / next plate.
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { plainCaption, plainTitle, src, type GalleryItem } from "../data/gallery";
+import { SITE } from "../content/site";
+import { RepoPath } from "./ui";
 import "../styles/lightbox.css";
 
 const EASE = "cubic-bezier(0.2, 0, 0, 1)";
@@ -250,11 +252,11 @@ export default function Lightbox({ items, index, morph, origin, onChange }: Ligh
             <h2 id="lb-title" className="lb-title">{plainTitle(g)}</h2>
             <p className="lb-caption">{plainCaption(g)}</p>
             {/* what the colours mean and where the picture comes from (external review of 0.1.1, figures) */}
-            <p className="lb-caption">{g.colormap === "signed"
-              ? "Colour: a signed field, red for negative, black at zero, glass green for positive, scaled to its largest magnitude."
-              : "Colour: a magnitude, from black at zero to light grey at its largest value."}
+            <p className="lb-caption">{g.colour ?? (g.colormap === "signed"
+              ? "Colour: a signed field, red for negative, black at zero, glass green for positive."
+              : "Colour: from black at the low end to light grey at the high end.")}
               {g.validated?.value ? ` Check: ${g.validated.value} against ${g.validated.reference}.` : ""}
-              {" "}Script: <code>{g.script}</code>.</p>
+              {" "}Script: <RepoPath path={g.script} at={`v${SITE.version}`}>{g.script}</RepoPath>.</p>
             <p className="lb-hint" aria-hidden="true">{coarse
               ? (zoomed ? "Drag to pan · pinch or double-tap to fit" : "Double-tap or pinch to zoom · swipe for the next plate")
               : (zoomed ? "Drag to pan · click to fit" : "Click to zoom · ← → for the next plate · Esc to close")}</p>

@@ -5,7 +5,9 @@
 Reads web/gallery/runs.txt (one "slug run_id" per line, in display order), takes
 scratch/output/<run_id>/<slug>.webp, <slug>-800.webp and <slug>.meta.json (written by the case
 script through brand_cmaps.save), copies the images to web/public/gallery/ and writes
-web/public/gallery/manifest.json. The manifest is generated, never edited by hand.
+web/public/gallery/manifest.json. The manifest is generated, never edited by hand. The exact field
+each image shows, and its colour scale, come from web/gallery/fields.json (read from the scripts;
+shown on the card and in the lightbox, the alt text keeps the visual description).
 """
 from __future__ import annotations
 
@@ -19,6 +21,7 @@ OUTPUT = ROOT / "scratch" / "output"
 PUBLIC = ROOT / "web" / "public" / "gallery"
 FIELDS = ("slug", "title", "image", "image_small", "width", "height", "alt", "caption", "colormap",
           "run_id", "script", "example_script", "validated", "geometry", "domain")
+SHOWN = json.loads((ROOT / "web/gallery/fields.json").read_text())   # slug -> {field, colour}
 GEOMETRIES = {"cartesian", "polar", "cylinder", "shell", "sphere", "ball"}
 DOMAINS = {"shear", "convection", "patterns", "pipe", "rotating", "turbulence", "dynamics"}
 
@@ -46,7 +49,9 @@ def entry(slug: str, run_id: str) -> dict:
     v = e["validated"]
     if not all(k in v for k in ("value", "reference", "source", "run_id")):
         raise SystemExit(f"{slug}: validated needs value, reference, source, run_id")
-    return {k: e[k] for k in FIELDS}
+    if slug not in SHOWN or not all(SHOWN[slug].get(k) for k in ("field", "colour")):
+        raise SystemExit(f"{slug}: no field and colour in web/gallery/fields.json")
+    return {**{k: e[k] for k in FIELDS}, "field": SHOWN[slug]["field"], "colour": SHOWN[slug]["colour"]}
 
 
 def main() -> None:

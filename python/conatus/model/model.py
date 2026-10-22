@@ -1001,7 +1001,8 @@ class Model:
     def eigenvalues(self, N: Any, *, dealias: Any = None, drift: Any = None, k: Any = None,
                     n_modes: int | None = None, **kw: Any):
         """Eigenvalues of an EVP model (``m.eigenvalue("c")``); ``drift=N2`` keeps only the modes
-        found again at resolution N2 (tau-mode rejection, conatus.eigenvalues(drift_plan=)).
+        found again at resolution N2 (conatus.eigenvalues(drift_plan=)); a mode that moves is not
+        converged by this test (a tau mode, or a physical mode N does not resolve) and is set aside.
 
         ``k``: the wavenumber of the periodic direction(s) (one number, a tuple in coordinate
         order or a dict by name), as in ``lin.eigenvalues(N, k=)``: each wavenumber is its own

@@ -1678,8 +1678,8 @@ class Linearization:
         linearization. Values left out of a call take the declared ones (logged): the model's
         parameters, and for a wavenumber ``k=`` or, if not given, the fundamental 2 pi / L of the
         box. A periodic axis not in ``over`` is fixed at ``k=`` (the group of that wavenumber, as
-        ``eigenvalues(N, k=)``). ``drift=N2`` with its required ``drift_tol`` rejects spurious
-        tau modes, as ``Model.parametric``."""
+        ``eigenvalues(N, k=)``). ``drift=N2`` with its required ``drift_tol`` keeps only the
+        modes found again at N2 (the others are not converged by this test), as ``Model.parametric``."""
         from ..solvers.parametric import ParametricEVP
         from ..tolerances import REQUIRED
         from .model import _check_drift

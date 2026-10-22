@@ -14,4 +14,12 @@
 .film-btn svg { width: 0.8em; height: 0.8em; fill: currentColor; }
 .film figcaption { display: grid; gap: 0.25rem; font-size: var(--cn-size-caption); color: var(--cn-muted); line-height: 1.45; }
 .film figcaption strong { color: var(--cn-text); font-weight: 500; font-size: var(--cn-size-ui); }
+/* "Calculation details": closed by default under the two visible lines (what is shown, key parameter). */
+.film-details { margin-top: 0.15rem; }
+.film-details summary { display: inline; cursor: pointer; list-style: none; text-decoration: underline;
+  text-decoration-color: var(--cn-rule); text-underline-offset: 0.2em; }
+.film-details summary::-webkit-details-marker { display: none; }
+.film-details summary:hover { color: var(--cn-text); }
+.film-details summary:focus-visible { outline: 2px solid #C6F03C; outline-offset: 2px; }
+.film-details p { margin: 0.35rem 0 0; overflow-wrap: anywhere; }
 @media (max-width: 900px) { .films { grid-template-columns: minmax(0, 1fr); } }

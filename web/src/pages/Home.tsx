@@ -50,11 +50,8 @@ export default function Home() {
         <div className="wrap hero-grid">
           <div className="hero-content">
             <p className="hero-eyebrow">Conatus</p>
-            <h1 id="hero-title" className="hero-title">Spectral PDE and stability calculations in Python</h1>
-            <p className="hero-lede">
-              Conatus is experimental research software for defining PDE models, computing eigenmodes and running
-              time-dependent simulations. Its examples focus on fluid instability and dynamical systems.
-            </p>
+            <h1 id="hero-title" className="hero-title">Write a PDE model once, then simulate it, compute its stability and find its invariant solutions from the same object.</h1>
+            <p className="hero-lede">Conatus is experimental research software for fluid instability and dynamical systems.</p>
             <div className="row hero-cta">
               <ButtonLink to="#example">See a first calculation</ButtonLink>
               <ButtonLink to="/tutorials/getting-started" variant="ghost">Getting started</ButtonLink>
@@ -91,8 +88,9 @@ export default function Home() {
               <p><strong>Reference.</strong> Orszag (1971) gives c = 0.23752649 + 0.00373967i at Re = 10 000, α = 1, and
                 Re<sub>c</sub> = 5772.22 at α<sub>c</sub> = 1.02056; the script's 1.02055 differs in the last digit.</p>
               <p><strong>What the checks mean.</strong> The residual is the backward error of the computed eigenpair.
-                With <code>drift=96</code>, a mode is kept only if it is found again with 96 Chebyshev polynomials
-                instead of 64; modes that move are discretisation artefacts and are dropped.</p>
+                With <code>drift=96</code>, every eigenvalue is computed again with 96 Chebyshev polynomials
+                instead of 64. Eigenvalues that change between the two resolutions are not converged by this test
+                and are set aside.</p>
               <p><strong>Next.</strong> The <DocLink to="tutorials/01_orr_sommerfeld.html">stability tutorial</DocLink>{" "}
                 continues from this script: the eigenfunction, its spectral coefficients and the sensitivity of c to Re.
                 The file is <RepoPath path="web/home/critical_reynolds.py">web/home/critical_reynolds.py</RepoPath>.</p>

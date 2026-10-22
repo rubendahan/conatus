@@ -8,7 +8,8 @@
   align-items: center; padding-top: clamp(2.5rem, 7vw, 5rem); padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
 }
 .hero-eyebrow { font-size: var(--cn-size-ui); letter-spacing: 0.08em; text-transform: uppercase; color: #A3A29D; margin: 0 0 1rem; }
-.hero-title { font-size: clamp(2.1rem, 4.6vw, 3.6rem); line-height: 1.06; max-width: 18ch; margin: 0 0 1.25rem; color: var(--cn-silver); }
+/* the title is one full sentence (review of the live 0.1.2 site): a smaller size and a wider measure */
+.hero-title { font-size: clamp(1.75rem, 3.2vw, 2.6rem); line-height: 1.12; max-width: 24ch; margin: 0 0 1.25rem; color: var(--cn-silver); }
 .hero-lede { font-size: clamp(1.02rem, 1.5vw, 1.15rem); line-height: 1.55; max-width: 36rem; color: #D6D4CE; margin: 0 0 1.75rem; }
 .hero-status { margin: 1.25rem 0 0; font-size: var(--cn-size-ui); color: #A3A29D; max-width: 40rem; }
 .hero-status code { color: var(--cn-silver); background: rgba(237, 235, 230, 0.08); }

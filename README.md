@@ -2,10 +2,9 @@
 
 # 🌀 Conatus
 
-### *Spectral PDE and stability calculations in Python.*
+### *Write a PDE model once, then simulate it, compute its stability and find its invariant solutions from the same object.*
 
-Conatus is experimental research software for defining PDE models, computing eigenmodes and
-running time-dependent simulations. Its examples focus on fluid instability and dynamical systems.
+Conatus is experimental research software for fluid instability and dynamical systems.
 
 **[Website](https://rubendahan.github.io/conatus/)** ·
 **[Getting started](https://rubendahan.github.io/conatus/tutorials/getting-started/)** ·

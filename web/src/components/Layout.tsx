@@ -127,7 +127,7 @@ function Footer() {
       <div className="wrap footer-inner">
         <div className="footer-brand">
           <Mark size={44} />
-          <p className="footer-tagline">Spectral PDE and stability calculations in Python. Experimental research software.</p>
+          <p className="footer-tagline">Experimental research software for fluid instability and dynamical systems.</p>
         </div>
         {COLS.map((c) => (
           <div key={c.title} className="footer-col">

@@ -16,7 +16,9 @@
       "reference": "Michalke 1964, JFM 19, 543–556, Table 1 (0.1897 at α = 0.4446)"
     },
     "geometry": "cartesian",
-    "domain": "shear"
+    "domain": "shear",
+    "field": "Vorticity ω = −∇²ψ (the component normal to the plane) of two rolled-up shear layers at t = 7.",
+    "colour": "Colour: ω, red for negative, black at zero, glass green for positive; the scale ends at the 99.7th percentile of |ω| (larger values saturate)."
   },
   {
     "slug": "kelvin-helmholtz-dye",
@@ -35,7 +37,9 @@
       "reference": "Michalke 1964, JFM 19, 543–556, Table 1 (0.1897 at α = 0.4446)"
     },
     "geometry": "cartesian",
-    "domain": "shear"
+    "domain": "shear",
+    "field": "Concentration c of a passive dye that starts as the central band, at t = 7; the yellow-green line is c = 1/2.",
+    "colour": "Colour: c, from 0 (black) to 1 (light grey)."
   },
   {
     "slug": "rayleigh-benard",
@@ -54,7 +58,9 @@
       "reference": "Dedalus (Burns et al. 2020, Phys. Rev. Research 2, 023068), same equations"
     },
     "geometry": "cartesian",
-    "domain": "convection"
+    "domain": "convection",
+    "field": "Temperature T (the full temperature, conduction profile included) of 2D convection at Ra = 10⁶.",
+    "colour": "Colour: T, from −A (black) to +A (light grey), with A the 99th percentile of |T| in the interior |z| < 0.4; the boundary layers, which reach ±1/2, saturate."
   },
   {
     "slug": "kuramoto-sivashinsky-l22",
@@ -73,7 +79,9 @@
       "reference": "Cvitanović, Davidchack & Siminos 2010, SIAM J. Appl. Dyn. Syst. 9, 1–33 (velocity 0.34954, energy 0.6048)"
     },
     "geometry": "cartesian",
-    "domain": "dynamics"
+    "domain": "dynamics",
+    "field": "The solution u(x, t) of the Kuramoto–Sivashinsky equation, L = 22: x upwards, t to the right.",
+    "colour": "Colour: u, red for negative, black at zero, glass green for positive; the scale ends at the 99.7th percentile of |u|."
   },
   {
     "slug": "taylor-couette-mode",
@@ -92,7 +100,9 @@
       "reference": "Recktenwald, Lücke & Müller 1993, Phys. Rev. E 48, 4444, Table I (68.19, 3.16)"
     },
     "geometry": "cylinder",
-    "domain": "rotating"
+    "domain": "rotating",
+    "field": "Azimuthal velocity u_φ of the critical axisymmetric mode in the meridional (z, r) plane, with streamlines of the meridional flow (u_r, u_z).",
+    "colour": "Colour: u_φ normalised to a largest magnitude of 1, red for negative, black at zero, glass green for positive."
   },
   {
     "slug": "swift-hohenberg",
@@ -111,7 +121,9 @@
       "reference": "Swift & Hohenberg 1977, Phys. Rev. A 15, 319; Cross & Hohenberg 1993, Rev. Mod. Phys. 65, 851"
     },
     "geometry": "cartesian",
-    "domain": "patterns"
+    "domain": "patterns",
+    "field": "The field u(x, y) of the Swift–Hohenberg equation at r = 0.1, t = 600.",
+    "colour": "Colour: u, from −max |u| (black, troughs) to +max |u| (light grey, crests)."
   },
   {
     "slug": "rossby-haurwitz",
@@ -130,7 +142,9 @@
       "reference": "Williamson et al. 1992, J. Comput. Phys. 102, 211–224, test case 6; Haurwitz 1940"
     },
     "geometry": "sphere",
-    "domain": "rotating"
+    "domain": "rotating",
+    "field": "Relative vorticity ζ (the radial component of the curl of the velocity) of the shallow-water flow after 14 days.",
+    "colour": "Colour: ζ, red for negative, black at zero, glass green for positive, scaled to the largest |ζ|."
   },
   {
     "slug": "orr-sommerfeld-mode",
@@ -149,6 +163,8 @@
       "reference": "Orszag 1971, J. Fluid Mech. 50, 689 (0.23752649 + 0.00373967i; Re_c = 5772.22)"
     },
     "geometry": "cartesian",
-    "domain": "shear"
+    "domain": "shear",
+    "field": "Streamwise velocity perturbation u = Re(û(y) exp(iαx)) of the least stable Orr–Sommerfeld mode, over one wavelength.",
+    "colour": "Colour: u normalised to a largest |û| of 1, red for negative, black at zero, glass green for positive."
   }
 ]

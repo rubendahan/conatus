@@ -61,6 +61,8 @@ html.lb-lock, html.lb-lock body { overflow: hidden; }
 .lb-prov { display: grid; gap: 0.2rem; margin: 0; font-size: var(--cn-size-caption); color: #A3A29D; }
 .lb-prov code, .lb-prov .run-id, .lb-prov .repo-path { background: rgba(237, 235, 230, 0.07); color: var(--cn-silver); }
 .lb-prov a { color: var(--cn-silver); }
+.lb-caption a.repo-path { color: var(--cn-silver); text-decoration: underline; text-decoration-color: rgba(237, 235, 230, 0.4); text-underline-offset: 0.2em; }
+.lb-caption .repo-path code, .lb-caption code { background: rgba(237, 235, 230, 0.07); color: var(--cn-silver); }
 .lb-hint { margin: 0.6rem 0 0; font-size: 0.72rem; color: #8A8A86; }
 
 @media (max-width: 700px) {

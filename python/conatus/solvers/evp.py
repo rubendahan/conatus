@@ -471,7 +471,8 @@ def drift_filter(lo: EVPResult, hi: EVPResult, tol: float = REQUIRED) -> EVPResu
 
     Drift ratio = |sigma_lo - nearest sigma_hi| / max(|sigma_lo|, DRIFT_FLOOR median |sigma_hi|)
     (:func:`drift_ratios`: no unit of sigma enters). Spurious tau modes move by
-    orders of magnitude between resolutions; resolved physical modes do not.
+    orders of magnitude between resolutions; resolved physical modes do not. An under-resolved
+    physical mode also moves: a removed mode is not converged by this test, not necessarily spurious.
     """
     tol = check_drift_tol(tol, "drift_filter()", "tol")      # given and in range
     if hi.values.size == 0:

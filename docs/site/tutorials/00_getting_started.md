@@ -67,9 +67,9 @@ here as a model on a line with the eigenvalue $s$ declared:
 ```
 
 `parametric` keeps $Ra$ and $k$ as live parameters; `critical` finds the neutral $Ra$ and minimises
-it over $k$. `drift=48` sets aside the spurious modes of the boundary treatment: a mode is kept
-only if the same pencil at 48 modes has it too, within `drift_tol` (a physical mode is resolved and
-does not move; a spurious one jumps). The growth of $s$ is its real part, read off its name and
+it over $k$. `drift=48` keeps a mode only if the same pencil at 48 modes has it too, within
+`drift_tol`. A mode that moves is not converged by this test and is set aside: the spurious modes of
+the boundary treatment jump, and so does a physical mode that 32 modes do not resolve. The growth of $s$ is its real part, read off its name and
 printed by `crit.explain()`.
 
 ```{figure} media/t00_neutral_curve.png
