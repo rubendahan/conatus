@@ -32,4 +32,4 @@ Orszag's 5772.22 to its printed digits; α_c = 1.020547 rounds to 1.02055, and t
 It prints the comparison and writes `result.json` in the working directory.
 `bash examples/published/run.sh orr_sommerfeld_spectrum` records `output.txt` and `result.json`
 here.
-Recorded run: 7 s of wall time on 4 threads of an AMD EPYC 9654 96-Core Processor (Conatus 0.2.0, Python 3.12.14, 2026-10-23).
+Recorded run: 7 s of wall time on 4 threads of an AMD EPYC 9654 96-Core Processor (Conatus 0.2.1, Python 3.12.14, 2026-10-24).

@@ -207,8 +207,11 @@ class SpoolClient:
     transport = "spool"
 
     def __init__(self, spool: str | Path, *, who: str | None = None,
-                 tail_bytes: int = TAIL_BYTES) -> None:
+                 tail_bytes: int = TAIL_BYTES, default: bool = False) -> None:
         self.spool = Path(spool)
+        # True when no source was given (no --hub, $CN_STUDIO_URL, config file or --spool) and
+        # this is the default spool: an unknown run then says so, rather than "known: []"
+        self.default = bool(default)
         who = who or f"{os.environ.get('USER', 'agent')}@{socket.gethostname().split('.')[0]}"
         self.who = re.sub(r"[^\w.@:+-]", "_", str(who))[:64]     # a name, not free text, in the audit
         self.tail_bytes = int(tail_bytes)
@@ -220,10 +223,18 @@ class SpoolClient:
         return sorted(r for r in (run_file_id(p.name) for p in self.spool.glob("*.jsonl")) if r)
 
     def _run(self, ref: str) -> tuple[str, RunState] | dict:
+        ids = self._ids()
         try:
-            rid = agentapi.resolve(self._ids(), ref)
+            rid = agentapi.resolve(ids, ref)
         except KeyError as err:
-            return {"api": agentapi.API_VERSION, "ok": False, "code": 404, "error": str(err.args[0])}
+            msg = str(err.args[0])
+            if not ids and self.default:
+                msg = (f"no run {ref!r}: no Studio source is configured (no --hub URL, "
+                       f"$CN_STUDIO_URL or {CONFIG}, and no --spool DIR), and the default spool "
+                       f"{self.spool} holds no run; pass --hub URL (with its token) or --spool DIR")
+            elif not ids:
+                msg = f"no run {ref!r}: the spool {self.spool} holds no run"
+            return {"api": agentapi.API_VERSION, "ok": False, "code": 404, "error": msg}
         st = read_run(self.spool, rid, tail_bytes=self.tail_bytes)
         if st is None:
             return {"api": agentapi.API_VERSION, "ok": False, "code": 404, "error": f"no run {rid!r}"}
@@ -415,7 +426,7 @@ def connect(*, hub: str | None = None, spool: str | Path | None = None,
     url = hub or os.environ.get("CN_STUDIO_URL") or cfg.get("url")
     if not url:
         from conatus.telemetry import default_spool
-        return SpoolClient(default_spool(), who=who)
+        return SpoolClient(default_spool(), who=who, default=True)
     tok = os.environ.get("CN_STUDIO_TOKEN", "").strip()
     tf = token_file or (None if tok else cfg.get("token_file")) or (None if tok else TOKEN_FILE)
     if tf is not None:

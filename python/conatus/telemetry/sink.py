@@ -143,6 +143,11 @@ class Telemetry:
         self.dropped_frames = 0
         self.written_records = 0
         self.error: str | None = None
+        # how the run ended when it did not finish normally, sent with every later status (the
+        # final one included): ``stopped`` by a Studio stop, ``failed`` (exception type and
+        # message) by :meth:`fail`. ``error`` above is the telemetry's own failure.
+        self.stopped: str | None = None
+        self.failed: str | None = None
         self._q: queue.Queue = queue.Queue(maxsize=self.capacity)
         self._frames: dict[str, dict] = {}
         self._frame_last: dict[str, float] = {}
@@ -393,7 +398,19 @@ class Telemetry:
                 if self.film_max_bytes else {})
         self._put(record("status", self.run_id, written=self.written_records,
                          dropped_records=self.dropped_records, dropped_frames=self.dropped_frames,
-                         paused=self.paused, error=self.error, **film, **extra))
+                         paused=self.paused, error=self.error, **film,
+                         **({"stopped": self.stopped} if self.stopped else {}),
+                         **({"failed": self.failed} if self.failed else {}), **extra))
+
+    def fail(self, err: BaseException) -> None:
+        """Record that the run raised ``err``: an event ``failed`` (exception type and message) and
+        a status; every later status, the final one included, carries ``failed``, so the Studio
+        and the agent API show the run as failed (earlier versions recorded only a Studio stop:
+        a run that diverged ended as "finished")."""
+        kind, msg = type(err).__name__, str(err)
+        self.failed = f"{kind}: {msg}"[:2000] if msg else kind
+        self.event("failed", error_type=kind, message=msg[:2000])
+        self.status()
 
     # ------------------------------------------------------------------ integrations
     def ivp_callback(self, *, scalars: Mapping[str, Callable[[Any], float]] | None = None,
@@ -527,13 +544,15 @@ class Telemetry:
                         self.paused = False         # what follows is handled after resuming
                     elif n == "stop":
                         self.paused = False
-                        raise StopRun("stopped from the Studio while paused")
+                        self.stopped = "stopped from the Studio while paused"
+                        raise StopRun(self.stopped)
                     elif n != "pause":              # already paused otherwise
                         self._apply(nxt, solver, checkpoint_dir, on_checkpoint, setters)
                 self.event("resumed")
                 self.status()
             elif c == "stop":
-                raise StopRun("stopped from the Studio")
+                self.stopped = "stopped from the Studio"
+                raise StopRun(self.stopped)
             elif c == "resume":
                 self.log("resume received while running: nothing to do", level="info")
             else:

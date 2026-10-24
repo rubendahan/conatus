@@ -28,4 +28,4 @@ within rounding; the largest gap is 6.0 × 10⁻⁵ (both parts within 5 × 10�
 It prints the comparison and writes `result.json` in the working directory.
 `bash examples/published/run.sh kuramoto_sivashinsky_l22` records `output.txt` and `result.json`
 here.
-Recorded run: 14 s of wall time on 4 threads of an AMD EPYC 9654 96-Core Processor (Conatus 0.2.0, Python 3.12.14, 2026-10-23).
+Recorded run: 9 s of wall time on 4 threads of an AMD EPYC 9654 96-Core Processor (Conatus 0.2.1, Python 3.12.14, 2026-10-24).

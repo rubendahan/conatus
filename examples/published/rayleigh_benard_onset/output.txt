@@ -1,4 +1,4 @@
-# rayleigh_benard_onset/run.py | script sha256 d63b3841da3857132943dc24a70da13e9a580031d67dc82848fe1b8703f29d77 | conatus 0.2.0 | python 3.12.14 | 2026-10-23 | 27 s | AMD EPYC 9654 96-Core Processor | 4 threads
+# rayleigh_benard_onset/run.py | script sha256 d63b3841da3857132943dc24a70da13e9a580031d67dc82848fe1b8703f29d77 | conatus 0.2.1 | python 3.12.14 | 2026-10-24 | 30 s | AMD EPYC 9654 96-Core Processor | 4 threads
 rigid-rigid: Ra_c = 1707.761777, k_c = 3.116324   (reference 1707.762, 3.117; relative gaps 1.3e-07, 2.2e-04)
 rigid-free: Ra_c = 1100.649607, k_c = 2.682322   (reference 1100.65, 2.682; relative gaps 3.6e-07, 1.2e-04)
 free-free: Ra_c = 657.511364, k_c = 2.221441   (reference 657.511364, 2.221441; relative gaps 7.3e-10, 2.1e-07)

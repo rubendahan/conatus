@@ -4,7 +4,7 @@
     python -m conatus.studio.hub addrelay mycluster --token-out ~/.config/conatus/relay_token
     python -m conatus.studio.hub addagent claude --scope command --token-out ~/.config/conatus/studio_token
     python -m conatus.studio.hub export                   # hashes only -> CN_HUB_AUTH_JSON secret
-    python -m conatus.studio.hub serve --state /data      # 127.0.0.1, behind a TLS proxy (Caddy)
+    python -m conatus.studio.hub --state /data serve      # 127.0.0.1, behind a TLS proxy (Caddy)
     python -m conatus.studio.hub serve --host 0.0.0.0 --behind-proxy   # container (Fly.io, Render)
     python -m conatus.studio.hub serve --local --spool scratch/telemetry   # hub + relay, 127.0.0.1;
                                   # one-session login token in <state>/local_user_token (0600)
@@ -1459,10 +1459,9 @@ async def _serve(a: argparse.Namespace) -> None:
     await asyncio.Event().wait()
 
 
-def main(argv: list[str] | None = None) -> None:
-    """CLI: ``serve`` the hub, or manage the auth file (adduser, addrelay, deluser, delrelay, export)."""
-    from conatus._experimental import experimental
-    experimental("hub")
+def build_parser() -> argparse.ArgumentParser:
+    """The command line of the hub: options of the hub (``--state``, ``--auth``) come before the
+    subcommand (``hub --state DIR serve --local``); the guide's commands are parsed with it in the tests."""
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--state", default=None,
                     help="directory for auth.json, audit.jsonl and the --local token file (a "
@@ -1535,7 +1534,14 @@ def main(argv: list[str] | None = None) -> None:
         d = sub.add_parser(f"del{what}", help=f"revoke a {what}")
         d.add_argument("name")
     sub.add_parser("export", help="print the auth file (hashes only) for $CN_HUB_AUTH_JSON")
-    a = ap.parse_args(argv)
+    return ap
+
+
+def main(argv: list[str] | None = None) -> None:
+    """CLI: ``serve`` the hub, or manage the auth file (adduser, addrelay, deluser, delrelay, export)."""
+    from conatus._experimental import experimental
+    experimental("hub")
+    a = build_parser().parse_args(argv)
     if a.cmd != "serve":
         a.state = state_dir(a.state, local=False)
     if a.cmd == "adduser":

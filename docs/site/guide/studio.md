@@ -102,7 +102,9 @@ loopback address only; the token file is readable by you alone.
   never through a symbolic link. The command prints the path of that file; read the token there.
   Without `--state`, the file is in a new private directory `conatus_hub_*` under the system
   temporary directory, which changes at every start and is not removed when the hub stops. For a
-  fixed place, pass `--state ./hub_state` (or set `$CN_HUB_STATE`), or `--user-token-out FILE`.
+  fixed place, give the state directory before `serve` (it is an option of the hub, not of `serve`):
+  `python -m conatus.studio.hub --state ./hub_state serve --local --spool <dir> --port 8765`; or
+  set `$CN_HUB_STATE`, or pass `serve --user-token-out FILE`.
   `--print-token` prints the token itself (it then lands in any log of the process).
 
 The solver library does not import `tornado`; only the Studio server needs it.

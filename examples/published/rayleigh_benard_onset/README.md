@@ -28,4 +28,4 @@ top: Ra_c = 1100.649607 at k_c = 2.682322, within the rounding of 1100.65 and 2.
 
 It prints the comparison and the three curves, and writes `result.json` in the working directory.
 `bash examples/published/run.sh rayleigh_benard_onset` records `output.txt` and `result.json` here.
-Recorded run: 27 s of wall time on 4 threads of an AMD EPYC 9654 96-Core Processor (Conatus 0.2.0, Python 3.12.14, 2026-10-23).
+Recorded run: 30 s of wall time on 4 threads of an AMD EPYC 9654 96-Core Processor (Conatus 0.2.1, Python 3.12.14, 2026-10-24).

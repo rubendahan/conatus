@@ -2,6 +2,37 @@
 
 All notable changes to Conatus.
 
+## [0.2.1] - 2026-10-24
+
+A correction release for the local Studio. Upgrading is recommended for anyone who uses it: in
+0.2.0 the Studio app installed from the wheel showed a blank page. The solver library is unchanged
+apart from how a watched run reports its end.
+
+### Fixed
+
+- Studio: the web app of the installed package showed a blank page. The release build changed the
+  app's JavaScript after it was built, and the result did not parse. The app is now shipped as
+  built, and every release is checked by signing in to the Studio of the installed wheel in a
+  headless browser.
+- Studio: the app's files have a new name in each release. Browsers keep these files for a year,
+  so a 0.2.0 page would otherwise have kept the broken file after the upgrade.
+- Studio: a watched run that raises (a blow-up stopped by the finite-state check, an error in a
+  callback, an interrupt) is reported as failed, with the exception type and message, in the app
+  and to `python -m conatus studio`. It was reported as finished.
+- Studio: a run stopped from the Studio is shown as stopped in the gallery, the run header and the
+  Board, as the agent interface already reported it. The app showed it as finished. The app now
+  shows the six states of the agent interface (running, paused, stale, finished, failed, stopped).
+- Studio: "Confirm stop" and "Confirm fork" go back to "Stop" and "Fork" after 5 seconds. A later
+  click no longer sends the command.
+- `python -m conatus studio status <run>` with no `--hub`, `--spool`, `$CN_STUDIO_URL` or
+  configuration file now says that no source is configured, instead of an empty list of known runs.
+
+### Documentation
+
+- Studio guide: a fixed state directory is given before the subcommand,
+  `python -m conatus.studio.hub --state ./hub_state serve --local ...`; the guide showed it after
+  `serve`, which the command refuses.
+
 ## [0.2.0] - 2026-10-24
 
 This release adds a set of published studies reproduced by public scripts and corrects the findings

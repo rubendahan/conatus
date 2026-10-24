@@ -9,11 +9,11 @@ Run (CPU, about ten seconds; as a job, not on the login node):
 """
 from __future__ import annotations
 
-import numpy as np
-
 
 def contour() -> None:
     # [ct-region]
+    import numpy as np
+
     import conatus as cn
 
     m = cn.Model(cn.Box(y=cn.walls(-1, 1)), name="Orr-Sommerfeld", Re=1e4, alpha=1.0)
@@ -36,8 +36,6 @@ def contour() -> None:
     assert res.residuals.max() < 1e-12
 
     # [ct-count]
-    import numpy as np
-
     from conatus.expert import HillBlocks
 
     a, q = 1.5, 0.5                      # Mathieu x'' + (a - 2q cos 2t) x = 0, period pi

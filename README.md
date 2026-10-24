@@ -16,19 +16,19 @@ Conatus is experimental research software for fluid instability and dynamical sy
 ![Platform](https://img.shields.io/badge/Linux-x86--64-FCC624?logo=linux&logoColor=black)
 ![CUDA](https://img.shields.io/badge/CUDA%2012-experimental-76B900?logo=nvidia&logoColor=white)
 ![License](https://img.shields.io/badge/license-BSD--3-success)
-![Version](https://img.shields.io/badge/version-0.2.0-blue)
+![Version](https://img.shields.io/badge/version-0.2.1-blue)
 
 </div>
 
 ## 📦 Install
 
 ```bash
-pip install conatus==0.2.0   # CPU wheel for Linux x86-64, compiled core included
+pip install conatus==0.2.1   # CPU wheel for Linux x86-64, compiled core included
 python -m conatus doctor         # what this machine can run, and what is missing
 ```
 
 CUDA support (one NVIDIA GPU, CUDA 12 wheel attached to the
-[v0.2.0 release](https://github.com/rubendahan/conatus/releases/tag/v0.2.0)) is experimental.
+[v0.2.1 release](https://github.com/rubendahan/conatus/releases/tag/v0.2.1)) is experimental.
 Building from source and the GPU wheel are described on the
 [install page](https://rubendahan.github.io/conatus/install/).
 
@@ -112,7 +112,7 @@ API reference and the numerical methods.
   in the [changelog](https://github.com/rubendahan/conatus/blob/main/CHANGELOG.md).
 - **CPU speed.** The CPU path is a NumPy reference implementation. It suits eigenvalue problems,
   small grids and setting a run up. Large grids can be slow on it.
-- **One process.** 0.2.0 runs a simulation on one CPU process or one GPU. No multi-GPU or MPI yet.
+- **One process.** 0.2.1 runs a simulation on one CPU process or one GPU. No multi-GPU or MPI yet.
 
 ## 🔧 Optional tools
 

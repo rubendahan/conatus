@@ -1,4 +1,4 @@
-# kuramoto_sivashinsky_l22/run.py | script sha256 47ecb76fac701eba5641ed73cce7bec4aae485aed7327f45370256c9b7983c87 | conatus 0.2.0 | python 3.12.14 | 2026-10-23 | 14 s | AMD EPYC 9654 96-Core Processor | 4 threads
+# kuramoto_sivashinsky_l22/run.py | script sha256 47ecb76fac701eba5641ed73cce7bec4aae485aed7327f45370256c9b7983c87 | conatus 0.2.1 | python 3.12.14 | 2026-10-24 | 9 s | AMD EPYC 9654 96-Core Processor | 4 threads
 E1: residual 6.7e-14, energy 0.260873 (published 0.2609)
    +0.1308 +0.3341i   Conatus +0.130810 +0.334076i   gap 2.6e-05   yes
    +0.0824 +0.3402i   Conatus +0.082353 +0.340213i   gap 4.8e-05   yes

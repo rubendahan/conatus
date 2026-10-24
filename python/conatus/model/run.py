@@ -403,16 +403,25 @@ class Simulation:
         if self.outputs:                           # cn.io files, each on its own cadence
             from ..io.analysis import _combine as _combine_io
             callback, every = _combine_io([(callback, every)] + [(o, o.every) for o in self.outputs])
-        if w is not None and not w.closed and w.settable:
-            try:
-                self._run_settable(until, steps, callback, every, w.poll)
-            finally:
-                self._write_sidecars()
-            return self
         try:
-            out = self.solver.run(steps, callback, every, record=record, cache=cache)
-        finally:                                   # also after a stop or a NumericalError:
-            self._write_sidecars()                 # the sidecar lists the rows written
+            if w is not None and not w.closed and w.settable:
+                try:
+                    self._run_settable(until, steps, callback, every, w.poll)
+                finally:
+                    self._write_sidecars()
+                return self
+            try:
+                out = self.solver.run(steps, callback, every, record=record, cache=cache)
+            finally:                               # also after a stop or a NumericalError:
+                self._write_sidecars()             # the sidecar lists the rows written
+        except BaseException as err:
+            # a watched run that raised (NumericalError when it diverges, an error in a callback,
+            # Ctrl-C) is reported to the Studio as failed, with the exception type and message;
+            # a Studio stop has already been recorded as such by the telemetry
+            from ..telemetry.sink import StopRun
+            if w is not None and not w.closed and not isinstance(err, StopRun):
+                w.tel.fail(err)
+            raise
         return self if out is None else out
 
     def _run_arguments(self, until: float | None = None, *, steps: int | None = None,

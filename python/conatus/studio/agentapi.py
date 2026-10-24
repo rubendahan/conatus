@@ -69,7 +69,8 @@ def _get(rec: Mapping | None, key: str, default: Any = None) -> Any:
 
 def run_state(st: Any, now: float | None = None) -> str:
     """``running | paused | stale | finished | failed | stopped`` from the records of a run
-    (a :class:`conatus.telemetry.RunState`): final status (stopped if a stop was received),
+    (a :class:`conatus.telemetry.RunState`): final status (failed if it carries ``failed`` or
+    ``error``, stopped if it carries ``stopped`` or a stop was received),
     a failure event, the paused flag, else running if a record came in the last
     :data:`LIVE_S` s, else stale."""
     now = time.time() if now is None else now
@@ -78,7 +79,8 @@ def run_state(st: Any, now: float | None = None) -> str:
     if status.get("final"):
         if status.get("error") or status.get("failed"):
             return "failed"
-        if any(e.get("name") == "command_received" and e.get("cmd") == "stop" for e in events):
+        if status.get("stopped") or any(e.get("name") == "command_received" and e.get("cmd") == "stop"
+                                        for e in events):
             return "stopped"
         return "finished"
     if any(e.get("name") in ("failed", "error") for e in events):
@@ -111,7 +113,10 @@ def alerts(st: Any, now: float | None = None, relay_connected: bool | None = Non
     if status.get("error"):
         out.append(dict(code="telemetry_error", level="error", message=str(status["error"])))
     if state == "failed":
-        out.append(dict(code="failed", level="error", message="the run reported a failure"))
+        why = status.get("failed")
+        out.append(dict(code="failed", level="error",
+                        message=f"the run failed: {why}" if isinstance(why, str) and why
+                        else "the run reported a failure"))
     age = now - float(st.last_wall or 0)
     if state in ("running", "stale") and age > SILENT_S:
         out.append(dict(code="silent", level="warning",
