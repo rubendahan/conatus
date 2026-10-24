@@ -814,27 +814,31 @@ source, which the website’s Install page uses too.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>CPU solvers (every geometry)</p></td>
+<tr class="row-even"><td><p>Platforms (wheels)</p></td>
+<td><p>Linux x86-64 only</p></td>
+<td><p>The 0.2 wheels are for Linux x86-64. On Windows, install Conatus inside WSL (Windows Subsystem for Linux). macOS, Windows and Linux aarch64 wheels are planned for 1.0.</p></td>
+</tr>
+<tr class="row-odd"><td><p>CPU solvers (every geometry)</p></td>
 <td><p>supported</p></td>
 <td><p>The configuration the test suite runs for each release.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Single GPU (backend=”cuda”)</p></td>
+<tr class="row-even"><td><p>Single GPU (backend=”cuda”)</p></td>
 <td><p>experimental</p></td>
 <td><p>Double precision. Not retested on GPU hardware for the current release.</p></td>
 </tr>
-<tr class="row-even"><td><p>Fused nonlinear kernels on the GPU</p></td>
+<tr class="row-odd"><td><p>Fused nonlinear kernels on the GPU</p></td>
 <td><p>experimental</p></td>
 <td><p>Box and channel: compiled fused kernels. Sphere, ball and shell: a right-hand side planned once, with generated product kernels. Disk, annulus and cylinder: not fused.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Several processes or GPUs (MPI)</p></td>
+<tr class="row-even"><td><p>Several processes or GPUs (MPI)</p></td>
 <td><p>not in this release</p></td>
 <td><p>doctor reports mpi4py if it is installed; the public release runs in one process.</p></td>
 </tr>
-<tr class="row-even"><td><p>Studio, local server</p></td>
+<tr class="row-odd"><td><p>Studio, local server</p></td>
 <td><p>experimental</p></td>
 <td><p>pip install “conatus[studio]”, then python -m conatus.studio.hub serve –local: the hub module, with a relay in the same process, on 127.0.0.1.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Studio hosted hub and remote relays</p></td>
+<tr class="row-even"><td><p>Studio hosted hub and remote relays</p></td>
 <td><p>not supported in this release</p></td>
 <td><p>The hub and relay modules ship because the local server uses them. Serving the hub outside 127.0.0.1, or running a relay that connects to a remote hub, was not tested for this release, and the deployment files are not included. Planned.</p></td>
 </tr>
