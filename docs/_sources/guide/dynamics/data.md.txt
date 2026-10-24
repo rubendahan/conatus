@@ -3,8 +3,10 @@
 Dynamic mode decomposition and spectral proper orthogonal decomposition of snapshots, in a weighted inner product.
 
 Snapshots are vectors of values on a grid. Each decomposition takes a `DataInnerProduct`, built
-from the quadrature weights of the grid and the weights you give each component. The modes are
-then orthogonal in that norm, for example the energy norm of the flow. The example uses snapshots of the linear Ginzburg–Landau equation.
+from the quadrature weights of the grid and the weights you give each component, for example the
+energy norm of the flow. SPOD modes are orthonormal in this inner product at each frequency. DMD
+modes are eigenvectors of a fitted evolution operator, which can be non-normal, so they are in
+general not orthogonal; Conatus scales each DMD mode to unit norm. The example uses snapshots of the linear Ginzburg–Landau equation.
 
 ```{literalinclude} _check.py
 :language: python

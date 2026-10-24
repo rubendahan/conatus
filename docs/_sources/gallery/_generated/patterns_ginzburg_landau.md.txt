@@ -1,5 +1,7 @@
 # Complex Ginzburg–Landau equation: Benjamin–Feir–Newell and Eckhaus instabilities of plane waves
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `patterns` · *Script:* `examples/patterns/ginzburg_landau.py`
 
 ```{list-table}

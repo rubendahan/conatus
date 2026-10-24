@@ -1,7 +1,7 @@
 # Ready problems
 
-`cn.problems` gives the canonical flows and model equations ready to solve, each validated
-against a published value.
+`cn.problems` gives canonical flows and model equations ready to solve. The linked examples
+compare selected outputs with published values or closed forms.
 
 ```python
 import conatus as cn

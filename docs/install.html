@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="_static/conatus.css?v=230279f1" />
+    <link rel="stylesheet" type="text/css" href="_static/conatus.css?v=73060e77" />
     
     
 
@@ -236,7 +236,7 @@
   <a href="./../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="./../install/" data-cn-route="/install">Install</a>
   <a href="./../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -251,14 +251,14 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/08_polar.html">Polar geometry: the modes of a drum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/10_bifurcations.html">Bifurcations: the Lorenz equilibria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/12_chaos_ensembles.html">Chaos and ensembles: the Lyapunov spectrum of Lorenz</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
@@ -283,6 +283,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/notebook.html">Notebooks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="guide/dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -315,8 +316,8 @@
 <li class="toctree-l2"><a class="reference internal" href="guide/taus.html">Tau terms by hand</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="gallery/index.html">Gallery: fluids everywhere</a><input aria-label="Toggle navigation of Gallery: fluids everywhere" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gallery/_generated/convection_salt_fingers.html">Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines &amp; Gill 1969, J. Fluid Mech. 37, 289-306)</a></li>
@@ -685,10 +686,10 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
-<p>Conatus 0.1.2 is installed <strong>from a binary wheel</strong> (no compiler needed) or <strong>from source</strong>. The CPU
-wheel is on PyPI (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">conatus</span></code>); the CUDA 12 wheel (beta) is a file attached to the
-<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.1.2">GitHub release</a>. The compiled C++ core, inside
-both wheels, is required for time integration; the GPU backend is optional.</p>
+<p>Install Conatus 0.2.0 from a binary wheel: no compiler is needed. The CPU wheel is on PyPI
+(<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">conatus</span></code>); the CUDA 12 wheel (beta) is attached to the
+<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.2.0">GitHub release</a>. Building from
+source is described at the end of this page, for developers.</p>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
 <ul class="simple">
@@ -736,7 +737,7 @@ later) and CPython 3.11, 3.12 or 3.13:</p>
 </div>
 <p>In a fresh virtual environment (no conda, no compiler):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>.<span class="w"> </span>venv/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[tutorials]==0.1.2"</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[tutorials]==0.2.0"</span>
 python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>--version<span class="w">     </span><span class="c1"># conatus, compiled core and Python versions</span>
 python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>doctor<span class="w">        </span><span class="c1"># what this machine can run, and what is missing</span>
 </pre></div>
@@ -745,19 +746,154 @@ python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> 
 PyPI) the install took under 30 s.</p>
 <p>The CUDA wheel pulls the NVIDIA runtime wheels (CUDA runtime, cuFFT, cuBLAS: about 700 MB) and,
 with the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> extra, CuPy: see <a class="reference internal" href="#gpu-cuda-install">GPU (CUDA) install</a>. <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">show</span> <span class="pre">conatus</span></code> says
-which flavour is installed (<code class="docutils literal notranslate"><span class="pre">0.1.2</span></code> from PyPI, <code class="docutils literal notranslate"><span class="pre">0.1.2+cu12</span></code> for the CUDA wheel).</p>
+which flavour is installed (<code class="docutils literal notranslate"><span class="pre">0.2.0</span></code> from PyPI, <code class="docutils literal notranslate"><span class="pre">0.2.0+cu12</span></code> for the CUDA wheel).</p>
 <p><strong>Threads.</strong> NumPy, SciPy and the core each load their own OpenBLAS, and each starts by default
 one thread per CPU, so the three compete for the same CPUs. On a node where the process could use
 8 CPUs, a Floquet computation of the test set took about 20 minutes with the defaults, 26 s with
 <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS=1</span></code> and 16 s with <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS=4</span></code>. Set <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">OMP_NUM_THREADS=&lt;half</span> <span class="pre">the</span> <span class="pre">CPUs&gt;</span></code> before starting Python. Conatus does not set thread counts itself, and
 <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">conatus</span> <span class="pre">doctor</span></code> prints the BLAS libraries loaded, their thread counts and the value to set.</p>
 </section>
+<section id="gpu-cuda-install">
+<h2>GPU (CUDA) install<a class="headerlink" href="#gpu-cuda-install" title="Link to this heading">¶</a></h2>
+<p>The GPU backend (<code class="docutils literal notranslate"><span class="pre">backend=&quot;cuda&quot;</span></code>) needs three things: the core compiled with CUDA
+(<code class="docutils literal notranslate"><span class="pre">CONATUS_CUDA=ON</span></code>), CuPy for the same CUDA major version, and an NVIDIA GPU with a recent enough
+driver. Compiling needs no GPU (a CPU or login node is fine); running does.</p>
+<p><strong>Tested combination</strong> (October 2026; recipe 2 on both GPUs, recipe 3 on an A100): CUDA 12.9 (nvcc 12.9.86, cuFFT
+11.4.1, cuBLAS 12.9.2), CuPy 14.2.0, GCC 13, Python 3.12, NVIDIA driver 580, on A100 (compute
+capability 8.0) and L40S (8.9), the two architectures the core is built for by default. Other
+12.x toolkits are expected to work but are not tested; CUDA 11 and 13 are not.</p>
+<p>Recipe 1, the CUDA binary wheel (beta; no compiler, no CUDA toolkit; the driver must support
+CUDA 12.9, i.e. driver ≥ 575 or an older 12.x driver through CUDA minor-version compatibility).
+The wheels are attached to the
+<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.2.0">GitHub release</a>, one per Python
+(<code class="docutils literal notranslate"><span class="pre">cp311</span></code>, <code class="docutils literal notranslate"><span class="pre">cp312</span></code>, <code class="docutils literal notranslate"><span class="pre">cp313</span></code>); for Python 3.12:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>.<span class="w"> </span>venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.2.0/conatus-0.2.0+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"</span>
+</pre></div>
+</div>
+<p>On a GPU node (in a batch job on a cluster), check that the device can be used:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>doctor<span class="w">     </span><span class="c1"># "GPU (backend='cuda')": ok, with the device's compute capability</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">doctor</span></code> names what is missing: CuPy, a core built without CUDA, or no visible GPU (each case is
+said separately; the same text appears when <code class="docutils literal notranslate"><span class="pre">backend=&quot;cuda&quot;</span></code> is refused).</p>
+</section>
+<section id="check-your-installation">
+<h2>Check your installation<a class="headerlink" href="#check-your-installation" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>doctor<span class="w">   </span><span class="c1"># compiled core, GPU: what this machine can run, what to do otherwise</span>
+python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>--version<span class="w">   </span><span class="c1"># conatus, compiled core and Python versions: the first line of a bug report</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">doctor</span></code> marks each line <code class="docutils literal notranslate"><span class="pre">[ok]</span></code>, <code class="docutils literal notranslate"><span class="pre">[missing]</span></code> (required: the exit code is 1), <code class="docutils literal notranslate"><span class="pre">[warning]</span></code> (something
+may be wrong: a core built for another version, little disk space, an untested Python) or
+<code class="docutils literal notranslate"><span class="pre">[optional]</span></code> (an optional component that is absent: GPU, CuPy, Dedalus, ipywidgets,
+an undeclared run registry; this is not an error).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">cn</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">walls</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"heat"</span><span class="p">,</span> <span class="n">kappa</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">equations</span><span class="p">(</span><span class="s2">"dt(T) - kappa*lap(T) = 0"</span><span class="p">)</span>
+<span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"walls"</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>then run <a class="reference internal" href="tutorials/01_orr_sommerfeld.html"><span class="doc">A first eigenvalue problem: Orr–Sommerfeld</span></a> (under a minute; eigenvalues only, so it runs even
+from a source tree whose core is not built yet). For the GPU path, the
+second half of <a class="reference internal" href="tutorials/02_rayleigh_benard.html"><span class="doc">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</span></a> runs the same problem on the device and
+compares with the CPU.</p>
+</section>
+<section id="release-status-and-extras">
+<h2>Release status and extras<a class="headerlink" href="#release-status-and-extras" title="Link to this heading">¶</a></h2>
+<p>What this release supports, and what each optional extra adds. Both tables are generated from one
+source, which the website’s Install page uses too.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Part</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Note</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CPU solvers (every geometry)</p></td>
+<td><p>supported</p></td>
+<td><p>The configuration the test suite runs for each release.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Single GPU (backend=”cuda”)</p></td>
+<td><p>experimental</p></td>
+<td><p>Double precision. Not retested on GPU hardware for the current release.</p></td>
+</tr>
+<tr class="row-even"><td><p>Fused nonlinear kernels on the GPU</p></td>
+<td><p>experimental</p></td>
+<td><p>Box and channel: compiled fused kernels. Sphere, ball and shell: a right-hand side planned once, with generated product kernels. Disk, annulus and cylinder: not fused.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Several processes or GPUs (MPI)</p></td>
+<td><p>not in this release</p></td>
+<td><p>doctor reports mpi4py if it is installed; the public release runs in one process.</p></td>
+</tr>
+<tr class="row-even"><td><p>Studio, local server</p></td>
+<td><p>experimental</p></td>
+<td><p>pip install “conatus[studio]”, then python -m conatus.studio.hub serve –local: the hub module, with a relay in the same process, on 127.0.0.1.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Studio hosted hub and remote relays</p></td>
+<td><p>not supported in this release</p></td>
+<td><p>The hub and relay modules ship because the local server uses them. Serving the hub outside 127.0.0.1, or running a relay that connects to a remote hub, was not tested for this release, and the deployment files are not included. Planned.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Extra</p></th>
+<th class="head"><p>Adds</p></th>
+<th class="head"><p>For</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tutorials</span></code></p></td>
+<td><p>matplotlib ≥ 3.7, xarray ≥ 2023.1</p></td>
+<td><p>The figures and labelled arrays of the tutorials.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gpu</span></code></p></td>
+<td><p>cupy-cuda12x ≥ 13</p></td>
+<td><p>Device arrays for the CUDA backend (the CUDA wheel, or a source build with CONATUS_CUDA=ON).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">notebook</span></code></p></td>
+<td><p>ipywidgets ≥ 8</p></td>
+<td><p>Widgets for explain() and parameters in Jupyter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio</span></code></p></td>
+<td><p>tornado ≥ 6.3</p></td>
+<td><p>The Studio server: watch and control runs from a browser.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dedalus-compare</span></code></p></td>
+<td><p>dedalus ≥ 3.0</p></td>
+<td><p>Dedalus 3, needed only by the optional check script of tutorial 14.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">docs</span></code></p></td>
+<td><p>sphinx ≥ 7, myst-parser ≥ 2</p></td>
+<td><p>Building the documentation site.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dev</span></code></p></td>
+<td><p>pytest ≥ 8, ruff ≥ 0.5, mpmath ≥ 1.3</p></td>
+<td><p>Tests and lint.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">all</span></code></p></td>
+<td><p>tutorials, notebook, gpu, studio, docs, dev</p></td>
+<td><p>Every extra above except dedalus-compare.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="for-developers-building-from-source">
+<h2>For developers: building from source<a class="headerlink" href="#for-developers-building-from-source" title="Link to this heading">¶</a></h2>
 <section id="from-source-install-the-package">
-<h2>From source: install the package<a class="headerlink" href="#from-source-install-the-package" title="Link to this heading">¶</a></h2>
+<h3>From source: install the package<a class="headerlink" href="#from-source-install-the-package" title="Link to this heading">¶</a></h3>
 <p>The same recipe as the README: a conda environment for the compilers and libraries, then
 <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;.[tutorials]&quot;</span></code>, which compiles the core, installs it inside the package and adds
 what the tutorials need (matplotlib). About two minutes on a cluster node with a warm package cache.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>v0.1.2<span class="w"> </span>https://github.com/rubendahan/conatus<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>conatus
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>v0.2.0<span class="w"> </span>https://github.com/rubendahan/conatus<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>conatus
 micromamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>conatus<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12<span class="w"> </span>gxx_linux-64<span class="o">=</span><span class="m">13</span><span class="w"> </span>liblapack<span class="w"> </span>libblas
 micromamba<span class="w"> </span>activate<span class="w"> </span>conatus
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">".[tutorials]"</span><span class="w">      </span><span class="c1"># CPU core + matplotlib, xarray (the GPU build: next section)</span>
@@ -773,24 +909,8 @@ registry. <code class="docutils literal notranslate"><span class="pre">doctor</s
 <p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">wheel</span> <span class="pre">.</span></code> builds a wheel of the same package (for another machine with the same
 environment).</p>
 </section>
-<section id="gpu-cuda-install">
-<h2>GPU (CUDA) install<a class="headerlink" href="#gpu-cuda-install" title="Link to this heading">¶</a></h2>
-<p>The GPU backend (<code class="docutils literal notranslate"><span class="pre">backend=&quot;cuda&quot;</span></code>) needs three things: the core compiled with CUDA
-(<code class="docutils literal notranslate"><span class="pre">CONATUS_CUDA=ON</span></code>), CuPy for the same CUDA major version, and an NVIDIA GPU with a recent enough
-driver. Compiling needs no GPU (a CPU or login node is fine); running does.</p>
-<p><strong>Tested combination</strong> (October 2026; recipe 2 on both GPUs, recipe 3 on an A100): CUDA 12.9 (nvcc 12.9.86, cuFFT
-11.4.1, cuBLAS 12.9.2), CuPy 14.2.0, GCC 13, Python 3.12, NVIDIA driver 580, on A100 (compute
-capability 8.0) and L40S (8.9), the two architectures the core is built for by default. Other
-12.x toolkits are expected to work but are not tested; CUDA 11 and 13 are not.</p>
-<p>Recipe 1, the CUDA binary wheel (beta; no compiler, no CUDA toolkit; the driver must support
-CUDA 12.9, i.e. driver ≥ 575 or an older 12.x driver through CUDA minor-version compatibility).
-The wheels are attached to the
-<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.1.2">GitHub release</a>, one per Python
-(<code class="docutils literal notranslate"><span class="pre">cp311</span></code>, <code class="docutils literal notranslate"><span class="pre">cp312</span></code>, <code class="docutils literal notranslate"><span class="pre">cp313</span></code>); for Python 3.12:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>.<span class="w"> </span>venv/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.1.2/conatus-0.1.2+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"</span>
-</pre></div>
-</div>
+<section id="gpu-builds-from-source">
+<h3>GPU builds from source<a class="headerlink" href="#gpu-builds-from-source" title="Link to this heading">¶</a></h3>
 <p>Recipe 2, a conda build from source (the development environment; one CuPy, from conda-forge):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>micromamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>conatus<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="s2">"python=3.12"</span><span class="w"> </span>gxx_linux-64<span class="o">=</span><span class="m">13</span><span class="w"> </span>liblapack<span class="w"> </span>libblas<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>cuda-version<span class="o">=</span><span class="m">12</span>.9<span class="w"> </span>cuda-nvcc<span class="w"> </span>cuda-cudart-dev<span class="w"> </span>libcufft-dev<span class="w"> </span>libcublas-dev<span class="w"> </span>cupy-core
@@ -817,15 +937,10 @@ cuFFT 11.4.1 and cuBLAS 12.9.2 wheels. Building directly against a
 system CUDA toolkit (<code class="docutils literal notranslate"><span class="pre">-Ccmake.define.CUDAToolkit_ROOT=/usr/local/cuda</span></code>) is expected to work but is
 not tested.</p>
 <p>Another GPU architecture: add <code class="docutils literal notranslate"><span class="pre">-Ccmake.define.CMAKE_CUDA_ARCHITECTURES=90</span></code> (for example); the
-default is <code class="docutils literal notranslate"><span class="pre">80;89</span></code>. Then, <strong>on a GPU node</strong> (in a batch job on a cluster):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>doctor<span class="w">     </span><span class="c1"># "GPU (backend='cuda')": ok, with the device's compute capability</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">doctor</span></code> names what is missing: CuPy, a core built without CUDA, or no visible GPU (each case is
-said separately; the same text appears when <code class="docutils literal notranslate"><span class="pre">backend=&quot;cuda&quot;</span></code> is refused).</p>
+default is <code class="docutils literal notranslate"><span class="pre">80;89</span></code>.</p>
 </section>
-<section id="from-source-development-tree">
-<h2>From source: development tree<a class="headerlink" href="#from-source-development-tree" title="Link to this heading">¶</a></h2>
+<section id="development-tree">
+<h3>Development tree<a class="headerlink" href="#development-tree" title="Link to this heading">¶</a></h3>
 <p>To work on Conatus itself, build the core in place and use the package from the tree:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>micromamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>conatus-dev<span class="w"> </span>-f<span class="w"> </span>ci/environment.yml<span class="w">      </span><span class="c1"># the development environment</span>
 micromamba<span class="w"> </span>activate<span class="w"> </span>conatus-dev
@@ -838,31 +953,8 @@ ruff<span class="w"> </span>check<span class="w"> </span>.<span class="w"> </spa
 <p>On a cluster, keep the environment and the build on a scratch or project file system rather than
 in a small home directory, and run anything heavy (tests, GPU work) in batch jobs.</p>
 </section>
-<section id="check-your-installation">
-<h2>Check your installation<a class="headerlink" href="#check-your-installation" title="Link to this heading">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>doctor<span class="w">   </span><span class="c1"># compiled core, GPU: what this machine can run, what to do otherwise</span>
-python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>--version<span class="w">   </span><span class="c1"># conatus, compiled core and Python versions: the first line of a bug report</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">doctor</span></code> marks each line <code class="docutils literal notranslate"><span class="pre">[ok]</span></code>, <code class="docutils literal notranslate"><span class="pre">[missing]</span></code> (required: the exit code is 1), <code class="docutils literal notranslate"><span class="pre">[warning]</span></code> (something
-may be wrong: a core built for another version, little disk space, an untested Python) or
-<code class="docutils literal notranslate"><span class="pre">[optional]</span></code> (an optional component that is absent: GPU, CuPy, Dedalus, ipywidgets,
-an undeclared run registry; this is not an error).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">cn</span><span class="o">.</span><span class="n">Box</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">cn</span><span class="o">.</span><span class="n">walls</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"heat"</span><span class="p">,</span> <span class="n">kappa</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
-<span class="n">T</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
-<span class="n">m</span><span class="o">.</span><span class="n">equations</span><span class="p">(</span><span class="s2">"dt(T) - kappa*lap(T) = 0"</span><span class="p">)</span>
-<span class="n">m</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="s2">"walls"</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
-</pre></div>
-</div>
-<p>then run <a class="reference internal" href="tutorials/01_orr_sommerfeld.html"><span class="doc">A first eigenvalue problem: Orr–Sommerfeld</span></a> (under a minute; eigenvalues only, so it runs even
-from a source tree whose core is not built yet). For the GPU path, the
-second half of <a class="reference internal" href="tutorials/02_rayleigh_benard.html"><span class="doc">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</span></a> runs the same problem on the device and
-compares with the CPU.</p>
-</section>
 <section id="building-this-documentation">
-<h2>Building this documentation<a class="headerlink" href="#building-this-documentation" title="Link to this heading">¶</a></h2>
+<h3>Building this documentation<a class="headerlink" href="#building-this-documentation" title="Link to this heading">¶</a></h3>
 <p>The site is built with Sphinx, MyST and Furo in a <strong>separate</strong> environment, so that the
 documentation tools do not modify the compute environment:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bash<span class="w"> </span>docs/site/build.sh<span class="w"> </span>--setup<span class="w">   </span><span class="c1"># once: creates the docs environment (docs/site/requirements.txt)</span>
@@ -871,6 +963,7 @@ bash<span class="w"> </span>docs/site/build.sh<span class="w">           </span>
 </div>
 <p>Tutorial outputs are produced by executing the scripts (<code class="docutils literal notranslate"><span class="pre">docs/site/run_tutorials.py</span></code>) and are
 included verbatim in the pages.</p>
+</section>
 </section>
 </section>
 
@@ -932,11 +1025,16 @@ included verbatim in the pages.</p>
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 <li><a class="reference internal" href="#from-a-binary-wheel-recommended">From a binary wheel (recommended)</a></li>
-<li><a class="reference internal" href="#from-source-install-the-package">From source: install the package</a></li>
 <li><a class="reference internal" href="#gpu-cuda-install">GPU (CUDA) install</a></li>
-<li><a class="reference internal" href="#from-source-development-tree">From source: development tree</a></li>
 <li><a class="reference internal" href="#check-your-installation">Check your installation</a></li>
+<li><a class="reference internal" href="#release-status-and-extras">Release status and extras</a></li>
+<li><a class="reference internal" href="#for-developers-building-from-source">For developers: building from source</a><ul>
+<li><a class="reference internal" href="#from-source-install-the-package">From source: install the package</a></li>
+<li><a class="reference internal" href="#gpu-builds-from-source">GPU builds from source</a></li>
+<li><a class="reference internal" href="#development-tree">Development tree</a></li>
 <li><a class="reference internal" href="#building-this-documentation">Building this documentation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -948,7 +1046,7 @@ included verbatim in the pages.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=92734c54"></script>
+</div><script src="_static/documentation_options.js?v=938c9ccc"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

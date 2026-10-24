@@ -70,8 +70,9 @@ except VJPSuspended:
 
 * `"host"` keeps the checkpoints in page-locked host memory (one device-to-host copy per stored
   state, cheap next to a step); `"disk"` writes one `.npy` per array in `checkpoint_dir` (atomic)
-  and is meant for small states: Revolve stores almost every step once, so a large state written to
-  disk at every step costs more than the step itself.
+  and is meant for small states: over a complete schedule, Revolve writes a checkpoint at most
+  of the steps, although few are kept at the same time. Measure the I/O cost before using it for large
+  states.
 * `revolve_cost(N, k)` gives the forward steps recomputed (e.g. N = 100 000: 3.9 N with k = 40,
   3.0 N with k = 100 to 400, 2.0 N with k = 1000) and `explain()` prints it with the store.
 * The journal (position in the Revolve action list, partial cotangents, live checkpoints) is written

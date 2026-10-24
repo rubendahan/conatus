@@ -2,9 +2,10 @@
 
 Everything the Studio shows about a run, a script can read as JSON, and the commands of the
 Controls sheet, a script can send (experimental, like the Studio: {doc}`experimental`). The same channel serves a person on a phone, a shell script
-and an AI agent that follows a long run and acts on it. Only commands the
-protocol declares exist; a run changes only what it declared changeable; every command is written
-to an audit log.
+and an AI agent that follows a long run and acts on it. The command schema
+(`conatus.telemetry.protocol`) lists the supported actions and the confirmation fields each one
+needs. A run changes only what it declared changeable, and every command is written to an audit
+log.
 
 ## Declare what may be changed
 

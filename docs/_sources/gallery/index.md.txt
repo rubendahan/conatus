@@ -1,4 +1,4 @@
-# Gallery: fluids everywhere
+# Scientific examples
 
 One script per canonical case, written as in the paper that introduced it: the equation, physical
 comments, `explain()`, and a result checked against a published value or a closed form. Each

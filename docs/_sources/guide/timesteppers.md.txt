@@ -57,13 +57,13 @@ are explicit ({doc}`equations`).
 | Scheme | Family (`solver.family`) | Implicit part on $L$ / explicit part on $F$ | Order | Reference |
 |---|---|---|---|---|
 | `SBDF1`–`SBDF4` | multistep (`"sbdf"`) | BDF$q$ / $q$-step extrapolation | $q$ (with the default `startup="lower_order"`: $\min(q, 2)$) | Wang & Ruuth 2008 |
-| `CNAB1` | multistep (`"cn"`) | Crank–Nicolson / forward Euler | 1 | Wang & Ruuth 2008, eq. 2.5.3 |
+| `CNAB1` | multistep (`"cn"`) | Crank–Nicolson / forward Euler | 1 | Wang & Ruuth 2008, eq. 2.5 with $\gamma = 1/2$ |
 | `CNAB2` | multistep (`"cn"`) | Crank–Nicolson / Adams–Bashforth 2 | 2 | eq. 2.9 |
 | `MCNAB2` | multistep (`"cn"`) | modified CN (9/16, 6/16, 1/16) / Adams–Bashforth 2 | 2 | eq. 2.10 |
 | `CNLF2` | multistep (`"cn"`) | CN over $2\,dt$ / leapfrog | 2 | eq. 2.11 |
 | `RK111`, `RK222`, `RK443` | Runge–Kutta (`"rk"`) | L-stable SDIRK / explicit RK | 1, 2, 3 | Ascher, Ruuth & Spiteri 1997 |
 | `RKSMR` | Runge–Kutta (`"rk"`) | CN per stage (order 2) / Wray RK3 (order 3) | 2 | Spalart, Moser & Rogers 1991 |
-| `RKGFY` | Runge–Kutta (`"rk"`) | Crank–Nicolson / Heun | 2 | Hollerbach 2002 |
+| `RKGFY` | Runge–Kutta (`"rk"`) | Crank–Nicolson / Heun | 2 | — |
 
 Their names are listed by `conatus.expert.SCHEMES`. Each scheme is implemented from its paper.
 The tests check the order conditions exactly and measure the observed orders (heat equation,
@@ -227,7 +227,7 @@ m = cn.problems.native.rayleigh_benard(Lx=2.0, Ra=2500, Pr=1)
 sim = m.simulate(N=(64, 32), scheme="RK443", dt=1e-3, check_finite=10)
 ```
 
-## A run that is under-resolved or ill-posed is told
+## Warnings for under-resolution and ill-posed implicit terms
 
 At each finite-state check the relative spectral tail of every unknown along every direction (the
 largest coefficient among the last 10 % of the mode numbers over the largest one, as in

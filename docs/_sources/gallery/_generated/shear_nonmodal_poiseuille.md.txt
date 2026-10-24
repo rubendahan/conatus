@@ -1,5 +1,7 @@
 # Non-modal stability of plane Poiseuille flow: transient growth and the continuous adjoint
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `shear` · *Script:* `examples/shear/nonmodal_poiseuille.py`
 
 ```{list-table}

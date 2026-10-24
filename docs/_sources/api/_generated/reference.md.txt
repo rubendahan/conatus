@@ -291,7 +291,7 @@ Pseudo-arclength continuation: generic core and NLBVP adapter.
 
 ## `conatus.floquet`
 
-Floquet–Hill toolkit (decision D9).
+Floquet–Hill toolkit.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert
@@ -379,7 +379,7 @@ Study presets built on the generic unit systems of :mod:`conatus.units`.
 
 ## `conatus.errors`
 
-Public exception hierarchy of Conatus (v0.1).
+Public exception hierarchy of Conatus.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert
@@ -460,7 +460,7 @@ Native bifurcation core on the Conatus IR.
 
 ## `conatus.slices`
 
-Symmetry reduction by slices: first Fourier mode slice of a translation symmetry, with phase reconstruction and slice-border detection. Notes: §3.
+Symmetry reduction by slices: first Fourier mode slice of a translation symmetry, with phase reconstruction and slice-border detection. Notes:
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert

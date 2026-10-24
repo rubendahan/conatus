@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Record, query, reproduce: the run registry" href="11_runs.html"><link rel="prev" title="Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins" href="12_chaos_ensembles.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Record, query, reproduce: the run registry" href="11_runs.html"><link rel="prev" title="Chaos and ensembles: the Lyapunov spectrum of Lorenz" href="12_chaos_ensembles.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=73060e77" />
     
     
 
@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -251,14 +251,14 @@
 <li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
 <li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: the modes of a drum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: the Lorenz equilibria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: the Lyapunov spectrum of Lorenz</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
@@ -283,6 +283,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/notebook.html">Notebooks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../guide/dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -315,8 +316,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/taus.html">Tau terms by hand</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Gallery: fluids everywhere</a><input aria-label="Toggle navigation of Gallery: fluids everywhere" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_salt_fingers.html">Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines &amp; Gill 1969, J. Fluid Mech. 37, 289-306)</a></li>
@@ -693,7 +694,7 @@ an empirical result for these trajectory lengths and thresholds; check how it ch
 <p><strong>Goal.</strong> Compute the twelve leading exponents and covariant vectors of KS <span class="math notranslate nohighlight">\(L = 22\)</span> from a native
 model with <code class="docutils literal notranslate"><span class="pre">sim.lyapunov</span></code>, check their covariance, and count the entangled modes from the
 domination of the Oseledets splitting.
-<strong>Expected.</strong> Cvitanović, Davidchack &amp; Siminos (2010, p. 12) tabulate ten values, <span class="math notranslate nohighlight">\((0.048, 0, 0,
+<strong>Expected.</strong> Cvitanović, Davidchack &amp; Siminos (2010, §2, p. 12 of arXiv:0709.2944) give the leading exponents; the first ten are <span class="math notranslate nohighlight">\((0.048, 0, 0,
 -0.003, -0.189, -0.256, -0.290, -0.310, -1.963, -1.967)\)</span>, in the zero-mean subspace; the page
 compares its first ten estimates with them; Ding, Chaté, Cvitanović,
 Siminos &amp; Takeuchi (2016): eight physical modes. <strong>Time:</strong> about two minutes on one CPU core.
@@ -746,12 +747,12 @@ between recomputed and stored factors (zero), the <strong>backward convergence</
 from two independent random starts of the backward iteration, compared: small except inside nearly
 degenerate pairs such as the two zero exponents, which converge slowly) and the <strong>covariance
 residual</strong>: each vector advanced by the tangent of the step over one interval must be parallel to
-the vector there, to its rounding floor.</p>
+the vector there; <code class="docutils literal notranslate"><span class="pre">explain()</span></code> gives the measured residual and its ratio to the rounding scale.</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t15_exponents.png"><img alt="Twelve Lyapunov exponents with error bars, close to zero for the first eight and dropping near -2 after; the first 10 sit on red ticks of the published values." loading="lazy" src="../_images/t15_exponents.png" style="width: 100%;" />
+<a class="cn-paper reference internal image-reference" href="../_images/t15_exponents.png"><img alt="Left: twelve Lyapunov exponents with error bars, the first eight between about 0.04 and -0.32, then two near -2 and two near -5.6; the first 10 sit on red ticks of the published values. Right: the first 8 enlarged, with their error bars and reference ticks." class="cn-paper" loading="lazy" src="../_images/t15_exponents.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors. Red ticks mark the 10 published values (Cvitanović et al. 2010), so exponents 11 to 12 have no reference tick. The first eight are the entangled modes.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors (left), and the first 8 on a finer scale (right). Red ticks mark the 10 published values (Cvitanović et al. 2010); exponents 11 to 12 have no reference. The first 8 are the entangled modes.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -771,17 +772,17 @@ such violations form clusters; the leading cluster is the set of physical modes.
 angles tell the same story: the split <span class="math notranslate nohighlight">\(8 \mid 9\)</span> keeps a finite angle, the split <span class="math notranslate nohighlight">\(4 \mid 5\)</span> inside the
 physical block has near-tangencies.</p>
 <figure class="align-default" id="id2">
-<a class="reference internal image-reference" href="../_images/t15_angles.png"><img alt="Two histograms of angles on a log axis: the filled red one, inside the entangled modes, reaches very small angles; the blue outline, at the split after eight modes, stays well away from zero." loading="lazy" src="../_images/t15_angles.png" style="width: 100%;" />
+<a class="cn-paper reference internal image-reference" href="../_images/t15_angles.png"><img alt="Two histograms of angles on a log axis: the filled red one, inside the entangled modes, reaches very small angles; the blue outline, at the split after eight modes, stays well away from zero." class="cn-paper" loading="lazy" src="../_images/t15_angles.png" style="width: 100%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Angles between the span of the first j covariant vectors and the rest, at each sample. Inside the entangled modes (j = 4) near-tangencies are frequent; at j = 8 the smallest angle stays away from zero over this run.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-default" id="id3">
-<a class="reference internal image-reference" href="../_images/t15_domination.png"><img alt="A triangular matrix of probabilities: red squares among the first eight indices, near white elsewhere." loading="lazy" src="../_images/t15_domination.png" style="width: 100%;" />
+<a class="cn-paper reference internal image-reference" href="../_images/t15_domination.png"><img alt="A triangular matrix of probabilities: red squares among the first 8 indices and inside the pairs 9–10 and 11–12; near white across the splits between them." class="cn-paper" loading="lazy" src="../_images/t15_domination.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Domination of Oseledets splitting: how often the local exponent i falls below j over windows of 5 time units. Violations stay among the first eight modes: they form one entangled block.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Domination of the Oseledets splitting: how often the local exponent i falls below j over windows of 5 time units. The first 8 modes form the leading cluster: no violation crosses the split 8 | 9. Later modes are entangled among themselves in the pairs 9–10 and 11–12, each separated from the leading cluster.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -869,7 +870,7 @@ verified against the CPU on GPU hardware: experimental until <code class="docuti
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</div>
+                <div class="title">Chaos and ensembles: the Lyapunov spectrum of Lorenz</div>
                 
               </div>
             </a>
@@ -921,7 +922,7 @@ verified against the CPU on GPU hardware: experimental until <code class="docuti
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=92734c54"></script>
+</div><script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=73060e77" />
     
     
 
@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -251,14 +251,14 @@
 <li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
 <li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: the modes of a drum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Where a global mode is born, and what the data say about it</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: the Lorenz equilibria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: the Lyapunov spectrum of Lorenz</a></li>
 <li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
@@ -283,6 +283,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/notebook.html">Notebooks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../guide/dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -315,8 +316,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/taus.html">Tau terms by hand</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Gallery: fluids everywhere</a><input aria-label="Toggle navigation of Gallery: fluids everywhere" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_salt_fingers.html">Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines &amp; Gill 1969, J. Fluid Mech. 37, 289-306)</a></li>
@@ -741,7 +742,7 @@ that is applied.</p>
 </pre></div>
 </div>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t13_modes.png"><img alt="Top: two bell-shaped curves, the direct global mode peaking downstream (right) and the adjoint mode upstream (left), overlapping little. Bottom: their product, the wavemaker, a single bump centred at x = 0 with its maximum marked in red." loading="lazy" src="../_images/t13_modes.png" style="width: 100%;" />
+<a class="cn-paper reference internal image-reference" href="../_images/t13_modes.png"><img alt="Top: two bell-shaped curves, the direct global mode peaking downstream (right) and the adjoint mode upstream (left), overlapping little. Bottom: their product, the wavemaker, a single bump centred at x = 0 with its maximum marked in red." class="cn-paper" loading="lazy" src="../_images/t13_modes.png" style="width: 100%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">The direct and adjoint global modes of the Ginzburg-Landau model of the page (top) and the wavemaker S(x) = |q†(x)| |q(x)| (bottom). Advection pushes the direct mode downstream and the adjoint upstream; S is largest where they overlap, the region where a local change of the model moves the eigenvalue most. Its maximum, at |x| &lt; 3×10⁻¹⁰, equals Chomaz’s closed form |χ|/√π to a relative 7×10⁻¹².</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
@@ -773,7 +774,7 @@ field without error, so the data norm is the energy norm of the model (EᴴWE = 
 </pre></div>
 </div>
 <figure class="align-default" id="id2">
-<a class="reference internal image-reference" href="../_images/t13_dmd.png"><img alt="Eigenvalues of the model in grey; four of them circled in red and numbered 1 to 4, each with a black cross from the decomposition of the data at its centre." loading="lazy" src="../_images/t13_dmd.png" style="width: 100%;" />
+<a class="cn-paper reference internal image-reference" href="../_images/t13_dmd.png"><img alt="Eigenvalues of the model in grey; four of them circled in red and numbered 1 to 4, each with a black cross from the decomposition of the data at its centre." class="cn-paper" loading="lazy" src="../_images/t13_dmd.png" style="width: 100%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Dynamic mode decomposition of a transient made of four global modes (numbered by growth rate): the DMD eigenvalues (crosses), computed from the snapshots alone, against the model’s (red circles). The distances, too small to see here, are 2×10⁻¹⁴, 4×10⁻¹³, 2×10⁻¹², 5×10⁻¹³ for modes 1 to 4.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
@@ -878,7 +879,7 @@ OK: wavemaker and d lambda/d mu_2 match the closed forms; DMD finds the four lea
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=92734c54"></script>
+</div><script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

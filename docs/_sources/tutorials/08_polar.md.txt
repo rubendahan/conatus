@@ -1,17 +1,16 @@
-# Polar geometry: a drum, a pipe, two rotating cylinders
+# Polar geometry: the modes of a drum
 
 The same workflow runs on the disk, the annulus and the cylinder, on bases that are regular at the
 axis.
 
-**Goal.** Solve three classical eigenvalue problems in polar and cylindrical geometry: the modes of
-a vibrating drum, written as a native model on `cn.Disk`; the linear stability of Hagen–Poiseuille
-flow in a pipe; and the onset of Taylor vortices between rotating cylinders. The last two come from
-the library of ready problems (`cn.problems`).
-**Expected.** Drum: eigenvalues $-j_{m,n}^2$, the squared zeros of the Bessel functions (closed
-form). Pipe, $R = 1000$: rightmost eigenvalues of $(m, k) = (1, 1)$ and $(1, 0)$ to 10 decimals
-(Meseguer & Trefethen 2003, *J. Comput. Phys.* 186, Table 1). Taylor–Couette, radius ratio
-$\eta = 0.5$, outer cylinder at rest: $Re_c = 68.19$ at $k_c = 3.16$ (Recktenwald, Lücke & Müller
-1993, *Phys. Rev. E* 48, 4444, Table I).
+**Goal.** Write the vibrating drum as a native model on `cn.Disk` and check its eigenvalues against
+the closed form.
+**Expected.** Eigenvalues $-j_{m,n}^2$, the squared zeros of the Bessel functions.
+**Extensions.** Two ready problems of `cn.problems` use the same bases; each section can be read
+alone. Hagen–Poiseuille flow in a pipe, $R = 1000$: rightmost eigenvalues of $(m, k) = (1, 1)$ and
+$(1, 0)$ to 10 decimals (Meseguer & Trefethen 2003, *J. Comput. Phys.* 186, Table 1).
+Taylor–Couette flow, radius ratio $\eta = 0.5$, outer cylinder at rest: $Re_c = 68.19$ at
+$k_c = 3.16$ (Recktenwald, Lücke & Müller 1993, *Phys. Rev. E* 48, 4444, Table I).
 **Time:** under a minute on one CPU core.
 **Script:** [`t08_polar.py`](code/t08_polar.py) · **Tests behind it:** `tests/polar/`,
 `tests/problems/test_problems_cylinders.py`.
@@ -53,7 +52,9 @@ $u_\pm = u_r \pm i u_\varphi$ (regular as $\rho^{|m\pm1|}$), and each operator i
 The vibrating drum at N = 32 radial modes: the eight slowest modes of each azimuthal number m against the closed form −j²ₘ,ₙ (ticks). Over these 24 modes the largest relative error is 3×10⁻¹⁵, the level of rounding error.
 ```
 
-## Hagen–Poiseuille
+## Extension: Hagen–Poiseuille flow in a pipe
+
+The drum result above is complete; this section and the next add a ready problem each.
 
 ```{literalinclude} code/t08_polar.py
 :language: python
@@ -78,7 +79,7 @@ The vibrating drum at N = 32 radial modes: the eight slowest modes of each azimu
 Hagen-Poiseuille flow, R = 1000, (m, k) = (1, 1): the spectrum of the pipe block, modes growing as exp(st). All modes decay. The two least stable are the centre mode, s = -0.0709 − 0.8467i, and the wall mode, s = -0.0911 − 0.4691i, of Meseguer and Trefethen (2003).
 ```
 
-## Taylor–Couette
+## Extension: Taylor–Couette onset
 
 ```{literalinclude} code/t08_polar.py
 :language: python
@@ -89,13 +90,16 @@ Hagen-Poiseuille flow, R = 1000, (m, k) = (1, 1): the spectrum of the pipe block
 Units: gap $d = r_o - r_i = 1$, inner wall speed $\Omega_i r_i = 1$, $Re = \Omega_i r_i d/\nu$. The base
 flow is circular Couette flow $V(r) = Ar + B/r$. For each $k$ the neutral Reynolds number (largest
 growth rate $= 0$) is found by Brent's method on the dense spectrum of the axisymmetric block
-$(m, k_z) = (0, k)$; the minimum over three wavenumbers brackets $k_c$.
+$(m, k_z) = (0, k)$. The script samples three wavenumbers. Re is lowest at $k = 3.16$, so
+$k_c$ lies between 3.10 and 3.22 if the neutral curve has a single minimum there; the script
+does not locate $k_c$ more precisely.
 
 ## Check against the references
 
 The drum eigenvalues equal $-j_{m,n}^2$ to $10^{-12}$ relative. The pipe eigenvalues match
 Meseguer & Trefethen's to the 10 published decimals. The Taylor–Couette threshold
-$Re_c = 68.1863$, converged in $N$, agrees with the published $68.19$ to its 4 digits.
+at $k = 3.16$, $Re = 68.1863$, converged in $N$, agrees with the published $Re_c = 68.19$ to its
+4 digits.
 
 ```{literalinclude} code/t08_polar.py
 :language: python

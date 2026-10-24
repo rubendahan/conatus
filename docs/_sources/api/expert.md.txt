@@ -4,10 +4,10 @@
 import conatus.expert as ex          # or: from conatus.expert import *
 ```
 
-The expert layer is the mathematical intermediate representation that native models compile to,
-together with every toolkit that operates on it. Use it to write a problem term by term (bases,
-tau variables and lifts chosen by hand), to reach options the native layer does not expose, or to
-apply a toolkit to `m.compile(N).problem` or `sim.solver`.
+Use the expert layer to write a spectral problem term by term (bases, tau variables and lifts
+chosen by hand), to reach options the native layer does not expose, or to use a tool that the
+native API does not offer on `m.compile(N).problem` or `sim.solver`. It is the representation
+that native models compile to.
 
 A name reachable in both layers means the same thing in both: the same object, or, for
 `discretize`, `linearize`, `methods` and `verify`, the package `cn.<name>` whose call is the

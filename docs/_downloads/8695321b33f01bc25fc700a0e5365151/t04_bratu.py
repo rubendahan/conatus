@@ -47,7 +47,7 @@ print(f"fold: lam_c = {fold.p:.14f}")
 a_star = brentq(lambda a: a * np.tanh(a) - 1.0, 0.5, 2.0, xtol=1e-15)
 LAM_C = 2 * a_star ** 2 / np.cosh(a_star) ** 2   # 0.87845767978129...
 a03 = brentq(lambda a: 2 * a * a / np.cosh(a) ** 2 - 0.3, 1e-12, a_star, xtol=1e-15)
-exact = lambda X: 2 * np.log(np.cosh(a03) / np.cosh(a03 * X))   # noqa: E731  lower branch
+exact = lambda X: 2 * np.log(np.cosh(a03) / np.cosh(a03 * X))   # lower branch
 X = grid(pb.bases["x"], dealias=False)          # the Chebyshev points of the solution
 assert sol.converged and sol.residual < 1e-13
 assert max(sol.observed_orders()) > 1.9          # quadratic Newton

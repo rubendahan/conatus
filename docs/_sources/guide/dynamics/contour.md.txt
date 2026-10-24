@@ -6,8 +6,9 @@ A dense eigenvalue solver gives every eigenvalue of a small problem. Shift-inver
 a target and says nothing about the others. A *region* asks which eigenvalues lie in a given box.
 Conatus answers in two steps that check each other:
 
-1. **the count**, by the argument principle. The number of eigenvalues inside a closed contour is
-   the number of times $\det T(z)$ winds around zero as $z$ goes once around it. The routine
+1. **the count**, by the argument principle. If $T(z)$ is analytic inside and on a closed contour
+   and nonsingular on it, the number of eigenvalues inside, counted with multiplicity, is the
+   number of times $\det T(z)$ winds around zero as $z$ goes once around the contour. The routine
    estimates this winding by sampling the determinant around the box;
 2. **the eigenvalues**, by Beyn's contour-integral method. Integrals of $T(z)^{-1}$ along the
    same contour carry the eigenvalues inside. Each one is refined and checked by its residual,
@@ -132,14 +133,22 @@ non-normal Orr–Sommerfeld branch below).
 | every root returned (or group of roots split by rounding) holds its own argument-principle count on a small square, at least 1, and these multiplicities add up to the count | more quadrature nodes and moments (three rounds), then the box is cut in two, then refused with what was found |
 | `counted=`: $\det T$ at the points the count recorded is that of the operator given | refused |
 
-What the sampled walk can miss. The phase and modulus tests see a zero of $\det T$ that comes
-close to the boundary, because the modulus dips or the phase turns by about $\pi$ across a step.
-They cannot see a zero and a pole on opposite sides of the boundary, both closer to it than the
-local step: $|\det T|$ stays near 1 there and the phase turns by $2\pi$ between two samples. A
-pencil and a Hill operator linear in the exponent have no poles
-(`CountResult.poles_by_construction` is True). For a function with poles near the box the count
-can be off by one; `count_method`, `explain()` and `CountResult.scope` say so. Keep the edges of the box away from
-the poles of $T$.
+What the sampled walk can miss. The count is a test on sampled values, not a proof. The phase
+and modulus tests see a zero of $\det T$ that comes close to the boundary, because the modulus
+dips or the phase turns by about $\pi$ across a step. A pencil and a Hill operator linear in the
+exponent have no poles (`CountResult.poles_by_construction` is True), so this covers them. `CountResult.scope` states which case applies to a result.
+
+A function you supply may have poles. A zero and a pole on opposite sides of the boundary, both
+closer to it than the local step, keep $|\det T|$ near 1 there, and the phase turns by $2\pi$
+between two samples. Seen from a sample at distance $d$, a pair $\delta$ off the edge bends
+$\log\det T$ by about $\delta/d$. For these functions the walk also halves a step whose two halves
+bend $\log\det T$ by more than half of their own increment, and follows the bend to the pair.
+With a zero $10^{-3}$ inside an edge and a pole $10^{-3}$ outside, the count is 1, as it should
+be. A bend that a stronger smooth variation of $\det T$ hides is not seen, and the count can then
+be off by one with no sign of it. When the walk resolves the phase on a step shorter than
+$10^{-3}$ of the perimeter (`NEAR_EDGE`), a zero or pole lies that close to an edge. The count
+then gives a `CorrectnessWarning`, and `explain()` repeats it. Move or shrink the box so that its
+edges stay clear of the zeros and poles of $T$, and compare the two counts.
 
 The routine does not form the determinant. It reads the phase and the logarithm of the modulus
 off the LU factorisation of $T(z)$, which avoids the overflow of multiplying the factors. The row

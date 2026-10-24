@@ -1,5 +1,7 @@
 # Turing instability of the Brusselator (Prigogine & Lefever 1968)
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `patterns` · *Script:* `examples/patterns/brusselator.py`
 
 ```{list-table}

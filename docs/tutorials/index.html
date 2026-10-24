@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=73060e77" />
     
     
 
@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -251,14 +251,14 @@
 <li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
 <li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: the modes of a drum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: the Lorenz equilibria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: the Lyapunov spectrum of Lorenz</a></li>
 <li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
@@ -283,6 +283,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/notebook.html">Notebooks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../guide/dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -315,8 +316,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/taus.html">Tau terms by hand</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Gallery: fluids everywhere</a><input aria-label="Toggle navigation of Gallery: fluids everywhere" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_salt_fingers.html">Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines &amp; Gill 1969, J. Fluid Mech. 37, 289-306)</a></li>
@@ -737,12 +738,12 @@ Rayleigh–Bénard tutorial needs a CUDA device; the optional check of the Dedal
 <td><p>a simulation on CPU, then on GPU; time steppers, CFL, the <em>Methods</em> paragraph</p></td>
 <td><p>linear growth rate, CPU/GPU agreement</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="08_polar.html"><span class="doc">Polar geometry: a drum, a pipe, two rotating cylinders</span></a></p></td>
-<td><p>polar and cylindrical geometry: a drum on <code class="docutils literal notranslate"><span class="pre">cn.Disk</span></code>, ready pipe and Taylor–Couette problems</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="08_polar.html"><span class="doc">Polar geometry: the modes of a drum</span></a></p></td>
+<td><p>polar geometry: the modes of a drum on <code class="docutils literal notranslate"><span class="pre">cn.Disk</span></code>; extensions: ready pipe and Taylor–Couette problems</p></td>
 <td><p>Bessel zeros, Meseguer &amp; Trefethen (2003), Recktenwald et al. (1993)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="16_particles_dye.html"><span class="doc">Lagrangian tracers and a numerical dye</span></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sim.particles</span></code> and <code class="docutils literal notranslate"><span class="pre">m.dye</span></code>: spectral velocity at the tracers, observed order in time, a dye whose mass is measured</p></td>
+<td><p>Tracers with <code class="docutils literal notranslate"><span class="pre">sim.particles</span></code>, a dye declared by <code class="docutils literal notranslate"><span class="pre">m.dye</span></code> and recorded by <code class="docutils literal notranslate"><span class="pre">sim.dye</span></code>: spectral velocity at the tracers, observed order in time, a dye whose mass is measured</p></td>
 <td><p>Taylor–Green and Couette closed forms</p></td>
 </tr>
 </tbody>
@@ -791,12 +792,12 @@ Rayleigh–Bénard tutorial needs a CUDA device; the optional check of the Dedal
 <td><p>equilibria, travelling waves and periodic orbits of a native model by Newton–Krylov–hookstep, Floquet exponents</p></td>
 <td><p>Cvitanović et al. (2010), Ding &amp; Cvitanović (2016)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="10_bifurcations.html"><span class="doc">Bifurcations: branch switching, cycles, codimension 2, normal forms</span></a></p></td>
-<td><p>branch switching, cycles, codimension 2, normal forms, Landau and Ginzburg–Landau</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="10_bifurcations.html"><span class="doc">Bifurcations: the Lorenz equilibria</span></a></p></td>
+<td><p>the Lorenz equilibria through a pitchfork and a Hopf point; extensions: cycles, codimension 2, Landau and Ginzburg–Landau</p></td>
 <td><p>Lorenz (1963), Kuznetsov (2004), Cross &amp; Hohenberg (1993)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="12_chaos_ensembles.html"><span class="doc">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</span></a></p></td>
-<td><p>Lyapunov spectrum, covariant vectors, Kaplan–Yorke, Poincaré map, basins from one ensemble</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="12_chaos_ensembles.html"><span class="doc">Chaos and ensembles: the Lyapunov spectrum of Lorenz</span></a></p></td>
+<td><p>the Lyapunov spectrum and Kaplan–Yorke dimension of Lorenz; extensions: covariant vectors, Poincaré map, basins</p></td>
 <td><p>Sprott (Lorenz), exact divergence</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="15_ks_covariant.html"><span class="doc">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</span></a></p></td>
@@ -844,88 +845,88 @@ Rayleigh–Bénard tutorial needs a CUDA device; the optional check of the Dedal
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t00_first_steps.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>29.2 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>13.9 s</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t00_getting_started.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>167.7 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t01_orr_sommerfeld.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>32.3 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t02a_rayleigh_benard_cpu.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>30.4 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t02b_rayleigh_benard_gpu.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>14.5 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t03_symmetries.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>5.1 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t04_bratu.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>8.7 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>8.3 s</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t05_ks_orbits.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>66.6 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>687.3 s</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t08_polar.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>8.8 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t10_bifurcations.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>4.6 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t11_runs.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>6.8 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t12_chaos_ensembles.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>136.6 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t13_sensitivity_data.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>60.8 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t14_from_dedalus.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>5.5 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>2.4 s</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t14b_dedalus_check.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>13.3 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t15_ks_covariant.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>45.4 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t16_particles_dye.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
 <td><p>45.4 s</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">—</span></code> ()</p></td>
+<td><p>—</p></td>
 </tr>
 </tbody>
 </table>
@@ -1010,7 +1011,7 @@ only passing outputs are copied into the pages.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=92734c54"></script>
+</div><script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

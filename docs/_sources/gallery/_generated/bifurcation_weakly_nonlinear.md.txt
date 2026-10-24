@@ -1,4 +1,6 @@
-# Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients
+# Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients
+
+**Goal.** Run this case and compare the value it obtains with the reference named in the script.
 
 *Family:* `bifurcation` · *Script:* `examples/bifurcation/weakly_nonlinear.py`
 
@@ -12,8 +14,8 @@
     for every Pr (Malkus & Veronis 1958; the same number follows from the Lorenz 1963 truncation,
     exact at this order since the O(a²) correction is the sin 2πz mean mode only).
 
-Every coefficient comes from ``normal_form``: symbolic 2nd/3rd Fréchet derivatives of the IR
-right-hand side, bordered solves on the discrete Jacobian. Nothing is derived by hand here.
+Every coefficient comes from ``normal_form``: symbolic 2nd/3rd Fréchet derivatives of the
+right-hand side of the model, bordered solves on the discrete Jacobian. Nothing is derived by hand here.
 
 Run:  python examples/bifurcation/weakly_nonlinear.py
 ```

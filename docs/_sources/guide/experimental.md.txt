@@ -12,7 +12,9 @@ on fewer measurements than the rest of the library. The first use of each in a p
   ({doc}`shells`); `conatus._experimental.SHELL_TESTED_SIZE`.
 - **The Studio**: the web page, its server and the Python client `conatus.studio.client.connect`
   ({doc}`studio`).
-- **The Studio hub and relay**: several runs, remote control and accounts ({doc}`studio_agents`).
+- **The Studio hub** (`conatus.studio.hub serve --local`, which starts a relay in the same
+  process): several runs, accounts and the agent channel ({doc}`studio_agents`). A hub hosted
+  outside 127.0.0.1 with remote relays is not supported in this release.
 
 The warning is a `UserWarning` (shown under Python's default filters), raised once per feature and
 process. To silence it once you have read it:
@@ -26,5 +28,4 @@ warnings.filterwarnings("ignore", category=cn.errors.ExperimentalWarning)
 ```
 
 The same checks apply to these features as to the rest of the library: residuals are reported and
-numerical choices are declared. Numbers that the documentation gives for them point to the run that
-measured them.
+numerical choices are declared.

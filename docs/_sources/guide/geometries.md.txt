@@ -93,5 +93,6 @@ The value and its reason are printed by `explain()` and written in the *Methods*
   (`m.at("top", u=cn.free_slip)`, `cn.no_slip`, `cn.navier_slip(l)`, {doc}`boundary_conditions`);
   other conditions on single components of a vector unknown are written in the
   {doc}`expert layer <expert>`.
-- Every geometry runs on the CPU and on a GPU (`backend="cuda"`); the fused nonlinear kernels
-  are for Cartesian geometries ({doc}`gpu`).
+- Every geometry runs on the CPU and on a GPU (`backend="cuda"`). Which geometries have fused
+  nonlinear kernels, and the status of the GPU path, are listed on the install page
+  ({doc}`../install`, "Release status and extras") and in {doc}`gpu`.

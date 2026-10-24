@@ -3,12 +3,12 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes" href="15_ks_covariant.html"><link rel="prev" title="Bifurcations: branch switching, cycles, codimension 2, normal forms" href="10_bifurcations.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes" href="15_ks_covariant.html"><link rel="prev" title="Bifurcations: the Lorenz equilibria" href="10_bifurcations.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
     <link rel="shortcut icon" href="../_static/favicon.svg"><!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
-        <title>Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins - Conatus</title>
+        <title>Chaos and ensembles: the Lyapunov spectrum of Lorenz - Conatus</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=73060e77" />
     
     
 
@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -251,14 +251,14 @@
 <li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
 <li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: the modes of a drum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: the Lorenz equilibria</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Chaos and ensembles: the Lyapunov spectrum of Lorenz</a></li>
 <li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
@@ -283,6 +283,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/notebook.html">Notebooks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../guide/dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -315,8 +316,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/taus.html">Tau terms by hand</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Gallery: fluids everywhere</a><input aria-label="Toggle navigation of Gallery: fluids everywhere" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_salt_fingers.html">Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines &amp; Gill 1969, J. Fluid Mech. 37, 289-306)</a></li>
@@ -683,20 +684,23 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="chaos-and-ensembles-lyapunov-spectrum-covariant-vectors-poincare-map-basins">
-<h1>Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins<a class="headerlink" href="#chaos-and-ensembles-lyapunov-spectrum-covariant-vectors-poincare-map-basins" title="Link to this heading">¶</a></h1>
-<p>The tangent used here is the derivative of the discrete step, so the Lyapunov spectrum is that of
-the map actually computed. Many trajectories share one batch, so the error estimates of an
-exponent (independent trajectories, block errors) cost little more than one trajectory.</p>
-<p><strong>Goal.</strong> Compute the Lyapunov spectrum, the Kaplan–Yorke dimension and the covariant Lyapunov
-vectors of the Lorenz attractor from 32 trajectories in one batch; build the Lorenz map from a
-Poincaré section located on the scheme; map the basins of the two stable foci at <span class="math notranslate nohighlight">\(r = 20\)</span> with
-2304 members advanced together.
+          <section class="tex2jax_ignore mathjax_ignore" id="chaos-and-ensembles-the-lyapunov-spectrum-of-lorenz">
+<h1>Chaos and ensembles: the Lyapunov spectrum of Lorenz<a class="headerlink" href="#chaos-and-ensembles-the-lyapunov-spectrum-of-lorenz" title="Link to this heading">¶</a></h1>
+<p><strong>Goal.</strong> Compute the Lyapunov spectrum and the Kaplan–Yorke dimension of the Lorenz attractor,
+with error estimates, from 32 trajectories advanced in one batch.
 <strong>Expected.</strong> Sprott (web page <em>lorenzle.htm</em>): <span class="math notranslate nohighlight">\((0.906, 0, -14.572)\)</span>, <span class="math notranslate nohighlight">\(D_{KY} = 2.062\)</span>; exact sum
-<span class="math notranslate nohighlight">\(-(\sigma + 1 + b) = -13.667\)</span> (constant divergence); the neutral covariant vector is the flow direction;
-maxima of <span class="math notranslate nohighlight">\(z\)</span> on a one-dimensional cusp map (Lorenz 1963, Fig. 4). <strong>Time:</strong> about 1 min on one CPU core.
+<span class="math notranslate nohighlight">\(-(\sigma + 1 + b) = -13.667\)</span> for the flow (constant divergence).
+<strong>Extensions.</strong> Three later sections reuse the same batch; each can be read alone. The covariant
+vectors (for the flow, the neutral one is the flow direction <span class="math notranslate nohighlight">\(f(x)\)</span>; the RK443 map approaches it
+as <span class="math notranslate nohighlight">\(dt \to 0\)</span>). The Lorenz map from a Poincaré section: maxima of <span class="math notranslate nohighlight">\(z\)</span> on a one-dimensional cusp
+map (Lorenz 1963, Fig. 4). The basins of the two stable foci at <span class="math notranslate nohighlight">\(r = 20\)</span>, from 2304 members
+advanced together.
+<strong>Time:</strong> about 1 min on one CPU core.
 <strong>Script:</strong> <a class="reference download internal" download="" href="../_downloads/e92e8b3a9e380d131389177c55e2c07f/t12_chaos_ensembles.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t12_chaos_ensembles.py</span></code></span></a> · <strong>Tests behind it:</strong>
 <code class="docutils literal notranslate"><span class="pre">tests/chaos/</span></code>, <code class="docutils literal notranslate"><span class="pre">tests/ensembles/</span></code>.</p>
+<p>The tangent used here is the derivative of the discrete step, so the spectrum is that of the map
+actually computed. Many trajectories share one batch, so the error estimates (independent
+trajectories, block errors) cost little more than one trajectory.</p>
 <section id="write-the-system">
 <h2>Write the system<a class="headerlink" href="#write-the-system" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -743,15 +747,15 @@ block means and the lag-1 correlation of those blocks (if it is large the blocks
 The sum is not exactly <span class="math notranslate nohighlight">\(-13.667\)</span>: it is the mean <span class="math notranslate nohighlight">\(\log|\det J|\)</span> of the RK443 <strong>map</strong>, whose
 truncation at <span class="math notranslate nohighlight">\(dt = 0.01\)</span> is <span class="math notranslate nohighlight">\(7.7\times10^{-3}\)</span> (<span class="math notranslate nohighlight">\(9.2\times10^{-4}\)</span> at <span class="math notranslate nohighlight">\(dt/2\)</span>: third order).</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t12_lyapunov.png"><img alt="Three panels, one per Lyapunov exponent: a grey band of running estimates over the starts narrows with time around a red mean that settles on the dashed published value." loading="lazy" src="../_images/t12_lyapunov.png" style="width: 100%;" />
+<a class="cn-paper reference internal image-reference" href="../_images/t12_lyapunov.png"><img alt="Three panels, one per Lyapunov exponent: a grey band of running estimates over the starts narrows with time around a red mean that settles on the dashed published value." class="cn-paper" loading="lazy" src="../_images/t12_lyapunov.png" style="width: 100%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Finite-time estimates of the three exponents, averaged from the start of the measurement, over the 32 starts of the page: the band holds the middle 80 % of the starts, the red line is their mean and the dashed lines are the published values 0.906, 0 and −14.572. The panel titles give the final mean and its standard error over the starts. Time is in the units of the Lorenz equations.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
-<section id="covariant-vectors">
-<h2>Covariant vectors<a class="headerlink" href="#covariant-vectors" title="Link to this heading">¶</a></h2>
+<section id="extension-covariant-vectors">
+<h2>Extension: covariant vectors<a class="headerlink" href="#extension-covariant-vectors" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">clv_states</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">SIGMA</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="p">),</span> <span class="mf">28.0</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="n">z</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">B</span> <span class="o">*</span> <span class="n">z</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>   <span class="c1"># vector field</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">clv</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>                                                         <span class="c1"># neutral CLV</span>
@@ -759,12 +763,14 @@ truncation at <span class="math notranslate nohighlight">\(dt = 0.01\)</span> is
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"neutral CLV vs f(x): min |cos| = </span><span class="si">{</span><span class="n">cos_fg</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2"> over </span><span class="si">{</span><span class="n">cos_fg</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> samples"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Ginelli’s backward pass turns the stored <span class="math notranslate nohighlight">\(Q\)</span> and <span class="math notranslate nohighlight">\(R\)</span> factors into the covariant vectors. The zero
-exponent belongs to time translation, so its covariant vector must be parallel to <span class="math notranslate nohighlight">\(f(x)\)</span>: a property,
-not a fit.</p>
+<p>Ginelli’s backward pass turns the stored <span class="math notranslate nohighlight">\(Q\)</span> and <span class="math notranslate nohighlight">\(R\)</span> factors into the covariant vectors. For the
+continuous flow, the zero exponent belongs to time translation and its covariant vector is parallel
+to <span class="math notranslate nohighlight">\(f(x)\)</span>. The time-stepping map satisfies this only up to its time-discretisation error. For
+example, one explicit Euler step on <span class="math notranslate nohighlight">\(x' = x^2\)</span> gives <span class="math notranslate nohighlight">\(D\Phi_h(x)\,f(x) - f(\Phi_h(x)) = -h^2 x^4\)</span>.
+The check below therefore measures the angle with <span class="math notranslate nohighlight">\(f(x)\)</span> against a tolerance.</p>
 </section>
-<section id="poincare-section-and-the-lorenz-map">
-<h2>Poincaré section and the Lorenz map<a class="headerlink" href="#poincare-section-and-the-lorenz-map" title="Link to this heading">¶</a></h2>
+<section id="extension-poincare-section-and-the-lorenz-map">
+<h2>Extension: Poincaré section and the Lorenz map<a class="headerlink" href="#extension-poincare-section-and-the-lorenz-map" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">zmax</span> <span class="o">=</span> <span class="n">poincare_section</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">X0</span><span class="p">[:</span><span class="mi">8</span><span class="p">],</span> <span class="k">lambda</span> <span class="n">X</span><span class="p">:</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">B</span> <span class="o">*</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>   <span class="c1"># dz/dt = 0</span>
                         <span class="n">direction</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">g_tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">max_iterations</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 <span class="n">zk</span><span class="p">,</span> <span class="n">zk1</span> <span class="o">=</span> <span class="n">zmax</span><span class="o">.</span><span class="n">return_pairs</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
@@ -776,15 +782,15 @@ not a fit.</p>
 same Runge–Kutta method with <span class="math notranslate nohighlight">\(g(\Phi_{\tau^*}(X_n)) = 0\)</span> to the declared tolerance. No interpolant is
 assumed; a crossing that is not located is refused.</p>
 <figure class="align-default" id="id2">
-<a class="reference internal image-reference" href="../_images/t12_lorenz_map.png"><img alt="Successive maxima of z plotted against each other: the dots lie on a thin tent-shaped curve above a dotted diagonal." loading="lazy" src="../_images/t12_lorenz_map.png" style="width: 100%;" />
+<a class="cn-paper reference internal image-reference" href="../_images/t12_lorenz_map.png"><img alt="Successive maxima of z plotted against each other: the dots lie on a thin tent-shaped curve above a dotted diagonal." class="cn-paper" loading="lazy" src="../_images/t12_lorenz_map.png" style="width: 100%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">The Poincaré section dz/dt = 0 of the page: each maximum of z against the next falls on a one-dimensional cusp map, as in Lorenz’s Fig. 4 of 1963.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
-<section id="basins-of-attraction-from-one-ensemble">
-<h2>Basins of attraction from one ensemble<a class="headerlink" href="#basins-of-attraction-from-one-ensemble" title="Link to this heading">¶</a></h2>
+<section id="extension-basins-of-attraction-from-one-ensemble">
+<h2>Extension: basins of attraction from one ensemble<a class="headerlink" href="#extension-basins-of-attraction-from-one-ensemble" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s20</span> <span class="o">=</span> <span class="n">lorenz</span><span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
 <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">B</span> <span class="o">*</span> <span class="mf">19.0</span><span class="p">)</span>
 <span class="n">Cp</span><span class="p">,</span> <span class="n">Cm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="mf">19.0</span><span class="p">])</span>
@@ -812,7 +818,7 @@ assumed; a crossing that is not located is refused.</p>
 <p><code class="docutils literal notranslate"><span class="pre">ensemble_fate</span></code> asks the classifier every <code class="docutils literal notranslate"><span class="pre">check_every</span></code> steps and latches each member’s verdict.
 Members undecided at the final time keep classification 0, and the result counts them.</p>
 <figure class="align-default" id="id3">
-<a class="reference internal image-reference" href="../_images/t12_basins.png"><img alt="A square map of starting points coloured red or blue by the equilibrium they end on, forming interleaved spiral bands, with C+ and C- marked and a legend below." loading="lazy" src="../_images/t12_basins.png" style="width: 100%;" />
+<a class="cn-paper reference internal image-reference" href="../_images/t12_basins.png"><img alt="A square map of starting points coloured red or blue by the equilibrium they end on, forming interleaved spiral bands, with C+ and C- marked and a legend below." class="cn-paper" loading="lazy" src="../_images/t12_basins.png" style="width: 100%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Basins of C+ (red) and C− (blue) at r = 20 for the 2304 starts of the ensemble (z₀ = 19); the rare starts still undecided at the horizon are black. The map is symmetric under (x, y) → (−x, −y).</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
@@ -897,7 +903,7 @@ CHECK lambda = (0.9085 +- 0.0068, -0.0004 +- 0.0033, -14.5825 +- 0.0048), sum = 
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Bifurcations: branch switching, cycles, codimension 2, normal forms</div>
+                <div class="title">Bifurcations: the Lorenz equilibria</div>
                 
               </div>
             </a>
@@ -931,12 +937,12 @@ CHECK lambda = (0.9085 +- 0.0068, -0.0004 +- 0.0033, -14.5825 +- 0.0048), sum = 
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a><ul>
+<li><a class="reference internal" href="#">Chaos and ensembles: the Lyapunov spectrum of Lorenz</a><ul>
 <li><a class="reference internal" href="#write-the-system">Write the system</a></li>
 <li><a class="reference internal" href="#lyapunov-spectrum-from-32-trajectories">Lyapunov spectrum from 32 trajectories</a></li>
-<li><a class="reference internal" href="#covariant-vectors">Covariant vectors</a></li>
-<li><a class="reference internal" href="#poincare-section-and-the-lorenz-map">Poincaré section and the Lorenz map</a></li>
-<li><a class="reference internal" href="#basins-of-attraction-from-one-ensemble">Basins of attraction from one ensemble</a></li>
+<li><a class="reference internal" href="#extension-covariant-vectors">Extension: covariant vectors</a></li>
+<li><a class="reference internal" href="#extension-poincare-section-and-the-lorenz-map">Extension: Poincaré section and the Lorenz map</a></li>
+<li><a class="reference internal" href="#extension-basins-of-attraction-from-one-ensemble">Extension: basins of attraction from one ensemble</a></li>
 <li><a class="reference internal" href="#check-against-the-references">Check against the references</a></li>
 <li><a class="reference internal" href="#output-as-executed">Output (as executed)</a></li>
 </ul>
@@ -950,7 +956,7 @@ CHECK lambda = (0.9085 +- 0.0068, -0.0004 +- 0.0033, -14.5825 +- 0.0048), sum = 
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=92734c54"></script>
+</div><script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

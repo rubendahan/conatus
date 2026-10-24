@@ -106,7 +106,10 @@ that seeds such a bisection.
 
 ## Validation
 
-A solution is accepted on its residual, reported with the iteration history (`explain()`). Its
+A solution is returned only when its full residual, rows of the frozen entries (the mean, and the
+cos components in the odd subspace) included, is at most `FULL_RESIDUAL_FACTOR` (10) times the
+Newton tolerance; otherwise the search raises `NewtonNotConverged`. The residual and the iteration
+history are reported by `explain()`. Its
 stability is a separate computation (eigenvalues or Floquet multipliers in the full space). A
 solution found in a symmetry subspace may be unstable outside it (see {doc}`symmetry`).
 

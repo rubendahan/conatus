@@ -1,0 +1,4 @@
+var e=`# critical_reynolds.py | script sha256 cf71502e94fff7f2c2c615bfc30dfa95da139b1a82f9ecec621e9a29f819193e | conatus 0.2.0 | python 3.12.14 | 2026-10-23 | 7 s
+c = 0.23752649+0.00373967j   residual below 1e-15: True
+Re_c = 5772.22   alpha_c = 1.02055
+`;export{e as t};

@@ -1,18 +1,21 @@
-# Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins
+# Chaos and ensembles: the Lyapunov spectrum of Lorenz
 
-The tangent used here is the derivative of the discrete step, so the Lyapunov spectrum is that of
-the map actually computed. Many trajectories share one batch, so the error estimates of an
-exponent (independent trajectories, block errors) cost little more than one trajectory.
-
-**Goal.** Compute the Lyapunov spectrum, the Kaplan–Yorke dimension and the covariant Lyapunov
-vectors of the Lorenz attractor from 32 trajectories in one batch; build the Lorenz map from a
-Poincaré section located on the scheme; map the basins of the two stable foci at $r = 20$ with
-2304 members advanced together.
+**Goal.** Compute the Lyapunov spectrum and the Kaplan–Yorke dimension of the Lorenz attractor,
+with error estimates, from 32 trajectories advanced in one batch.
 **Expected.** Sprott (web page *lorenzle.htm*): $(0.906, 0, -14.572)$, $D_{KY} = 2.062$; exact sum
-$-(\sigma + 1 + b) = -13.667$ (constant divergence); the neutral covariant vector is the flow direction;
-maxima of $z$ on a one-dimensional cusp map (Lorenz 1963, Fig. 4). **Time:** about 1 min on one CPU core.
+$-(\sigma + 1 + b) = -13.667$ for the flow (constant divergence).
+**Extensions.** Three later sections reuse the same batch; each can be read alone. The covariant
+vectors (for the flow, the neutral one is the flow direction $f(x)$; the RK443 map approaches it
+as $dt \to 0$). The Lorenz map from a Poincaré section: maxima of $z$ on a one-dimensional cusp
+map (Lorenz 1963, Fig. 4). The basins of the two stable foci at $r = 20$, from 2304 members
+advanced together.
+**Time:** about 1 min on one CPU core.
 **Script:** [`t12_chaos_ensembles.py`](code/t12_chaos_ensembles.py) · **Tests behind it:**
 `tests/chaos/`, `tests/ensembles/`.
+
+The tangent used here is the derivative of the discrete step, so the spectrum is that of the map
+actually computed. Many trajectories share one batch, so the error estimates (independent
+trajectories, block errors) cost little more than one trajectory.
 
 ## Write the system
 
@@ -55,7 +58,7 @@ truncation at $dt = 0.01$ is $7.7\times10^{-3}$ ($9.2\times10^{-4}$ at $dt/2$: t
 Finite-time estimates of the three exponents, averaged from the start of the measurement, over the 32 starts of the page: the band holds the middle 80 % of the starts, the red line is their mean and the dashed lines are the published values 0.906, 0 and −14.572. The panel titles give the final mean and its standard error over the starts. Time is in the units of the Lorenz equations.
 ```
 
-## Covariant vectors
+## Extension: covariant vectors
 
 ```{literalinclude} code/t12_chaos_ensembles.py
 :language: python
@@ -63,11 +66,13 @@ Finite-time estimates of the three exponents, averaged from the start of the mea
 :end-before: "# [/clv]"
 ```
 
-Ginelli's backward pass turns the stored $Q$ and $R$ factors into the covariant vectors. The zero
-exponent belongs to time translation, so its covariant vector must be parallel to $f(x)$: a property,
-not a fit.
+Ginelli's backward pass turns the stored $Q$ and $R$ factors into the covariant vectors. For the
+continuous flow, the zero exponent belongs to time translation and its covariant vector is parallel
+to $f(x)$. The time-stepping map satisfies this only up to its time-discretisation error. For
+example, one explicit Euler step on $x' = x^2$ gives $D\Phi_h(x)\,f(x) - f(\Phi_h(x)) = -h^2 x^4$.
+The check below therefore measures the angle with $f(x)$ against a tolerance.
 
-## Poincaré section and the Lorenz map
+## Extension: Poincaré section and the Lorenz map
 
 ```{literalinclude} code/t12_chaos_ensembles.py
 :language: python
@@ -86,7 +91,7 @@ assumed; a crossing that is not located is refused.
 The Poincaré section dz/dt = 0 of the page: each maximum of z against the next falls on a one-dimensional cusp map, as in Lorenz's Fig. 4 of 1963.
 ```
 
-## Basins of attraction from one ensemble
+## Extension: basins of attraction from one ensemble
 
 ```{literalinclude} code/t12_chaos_ensembles.py
 :language: python

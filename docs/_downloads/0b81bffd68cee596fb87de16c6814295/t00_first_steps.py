@@ -34,10 +34,10 @@ for t in (0.0, 0.5, 1.0, 1.5, 2.0):
 import matplotlib.pyplot as plt
 
 fig, ax = plt.subplots(figsize=(6.4, 3.2), dpi=150)
-styles = ["-", "--", ":", "-."]                # the site's figure palette, one line style per curve
-colours = ["#6C7FA8", "#C8463A", "#A8864F", "#77736B"]
+styles = ["-", "--", ":", "-.", (0, (6, 2, 1, 2, 1, 2))]   # one line style and colour per time
+colours = ["#6C7FA8", "#C8463A", "#A8864F", "#77736B", "#2F2E2B"]
 for k, (t, ut) in enumerate(profiles.items()):
-    ax.plot(x, ut, styles[k % 4], color=colours[k % 4], label=f"t = {t:g}")
+    ax.plot(x, ut, linestyle=styles[k], color=colours[k], label=f"t = {t:g}")
 ax.set_xlabel("x")
 ax.set_ylabel("u")
 ax.spines[["top", "right"]].set_visible(False)

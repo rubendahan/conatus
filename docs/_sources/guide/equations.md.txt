@@ -30,7 +30,7 @@ print(m.explain())
 | `m.given(U=lambda y: 1 - y**2)` | a known field; the argument names say which coordinates it depends on |
 | `m.define("L2(f) = dy(dy(f)) - alpha**2*f")` | a named operator, substituted where it is used |
 | `m.function("g", np.tanh, derivative=...)` | a pointwise function of a scalar field, used as `g(u)`; without `derivative` linearization and Newton are refused |
-| `m.eigenvalue("c", growth="imag")` | the model is an eigenvalue problem in `c`; `growth=` declares how a mode grows (`"imag"`: phase speed of $e^{i\alpha(x-ct)}$, `"real"`: rate of $e^{st}$); left out, v0.1 guesses from the name (`c` → Im, `s` → Re) with a `DefaultChoiceWarning`, required from v0.2 |
+| `m.eigenvalue("c", growth="imag")` | the model is an eigenvalue problem in `c`; `growth=` declares how a mode grows (`"imag"`: phase speed of $e^{i\alpha(x-ct)}$, `"real"`: rate of $e^{st}$); left out, 0.1 and 0.2 guess from the name (`c` → Im, `s` → Re) with a `DefaultChoiceWarning`, required from 0.3 |
 | `m.equations("...")` | equations, one per line, optionally labelled `name:` |
 | `m.at("bottom", T=0)` | boundary conditions ({doc}`boundary_conditions`) |
 

@@ -1,5 +1,7 @@
 # Womersley flow in a plane channel: exact profile (LBVP and IVP) and Floquet stability (Hill)
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `oscillatory` · *Script:* `examples/oscillatory/womersley.py`
 
 ```{list-table}

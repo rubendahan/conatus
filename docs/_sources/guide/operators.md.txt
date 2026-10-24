@@ -50,7 +50,8 @@ is accepted.
 **Residual digits and coefficient digits.** A Newton or eigenvalue residual of $10^{-12}$ next to
 an accepted NCC tail of $10^{-9}$ is not a contradiction: the residual measures how well the
 *discrete* problem is solved, with each coefficient as represented by its truncated Chebyshev
-series; the tail bounds how far that representation is from the coefficient you gave. The answer
+series; the measured coefficient tail estimates how far that representation is from the
+coefficient you gave. The answer
 of the continuous problem is known to about the larger of the two (times the conditioning of the
 problem), not to the residual alone. `NLBVPSolution.explain()` and
 `LBVPSolution.explain()` print an *accuracy floor* line with the largest sampled NCC tail

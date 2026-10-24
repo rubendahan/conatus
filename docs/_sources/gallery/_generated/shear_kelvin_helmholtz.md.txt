@@ -1,5 +1,7 @@
 # Kelvin–Helmholtz instability of the tanh mixing layer (Michalke 1964), inviscid and viscous
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `shear` · *Script:* `examples/shear/kelvin_helmholtz.py`
 
 ```{list-table}

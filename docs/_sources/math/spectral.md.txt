@@ -26,12 +26,18 @@ $$
 \frac{d C^{(\lambda)}_n}{dt} = 2\lambda\, C^{(\lambda+1)}_{n-1},
 $$
 
-so each derivative is a single super-diagonal mapping $C^{(\lambda)} \to C^{(\lambda+1)}$. The
+so each derivative is a single super-diagonal mapping $C^{(\lambda)} \to C^{(\lambda+1)}$. In the
+physical coordinate, $d/dz = \frac{2}{b-a}\,d/dt$, so for example
+$dT_n/dz = \frac{2n}{b-a}\,C^{(1)}_{n-1}$. The
 conversions $S_\lambda: C^{(\lambda)} \to C^{(\lambda+1)}$ have two diagonals, and multiplication
 by a smooth coefficient $a(t)$ is banded, with half-bandwidth the number of Chebyshev coefficients
 kept for $a$. An equation of order $q$ in the bounded direction is written in $C^{(q)}$: every term
 is converted up to that space. The resulting matrices are banded plus a few dense rows; no dense
-differentiation matrix is ever formed, and the condition number grows only mildly with $N$.
+differentiation matrix is ever formed. Under the assumptions of their paper, Olver and Townsend
+(2013) prove stability by relating the system to a diagonally preconditioned one whose condition
+number is bounded in a suitable norm; for Dirichlet conditions this implies stability in the
+2-norm. Conatus factorises the assembled matrices directly and does not claim a bound on their
+condition number.
 
 Variable coefficients (a base flow $U(y)$, a metric factor) enter as non-constant coefficients.
 All their Chebyshev coefficients are used unless you ask for a truncation; the size of the
@@ -86,9 +92,9 @@ otherwise $\mu$ is expanded to round-off like any variable coefficient.
 
 ## References
 
-- S. Olver and A. Townsend, *A fast and well-conditioned spectral method*, SIAM Review 55 (2013).
+- S. Olver and A. Townsend, *A fast and well-conditioned spectral method*, SIAM Review 55 (2013) 462–489.
 - K. J. Burns, G. M. Vasil, J. S. Oishi, D. Lecoanet and B. P. Brown, *Dedalus: a flexible
   framework for numerical simulations with spectral methods*, Phys. Rev. Research 2 (2020) 023068.
 - J. P. Boyd, *Chebyshev and Fourier Spectral Methods*, 2nd ed., Dover (2001).
 - C. Lanczos, *Trigonometric interpolation of empirical and analytical functions*, J. Math. Phys.
-  17 (1938) (the tau method).
+  17 (1938) 123–199 (the tau method).

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Notebooks" href="notebook.html"><link rel="prev" title="Pilot a run from a script or an agent" href="studio_agents.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Notebooks" href="notebook.html"><link rel="prev" title="Studio limits and timings" href="studio_limits.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=73060e77" />
     
     
 
@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -251,14 +251,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/08_polar.html">Polar geometry: the modes of a drum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/03_symmetries.html">Symmetries and symmetry subspaces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/10_bifurcations.html">Bifurcations: the Lorenz equilibria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/12_chaos_ensembles.html">Chaos and ensembles: the Lyapunov spectrum of Lorenz</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/11_runs.html">Record, query, reproduce: the run registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/14_from_dedalus.html">Importing a Dedalus script</a></li>
@@ -283,6 +283,7 @@
 <li class="toctree-l2"><a class="reference internal" href="io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebook.html">Notebooks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -315,8 +316,8 @@
 <li class="toctree-l2"><a class="reference internal" href="taus.html">Tau terms by hand</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Gallery: fluids everywhere</a><input aria-label="Toggle navigation of Gallery: fluids everywhere" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_salt_fingers.html">Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines &amp; Gill 1969, J. Fluid Mech. 37, 289-306)</a></li>
@@ -822,8 +823,11 @@ tokens: see <a class="reference internal" href="studio_agents.html"><span class=
 </section>
 <section id="agents-md">
 <h2>AGENTS.md<a class="headerlink" href="#agents-md" title="Link to this heading">¶</a></h2>
-<p>The page itself, as an agent reads it:</p>
-<p>Conatus: spectral PDEs and dynamical systems on CPU and GPU (v0.1; the API is young, see the deprecation notes below).
+<p>The start of the page, as an agent reads it: installation, the mental model, a working example,
+the surface by task and the rules. The rest of
+<a class="reference external" href="https://github.com/rubendahan/conatus/blob/main/AGENTS.md"><code class="docutils literal notranslate"><span class="pre">AGENTS.md</span></code></a> covers live runs
+(<a class="reference internal" href="studio_agents.html"><span class="doc">Pilot a run from a script or an agent</span></a>) and the JSON contract described above.</p>
+<p>Conatus: spectral PDEs and dynamical systems on CPU and GPU (0.2; the API is young, see the deprecation notes below).
 You write equations as on paper; Conatus discretises (Fourier/Chebyshev/curvilinear bases, taus
 placed for you), integrates, solves eigenproblems and finds structure (orbits, bifurcations, Floquet, optimal perturbations).
 Declare numerical choices explicitly. When a call lacks one, Conatus raises an error that says what to write.
@@ -850,7 +854,7 @@ as text, conditions by boundary name) → numerics given at the call (<code clas
 <code class="docutils literal notranslate"><span class="pre">sim.solver</span></code>, <code class="docutils literal notranslate"><span class="pre">sim.plan</span></code>. A name present in both layers has one meaning.</p></li>
 <li><p>One word per notion: <code class="docutils literal notranslate"><span class="pre">steps</span></code> (number of time steps), <code class="docutils literal notranslate"><span class="pre">k</span></code> (a wavenumber keyword; a problem
 parameter keeps its literature name, e.g. <code class="docutils literal notranslate"><span class="pre">alpha</span></code> of Orr–Sommerfeld), <code class="docutils literal notranslate"><span class="pre">eta</span></code> (radius
-ratio), <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>, <code class="docutils literal notranslate"><span class="pre">max_iterations</span></code>, <code class="docutils literal notranslate"><span class="pre">tol</span></code> (exceptions until v0.2: the fields <code class="docutils literal notranslate"><span class="pre">ContinuationSettings(tolerance=,</span> <span class="pre">max_newton=)</span></code>, also read as <code class="docutils literal notranslate"><span class="pre">cfg.tol</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg.max_iterations</span></code>);
+ratio), <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>, <code class="docutils literal notranslate"><span class="pre">max_iterations</span></code>, <code class="docutils literal notranslate"><span class="pre">tol</span></code> (exceptions until 0.3: the fields <code class="docutils literal notranslate"><span class="pre">ContinuationSettings(tolerance=,</span> <span class="pre">max_newton=)</span></code>, also read as <code class="docutils literal notranslate"><span class="pre">cfg.tol</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg.max_iterations</span></code>);
 former names warn (<code class="docutils literal notranslate"><span class="pre">conatus._deprecation.RENAMES</span></code>).</p></li>
 <li><p>Names below: <code class="docutils literal notranslate"><span class="pre">m</span></code> = <code class="docutils literal notranslate"><span class="pre">cn.Model</span></code>, <code class="docutils literal notranslate"><span class="pre">sim</span></code> = <code class="docutils literal notranslate"><span class="pre">cn.model.Simulation</span></code>, <code class="docutils literal notranslate"><span class="pre">lin</span></code> = <code class="docutils literal notranslate"><span class="pre">cn.model.Linearization</span></code>, <code class="docutils literal notranslate"><span class="pre">X</span></code> = <code class="docutils literal notranslate"><span class="pre">conatus.expert</span></code>.</p></li>
 </ul>
@@ -1019,7 +1023,7 @@ former names warn (<code class="docutils literal notranslate"><span class="pre">
 <td><p><code class="docutils literal notranslate"><span class="pre">cn.from_dedalus(&quot;script.py&quot;)</span></code> (parsed, not executed) → <code class="docutils literal notranslate"><span class="pre">.explain()</span></code>, <code class="docutils literal notranslate"><span class="pre">.problem</span></code>, <code class="docutils literal notranslate"><span class="pre">.to_script()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Studio (watch live)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">sim.watch(&quot;run_id&quot;,</span> <span class="pre">film={&quot;T&quot;:</span> <span class="pre">cn.view(&quot;T&quot;)},</span> <span class="pre">stats={...},</span> <span class="pre">settable={&quot;dt&quot;:</span> <span class="pre">(1e-4,</span> <span class="pre">1e-2)},</span> <span class="pre">every_s=0.5)</span></code> (periods in wall seconds: <code class="docutils literal notranslate"><span class="pre">every_s</span></code>, <code class="docutils literal notranslate"><span class="pre">scalars_every_s</span></code>, <code class="docutils literal notranslate"><span class="pre">controls_every_s</span></code>), <code class="docutils literal notranslate"><span class="pre">sim.unwatch()</span></code>; <code class="docutils literal notranslate"><span class="pre">cn.series(f)</span></code>, <code class="docutils literal notranslate"><span class="pre">cn.profile(&quot;T&quot;,</span> <span class="pre">&quot;z&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">cn.spectrum(&quot;u&quot;,</span> <span class="pre">&quot;x&quot;)</span></code>; a Studio stop raises <code class="docutils literal notranslate"><span class="pre">cn.StopRun</span></code> in the run; every Studio/hub/relay limit and timing: <code class="docutils literal notranslate"><span class="pre">conatus.studio.constants.explain()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sim.watch(&quot;run_id&quot;,</span> <span class="pre">film={&quot;T&quot;:</span> <span class="pre">cn.view(&quot;T&quot;)},</span> <span class="pre">stats={...},</span> <span class="pre">settable={&quot;dt&quot;:</span> <span class="pre">(1e-4,</span> <span class="pre">1e-2)},</span> <span class="pre">every_s=0.5)</span></code> (periods in wall seconds: <code class="docutils literal notranslate"><span class="pre">every_s</span></code>, <code class="docutils literal notranslate"><span class="pre">scalars_every_s</span></code>, <code class="docutils literal notranslate"><span class="pre">controls_every_s</span></code>), <code class="docutils literal notranslate"><span class="pre">sim.unwatch()</span></code>; <code class="docutils literal notranslate"><span class="pre">cn.series(f)</span></code>, <code class="docutils literal notranslate"><span class="pre">cn.profile(&quot;T&quot;,</span> <span class="pre">&quot;z&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">cn.spectrum(&quot;u&quot;,</span> <span class="pre">&quot;x&quot;)</span></code>; a Studio stop raises <code class="docutils literal notranslate"><span class="pre">cn.StopRun</span></code> in the run; limits and timings: <code class="docutils literal notranslate"><span class="pre">conatus.studio.constants.explain()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Notebook, units</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">cn.notebook</span></code>, <code class="docutils literal notranslate"><span class="pre">X.UnitSystem</span></code>, <code class="docutils literal notranslate"><span class="pre">X.convert</span></code>, <code class="docutils literal notranslate"><span class="pre">X.presets</span></code></p></td>
@@ -1035,8 +1039,8 @@ former names warn (<code class="docutils literal notranslate"><span class="pre">
 <h2>5. Rules that prevent agent mistakes<a class="headerlink" href="#rules-that-prevent-agent-mistakes" title="Link to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p><strong>Errors carry a fix.</strong> A refusal is a <code class="docutils literal notranslate"><span class="pre">cn.errors.ConatusError</span></code> with <code class="docutils literal notranslate"><span class="pre">.message</span></code>, <code class="docutils literal notranslate"><span class="pre">.where</span></code>, <code class="docutils literal notranslate"><span class="pre">.why</span></code>,
-<code class="docutils literal notranslate"><span class="pre">.fix</span></code>, <code class="docutils literal notranslate"><span class="pre">.doc</span></code>. Read <code class="docutils literal notranslate"><span class="pre">fix</span></code>, apply it yourself only if it is what you mean; never wrap Conatus
-calls in <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span> <span class="pre">pass</span></code>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">.fix</span></code>, <code class="docutils literal notranslate"><span class="pre">.doc</span></code>. Read <code class="docutils literal notranslate"><span class="pre">fix</span></code>, apply it yourself only if it is what you mean. Let numerical
+refusals propagate; if a script handles one, record the exception and the decision taken.</p></li>
 <li><p><strong>Supply these accuracy arguments explicitly</strong> (<code class="docutils literal notranslate"><span class="pre">REQUIRED</span></code>): <code class="docutils literal notranslate"><span class="pre">drift_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">xtol</span></code> of
 <code class="docutils literal notranslate"><span class="pre">X.critical</span></code>, <code class="docutils literal notranslate"><span class="pre">tol</span></code> of <code class="docutils literal notranslate"><span class="pre">method=&quot;hill&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">X.shell_floquet</span></code> / <code class="docutils literal notranslate"><span class="pre">nl.linear_gain</span></code> / <code class="docutils literal notranslate"><span class="pre">NewtonKrylovHookstep</span></code>,
 <code class="docutils literal notranslate"><span class="pre">tolerance</span></code> of <code class="docutils literal notranslate"><span class="pre">ContinuationSettings</span></code>, <code class="docutils literal notranslate"><span class="pre">tol</span></code> of <code class="docutils literal notranslate"><span class="pre">X.NewtonSolver</span></code>, <code class="docutils literal notranslate"><span class="pre">arnoldi_tol</span></code> of
@@ -1086,48 +1090,6 @@ say so in what you report. <code class="docutils literal notranslate"><span clas
 <code class="docutils literal notranslate"><span class="pre">conatus.&lt;module&gt;.&lt;name&gt;</span></code> (<code class="docutils literal notranslate"><span class="pre">X.&lt;name&gt;</span></code> warns <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>, gone in 0.3).</p></li>
 </ol>
 </section>
-<section id="driving-a-run-live-studio-channel-json-no-server-needed-on-a-cluster">
-<h2>6. Driving a run live (Studio channel, JSON, no server needed on a cluster)<a class="headerlink" href="#driving-a-run-live-studio-channel-json-no-server-needed-on-a-cluster" title="Link to this heading">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>studio<span class="w"> </span>runs<span class="w">                   </span><span class="c1"># every run, live first (JSON, "api": 1)</span>
-python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>studio<span class="w"> </span>status<span class="w"> </span>RUN<span class="w">             </span><span class="c1"># state, t, iteration, dt, scalars, alerts, commands, settable</span>
-python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>studio<span class="w"> </span>watch<span class="w"> </span>RUN<span class="w"> </span>--for<span class="w"> </span><span class="m">600</span><span class="w">    </span><span class="c1"># one JSON line per change; always bounded</span>
-python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>studio<span class="w"> </span>send<span class="w"> </span>RUN<span class="w"> </span>pause<span class="p">|</span>resume<span class="p">|</span>checkpoint
-python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>studio<span class="w"> </span>send<span class="w"> </span>RUN<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">dt</span><span class="o">=</span>2e-3<span class="w">   </span><span class="c1"># only if declared settable, within bounds</span>
-python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>studio<span class="w"> </span>send<span class="w"> </span>RUN<span class="w"> </span>stop<span class="w">          </span><span class="c1"># exit 5 + confirm_token; resend with --confirm TOKEN</span>
-python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>studio<span class="w"> </span>log<span class="w"> </span>RUN<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span><span class="w"> </span><span class="p">;</span><span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>studio<span class="w"> </span>frame<span class="w"> </span>RUN<span class="w"> </span>--png<span class="w"> </span>out.png
-</pre></div>
-</div>
-<p>Exit codes: 0 done (command written; confirm via events <code class="docutils literal notranslate"><span class="pre">command_received</span></code> → <code class="docutils literal notranslate"><span class="pre">param_set</span></code>/<code class="docutils literal notranslate"><span class="pre">set_refused</span></code>),
-1 refused, 2 usage, 3 not authorised, 4 no such run, 5 confirmation needed, 6 hub unreachable.
-Alerts: <code class="docutils literal notranslate"><span class="pre">non_finite</span></code>, <code class="docutils literal notranslate"><span class="pre">silent</span></code>, <code class="docutils literal notranslate"><span class="pre">set_refused</span></code>, <code class="docutils literal notranslate"><span class="pre">failed</span></code>, <code class="docutils literal notranslate"><span class="pre">log_errors</span></code>, … Act on one alert at a time,
-check it was applied, then send the next command. Python: <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">conatus.studio.client</span> <span class="pre">import</span> <span class="pre">connect</span></code>
-(<code class="docutils literal notranslate"><span class="pre">cl.status</span></code>, <code class="docutils literal notranslate"><span class="pre">cl.send</span></code>, <code class="docutils literal notranslate"><span class="pre">cl.wait</span></code>). Hub tokens are per agent with a scope (<code class="docutils literal notranslate"><span class="pre">read</span></code> | <code class="docutils literal notranslate"><span class="pre">command</span></code>) and
-run patterns (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">conatus.studio.hub</span> <span class="pre">--state</span> <span class="pre">DIR</span> <span class="pre">addagent</span> <span class="pre">NAME</span> <span class="pre">--scope</span> <span class="pre">command</span> <span class="pre">--runs</span> <span class="pre">'host:kh_*'</span> <span class="pre">--token-out</span> <span class="pre">FILE</span></code>).
-On a cluster: run agents and servers inside compute-node jobs, under the cluster’s policy. Leave no background
-process behind, and do not poll the scheduler in a loop.</p>
-</section>
-<section id="python-m-conatus-agent-json-contract-api-1-fields-only-added-within-a-version">
-<h2>7. <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">conatus</span> <span class="pre">agent</span></code> — JSON contract (api 1; fields only added within a version)<a class="headerlink" href="#python-m-conatus-agent-json-contract-api-1-fields-only-added-within-a-version" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">info</span> <span class="pre">[--no-probe]</span> <span class="pre">[--no-runs]</span></code> → <code class="docutils literal notranslate"><span class="pre">api,</span> <span class="pre">command,</span> <span class="pre">conatus,</span> <span class="pre">python,</span> <span class="pre">platform,</span> <span class="pre">host,</span> <span class="pre">cpus,</span> <span class="pre">packages,</span> <span class="pre">gpu{probed,</span> <span class="pre">available,</span> <span class="pre">backend,</span> <span class="pre">cupy,</span> <span class="pre">core,</span> <span class="pre">visible_devices,</span> <span class="pre">how},</span> <span class="pre">surface{cn,</span> <span class="pre">modules,</span> <span class="pre">expert},</span> <span class="pre">runs{available,</span> <span class="pre">runs[]},</span> <span class="pre">commands,</span> <span class="pre">docs,</span> <span class="pre">rules</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">explain</span> <span class="pre">NAME</span></code> (<code class="docutils literal notranslate"><span class="pre">cn.&lt;name&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">expert.&lt;name&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">conatus.&lt;module&gt;.&lt;name&gt;</span></code>) → <code class="docutils literal notranslate"><span class="pre">qualified,</span> <span class="pre">kind,</span> <span class="pre">signature,</span> <span class="pre">summary,</span> <span class="pre">value,</span> <span class="pre">required,</span> <span class="pre">required_tolerances,</span> <span class="pre">conditional[{argument,</span> <span class="pre">when,</span> <span class="pre">suggest,</span> <span class="pre">kind}],</span> <span class="pre">deprecated{old:</span> <span class="pre">new},</span> <span class="pre">methods</span> <span class="pre">|</span> <span class="pre">names,</span> <span class="pre">explain</span></code>. Exit 4 if the name does not exist; <code class="docutils literal notranslate"><span class="pre">explain</span> <span class="pre">FILE.py</span></code> is refused
-(exit 2: it never runs a script, use <code class="docutils literal notranslate"><span class="pre">check</span></code>).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">check</span> <span class="pre">SCRIPT.py</span> <span class="pre">[--memory]</span> <span class="pre">[--timeout</span> <span class="pre">S]</span> <span class="pre">[--</span> <span class="pre">script</span> <span class="pre">args]</span></code> runs the script for real up to its
-first expensive call (a CPU <code class="docutils literal notranslate"><span class="pre">simulate</span></code> is built, a CUDA one stops; then <code class="docutils literal notranslate"><span class="pre">run</span></code>/<code class="docutils literal notranslate"><span class="pre">eigenvalues</span></code>/<code class="docutils literal notranslate"><span class="pre">solve</span></code>/
-Newton/continuation/… stop it, list <code class="docutils literal notranslate"><span class="pre">conatus.agent.EXPENSIVE</span></code>); Conatus calls that write files
-(<code class="docutils literal notranslate"><span class="pre">watch</span></code>, <code class="docutils literal notranslate"><span class="pre">output</span></code>, <code class="docutils literal notranslate"><span class="pre">checkpoints</span></code>, <code class="docutils literal notranslate"><span class="pre">save</span></code>) are skipped. Not a sandbox: the script’s own code (file
-writes, subprocesses) runs with your privileges; never catch <code class="docutils literal notranslate"><span class="pre">BaseException</span></code> around Conatus calls. →
-<code class="docutils literal notranslate"><span class="pre">ok,</span> <span class="pre">calls[{call,</span> <span class="pre">line,</span> <span class="pre">action}],</span> <span class="pre">stopped_at,</span> <span class="pre">missing[{call,</span> <span class="pre">argument,</span> <span class="pre">kind,</span> <span class="pre">suggest}],</span> <span class="pre">refusals[{type,</span> <span class="pre">message,</span> <span class="pre">where,</span> <span class="pre">why,</span> <span class="pre">fix,</span> <span class="pre">doc,</span> <span class="pre">line}],</span> <span class="pre">errors,</span> <span class="pre">warnings,</span> <span class="pre">explain{model,</span> <span class="pre">simulation,</span> <span class="pre">plan,</span> <span class="pre">...},</span> <span class="pre">plan{type,</span> <span class="pre">groups},</span> <span class="pre">memory{peak_bytes</span> <span class="pre">(allocators),</span> <span class="pre">peak_with_process_floor_bytes</span> <span class="pre">(+</span> <span class="pre">the</span> <span class="pre">declared</span> <span class="pre">CUDA</span> <span class="pre">context/kernels</span> <span class="pre">floor,</span> <span class="pre">512</span> <span class="pre">MiB</span> <span class="pre">measured),</span> <span class="pre">report}</span> <span class="pre">|</span> <span class="pre">null,</span> <span class="pre">notes,</span> <span class="pre">validated[{call,</span> <span class="pre">values:</span> <span class="pre">&quot;checked&quot;</span> <span class="pre">|</span> <span class="pre">&quot;not</span> <span class="pre">checked&quot;,</span> <span class="pre">checked}],</span> <span class="pre">elapsed_s</span></code>. <code class="docutils literal notranslate"><span class="pre">ok</span></code> covers what
-<code class="docutils literal notranslate"><span class="pre">validated</span></code> says was checked: the argument values of the stopped call are checked for <code class="docutils literal notranslate"><span class="pre">run</span></code> only.
-Exit 0 ok, 1 refusal/missing/error, 2 usage. Python: <code class="docutils literal notranslate"><span class="pre">conatus.agent.check(path)</span></code>, <code class="docutils literal notranslate"><span class="pre">conatus.agent.info()</span></code>, <code class="docutils literal notranslate"><span class="pre">conatus.agent.describe(name)</span></code>.</p></li>
-</ul>
-</section>
-<section id="where-the-full-documentation-is">
-<h2>8. Where the full documentation is<a class="headerlink" href="#where-the-full-documentation-is" title="Link to this heading">¶</a></h2>
-<p>User guide <code class="docutils literal notranslate"><span class="pre">docs/site/guide/</span></code> (geometries, equations, boundary_conditions, timesteppers, gpu, io,
-studio_agents, explain, errors, dynamics/*), tutorials <code class="docutils literal notranslate"><span class="pre">docs/site/tutorials/</span></code>, API reference
-<code class="docutils literal notranslate"><span class="pre">docs/site/api/</span></code>, frozen surface <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">conatus._surface</span></code>. Web: <code class="docutils literal notranslate"><span class="pre">/docs/guide/agents.html</span></code>.</p>
-</section>
 </section>
 
         </article>
@@ -1144,14 +1106,14 @@ studio_agents, explain, errors, dynamics/*), tutorials <code class="docutils lit
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="studio_agents.html">
+          <a class="prev-page" href="studio_limits.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Pilot a run from a script or an agent</div>
+                <div class="title">Studio limits and timings</div>
                 
               </div>
             </a>
@@ -1194,9 +1156,6 @@ studio_agents, explain, errors, dynamics/*), tutorials <code class="docutils lit
 <li><a class="reference internal" href="#minimal-working-example-executed-by-the-test-suite">3. Minimal working example (executed by the test suite)</a></li>
 <li><a class="reference internal" href="#the-surface-by-task-one-minimal-call-each">4. The surface, by task (one minimal call each)</a></li>
 <li><a class="reference internal" href="#rules-that-prevent-agent-mistakes">5. Rules that prevent agent mistakes</a></li>
-<li><a class="reference internal" href="#driving-a-run-live-studio-channel-json-no-server-needed-on-a-cluster">6. Driving a run live (Studio channel, JSON, no server needed on a cluster)</a></li>
-<li><a class="reference internal" href="#python-m-conatus-agent-json-contract-api-1-fields-only-added-within-a-version">7. <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">conatus</span> <span class="pre">agent</span></code> — JSON contract (api 1; fields only added within a version)</a></li>
-<li><a class="reference internal" href="#where-the-full-documentation-is">8. Where the full documentation is</a></li>
 </ul>
 </li>
 </ul>
@@ -1208,7 +1167,7 @@ studio_agents, explain, errors, dynamics/*), tutorials <code class="docutils lit
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=92734c54"></script>
+</div><script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

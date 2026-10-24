@@ -49,6 +49,7 @@ particles
 io
 studio
 studio_agents
+studio_limits
 agents
 notebook
 ```

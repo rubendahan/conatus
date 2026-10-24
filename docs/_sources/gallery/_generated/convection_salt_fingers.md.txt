@@ -1,5 +1,7 @@
 # Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines & Gill 1969, J. Fluid Mech. 37, 289-306)
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `convection` · *Script:* `examples/convection/salt_fingers.py`
 
 ```{list-table}

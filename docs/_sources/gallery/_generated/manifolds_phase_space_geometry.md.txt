@@ -1,5 +1,7 @@
 # Phase-space geometry in three steps
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `manifolds` · *Script:* `examples/manifolds/phase_space_geometry.py`
 
 ```{list-table}

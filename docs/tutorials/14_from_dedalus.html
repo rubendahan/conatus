@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=73060e77" />
     
     
 
@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -251,14 +251,14 @@
 <li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
 <li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: the modes of a drum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
 <li class="toctree-l2"><a class="reference internal" href="04_bratu.html">Nonlinear boundary-value problems and continuation: Bratu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: the Lorenz equilibria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: the Lyapunov spectrum of Lorenz</a></li>
 <li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Importing a Dedalus script</a></li>
@@ -283,6 +283,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/notebook.html">Notebooks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../guide/dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -315,8 +316,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/taus.html">Tau terms by hand</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Gallery: fluids everywhere</a><input aria-label="Toggle navigation of Gallery: fluids everywhere" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_salt_fingers.html">Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines &amp; Gill 1969, J. Fluid Mech. 37, 289-306)</a></li>
@@ -708,6 +709,16 @@ check script finds the translation equal to its result to rounding (<span class=
 <strong>Guide:</strong> <a class="reference internal" href="../guide/dedalus.html"><span class="doc">Importing Dedalus scripts</span></a>, <a class="reference internal" href="../guide/equations.html"><span class="doc">Equations</span></a>.</p>
 <section id="the-cell-as-a-native-model">
 <h2>The cell as a native model<a class="headerlink" href="#the-cell-as-a-native-model" title="Link to this heading">¶</a></h2>
+<p>The driver is <a class="reference download internal" download="" href="../_downloads/212c578fd716482a203721a9bf79a6da/t14_from_dedalus.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t14_from_dedalus.py</span></code></span></a>. To run the blocks of this page
+yourself, save <a class="reference download internal" download="" href="../_downloads/c1a491ef3dcb75ed9f2af997a8faf2d7/rb_cell_dedalus.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">rb_cell_dedalus.py</span></code></span></a> in your working directory first:
+the translation reads it. The driver starts with its imports:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Onset of convection in diffusive units: th is the temperature minus the conduction profile 1 - z,</span>
 <span class="c1"># so it vanishes on both walls; u.ez carries the conduction profile into the heat equation.</span>
 <span class="n">RA</span><span class="p">,</span> <span class="n">PR</span><span class="p">,</span> <span class="n">PERIOD</span><span class="p">,</span> <span class="n">NX</span><span class="p">,</span> <span class="n">DT</span> <span class="o">=</span> <span class="mf">3000.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mf">5e-4</span>
@@ -750,7 +761,10 @@ rule, and <code class="docutils literal notranslate"><span class="pre">explain()
 <section id="the-same-cell-as-a-dedalus-script">
 <h2>The same cell as a Dedalus script<a class="headerlink" href="#the-same-cell-as-a-dedalus-script" title="Link to this heading">¶</a></h2>
 <p><a class="reference download internal" download="" href="../_downloads/c1a491ef3dcb75ed9f2af997a8faf2d7/rb_cell_dedalus.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">rb_cell_dedalus.py</span></code></span></a> is a Dedalus 3 script written for this tutorial.
-It reduces the equations to first order and declares its own tau fields and lifts:</p>
+It is a separate file: the driver reads it but does not run it, so do not paste it into the
+driver. It reduces the equations to first order and declares its own tau fields and lifts:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">rb_cell_dedalus.py (separate file, not run by the driver)</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plane</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">CartesianCoordinates</span><span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="s1">'z'</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">Distributor</span><span class="p">(</span><span class="n">plane</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 <span class="n">horiz</span> <span class="o">=</span> <span class="n">d3</span><span class="o">.</span><span class="n">RealFourier</span><span class="p">(</span><span class="n">plane</span><span class="p">[</span><span class="s1">'x'</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">N_x</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">period</span><span class="p">),</span> <span class="n">dealias</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
@@ -790,13 +804,14 @@ It reduces the equations to first order and declares its own tau fields and lift
     <span class="n">run</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">tstep</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
 <p>It uses a fixed time step and a deterministic start. The translator marks a <code class="docutils literal notranslate"><span class="pre">CFL</span></code> or a
 <code class="docutils literal notranslate"><span class="pre">fill_random</span></code> line <strong>unsupported</strong> and says what to write instead: Conatus runs with a fixed
 <code class="docutils literal notranslate"><span class="pre">dt</span></code>, and the random layout of <code class="docutils literal notranslate"><span class="pre">fill_random</span></code> cannot be reproduced.</p>
 </section>
 <section id="translate-and-read-the-report">
 <h2>Translate and read the report<a class="headerlink" href="#translate-and-read-the-report" title="Link to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SCRIPT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s2">"rb_cell_dedalus.py"</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SCRIPT</span> <span class="o">=</span> <span class="s2">"rb_cell_dedalus.py"</span>         <span class="c1"># the Dedalus script, in the working directory</span>
 <span class="n">tr</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">from_dedalus</span><span class="p">(</span><span class="n">SCRIPT</span><span class="p">)</span>          <span class="c1"># read with `ast`, never executed; Dedalus is not imported</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>
 <span class="n">counts</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">counts</span><span class="p">()</span>
@@ -854,46 +869,27 @@ falls spectrally as <span class="math notranslate nohighlight">\(N_z\)</span> gr
 solution, and the difference measures how far the coarser grids are from it.
 <code class="docutils literal notranslate"><span class="pre">overrides={&quot;N_z&quot;:</span> <span class="pre">nz}</span></code> changes one top-level assignment of the script, and the report lists the
 change.</p>
-<figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t14_convergence.png"><img alt="The relative difference between the native model and the translated script on a log scale, falling steeply with the number of wall-normal modes down to rounding." loading="lazy" src="../_images/t14_convergence.png" style="width: 100%;" />
+<figure class="align-default" id="id2">
+<a class="cn-paper reference internal image-reference" href="../_images/t14_convergence.png"><img alt="The relative difference between the native model and the translated script on a log scale, falling steeply with the number of wall-normal modes down to rounding." class="cn-paper" loading="lazy" src="../_images/t14_convergence.png" style="width: 100%;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Relative difference between the native model and the translated script after 40 SBDF2 steps, against nz. The two tau formulations of the same equations differ by an amount that falls spectrally down to rounding.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-text">Relative difference between the native model and the translated script after 40 SBDF2 steps, against nz. The two tau formulations of the same equations differ by an amount that falls spectrally down to rounding.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
-<section id="optional-run-the-original-script">
-<h2>Optional: run the original script<a class="headerlink" href="#optional-run-the-original-script" title="Link to this heading">¶</a></h2>
-<p><a class="reference download internal" download="" href="../_downloads/4173a53d5c87e09bc40662006f2e6840/t14b_dedalus_check.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t14b_dedalus_check.py</span></code></span></a> runs the original script, if Dedalus is
-installed (<code class="docutils literal notranslate"><span class="pre">micromamba</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">dedalus</span></code>), and compares its result with the
-translation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"OMP_NUM_THREADS"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">)</span>      <span class="c1"># Dedalus asks for it before its import</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">dedalus</span>  <span class="c1"># noqa: F401  (comparison oracle only; the conatus package never imports it)</span>
-    <span class="n">have_dedalus</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">have_dedalus</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"Dedalus is not installed here: the comparison with Dedalus is skipped (declared)"</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="n">have_dedalus</span><span class="p">:</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>                   <span class="c1"># Dedalus's per-step log lines</span>
-    <span class="n">ns</span> <span class="o">=</span> <span class="n">runpy</span><span class="o">.</span><span class="n">run_path</span><span class="p">(</span><span class="n">SCRIPT</span><span class="p">,</span> <span class="n">run_name</span><span class="o">=</span><span class="s2">"__main__"</span><span class="p">)</span>   <span class="c1"># the script, run by Dedalus as written</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"th"</span><span class="p">,</span> <span class="s2">"u"</span><span class="p">):</span>
-        <span class="n">ns</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">change_scales</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>                   <span class="c1"># back to the grid without 3/2 padding</span>
-        <span class="n">out</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ns</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">"g"</span><span class="p">])</span>
-    <span class="n">rel_th</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s2">"th"</span><span class="p">]</span> <span class="o">-</span> <span class="n">th_cn</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s2">"th"</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="n">rel_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s2">"u"</span><span class="p">]</span> <span class="o">-</span> <span class="n">u_cn</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s2">"u"</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dedalus: t = </span><span class="si">{</span><span class="n">ns</span><span class="p">[</span><span class="s1">'run'</span><span class="p">]</span><span class="o">.</span><span class="n">sim_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">; relative difference th </span><span class="si">{</span><span class="n">rel_th</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">, "</span>
-          <span class="sa">f</span><span class="s2">"u </span><span class="si">{</span><span class="n">rel_u</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<section id="check">
+<h2>Check<a class="headerlink" href="#check" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">P</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">numbers</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">counts</span><span class="p">[</span><span class="s2">"unsupported"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">tr</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s2">"SBDF2"</span> <span class="ow">and</span> <span class="n">tr</span><span class="o">.</span><span class="n">steps</span><span class="p">()</span> <span class="o">==</span> <span class="mi">40</span>
+<span class="k">assert</span> <span class="n">P</span><span class="p">[</span><span class="s2">"Ra"</span><span class="p">]</span> <span class="o">==</span> <span class="n">RA</span> <span class="ow">and</span> <span class="n">P</span><span class="p">[</span><span class="s2">"Pr"</span><span class="p">]</span> <span class="o">==</span> <span class="n">PR</span> <span class="ow">and</span> <span class="n">P</span><span class="p">[</span><span class="s2">"tstep"</span><span class="p">]</span> <span class="o">==</span> <span class="n">DT</span>       <span class="c1"># same physics, same step</span>
+<span class="k">assert</span> <span class="nb">max</span><span class="p">(</span><span class="n">gap</span><span class="p">[</span><span class="mi">32</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1e-12</span> <span class="ow">and</span> <span class="nb">max</span><span class="p">(</span><span class="n">gap</span><span class="p">[</span><span class="mi">32</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">gap</span><span class="p">[</span><span class="mi">12</span><span class="p">])</span>   <span class="c1"># spectral convergence</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"PASS"</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The translation keeps the script’s bases, tau terms, lifts, scheme, start-up and dealiasing, so
-the difference is rounding.</p>
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14_from_dedalus: PASS (exit 0) in 5.5 s | 2026-10-21 | script sha256 835f55b72051bfc6
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14_from_dedalus: PASS (exit 0) in 2.4 s | 2026-10-23 | script sha256 5a740420eb488748
 native model: t = 0.020, max|u| = 4.225e-02
 Dedalus -&gt; Conatus: rb_cell_dedalus.py
   39 translated, 0 approximated, 0 unsupported, 0 skipped (output only)
@@ -955,7 +951,39 @@ nz = 32: native vs translated, relative difference th 3.8e-15, u 2.8e-15
 PASS
 </pre></div>
 </div>
-<p>The optional check:</p>
+</section>
+<section id="optional-run-the-original-script">
+<h2>Optional: run the original script<a class="headerlink" href="#optional-run-the-original-script" title="Link to this heading">¶</a></h2>
+<p><a class="reference download internal" download="" href="../_downloads/4173a53d5c87e09bc40662006f2e6840/t14b_dedalus_check.py"><span class="xref download myst"><code class="docutils literal notranslate"><span class="pre">t14b_dedalus_check.py</span></code></span></a> runs the original script, if Dedalus is
+installed (<code class="docutils literal notranslate"><span class="pre">micromamba</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">dedalus</span></code>), and compares its result with the
+translation:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">t14b_dedalus_check.py (separate script, needs Dedalus)</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"OMP_NUM_THREADS"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">)</span>      <span class="c1"># Dedalus asks for it before its import</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">dedalus</span>  <span class="c1"># noqa: F401  (comparison oracle only; the conatus package never imports it)</span>
+    <span class="n">have_dedalus</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">have_dedalus</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Dedalus is not installed here: the comparison with Dedalus is skipped (declared)"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">have_dedalus</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">disable</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>                   <span class="c1"># Dedalus's per-step log lines</span>
+    <span class="n">ns</span> <span class="o">=</span> <span class="n">runpy</span><span class="o">.</span><span class="n">run_path</span><span class="p">(</span><span class="n">SCRIPT</span><span class="p">,</span> <span class="n">run_name</span><span class="o">=</span><span class="s2">"__main__"</span><span class="p">)</span>   <span class="c1"># the script, run by Dedalus as written</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"th"</span><span class="p">,</span> <span class="s2">"u"</span><span class="p">):</span>
+        <span class="n">ns</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">change_scales</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>                   <span class="c1"># back to the grid without 3/2 padding</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ns</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">"g"</span><span class="p">])</span>
+    <span class="n">rel_th</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s2">"th"</span><span class="p">]</span> <span class="o">-</span> <span class="n">th_cn</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s2">"th"</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">rel_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s2">"u"</span><span class="p">]</span> <span class="o">-</span> <span class="n">u_cn</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="s2">"u"</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dedalus: t = </span><span class="si">{</span><span class="n">ns</span><span class="p">[</span><span class="s1">'run'</span><span class="p">]</span><span class="o">.</span><span class="n">sim_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">; relative difference th </span><span class="si">{</span><span class="n">rel_th</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">, "</span>
+          <span class="sa">f</span><span class="s2">"u </span><span class="si">{</span><span class="n">rel_u</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The translation keeps the script’s bases, tau terms, lifts, scheme, start-up and dealiasing, so
+the difference is rounding.</p>
+<p>Its output:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14b_dedalus_check: PASS (exit 0) in 13.3 s | 2026-10-21 | script sha256 763cece2d005a63e
 Conatus: t = 0.020 after 40 steps
 2026-10-21 19:47:52,019 dedalus 0/1 WARNING :: Threading has not been disabled. This may massively degrade Dedalus performance.
@@ -1039,8 +1067,9 @@ eigenvalue problem and 5e-14 for the pipe-flow eigenvalues on the disk.</p></li>
 <li><a class="reference internal" href="#translate-and-read-the-report">Translate and read the report</a></li>
 <li><a class="reference internal" href="#run-the-translation">Run the translation</a></li>
 <li><a class="reference internal" href="#native-model-and-translation-side-by-side">Native model and translation, side by side</a></li>
-<li><a class="reference internal" href="#optional-run-the-original-script">Optional: run the original script</a></li>
+<li><a class="reference internal" href="#check">Check</a></li>
 <li><a class="reference internal" href="#output-as-executed">Output (as executed)</a></li>
+<li><a class="reference internal" href="#optional-run-the-original-script">Optional: run the original script</a></li>
 <li><a class="reference internal" href="#going-further">Going further</a></li>
 </ul>
 </li>
@@ -1053,7 +1082,7 @@ eigenvalue problem and 5e-14 for the pipe-flow eigenvalues on the disk.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=92734c54"></script>
+</div><script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

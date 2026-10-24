@@ -38,7 +38,9 @@ Things to notice:
   the tau terms when you give `N` at the solve (`N=64`).
 - `cn.Box(y=cn.walls(-1, 1))` names the geometry, and `m.given(U=lambda y: 1 - y**2)` the base
   flow (its argument names say it depends on $y$ only). `m.eigenvalue("c", growth="imag")` declares
-  the eigenvalue and how a mode grows (Im $c$ for a phase speed; `growth="real"` for $e^{st}$).
+  the eigenvalue and how a mode grows. For a phase speed the mode is $e^{i\alpha(x - ct)}$, so its
+  temporal growth rate is $\alpha \operatorname{Im} c$; with $\alpha > 0$, as here, the sign of
+  growth is the sign of $\operatorname{Im} c$ (`growth="real"` is for $e^{st}$).
   `m.define` names the operator $\mathcal{L}_2$.
 - `m.at("walls", "v = 0", "dy(v) = 0")` gives four conditions; each tau is placed by a fixed rule
   (in the equation where $v$ has its highest order, modes $N-1, \dots, N-4$) and
@@ -103,8 +105,8 @@ The Chebyshev coefficients of the mode (mode.coeffs("v")), even and odd indices 
 parameters reconstructed from plans at a few parameter values. `P.explain()` reports the
 reconstruction error and the coefficient entries discarded at rounding level. `drift=96`
 builds the same pencil at $N = 96$. As for `eigenvalues(drift=)`, only the modes found again there
-within `drift_tol` are candidates, so the spurious tau modes are not selected. The growth of a mode is
-$\operatorname{Im} c$ because $c$ is a phase speed: `critical` and `least_stable` read this off the
+within `drift_tol` are candidates, so the spurious tau modes are not selected. A mode grows when
+$\alpha \operatorname{Im} c > 0$, which for $\alpha > 0$ means $\operatorname{Im} c > 0$: `critical` and `least_stable` read this off the
 declared eigenvalue (`m.eigenvalue("c", growth="imag")`) and print it in `crit.explain()`. `critical` follows the least
 stable mode by bordered Newton to $\operatorname{Im} c = 0$ and minimises over $\alpha$; a call that
 leaves out a parameter of the pencil uses the value declared in the model (logged).

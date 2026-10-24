@@ -52,8 +52,8 @@ term by term.
 ```
 
 `linearize` derives the linear equations about the conduction state $T = -z$; `eigenvalues`
-solves them for the roll $k = \pi$ with the resolution you choose. At $Ra = 1500$ every disturbance
-decays; at $Ra = 2500$ one grows.
+solves them for the roll $k = \pi$ with the resolution you choose. At $Ra = 1500$ the computed modes
+of this roll decay; at $Ra = 2500$ one grows.
 
 ## Where convection starts
 

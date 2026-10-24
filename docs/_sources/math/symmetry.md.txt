@@ -14,8 +14,9 @@ components follow: the component normal to the mirror changes sign), and the lib
    conditions that are not mirror images of each other;
 3. runs the transforms, the nonlinear terms on the folded grid, and the banded solves in $V_S$,
    which halves each group;
-4. provides the embedding $E: V_S \to V$ and the projection $P: V \to V_S$ ($PE = I$) to move a
-   symmetric solution into the full space and back.
+4. provides the embedding $E: V_S \to V$ and the projection $P: V \to V_S$ to move a symmetric
+   solution into the full space and back. $PE$ is the identity on $V_S$; $EP$ is the projector of
+   $V$ onto $V_S$, not the identity of $V$.
 
 In curvilinear geometries each symmetry (azimuthal rotation by $2\pi/n$, equatorial reflection,
 axial reflection) acts on coefficients as a signed permutation; the subspace keeps one
@@ -23,10 +24,17 @@ representative per orbit. Regularity at the axis is not a symmetry choice: the b
 
 ## What a subspace hides
 
-A computation in $V_S$ cannot see instabilities that break the symmetry. `explain()` says so, and
-`symmetry_breaking_check` computes the leading eigenvalue (or Floquet multiplier) in each of
-the other isotypic components, reusing the same discretisation with the opposite parities. A
-symmetric solution is declared stable only after this check.
+A computation in $V_S$ cannot see instabilities that break the symmetry, and `explain()` says so.
+For a reflection $R$ with $R^2 = I$, a Jacobian that commutes with $R$ splits into a symmetric
+block ($Rv = v$) and an antisymmetric block ($Rv = -v$). `symmetry_breaking_check` covers two
+cases. For an equilibrium of a one-dimensional periodic problem that is symmetric under a
+reflection (`conatus.ecs`), it computes both blocks densely, measures the coupling between them,
+and counts the eigenvalues with positive real part in each. For a curvilinear eigenvalue problem
+with a declared subspace (`conatus.discretize.curvilinear_symmetry`), it computes the leading
+eigenvalue in each of the other isotypic components, reusing the same discretisation with the
+opposite parities. Floquet multipliers of orbits are not covered: for a periodic orbit, compute
+them in the full space. A symmetric solution is declared stable only after one of these
+full-space checks.
 
 ## Slices
 
@@ -51,8 +59,8 @@ detected and reported.
 - M. Golubitsky and I. Stewart, *The Symmetry Perspective*, Birkhäuser (2002).
 - N. B. Budanur, P. Cvitanović, R. L. Davidchack and E. Siminos, *Reduction of SO(2) symmetry for
   spatially extended dynamical systems*, Phys. Rev. Lett. 114 (2015) 084102.
-- X. Cabré, E. Fontich and R. de la Llave, *The parameterization method for invariant manifolds*,
-  Indiana Univ. Math. J. 52 (2003).
+- X. Cabré, E. Fontich and R. de la Llave, *The parameterization method for invariant manifolds I:
+  manifolds associated to non-resonant subspaces*, Indiana Univ. Math. J. 52 (2003) 283–328.
 - W.-J. Beyn, *The numerical computation of connecting orbits in dynamical systems*, IMA J. Numer.
   Anal. 10 (1990) 379–405.
 - P. Cvitanović, R. Artuso, R. Mainieri, G. Tanner and G. Vattay, *Chaos: Classical and Quantum*,

@@ -29,8 +29,11 @@ import conatus.expert as ex       # or: from conatus.expert import IVP, Chebyshe
 The native layer covers most problems. Use the expert layer for the cases the native layer leaves
 to you:
 
-- conditions that couple several unknowns, or act on one component of a vector (free slip);
-- symmetry subspaces, where the parity of each tau must be declared by hand;
+- conditions that couple several unknowns, or act on one component of a vector in a way the
+  native boundary conditions do not cover (free-slip, no-slip and Navier-slip walls are native:
+  {doc}`boundary_conditions`);
+- symmetry subspaces other than those of the native sine and cosine axes, with the parity of
+  each tau declared by hand ({doc}`dynamics/symmetry`);
 - first-order formulations chosen by hand, or several equations sharing the taus of one unknown;
 - bases outside the geometry catalogue (Legendre, Jacobi, mapped Chebyshev for infinite lines);
 - options of the discretisation and of the time stepper (below).

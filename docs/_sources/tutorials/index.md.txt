@@ -26,8 +26,8 @@ In this order: a first simulation, a first stability calculation, then one probl
 | Tutorial | You will learn | Reference value |
 |---|---|---|
 | {doc}`02_rayleigh_benard` | a simulation on CPU, then on GPU; time steppers, CFL, the *Methods* paragraph | linear growth rate, CPU/GPU agreement |
-| {doc}`08_polar` | polar and cylindrical geometry: a drum on `cn.Disk`, ready pipe and Taylor–Couette problems | Bessel zeros, Meseguer & Trefethen (2003), Recktenwald et al. (1993) |
-| {doc}`16_particles_dye` | `sim.particles` and `m.dye`: spectral velocity at the tracers, observed order in time, a dye whose mass is measured | Taylor–Green and Couette closed forms |
+| {doc}`08_polar` | polar geometry: the modes of a drum on `cn.Disk`; extensions: ready pipe and Taylor–Couette problems | Bessel zeros, Meseguer & Trefethen (2003), Recktenwald et al. (1993) |
+| {doc}`16_particles_dye` | Tracers with `sim.particles`, a dye declared by `m.dye` and recorded by `sim.dye`: spectral velocity at the tracers, observed order in time, a dye whose mass is measured | Taylor–Green and Couette closed forms |
 
 ## Stability and sensitivity
 
@@ -42,8 +42,8 @@ In this order: a first simulation, a first stability calculation, then one probl
 |---|---|---|
 | {doc}`04_bratu` | a nonlinear boundary-value model, Newton on the exact Jacobian, pseudo-arclength continuation, folds | Bratu (1914), Gelfand (1963) |
 | {doc}`05_ks_orbits` | equilibria, travelling waves and periodic orbits of a native model by Newton–Krylov–hookstep, Floquet exponents | Cvitanović et al. (2010), Ding & Cvitanović (2016) |
-| {doc}`10_bifurcations` | branch switching, cycles, codimension 2, normal forms, Landau and Ginzburg–Landau | Lorenz (1963), Kuznetsov (2004), Cross & Hohenberg (1993) |
-| {doc}`12_chaos_ensembles` | Lyapunov spectrum, covariant vectors, Kaplan–Yorke, Poincaré map, basins from one ensemble | Sprott (Lorenz), exact divergence |
+| {doc}`10_bifurcations` | the Lorenz equilibria through a pitchfork and a Hopf point; extensions: cycles, codimension 2, Landau and Ginzburg–Landau | Lorenz (1963), Kuznetsov (2004), Cross & Hohenberg (1993) |
+| {doc}`12_chaos_ensembles` | the Lyapunov spectrum and Kaplan–Yorke dimension of Lorenz; extensions: covariant vectors, Poincaré map, basins | Sprott (Lorenz), exact divergence |
 | {doc}`15_ks_covariant` | `sim.lyapunov` with covariant vectors: exponents with errors, covariance residual, tangencies, domination and the physical modes | Cvitanović et al. (2010), Ding et al. (2016) |
 
 ## Workflow

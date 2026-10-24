@@ -1,5 +1,7 @@
 # Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `convection` · *Script:* `examples/convection/rotating_rayleigh_benard.py`
 
 ```{list-table}

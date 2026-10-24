@@ -1,5 +1,7 @@
 # Wavemaker and base-flow sensitivity of Orszag's Tollmien-Schlichting mode (plane Poiseuille, Re = 1e4, alpha = 1), then the steady-forcing sensitivity
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `shear` · *Script:* `examples/shear/sensitivity_wavemaker.py`
 
 ```{list-table}

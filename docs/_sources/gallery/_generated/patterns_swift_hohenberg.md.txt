@@ -1,5 +1,7 @@
 # Swift–Hohenberg: onset of rolls, weakly nonlinear amplitude, roll branch by continuation, 2D rolls
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `patterns` · *Script:* `examples/patterns/swift_hohenberg.py`
 
 ```{list-table}

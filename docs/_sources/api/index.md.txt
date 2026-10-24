@@ -13,7 +13,8 @@ Conatus has two layers. Most scripts only need the first.
   telemetry recorder is a separate module, `conatus.telemetry`.
 
 The two layers meet in one place: `m.compile(N).problem` is an ordinary expert-layer problem, and
-`sim.solver` is an ordinary expert-layer time stepper, so every toolkit applies to a native model.
+`sim.solver` is an ordinary expert-layer time stepper. Pass them to the tools that support their
+geometry and scheme; each tool's page states its scope.
 
 ```{toctree}
 :maxdepth: 2

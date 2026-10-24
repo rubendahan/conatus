@@ -19,14 +19,22 @@ the equation text override the rule for one term (an `implicit` nonlinear term i
 
 ## Schemes
 
-Two families are available:
+Three families are available:
 
-- **IMEX Runge–Kutta** `RK111`, `RK222`, `RK443` (Ascher, Ruuth and Spiteri 1997). A stage reads
+- **IMEX Runge–Kutta** `RK111`, `RK222`, `RK443` (Ascher, Ruuth and Spiteri 1997), `RKSMR` and
+  `RKGFY` (their sources are listed in the time-stepper guide). With step $k$, stage $i$ solves
   $$ (M + k H_{ii} L)\, X_i = M X_0 + k \sum_{j<i} A_{ij} F(X_j, t_j) - k \sum_{j<i} H_{ij} L X_j , $$
-  with $(A, H)$ the explicit and implicit tableaux. In these tableaux all $H_{ii}$ are equal, so one
-  factorisation of $M + k H_{ii} L$ per group serves every stage of the run.
-- **Semi-implicit BDF** `SBDF1` to `SBDF4` (Wang and Ruuth 2008): multistep, one solve per step;
-  the first steps are taken with a declared start-up procedure, printed by `explain()`.
+  with $(A, H)$ the explicit and implicit tableaux and $t_j = t_0 + c_j k$. The diagonal term
+  $H_{ii} L X_i$ has been moved to the left, so both sums run over the earlier stages $j < i$.
+  In `RK111`, `RK222`, `RK443` and `RKGFY` all $H_{ii}$ of the implicit stages are equal, so one
+  factorisation of $M + k H_{ii} L$ per group serves every stage. `RKSMR` has three different
+  diagonal entries and needs one factorisation per stage.
+- **Semi-implicit BDF** `SBDF1` to `SBDF4` (Wang and Ruuth 2008): multistep, one solve per step.
+- **Crank–Nicolson multistep** `CNAB1`, `CNAB2`, `MCNAB2` and `CNLF2` (Wang and Ruuth 2008):
+  Crank–Nicolson-type implicit part, Adams–Bashforth or leapfrog explicit part.
+
+The multistep schemes take their first steps with a declared start-up procedure, printed by
+`explain()`.
 
 The time step is fixed and chosen by you. The CFL estimate (`sim.cfl("u", safety=0.5)`, with your
 safety factor) limits the step for stability. It does not estimate the time error. The stop time
@@ -41,13 +49,21 @@ It is factorised once by a banded LU with the border eliminated through a small 
 ## Watching the taus
 
 The tau variables absorb the residual of the truncated equations. Their size along a run is a
-cheap diagnostic of resolution: a growing tau means the top modes are not resolved. Conatus can
-monitor them (`TauWatch`) and warn above a declared threshold.
+cheap diagnostic. Growth of the taus relative to the size of the fields and of the forcing can
+indicate that the highest modes are not resolved. A tau also grows when the solution or the forcing
+grows, and in fourth-order equations the taus can amplify rounding errors while the fields are
+unaffected. A growing tau is therefore a reason to check the resolution, not a proof of
+under-resolution. `TauWatch` records the largest tau coefficient of each tau variable, without
+normalisation, and warns when it exceeds its first recorded value by a declared factor. To confirm
+under-resolution, repeat the run at a larger $N$ and inspect the decay of the spectral
+coefficients.
 
 ## Exact restart
 
 The state of a run (coefficients, time, step count and, for multistep schemes, the history) is
-written in full, so that a restarted run continues bit for bit.
+written in full. A Runge–Kutta step starts from a single state, so no stage data need to be kept
+between steps. Restarted with the same problem, scheme, step and build, the run continues bit for
+bit.
 
 ## References
 

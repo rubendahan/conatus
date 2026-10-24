@@ -6,9 +6,10 @@ A `Domain` is a coordinate system and one basis per coordinate. Fourier directio
 the discrete problem splits into independent **groups** (one per wavenumber, or per azimuthal
 number $m$ in polar geometry), each solved with banded Olver–Townsend operators.
 
-## Dealiasing is always explicit
+## Dealiasing factors
 
-Every basis takes a `dealias` factor, and there is **no default**:
+Expert-layer bases require an explicit `dealias` factor; there is no default. Native models
+select a default and report it in `explain()`.
 
 ```python
 from conatus.expert import CartesianCoordinates, Chebyshev
@@ -19,7 +20,7 @@ try:
 except ValueError as err:
     print(err)
 # Chebyshev: dealias must be given explicitly
-#   why:   the dealiasing factor sets the grid of the nonlinear products; Conatus never picks it for you
+#   why:   the dealiasing factor sets the grid of the nonlinear products, so the user chooses it
 #   fix:   dealias=1 (no padding, linear problems) or dealias=3/2 (quadratic nonlinearities)
 try:
     Chebyshev(z, 32, (-1, 1), dealias=True)

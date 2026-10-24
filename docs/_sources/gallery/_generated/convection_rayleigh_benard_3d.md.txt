@@ -1,14 +1,16 @@
 # Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `convection` · *Script:* `examples/convection/rayleigh_benard_3d.py`
 
 ```{list-table}
 :widths: 20 80
 
 * - Obtained
-  - Ra = 1707.76178 at
+  - Ra = 1707.76178 at \|k\| = 3.1163, isotropic to 1e-10
 * - Reference
-  - k
+  - Reid & Harris 1958
 ```
 
 ```text

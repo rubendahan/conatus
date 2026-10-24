@@ -114,6 +114,7 @@ m = cn.problems.native.orr_sommerfeld(Re=1e4, alpha=1.0, flow="poiseuille")
 res = m.eigenvalues(N=64, drift=96, drift_tol=1e-6)
 print(res.label, "|", res.method)         # the group solved, and how (dense QZ here)
 print(len(res), "modes kept;", res.n_infinite, "infinite eigenvalues (M singular on tau rows)")
+print(res.infinite_ambiguous)             # moduli of removed pairs that could be finite (empty)
 print(res.growth_rule())                  # how order() ranks the modes, in words
 print(res.growth_note)                    # where that rule comes from (the declared growth=)
 print(res.filter_note)                    # the spurious-mode filter that ran (drift here)
@@ -150,13 +151,13 @@ conditions (time derivatives dropped) are evaluated at the base, the unknowns wi
 printed ("base state: steady residual ..."). Above `cn.tolerances.BASE_RESIDUAL_TOL` ($10^{-6}$) the
 base is not a solution: about $T = +z$ instead of $-z$ the residual is 2, in `T(z=-0.5) = 0.5`;
 plane Poiseuille without its driving force has 1 in the momentum equation. Such a base gets a
-`cn.errors.BaseStateWarning` in v0.1 (refused in v0.2) and a WARNING line in `lin.explain()`; a base that
+`cn.errors.BaseStateWarning` in 0.1 and 0.2 (refused from 0.3) and a WARNING line in `lin.explain()`; a base that
 knowingly is not a solution (a frozen or forced profile) is declared with
 `m.linearize(about=..., base_residual="accept")`.
 
 Each wavenumber of a periodic direction is its own set of modes, chosen with `k=`. This holds for
 `m.eigenvalues(N, k=...)` on a model with a periodic axis too: without `k=`, v0.1 solves the
-$k = 0$ group alone and says so in a `cn.errors.GroupWarning` (required in v0.2). `k` is always a
+$k = 0$ group alone and says so in a `cn.errors.GroupWarning` (required from 0.3). `k` is always a
 wavenumber; the number of modes of `method="shift-invert"` is `n_modes=` (an integer `k` on a model
 without a periodic direction keeps that former meaning with a `DeprecationWarning`; a non-integer
 `k` there is refused, it used to be ignored). A curvilinear geometry chooses its group with `m=`
@@ -198,7 +199,7 @@ $e^{i\alpha(x - ct)}$, growth $\operatorname{Im} c$), `growth="real"` for a rate
 or `critical(growth=...)` for one call; a linearization's eigenvalue is the $s$ of $e^{st}$
 (growth $\operatorname{Re} s$, declared by construction). In v0.1 an undeclared convention is still
 guessed from the name (`c` → Im, `s`, `sigma`, `lam` → Re) with a `cn.errors.DefaultChoiceWarning`
-naming the rule guessed; it is required from v0.2. The guess fails for a temporal eigenvalue named `c`
+naming the rule guessed; it is required from 0.3. The guess fails for a temporal eigenvalue named `c`
 (`c*T = kappa*dz(dz(T))`): `res.explain()` then says that the growth part is the same for every mode. A parameter of the pencil that a call leaves out
 takes the value declared in the model (logged in `crit.explain()`). The growth of the least stable
 admissible mode is computed at both ends of the bracket on every call (with `values=`, `over=` or

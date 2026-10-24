@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     <link rel="stylesheet" type="text/css" href="../_static/vendor/fonts/fonts.css?v=d20fc551" />
     <link rel="stylesheet" type="text/css" href="../_static/tokens.css?v=6baad13e" />
-    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=230279f1" />
+    <link rel="stylesheet" type="text/css" href="../_static/conatus.css?v=73060e77" />
     
     
 
@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.1.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -251,14 +251,14 @@
 <li class="toctree-l2"><a class="reference internal" href="01_orr_sommerfeld.html">A first eigenvalue problem: Orr–Sommerfeld</a></li>
 <li class="toctree-l2"><a class="reference internal" href="00_getting_started.html">Convection between two plates: from onset to simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="02_rayleigh_benard.html">A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: a drum, a pipe, two rotating cylinders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08_polar.html">Polar geometry: the modes of a drum</a></li>
 <li class="toctree-l2"><a class="reference internal" href="16_particles_dye.html">Lagrangian tracers and a numerical dye</a></li>
 <li class="toctree-l2"><a class="reference internal" href="03_symmetries.html">Symmetries and symmetry subspaces</a></li>
 <li class="toctree-l2"><a class="reference internal" href="13_sensitivity_data.html">Where a global mode is born, and what the data say about it</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Nonlinear boundary-value problems and continuation: Bratu</a></li>
 <li class="toctree-l2"><a class="reference internal" href="05_ks_orbits.html">Invariant solutions: Kuramoto–Sivashinsky, L = 22</a></li>
-<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: branch switching, cycles, codimension 2, normal forms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10_bifurcations.html">Bifurcations: the Lorenz equilibria</a></li>
+<li class="toctree-l2"><a class="reference internal" href="12_chaos_ensembles.html">Chaos and ensembles: the Lyapunov spectrum of Lorenz</a></li>
 <li class="toctree-l2"><a class="reference internal" href="15_ks_covariant.html">Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="11_runs.html">Record, query, reproduce: the run registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="14_from_dedalus.html">Importing a Dedalus script</a></li>
@@ -283,6 +283,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/notebook.html">Notebooks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../guide/dynamics/index.html">Dynamics</a><input aria-label="Toggle navigation of Dynamics" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -315,8 +316,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/taus.html">Tau terms by hand</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Gallery: fluids everywhere</a><input aria-label="Toggle navigation of Gallery: fluids everywhere" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_salt_fingers.html">Salt fingers: stationary double-diffusive onset in a layer with free walls (Stern 1960; Baines &amp; Gill 1969, J. Fluid Mech. 37, 289-306)</a></li>
@@ -744,8 +745,8 @@ left to the native default; resolution is then checked by convergence in <span c
 <p>The tolerance <code class="docutils literal notranslate"><span class="pre">tol</span></code> is required: it decides the digits of the solution. The damping (default 1,
 full Newton steps) and the iteration budget (default 50) have declared defaults; the script gives
 both explicitly (1 and 20). All three are printed with the result. <code class="docutils literal notranslate"><span class="pre">sol.explain()</span></code> lists the residual of every iteration and the <strong>observed</strong> order of
-convergence <span class="math notranslate nohighlight">\(q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})\)</span>, about 2 here, the signature of an exact
-Jacobian. Non-convergence raises <code class="docutils literal notranslate"><span class="pre">NewtonNotConverged</span></code> with the history of the iterations.</p>
+convergence <span class="math notranslate nohighlight">\(q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})\)</span>, about 2 here, consistent with local
+quadratic convergence of Newton’s method. Non-convergence raises <code class="docutils literal notranslate"><span class="pre">NewtonNotConverged</span></code> with the history of the iterations.</p>
 <!-- written by docs/site/tutorial_media_render.py from the captured data; do not edit -->
 <div class="table-wrapper colwidths-auto docutils container" id="t04-newton">
 <table class="docutils align-default" id="t04-newton">
@@ -801,7 +802,7 @@ refines the fold by solving for a zero <span class="math notranslate nohighlight
 <span class="math notranslate nohighlight">\(|t_\lambda| \approx 10^{-16}\)</span>). <code class="docutils literal notranslate"><span class="pre">branch.explain()</span></code> reports the residual at the located point and
 each step-size change.</p>
 <figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/t04_branch.png"><img alt="The solution branch of the Bratu problem: u(0) rises with lambda, turns back at a red fold near lambda = 0.878 and climbs on the upper branch, the dots lying on a thin closed-form curve." loading="lazy" src="../_images/t04_branch.png" style="width: 100%;" />
+<a class="cn-paper reference internal image-reference" href="../_images/t04_branch.png"><img alt="The solution branch of the Bratu problem: u(0) rises with lambda, turns back at a red fold near lambda = 0.878 and climbs on the upper branch, the dots lying on a thin closed-form curve." class="cn-paper" loading="lazy" src="../_images/t04_branch.png" style="width: 100%;" />
 </a>
 <figcaption>
 <p><span class="caption-text">The branch followed by pseudo-arclength continuation (the page’s settings, run for more points), on the closed form u(0) = 2 ln cosh a. The fold, located by bisection on the tangent, is at λ_c = 0.8784576798.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
@@ -815,7 +816,7 @@ agrees with the root of <span class="math notranslate nohighlight">\(a\tanh a = 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a_star</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)</span>
 <span class="n">LAM_C</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">a_star</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">a_star</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>   <span class="c1"># 0.87845767978129...</span>
 <span class="n">a03</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">a</span> <span class="o">*</span> <span class="n">a</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="n">a_star</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)</span>
-<span class="n">exact</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">X</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">a03</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">a03</span> <span class="o">*</span> <span class="n">X</span><span class="p">))</span>   <span class="c1"># noqa: E731  lower branch</span>
+<span class="n">exact</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">X</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">a03</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">a03</span> <span class="o">*</span> <span class="n">X</span><span class="p">))</span>   <span class="c1"># lower branch</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">grid</span><span class="p">(</span><span class="n">pb</span><span class="o">.</span><span class="n">bases</span><span class="p">[</span><span class="s2">"x"</span><span class="p">],</span> <span class="n">dealias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>          <span class="c1"># the Chebyshev points of the solution</span>
 <span class="k">assert</span> <span class="n">sol</span><span class="o">.</span><span class="n">converged</span> <span class="ow">and</span> <span class="n">sol</span><span class="o">.</span><span class="n">residual</span> <span class="o">&lt;</span> <span class="mf">1e-13</span>
 <span class="k">assert</span> <span class="nb">max</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">observed_orders</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mf">1.9</span>          <span class="c1"># quadratic Newton</span>
@@ -827,7 +828,7 @@ agrees with the root of <span class="math notranslate nohighlight">\(a\tanh a = 
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t04_bratu: PASS (exit 0) in 8.7 s | 2026-10-21 | script sha256 9c3b5128628b4e17
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t04_bratu: PASS (exit 0) in 8.3 s | 2026-10-24 | script sha256 997fc91ce53266ca
 Model 'Bratu': Box(x=walls(-1, 1)) (Cartesian box)
 Unknowns: u (scalar); parameters: lam = 0.3
 Equations as written:
@@ -945,7 +946,7 @@ OK: lam_c within 1.1e-16 of the closed form 0.87845767978129
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=92734c54"></script>
+</div><script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

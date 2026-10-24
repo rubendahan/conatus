@@ -1,5 +1,7 @@
 # Stratified Kelvin–Helmholtz: Taylor–Goldstein equation for the tanh/tanh layer (Hazel 1972)
 
+**Goal.** Run this case and compare the value it obtains with the reference below.
+
 *Family:* `shear` · *Script:* `examples/shear/taylor_goldstein.py`
 
 ```{list-table}

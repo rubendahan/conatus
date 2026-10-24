@@ -1,25 +1,21 @@
-# Bifurcations: branch switching, cycles, codimension 2, normal forms
+# Bifurcations: the Lorenz equilibria
 
-**Goal.** Build the bifurcation diagram of the Lorenz system (pitchfork with a declared symmetry,
-Hopf point, its first Lyapunov coefficient, the cycles born there), follow fold and Hopf curves of
-the Bogdanov–Takens normal form in two parameters, and derive the Landau and Ginzburg–Landau
-coefficients of Swift–Hohenberg rolls.
+**Goal.** Follow the equilibria of the Lorenz system as $r$ grows, through the pitchfork at
+$r = 1$ (with a declared symmetry) and the Hopf point, and compute the first Lyapunov coefficient
+there.
 **Expected.** Lorenz (1963): pitchfork at $r = 1$ with $x^2 = b(r-1)$ on $C^\pm$; Hopf at
 $r_H = \sigma(\sigma+b+3)/(\sigma-b-1) = 470/19$ with $\omega^2 = b(\sigma + r_H)$, **subcritical**
-(Marsden & McCracken 1976). Bogdanov–Takens (Kuznetsov 2004, §8.4): fold curve $\beta_1 = \beta_2^2/4$,
-Hopf curve $\beta_1 = 0$, both ending at $(0,0)$. Swift–Hohenberg (Cross & Hohenberg 1993):
-$A^2 = 4r/3$, $\tau_0 = 1$, $\xi_0^2 = 4$, $g_0 = 3$. **Time:** under a minute on one CPU core.
+(Marsden & McCracken 1976).
+**Extensions.** Three later sections build on this result; each can be read alone. The cycles born
+at the Hopf point. The Bogdanov–Takens normal form in two parameters (Kuznetsov 2004, §8.4): fold
+curve $\beta_1 = \beta_2^2/4$, Hopf curve $\beta_1 = 0$, both ending at $(0,0)$. The Landau and
+Ginzburg–Landau coefficients of Swift–Hohenberg rolls (Cross & Hohenberg 1993): $A^2 = 4r/3$,
+$\tau_0 = 1$, $\xi_0^2 = 4$, $g_0 = 3$.
+**Time:** under a minute on one CPU core.
 **Script:** [`t10_bifurcations.py`](code/t10_bifurcations.py) · **Tests behind it:**
 `tests/bifurcation/test_bifurcation_core.py`, `tests/bifurcation/test_amplitude.py`.
 
-The page has three parts, which can be read separately:
-
-1. **The Lorenz system, one parameter**: equilibria, branch switching, normal forms and the cycles
-   born at the Hopf point (from "Write the system" to "Cycles from the Hopf point").
-2. **The Bogdanov–Takens normal form, two parameters**: fold and Hopf curves ("Two parameters").
-3. **Swift–Hohenberg rolls**: the Landau and Ginzburg–Landau coefficients of a PDE.
-
-"Check against the closed forms" tests the defining values of all three parts.
+The core result ends with "Normal forms": the Hopf point and the sign of its Lyapunov coefficient.
 
 ## Write the system
 
@@ -78,7 +74,7 @@ point, $c_1$ and the **first Lyapunov coefficient** $\ell_1 = \mathrm{Re}\,c_1/\
 here, so the Hopf bifurcation of Lorenz is subcritical. Each quantity is reported with its checks
 (residuals of the eigenvectors and of the bordered solves); the normalization $\|q\| = 1$ is declared.
 
-## Cycles from the Hopf point
+## Extension: cycles from the Hopf point
 
 ```{literalinclude} code/t10_bifurcations.py
 :language: python
@@ -92,13 +88,13 @@ $r < r_H$. Followed further, their period diverges at
 the homoclinic explosion $r \approx 13.926$.
 
 ```{figure} media/t10_cycles.png
-:alt: Nested closed loops in the (x, z) plane around the point C+, small ones near it and larger ones further out.
+:alt: Nested closed loops in the (x, z) plane around the point C−, small ones near it and larger ones further out.
 :width: 100%
 
 The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of degree 4) for r from 24.735 down to 22.335 (colour bar): born at the Hopf point around the equilibrium of the continued branch (cross), they grow as r decreases.
 ```
 
-## Two parameters: fold and Hopf curves
+## Extension: fold and Hopf curves in two parameters
 
 ```{literalinclude} code/t10_bifurcations.py
 :language: python
@@ -122,7 +118,7 @@ the eigenvalues of the Jacobian, computed on their own. The vanishing determinan
 Codimension two: the fold and Hopf curves of the Bogdanov-Takens normal form, continued in (β₁, β₂). The fold curve follows β₁ = β₂²/4 through the BT point; the Hopf curve β₁ = 0 exists for β₂ < 0 and ends at the BT point.
 ```
 
-## Landau and Ginzburg–Landau equations of a PDE
+## Extension: Landau and Ginzburg–Landau equations of a PDE
 
 ```{literalinclude} code/t10_bifurcations.py
 :language: python
