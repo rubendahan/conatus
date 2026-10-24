@@ -13,6 +13,19 @@ export interface GalleryItem {
   measured?: string;
   /** The colour range the run used; null when each panel is normalised separately. */
   scale?: { kind: "smoke" | "signed"; lo: number; hi: number } | null;
+  /** The film of the case (web/gallery/gallery_films.py); `image` is then its poster. */
+  film?: GalleryFilm;
+}
+
+export interface GalleryFilm {
+  webm: string; mp4: string; webm_small: string; mp4_small: string; poster: string; poster_small: string;
+  duration_s: number; fps: number; frames: number;
+  bytes: Record<string, number>;
+  times: [number, number, number | string];     // first and last simulated time, time between frames
+  loop: string;                                 // how the loop closes (said under the film)
+  span: string;                                 // simulated time shown and the playback length
+  case_script: string;                          // the gallery script whose problem the film reruns
+  generation: { command: string; sha256: Record<string, string> };
 }
 
 const found = import.meta.glob<GalleryItem[]>("../../public/gallery/manifest.json", { eager: true, import: "default" });

@@ -1,6 +1,13 @@
-"""Collect the gallery images of finished runs into the website (login node: file copies only).
+"""Collect the gallery films and images of finished runs into the website (login node: file copies only).
 
     source env/env.sh && python web/gallery/collect.py
+
+Films: web/gallery/film_runs.txt lists "slug run_id" for the cases that have a film (runs of
+web/gallery/gallery_films.py). For those, the WebM and MP4 files (desktop and 800 px), the two WebP
+posters and what the film shows (field, colour, extent, caption, scale, measured values) come from
+scratch/output/<run_id>/<slug>.film.json, and the entry gets a `film` object (files, duration,
+simulated times, how the loop closes, the command and the SHA-256 of each video). The poster is the
+entry's image. A case without a film keeps its still image, below.
 
 Reads web/gallery/runs.txt (one "slug run_id" per line, in display order), takes
 scratch/output/<run_id>/<slug>.webp, <slug>-800.webp and <slug>.meta.json (written by the case
@@ -127,15 +134,91 @@ def entry(slug: str, run_id: str) -> dict:
             "measured": measured, "scale": scale_of(meta)}
 
 
+# ---- films (web/gallery/gallery_films.py) -----------------------------------------------------------
+CASE_OF = {"kelvin-helmholtz-vorticity": "kh", "kelvin-helmholtz-dye": "kh", "rayleigh-benard": "rb",
+           "kuramoto-sivashinsky-l22": "ks", "swift-hohenberg": "sh", "rossby-haurwitz": "rh",
+           "orr-sommerfeld-mode": "os", "pipe-mode": "pipe", "christensen-shell": "shell",
+           "channel-retau180-streaks": "channel", "taylor-couette-mode": "tc"}
+FILM_BYTES = {"": 5_000_000, "-800": 1_500_000}     # per video file, checked (also by the tests)
+FILM_MEASURED = {   # slug -> sentence from the film run's own diagnostics; the same keys as the still
+    **{k: MEASURED[k] for k in ("kelvin-helmholtz-vorticity", "kelvin-helmholtz-dye", "rayleigh-benard",
+                                "kuramoto-sivashinsky-l22", "pipe-mode", "swift-hohenberg", "orr-sommerfeld-mode")},
+    "rossby-haurwitz": lambda d, p: (
+        f"Period of the wave {_g(d['period_days'], 4)} days, from the turn of the m = 4 phase of the vorticity at "
+        f"45° N; largest |ζ| over the film {_g(d['max_abs_zeta'], 4)}."),
+    "christensen-shell": lambda d, p: (
+        f"Kinetic energy {_g(d['E_kin'], 6)} at the last frame ({_g(d['E_kin_first'], 6)} at the first); drift "
+        f"frequency of the m = 4 pattern {_g(d['omega_m4'], 4)}, fitted over the film."),
+    "channel-retau180-streaks": lambda d, p: (
+        f"Friction Reynolds number {_g(d['re_tau_first'])} at the first frame and {_g(d['re_tau_lower'])} at the "
+        f"last (lower wall)."),
+    "taylor-couette-mode": lambda d, p: (
+        f"Growth rate of the vortices {_g(d['growth_rate'], 3)}, fitted on the energy after the initial transient, "
+        f"up to 10 % of the saturated amplitude; the eigenvalue problem of the still's script gives "
+        f"{_g(d['evp_growth_rate'], 3)} at the same Re and k."),
+}
+FILM_FILES = {"webm": "{s}.webm", "mp4": "{s}.mp4", "webm_small": "{s}-800.webm", "mp4_small": "{s}-800.mp4",
+              "poster": "{s}-poster.webp", "poster_small": "{s}-poster-800.webp"}
+
+
+def sha256(p: Path) -> str:
+    import hashlib
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def film_entry(slug: str, run_id: str) -> dict:
+    """Manifest entry of a filmed case: the run's film.json, its files copied to the site."""
+    run = OUTPUT / run_id
+    if json.loads((run / "STATUS.json").read_text()).get("exit_code") != 0:
+        raise SystemExit(f"{run_id}: non-zero exit code (not collected)")
+    m = json.loads((run / f"{slug}.film.json").read_text())
+    if m.get("run_id") != run_id:
+        raise SystemExit(f"{slug}: film run_id {m.get('run_id')} != {run_id}")
+    files = {k: v.format(s=slug) for k, v in FILM_FILES.items()}
+    for k, name in files.items():
+        src = run / name
+        if k.startswith(("webm", "mp4")) and src.stat().st_size >= FILM_BYTES["-800" if "small" in k else ""]:
+            raise SystemExit(f"{src}: {src.stat().st_size} B over the budget")
+        shutil.copyfile(src, PUBLIC / name)
+    for k in ("field", "colour", "extent", "caption", "alt", "scale", "loop", "times"):
+        if not m.get(k):
+            raise SystemExit(f"{slug}: the film metadata has no {k!r}")
+    if slug not in FILM_MEASURED:
+        raise SystemExit(f"{slug}: no FILM_MEASURED formatter (what the film run itself reports)")
+    cfg = json.loads((run / "config.json").read_text())
+    t = m["times"]
+    film = {**{k: f"/gallery/{v}" for k, v in files.items()},
+            "duration_s": m["duration_s"], "fps": m["fps"], "frames": m["frames"],
+            "bytes": {k: (run / v).stat().st_size for k, v in files.items()},
+            "times": t, "loop": m["loop"], "case_script": m["case_script"],
+            "span": f"Simulated time {t[0]:.4g} to {t[1]:.4g}, shown in {m['duration_s']:g} s of playback.",
+            "generation": {"command": " ".join(["python web/gallery/gallery_films.py --case", CASE_OF[slug],
+                                                *cfg.get("args", [])]),
+                           "sha256": {k: sha256(run / v) for k, v in files.items() if not k.startswith("poster")}}}
+    return {"slug": slug, "title": m["title"], "image": film["poster"], "image_small": film["poster_small"],
+            "width": m["width"], "height": m["height"], "alt": m["alt"], "caption": m["caption"],
+            "colormap": m["colormap"], "run_id": run_id, "script": m["script"],
+            "example_script": m["example_script"], "geometry": m["geometry"], "domain": m["domain"],
+            "field": m["field"], "colour": m["colour"], "extent": m["extent"],
+            "measured": FILM_MEASURED[slug](m.get("diagnostics") or {}, m.get("parameters") or {}),
+            "scale": {"kind": m["scale"]["kind"], "lo": float(m["scale"]["lo"]), "hi": float(m["scale"]["hi"])},
+            "film": film}
+
+
+def read_pairs(path: Path) -> list[list[str]]:
+    return [ln.split() for ln in path.read_text().splitlines() if ln.strip() and not ln.startswith("#")]
+
+
 def main() -> None:
     PUBLIC.mkdir(parents=True, exist_ok=True)
-    lines = [ln.split() for ln in (ROOT / "web/gallery/runs.txt").read_text().splitlines()
-             if ln.strip() and not ln.startswith("#")]
-    manifest = [entry(slug, run_id) for slug, run_id in lines]
+    lines = read_pairs(ROOT / "web/gallery/runs.txt")
+    films = dict(read_pairs(ROOT / "web/gallery/film_runs.txt"))
+    manifest = [film_entry(slug, films[slug]) if slug in films else entry(slug, run_id) for slug, run_id in lines]
     (PUBLIC / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     for e in manifest:
-        print(f"{e['slug']:32s} {e['width']}x{e['height']}  {e['run_id']}")
-    print(f"{len(manifest)} images -> {PUBLIC / 'manifest.json'}", file=sys.stderr)
+        print(f"{e['slug']:32s} {e['width']}x{e['height']}  {e['run_id']}  {'film' if 'film' in e else 'still'}")
+    print(f"{len(manifest)} entries ({sum('film' in e for e in manifest)} films) -> {PUBLIC / 'manifest.json'}",
+          file=sys.stderr)
 
 
 if __name__ == "__main__":

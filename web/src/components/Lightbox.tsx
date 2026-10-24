@@ -1,16 +1,26 @@
-// Gallery lightbox: one plate at full resolution on lab black, with its name and caption.
+// Gallery lightbox: one case at full size on lab black (its film, or its still image), with its name,
+// the field shown, the colour scale, the time covered and the playback speed, the run's measured values,
+// how the film loops and the script that made it.
 // A modal <dialog> (focus stays inside, Esc closes), body scroll locked while open. The image opens
 // with a shared-element morph from its thumbnail (FLIP on transform, 280 ms) and closes back into it;
 // nothing morphs under prefers-reduced-motion. Zoom: click (mouse) or double-tap (touch) toggles
 // fit ↔ max(2×, 1:1) at the pointer; pinch zooms on touch; drag pans a zoomed image. Unzoomed,
 // a horizontal swipe or the arrow keys go to the previous / next plate.
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type Ref } from "react";
 import { plainCaption, plainTitle, RAMPS, src, tick, type GalleryItem } from "../data/gallery";
 import { SITE } from "../content/site";
 import { RepoPath } from "./ui";
+import GalleryVideo, { loopSentence } from "./GalleryVideo";
 import "../styles/lightbox.css";
 
 const EASE = "cubic-bezier(0.2, 0, 0, 1)";
+// Indexed by booleans rather than written as ternaries: a minified "`...`" reads as an internal
+// reference to the public scrub of the built site.
+const ZOOM_CLASS = ["", " is-zoomed"];
+const HINTS = [   // [pointer: coarse][zoomed]
+  ["Click to zoom · ← → for the next case · Esc to close", "Drag to pan · click to fit"],
+  ["Double-tap or pinch to zoom · swipe for the next case", "Drag to pan · pinch or double-tap to fit"],
+];
 const MS = 280;
 // useLayoutEffect warns on the server (prerender); the morph only exists in the browser.
 const useIso = typeof window === "undefined" ? useEffect : useLayoutEffect;
@@ -35,7 +45,7 @@ export interface LightboxProps {
 export default function Lightbox({ items, index, morph, origin, onChange }: LightboxProps) {
   const dlg = useRef<HTMLDialogElement>(null);
   const stage = useRef<HTMLDivElement>(null);
-  const img = useRef<HTMLImageElement>(null);
+  const img = useRef<HTMLImageElement | HTMLVideoElement | null>(null);
   const [full, setFull] = useState<string | null>(null);   // full-resolution src once loaded
   const [zoomed, setZoomed] = useState(false);
   const closing = useRef(false);
@@ -76,7 +86,7 @@ export default function Lightbox({ items, index, morph, origin, onChange }: Ligh
     const el = img.current;
     if (!el) return;
     if (z.current.s > 1.01) { z.current = { s: 1, tx: 0, ty: 0 }; apply(true); return; }
-    const oneToOne = (g?.width ?? el.naturalWidth) / Math.max(1, el.offsetWidth);
+    const oneToOne = (g?.width ?? el.offsetWidth) / Math.max(1, el.offsetWidth);
     zoomTo(Math.min(4, Math.max(2, oneToOne)), x, y);
   };
 
@@ -143,6 +153,7 @@ export default function Lightbox({ items, index, morph, origin, onChange }: Ligh
     z.current = { s: 1, tx: 0, ty: 0 };
     setZoomed(false);
     setFull(null);
+    if (g.film) return;                                    // a film: the video element loads its own sources
     let alive = true;
     const im = new Image();
     im.onload = () => { if (alive) setFull(src(g.image)); };
@@ -153,7 +164,7 @@ export default function Lightbox({ items, index, morph, origin, onChange }: Ligh
   // preload the neighbours
   useEffect(() => {
     if (index === null || items.length < 2) return;
-    for (const d of [1, -1]) { const n = items[(index + d + items.length) % items.length]; new Image().src = src(n.image_small); }
+    for (const d of [1, -1]) { const n = items[(index + d + items.length) % items.length]; new Image().src = src(n.film ? n.film.poster_small : n.image_small); }
   }, [index, items]);
 
   const onKey = (e: KeyboardEvent) => {
@@ -222,6 +233,8 @@ export default function Lightbox({ items, index, morph, origin, onChange }: Ligh
   const onCancel = (e: PointerEvent) => { ptr.current.delete(e.pointerId); gest.current.pinch = false; apply(true); };
 
   const coarse = typeof window !== "undefined" && !!window.matchMedia?.("(pointer: coarse)").matches;
+  // desktop film files on a screen wide enough to show more than 800 px of them
+  const wide = typeof window !== "undefined" && window.innerWidth * (window.devicePixelRatio || 1) > 1100;
   return (
     <dialog ref={dlg} className="lb" aria-labelledby="lb-title" onKeyDown={onKey}
       onCancel={(e) => { e.preventDefault(); requestClose(); }}>
@@ -233,10 +246,15 @@ export default function Lightbox({ items, index, morph, origin, onChange }: Ligh
           <button type="button" className="lb-btn lb-close" onClick={requestClose} aria-label="Close">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
           </button>
-          <div ref={stage} className={"lb-stage" + (zoomed ? " is-zoomed" : "")}
+          <div ref={stage} className={"lb-stage" + ZOOM_CLASS[+zoomed]}
             onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onCancel}>
-            <img ref={img} key={g.slug} className="lb-img" src={full ?? src(g.image_small)} width={g.width} height={g.height}
-              alt={g.alt} draggable={false} style={{ ["--ar" as string]: String(g.width / g.height) }} />
+            {g.film ? (
+              <GalleryVideo key={g.slug} g={g} large={wide} className="lb-img" videoRef={img as Ref<HTMLVideoElement>}
+                style={{ ["--ar" as string]: String(g.width / g.height) }} />
+            ) : (
+              <img ref={img as Ref<HTMLImageElement>} key={g.slug} className="lb-img" src={full ?? src(g.image_small)} width={g.width} height={g.height}
+                alt={g.alt} draggable={false} style={{ ["--ar" as string]: String(g.width / g.height) }} />
+            )}
           </div>
           {items.length > 1 && (
             <div className="lb-nav">
@@ -263,11 +281,17 @@ export default function Lightbox({ items, index, morph, origin, onChange }: Ligh
               ? "Colour: a signed field, red for negative, black at zero, glass green for positive."
               : "Colour: from black at the low end to light grey at the high end.")}
               {g.extent ? ` ${g.extent}` : ""}</p>
+            {g.film && <p className="lb-caption">{g.caption} {g.film.span} {loopSentence(g.film.loop)}</p>}
             {g.measured && <p className="lb-caption">Measured in this run: {g.measured}</p>}
-            <p className="lb-caption">Script: <RepoPath path={g.script} at={`v${SITE.version}`}>{g.script}</RepoPath>.</p>
-            <p className="lb-hint" aria-hidden="true">{coarse
-              ? (zoomed ? "Drag to pan · pinch or double-tap to fit" : "Double-tap or pinch to zoom · swipe for the next plate")
-              : (zoomed ? "Drag to pan · click to fit" : "Click to zoom · ← → for the next plate · Esc to close")}</p>
+            {g.film ? (
+              <p className="lb-caption">Script: <RepoPath path={g.script} at={`v${SITE.version}`}>{g.script}</RepoPath>, which
+                reruns the problem of <RepoPath path={g.film.case_script} at={`v${SITE.version}`}>{g.film.case_script}</RepoPath>.
+                Made by <code>{g.film.generation.command}</code>; SHA-256 of the WebM file:{" "}
+                <code className="film-hash">{g.film.generation.sha256.webm}</code>.</p>
+            ) : (
+              <p className="lb-caption">Script: <RepoPath path={g.script} at={`v${SITE.version}`}>{g.script}</RepoPath>.</p>
+            )}
+            <p className="lb-hint" aria-hidden="true">{HINTS[+coarse][+zoomed]}</p>
           </div>
         </div>
       )}

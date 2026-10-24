@@ -1,14 +1,14 @@
-// Gallery: flows computed with Conatus, drawn as laboratory plates (brand charter III colour maps), each with
-// its name and the exact field it shows (manifest `field`, from web/gallery/fields.json); the lightbox shows the
-// full-resolution image, the colour scale and the script, linked at the release tag.
+// Gallery: a grid of short looping films of Conatus runs (web/gallery/gallery_films.py; brand charter III
+// colour maps), each with its name and the exact field it shows (manifest `field`). A case without a film
+// keeps its still image. The lightbox shows the full film, the colour scale, the run's measured values and
+// the script, linked at the release tag.
 // Data: public/gallery/manifest.json, written by web/gallery/collect.py (never by hand).
-// A plate opens in the lightbox (components/Lightbox.tsx) and its URL hash (#slug) opens it on
-// load; without JavaScript the plate is a plain link to the full-resolution image.
+// A card opens in the lightbox (components/Lightbox.tsx) and its URL hash (#slug) opens it on
+// load; without JavaScript the card is a plain link to the film (MP4) or the full-resolution image.
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { PageHead, PageLink, Section } from "../components/ui";
 import Lightbox from "../components/Lightbox";
-import Film from "../components/Film";
-import { films } from "../data/films";
+import GalleryVideo from "../components/GalleryVideo";
 import { gallery, plainCaption, plainTitle, src, type GalleryItem } from "../data/gallery";
 import "../styles/gallery.css";
 import "../styles/films.css";
@@ -32,20 +32,35 @@ function setHash(slug: string | null) {
 function Plate({ g, onOpen }: { g: GalleryItem; onOpen: (e: MouseEvent, g: GalleryItem) => void }) {
   const n = fig(g);
   const h800 = Math.round((800 * g.height) / g.width);
+  const open = (
+    <span className="gplate-open" aria-hidden="true">
+      <svg viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5 9 7M6.5 13.5h-4v-4M2.5 13.5 7 9" /></svg>
+    </span>
+  );
   return (
     <article className="gplate" id={g.slug} aria-labelledby={`${g.slug}-t`}>
       <figure className="gplate-fig">
-        <a href={src(g.image)} className="gplate-img" onClick={(e) => onOpen(e, g)}
-          aria-label={`${plainTitle(g)}: open the image at full resolution`}>
-          <img data-plate={g.slug} src={src(g.image_small)} srcSet={`${src(g.image_small)} 800w, ${src(g.image)} ${g.width}w`}
-            sizes="(max-width: 900px) 100vw, 60vw" width={800} height={h800} alt={g.alt} loading={n > 2 ? "lazy" : "eager"} decoding="async" />
-          <span className="gplate-open" aria-hidden="true">
-            <svg viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M13.5 2.5 9 7M6.5 13.5h-4v-4M2.5 13.5 7 9" /></svg>
-          </span>
-        </a>
+        {g.film ? (
+          <div className="gplate-media film-box" style={{ aspectRatio: `${g.width} / ${g.height}` }}>
+            <GalleryVideo g={g} dataPlate={g.slug} wrap={(video) => (
+              <a href={src(g.film!.mp4)} className="gplate-img" onClick={(e) => onOpen(e, g)}
+                aria-label={`${plainTitle(g)}: open the film at full size`}>
+                {video}
+                {open}
+              </a>
+            )} />
+          </div>
+        ) : (
+          <a href={src(g.image)} className="gplate-img" onClick={(e) => onOpen(e, g)}
+            aria-label={`${plainTitle(g)}: open the image at full resolution`}>
+            <img data-plate={g.slug} src={src(g.image_small)} srcSet={`${src(g.image_small)} 800w, ${src(g.image)} ${g.width}w`}
+              sizes="(max-width: 900px) 100vw, 50vw" width={800} height={h800} alt={g.alt} loading={n > 2 ? "lazy" : "eager"} decoding="async" />
+            {open}
+          </a>
+        )}
       </figure>
       <div className="gplate-meta">
-        <p className="gplate-kicker">{DOMAIN_LABEL[g.domain] ?? g.domain} · {g.geometry}</p>
+        <p className="gplate-kicker">{DOMAIN_LABEL[g.domain] ?? g.domain} · {g.geometry}{g.film ? "" : " · still image"}</p>
         <h2 id={`${g.slug}-t`}>{plainTitle(g)}</h2>
         <p className="gplate-caption">{plainCaption(g)}</p>
       </div>
@@ -87,20 +102,13 @@ export default function Gallery() {
   return (
     <>
       <PageHead eyebrow="Gallery" title="Fluids, everywhere">
-        <p>Flows computed with Conatus, drawn like the photographs of <i>An Album of Fluid Motion</i>: some fields in smoke
-          greys from low to high, signed fields through black at zero, from red to glass green. Each plate names the field it
-          shows. The plates are illustrations. Open one to see
-          it at full size, with its colour scale, the value it was checked against and the script that made it.</p>
+        <p>Short films of flows computed with Conatus. Each frame is a state of the run at a recorded time, drawn in the
+          colours of <i>An Album of Fluid Motion</i>: smoke greys from low to high, or signed fields through black at zero,
+          from red to glass green. Each card names the field it shows. Open one to see the film at full size, with its
+          colour scale, the time it covers, the values the run measured and the script that made it.</p>
         <p>Results of published papers computed again, with the paper's values next to Conatus's and the gap between
           them, are on the <PageLink to="/published">Published cases</PageLink> page.</p>
       </PageHead>
-      {films.length > 0 && (
-        <Section id="films" className="gallery-section" title="In motion" intro={<p>Two Conatus runs, frame by frame, looping.</p>}>
-          <ul className="films">
-            {films.map((f) => <li key={f.slug}><Film f={f} /></li>)}
-          </ul>
-        </Section>
-      )}
       <Section id="plates" className="gallery-section">
         {gallery.length === 0 ? (
           <p className="note">The gallery is empty in this build.</p>

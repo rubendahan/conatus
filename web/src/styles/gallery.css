@@ -1,11 +1,15 @@
 /* Gallery page: large plates on lab black, a metadata column set as a ledger (hairline rows,
    small-caps terms, tabular values). The lightbox is in lightbox.css. */
 .gallery-section { border-top: 0; padding-top: 0.5rem; }
-.gplates { display: grid; gap: clamp(3rem, 7vw, 5.5rem); }
+/* A grid of films: two columns on a desktop, one on a phone; each card is the film, then its name and field. */
+.gplates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 4vw, 3rem) clamp(1.25rem, 3vw, 2.25rem); align-items: start; }
 .gplate {
-  display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: clamp(1.25rem, 3vw, 2.5rem);
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.85rem;
   align-items: start; scroll-margin-top: calc(var(--cn-header-h) + 1rem);
 }
+.gplate-media .gplate-img { height: 100%; }
+.gplate-img video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.gplate-media .film-btn { right: auto; left: 0.5rem; }
 .gplate-fig { margin: 0; min-width: 0; }
 .gplate-img {
   position: relative; display: block; background: var(--cn-lab); border-radius: var(--cn-radius); overflow: hidden;
@@ -28,7 +32,8 @@
   letter-spacing: 0.06em; text-transform: uppercase; color: var(--cn-muted);
 }
 .gplate-n { font-family: var(--cn-font-code); font-size: 0.78rem; letter-spacing: 0; color: var(--cn-accent); }
-.gplate-meta h2 { font-size: clamp(1.45rem, 2.4vw, 1.8rem); line-height: 1.15; margin-bottom: 1rem; }
+.gplate-meta h2 { font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.15; margin-bottom: 0.5rem; }
+.gplate-caption { margin: 0; color: var(--cn-muted); font-size: 0.92rem; line-height: 1.5; }
 .gplate-dl { margin: 0; font-size: 0.9rem; border-top: 1px solid var(--cn-text); }
 .gplate-dl > div {
   display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.75rem; padding: 0.6rem 0;
@@ -41,6 +46,6 @@
 .gplate-dl dd { margin: 0; min-width: 0; line-height: 1.5; overflow-wrap: anywhere; font-variant-numeric: tabular-nums lining-nums; }
 .gplate-value { font-weight: 500; }
 @media (max-width: 900px) {
-  .gplate { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+  .gplates { grid-template-columns: minmax(0, 1fr); }
   .gplate-dl > div { grid-template-columns: 5.5rem minmax(0, 1fr); }
 }

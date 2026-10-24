@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-24T00:49:45.595Z",
+ "generated": "2026-10-24T12:45:34.651Z",
  "source": "",
  "extras": [
   {
@@ -44,6 +44,11 @@
   }
  ],
  "features": [
+  {
+   "feature": "Platforms (wheels)",
+   "status": "Linux x86-64 only",
+   "note": "The 0.2 wheels are for Linux x86-64. On Windows, install Conatus inside WSL (Windows Subsystem for Linux). macOS, Windows and Linux aarch64 wheels are planned for 1.0."
+  },
   {
    "feature": "CPU solvers (every geometry)",
    "status": "supported",
