@@ -1,7 +1,7 @@
 // Server entry used only by scripts/prerender.mjs: renders one path to static HTML.
 import { StrictMode, type ComponentType } from "react";
 import { renderToString } from "react-dom/server";
-import { StaticRouter } from "react-router-dom/server";
+import { StaticRouter } from "react-router";
 import App, { type PageMap } from "./App";
 import { allRoutes, findRoute, redirects, routes } from "./routes";
 import { basename } from "./lib/base";

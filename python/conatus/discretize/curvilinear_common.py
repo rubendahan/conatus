@@ -1,5 +1,5 @@
-"""Helpers shared by the polar and spherical discretizations (one implementation, external review of
-0.1.1, F31: the two geometries had identical copies of both).
+"""Helpers shared by the polar and spherical discretizations (one implementation for both
+geometries).
 
 * :func:`spin_dot`: the dot product of two tensor fields stored in a spin basis, contracted with the
   geometry's metric ``G`` (polar: e_- . e_+ = 1/2, e_z . e_z = 1; spherical: its own ``G``). The

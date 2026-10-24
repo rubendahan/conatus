@@ -41,6 +41,8 @@ import numpy as np
 
 from ..discretize.sphere_eval import _flip, comps
 from ..discretize.sphere_ops import spin_of
+from ..discretize.spin import canon as _canon
+from ..discretize.spin import real_component as _real_comp
 from ..ir import expr as E
 
 __all__ = ["PlanRefused", "PlannedSphereTranspose", "check_scope"]
@@ -48,15 +50,6 @@ __all__ = ["PlanRefused", "PlannedSphereTranspose", "check_scope"]
 
 class PlanRefused(Exception):
     """An equation outside the planned scope (it keeps the explicit walk; the reason is kept)."""
-
-
-def _canon(c: tuple) -> tuple:
-    f = _flip(c)
-    return c if c <= f else f
-
-
-def _real_comp(c: tuple) -> bool:
-    return all(i == 2 for i in c)
 
 
 def _unbroadcast(a, shape: tuple):

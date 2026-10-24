@@ -22,7 +22,7 @@ touch the computation. Everything numerical is declared and shown by ``explain()
   added mass, fluid acceleration (pressure gradient) term, Basset history force, Faxén
   corrections, Saffman lift, particle-particle and two-way coupling.
 
-Two particle interfaces, two contracts (finding 63): this module is the
+Two particle interfaces, two contracts: this module is the
 **standalone** one: any velocity (an analytic callable, or grid snapshots interpolated by a
 declared method), a caller-chosen ``dt`` and scheme (RK4 / RK2), boundaries ``"clip"`` /
 ``"raise"``, positions in memory. ``sim.particles(...)`` (:mod:`conatus.model.particles`) is the

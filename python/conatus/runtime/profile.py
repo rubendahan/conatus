@@ -1,5 +1,4 @@
-"""``solver.profile(steps)``: time per phase with explicit GPU synchronisation, and a simple roofline
-.
+"""``solver.profile(steps)``: time per phase with explicit GPU synchronisation, and a simple roofline.
 
 **Measured.** Every phase of :mod:`conatus.runtime.phases` is bracketed by two CUDA events recorded
 on the current stream (GPU) or by ``time.perf_counter`` (CPU). After the timed steps the device is
@@ -247,6 +246,7 @@ class ProfileReport:
     notes: list = field(default_factory=list)
 
     def to_dict(self) -> dict:
+        """The profile as a JSON-serialisable dict."""
         d = {k: getattr(self, k) for k in ("backend", "device", "steps", "wall_per_step",
                                             "wall_per_step_unprobed", "phases", "groups",
                                             "estimated", "measured", "declared", "notes")}
@@ -255,6 +255,7 @@ class ProfileReport:
         return d
 
     def explain(self) -> str:
+        """Wall time per step, the phases and groups, and the notes of the profile."""
         ms = 1e3
         lines = [f"Profile ({self.backend}, {self.device}): {self.steps} timed steps; wall per step "
                  f"{self.wall_per_step_unprobed * ms:.3f} ms unprobed, {self.wall_per_step * ms:.3f} ms "

@@ -53,8 +53,8 @@ def max_growth(ss: StateSpace, t_bounds: tuple[float, float], *, xtol: float,
     """(G_max, t_max) over t in ``t_bounds``: scan of ``n_scan`` points (declared default
     :data:`MAX_GROWTH_N_SCAN` = 64), then bounded Brent to ``xtol`` (required) around the best
     scan point. The answer is the best of the two interval ends, the best scan point and the
-    refined candidate (finding 15: a maximum at t = 0, G = 1, was missed
-    because only the Brent result was returned); an optimiser failure raises."""
+    refined candidate, so a maximum at an end of the interval is found; an optimiser failure
+    raises."""
     t0, t1 = (float(t) for t in t_bounds)
     if not (np.isfinite(t0) and np.isfinite(t1) and 0 <= t0 < t1):
         raise OptionError(f"max_growth: t_bounds = {t_bounds!r} must satisfy 0 <= t0 < t1 < inf",

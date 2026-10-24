@@ -167,7 +167,7 @@ def ivp_run(solver: Any, nsteps: int, callback: Callable | None, every: int | No
 def _lookup(reg: Registry, key: str, report: dict, full: dict | None = None) -> str | None:
     """Cache lookup that never fails the computation: an unreadable registry is a miss (reported).
     No lookup when the package sources changed after import (``full["code"]``): the key would
-    name code that does not run (audit state)."""
+    name code that does not run."""
     changed = ((full or {}).get("code") or {}).get("changed_since_import")
     if changed:
         report["miss_reason"] = ("package sources changed after import (" + ", ".join(changed[:3])
@@ -266,7 +266,7 @@ def track(name: str | None = None, *, tags: Iterable[str] = (), params: Mapping[
           status: str = "provisional", root: Any = None, telemetry: Any = None,
           capacity: int = QUEUE_CAPACITY, notes: str | None = None, cache: bool = False,
           compression: str | None = None) -> Tracker:
-    """Record a block (``with track("rb", tags=[""]) as run: ...``) or every call of a function
+    """Record a block (``with track("rb", tags=["convection"]) as run: ...``) or every call of a function
     (``@track("eig", cache=True)``). ``compression`` applies to arrays returned by a decorated
     function (None, 'gzip', 'lzf'; all lossless)."""
     return Tracker(name, dict(tags=tags, params=params, obj=obj, parent=parent, relation=relation,
@@ -507,7 +507,7 @@ def reproduce(run: Run, solver: Any = None, *, fn: Callable | None = None, recor
     """Run the recorded computation again and compare with the recorded output.
 
     IVP runs: pass a ``solver`` built for the same problem and numerics (checked: problem hash,
-    parameters, bases, scheme, dt... ; any difference is refused, never adapted); the recorded
+    parameters, bases, scheme, dt... ; any difference is refused); the recorded
     start state is loaded, the same number of steps is taken, the end state is compared bit for bit.
     Decorated calls: the function is re-imported (or ``fn=``) and called with the recorded
     arguments. If the executed code differs from the recorded one, a :class:`CodeChangedWarning`
@@ -634,7 +634,7 @@ def _call_args(fn: Callable, argsd: Mapping[str, Any]) -> tuple[tuple, dict]:
 
 def _same(a: Any, b: Any) -> tuple[bool, float]:
     """(bitwise identical, max abs difference) of two return values of the same layout.
-    Bitwise means the bits (review finding 23): same type of container, same dtype and shape,
+    Bitwise means the bits: same type of container, same dtype and shape,
     same bytes (``-0.0`` is not ``+0.0``; a NaN equals only the same NaN)."""
     if isinstance(a, dict) and isinstance(b, dict) and a.keys() == b.keys():
         pairs = [_same(a[k], b[k]) for k in a]

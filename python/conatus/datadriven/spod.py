@@ -22,9 +22,14 @@ the numerical rank of S(f) (eigenvalues above ``RANK_RTOL`` x max(n, N_b) x eps 
 ``nmodes`` above the smallest rank over the frequencies is refused (it used to come back as zero
 or arbitrary columns beside a zero eigenvalue).
 
-Confidence interval of λ (Schmidt & Colonius 2020, eq. 20): with 2N_b degrees of freedom,
-[2N_b λ / χ²_{2N_b}(1 − α/2), 2N_b λ / χ²_{2N_b}(α/2)] — valid for independent blocks
-(``explain`` states the overlap used).
+Confidence interval of λ (Schmidt & Colonius 2020, eq. 20): with ν degrees of freedom,
+[ν λ / χ²_ν(1 − α/2), ν λ / χ²_ν(α/2)] — valid for independent Gaussian blocks (``explain``
+states the overlap used). ν = 2N_b at a frequency where the block coefficient q̂ is complex (two
+real quadratures per block). For real data the coefficient at f = 0 and, for even ``nfft``, at
+the Nyquist frequency is real: ν = N_b there (2N_b at those two
+frequencies would give 83.3 % coverage for a nominal 95 % interval with N_b = 16). ``mean="subtract"`` removes the
+long-time mean, which takes one more degree of freedom from the f = 0 estimate; it is not
+corrected for.
 """
 from __future__ import annotations
 
@@ -91,18 +96,36 @@ class SPOD:
     mean_policy: str
     inner_product: DataInnerProduct
     notes: list[str] = field(default_factory=list)
+    #: the data were real: the coefficients at f = 0 and at the Nyquist frequency are real
+    real_data: bool = False
+
+    def dof(self) -> np.ndarray:
+        """Degrees of freedom ν of the χ² law of ν λ̂ / λ at each frequency (nfreq,): 2 N_b, and N_b
+        at f = 0 and at the Nyquist frequency (even nfft) of real data, where the block
+        coefficient is real (module docstring)."""
+        nu = np.full(self.frequencies.shape, 2 * self.nblocks, dtype=float)
+        if self.real_data:
+            nu[0] = self.nblocks                    # f = 0 (index 0, one- and two-sided)
+            if self.nfft % 2 == 0:                  # Nyquist: index nfft/2 in both layouts
+                nu[self.nfft // 2] = self.nblocks
+        return nu
 
     def confidence(self, alpha: float) -> tuple[np.ndarray, np.ndarray]:
-        """(lower, upper) (1 − α) bounds on every eigenvalue (χ² with 2 N_b dof)."""
+        """(lower, upper) (1 − α) bounds on every eigenvalue: ν λ / χ²_ν(1 − α/2) and
+        ν λ / χ²_ν(α/2) with ν = :meth:`dof` at each frequency (2 N_b; N_b at f = 0 and Nyquist
+        of real data)."""
         from scipy.stats import chi2
-        nu = 2 * self.nblocks
+        nu = self.dof()[:, None]
         return (nu * self.eigenvalues / chi2.ppf(1 - alpha / 2, nu),
                 nu * self.eigenvalues / chi2.ppf(alpha / 2, nu))
 
     def explain(self) -> str:
         k = int(np.argmax(self.eigenvalues[:, 0]))
+        dof = ("N_b dof at f = 0 and Nyquist (real data), 2 N_b elsewhere" if self.real_data
+               else "2 N_b dof")
         return (f"SPOD (Towne et al. 2018): N_b = {self.nblocks} blocks of nfft = {self.nfft} "
-                f"(overlap {self.noverlap}; the χ² confidence assumes independent blocks), window "
+                f"(overlap {self.noverlap}; the χ² confidence assumes independent blocks, "
+                f"{dof}), window "
                 f"{self.window}, Δt = {self.dt:g}, mean: {self.mean_policy}, "
                 f"{'one' if self.onesided else 'two'}-sided density (scipy.signal.csd "
                 f"conventions), {self.inner_product.kind} product; largest λ_1 = "
@@ -172,7 +195,7 @@ def spod(Q, *, dt: float, nfft: int, noverlap: int, window, mean: str, onesided:
     note = ("eigenproblem of size N_b (method of snapshots)" if small == "blocks" else
             f"eigenproblem of size n = {n} < N_b (the weighted CSD; same eigenvalues)")
     return SPOD(f, lam, modes, nb, nfft, noverlap, float(dt), str(wname), onesided, mean,
-                inner_product, [note])
+                inner_product, [note], real_data=not bool(xp.iscomplexobj(Q)))
 
 
 def _rank(ev: np.ndarray, n: int, nb: int) -> int:

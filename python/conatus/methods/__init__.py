@@ -85,7 +85,8 @@ BIBTEX = {
   volume  = {26},
   number  = {6},
   pages   = {838--855},
-  year    = {2008}
+  year    = {2008},
+  doi     = {10.4208/jcm.v26.n6.p838}
 }""",
     "spalart1991": """@article{spalart1991,
   author  = {Spalart, Philippe R. and Moser, Robert D. and Rogers, Michael M.},
@@ -94,7 +95,8 @@ BIBTEX = {
   volume  = {96},
   number  = {2},
   pages   = {297--324},
-  year    = {1991}
+  year    = {1991},
+  doi     = {10.1016/0021-9991(91)90238-G}
 }""",
 }
 

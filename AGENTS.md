@@ -1,6 +1,6 @@
 # AGENTS.md — Conatus for AI agents (read before writing any Conatus code)
 
-Conatus: spectral PDEs and dynamical systems on CPU and GPU (v0.1; the API is young, see the deprecation notes below).
+Conatus: spectral PDEs and dynamical systems on CPU and GPU (0.2; the API is young, see the deprecation notes below).
 You write equations as on paper; Conatus discretises (Fourier/Chebyshev/curvilinear bases, taus
 placed for you), integrates, solves eigenproblems and finds structure (orbits, bifurcations, Floquet, optimal perturbations).
 Declare numerical choices explicitly. When a call lacks one, Conatus raises an error that says what to write.
@@ -26,7 +26,7 @@ python -m conatus agent check run.py   # dry run (no solve): refusals + fix, mis
   `sim.solver`, `sim.plan`. A name present in both layers has one meaning.
 - One word per notion: `steps` (number of time steps), `k` (a wavenumber keyword; a problem
   parameter keeps its literature name, e.g. `alpha` of Orr–Sommerfeld), `eta` (radius
-  ratio), `n_modes`, `max_iterations`, `tol` (exceptions until v0.2: the fields `ContinuationSettings(tolerance=, max_newton=)`, also read as `cfg.tol`, `cfg.max_iterations`);
+  ratio), `n_modes`, `max_iterations`, `tol` (exceptions until 0.3: the fields `ContinuationSettings(tolerance=, max_newton=)`, also read as `cfg.tol`, `cfg.max_iterations`);
   former names warn (`conatus._deprecation.RENAMES`).
 - Names below: `m` = `cn.Model`, `sim` = `cn.model.Simulation`, `lin` = `cn.model.Linearization`, `X` = `conatus.expert`.
 
@@ -115,15 +115,15 @@ T = md.at("T", z=np.linspace(-0.5, 0.5, 101))[0]     # walls included; row x = 0
 | Ready problems | `cn.problems.native.rayleigh_benard(Lx=, Ra=, Pr=)` → `cn.Model` (start here; `cn.problems.<name>` of the same name is the expert `Ready`, resolution in the call) (also `channel`, `plane_couette`, `pipe`, `taylor_couette`, `kolmogorov`, `kuramoto_sivashinsky`, `swift_hohenberg`, `rotating_shell_convection`, `orr_sommerfeld`, `*_evp` → `lin`); expert `cn.problems` (`.problem`, `.ncc`, `.explain()`) |
 | Provenance, runs | `sim.methods()` (Methods paragraph + BibTeX), `cn.methods`, `cn.verify`, `cn.runs.track(name)`, `cn.runs.find(...)`, `cn.runs.compare(a, b)`, `cn.runs.reproduce(run)` |
 | Importing a Dedalus 3 script | `cn.from_dedalus("script.py")` (parsed, not executed) → `.explain()`, `.problem`, `.to_script()` |
-| Studio (watch live) | `sim.watch("run_id", film={"T": cn.view("T")}, stats={...}, settable={"dt": (1e-4, 1e-2)}, every_s=0.5)` (periods in wall seconds: `every_s`, `scalars_every_s`, `controls_every_s`), `sim.unwatch()`; `cn.series(f)`, `cn.profile("T", "z")`, `cn.spectrum("u", "x")`; a Studio stop raises `cn.StopRun` in the run; every Studio/hub/relay limit and timing: `conatus.studio.constants.explain()` |
+| Studio (watch live) | `sim.watch("run_id", film={"T": cn.view("T")}, stats={...}, settable={"dt": (1e-4, 1e-2)}, every_s=0.5)` (periods in wall seconds: `every_s`, `scalars_every_s`, `controls_every_s`), `sim.unwatch()`; `cn.series(f)`, `cn.profile("T", "z")`, `cn.spectrum("u", "x")`; a Studio stop raises `cn.StopRun` in the run; limits and timings: `conatus.studio.constants.explain()` |
 | Notebook, units | `cn.notebook`, `X.UnitSystem`, `X.convert`, `X.presets` |
 | Errors, tolerances | `conatus.errors.explain()` (tree), `cn.errors`, `cn.tolerances.explain()` (every declared threshold), `cn.doctor()` |
 
 ## 5. Rules that prevent agent mistakes
 
 1. **Errors carry a fix.** A refusal is a `cn.errors.ConatusError` with `.message`, `.where`, `.why`,
-   `.fix`, `.doc`. Read `fix`, apply it yourself only if it is what you mean; never wrap Conatus
-   calls in `except Exception: pass`.
+   `.fix`, `.doc`. Read `fix`, apply it yourself only if it is what you mean. Let numerical
+   refusals propagate; if a script handles one, record the exception and the decision taken.
 2. **Supply these accuracy arguments explicitly** (`REQUIRED`): `drift_tol`, `xtol` of
    `X.critical`, `tol` of `method="hill"` / `X.shell_floquet` / `nl.linear_gain` / `NewtonKrylovHookstep`,
    `tolerance` of `ContinuationSettings`, `tol` of `X.NewtonSolver`, `arnoldi_tol` of

@@ -10,6 +10,8 @@ from dataclasses import field as dc_field
 
 import numpy as np
 
+from ..ir.tails import coefficient_tail
+
 __all__ = ["Check", "VerificationReport", "verify"]
 
 # Pass thresholds of the report checks (each is printed beside its measured value; declared in
@@ -84,7 +86,7 @@ def _tail(pevp, x: np.ndarray, k: int = 4) -> float:
             # 0 / 1e-300 = 0 was a PASS on a zero vector)
             tails.append(float("nan"))
             continue
-        tails.append(float(a[-k:].max() / a.max()))
+        tails.append(coefficient_tail(a, k))
     return float(np.max(tails)) if tails else float("nan")     # np.max keeps a NaN
 
 

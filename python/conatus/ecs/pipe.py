@@ -238,7 +238,7 @@ class PipeTravellingWave:
 
     def phi(self, x) -> tuple[np.ndarray, object]:
         """Time-T map of velocity vector x (cached for the last x): (real vector, full state),
-        the caller's own copies (review of the state audit, F4: the cached arrays were returned,
+        the caller's own copies (returning the cached arrays,
         and the result of ``solve`` keeps the full state, so an in-place edit of ``result.X``
         changed what a later ``phi`` of the same x returned)."""
         key = np.asarray(x).tobytes()

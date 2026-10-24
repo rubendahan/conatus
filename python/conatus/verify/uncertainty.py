@@ -57,8 +57,7 @@ _DECAY_RATE_MAX = 1e6
 
 
 def _fmt(p: Any) -> str:
-    """A resolution or a time step: a number, or a tuple of sizes ``(8, 8)`` (review 0.1.1, F16:
-    ``f"{p:g}"`` raised TypeError on the documented tuple resolutions)."""
+    """A resolution or a time step: a number, or a tuple of sizes ``(8, 8)`` (earlier versions: ``f"{p:g}"`` raised TypeError on the documented tuple resolutions)."""
     if isinstance(p, (tuple, list)):
         return "(" + ", ".join(f"{x:g}" for x in p) + ")"
     return f"{p:g}"

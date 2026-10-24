@@ -9,7 +9,7 @@ modes carry their exact norm (L for complex e^{ikx}, L/2 for cos/sin, L for the
 mean). Tau and constant unknowns get weight 0: they are not part of the state.
 
 The adjoint of an operator A for this product is A† = W⁻¹ Aᴴ W on the field
-subspace (transpose ≠ adjoint). It is only defined where W is
+subspace (the transpose is not the adjoint). It is only defined where W is
 invertible: a singular W (tau or zero-weight columns) is refused by ``adjoint()``,
 which points to the left eigenvectors (``solve_dense(..., left=True)``) or a tau-free
 formulation. No column is ever dropped for you.

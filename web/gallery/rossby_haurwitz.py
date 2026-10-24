@@ -142,10 +142,6 @@ def main() -> None:
                  f"T{a.L} ({Np} × {a.L + 1}), implicit Coriolis, RK443, dt = {a.dt:g}/Ω."),
         colormap="signed", script="web/gallery/rossby_haurwitz.py",
         example_script="benchmarks/spherical/rossby_haurwitz.py",
-        validated=dict(value=("14 days: mass exact, energy conserved to 1.4e-7; pattern 7.7% slower "
-                              "than the non-divergent Haurwitz speed, converged (T42/T63 within 0.13%)"),
-                       reference="Williamson et al. 1992, J. Comput. Phys. 102, 211–224, test case 6; Haurwitz 1940",
-                       source="paper/conatus.tex §Verification", run_id=""),
         geometry="sphere", domain="rotating",
         parameters=dict(Lmax=a.L, Nphi=Np, dealias=1.5, scheme="RK443", dt=a.dt, days=a.days, R=rh.RW),
         diagnostics=diag)

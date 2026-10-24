@@ -57,7 +57,9 @@ numerical configuration and `explain()` text, the executed code (commit, dirty p
 the imported tree and of the compiled core), versions, host, GPU, batch job and the command line.
 A field that cannot be read is recorded as unreadable.
 
-Scalars and series are kept in memory. Fields, files and states are copied and written by a
+Scalars are kept in memory and written when the run closes. Series are buffered and appended to a
+temporary file (`.series.jsonl.part`) every `SERIES_FLUSH_ROWS` rows (4096); when the run closes,
+the file is converted into `data.h5`. Fields, files and states are copied and written by a
 background thread through a bounded queue. When the queue is full, the item is dropped and the
 drop is counted (`run.dropped`); the computation does not wait. A disk error is recorded and
 reported by a `RegistryWriteWarning` when the run closes. The computed numbers are bit-for-bit

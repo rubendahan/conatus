@@ -39,7 +39,7 @@ import numpy as np
 
 from ..adjoint import FlowMap
 from .newton import NewtonKrylovHookstep, NewtonKrylovResult
-from .subspace import StateTranslation
+from .subspace import StateTranslation, _xp
 from ..errors import OptionError, SymmetryError
 from .._repr import compact_repr
 
@@ -65,14 +65,6 @@ class StateShift(StateTranslation):
             self._dev[key] = (xp.asarray(self.src), xp.asarray(self.k), xp.asarray(self.sgn))
         src, k, sgn = self._dev[key]
         return xp.cos(k * a) * X + xp.sin(k * a) * sgn * X[src]
-
-
-def _xp(X):
-    try:
-        import cupy
-        return cupy.get_array_module(X)
-    except ImportError:          # pragma: no cover
-        return np
 
 
 class _StageCachedFlowMap(FlowMap):

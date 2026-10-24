@@ -1,0 +1,187 @@
+{
+  "_about": "Published cases page (src/pages/Published.tsx). One entry per directory of examples/published/: the text of the page and the numbers it displays. Each fact's value appears verbatim in its 'printed' text, and that text appears verbatim in the case's recorded output (examples/published/<case>/output.txt). The links point to the tag of the version in the header of output.txt (no typed version). 'validation' lists the Validation rows (web/src/content/reproduced.json) whose number this script prints. Checked by tests/docs/test_published_cases.py.",
+  "cases": [
+    {
+      "slug": "orr-sommerfeld-spectrum",
+      "dir": "examples/published/orr_sommerfeld_spectrum",
+      "title": "Orr–Sommerfeld spectrum of plane Poiseuille flow",
+      "reference": "S. A. Orszag (1971), Accurate solution of the Orr–Sommerfeld stability equation, J. Fluid Mech. 50, 689–703.",
+      "doi": "10.1017/S0022112071002842",
+      "source": "Orszag (1971): 32 eigenvalues, read from Table 1 of S. Gana (2026), Advancements in spectral collocation methods for high-order eigenvalue problems, arXiv:2608.29932, which lists Orszag's values (column λₙ([23])). Re_c from the abstract of Orszag (1971); α_c as later papers quote it.",
+      "shows": "The whole spectrum of a fourth-order, non-self-adjoint eigenvalue problem, damped modes included, against a classical benchmark of hydrodynamic stability. It shows that, on this problem, the eigenvalue solver and its test for unresolved modes reproduce the published digits.",
+      "computed": "Every eigenvalue c of the Orr–Sommerfeld equation for U = 1 − y² between rigid walls, at Re = 10⁴ and α = 1, with 128 Chebyshev modes; a mode is kept only if it is found again with 160 modes. Each eigenvalue Orszag lists is matched to the nearest computed one. Then the critical Reynolds number.",
+      "gap": "|c_Conatus − c_Orszag| for each listed eigenvalue. A value is within rounding when its real and imaginary parts are both within half a unit of the last digit Orszag prints (he prints 5 to 8 decimals).",
+      "facts": [
+        {
+          "label": "Eigenvalues within rounding of Orszag's digits",
+          "value": "27 of 32",
+          "printed": "within rounding of the printed digits: 27 of 32"
+        },
+        {
+          "label": "Within one unit of his last digit",
+          "value": "32 of 32",
+          "printed": "within one unit of the last digit: 32 of 32"
+        },
+        {
+          "label": "Median gap",
+          "value": "5.3e-08",
+          "printed": "median 5.3e-08"
+        },
+        {
+          "label": "Largest gap (n = 20)",
+          "value": "7.1e-06",
+          "printed": "largest gap |c_Conatus - c_Orszag| = 7.1e-06 (n = 20); median 5.3e-08"
+        },
+        {
+          "label": "Least stable mode c, Conatus",
+          "value": "0.23752649 +0.00373967i",
+          "printed": "0.23752649 +0.00373967i"
+        },
+        {
+          "label": "Re_c, Conatus (Orszag 5772.22)",
+          "value": "5772.2218",
+          "printed": "Re_c = 5772.2218 (Orszag 5772.22), alpha_c = 1.020547 (Orszag 1.02056)"
+        },
+        {
+          "label": "α_c, Conatus (Orszag 1.02056)",
+          "value": "1.020547",
+          "printed": "Re_c = 5772.2218 (Orszag 5772.22), alpha_c = 1.020547 (Orszag 1.02056)"
+        },
+        {
+          "label": "Gap in α_c",
+          "value": "1.3e-05",
+          "printed": "gap: Re_c 1.8e-03, alpha_c 1.3e-05"
+        }
+      ],
+      "validation": [
+        "orr-sommerfeld-re-104-1",
+        "critical-reynolds-number-plane-poiseuille"
+      ],
+      "note": "Five values are outside rounding, each by at most one unit of the last digit; three of them (n = 14, 20, 24) lie near the point where the branches of the spectrum meet, where the eigenvalues are most sensitive. Conatus finds the same values with 160 modes. The computed α_c rounds to 1.02055; the quoted value is 1.02056."
+    },
+    {
+      "slug": "pipe-flow-spectrum",
+      "dir": "examples/published/pipe_flow_spectrum",
+      "title": "Linearised pipe flow from Re = 10² to 10⁷",
+      "reference": "A. Meseguer & L. N. Trefethen (2003), Linearized pipe flow to Reynolds number 10⁷, J. Comput. Phys. 186, 178–197.",
+      "doi": "10.1016/S0021-9991(03)00029-9",
+      "source": "Meseguer & Trefethen (2003), Table 1: 17 eigenvalues to ten decimals (complex conjugates of the values Conatus reports, by the sign convention of the modes).",
+      "shows": "The linearised Navier–Stokes equations in a pipe, with the regularity conditions at the axis, from Re = 10² to 10⁷. It shows that the cylindrical discretisation stays converged to about ten digits at Reynolds numbers where the modes are thin layers and the operator is strongly non-normal.",
+      "computed": "The rightmost eigenvalue of Hagen–Poiseuille flow for the azimuthal and axial wavenumbers (1, 0), and the rightmost centre mode and wall mode for (1, 1), at six Reynolds numbers from 10² to 10⁷. Two radial resolutions per Reynolds number (32/48 up to 256/320); an eigenvalue is kept only if both find it to 10⁻⁸.",
+      "gap": "|s_Conatus − λ̄_MT| for each tabulated eigenvalue λ_MT. Within rounding: real and imaginary parts both within 5 × 10⁻¹¹ (half a unit of the tenth decimal). The authors expect all but possibly the last of their ten digits to be correct.",
+      "facts": [
+        {
+          "label": "Eigenvalues within rounding of the ten decimals",
+          "value": "15 of 17",
+          "printed": "within rounding: 15 of 17; within one unit of the last digit: 15 of 17"
+        },
+        {
+          "label": "Within one unit of the last decimal",
+          "value": "15 of 17",
+          "printed": "within rounding: 15 of 17; within one unit of the last digit: 15 of 17"
+        },
+        {
+          "label": "Largest gap, Re = 10² to 10⁴",
+          "value": "6.3e-11",
+          "printed": "largest gap for R = 10^2 to 10^4: 6.3e-11; for R = 10^2 to 10^7: 3.9e-10"
+        },
+        {
+          "label": "Largest gap, Re = 10² to 10⁷",
+          "value": "3.9e-10",
+          "printed": "largest gap for R = 10^2 to 10^4: 6.3e-11; for R = 10^2 to 10^7: 3.9e-10"
+        }
+      ],
+      "validation": [
+        "hagen-poiseuille-n-k-1-1-1-0-r-102-104"
+      ],
+      "note": "The two values outside rounding are the centre modes at Re = 10⁶ and 10⁷, two and four units of the tenth decimal away; Conatus's two resolutions agree there to better than 10⁻¹². Meseguer & Trefethen note that the eigenvalues in this part of the plane are exact eigenvalues of operators perturbed by less than 10⁻¹⁰, so a difference of this size does not say which value is closer to the exact one."
+    },
+    {
+      "slug": "rayleigh-benard-onset",
+      "dir": "examples/published/rayleigh_benard_onset",
+      "title": "Onset of Rayleigh–Bénard convection",
+      "reference": "S. Chandrasekhar (1961), Hydrodynamic and Hydromagnetic Stability, Oxford University Press, ch. II; Lord Rayleigh (1916), On convection currents in a horizontal layer of fluid, Phil. Mag. 32, 529–546.",
+      "doi": "10.1080/14786441608635602",
+      "source": "Rayleigh (1916): the closed form Ra(k) = (k² + π²)³ / k² for two stress-free walls. Chandrasekhar (1961), ch. II: Ra_c = 1707.762 at k_c = 3.117 (two rigid walls) and 1100.65 at 2.682 (rigid bottom, stress-free top).",
+      "shows": "Coupled velocity and temperature equations with three kinds of wall, and a critical point found by minimising over the wavenumber. It checks the boundary conditions and the critical-point search against an exact curve and the classical critical values.",
+      "computed": "The neutral Rayleigh number Ra(k) of a layer heated from below, at 25 wavenumbers, for three pairs of walls, and the minimum (Ra_c, k_c) of each curve; 32 Chebyshev modes, every mode checked again with 48.",
+      "gap": "Relative gap |Ra − Ra_ref| / Ra_ref: along the whole stress-free curve, against the closed form, and at the critical point for the rigid cases, against the digits Chandrasekhar prints.",
+      "facts": [
+        {
+          "label": "Free–free curve, largest relative gap (25 wavenumbers)",
+          "value": "9.1e-16",
+          "printed": "wavenumbers in [1, 7]: 9.1e-16"
+        },
+        {
+          "label": "Rigid–rigid Ra_c (Chandrasekhar 1707.762)",
+          "value": "1707.761777",
+          "printed": "rigid-rigid: Ra_c = 1707.761777, k_c = 3.116324   (reference 1707.762, 3.117; relative gaps 1.3e-07, 2.2e-04)"
+        },
+        {
+          "label": "Rigid–rigid k_c (Chandrasekhar 3.117)",
+          "value": "3.116324",
+          "printed": "rigid-rigid: Ra_c = 1707.761777, k_c = 3.116324   (reference 1707.762, 3.117; relative gaps 1.3e-07, 2.2e-04)"
+        },
+        {
+          "label": "Rigid–rigid relative gaps, Ra_c and k_c",
+          "value": "1.3e-07, 2.2e-04",
+          "printed": "rigid-rigid: Ra_c = 1707.761777, k_c = 3.116324   (reference 1707.762, 3.117; relative gaps 1.3e-07, 2.2e-04)"
+        },
+        {
+          "label": "Rigid–free Ra_c (Chandrasekhar 1100.65)",
+          "value": "1100.649607",
+          "printed": "rigid-free: Ra_c = 1100.649607, k_c = 2.682322   (reference 1100.65, 2.682; relative gaps 3.6e-07, 1.2e-04)"
+        },
+        {
+          "label": "Rigid–free k_c (Chandrasekhar 2.682)",
+          "value": "2.682322",
+          "printed": "rigid-free: Ra_c = 1100.649607, k_c = 2.682322   (reference 1100.65, 2.682; relative gaps 3.6e-07, 1.2e-04)"
+        },
+        {
+          "label": "Rigid–free relative gaps, Ra_c and k_c",
+          "value": "3.6e-07, 1.2e-04",
+          "printed": "rigid-free: Ra_c = 1100.649607, k_c = 2.682322   (reference 1100.65, 2.682; relative gaps 3.6e-07, 1.2e-04)"
+        }
+      ],
+      "validation": [
+        "rayleigh-benard-onset-rigid",
+        "rayleigh-benard-onset-rigid-bottom-stress-free-top"
+      ],
+      "note": "For two rigid walls the computed k_c = 3.11632 rounds to 3.116, where Chandrasekhar prints 3.117; this is the one printed value outside its rounding. Both critical Rayleigh numbers agree to every printed digit."
+    },
+    {
+      "slug": "kuramoto-sivashinsky-l22",
+      "dir": "examples/published/kuramoto_sivashinsky_l22",
+      "title": "Kuramoto–Sivashinsky equilibria and travelling waves, L = 22",
+      "reference": "P. Cvitanović, R. L. Davidchack & E. Siminos (2010), On the state space geometry of the Kuramoto–Sivashinsky flow in a periodic domain, SIAM J. Appl. Dyn. Syst. 9, 1–33.",
+      "doi": "10.1137/070705623",
+      "source": "Cvitanović, Davidchack & Siminos (2010), arXiv:0709.2944: Table 5.1 (leading eigenvalues, 4 decimals), Table 5.2 (energies) and section 5 (wave speeds).",
+      "shows": "Invariant solutions of a chaotic PDE found by Newton–Krylov iteration from a time-stepping model, and their stability, travelling waves in the frame that moves with them. It checks the whole path from a model to equilibria, relative equilibria and their eigenvalues against a standard benchmark of dynamical-systems work.",
+      "computed": "The three equilibria E1, E2, E3 and the two travelling waves TW1, TW2 of u_t + u u_x + u_xx + u_xxxx = 0 on a periodic interval of length 22, found by Newton–Krylov–hookstep and converged with 64 Fourier modes, then the leading eigenvalues of each (in the frame moving with the wave for TW1 and TW2), their energies and the wave speeds.",
+      "gap": "|λ_Conatus − λ_published| for each tabulated eigenvalue (matched to the nearest unused computed eigenvalue), and the absolute differences of energies and speeds. Within rounding: within half a unit of the last printed digit (5 × 10⁻⁵ for eigenvalues and energies, 5 × 10⁻⁶ for speeds).",
+      "facts": [
+        {
+          "label": "Published values within rounding (32 eigenvalues, 5 energies, 2 speeds)",
+          "value": "39 of 39",
+          "printed": "within rounding: 39 of 39"
+        },
+        {
+          "label": "Largest eigenvalue gap",
+          "value": "6.0e-05",
+          "printed": "largest gap 6.0e-05"
+        },
+        {
+          "label": "TW1 speed (published 0.73699)",
+          "value": "0.7369890",
+          "printed": "speed 0.7369890 (published 0.73699)"
+        },
+        {
+          "label": "TW2 speed (published 0.34954)",
+          "value": "0.3495413",
+          "printed": "speed 0.3495413 (published 0.34954)"
+        }
+      ],
+      "validation": []
+    }
+  ]
+}

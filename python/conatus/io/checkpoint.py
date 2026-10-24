@@ -16,7 +16,8 @@ Layout of a checkpoint file (``format = "conatus.checkpoint/1"``)::
     /scales/component  the coordinate names (component axis of vectors)
 
 Root attributes also carry ``conatus_version``, ``parameters`` (JSON), ``coordinates`` (JSON,
-grid order) and, for a native simulation, ``geometry`` and ``model`` (self-describing layout: ``cn.io.read(path).to_xarray()``; files written before keep reading and restarting).
+grid order) and, for a native simulation, ``geometry`` and ``model`` (self-describing layout:
+``cn.io.read(path).to_xarray()``; files written before keep reading and restarting).
 
 Restart reads ``/state`` and ``/history`` only: the same arrays as the ``.npz`` format, stored
 without conversion, so a restart is bit-for-bit (tests/output/test_io_hdf5.py).
@@ -106,7 +107,7 @@ def read_checkpoint(path: str | Path) -> tuple[dict, dict[str, np.ndarray]]:
 
 #: The default pattern of :func:`latest`; with it the NumPy checkpoints ``checkpoint_*.npz``
 #: (``sim.save(directory / "checkpoint_<iteration>.npz")``, the format the GPU guide recommends)
-#: are searched too (they were never found, so a GPU chain restarted from t = 0).
+#: are searched too (earlier versions: they were never found, so a GPU chain restarted from t = 0).
 DEFAULT_PATTERN = "checkpoint_*.h5"
 _NPZ_PATTERN = "checkpoint_*.npz"
 
@@ -157,8 +158,8 @@ def latest(directory: str | Path, pattern: str = DEFAULT_PATTERN) -> Path | None
     (``sim.checkpoints``) and its NumPy twin ``checkpoint_*.npz`` (``sim.save``); a restart from
     either is bit-for-bit. Any other pattern is that glob only. Two files
     of the same iteration in the two formats are refused (which one is the run's is not
-    known). A directory that does not exist is refused (it returned
-    None, so a misspelt directory restarted a chain from t = 0 without a word)."""
+    known). A directory that does not exist is refused (returning
+    None would let a misspelt directory restart a chain from t = 0 without a word)."""
     d = Path(directory)
     if not d.is_dir():
         raise OptionError(f"cn.io.latest({str(directory)!r}): "

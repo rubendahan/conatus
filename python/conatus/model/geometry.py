@@ -111,7 +111,7 @@ class Walls:
 def periodic(length: float | tuple[float, float], *more: Any, complex: bool = False) -> Periodic:
     """Periodic axis of length ``L`` ([0, L)) or on ``(a, b)``; ``complex=True`` uses complex
     exponentials (ComplexFourier) instead of the real cos/sin series (RealFourier).
-    ``periodic(a, b)`` (two numbers) is refused with the two spellings it may mean (it was a bare TypeError)."""
+    ``periodic(a, b)`` (two numbers) is refused with the two spellings it may mean."""
     if more:
         shown = ", ".join(_g(v) if isinstance(v, numbers.Real) else repr(v)
                           for v in (length,) + more)
@@ -141,7 +141,7 @@ def periodic(length: float | tuple[float, float], *more: Any, complex: bool = Fa
         raise InputTypeError(f"periodic({length!r}): one length or one (a, b) pair",
                              fix="periodic(2.0) for [0, 2), or periodic((a, b)) with a < b",
                              doc=_DOC)
-    # finite bounds (periodic(inf) built a grid of NaN)
+    # finite bounds (periodic(inf) would build a grid of NaN)
     if not (b > a and math.isfinite(a) and math.isfinite(b)):
         raise InputTypeError(f"periodic({length!r}): the length must be finite and positive",
                              fix="periodic(2.0) for [0, 2), or periodic((a, b)) with a < b",
@@ -205,8 +205,8 @@ def _num(v: Any, what: str) -> float:
 
 
 def _check_finite(pts: tuple[float, ...], what: str) -> None:
-    """Wall positions are finite numbers (walls(0, inf) was
-    accepted and built a Chebyshev grid of NaN); an unbounded axis is declared as such."""
+    """Wall positions are finite numbers (walls(0, inf) would build a
+    Chebyshev grid of NaN); an unbounded axis is declared as such."""
     if not all(math.isfinite(p) for p in pts):
         raise InputTypeError(f"{what}{pts}: the walls must be at finite positions",
                              fix="line(scale=...) for the whole line, half_line(scale=...) for "
@@ -225,6 +225,7 @@ def _check_radii(kind: str, radii: tuple[float, ...], fix: str) -> None:
 
 
 def _g(v: float) -> str:
+    """A number in the shortest ``%g`` form (labels and messages)."""
     return f"{v:g}"
 
 
@@ -237,7 +238,8 @@ class Geometry:
     the derivative basis lam=2 (disk/ball/pipe NS, tests/curvilinear/curvi_cases.py),
     ``"annulus"`` two walls, lam=2 lifts -1, -2 (tests/polar/test_polar_symmetry.py),
     ``"shell"`` first-order form with rvec, tau_1 lifted in lam=1 inside the gradient and tau_2 in
-    lam=2 (Dedalus's shell examples lift both in lam=1: spurious growing tau mode from N_r ~ 48; conatus.problems rotating_shell_convection uses the same form).
+    lam=2 (lifting both in lam=1 gives a spurious growing tau mode from N_r ~ 48;
+    conatus.problems rotating_shell_convection uses the same form).
     """
 
     kind = "abstract"
@@ -353,7 +355,8 @@ class Geometry:
         return {c: int(n) for c, n in out.items()}
 
     def _min_size(self, c: str) -> tuple[int, str]:
-        """(smallest accepted size, why) along coordinate ``c`` (N = 2 on Chebyshev walls was accepted). Default: 1 (no rule)."""
+        """(smallest accepted size, why) along coordinate ``c`` (N = 2 on
+        Chebyshev walls is refused). Default: 1 (no rule)."""
         return 1, ""
 
     def _weighted_coords(self) -> tuple[str, ...]:
@@ -438,6 +441,7 @@ class Box(Geometry):
         self._axes = dict(axes)
 
     def coordsys(self):
+        """Cartesian coordinates in the declared order."""
         return CartesianCoordinates(*self.coord_names)
 
     @property
@@ -447,9 +451,11 @@ class Box(Geometry):
 
     @property
     def bounded_coord(self) -> str | None:
+        """The first non-periodic coordinate, or None."""
         return next((k for k, v in self._axes.items() if not isinstance(v, Periodic)), None)
 
     def n_walls(self) -> int:
+        """Number of walls: 0 (all periodic), 1 (half line) or 2."""
         c = self.wall_coord
         if c is None:
             return 0
@@ -457,17 +463,21 @@ class Box(Geometry):
 
     @property
     def sincos_coord(self) -> str | None:
+        """The wall coordinate when it uses sine/cosine series, else None."""
         c = self.wall_coord
         ax = self._axes[c] if c is not None else None
         return c if isinstance(ax, Walls) and ax.basis == "sincos" else None
 
     @property
     def interfaces(self) -> tuple[float, ...]:
+        """Interface positions of a compound wall axis (empty otherwise)."""
         c = self.wall_coord
         ax = self._axes[c] if c is not None else None
         return ax.interfaces if isinstance(ax, Walls) else ()
 
     def boundaries(self) -> dict[str, list[tuple[str, str]]]:
+        """Named boundaries -> [(coordinate, side)]: bottom/top, walls, and the positions such
+        as ``z=0``; none without a wall axis."""
         c = self.wall_coord
         if c is None:
             return {}
@@ -549,6 +559,7 @@ class Box(Geometry):
         return Chebyshev(coord, n, ax.bounds, dealias=dealias)
 
     def basis_table(self) -> list[str]:
+        """Coordinate -> basis lines of the box (explain())."""
         out = []
         for k, v in self._axes.items():
             if isinstance(v, Periodic):
@@ -644,6 +655,7 @@ class Disk(_Radial):
         self._radii = (0.0, float(radius))
 
     def coordsys(self):
+        """Polar coordinates (phi, r)."""
         return PolarCoordinates("phi", "r")
 
     def _basis(self, coord, n, dealias):
@@ -652,6 +664,7 @@ class Disk(_Radial):
         return DiskBasis(coord, n, self._radii[1], dealias=dealias)
 
     def basis_table(self) -> list[str]:
+        """Coordinate -> basis lines of the disk (explain())."""
         return ["phi: periodic on [0, 2 pi) -> RealFourier(N_phi)",
                 f"r: [0, {_g(self._radii[1])}] -> DiskBasis(N_r) (regular at r = 0)"]
 
@@ -680,6 +693,7 @@ class Annulus(Disk):
         return AnnulusBasis(coord, n, self._radii, dealias=dealias)
 
     def basis_table(self) -> list[str]:
+        """Coordinate -> basis lines of the annulus (explain())."""
         return ["phi: periodic on [0, 2 pi) -> RealFourier(N_phi)",
                 f"r: [{_g(self._radii[0])}, {_g(self._radii[1])}] -> AnnulusBasis(N_r) (Chebyshev T)"]
 
@@ -706,6 +720,7 @@ class Pipe(Disk):
         self.length = float(length)
 
     def coordsys(self):
+        """Cylindrical coordinates (phi, r, z)."""
         return CylindricalCoordinates("phi", "r", "z")
 
     def _basis(self, coord, n, dealias):
@@ -716,6 +731,7 @@ class Pipe(Disk):
         return super()._basis(coord, n, dealias)
 
     def basis_table(self) -> list[str]:
+        """Coordinate -> basis lines of the pipe (explain())."""
         return super().basis_table() + [f"z: periodic on [0, {_g(self.length)}) -> ComplexFourier(N_z)"]
 
     def __repr__(self) -> str:
@@ -754,6 +770,7 @@ class TaylorCouette(Annulus):
         self.length = float(length)
 
     def coordsys(self):
+        """Cylindrical coordinates (phi, r, z)."""
         return CylindricalCoordinates("phi", "r", "z")
 
     def _basis(self, coord, n, dealias):
@@ -762,6 +779,7 @@ class TaylorCouette(Annulus):
         return super()._basis(coord, n, dealias)
 
     def basis_table(self) -> list[str]:
+        """Coordinate -> basis lines of the Taylor-Couette annulus (explain())."""
         return super().basis_table() + [f"z: periodic on [0, {_g(self.length)}) -> ComplexFourier(N_z)"]
 
     @property
@@ -771,10 +789,10 @@ class TaylorCouette(Annulus):
 
     @property
     def radius_ratio(self) -> float:
-        """Former name of :attr:`eta` (deprecated since removed in v0.2)."""
+        """Former name of :attr:`eta` (deprecated since v0.1, removed in 0.3)."""
         import warnings
         warnings.warn("TaylorCouette.radius_ratio is deprecated since v0.1, read .eta (same value; "
-                      "removed in v0.2)", DeprecationWarning, stacklevel=2)
+                      "removed in 0.3)", DeprecationWarning, stacklevel=2)
         return self.eta
 
     def __repr__(self) -> str:
@@ -784,7 +802,7 @@ class TaylorCouette(Annulus):
 
 class Sphere(Geometry):
     """Sphere surface of radius R: S2Coordinates(phi, theta), RealFourier(phi) x SphereBasis(theta).
-    N_theta is the SphereBasis size Lmax + 1 (Dedalus's Ntheta - 1, declared). No boundary."""
+    N_theta = Lmax + 1, the SphereBasis size. No boundary."""
 
     kind, recipe = "sphere surface", "none"
 
@@ -796,6 +814,7 @@ class Sphere(Geometry):
         self.radius = float(radius)
 
     def coordsys(self):
+        """Sphere-surface coordinates (phi, theta)."""
         return S2Coordinates("phi", "theta")
 
     def _basis(self, coord, n, dealias):
@@ -804,6 +823,7 @@ class Sphere(Geometry):
         return SphereBasis(coord, n, radius=self.radius, dealias=dealias)
 
     def basis_table(self) -> list[str]:
+        """Coordinate -> basis lines of the sphere surface (explain())."""
         return ["phi: periodic on [0, 2 pi) -> RealFourier(N_phi)",
                 "theta: [0, pi] -> SphereBasis(N_theta) (N_theta = Lmax + 1)"]
 
@@ -826,6 +846,7 @@ class Ball(_Radial):
         self._radii = (0.0, float(radius))
 
     def coordsys(self):
+        """Spherical coordinates (phi, theta, r)."""
         return SphericalCoordinates("phi", "theta", "r")
 
     def _radial(self, coord, n, dealias):
@@ -839,6 +860,7 @@ class Ball(_Radial):
         return self._radial(coord, n, dealias)
 
     def basis_table(self) -> list[str]:
+        """Coordinate -> basis lines of the ball (explain())."""
         return ["phi: periodic on [0, 2 pi) -> RealFourier(N_phi)",
                 "theta: [0, pi] -> SphereBasis(N_theta) (N_theta = Lmax + 1)",
                 f"r: [0, {_g(self._radii[1])}] -> BallBasis(N_r) (regular at r = 0)"]
@@ -866,6 +888,7 @@ class Shell(Ball):
         return ShellBasis(coord, n, self._radii, dealias=dealias)
 
     def basis_table(self) -> list[str]:
+        """Coordinate -> basis lines of the shell (explain())."""
         return ["phi: periodic on [0, 2 pi) -> RealFourier(N_phi)",
                 "theta: [0, pi] -> SphereBasis(N_theta) (N_theta = Lmax + 1)",
                 f"r: [{_g(self._radii[0])}, {_g(self._radii[1])}] -> ShellBasis(N_r) (Chebyshev T)"]

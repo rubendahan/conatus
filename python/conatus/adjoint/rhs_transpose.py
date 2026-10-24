@@ -12,7 +12,7 @@ modes (the dealiasing projection) and D^a products of 1D spectral derivatives. T
     F'(X)ᵀ W  = sum_m c_m sum_{j active} (D^a)ᵀ Gᵀ( Cᵀ(W) * prod_{i != j} g_i ),
 
 where g_i = G(D^a f_i) are the passive factor grids at X. Gᵀ and Cᵀ are the **explicit transposes**
-of the reference transforms (bilinear pairing, no conjugation, D8), written with FFT/DCT below
+of the reference transforms (bilinear pairing, no conjugation), written with FFT/DCT below
 (the dense matrices of the bases of ``discretize.families`` are transposed as they are) and checked
 against dense matrices in tests/adjoint; (D^a)ᵀ uses the 1D derivative matrix built
 from the evaluator itself. The map V -> F'(X) V is the same linear map as the IR linearization
@@ -402,7 +402,7 @@ class LinearizedRHS:
         """Grids G(D^a f) of every factor at the state X. ``cache``: a dict owned by the caller
         for the duration of one tangent/adjoint step (FlowMap passes its per-step cache), during
         which X is not modified; no cache across calls (an array updated in place keeps its id
-        and pointer: same defect as)."""
+        and pointer, so a cache keyed by it would return stale data)."""
         key = ("factor", id(X))
         if cache is not None and key in cache:
             return cache[key][1]
@@ -766,6 +766,8 @@ class LinearizedRHS:
         return self._scatter_T(var_ct)
 
     def explain(self) -> str:
+        """The linearized right-hand side: its forms (monomials, general forms) and how the
+        tangent and transpose are evaluated."""
         nm = sum(len(m) for P in self.polys if P for m in P.values())
         ng = sum(G is not None for G in self.generals)
         gen = (f", general form (products of linear forms, post-operators on the projected "

@@ -13,8 +13,8 @@ Everything the classification depends on is supplied and reported: ``classify(X)
 (laminar), +1 (turbulent), 0 (undecided)``, the check interval ``t_check`` and the horizon
 ``t_max`` after which an undecided trial is refused (never guessed), and ``t_min``: no verdict
 before it (the initial transient of a perturbation can cross the thresholds: measured on plane
-Couette at Re = 400, D > 2.5 during the first time units of perturbations that relaminarize, run
-```` ❌, whose bisection tracked the threshold crossing instead)."""
+Couette at Re = 400, D > 2.5 during the first time units of perturbations that relaminarize;
+a bisection without ``t_min`` tracks the threshold crossing instead of the edge)."""
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -158,8 +158,8 @@ class EdgeTracker:
 
 class ThresholdBisection:
     """Bisection on one amplitude (e.g. the seed energy E0 of a minimal seed) between a
-    value that relaminarizes and one that transitions: the transition threshold as a bracket
-    ]lo, hi], never as a single guessed number.
+    value that relaminarizes and one that transitions. Returns the bracket ]lo, hi] of the
+    transition threshold.
 
     ``fate(a) -> -1`` (relaminarizes) / ``+1`` (transitions) / ``0`` (undecided) is the user's
     declared verdict for amplitude ``a`` (e.g. one forward DNS of the seed rescaled to E0 = a,

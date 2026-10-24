@@ -1,7 +1,7 @@
 // Capabilities: what Conatus lets you do, in short plain sentences, grouped by the way you work: write,
 // discretise, run, analyse, keep track. No measured figures here: the numbers are on the
 // Validation page, linked once at the end.
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { DocLink, PageHead, Section } from "../components/ui";
 import "../styles/capabilities.css";
 
@@ -33,7 +33,7 @@ const PARTS: Part[] = [
     intro: "The same model runs on a CPU or a GPU. You choose the resolution, the scheme and the time step in the call.",
     caps: [
       { title: "Time integration", text: "Implicit–explicit multistep schemes (backward differentiation and Crank–Nicolson) and Runge–Kutta schemes, of order 1 to 4. Boundary values that move in time are imposed at the stages; on the tested heat problem RK443 then reaches order 2.8 and RK222 order 2, while first-order schemes stay first order. The guide gives the order of each scheme. Restarts from a checkpoint continue bit for bit.", more: ["docs:guide/timesteppers.html", "Time steppers"] },
-      { title: "GPU-native", text: "One keyword moves a simulation to the GPU, in a box, a channel, a disk, a pipe, on a sphere, in a ball or a spherical shell; nonlinear terms become fused kernels, and in boxes, channels and shells whole steps can be replayed as one graph." },
+      { title: "Single GPU (experimental)", text: "Not retested on GPU hardware for this release. One keyword moves a simulation to the GPU, in a box, a channel, a disk, a pipe, on a sphere, in a ball or a spherical shell; nonlinear terms become fused kernels, and in boxes, channels and shells whole steps can be replayed as one graph." },
     ],
   },
   {
@@ -42,7 +42,7 @@ const PARTS: Part[] = [
     caps: [
       { title: "Stability", text: "Eigenvalues with their residuals, critical parameters and sensitivities. The result lists the modes removed by the drift filter.", more: ["/dynamics#eigen", "Dynamics"] },
       { title: "Orbits and bifurcations", text: "Equilibria, travelling waves and periodic orbits; branches followed through folds, pitchforks and Hopf points.", more: ["/dynamics#bifurcations", "Dynamics"] },
-      { title: "Time-periodic flows", text: "Floquet exponents and optimal transient growth about any flow that repeats in time, written as a function of time, such as pulsatile flow in a channel.", more: ["/dynamics#floquet", "Dynamics"] },
+      { title: "Time-periodic flows", text: "Floquet exponents and optimal transient growth about a flow given as a periodic function of time, such as pulsatile flow in a channel.", more: ["/dynamics#floquet", "Dynamics"] },
       { title: "Adjoints and transient growth", text: "Adjoints of the discrete time stepper, in boxes, channels and the spherical shell, for gradients and optimisation; linear and nonlinear optimal perturbations of non-normal flows.", more: ["/dynamics#adjoint", "Dynamics"] },
     ],
   },
@@ -63,7 +63,8 @@ export default function Capabilities() {
     <>
       <PageHead eyebrow="Capabilities" title="What you can do with Conatus">
         <p>Write the equations, run them on a CPU or a GPU, and study the structure of the solutions: instabilities,
-          orbits, bifurcations. Everything below starts from the same model.</p>
+          orbits, bifurcations. The native model compiles to the problems these tools use; some tools need an object of the
+          expert layer.</p>
       </PageHead>
       <nav className="wrap parts-nav" aria-label="Parts">
         <ol>{PARTS.map((p) => <li key={p.id}><a href={`#${p.id}`}>{p.label}</a></li>)}</ol>

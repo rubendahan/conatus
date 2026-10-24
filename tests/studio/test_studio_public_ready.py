@@ -187,7 +187,7 @@ def test_local_serve_refuses_a_public_host_and_a_submit_it_cannot_honour(monkeyp
 
 
 # ------------------------------------------------------------------ every route needs a credential
-PUBLIC_OK = {"/healthz", "/login"}            # answered 200 to anyone (no data)
+PUBLIC_OK = {"/healthz", "/login", "/login-done.js"}   # answered 200 to anyone (no data)
 
 
 def test_every_route_needs_a_session_or_a_token(tmp_path):
@@ -207,7 +207,7 @@ def test_every_route_needs_a_session_or_a_token(tmp_path):
     routes = [r.matcher.regex.pattern.rstrip("$") for r in make_app(Hub(
         AuthDB({}), audit=AuditLog(tmp_path / "a0.jsonl", echo=False), local=True)).default_router.rules[0]
         .target.rules]
-    concrete = {"/healthz", "/login", "/logout", "/classic", "/api/runs", "/api/whoami",
+    concrete = {"/healthz", "/login", "/login-done.js", "/logout", "/classic", "/api/runs", "/api/whoami",
                 f"/api/film/{secret}", f"/api/film/{secret}/frames", f"/api/control/{secret}",
                 "/api/compare", "/api/jobs/prepare", "/api/registry", "/api/v1/ping",
                 "/api/v1/whoami", "/api/v1/runs", "/api/v1/board", "/api/v1/audit",
@@ -252,14 +252,15 @@ def test_every_route_needs_a_session_or_a_token(tmp_path):
         r = await c.fetch(base + "/login", method="POST", follow_redirects=False, raise_error=False,
                           body=urlencode({"user": "ruben", "password": "correct horse battery"}),
                           headers={"Sec-Fetch-Site": "same-origin", "Origin": base})
-        assert r.code == 302, r.code
+        assert r.code == 200, r.code
         cookie = r.headers["Set-Cookie"].split(";")[0]
+        key = re.search(rb'name="cn-session-key" content="([A-Za-z0-9_-]+)"', r.body).group(1).decode()
         with pytest.raises(HTTPClientError) as err:      # cross-site WebSocket hijacking
             await websocket_connect(HTTPRequest(f"ws://127.0.0.1:{port}/ws", headers={
-                "Cookie": cookie, "Origin": "http://evil.example"}))
+                "Cookie": cookie, "Origin": "http://evil.example", "X-CN-Session-Key": key}))
         assert err.value.code == 403
         ws = await websocket_connect(HTTPRequest(f"ws://127.0.0.1:{port}/ws", headers={
-            "Cookie": cookie, "Origin": base}))
+            "Cookie": cookie, "Origin": base, "X-CN-Session-Key": key}))
         snap = json.loads(await ws.read_message())       # the same session from its own page works
         assert isinstance(snap, dict)
         ws.close()

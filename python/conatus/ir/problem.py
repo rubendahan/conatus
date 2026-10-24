@@ -1,10 +1,10 @@
 """Equations and problem declarations.
 
- declares and *counts*; it does not discretize. The LHS/RHS split is
+The IR declares and *counts*; it does not discretize. The LHS/RHS split is
 checked: the LHS must be homogeneous linear in the problem variables (it is
 treated implicitly), the RHS holds explicit terms. The rank report is an
-IR-level pre-check of §14; the structural rank of the discrete system comes
-with.
+IR-level pre-check; the structural rank of the discrete system is checked
+by the discretization plan.
 """
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from dataclasses import field as dc_field
 from typing import Any
 
-# Public exception classes live in conatus.errors (v0.1); ProblemError is EquationError.
+# Public exception classes live in conatus.errors; ProblemError is EquationError.
 from ..errors import (BoundaryConditionError, InputTypeError, NonlinearLHSError, ProblemError,
                       ResolutionError, TensorError, UndeclaredVariableError)
 from .coords import Coordinate
@@ -46,10 +46,12 @@ class Equation:
 
     @property
     def domain(self) -> Domain | None:
+        """Union of the domains of both sides."""
         return Domain.union(self.lhs.domain, self.rhs.domain)
 
     @property
     def n_components(self) -> int:
+        """Number of tensor components of the equation."""
         n = 1
         for cs in self.lhs.tensorsig:
             n *= cs.dim
@@ -62,6 +64,7 @@ class Equation:
         return f"Equation({self})"
 
     def explain(self) -> str:
+        """The equation and its left-hand side tree."""
         return f"Equation: {self}\n  LHS:\n    " + self.lhs.explain().replace("\n", "\n    ")
 
 
@@ -89,6 +92,7 @@ class DirectionReport:
 
     @property
     def consistent(self) -> bool:
+        """True when the order sum, lifted taus, boundary components and tau variables agree."""
         return (self.order_sum == self.lifted_tau_components == self.boundary_components
                 == self.tau_variable_components)
 
@@ -105,10 +109,12 @@ class RankReport:
 
     @property
     def square(self) -> bool:
+        """True when there are as many equation components as variable components."""
         return self.variable_components == self.equation_components
 
     @property
     def status(self) -> str:
+        """CONSISTENT, CHECK or FAIL of the count analysis."""
         if not self.square:
             return "FAIL"
         if all(d.consistent for d in self.directions):
@@ -116,6 +122,8 @@ class RankReport:
         return "CHECK"
 
     def explain(self) -> str:
+        """The count analysis: variable and equation components and the per-direction tau
+        balance."""
         lines = [
             "System count analysis (IR level; the discrete rank is checked by discretize())",
             "-" * 72,
@@ -282,8 +290,8 @@ class Problem:
         return out
 
     def _check_bc_count(self, coord, basis, into: int, eqs: list[Equation]) -> None:
-        """Refuse more boundary conditions than the differential order along ``coord`` (v0.1:
-        an extra condition got an extra tau, the square system solved to a 1e-15 discrete
+        """Refuse more boundary conditions than the differential order along ``coord`` (otherwise
+        an extra condition gets an extra tau, the square system solved to a 1e-15 discrete
         residual and the PDE itself was no longer satisfied), a periodic direction, and a basis
         with fewer modes than tau terms."""
         V = self._vars

@@ -161,6 +161,7 @@ class SphereGlobalSystem(PolarGlobalSystem):
         return out
 
     def explain(self) -> str:
+        """The polar system's explain() for spherical groups, with the border mode."""
         text = super().explain().replace("PolarGlobalSystem", "SphereGlobalSystem").replace(
             "azimuthal group(s)", "group(s)")
         if self.border == "rows":
@@ -269,7 +270,7 @@ class SphereIVPSolver(PolarIVPSolver):
             self._sfused = SphereFusedRHS(self)
 
     def _graph_time_support(self):
-        """run_graph with a time-dependent F (B2): the planned F reads its time factors from
+        """run_graph with a time-dependent F: the planned F reads its time factors from
         device slots refreshed before each replay (sphere_fused.GraphScalars). None (refused)
         without f_backend='fused' on the GPU or with time-dependent boundary data."""
         if self.backend != "cuda" or self._sfused is None or self._bc_data() is not None:

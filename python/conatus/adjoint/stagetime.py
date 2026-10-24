@@ -18,7 +18,7 @@ adjoint keep the matrix-free linearization, as for any fused solver). CUDA-graph
 
 ``coefficient_time="step_start"`` (opt-in, comparison only) evaluates a_g at the start time of
 the current step for all its stages: the convention of a Dedalus script that updates a
-time-dependent NCC once per step (the reference bracket). It is a
+time-dependent NCC once per step. It is a
 different, first-order-in-time discretization of the forcing, used only to *measure* the effect
 of that method difference; the default ``"stage"`` is the consistent one. It is refused for any
 call whose time is not inside the solver's current step (e.g. a FlowMap replay), so it cannot
@@ -86,6 +86,8 @@ class StageTimeFused:
         self.inner.check_params(p)
 
     def values(self, t: float) -> list:
+        """Values of the time coefficients a_g(t) at time ``t`` (other parameters from the
+        plan)."""
         params = dict(self.solver.plan.params)
         params[self.tname] = t
         return [eval_scalar(a, params) for a in self.coefs]
@@ -105,6 +107,8 @@ class StageTimeFused:
         return t0
 
     def evaluate(self, data) -> list:
+        """Evaluate the right-hand side with the time-dependent coefficient fields at the
+        current stage (or step-start) time."""
         if self._t is None:
             raise RuntimeError("StageTimeFused.evaluate before check_params (no stage time)")
         d = dict(data)
@@ -113,9 +117,12 @@ class StageTimeFused:
         return self.inner.evaluate(d)
 
     def check_real_projection(self) -> None:
+        """Check the m = 0 real projection of the wrapped fused right-hand side."""
         self.inner.check_real_projection()
 
     def explain(self) -> str:
+        """When the time-dependent coefficients are evaluated (each stage, or frozen at the
+        start of the step)."""
         when = (f"at every stage time ({self.tname} never frozen)" if self.coefficient_time == "stage"
                 else "at the START of each step, frozen over its stages (coefficient_time="
                      "'step_start': first order in time in the forcing, comparison mode only)")

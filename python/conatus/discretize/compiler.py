@@ -1,4 +1,4 @@
-"""IR -> sparse blocks, for one mode group (the core).
+"""IR -> sparse blocks, for one mode group (the core of the discretization).
 
 A linear expression is compiled into a *form*: for each output tensor component,
 an ``Entry`` = (ultraspherical index lam along z or None if constant in z,
@@ -38,6 +38,7 @@ class Entry:
     blocks: dict[Key, sp.spmatrix] = dc_field(default_factory=dict)
 
     def copy_with(self, blocks: dict, lam: Any = "same", fdep: Any = "same") -> Entry:
+        """A copy with new ``blocks`` (and optionally a new level or Fourier dependence)."""
         return Entry(self.lam if lam == "same" else lam,
                      self.fdep if fdep == "same" else fdep, blocks)
 
@@ -101,6 +102,8 @@ class Compiler:
         return {k: (K @ b).tocsr() for k, b in e.blocks.items()}
 
     def convert(self, e: Entry, lam: int) -> Entry:
+        """The entry converted to level ``lam`` (unchanged when constant along z or already
+        there)."""
         if e.lam is None or e.lam == lam:
             return e
         S = (self.zfam.conversion_chain(e.lam, lam) if self.zfam is not None
@@ -108,6 +111,8 @@ class Compiler:
         return e.copy_with(self._apply(e, None, S), lam=lam)
 
     def broadcast(self, e: Entry, fdep: tuple[bool, ...], z: bool) -> Entry:
+        """The entry made dependent on the Fourier directions ``fdep`` and, if ``z``, on the
+        non-periodic one."""
         per = {i: item.embed_const() for i, (item, a, b) in enumerate(zip(self.g, e.fdep, fdep, strict=True))
                if b and not a}
         for a, b in zip(e.fdep, fdep, strict=True):
@@ -127,6 +132,8 @@ class Compiler:
         return Entry(lam, tuple(fdep), self._apply(e, F, Z))
 
     def add_entries(self, entries: list[Entry]) -> Entry:
+        """Sum of entries, broadcast to a common Fourier and non-periodic dependence and the
+        highest level."""
         fdep = tuple(any(e.fdep[i] for e in entries) for i in range(len(self.g)))
         z = any(e.lam is not None for e in entries)
         entries = [self.broadcast(e, fdep, z) for e in entries]
@@ -139,10 +146,13 @@ class Compiler:
         return Entry(lam, fdep, out)
 
     def scale(self, e: Entry, c: complex) -> Entry:
+        """The entry multiplied by the number ``c``."""
         return e.copy_with({k: (c * b).tocsr() for k, b in e.blocks.items()})
 
     # ------------------------------------------------------------------ compile
     def compile(self, x: E.Expr, mode: str = "L") -> dict[tuple, Entry]:
+        """Sparse blocks (per unknown) of the expression ``x``; ``mode`` 'L' or 'M' picks the
+        operator, and an EVP splits off the eigenvalue."""
         self.mode = mode
         ev = self.eigenvalue
         if ev is not None and ev in x.free_parameters() and not any(
@@ -638,6 +648,7 @@ def implicit_rotation_rate(problem: Any, params: Mapping[str, Any]) -> tuple[flo
 
 
 def form_rank(a: E.Expr) -> int:
+    """Tensor rank of the expression ``a``."""
     return a.rank
 
 

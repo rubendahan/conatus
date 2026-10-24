@@ -2,6 +2,110 @@
 
 All notable changes to Conatus.
 
+## [0.2.0] - 2026-10-24
+
+This release adds a set of published studies reproduced by public scripts and corrects the findings
+of an external review of 0.1.2. Each fix has a test against an independent reference value.
+Upgrading is recommended: some results of 0.1.2 were wrong (see Correctness). Results that can
+differ from 0.1.2: invariant solutions with a conserved mean, flow maps after a change of time step,
+the finite/infinite split of dense QZ under a rescaled equation, spectral POD confidence intervals
+at zero and Nyquist frequency, certified Floquet roots, cached calls of functions that draw random
+numbers, angles between complex covariant Lyapunov vectors, and contour counts of a function with
+poles near the boundary.
+
+### Added
+
+- Published studies reproduced, in `examples/published/`: the Orr–Sommerfeld spectrum of plane
+  Poiseuille flow (Orszag 1971, 32 eigenvalues and the critical point), linearised pipe flow from
+  Re = 10² to 10⁷ (Meseguer & Trefethen 2003, Table 1, 17 eigenvalues), the marginal curves of
+  Rayleigh–Bénard onset for three pairs of walls (Rayleigh 1916, Chandrasekhar 1961) and the
+  equilibria and travelling waves of Kuramoto–Sivashinsky at L = 22 (Cvitanović, Davidchack &
+  Siminos 2010). Each script prints, for every published value, the computed value, the gap and
+  whether it is within the rounding of the printed digits; `examples/published/run.sh <case>`
+  records the output with the script hash, the version and the machine. The site has a page that
+  draws the published values over the computed ones, and Validation rows link to the script that
+  prints them.
+- `EVPResult.infinite_ambiguous`: the moduli of the eigenvalue pairs removed as infinite on
+  numerical rank alone.
+- `SPOD.dof()` (degrees of freedom per frequency) and `SPOD.real_data`.
+- `FlowMap.dt`: the time step a flow map was built with.
+
+### Security
+
+- Studio hub sessions carry a second secret next to the cookie: a session key that the app keeps in
+  the storage of its own origin and sends with every data request, command and WebSocket. A cookie
+  replayed by another service on the same host name, without the key, is refused (401). Bearer
+  tokens of agents are unchanged.
+
+### Correctness
+
+- Invariant solutions (`find_equilibrium`, `find_travelling_wave`, `find_relative_periodic_orbit`)
+  keep the mean of the initial guess; it was reset to 0 (1 + cos x came back as cos x). A result
+  whose full equations, frozen mean included, miss the tolerance is refused
+  (`NewtonNotConverged`); `u_t = 1` returned an "equilibrium". The orbit Newton uses the
+  derivative of the discrete map for its period column, so it converges at its full rate.
+- `FlowMap` keeps the time step it was built with; after `solver.set_dt`, calling the map ran at
+  the new step while `trajectory` and `jvp` kept the old one. Repeated orbit residuals no longer
+  depend on the period evaluated before.
+- Dense QZ: the finite/infinite split no longer depends on the scale of each equation. A pair
+  removed only because `M` is numerically singular is listed with its modulus in
+  `EVPResult.infinite_ambiguous` and in the log.
+- `SPOD.confidence`: N_b degrees of freedom at f = 0 and Nyquist of real data (2 N_b elsewhere);
+  the nominal 95 % intervals covered 83 % there.
+- `CertifiedRoot.certify` requires a finite root that matches the finest resolution of its study;
+  changing the root or its evidence afterwards withdraws the certification.
+- Run cache: a function that reads a global random generator, the clock or an unseeded
+  `default_rng()` is never served from the cache (it was, after reseeding). A generator built from
+  a seed argument, or a module-level value named like one (`seed = 7`), keeps the cache key.
+- `clv_subspace_angles` and `LyapunovResult.pair_angle` use the Hermitian product for complex
+  vectors.
+- Eigenvalue results report a failure to identify the tau variables in `spurious_note` /
+  `filter_note` instead of treating it as "no tau".
+- `cn.contour.count` for a function `T(z)` that may have poles: a zero just inside an edge and a
+  pole just outside it (1e-3 apart) were counted 0 instead of 1. The walk now refines where
+  `log det T` bends, and when a zero or a pole lies closer to the boundary than 1e-3 of the
+  perimeter the count warns (`CorrectnessWarning`, also in `CountResult.near_edge`) and suggests
+  moving or shrinking the box.
+- The Studio example's kinetic energy is ½∫|u|² (it was half of that).
+
+### Documentation
+
+- The methods pages state the derivative each method uses and the hypotheses of each result: the
+  tangent of a Runge–Kutta stage sums over the earlier stages, the phase residual of
+  pseudo-arclength continuation carries the weight W of its bordered row, DMD modes are not
+  orthogonal in general, the growth rate of a mode with phase speed c is α Im c, and the
+  conventions of the energy-gain slope, the Floquet fundamental matrix, the real and complex
+  adjoints and the covariance of Lyapunov vectors. Each identity is checked by a test.
+- References shown by the site, the docs, the docstrings and the examples are checked against
+  Crossref or arXiv; one reference that does not exist was removed, twenty were corrected, and a
+  wrong equation number fixed.
+- Guides, tutorials and the site describe what the code does, without comparison with other codes.
+  A gallery picture reports only what its own run measured; the install page and the docs build
+  their tables of releases and optional extras from one source. Docstrings of the public API carry
+  no internal identifiers.
+
+### Changed
+
+- The package follows one import rule between its layers (base, IR, reference, discretisation,
+  execution, methods, model, user). Six large modules were split; their former import paths still
+  work.
+- The warnings that 0.1 announced as errors "in v0.2" (`BaseStateWarning`, `GroupWarning`,
+  `DefaultChoiceWarning`, `arnoldi_tol`, the `k=`/`n_modes` names and the other renamed arguments)
+  stay warnings in 0.2.0 and become errors in 0.3. The messages and the guide say so.
+- The status table of the documentation lists the local Studio server
+  (`python -m conatus.studio.hub serve --local`) as shipped; serving the hub beyond 127.0.0.1 and a
+  relay to a remote hub are not supported in this release.
+
+### Known limitations
+
+- A contour count for a function `T(z)` with poles is a test on samples, not a proof: a zero and
+  a pole on opposite sides of an edge whose bend is hidden by a stronger smooth variation of
+  `det T` can still cancel.
+- The GPU paths were not run again on GPU hardware for this release; the GPU statements of the
+  documentation refer to the last release that ran them (0.1.x).
+- Unchanged from 0.1.2: the dense QZ limitation on pencils with a singular `M` and finite
+  eigenvalues above about 1e12 times the scale of the pencil.
+
 ## [0.1.2] - 2026-10-21
 
 A correction release for the findings of an external review of 0.1.1 and of a review of its

@@ -23,11 +23,13 @@ _cu = getattr(_core, "cuda", None)
 
 
 def available() -> bool:
+    """True when the core was built with CUDA and a device is usable."""
     return _cu is not None and bool(_cu.available())
 
 
 def unavailable_reason() -> str:
-    """Why ``backend='cuda'`` cannot run here, naming the one case that applies (the messages said "no device, or a core built without CUDA" although the two are known apart);
+    """Why ``backend='cuda'`` cannot run here, naming the one case that applies ("no
+    device" and "a core built without CUDA" are told apart);
     "" when it can."""
     if _cu is None:
         return ("the compiled core was built without CUDA (conatus._core has no CUDA part): "
@@ -50,14 +52,17 @@ def _need():
 
 
 def device_name() -> str:
+    """Name of the CUDA device ("none" without CUDA)."""
     return _cu.device_name() if _cu is not None else "none (built without CUDA)"
 
 
 def synchronize() -> None:
+    """Wait for every queued device operation."""
     _need().synchronize()
 
 
 def pool_stats() -> dict:
+    """Device memory pool counters: live and cached bytes, allocations and reuses."""
     live, cached, n_alloc, n_reuse = _need().pool_stats()
     return {"live_bytes": live, "cached_bytes": cached, "n_alloc": n_alloc, "n_reuse": n_reuse}
 
@@ -215,6 +220,7 @@ class BandedBatch:
         self._s.prepare_transpose()
 
     def explain(self) -> str:
+        """Batch size, band, border and storage of the device systems, one line."""
         return (f"cuda.BandedBatch(batch={self.batch}, n={self.n}, common band kl={self.kl} ku={self.ku}, "
                 f"border rank={self.rank}"
                 + (f" (rows and columns, {self._s.col_border_nnz} column-border entries)" if self.col_border else "")
@@ -264,6 +270,7 @@ class Imex:
         return self._s.run(d, float(t0), check_steps(nsteps, "cuda.Imex.run"))
 
     def explain(self) -> str:
+        """Scheme, dt, explicit term and factorizations of the device integrator, one line."""
         return (f"cuda.Imex(scheme={self.scheme}, dt={self.dt:g}, constant step, "
                 f"F={'g*X+h' if self._pointwise else 'none'}, factorizations={self.n_factorizations}); "
                 "state resident on the device, batched bordered banded solves")

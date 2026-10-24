@@ -157,6 +157,16 @@ def ffmpeg_exe() -> str:
     return imageio_ffmpeg.get_ffmpeg_exe()
 
 
+def _generation(key: str, slug: str) -> dict:
+    """How to make a film again (the two commands, from the repository root) and the sha256 of the
+    published files."""
+    import hashlib
+    return {"command": f"python docs/site/tutorial_media.py capture --out DATA --only {key} && "
+                       f"python docs/site/tutorial_media.py render --data DATA --only {key}",
+            "sha256": {ext: hashlib.sha256((FILMS / f"{slug}.{ext}").read_bytes()).hexdigest()
+                       for ext in ("webm", "mp4")}}
+
+
 def film(frames: list[np.ndarray], key: str, name: str, poster: int, alt: str, caption: str,
          closes: bool = False) -> None:
     """WebM (VP9) + MP4 (H.264) at FPS, no audio, each < MAX_VIDEO_BYTES (the constant quality
@@ -208,7 +218,7 @@ def film(frames: list[np.ndarray], key: str, name: str, poster: int, alt: str, c
                     "poster": f"_static/tutorial_films/{slug}.webp", "tutorial": key, "kind": "film",
                     "width": W, "height": H, "fps": FPS, "frames": len(frames),
                     "duration_s": round(len(frames) / FPS, 2), "bytes": sizes, "loop": loop,
-                    "alt": alt, "caption": caption})
+                    "generation": _generation(key, slug), "alt": alt, "caption": caption})
     print(f"[render] {slug}: {W}x{H}, {len(frames) / FPS:.1f} s, webm {sizes['webm'] / 1e3:.0f} kB, "
           f"mp4 {sizes['mp4'] / 1e3:.0f} kB", flush=True)
 
@@ -792,9 +802,10 @@ def r_t10(d, meta, films=True):
         ax.set_xlabel("x")
         ax.set_ylabel("z")
         ax.set_aspect("equal", adjustable="datalim")
+        name = "C+" if c > 0 else "C−"                    # the branch the page continued (sign of x)
         save(fig, "t10", "cycles",
-             "Nested closed loops in the (x, z) plane around the point C+, small ones near it and larger ones "
-             "further out.",
+             f"Nested closed loops in the (x, z) plane around the point {name}, small ones near it and larger "
+             "ones further out.",
              f"The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of degree 4) "
              f"for r from {rc.max():.3f} down to {rc.min():.3f} (colour bar): born at the Hopf point around the "
              "equilibrium of the continued branch (cross), they grow as r decreases.")
@@ -1068,24 +1079,31 @@ def r_t14(d, meta, films=True):
 def r_t15(d, meta, films=True):
     lam, err, cds = d["exponents"], d["stderr"], d["cds"]
     i = np.arange(1, lam.size + 1)
-    fig, ax = plt.subplots(figsize=(7, 3.4))
-    ax.errorbar(i, lam, yerr=err, fmt="o", ms=4, color=INK, capsize=2, label="this run")
-    ax.plot(np.arange(1, cds.size + 1), cds, "_", ms=16, mew=2, color=RED,
-            label=f"published, {cds.size} values (Cvitanović et al. 2010)")
-    ax.axvline(meta["n_physical"] + 0.5, color=SMOKE, ls=":", lw=1)
-    ax.text(meta["n_physical"] + 0.5, 1.0, "entangled | isolated", ha="center", va="bottom", fontsize=9, color=INK,
+    n = meta["n_physical"]
+    fig, (ax, az) = plt.subplots(1, 2, figsize=(7.6, 3.4), gridspec_kw={"width_ratios": [3, 2]})
+    for a, sel in ((ax, slice(None)), (az, slice(0, n))):
+        a.errorbar(i[sel], lam[sel], yerr=err[sel], fmt="o", ms=4, color=INK, capsize=2, label="this run")
+        m = min(cds.size, i[sel][-1])
+        a.plot(np.arange(1, m + 1), cds[:m], "_", ms=16, mew=2, color=RED,
+               label=f"published, {cds.size} values (Cvitanović et al. 2010)")
+        a.axhline(0, color=INK, lw=0.6, alpha=0.5)
+        a.set_xlabel("index i")
+        a.set_xticks(i[sel])
+    ax.axvline(n + 0.5, color=SMOKE, ls=":", lw=1)
+    ax.text(n + 0.5, 1.0, "entangled | isolated", ha="center", va="bottom", fontsize=9, color=INK,
             transform=ax.get_xaxis_transform())
-    ax.axhline(0, color=INK, lw=0.6, alpha=0.5)
-    ax.set_xlabel("index i")
     ax.set_ylabel("Lyapunov exponent λᵢ")
-    ax.set_xticks(i)
-    ax.legend(loc="lower left")
+    ax.legend(loc="lower left", fontsize=8)
+    az.set_title(f"the first {n}, enlarged", fontsize=9)
+    fig.tight_layout()
     save(fig, "t15", "exponents",
-         f"Twelve Lyapunov exponents with error bars, close to zero for the first eight and dropping near -2 "
-         f"after; the first {cds.size} sit on red ticks of the published values.",
-         f"The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors. Red "
-         f"ticks mark the {cds.size} published values (Cvitanović et al. 2010), so exponents {cds.size + 1} to "
-         f"{lam.size} have no reference tick. The first eight are the entangled modes.")
+         f"Left: twelve Lyapunov exponents with error bars, the first eight between about 0.04 and -0.32, "
+         f"then two near -2 and two near -5.6; the first {cds.size} sit on red ticks of the published values. "
+         f"Right: the first {n} enlarged, with their error bars and reference ticks.",
+         f"The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors (left), "
+         f"and the first {n} on a finer scale (right). Red ticks mark the {cds.size} published values "
+         f"(Cvitanović et al. 2010); exponents {cds.size + 1} to {lam.size} have no reference. The first "
+         f"{n} are the entangled modes.")
     t4, t8 = d["theta4"].ravel(), d["theta8"].ravel()
     fig, ax = plt.subplots(figsize=(7, 3.0))
     bins = np.geomspace(max(min(t4.min(), t8.min()), 1e-4), np.pi / 2, 50)
@@ -1116,11 +1134,24 @@ def r_t15(d, meta, films=True):
     cb = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     cb.set_label("P(Λᵢ < Λⱼ), τ = 5", fontsize=9)
     cb.outline.set_visible(False)
+    # clusters from the matrix itself: a split j | j+1 is crossed when some nu_il > 0 with i <= j < l
+    crossed = [bool(np.nanmax(M[:j, j:]) > 0) for j in range(1, k)]
+    clusters, start = [], 1
+    for j in range(1, k + 1):
+        if j == k or not crossed[j - 1]:
+            clusters.append((start, j))
+            start = j + 1
+    later = [f"{a}–{b}" for a, b in clusters[1:] if b > a]
+    names = ", ".join(later[:-1]) + (" and " if len(later) > 1 else "") + (later[-1] if later else "")
+    first = clusters[0][1]
     save(fig, "t15", "domination",
-         "A triangular matrix of probabilities: red squares among the first eight indices, near white "
-         "elsewhere.",
-         "Domination of Oseledets splitting: how often the local exponent i falls below j over windows of "
-         "5 time units. Violations stay among the first eight modes: they form one entangled block.")
+         f"A triangular matrix of probabilities: red squares among the first {first} indices"
+         + (f" and inside the pairs {names}" if later else "") + "; near white across the splits between them.",
+         f"Domination of the Oseledets splitting: how often the local exponent i falls below j over windows "
+         f"of 5 time units. The first {first} modes form the leading cluster: no violation crosses the split "
+         f"{first} | {first + 1}."
+         + (f" Later modes are entangled among themselves in the pairs {names}, each separated from the "
+            "leading cluster." if later else ""))
     U = d["spacetime"]
     L = meta["L"]
     Uf = fourier_interp(U, 256, axis=1)

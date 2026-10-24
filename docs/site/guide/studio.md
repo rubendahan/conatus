@@ -1,9 +1,13 @@
 # The Studio
 
-The Studio shows a running simulation as a film, from a browser or a phone, and lets you pause,
-checkpoint, stop or fork it. Watching does not change the computation. The Studio and its hub are
-experimental in this release ({doc}`experimental`). `sim.watch` records the telemetry as
-documented; the page, the server, the hub and the client may change.
+The Studio shows a running simulation as a film in a browser, and lets you pause, checkpoint, stop
+or fork it. This page gets a first live view on your own machine, then explains what is sent and
+where else the server can run. The Studio is experimental in this release ({doc}`experimental`).
+
+## A first live view
+
+**Declare** what the Studio may show with `sim.watch`, then run the simulation. The telemetry goes
+to the spool directory `studio_spool`:
 
 ```{literalinclude} _check_features.py
 :language: python
@@ -16,10 +20,20 @@ documented; the page, the server, the hub and the client may change.
 :language: text
 ```
 
-Telemetry reads the declared fields and does not change them: the run gives the same numbers, bit
-for bit, with and without the watch (the check script runs the same simulation without the watch
-and compares the two final states). The Controls panel can send pause, checkpoint and stop
-commands.
+The watch reads the declared fields and never changes them: the check script runs the same
+simulation without the watch and gets the same final state, bit for bit.
+
+**Start the server** on the same machine, on that spool directory (it needs
+`pip install "conatus[studio]"`):
+
+```bash
+python -m conatus.studio.hub serve --local --spool studio_spool --port 8765
+```
+
+It prints the path of a file that holds a one-session login token.
+
+**Open** `http://localhost:8765/login` and paste the token from that file. The Controls panel can
+send pause, checkpoint and stop commands.
 
 ## Only what you declare
 
@@ -31,11 +45,10 @@ commands.
   as an isosurface, a volume or slices (`cn.view(q, mode="isosurface")`).
 - **stats**: numbers and curves. A function returns one number per call (a time series);
   `cn.series`, `cn.spectrum` and `cn.profile` declare curves with their formula.
-- **every**: the wall-clock time between two frames of a view.
+- **every_s**: the wall-clock time, in seconds, between two frames of a view.
 
 `w = sim.watch(...)` returns the watch; `w.explain()` (and `sim.explain()`) lists what will be
-sent and what is lost on the way: frames are stored on 8 bits and decimated. Watching does not
-change the numbers of the computation.
+sent and what is lost on the way: frames are stored on 8 bits and decimated.
 
 ## What you see
 
@@ -54,7 +67,7 @@ change the numbers of the computation.
 5. **The board**: every run with what needs attention (a non-finite value, a silent run, a relay
    down...), who is piloting it, and the recent commands; read only.
 
-A second screen compares one quantity across two to six runs. On a phone the Studio can be added
+A second screen compares one quantity across up to eight runs. On a phone the Studio can be added
 to the home screen. The link is always shown: *live* with its round-trip time, *reconnecting*
 with the next attempt (tap to retry now), or *offline*; the Studio reconnects by itself when the
 page comes back or the network returns, and a light stream (no 3D data, fewer points) can be
@@ -62,7 +75,7 @@ chosen on the board for a slow connection.
 
 Scripts and agents read the same state and send the same commands: {doc}`studio_agents`.
 
-## Opening the Studio
+## Where the server runs
 
 The computation writes its film and numbers to a spool directory; the Studio reads it. Choose who
 serves it:
@@ -92,16 +105,19 @@ loopback address only; the token file is readable by you alone.
   fixed place, pass `--state ./hub_state` (or set `$CN_HUB_STATE`), or `--user-token-out FILE`.
   `--print-token` prints the token itself (it then lands in any log of the process).
 
-The Studio needs `tornado` (`pip install "conatus[studio]"`). The solver library
-does not import it.
+The solver library does not import `tornado`; only the Studio server needs it.
 
 **Other services on `localhost`.** Browsers keep cookies per host name, not per port. After you
 sign in at `http://localhost:8765`, the browser also sends the Studio's session cookie to any other
-web service you open on `localhost`, whatever its port. Such a service could reuse the cookie to
-act in your Studio until the session ends. To avoid it, open the Studio at a name of its own, such
-as `http://studio.localhost:8765` (Chrome, Edge and Firefox send `*.localhost` to this machine
-without DNS), and sign in there. The cookie is then sent only to `studio.localhost`. A session
-works only at the name and port where you signed in.
+web service you open on `localhost`, whatever its port. The cookie alone does not give access to
+your runs. At sign-in the hub also gives the page a session key, which the Studio app keeps in the
+browser storage of its own address (name and port) and sends with every request. Other services
+cannot read that storage. Without the key, the hub answers only the app's pages, which hold no
+data. A session works only at the name and port where you signed in, and ends after 12 hours or
+when the hub stops. If your browser blocks site storage, the Studio sends you back to the sign-in
+page. You can also open the Studio at a name of its own, such as `http://studio.localhost:8765`
+(Chrome, Edge and Firefox send `*.localhost` to this machine without DNS); the cookie is then sent
+only to `studio.localhost`.
 
 
 ## Without the native layer
@@ -112,13 +128,6 @@ and a wrapper for Newton–Krylov searches.
 
 ## Limits and timings
 
-Every number the Studio, the hub, the relay and the telemetry use on their own (when a quiet run
-counts as *silent*, how long a confirmation or a session lives, how many failed logins are allowed,
-how large a request may be, how much film the hub keeps) is declared in one table,
-`conatus.studio.constants`, and printed by
-`python -c "import conatus.studio.constants as c; print(c.explain())"`. A test fails if the code and
-the table ever differ, or if a new constant is not listed.
-
-```{include} _generated/studio_constants.md
-```
-
+The Studio, the hub, the relay and the telemetry use fixed limits and timings: when a quiet run
+counts as *silent*, how long a session lives, how many failed logins are allowed, how much film the
+hub keeps. They are listed in {doc}`studio_limits`.

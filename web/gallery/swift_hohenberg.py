@@ -8,7 +8,7 @@ Same equation, bases and dealiasing as part (c) of examples/patterns/swift_hohen
 |k| close to 1: rolls of every orientation grow and form a labyrinth with defects that
 coarsens slowly. The field u is drawn in the smoke colormap (dark troughs, light crests); the
 pixels are an exact Fourier synthesis on the pixel grid (FFT zero-padding).
-The r.m.s. of u is compared with that of the straight rolls of the validated branch,
+The r.m.s. of u is compared with that of the straight rolls of the continued branch,
 A / sqrt(2) with A(r = 0.1) = 0.3652433 (diagnostic only: the labyrinth is not straight rolls).
 
 """
@@ -98,13 +98,6 @@ def main() -> None:
         "colormap": "smoke",
         "script": "web/gallery/swift_hohenberg.py",
         "example_script": "examples/patterns/swift_hohenberg.py",
-        "validated": {
-            "value": ("roll amplitude A(r = 0.1) = 0.3652433015 (N-converged, Newton residual 8e-14); "
-                      "(A² − 4r/3)/r² → 1/144 along the continued branch; 2D IVP on the branch to 1e-9"),
-            "reference": "Swift & Hohenberg 1977, Phys. Rev. A 15, 319; Cross & Hohenberg 1993, Rev. Mod. Phys. 65, 851",
-            "source": "paper/conatus.tex §Gallery; examples/README.md",
-            "run_id": None,
-        },
         "geometry": "cartesian",
         "domain": "patterns",
         "parameters": {"r": a.r, "Lx": Lx, "Ly": Ly, "Nx": Nx, "Ny": Ny, "dealias": 2,

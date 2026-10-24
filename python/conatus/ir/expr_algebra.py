@@ -31,6 +31,7 @@ class Add(Expr):
         self._setup(terms, terms[0].tensorsig, _union_domains(terms), _result_dtype(terms))
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same node on the arguments ``args``, built by ``add`` (with its simplifications)."""
         return add(*args)
 
     def _degrees(self, fields: frozenset) -> frozenset[int]:
@@ -112,6 +113,7 @@ class Mul(Expr):
         self._setup(factors, sig, _union_domains(factors), _result_dtype(factors))
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same node on the arguments ``args``, built by ``mul`` (with its simplifications)."""
         return mul(*args)
 
     @property
@@ -220,6 +222,7 @@ class Dot(Expr):
                     _result_dtype((a, b)))
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same node on the arguments ``args``, built by ``dot`` (with its simplifications)."""
         return dot(*args)
 
     def _degrees(self, fields: frozenset) -> frozenset[int]:
@@ -279,6 +282,8 @@ class Cross(Expr):
         self._setup((a, b), (a.tensorsig[0],), _union_domains((a, b)), _result_dtype((a, b)))
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same node on the arguments ``args``, built by ``cross`` (with its
+        simplifications)."""
         return cross(*args)
 
     def _degrees(self, fields: frozenset) -> frozenset[int]:
@@ -347,6 +352,8 @@ class Outer(Expr):
                     _result_dtype((a, b)))
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same node on the arguments ``args``, built by ``outer`` (with its
+        simplifications)."""
         return outer(*args)
 
     def _degrees(self, fields: frozenset) -> frozenset[int]:
@@ -393,6 +400,8 @@ class Component(Expr):
                     params=(index,), index=index)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same node on the arguments ``args``, built by ``comp`` (with its
+        simplifications)."""
         return comp(args[0], self.index)
 
     def __str__(self) -> str:
@@ -426,6 +435,8 @@ class Power(Expr):
                     exponent=exponent)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same node on the arguments ``args``, built by ``power`` (with its
+        simplifications)."""
         return power(args[0], self.exponent)
 
     def _degrees(self, fields: frozenset) -> frozenset[int]:
@@ -489,6 +500,8 @@ class Conj(Expr):
         self._setup((operand,), operand.tensorsig, operand.domain, operand.dtype)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same node on the arguments ``args``, built by ``conj`` (with its
+        simplifications)."""
         return conj(args[0])
 
     def __str__(self) -> str:
@@ -554,8 +567,8 @@ _BUILTIN_TABLE: dict[str, tuple] = {
     "sign": (np.sign, "odd", 0.0, None),   # derivative 0 a.e., undefined at 0: not linearizable
 }
 _BUILTIN_FUNCS = frozenset(_BUILTIN_TABLE)
-#: Functions whose derivative is not continuous: refused by the tangent and adjoint maps
-#:; sign() is also refused by linearization.
+#: Functions whose derivative is not continuous: refused by the tangent and adjoint maps;
+#: sign() is also refused by linearization.
 NONDIFFERENTIABLE = ("abs", "sign")
 NONDIFFERENTIABLE_FIX = ("replace it by a smooth approximation whose derivative exists everywhere, "
                          "e.g. abs(T) -> sqrt(T**2 + eps**2) or sign(T) -> tanh(T/eps) with eps a "
@@ -568,10 +581,9 @@ _RENAMED: dict[str, str] = {}          # key -> name, for the keys that differ f
 
 
 class _UserFunction:
-    """One :func:`pointwise` declaration (F105). The registry holds it
+    """One :func:`pointwise` declaration. The registry holds it
     weakly; the builder that ``pointwise`` returns and every node ``g(u)`` hold it, so a
-    declaration lives exactly as long as something can still use it (review of the state audit,
-    F5: the registry kept every declaration, so a notebook cell run again with a new lambda added
+    declaration lives exactly as long as something can still use it (earlier versions: the registry kept every declaration, so a notebook cell run again with a new lambda added
     an entry, and kept its closure and whatever it captured alive, for the life of the process).
     Its key is never given to another declaration (``_USED_KEYS``), also after it is collected."""
 
@@ -631,14 +643,13 @@ _DISPLAY = _Table(lambda r: r.name)
 
 
 def _user_key(name: str, entry: tuple, value_at_zero: float | None = None) -> str:
-    """The registry key of user function ``entry`` named ``name`` (F105-10-19):
+    """The registry key of user function ``entry`` named ``name``:
     the name itself the first time, the same key again for the same function, else ``name__2``,
     ``name__3``... A user name is scoped to the model that declares it: two models (or a notebook
     cell run again with a new lambda) may each have their own ``g``; the nodes differ (their key
     enters the hash), and every printed form shows ``g``. ``value_at_zero`` is part of the
     identity: the same f declared again with another f(0) used to take the same key and
-    overwrite the f(0) that the symmetry checks of the first model read (audit state
-   )."""
+    overwrite the f(0) that the symmetry checks of the first model read."""
     key, i = name, 1
     while key in _USED_KEYS or key in _BUILTIN_FUNCS:
         r = _USER_REG.get(key)
@@ -678,8 +689,7 @@ def display_name(func: str) -> str:
 def pointwise(name: str, f: Any, *, derivative: Any = None, parity: str = "none",
               value_at_zero: float | None = None):
     """Register a user pointwise scalar function f(u) and return its builder ``g`` (``g(u)`` is an
-    IR node like ``sin(u)``): the role of Dedalus' ``GeneralFunction`` for the common case of a
-    pointwise function of one scalar field.
+    IR node like ``sin(u)``): a pointwise function of one scalar field, evaluated on the grid.
 
     ``f`` maps an array of grid values to an array of the same shape (NumPy on CPU; on the GPU
     backend it receives CuPy arrays and must accept them); ``derivative`` (optional) is f' in the
@@ -688,7 +698,7 @@ def pointwise(name: str, f: Any, *, derivative: Any = None, parity: str = "none"
     built-in functions the node is evaluated on the dealiased grid and is not alias-free
     (declared by explain()); non-finite values are refused at evaluation. A built-in name is
     refused; the same name with another function is another node (a user name is scoped to the
-    model that declares it: F105-10-19)."""
+    model that declares it)."""
     import re
     if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
         raise OptionError(f"pointwise({name!r}): the name must be an identifier",
@@ -722,7 +732,7 @@ def pointwise(name: str, f: Any, *, derivative: Any = None, parity: str = "none"
 
     def builder(x: Any) -> Expr:
         return _unary(key, x)
-    builder._declaration = rec             # the builder keeps its declaration alive (F5)
+    builder._declaration = rec             # the builder keeps its declaration alive
     builder.__name__ = name
     builder.__doc__ = f"User pointwise function {name}(u) (conatus.ir.pointwise)."
     return builder
@@ -753,23 +763,28 @@ class UnaryFunction(Expr):
             raise TypeError(f"{name}() is defined for scalars only")
         if name in ("abs", "sign") and operand.dtype.kind == "c":
             raise TypeError(f"{name}() of a complex quantity is not holomorphic: refused")
-        # a user function's node holds its declaration (the registry holds it weakly, F5)
+        # a user function's node holds its declaration (the registry holds it weakly)
         self._setup((operand,), (), operand.domain, operand.dtype, params=(name,), func=name,
                     _declaration=_USER_REG.get(name))
 
     @property
     def numpy_func(self):
+        """The NumPy function evaluating it pointwise."""
         return _FUNCS[self.func][0]
 
     @property
     def parity_kind(self) -> str:
+        """Parity kind of the function: 'odd' (f(-u) = -f(u)), 'even' (f(-u) = f(u)) or 'none'."""
         return _FUNCS[self.func][1]
 
     @property
     def value_at_zero(self) -> float | None:
+        """f(0) when defined (None otherwise), used by the parity rules."""
         return _FUNCS[self.func][2]
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same node on the arguments ``args``, built by the same function (with its
+        simplifications)."""
         return _unary(self.func, args[0])
 
     def _degrees(self, fields: frozenset) -> frozenset[int]:

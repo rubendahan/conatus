@@ -1,9 +1,9 @@
-"""Reuse of assembled operators between two ``simulate()`` of the same model.
+"""Reuse of assembled operators between two ``simulate()`` of the same model (P1).
 
 Building a simulation is dominated by the assembly of the implicit operators: the sparse ``L`` and
 ``M`` of every Fourier group (``Plan.matrices``; about 1.3 s for Rayleigh-Benard at 64 x 32, more
 than the compile, the factorisation or a few hundred steps). A parameter sweep or a notebook cell
-run twice paid it each time. ``Model.simulate`` now keeps the assembled
+run twice paid it each time (P1). ``Model.simulate`` now keeps the assembled
 group matrices of its last :data:`PLAN_CACHE_SIZE` builds and copies them into the next plan
 when nothing that enters them changed.
 

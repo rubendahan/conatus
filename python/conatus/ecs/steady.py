@@ -273,7 +273,7 @@ def isotypic_spectrum(solver, X, group, *, T: float, nsteps: int, k: int, tol: f
                       tangent: str = "exact", fd_eps: float | None = None,
                       advance=None) -> dict:
     """Leading eigenvalues of the linearization about a steady state X in **each isotypic
-    component** of a diagonal symmetry group (D7): Arnoldi (ARPACK, largest modulus) on the exact
+    component** of a diagonal symmetry group: Arnoldi (ARPACK, largest modulus) on the exact
     tangent of the discrete time-T map (FlowMap.jvp, dt = T / nsteps) restricted to the component's
     field entries; |μ| gives Re λ = log|μ| / T. The imaginary part of log μ / T is only known
     modulo 2π/T: with ``branch_steps`` (declared), each Ritz vector v is also pushed through the

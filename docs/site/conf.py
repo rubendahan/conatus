@@ -183,3 +183,93 @@ def _start_list() -> str:
 _start = SITE / "tutorials" / "_generated" / "start.md"
 if not _start.exists() or _start.read_text() != _start_list():
     _start.write_text(_start_list())
+
+
+# Plot figures (tutorials/media, tutorials/outputs, guide/media PNGs) are drawn on a transparent
+# background with mid-tone ink. In the dark theme they need a paper panel, and the built pages serve
+# them from _images/, so the source path cannot be matched in CSS: the class is set here from the
+# source URI (conatus.css, "cn-paper").
+_PAPER_DIRS = ("tutorials/media/", "tutorials/outputs/", "guide/media/")
+
+
+def _paper_class(app, doctree) -> None:
+    """Runs before or after Sphinx's image collector, so the URI may be page- or root-relative."""
+    import posixpath as _posix
+
+    from docutils import nodes
+    doc = app.env.docname.rsplit("/", 1)[0] + "/" if "/" in app.env.docname else ""
+    for node in doctree.findall(nodes.image):
+        uri = node.get("uri", "").replace("\\", "/")
+        full = uri if uri.startswith(("tutorials/", "guide/")) else _posix.normpath(doc + uri)
+        if full.endswith(".png") and any(full.startswith(d) for d in _PAPER_DIRS):
+            node["classes"].append("cn-paper")
+
+
+def _no_viewcode_for_unindexed(app, doctree) -> None:
+    """Objects documented twice (a ``conatus.contour`` class re-exported by ``conatus.expert``) are
+    indexed on the user page only; their expert stub is ``:no-index:`` and has no anchor. viewcode
+    would still record the stub and link the source page to ``#conatus.expert.<name>``, a fragment
+    that does not exist. Hiding the stub from viewcode (its domain test) leaves the canonical link."""
+    from sphinx import addnodes
+    for node in doctree.findall(addnodes.desc):
+        if node.get("domain") == "py" and (node.get("no-index") or node.get("noindex")):
+            node["domain"] = "py-unindexed"
+
+
+# Exported constants of conatus.expert: autodoc would show the docstring of their type (tuple, int,
+# dict, sympy.Symbol), which says nothing about Conatus. Their purpose, written here, replaces it.
+DATA_DOCS = {
+    "SCHEMES": "Names of every time-stepping scheme the IVP solvers accept: the multistep SBDF1–4, "
+               "the Crank–Nicolson families CNAB1, CNAB2, MCNAB2, CNLF2, and the IMEX Runge–Kutta "
+               "RK111, RK222, RK443, RKSMR, RKGFY. Pass one as ``scheme=``; the orders, start-up "
+               "rules and stability notes are in the time-stepper guide.",
+    "SBDF_SCHEMES": "The semi-implicit backward-differentiation schemes, SBDF1 to SBDF4 (order 1 to 4). "
+                    "SBDF3 and SBDF4 need a declared start-up (``STARTUPS``).",
+    "CN_SCHEMES": "The Crank–Nicolson multistep schemes: CNAB1, CNAB2, MCNAB2, CNLF2.",
+    "RK_SCHEMES": "The IMEX Runge–Kutta schemes: RK111, RK222, RK443, RKSMR, RKGFY.",
+    "STARTUPS": "How a multistep scheme takes its first steps: ``lower_order`` (lower-order steps of "
+                "the same family) or ``rk443`` (RK443 steps).",
+    "Y": "The wall-normal coordinate y of the modal tables of ``conatus.nonmodal`` (a real SymPy "
+         "symbol). Write base flows and coefficients as expressions in it, for example "
+         "``1 - Y**2`` for plane Poiseuille flow.",
+    "CHANNEL_SYSTEMS": "The three Reynolds-number conventions of channel flow, by name: "
+                       "``centreline`` (Re_c = U_c h / ν), ``bulk`` (Re_b = U_b 2h / ν) and "
+                       "``friction`` (Re_τ = u_τ h / ν). Each is a ``UnitSystem`` that converts "
+                       "between them.",
+    "DMD_METHODS": "The DMD variants of ``dmd(method=...)``: ``exact`` and ``optimized``.",
+    "AMPLITUDES": "How ``dmd`` computes the mode amplitudes: ``first`` (fit to the first snapshot) or "
+                  "``optimal`` (least squares over all snapshots).",
+    "POD_METHODS": "How ``pod`` computes the modes: ``snapshots`` (method of snapshots) or ``svd``.",
+    "MEAN_POLICIES": "What ``pod`` and ``spod`` do with the temporal mean: ``subtract`` or ``keep``.",
+    "ADJOINT_KINDS": "The adjoint used by the sensitivity tools: ``discrete`` (of the discretised "
+                     "operator) or ``continuous`` (discretised from the continuous adjoint).",
+    "ORDERINGS": "Layouts of the unknowns in the global system of a time stepper: ``interleaved`` or "
+                 "``variable-major``.",
+    "SCALES": "Colour scales of a Studio view: ``smoke`` (one-signed), ``signed`` (zero in black) "
+              "and ``dye``.",
+    "VIEW_KINDS": "Kinds of view a watched run can declare for the Studio.",
+    "STAT_KINDS": "Kinds of statistic a watched run can declare: ``series``, ``spectrum``, ``profile``.",
+    "FRAME_KINDS": "Kinds of frame record in the telemetry stream.",
+    "KINDS": "Kinds of record in the telemetry stream (header, scalars, event, log, status, newton).",
+    "PROTOCOL_VERSION": "Version of the telemetry protocol written in every record.",
+    "FILM_ENCODING": "Encoding of the 8-bit film frames in the telemetry stream.",
+    "FILM_POLICY": "Which frames of a long run the telemetry film keeps.",
+    "COMMANDS": "The commands of ``python -m conatus agent`` and what each one does.",
+}
+_TYPE_BOILERPLATE = ("Built-in immutable sequence", "Built-in mutable sequence", "int([x]) -> integer",
+                     "Symbol class is used", "dict() -> new empty dictionary", "str(object=",
+                     "Convert a string or number to a floating point")
+
+
+def _no_type_boilerplate(app, what, name, obj, options, lines) -> None:
+    """Replace the docstring of a built-in or SymPy type, inherited by a constant or a property,
+    by the constant's purpose (DATA_DOCS), or by nothing."""
+    text = "\n".join(lines).lstrip()
+    if text.startswith(_TYPE_BOILERPLATE):
+        lines[:] = [DATA_DOCS[name.rsplit(".", 1)[-1]]] if name.rsplit(".", 1)[-1] in DATA_DOCS else []
+
+
+def setup(app):
+    app.connect("autodoc-process-docstring", _no_type_boilerplate)
+    app.connect("doctree-read", _paper_class)
+    app.connect("doctree-read", _no_viewcode_for_unindexed, priority=400)   # before viewcode (500)

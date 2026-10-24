@@ -1,5 +1,5 @@
 """Trajectories with a *declared* dense output, for event detection (Poincaré sections, slice
-phases, connection end points). Notes: §1.
+phases, connection end points). Notes:
 
 Two integrators, one interface (``integrate(x0, until) -> Trajectory``):
 

@@ -35,8 +35,9 @@ def explain() -> str:
         "minus poles inside); det T as unit phase + log modulus from an LU (never formed), "
         f"adaptive walk with phase increments <= {PHASE_STEP_MAX:.3g} rad; a non-integer winding, "
         "an eigenvalue on the boundary or a discontinuous determinant is refused; a test on "
-        "samples: for a T with poles, a zero and a pole straddling the boundary closer than a "
-        "step are not seen (CountResult.scope)",
+        "samples: for a T with poles, the walk follows where log det T bends and warns when a "
+        "zero or pole is close to an edge; a zero and a pole straddling the boundary whose bend "
+        "a smooth variation of det T hides are not seen (CountResult.scope)",
         "  beyn(T, cn.box(...)): Beyn's contour-integral method (block Hankel moments, rank-"
         "revealing SVD), every root polished by nonlinear inverse iteration and accepted when "
         f"its residual is <= {RESIDUAL_TOL:g} (default; scale in BeynResult.residual_definition) "

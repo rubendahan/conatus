@@ -7,7 +7,7 @@
 // written by web/home/run.sh when the script runs (header: sha256 of the script, Conatus and Python versions).
 // tests/docs/test_home_example.py checks that the output belongs to the script shown and that the README
 // shows the same code and output.
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ButtonLink, Code, DocLink, RepoPath } from "../components/ui";
 import { SITE } from "../content/site";
 import Film from "../components/Film";
@@ -50,7 +50,7 @@ export default function Home() {
         <div className="wrap hero-grid">
           <div className="hero-content">
             <p className="hero-eyebrow">Conatus</p>
-            <h1 id="hero-title" className="hero-title">Write a PDE model once, then simulate it, compute its stability and find its invariant solutions from the same object.</h1>
+            <h1 id="hero-title" className="hero-title">Define a PDE model, then simulate it, compute its stability and search for its invariant solutions.</h1>
             <p className="hero-lede">Conatus is experimental research software for fluid instability and dynamical systems.</p>
             <div className="row hero-cta">
               <ButtonLink to="#example">See a first calculation</ButtonLink>

@@ -8,7 +8,7 @@ Pairs (x_j, y_j = x_{j+1}) with time step Δt (declared), product ⟨a, b⟩ = a
     φ_k = F⁻¹ (F Y) V Σ⁻¹ w_k / μ_k   (exact modes; unit W-norm after scaling),
     ω_k = log(μ_k)/Δt  (principal branch: |Im ω| < π/Δt, aliasing declared).
 
-**Residual** of each pair (ResDMD with the linear dictionary, Colbrook & Townsend 2023): with
+**Residual** of each pair (ResDMD with the linear dictionary, Colbrook & Townsend 2024): with
 g_k = V Σ⁻¹ w_k, res_k = ‖F (Y − μ_k X) g_k‖ / ‖F X g_k‖ — the defect of x = X g_k as an eigenvector
 of any linear map sending the x_j to the y_j; ≈ rounding for data from a linear system of rank ≤ r.
 

@@ -2,7 +2,7 @@
 // topic pointing to the tutorial that does it and to the user guide. Text only (Ruben, 2026-10-02:
 // text-first pages; the former scroll scene is gone).
 import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { DocLink, PageHead, Section } from "../components/ui";
 import { tutorials } from "../data";
 import "../styles/dynamics.css";
@@ -14,8 +14,9 @@ const TOPICS: { id: string; title: string; body: ReactNode; tut: number[] }[] = 
       critical point where it starts to grow. Ask for a drift check and the modes that do not survive a finer
       resolution are removed, and you are told.</p> },
   { id: "symmetry", title: "Symmetry subspaces", tut: [3],
-    body: <p>Declare a reflection or a rotation and solve in the symmetric subspace: the same eigenvalues for a fraction
-      of the cost, after a check that the equations respect the symmetry.</p> },
+    body: <p>Declare a reflection or a rotation and solve in the symmetric subspace, after a check that the equations
+      respect the symmetry. You get the eigenvalues of that symmetry class at a fraction of the cost; modes that break
+      the symmetry need a computation in the other classes.</p> },
   { id: "bifurcations", title: "Bifurcations, followed", tut: [4, 10],
     body: <p>Follow a branch of steady solutions as a parameter moves, through folds, by pseudo-arclength continuation.
       Pitchforks and Hopf points are detected and located on the way; switch branches, follow the cycles born at a Hopf

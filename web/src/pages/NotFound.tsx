@@ -1,7 +1,7 @@
 // 404 page: one lens, and a message written like a Conatus error (what, why, what to do).
 // The requested path is filled in after hydration only, so the prerendered 404.html matches the client render.
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import Mark from "../components/Mark";
 import { ButtonLink } from "../components/ui";
 import "../styles/info.css";

@@ -108,15 +108,14 @@ figure.cn-film figcaption { font-size: var(--cn-size-caption); color: var(--colo
 .cn-start { padding-left: 1.4rem; }
 .cn-start li { margin: 0 0 0.6rem; }
 .cn-site-link a { white-space: nowrap; }
-/* Tutorial figures in the dark theme: the transparent plots keep their mid-tone ink, which is faint
-   on laboratory black, so they sit on a paper panel there (external review of 0.1.1, figures). */
-body[data-theme="dark"] img[src*="tutorials/media/"],
-body[data-theme="dark"] img[src*="tutorials/outputs/"] {
+/* Plot figures in the dark theme: the transparent plots keep their mid-tone ink, which is faint on
+   laboratory black, so they sit on a paper panel there. conf.py (_paper_class) marks them "cn-paper"
+   from their source path; the built pages serve them from _images/. */
+body[data-theme="dark"] img.cn-paper {
   background: var(--cn-paper); border-radius: var(--cn-radius); padding: 0.5rem;
 }
 @media (prefers-color-scheme: dark) {
-  body:not([data-theme="light"]) img[src*="tutorials/media/"],
-  body:not([data-theme="light"]) img[src*="tutorials/outputs/"] {
+  body:not([data-theme="light"]) img.cn-paper {
     background: var(--cn-paper); border-radius: var(--cn-radius); padding: 0.5rem;
   }
 }

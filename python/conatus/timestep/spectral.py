@@ -11,8 +11,8 @@ coordinate of the coordinate system, of length N (coefficients) if the node depe
 that coordinate and 1 otherwise. A size-1 axis holds the *zero mode* only: when such an
 array is added to a dependent one it is embedded in mode 0, never broadcast over modes.
 
-This is the reference implementation of F; the C++/CUDA port of F (fused kernels, §60)
-comes after. The evaluator is vectorized over all modes (no loop over groups).
+This is the reference implementation of F; the fused CUDA kernels of F are
+checked against it. The evaluator is vectorized over all modes (no loop over groups).
 """
 from __future__ import annotations
 

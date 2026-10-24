@@ -11,6 +11,7 @@ import subprocess
 
 import pytest
 
+import conatus
 import conatus.provenance as prov
 from conatus.runs import analysis
 
@@ -37,7 +38,7 @@ def test_installed_package_inside_a_user_repository_has_no_git_head(tmp_path, mo
     state = prov.code_state()
     assert state["git_head"] is None and state["git_dirty_paths"] == []
     assert state["code_matches_commit"] is False
-    assert state["installed_version"] == prov.conatus.__version__
+    assert state["installed_version"] == conatus.__version__
     assert "installed package" in state["warning"]
 
 

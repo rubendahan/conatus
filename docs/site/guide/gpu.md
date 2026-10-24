@@ -1,7 +1,8 @@
 # GPU
 
-The same model runs on an NVIDIA GPU by adding `backend="cuda"`; the arithmetic is double
-precision, as on the CPU.
+The same model runs on an NVIDIA GPU by adding `backend="cuda"`. The GPU path uses double
+precision. It is experimental: it was not retested on GPU hardware for this release (status
+table: {doc}`../install`, "Release status and extras").
 
 ```python
 # requires: gpu
@@ -60,9 +61,10 @@ sim = m.simulate((64, 48, 48), scheme="RK443", dt=1e-3, backend="cuda", f_backen
 print(sim.explain())           # what is planned, and which sums change order (rounding only)
 ```
 
-`run` and `run_graph` can be mixed, and checkpoints taken on the GPU restart bit for bit. Where
-a GPU path has been run on GPU hardware its results agree with the CPU to round-off; which paths
-have been run is listed below.
+`run` and `run_graph` can be mixed. In the last GPU test run (A100 and L40S, 9 October 2026), a
+run restarted from a checkpoint taken on the GPU matched the uninterrupted run bit for bit; the
+GPU path was not retested for this release. Where a GPU path has been run on GPU hardware its
+results agreed with the CPU to round-off; which paths have been run is listed below.
 
 ## What runs on the GPU
 

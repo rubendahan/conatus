@@ -235,7 +235,7 @@ class PolarGlobalSystem:
     def gather_state(self, coeffs, check_subspace: bool = True) -> np.ndarray:
         """Coefficient arrays -> global vector. With ``check_subspace`` (default), data in slots
         the system does not represent (per-m radial truncation N_m) is refused instead of
-        being dropped; the argument used to be ignored. The polar forward transform
+        being dropped; the argument is never ignored. The polar forward transform
         leaves those slots exactly 0, so only hand-built coefficients can trip the check."""
         X = np.zeros(self.n, dtype=self.dtype)
         flat_in = []
@@ -273,6 +273,7 @@ class PolarGlobalSystem:
         return b
 
     def explain(self) -> str:
+        """Groups, unknowns, ordering and solver buckets of the polar system."""
         from ..runtime import BorderedBanded
         lines = [f"PolarGlobalSystem: {len(self.slots)} azimuthal group(s), {self.n} unknowns, complex128, "
                  f"ordering={self.ordering}; {len(self._buckets)} solver bucket(s) (groups sharing one "

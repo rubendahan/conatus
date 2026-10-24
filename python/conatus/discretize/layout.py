@@ -1,8 +1,8 @@
 """Mode groups and coefficient layout for Fourier^k x (Chebyshev | nothing) domains.
 
 A *group* is one Fourier wavenumber per periodic direction: the linear problem
-decouples into one sparse system per group (never lose Fourier
-separability). Inside a group, an object (variable or equation) that depends on
+decouples into one sparse system per group (Fourier separability is never
+lost). Inside a group, an object (variable or equation) that depends on
 the Fourier direction i holds ``len(indices_i)`` Fourier coefficients (2 for a
 real cos/-sin pair, 1 otherwise); an object constant along i only exists in the
 zero-mode group. Vector layout inside a group, per object: tensor components
@@ -35,14 +35,19 @@ class GroupItem:
 
     @property
     def zero(self) -> bool:
+        """True for the mean mode (k = 0)."""
         return self.k == 0.0
 
     def size(self, dep: bool) -> int:
+        """Number of coefficients of the item for an object that depends on the direction
+        (``dep``), else 1 for k = 0 and 0 otherwise."""
         if dep:
             return len(self.indices)
         return 1 if self.zero else 0
 
     def deriv(self, order: int) -> np.ndarray:
+        """Matrix of d^order along the direction on the item's coefficients ((cos, -sin) pair or
+        one complex mode)."""
         if self.kind == "complex":
             return np.array([[(1j * self.k) ** order]])
         if len(self.indices) == 1:
@@ -60,6 +65,8 @@ class GroupItem:
 
 
 class FourierDir:
+    """One Fourier direction of the layout: its basis, wavenumbers and the coefficient indices
+    of each group item (even sizes only)."""
     def __init__(self, basis: Basis) -> None:
         if basis.size % 2:
             # typed refusal with the fix (a bare ValueError)
@@ -119,10 +126,12 @@ class ObjLayout:
 
     @property
     def size(self) -> int:
+        """Size of the object (components x nf x nz)."""
         return self.ncomp * self.nf * self.nz
 
     @property
     def block(self) -> int:
+        """Size of one tensor component (nf x nz)."""
         return self.nf * self.nz
 
 
@@ -166,15 +175,19 @@ class Layout:
 
     @property
     def zcoord(self) -> Coordinate | None:
+        """The non-periodic coordinate, or None."""
         return self.zbasis.coord if self.zbasis is not None else None
 
     def fdep_of(self, dom: Domain | None) -> tuple[bool, ...]:
+        """Dependence on each Fourier direction of an object on ``dom``."""
         return tuple(dom is not None and dom.has(d.coord) for d in self.fdirs)
 
     def zdep_of(self, dom: Domain | None) -> bool:
+        """True when an object on ``dom`` depends on the non-periodic coordinate."""
         return self.zbasis is not None and dom is not None and dom.has(self.zbasis.coord)
 
     def nf(self, fdep: Sequence[bool], group: tuple[GroupItem, ...]) -> int:
+        """Number of Fourier coefficients of an object of dependence ``fdep`` in ``group``."""
         n = 1
         for dep, item in zip(fdep, group, strict=True):
             n *= item.size(dep)
@@ -188,6 +201,7 @@ class Layout:
         return list(product(*per)) if per else [()]
 
     def group_label(self, group: tuple[GroupItem, ...]) -> str:
+        """The group's wavenumbers as text."""
         if not group:
             return "single group (no Fourier direction)"
         return ", ".join(f"{d.coord.name}: k={it.k:g}" for d, it in zip(self.fdirs, group, strict=True))

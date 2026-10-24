@@ -51,7 +51,7 @@ RT_M0_FACTOR = 10.0
 of a real probe (P z, a real field: the round trip must leave it unchanged up to rounding). The
 m = 0 entries round more than the 90th percentile of the m > 0 entries (shell 256x127x64: the m = 0
 map was verified to 5.8e-12 and its unit factors to 1.9e-11, against a bound of 4.7e-12 read on
-the m > 0 entries; gpu2): their bound is measured on themselves, as a maximum (the residual
+the m > 0 entries): their bound is measured on themselves, as a maximum (the residual
 it bounds is a maximum). The m > 0 entries keep the quantile bound, so a defect confined to a few
 of them is still caught."""
 
@@ -126,7 +126,7 @@ class M0RealProjection:
         tol = self.tol
         # rounding of the m = 0 entries themselves: a real probe (P z) is left unchanged by the
         # transforms' projection up to rounding; its largest change on the m = 0 entries sets their
-        # bound (they round more than the m > 0 quantile at large sizes; gpu2)
+        # bound (they round more than the m > 0 quantile at large sizes)
         Pzr = proj(Pz)
         self.rt_m0 = float(np.abs(Pzr[idx] - Pz[idx]).max()) / scale0
         if self.rt_m0 > RT_MAX:
@@ -206,6 +206,7 @@ class M0RealProjection:
         return float(xp.abs(0.5 * (X[idx] - sig * xp.conj(X[par]))).max())
 
     def explain(self) -> str:
+        """Whether the m = 0 real projection is on, and the pairs it projects."""
         if not self.active:
             return f"m = 0 real projection: off ({self.reason})"
         npair = int(np.sum(self.partner != self.idx)) // 2

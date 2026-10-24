@@ -16,7 +16,7 @@ other axes on their own grids), and transforms along that axis: Fourier axes on 
 points (wavenumbers up to N), bounded polynomial axes on 2N Chebyshev--Gauss points (degrees up
 to 2N - 1). The **relative tail** is the largest coefficient the resolution N does not keep
 (``|k| >= N/2`` on a Fourier axis, degree ``>= N`` on a bounded axis) over the largest
-coefficient. It is the part of the data the run never sees. Two levels (a
+coefficient. It is the part of the data the run never sees. Two levels (earlier versions: a
 single refusal at 1e-6 refused the coarse N of every resolution study):
 
 * above ``INITIAL_TAIL_REFUSE`` (1e-2) the data are **clearly wrong** and refused, naming the

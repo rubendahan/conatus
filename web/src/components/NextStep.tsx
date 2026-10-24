@@ -1,7 +1,7 @@
 // "Next step" band at the end of every page: the reading path continues instead of ending on the
 // footer. The path (web/README.md, "Reading path"): Getting started → Tutorials → Documentation → Capabilities → Dynamics →
 // Gallery; side pages lead back into the Tutorial.
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 import { findRoute } from "../routes";
 
 const NEXT: Record<string, [string, string]> = {

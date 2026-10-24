@@ -83,12 +83,6 @@ def main() -> None:
         "colormap": "signed",
         "script": "web/gallery/orr_sommerfeld.py",
         "example_script": "docs/site/tutorials/code/t01_orr_sommerfeld.py",
-        "validated": {
-            "value": "c = 0.23752648882 + 0.00373967062i at Re = 1e4, α = 1 (8 digits); Re_c = 5772.2218, α_c = 1.020547",
-            "reference": "Orszag 1971, J. Fluid Mech. 50, 689 (0.23752649 + 0.00373967i; Re_c = 5772.22)",
-            "source": "paper/conatus.tex §Verification; docs/site/tutorials/code/t01_orr_sommerfeld.py",
-            "run_id": "",
-        },
         "geometry": "cartesian",
         "domain": "shear",
         "parameters": {"N": a.N, "Re": a.Re, "alpha": a.alpha},

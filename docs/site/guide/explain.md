@@ -17,8 +17,8 @@ print(res.explain())      # an eigenvalue result: filters, growth convention, mo
 print(sim.explain(full=True))   # compiler decisions, tau by tau and term by term
 ```
 
-`explain()` is short by default: a summary of about ten lines in the words of your model. For a
-simulation of the README's Rayleigh–Bénard problem:
+`explain()` is short by default: a summary of about ten lines in the words of your model. For the
+simulation above:
 
 ```text
 Simulation of 'Rayleigh-Benard 2D' at N = x: 16, z: 24: RK443, dt = 0.0005, backend cpu
@@ -37,24 +37,18 @@ Warnings stay in the short text. They cover terms that are not polynomial in the
 parameter values given for one call, a symmetry subspace that hides symmetry-breaking
 instabilities, the m = 0 projection of curvilinear solvers, spurious tau modes of a shell, the
 order of the scheme with time-dependent boundary values, fallbacks and first-order modes of the
-right-hand side, and eigenproblem checks that were skipped. `explain(full=True)` adds the full
-record that the object holds.
+right-hand side, and eigenproblem checks that were skipped.
 
-`explain(full=True)` includes the compiler decisions and the solver layout recorded by the object
-({doc}`../principles`). A missing automatic choice is treated as a bug. For a native model, the
-full text lists the term placement (implicit or explicit) term by term, each boundary condition and the tau that imposes it, the
+`explain(full=True)` adds the compiler decisions, the logs and the solver layout recorded by the
+object ({doc}`../principles`). For a native model, the full text lists the term placement (implicit or explicit) term by term, each boundary condition and the tau that imposes it, the
 pressure gauge, the dealiasing factors with their origin (yours or the declared default) and the
 bases chosen by the geometry; for a solver, the system layout (groups, buckets, bands), how $F$ is
-evaluated and what runs where.
+evaluated and what runs where. If an automatic choice is missing from that text, report it with
+the model and its `explain(full=True)` output.
 
-The split applies to the model, the compiled model (`m.compile(N)`), the `Simulation`, the
-`Linearization`, the EVP result and the time steppers (`IVPSolver` and its polar, spherical and
-distributed forms):
-
-| Call | What it prints |
-|---|---|
-| `explain()` | problem, discretisation, scheme, the defaults and tolerances that matter, warnings |
-| `explain(full=True)` | the recorded compiler decisions, the logs, the solver layout |
+The short and full forms exist for the model, the compiled model (`m.compile(N)`), the
+`Simulation`, the `Linearization`, the EVP result and the time steppers (`IVPSolver` and its polar
+and spherical forms).
 
 ## What has `explain()`
 

@@ -95,7 +95,7 @@ def unbounded_compound() -> None:
     m.scalar("u")
     m.equations("dt(u) - lap(u) = 0")
     m.at("wall", u=0)
-    exact = lambda y, t: y / (1 + t)**1.5 * np.exp(-y**2 / (4*(1 + t)))   # noqa: E731
+    exact = lambda y, t: y / (1 + t)**1.5 * np.exp(-y**2 / (4*(1 + t)))
     sim = m.simulate(N=40, scheme="CNAB2", dt=1e-3)
     sim.initial(u=lambda y: exact(y, 0))
     sim.run(until=0.5)
@@ -230,9 +230,14 @@ def studio_watch() -> None:
     sim = m.simulate(N=(32, 16), scheme="RK443", dt=1e-3)
     sim.initial(T=lambda x, z: -z + 1e-3 * np.cos(np.pi * x) * np.cos(np.pi * z))
 
+    from conatus.diagnostics import Grid
+    quad = Grid.from_bases([sim.compiled.bases[c] for c in ("x", "z")], dealias=False)
+
     def kinetic(sim):
-        """Mean kinetic energy: one number per call, a time series in the Studio."""
-        return 0.5 * float(np.mean(sim.grid("u") ** 2))
+        """Mean kinetic energy per unit mass, (1/V) ∫ |u|²/2 dV: the components summed, then the
+        volume average by quadrature (the Chebyshev points in z are not uniform)."""
+        u = sim.grid("u")                                    # (2, Nx, Nz)
+        return float(quad.mean(0.5 * np.sum(u ** 2, axis=0)))
 
     w = sim.watch("rb_demo",
                   film={"T": cn.view("T", scale="signed")},          # the first view is the default
@@ -248,6 +253,13 @@ def studio_watch() -> None:
     plain.initial(T=lambda x, z: -z + 1e-3 * np.cos(np.pi * x) * np.cos(np.pi * z))
     plain.run(steps=50)
     assert np.array_equal(plain.solver.X, sim.solver.X)      # watching never changes the numbers
+    # normalisation (audit of 0.1.2, F08: np.mean over the component axis halved the energy):
+    # u = (1, 0) has mean kinetic energy 1/2, u = (0, z) has (1/V) ∫ z²/2 dV = 1/24 on z in [-1/2, 1/2]
+    x, z = quad.mesh()
+    one = type("S", (), {"grid": lambda self, n: np.stack([np.ones_like(x), np.zeros_like(x)])})()
+    lin = type("S", (), {"grid": lambda self, n: np.stack([np.zeros_like(x), z])})()
+    assert abs(kinetic(one) - 0.5) < 1e-13
+    assert abs(kinetic(lin) - 1 / 24) < 1e-13
     assert w.tel.dropped_records == 0
 
 

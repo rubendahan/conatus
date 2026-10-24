@@ -1,6 +1,6 @@
 # Conatus
 
-Write a PDE model once, then simulate it, compute its stability and find its invariant solutions from the same object.
+Define a PDE model, then simulate it, compute its stability and search for its invariant solutions.
 Conatus is experimental research software for fluid instability and dynamical systems.
 
 **Status.** CPU wheels for Linux x86-64 (`pip install conatus`); CUDA support is experimental. The

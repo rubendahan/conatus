@@ -9,7 +9,7 @@ the *endpoint* recurrence distance for a lag T = t_n − t_j is
 with τ_ℓ f(x) = f(x + ℓ) and R f(x) = −f(−x). A small local minimum of d means the trajectory came
 back close to (a symmetry copy of) itself after T; since the loop ends at u(t_n), the pair
 (T, ℓ) is a guess for an orbit **through the current state** (equivariance: S τ_ℓ commutes with the
-flow). This is the same measure as the KS benchmark, restricted to the
+flow). This is the measure of a full recurrence scan, restricted to the
 last state so that it is cheap (one lag sweep, O(n · n_ell · N)) and can run inside the job when
 the Studio asks for a checkpoint. Norm: the L²(0, L) norm / L (mean weight 1, pairs weight 1/2).
 Everything is an argument; nothing is chosen here.

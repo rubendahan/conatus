@@ -226,7 +226,7 @@ def _compound_pinning(pat, border, pinned, kinds, col_n, col_kind, piece, offs, 
 #: (system, groups, reduced) of a parallel build, set in each forked worker by the pool
 #: initializer and never in the parent: a parent-side global was read by the workers at fork time,
 #: so two threads building systems at once could fork with each other's groups (review of the
-#: state audit, F7). The initializer's arguments reach a forked worker by the fork itself (no
+#: state audit). The initializer's arguments reach a forked worker by the fork itself (no
 #: pickling): each pool carries its own build.
 _BUILD_SELF = None
 
@@ -787,7 +787,7 @@ class GlobalSystem:
         n_sh = sum(isinstance(e, SharedFactor) for e in entries)
         n_cand = sum(p is not None for p in (self._zpartners or []))
         if getattr(self, "_share_stats", None) is None:
-            # bounded like the factors (review of the state audit: one entry per (a, b) grew
+            # bounded like the factors (earlier versions: one entry per (a, b) grew
             # with every adaptive step although the factors themselves were bounded)
             self._share_stats = FactorCache()
         self._share_stats[key] = (n_sh, n_cand)
@@ -840,6 +840,7 @@ class GlobalSystem:
 
     @property
     def n_factorizations(self) -> int:
+        """Number of cached factorizations."""
         return len(self._factors)
 
     def bands(self) -> list[tuple[str, int, int, int, int]]:
@@ -848,10 +849,10 @@ class GlobalSystem:
 
         The bandwidths are read off the sparsity pattern of |M| + |L| (rows and columns in the
         solver order, the border rows first), as the C++ factor measures the band of its bulk
-        rows, without factorizing anything (``M + L`` was factored
-        with dt = 1 only to read kl and ku, and a valid run whose step matrix is singular at
-        dt = 1, e.g. Allen--Cahn ``dt(T) - eps*lap(T) = T - T**3`` with ``-T`` implicit, made
-        ``explain()`` raise "banded part is singular"). |M| + |L| has the union of the two
+        rows, without factorizing anything (factoring ``M + L``
+        with dt = 1 only to read kl and ku would fail on a valid run whose step matrix is singular at
+        dt = 1, e.g. Allen--Cahn ``dt(T) - eps*lap(T) = T - T**3`` with ``-T`` implicit, where
+        ``explain()`` would raise "banded part is singular"). |M| + |L| has the union of the two
         patterns, so no cancellation can narrow the band reported for a step a M + b L."""
         out = []
         for idx, _, _ in self._buckets:
@@ -931,7 +932,7 @@ class GlobalSystem:
 
     def _refuse_lossy(self, a: np.ndarray, what: str) -> np.ndarray:
         """``a`` ready for this system's dtype: complex data with a non-zero imaginary part is
-        refused in a real system (the cast would drop it silently; review finding 2); an exactly
+        refused in a real system (the cast would drop it silently); an exactly
         zero imaginary part is exact and its real part is returned."""
         if self.complex or not np.iscomplexobj(a) or a.size == 0:
             return a
@@ -944,6 +945,7 @@ class GlobalSystem:
         return a.real
 
     def explain(self) -> str:
+        """Groups, unknowns, space, dtype, ordering and solver buckets of the system."""
         lines = [f"GlobalSystem: {len(self.slots)} group(s), {self.n} unknowns "
                  f"({'symmetry subspace' if self.reduced else 'full space'}), dtype "
                  f"{np.dtype(self.dtype).name}, ordering={self.ordering}, complexify="

@@ -3,7 +3,7 @@
 Every node knows, symbolically:
   * its tensor signature, domain and dtype;
   * ``degrees(fields)``   -> polynomial degrees in a set of fields (linearity checks);
-  * ``order_in(coord)``   -> differential order along a coordinate (tau counting, §14);
+  * ``order_in(coord)``   -> differential order along a coordinate (tau counting);
   * ``linearize(around, direction)`` -> Fréchet derivative, as a new expression;
   * ``transpose(u, w)``   -> formal transpose w.r.t. the bilinear pairing ∫ a·b dV,
     with the boundary terms of the integrations by parts kept explicit;

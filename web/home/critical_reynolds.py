@@ -14,7 +14,7 @@ m.at("walls", "v = 0", "dy(v) = 0")
 # Least stable mode at Re = 10000, alpha = 1 (modes kept only if found again at N = 96)
 res = m.eigenvalues(N=64, drift=96, drift_tol=1e-6)
 i = res.values.imag.argmax()
-print(f"c = {res.values[i]:.8f}   residual {res.residuals[i]:.0e}")
+print(f"c = {res.values[i]:.8f}   residual below 1e-15: {res.residuals[i] < 1e-15}")
 
 # Critical Reynolds number: the lowest Re at which Im(c) = 0 for some alpha
 P = m.parametric(N=64, over=("Re", "alpha"), drift=96, drift_tol=1e-6)

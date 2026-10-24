@@ -296,8 +296,8 @@ _DECLARE = {"scalar": None, "vector": None, "velocity": "u", "pressure": "p", "d
 def declared_unknowns(func: Any) -> list[dict]:
     """Unknowns a model factory declares (``m.velocity("u")``, ``m.scalar("T")``, ...), read
     from its source and from the module-level functions of the same module it calls, in the
-    order written; nothing is called (A1.1: ``agent explain`` of a ready model
-    listed its arguments but not its unknowns). ``[]`` when there is no source or none found."""
+    order written; nothing is called, so ``agent explain`` of a ready model lists its unknowns, not only its
+    arguments. ``[]`` when there is no source or none found."""
     import ast
     func = inspect.unwrap(func)
     mod = inspect.getmodule(func)
@@ -443,17 +443,20 @@ class _Checker:
     # -- patching ---------------------------------------------------------------------------
     def install(self) -> None:
         for mod, owner, attr in EXPENSIVE:
+            label = f"{owner}.{attr}" if owner else attr
             try:
                 m = importlib.import_module(mod)
-            except ImportError as err:             # an optional part that is not installed
-                self.report["notes"].append(f"not intercepted: {mod}.{attr} ({err})")
+            except ImportError:
+                # a module this installation does not have (cut from the public package, or an
+                # optional dependency missing): the script cannot call it either, so no note
+                # (0.1.1 leftover: one note per absent module on every check was noise)
                 continue
             target = getattr(m, owner, None) if owner else m
             orig = vars(target).get(attr) if target is not None else None
             if orig is None:                       # the table is out of date: say so, never hide it
-                self.report["notes"].append(f"not intercepted: {mod}:{owner}.{attr} (not found)")
+                self.report["notes"].append(f"{label} ({mod}) not found: a call to it would run "
+                                            "for real (stale table in conatus.agent)")
                 continue
-            label = f"{owner}.{attr}" if owner else attr
             new = self._wrap(label, orig)
             self._patch(target, attr, new)
             self.active = True
@@ -537,9 +540,8 @@ class _Checker:
             raise _Stop(label)
         given = self._arguments(label, orig, args, kwargs)
         if label in PASS_THROUGH and given.get("backend", "cpu") != "cpu":
-            rep["notes"].append(f"{label} at line {line}: backend={given['backend']!r} -- not "
-                                "built by check (it would allocate device memory): discretized "
-                                "and stopped; memory predicted")
+            rep["notes"].append(f"{label} at line {line}: backend={given['backend']!r} not built "
+                                "(it would allocate device memory); stopped after discretizing")
         elif label in PASS_THROUGH:
             try:
                 sim = orig(*args, **kwargs)
@@ -548,8 +550,7 @@ class _Checker:
                 if not isinstance(err, BackendError):
                     raise
                 rep["notes"].append(f"{label} at line {line}: {type(err).__name__}: "
-                                    f"{str(err).splitlines()[0]} -- discretized without the "
-                                    "solver and stopped (run it where the backend exists)")
+                                    f"{str(err).splitlines()[0]}; stopped after discretizing")
             else:
                 rep["calls"].append({"call": label, "line": line, "action": "ran"})
                 self._collect_simulation(sim, given)
@@ -729,7 +730,7 @@ def _check_locked(path: str, argv: list[str] | None, timeout: float, memory: boo
     alarm = (bool(timeout) and hasattr(signal, "SIGALRM")
              and threading.current_thread() is threading.main_thread())
     if timeout and not alarm:
-        ck.report["notes"].append("no timeout: SIGALRM exists only in the main thread on POSIX")
+        ck.report["notes"].append("no timeout: check is not in the main thread (SIGALRM)")
     try:
         ck.install()
         sys.argv = [path] + list(argv or [])

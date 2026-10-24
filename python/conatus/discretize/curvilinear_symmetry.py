@@ -348,6 +348,7 @@ class CurvilinearReduction:
 
     # ------------------------------------------------------------------ per group
     def group_index(self, g) -> int:
+        """Index of group ``g`` in the plan."""
         return list(self.plan.groups).index(g)
 
     def col_members(self, gi: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -359,11 +360,13 @@ class CurvilinearReduction:
         return rep[ok] - lo, a[ok] - lo, fac[ok]
 
     def kept_cols(self, gi: int) -> np.ndarray:
+        """Columns of group ``gi`` kept in the subspace (local indices)."""
         lo, hi = self.col_off[gi], self.col_off[gi + 1]
         k = self.cols.kept
         return k[(k >= lo) & (k < hi)] - lo
 
     def kept_rows(self, gi: int) -> np.ndarray:
+        """Rows of group ``gi`` kept in the subspace (local indices)."""
         lo, hi = self.row_off[gi], self.row_off[gi + 1]
         k = self.rows.kept
         return k[(k >= lo) & (k < hi)] - lo
@@ -446,6 +449,7 @@ class CurvilinearReduction:
         return c.reshape(np.shape(coeffs))
 
     def explain(self) -> str:
+        """Kept columns and rows against the full space, per group and in total."""
         nfull, nred = len(self.cols.rep), len(self.cols.kept)
         rfull, rred = len(self.rows.rep), len(self.rows.kept)
         kept_groups = sum(1 for gi in range(len(self.plan.groups)) if len(self.kept_cols(gi)))
@@ -679,6 +683,7 @@ class FoldSpec:
 
     @property
     def active(self) -> bool:
+        """True when at least one fold (equatorial, rotation, reflection) applies."""
         return self.eq is not None or self.rot is not None or self.zr is not None
 
     def fold(self, x) -> Fold:
@@ -713,6 +718,7 @@ class FoldSpec:
                     None if f.zq is None else -f.zq)
 
     def explain(self) -> str:
+        """The folds applied to the grid, one line each."""
         parts = []
         if self.eq is not None:
             parts.append("colatitude folded to the northern hemisphere (equatorial parity: half the "

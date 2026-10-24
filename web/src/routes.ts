@@ -16,7 +16,7 @@ export interface RouteDef {
 
 export const routes: RouteDef[] = [
   { path: "/", title: "Conatus: one PDE model for simulation, stability and invariant solutions", nav: "Home", group: "none",
-    description: "Write a PDE model once, then simulate it, compute its stability and find its invariant solutions from the same object. Conatus is experimental research software for fluid instability and dynamical systems.",
+    description: "Define a PDE model, then simulate it, compute its stability and search for its invariant solutions. Conatus is experimental research software for fluid instability and dynamical systems.",
     load: () => import("./pages/Home"), src: "src/pages/Home.tsx" },
   { path: "/tutorials/getting-started", title: "First steps: the Burgers equation in ten minutes", nav: "Getting started", group: "primary",
     description: "Getting started with Conatus in ten minutes: one equation written as on paper, a simulation, a plot and one physical number checked against the exact solution, then four guided changes.",
@@ -31,7 +31,7 @@ export const routes: RouteDef[] = [
     description: "Install Conatus with pip: CPU wheel, CUDA 12 wheel (beta), or from source.",
     load: () => import("./pages/Install"), src: "src/pages/Install.tsx" },
   { path: "/gallery", title: "Gallery", group: "primary",
-    description: "Flows computed with Conatus: Kelvin–Helmholtz, Rayleigh–Bénard, Kuramoto–Sivashinsky, Taylor–Couette, Swift–Hohenberg and the sphere, each with its script and validated value.",
+    description: "Flows computed with Conatus: Kelvin–Helmholtz, Rayleigh–Bénard, Kuramoto–Sivashinsky, Taylor–Couette, Swift–Hohenberg and the sphere, each with its script, its colour scale and what its run measured.",
     load: () => import("./pages/Gallery"), src: "src/pages/Gallery.tsx" },
   { path: "/capabilities", title: "Capabilities", group: "more",
     description: "What Conatus does: equations as on paper, simulation on CPU and GPU, stability, orbits, bifurcations and run tracking.",
@@ -45,6 +45,9 @@ export const routes: RouteDef[] = [
   { path: "/validation", title: "Validation", group: "more",
     description: "How Conatus compares with published results and independent codes, topic by topic.",
     load: () => import("./pages/Validation"), src: "src/pages/Validation.tsx" },
+  { path: "/published", title: "Published cases", group: "more",
+    description: "Results of published papers computed again with Conatus: the paper's values next to Conatus's, the gap between them, and the script and command that reproduce each number.",
+    load: () => import("./pages/Published"), src: "src/pages/Published.tsx" },
   { path: "/about", title: "About", group: "primary",
     description: "What Conatus is for, its status and maintenance, how to report a problem, the optional tools, the plans and the origin of the name.",
     load: () => import("./pages/About"), src: "src/pages/About.tsx" },

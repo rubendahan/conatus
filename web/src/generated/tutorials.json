@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-22T12:13:44.536Z",
+ "generated": "2026-10-24T00:49:45.595Z",
  "source": "",
  "statusSource": "docs/site/tutorials/outputs/STATUS.json",
  "tutorials": [
@@ -15,7 +15,7 @@
     {
      "script": "t00_first_steps.py",
      "status": "pass",
-     "time": "29.2 s",
+     "time": "13.9 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -96,8 +96,8 @@
    "n": 8,
    "group": "Simulation",
    "slug": "08_polar",
-   "title": "Polar geometry: a drum, a pipe, two rotating cylinders",
-   "learn": "polar and cylindrical geometry: a drum on cn.Disk, ready pipe and Taylor–Couette problems",
+   "title": "Polar geometry: the modes of a drum",
+   "learn": "polar geometry: the modes of a drum on cn.Disk; extensions: ready pipe and Taylor–Couette problems",
    "reference": "Bessel zeros, Meseguer & Trefethen (2003), Recktenwald et al. (1993)",
    "status": "pass",
    "scripts": [
@@ -117,7 +117,7 @@
    "group": "Simulation",
    "slug": "16_particles_dye",
    "title": "Lagrangian tracers and a numerical dye",
-   "learn": "sim.particles and m.dye: spectral velocity at the tracers, observed order in time, a dye whose mass is measured",
+   "learn": "Tracers with sim.particles, a dye declared by m.dye and recorded by sim.dye: spectral velocity at the tracers, observed order in time, a dye whose mass is measured",
    "reference": "Taylor–Green and Couette closed forms",
    "status": "pass",
    "scripts": [
@@ -184,7 +184,7 @@
     {
      "script": "t04_bratu.py",
      "status": "pass",
-     "time": "8.7 s",
+     "time": "8.3 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -204,7 +204,7 @@
     {
      "script": "t05_ks_orbits.py",
      "status": "pass",
-     "time": "66.6 s",
+     "time": "687.3 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -216,8 +216,8 @@
    "n": 10,
    "group": "Nonlinear dynamics",
    "slug": "10_bifurcations",
-   "title": "Bifurcations: branch switching, cycles, codimension 2, normal forms",
-   "learn": "branch switching, cycles, codimension 2, normal forms, Landau and Ginzburg–Landau",
+   "title": "Bifurcations: the Lorenz equilibria",
+   "learn": "the Lorenz equilibria through a pitchfork and a Hopf point; extensions: cycles, codimension 2, Landau and Ginzburg–Landau",
    "reference": "Lorenz (1963), Kuznetsov (2004), Cross & Hohenberg (1993)",
    "status": "pass",
    "scripts": [
@@ -236,8 +236,8 @@
    "n": 12,
    "group": "Nonlinear dynamics",
    "slug": "12_chaos_ensembles",
-   "title": "Chaos and ensembles: Lyapunov spectrum, covariant vectors, Poincaré map, basins",
-   "learn": "Lyapunov spectrum, covariant vectors, Kaplan–Yorke, Poincaré map, basins from one ensemble",
+   "title": "Chaos and ensembles: the Lyapunov spectrum of Lorenz",
+   "learn": "the Lyapunov spectrum and Kaplan–Yorke dimension of Lorenz; extensions: covariant vectors, Poincaré map, basins",
    "reference": "Sprott (Lorenz), exact divergence",
    "status": "pass",
    "scripts": [
@@ -304,7 +304,7 @@
     {
      "script": "t14_from_dedalus.py",
      "status": "pass",
-     "time": "5.5 s",
+     "time": "2.4 s",
      "run": "",
      "commit": null,
      "date": null,

@@ -6,7 +6,7 @@ Two install modes, told apart without importing the compiled core:
   has ``core/CMakeLists.txt``); scratch data goes to ``$CN_TMP`` or the
   checkout's ``scratch/``, as before;
 * **installed package** (``pip install .``, a wheel, conda): the package sits in
-  ``site-packages`` of an environment. Nothing is ever written next to it (the
+  ``site-packages`` of an environment. Nothing is ever written next to it (earlier versions: the
   telemetry spool used to land in ``<env>/lib/python3.x/scratch/telemetry``). The defaults are
   the XDG user directories, declared here and printed by ``python -m conatus doctor``:
 

@@ -99,8 +99,8 @@ the file.
 
 ### Reading the files with other tools
 
-The files describe themselves with plain HDF5 means, so other tools see named arrays on
-coordinates:
+The datasets carry coordinate labels, component names and dimension scales as standard HDF5
+attributes, so other tools see named arrays on coordinates:
 
 - every task has a `dims` attribute (for example `["t", "component", "x", "z"]`) and each of its
   dimensions is labelled and attached to its coordinate dataset as an HDF5 **dimension scale**

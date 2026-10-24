@@ -4,7 +4,7 @@
 module constants. The library also decides with literals written inside its comparisons
 (``abs(L - 2 * pi) > 1e-12``, ``sv[-1] <= 1e-14 * sv[0]``): whether two lengths are the same,
 whether a matrix is singular, whether a duration is a whole number of steps. They are listed here,
-grouped by what they decide, so that every such number has a stated reason (from G4 / Q9.6).
+grouped by what they decide, so that every such number has a stated reason.
 
 Each :class:`Internal` entry names one value and the functions (``module:qualname``) whose
 comparisons use it with that meaning. The development test suite reads every
@@ -52,7 +52,6 @@ _ENTRIES = (
         "conatus.discretize.curvilinear_symmetry:_check_generator",
         "conatus.discretize.plan:Plan._reflection_kind",
         "conatus.discretize.polar_plan:PolarPlan.group",
-        "conatus.discretize.terrain_plan:_round_up",
         "conatus.discretize.ultraspherical:_round_up",
         "conatus.ecs.edge:EdgeTracker.fate",
         "conatus.ecs.fourier_ops:AxisOps.__init__",
@@ -68,9 +67,9 @@ _ENTRIES = (
         "conatus.manifolds.trajectory:SolverIntegrator.integrate.restep",
         "conatus.methods:_frac",
         "conatus.model.model:_select_group",
-        "conatus.model.run:Linearization.group",
-        "conatus.model.run:Linearization.parametric.group_of",
-        "conatus.model.run:sincos_eigenvalues",
+        "conatus.model.linearization:Linearization.group",
+        "conatus.model.linearization:Linearization.parametric.group_of",
+        "conatus.model.linearization:sincos_eigenvalues",
         "conatus.model.sincos:extend_to_period.ext",
         "conatus.solvers.evp:EVPResult.explain",
         "conatus.solvers.evp_modes:_evaluation_matrix",
@@ -172,7 +171,7 @@ _ENTRIES = (
                  "conatus.adjoint.stagetime:StageTimeFused.coefficient_time_of",
                  "conatus.manifolds.trajectory:SolverIntegrator.flow",
                  "conatus.manifolds.trajectory:SolverIntegrator.integrate",
-                 "conatus.model.run:Linearization._N",
+                 "conatus.model.linearization:Linearization._N",
                  "conatus.translate.dedalus_result:DedalusTranslation.steps",
              )),
     Internal("SAME_VALUE", 1e-9, "classification",
@@ -262,15 +261,18 @@ _ENTRIES = (
              ("conatus.contour.count:count",)),
     Internal("WALK_MIN_STEP", 1e-12, "refusal",
              "a boundary step shorter than 1e-12 of the perimeter whose phase still jumps: a zero "
-             "on the boundary within rounding or a discontinuous determinant; the count is refused "
-             "",
+             "on the boundary within rounding or a discontinuous determinant; the count is refused",
+             ("conatus.contour.count:_walk",)),
+    Internal("WALK_BEND_MIN_STEP", 1e-10, "floor",
+             "the bend test of the boundary walk (operators that may have poles) "
+             "halves steps down to 1e-10 of the perimeter and no further, so that rounding noise "
+             "in log det T never drives the walk to the 1e-12 refusal by itself",
              ("conatus.contour.count:_walk",)),
     Internal("HANKEL_RANK", 1e-10, "rank",
              "Beyn's method: singular values of the block Hankel moment matrix above 1e-10 of the "
              "largest are its numerical rank (the Gauss-Legendre moments are accurate to about "
              "1e-12..1e-14 with eigenvalues clear of the edges); every Ritz value of that rank is "
-             "polished and checked by its residual, so a noise direction kept costs time "
-             "",
+             "polished and checked by its residual, so a noise direction kept costs time",
              ("conatus.contour.beyn:_rounds",)),
     # --- invariance battery (tests/invariance, audit invariance): the bounds of the
     # metamorphic relations. They decide no library result; each says why an equivalent

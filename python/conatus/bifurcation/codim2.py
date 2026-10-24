@@ -14,7 +14,7 @@ columns B and rows Cᵀ gives a 2×2 G; the two entries of G used as conditions 
 the start (the pair giving the best-conditioned augmented Jacobian, declared). Derivatives:
 (J²)_z v = J_z(J v) + J(J_z v), exact from B and J_p. The augmented system also holds where J
 has a real pair ±√(−κ) (κ < 0, a neutral saddle): a small residual does not make a point a Hopf
-point (external review of 0.1.1, F8). The curve stops where κ reaches 0 (the Bogdanov–Takens
+point. The curve stops where κ reaches 0 (the Bogdanov–Takens
 point, located as the ``bt`` event), and at every accepted point the eigenvalues of J, computed
 on their own (QZ), must hold the pair ±iω within ``HOPF_PAIR_TOL``; a point that fails either
 check ends the curve and is not kept.
@@ -57,6 +57,7 @@ __all__ = ["continue_codim2"]
 
 
 def _s(x):
+    """Bounded test function x / (1 + |x|) (same sign and zeros as x)."""
     return x / (1.0 + np.abs(x))
 
 

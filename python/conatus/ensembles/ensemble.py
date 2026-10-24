@@ -191,8 +191,8 @@ class Ensemble:
 
     # ------------------------------------------------------------------ output
     def states(self) -> np.ndarray:
-        """Host copy of the member states (B, n): a copy on every backend (finding 68: on NumPy the live state array was returned, so writing to it changed the
-        ensemble)."""
+        """Host copy of the member states (B, n), on every backend: changing it does not change the
+        ensemble."""
         return self.X.copy() if self.xp is np else self.xp.asnumpy(self.X)
 
     def explain(self) -> str:

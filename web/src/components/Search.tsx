@@ -6,7 +6,7 @@
 // --with-docs, from the built Sphinx pages (one document per section) and fetched on first open, with MiniSearch
 // loaded as a separate chunk. Keyboard: "/" or Ctrl/Cmd+K opens, arrows move, Enter opens, Esc closes.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { withBase } from "../lib/base";
 
 interface Doc { id: string; path: string; page: string; heading: string; text: string }

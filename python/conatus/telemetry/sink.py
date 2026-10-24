@@ -155,7 +155,7 @@ class Telemetry:
         self.paused = False
         self._thread = threading.Thread(target=self._writer, name=f"telemetry-{run_id}", daemon=True)
         try:
-            private_dir(self.spool)                 # 0700 when created here (F12)
+            private_dir(self.spool)                 # 0700 when created here
         except OSError as err:                      # never fatal for the computation
             self.error = f"spool {self.spool} unavailable: {err}"
         # a run_id used again (a script re-run): the old film is moved aside, never appended to
@@ -187,7 +187,7 @@ class Telemetry:
                 raise ValueError(f"header_extra field {k!r} clashes with a header field")
             head[k] = _deep_jsonable(v)
         self._put(record("header", run_id, **head))
-        # a run_id used again: the commands sent to the previous run are never replayed (a
+        # a run_id used again: the commands sent to the previous run are never replayed (earlier versions: a
         # "stop" or a "set dt" left in the control file used to hit the new run at its first check)
         try:
             self._control_pos = (self.spool / f"{run_id}.control.jsonl").stat().st_size
@@ -237,7 +237,7 @@ class Telemetry:
 
     def _payload(self, data: Mapping[str, Any], conv: Callable[[Any], Any]) -> dict:
         """User fields of a record. A field named like a record field (v, kind, run_id, wall, name)
-        would clash with it (a TypeError raised into the run): it is renamed ``user_<key>``
+        would clash with it (earlier versions: a TypeError raised into the run): it is renamed ``user_<key>``
         and the renaming is logged, never dropped."""
         out = {}
         for k, v in data.items():
@@ -374,7 +374,7 @@ class Telemetry:
         """Send the final status, stop the writer thread and wait up to ``timeout`` s. If the
         writer is still busy then (a slow shared file system), say so on stderr: the last
         records (the final status among them) may never reach the spool, and the Studio will
-        show the run as stale rather than ended (lost silently with the former 5 s)."""
+        show the run as stale rather than ended."""
         self.status(final=True)
         try:
             self._q.put(_STOP, timeout=timeout)
@@ -502,7 +502,7 @@ class Telemetry:
                          on_checkpoint: Callable[[Any, Path], Mapping[str, Any] | None] | None = None,
                          setters: Mapping[str, Callable] | None = None) -> None:
         """Apply the new Studio commands in order. While paused, the run waits here; checkpoint,
-        fork and set received meanwhile are applied at once (they used to be dropped
+        fork and set received meanwhile are applied at once (earlier versions: they used to be dropped
         silently while paused), resume ends the wait, stop raises :class:`StopRun`."""
         pending = deque(self.controls())
         while pending:
@@ -618,7 +618,7 @@ class Telemetry:
                 try:
                     if batch:
                         if fh is None:
-                            fh = open_private(path, "a")    # 0600 whatever the umask (F12)
+                            fh = open_private(path, "a")    # 0600 whatever the umask
                         fh.write("".join(json.dumps(b, separators=(",", ":")) + "\n" for b in batch))
                         fh.flush()
                         self.written_records += len(batch)

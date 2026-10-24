@@ -1,10 +1,9 @@
 # Installation
 
-Conatus 0.1.2 is installed **from a binary wheel** (no compiler needed) or **from source**. The CPU
-wheel is on PyPI (`pip install conatus`); the CUDA 12 wheel (beta) is a file attached to the
-[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.1.2). The compiled C++ core, inside
-both wheels, is required for time integration; the GPU backend is optional.
-
+Install Conatus 0.2.0 from a binary wheel: no compiler is needed. The CPU wheel is on PyPI
+(`pip install conatus`); the CUDA 12 wheel (beta) is attached to the
+[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.2.0). Building from
+source is described at the end of this page, for developers.
 
 ## Requirements
 
@@ -39,7 +38,7 @@ In a fresh virtual environment (no conda, no compiler):
 
 ```bash
 python3.12 -m venv venv && . venv/bin/activate
-pip install "conatus[tutorials]==0.1.2"
+pip install "conatus[tutorials]==0.2.0"
 python -m conatus --version     # conatus, compiled core and Python versions
 python -m conatus doctor        # what this machine can run, and what is missing
 ```
@@ -49,7 +48,7 @@ PyPI) the install took under 30 s.
 
 The CUDA wheel pulls the NVIDIA runtime wheels (CUDA runtime, cuFFT, cuBLAS: about 700 MB) and,
 with the `gpu` extra, CuPy: see [GPU (CUDA) install](#gpu-cuda-install). `pip show conatus` says
-which flavour is installed (`0.1.2` from PyPI, `0.1.2+cu12` for the CUDA wheel).
+which flavour is installed (`0.2.0` from PyPI, `0.2.0+cu12` for the CUDA wheel).
 
 **Threads.** NumPy, SciPy and the core each load their own OpenBLAS, and each starts by default
 one thread per CPU, so the three compete for the same CPUs. On a node where the process could use
@@ -58,14 +57,84 @@ one thread per CPU, so the three compete for the same CPUs. On a node where the 
 CPUs>` before starting Python. Conatus does not set thread counts itself, and
 `python -m conatus doctor` prints the BLAS libraries loaded, their thread counts and the value to set.
 
-## From source: install the package
+## GPU (CUDA) install
+
+The GPU backend (`backend="cuda"`) needs three things: the core compiled with CUDA
+(`CONATUS_CUDA=ON`), CuPy for the same CUDA major version, and an NVIDIA GPU with a recent enough
+driver. Compiling needs no GPU (a CPU or login node is fine); running does.
+
+**Tested combination** (October 2026; recipe 2 on both GPUs, recipe 3 on an A100): CUDA 12.9 (nvcc 12.9.86, cuFFT
+11.4.1, cuBLAS 12.9.2), CuPy 14.2.0, GCC 13, Python 3.12, NVIDIA driver 580, on A100 (compute
+capability 8.0) and L40S (8.9), the two architectures the core is built for by default. Other
+12.x toolkits are expected to work but are not tested; CUDA 11 and 13 are not.
+
+Recipe 1, the CUDA binary wheel (beta; no compiler, no CUDA toolkit; the driver must support
+CUDA 12.9, i.e. driver ≥ 575 or an older 12.x driver through CUDA minor-version compatibility).
+The wheels are attached to the
+[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.2.0), one per Python
+(`cp311`, `cp312`, `cp313`); for Python 3.12:
+
+```bash
+python3.12 -m venv venv && . venv/bin/activate
+pip install "conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.2.0/conatus-0.2.0+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+```
+
+On a GPU node (in a batch job on a cluster), check that the device can be used:
+
+```bash
+python -m conatus doctor     # "GPU (backend='cuda')": ok, with the device's compute capability
+```
+
+`doctor` names what is missing: CuPy, a core built without CUDA, or no visible GPU (each case is
+said separately; the same text appears when `backend="cuda"` is refused).
+
+## Check your installation
+
+```bash
+python -m conatus doctor   # compiled core, GPU: what this machine can run, what to do otherwise
+python -m conatus --version   # conatus, compiled core and Python versions: the first line of a bug report
+```
+
+`doctor` marks each line `[ok]`, `[missing]` (required: the exit code is 1), `[warning]` (something
+may be wrong: a core built for another version, little disk space, an untested Python) or
+`[optional]` (an optional component that is absent: GPU, CuPy, Dedalus, ipywidgets,
+an undeclared run registry; this is not an error).
+
+```python
+import conatus as cn
+m = cn.Model(cn.Box(x=cn.walls(0, 1)), name="heat", kappa=1.0)
+T = m.scalar("T")
+m.equations("dt(T) - kappa*lap(T) = 0")
+m.at("walls", T=0)
+print(m.explain())
+```
+
+then run {doc}`tutorials/01_orr_sommerfeld` (under a minute; eigenvalues only, so it runs even
+from a source tree whose core is not built yet). For the GPU path, the
+second half of {doc}`tutorials/02_rayleigh_benard` runs the same problem on the device and
+compares with the CPU.
+
+## Release status and extras
+
+What this release supports, and what each optional extra adds. Both tables are generated from one
+source, which the website's Install page uses too.
+
+```{include} guide/_generated/status_features.md
+```
+
+```{include} guide/_generated/status_extras.md
+```
+
+## For developers: building from source
+
+### From source: install the package
 
 The same recipe as the README: a conda environment for the compilers and libraries, then
 `pip install ".[tutorials]"`, which compiles the core, installs it inside the package and adds
 what the tutorials need (matplotlib). About two minutes on a cluster node with a warm package cache.
 
 ```bash
-git clone --branch v0.1.2 https://github.com/rubendahan/conatus && cd conatus
+git clone --branch v0.2.0 https://github.com/rubendahan/conatus && cd conatus
 micromamba create -n conatus -c conda-forge python=3.12 gxx_linux-64=13 liblapack libblas
 micromamba activate conatus
 pip install ".[tutorials]"      # CPU core + matplotlib, xarray (the GPU build: next section)
@@ -83,27 +152,7 @@ registry. `doctor` prints these directories on its first line.
 `pip wheel .` builds a wheel of the same package (for another machine with the same
 environment).
 
-## GPU (CUDA) install
-
-The GPU backend (`backend="cuda"`) needs three things: the core compiled with CUDA
-(`CONATUS_CUDA=ON`), CuPy for the same CUDA major version, and an NVIDIA GPU with a recent enough
-driver. Compiling needs no GPU (a CPU or login node is fine); running does.
-
-**Tested combination** (October 2026; recipe 2 on both GPUs, recipe 3 on an A100): CUDA 12.9 (nvcc 12.9.86, cuFFT
-11.4.1, cuBLAS 12.9.2), CuPy 14.2.0, GCC 13, Python 3.12, NVIDIA driver 580, on A100 (compute
-capability 8.0) and L40S (8.9), the two architectures the core is built for by default. Other
-12.x toolkits are expected to work but are not tested; CUDA 11 and 13 are not.
-
-Recipe 1, the CUDA binary wheel (beta; no compiler, no CUDA toolkit; the driver must support
-CUDA 12.9, i.e. driver ≥ 575 or an older 12.x driver through CUDA minor-version compatibility).
-The wheels are attached to the
-[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.1.2), one per Python
-(`cp311`, `cp312`, `cp313`); for Python 3.12:
-
-```bash
-python3.12 -m venv venv && . venv/bin/activate
-pip install "conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.1.2/conatus-0.1.2+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
-```
+### GPU builds from source
 
 Recipe 2, a conda build from source (the development environment; one CuPy, from conda-forge):
 
@@ -137,16 +186,9 @@ system CUDA toolkit (`-Ccmake.define.CUDAToolkit_ROOT=/usr/local/cuda`) is expec
 not tested.
 
 Another GPU architecture: add `-Ccmake.define.CMAKE_CUDA_ARCHITECTURES=90` (for example); the
-default is `80;89`. Then, **on a GPU node** (in a batch job on a cluster):
+default is `80;89`.
 
-```bash
-python -m conatus doctor     # "GPU (backend='cuda')": ok, with the device's compute capability
-```
-
-`doctor` names what is missing: CuPy, a core built without CUDA, or no visible GPU (each case is
-said separately; the same text appears when `backend="cuda"` is refused).
-
-## From source: development tree
+### Development tree
 
 To work on Conatus itself, build the core in place and use the package from the tree:
 
@@ -162,33 +204,7 @@ ruff check . && python -m pytest -q -m "not slow and not gpu"   # lint + fast te
 On a cluster, keep the environment and the build on a scratch or project file system rather than
 in a small home directory, and run anything heavy (tests, GPU work) in batch jobs.
 
-## Check your installation
-
-```bash
-python -m conatus doctor   # compiled core, GPU: what this machine can run, what to do otherwise
-python -m conatus --version   # conatus, compiled core and Python versions: the first line of a bug report
-```
-
-`doctor` marks each line `[ok]`, `[missing]` (required: the exit code is 1), `[warning]` (something
-may be wrong: a core built for another version, little disk space, an untested Python) or
-`[optional]` (an optional component that is absent: GPU, CuPy, Dedalus, ipywidgets,
-an undeclared run registry; this is not an error).
-
-```python
-import conatus as cn
-m = cn.Model(cn.Box(x=cn.walls(0, 1)), name="heat", kappa=1.0)
-T = m.scalar("T")
-m.equations("dt(T) - kappa*lap(T) = 0")
-m.at("walls", T=0)
-print(m.explain())
-```
-
-then run {doc}`tutorials/01_orr_sommerfeld` (under a minute; eigenvalues only, so it runs even
-from a source tree whose core is not built yet). For the GPU path, the
-second half of {doc}`tutorials/02_rayleigh_benard` runs the same problem on the device and
-compares with the CPU.
-
-## Building this documentation
+### Building this documentation
 
 The site is built with Sphinx, MyST and Furo in a **separate** environment, so that the
 documentation tools do not modify the compute environment:

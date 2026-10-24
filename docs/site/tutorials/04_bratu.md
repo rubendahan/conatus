@@ -53,8 +53,8 @@ because the Jacobian is singular there. Pseudo-arclength continuation parametris
 The tolerance `tol` is required: it decides the digits of the solution. The damping (default 1,
 full Newton steps) and the iteration budget (default 50) have declared defaults; the script gives
 both explicitly (1 and 20). All three are printed with the result. `sol.explain()` lists the residual of every iteration and the **observed** order of
-convergence $q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})$, about 2 here, the signature of an exact
-Jacobian. Non-convergence raises `NewtonNotConverged` with the history of the iterations.
+convergence $q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})$, about 2 here, consistent with local
+quadratic convergence of Newton's method. Non-convergence raises `NewtonNotConverged` with the history of the iterations.
 
 ```{include} media/t04_newton.md
 ```

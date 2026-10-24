@@ -58,6 +58,7 @@ class Surface:
 
     @property
     def flat(self) -> bool:
+        """True for a constant surface (a number)."""
         return isinstance(self.value, numbers.Real)
 
     def __call__(self, *grids: np.ndarray) -> np.ndarray:
@@ -80,6 +81,8 @@ class MetricReport:
     tol: float
 
     def explain(self) -> str:
+        """Fourier coefficients kept, sampled tail and accepted level of one metric function,
+        one line."""
         return (f"metric {self.name}: {self.kept} of {self.total} Fourier coefficients kept "
                 f"(Fourier bandwidth), sampled tail {self.tail:.1e} on the grid "
                 f"(accepted up to ncc_tail_tol = {self.tol:g})")
@@ -107,14 +110,17 @@ class TerrainMap:
     # -------------------------------------------------------------------- identity
     @property
     def names(self) -> tuple[str, ...]:
+        """Names of the horizontal periodic coordinates."""
         return tuple(n for n, _ in self.periodic)
 
     @property
     def lengths(self) -> tuple[float, ...]:
+        """Periods of the horizontal directions."""
         return tuple(b - a for _, (a, b) in self.periodic)
 
     @property
     def flat(self) -> bool:
+        """True when both surfaces are flat."""
         return self.bottom.flat and self.top.flat
 
     @property
@@ -152,12 +158,14 @@ class TerrainMap:
 
     # -------------------------------------------------------------------- explain
     def formula(self) -> str:
+        """z = b + (t - b)(1 + xi)/2 as text."""
         h = ", ".join(self.names)
         z = self.vertical
         return (f"{z} = b({h}) + (t({h}) - b({h})) (1 + xi)/2, xi in [-1, 1] "
                 f"(b: {self.bottom.text}; t: {self.top.text})")
 
     def metric_text(self) -> str:
+        """The chain rule of the map (J, A_x, B_x), as text."""
         z = self.vertical
         lines = [f"d{z} = J dxi, J = 2/(t - b)"]
         for n in self.names:
@@ -167,6 +175,7 @@ class TerrainMap:
         return "; ".join(lines)
 
     def explain(self) -> str:
+        """The map and its chain-rule metric, one line."""
         return f"{self.kind}: {self.formula()}; chain rule: {self.metric_text()}"
 
     def __repr__(self) -> str:
@@ -220,11 +229,12 @@ class TerrainMap:
         return out
 
     def metric_names(self) -> list[str]:
+        """Names of the metric functions: J, H and A_x, B_x per horizontal direction x."""
         return ["J", "H"] + [f"{p}_{n}" for n in self.names for p in ("A", "B")]
 
     def metric_coeffs(self, Ns: tuple[int, ...], tol: float) -> tuple[dict, list[MetricReport]]:
         """Fourier coefficients c[p], |p_d| <= 2 K_d (K_d = N_d/2 - 1), of every metric function,
-        computed on a fine grid (multiple of N_d), and the check: the coefficients of each
+        computed on a fine grid (multiple of N_d), and the tail check: the coefficients of each
         function sampled on the N-point grid (the resolution of the unknowns) must have a relative
         outer-shell tail <= ``tol`` (``ncc_tail_tol``), otherwise ValueError with the resolution
         to use. Returns ({name: array of shape (4K_d + 1, ...)}, reports)."""
@@ -261,7 +271,7 @@ class TerrainMap:
 def _outer_shell(shape: tuple[int, ...]) -> np.ndarray:
     """Mask of the FFT coefficients with |m_d| >= M_d/2 - 1 in some direction (the last two
     retained wavenumbers and the Nyquist mode: the Fourier analogue of the 'last 3' Chebyshev
-    coefficients of the tail)."""
+    coefficients of the coefficient tail)."""
     mask = np.zeros(shape, dtype=bool)
     for i, m in enumerate(shape):
         f = np.abs(np.fft.fftfreq(m, d=1.0 / m))
@@ -326,6 +336,7 @@ class TerrainChebyshev(Chebyshev):
         return super()._params() + self.terrain.key
 
     def coeff_space(self) -> str:
+        """Chebyshev T_n of xi with the terrain map, as text."""
         return f"T_n(xi), n = 0..{self.size - 1}, {self.terrain.formula()}"
 
     def __repr__(self) -> str:
@@ -334,6 +345,7 @@ class TerrainChebyshev(Chebyshev):
 
 
 def is_terrain(b: Any) -> bool:
+    """True for a TerrainChebyshev basis."""
     return isinstance(b, TerrainChebyshev)
 
 

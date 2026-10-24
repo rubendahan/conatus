@@ -2,7 +2,7 @@
 // resolved page components) and hydrated by the client (with lazy components per route), so
 // every page ships only its own code.
 import { Suspense, type ComponentType } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router";
 import { routes, notFound, redirects } from "./routes";
 import Layout from "./components/Layout";
 

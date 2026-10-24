@@ -37,8 +37,8 @@ def rotating_layer(N: int, walls: str, Pr: float = 1.0):
     sigma = Parameter("sigma", dtype=complex)
     Ra, k, Ta = Parameter("Ra", 1e3), Parameter("k", 3.0), Parameter("Ta", 1e3)
     f = sqrt(Ta)                                                # Coriolis parameter in these units
-    Dz = lambda q: diff(q, z)                                   # noqa: E731
-    lap = lambda q: Dz(Dz(q)) - k ** 2 * q                      # noqa: E731
+    Dz = lambda q: diff(q, z)
+    lap = lambda q: Dz(Dz(q)) - k ** 2 * q
     pb = EVP([u, v, w, p, T], eigenvalue=sigma, name=f"rotating RB ({walls} walls)")
     pb.add_equation((sigma * u - Pr * lap(u) + 1j * k * p - Pr * f * v, 0))
     pb.add_equation((sigma * v - Pr * lap(v) + Pr * f * u, 0))

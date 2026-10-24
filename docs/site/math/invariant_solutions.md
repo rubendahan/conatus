@@ -25,9 +25,22 @@ problem. It does not estimate the time-discretisation error.
 ## Newton–Krylov
 
 The Newton correction solves $J\,\delta z = -R(z)$ by GMRES. The Jacobian is not formed. Its
-products with a vector use the tangent of the discrete time stepper ({doc}`chaos` and the adjoint
-pages describe the same tangent), and the derivative with respect to $T$ is the velocity at the end
-point.
+products with a state direction use the derivative of the discrete time stepper with respect to
+the state ({doc}`chaos` gives the stage equation).
+
+The column for the period is the derivative of the discrete map. With $dt = T/n$ and $n$ fixed,
+it is $\partial \Phi_T/\partial T = \frac1n\,\partial \Phi_T/\partial(dt)$, which differentiates
+every stage with respect to the step. Both shooting solvers (the three-dimensional one and
+`find_relative_periodic_orbit` for one-dimensional problems) approximate it by a central difference
+of discrete maps, $(\Phi_{T+\varepsilon} - \Phi_{T-\varepsilon})(u)/2\varepsilon$, with a declared
+relative step $\varepsilon/T$.
+
+The velocity at the end point, $v(\Phi_T(u))$, is the derivative of the exact flow, not of the
+discrete map; for a scheme of order $p$ the two differ by $O(dt^p)$. For example, backward Euler on
+$u' = -u$ gives $\Phi_T(u) = (1 + T/n)^{-n} u$. Its exact $T$-derivative is $-\Phi_T(u)/(1 + dt)$,
+while the end-point velocity is $-\Phi_T(u)$. Up to version 0.1.2, `find_relative_periodic_orbit`
+used the end-point velocity. That only slowed Newton: the residual $R(z)$ and the stopping test use
+the discrete map itself, so the converged solution is the same.
 
 ## Hookstep
 
@@ -38,8 +51,9 @@ $\lVert \beta e_1 - \bar H y\rVert$. If it is longer than the trust radius $\Del
 $$ y(\mu) = W\,\mathrm{diag}\!\left(\frac{s_i}{s_i^2 + \mu}\right) U^T \beta e_1,
 \qquad \lVert y(\mu)\rVert = \Delta, $$
 
-from the singular value decomposition $\bar H = U\,\mathrm{diag}(s)\,W^T$, with $\mu$ found by
-bisection. The radius follows the ratio of actual to predicted reduction: halved and retried in the
+from the singular value decomposition $\bar H = U\,\mathrm{diag}(s)\,W^T$ (real arithmetic), with
+$\mu \ge 0$ found by bisection. This is the minimiser of $\lVert \beta e_1 - \bar H y\rVert$ under
+the constraint $\lVert y\rVert \le \Delta$. The radius follows the ratio of actual to predicted reduction: halved and retried in the
 same Krylov space when the step is poor, doubled when it is good at the boundary. Every tolerance,
 budget and radius is an argument; a search that does not converge raises an error with its history.
 
@@ -47,8 +61,9 @@ budget and radius is an argument; a search that does not converge raises an erro
 
 Once found, an equilibrium's stability follows from the eigenvalues of its Jacobian, and a periodic
 orbit's from its Floquet multipliers (eigenvalues of $D\Phi_T$, by Arnoldi on the tangent map). A
-solution computed in a symmetry subspace is declared stable only after the symmetry-breaking
-directions have been checked ({doc}`symmetry`).
+computation in a symmetry subspace sees only the symmetric perturbations. For a
+reflection-symmetric equilibrium, `symmetry_breaking_check` also computes the antisymmetric block
+({doc}`symmetry`). Other cases need a stability computation in the full space.
 
 ## Edge states and minimal seeds
 

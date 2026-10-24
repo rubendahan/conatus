@@ -33,7 +33,7 @@ export default defineConfig({
     assetsInlineLimit: 2048,
     reportCompressedSize: false,
   },
-  ssr: { noExternal: ["react-router-dom", "react-router", "@remix-run/router"] },
+  ssr: { noExternal: ["react-router"] },
   // Pages import tutorial scripts and their executed outputs from docs/ with ?raw (shown as run).
   server: { host: "127.0.0.1", port: 5173, fs: { allow: [".."] } },
 });

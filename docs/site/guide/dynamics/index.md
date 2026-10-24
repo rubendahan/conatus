@@ -5,8 +5,9 @@ Everything Conatus does with a model once it is written: stability, growth, inva
 The model you simulate is the model you analyse. A native model (`cn.Model`) gives its eigenvalue
 problem with `m.eigenvalues(...)` or `m.linearize(about=...)`, its time stepper with
 `m.simulate(...)` (the flow map that every search for an invariant solution uses), and its
-compiled problem with `m.compile(N).problem` for the tools of `conatus.expert`. Every result
-carries the residual that validates it and an `explain()` that lists the choices made.
+compiled problem with `m.compile(N).problem` for the tools of `conatus.expert`. Results report
+their residuals and the checks performed, and `explain()` lists the choices made. Test
+convergence and compare with an independent value before using a result.
 
 | Page | Question it answers |
 |---|---|

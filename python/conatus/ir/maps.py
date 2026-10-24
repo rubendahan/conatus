@@ -1,4 +1,4 @@
-"""Mapped Chebyshev bases: infinite and semi-infinite intervals (anticipating gallery, BACKLOG).
+"""Mapped Chebyshev bases: infinite and semi-infinite intervals.
 
 A mapped basis expands in Chebyshev polynomials T_n(xi), xi in [-1, 1], of a computational
 coordinate related to the physical one by a declared map y = m(xi) (Boyd, *Chebyshev and Fourier
@@ -43,6 +43,7 @@ import scipy.fft as sfft
 from .bases import _REQUIRED, Basis, Chebyshev
 from .coords import Coordinate
 from ..errors import CoordinateError, OptionError, ResolutionError
+from .tails import coefficient_tail
 
 __all__ = ["CoordinateMap", "TanhMap", "TanMap", "RationalMap", "MappedChebyshev", "is_mapped"]
 
@@ -84,6 +85,8 @@ class CoordinateMap:
     # -- public
     @property
     def bounds(self) -> tuple[float, float]:
+        """Physical interval of y: (origin, inf) on the half line, (-inf, inf) on the whole
+        line."""
         return (-math.inf if self.infinite else self.origin, math.inf)
 
     def y(self, xi):
@@ -95,6 +98,7 @@ class CoordinateMap:
         return out
 
     def dy(self, xi):
+        """dy/dxi at ``xi``."""
         return self._dy(np.asarray(xi, float))
 
     def metric(self, xi):
@@ -122,7 +126,7 @@ class CoordinateMap:
         keep = int(np.nonzero(np.abs(c) > METRIC_TAIL * amax)[0][-1]) + 1
         if keep > 0.9 * m:
             raise ResolutionError(f"{self!r}: the metric is not resolved by {m} Chebyshev coefficients "
-                                  f"(tail {np.abs(c[-3:]).max() / amax:.1e}); choose another map",
+                                  f"(tail {coefficient_tail(c):.1e}); choose another map",
                                   fix="more Chebyshev coefficients for the metric, or a smoother map")
         dropped = float(np.abs(c[keep:]).max() / amax) if keep < m else 0.0
         return c[:keep], (f"metric expanded to machine precision: {keep} Chebyshev coefficients "
@@ -130,6 +134,7 @@ class CoordinateMap:
 
     @property
     def key(self) -> tuple:
+        """Structural identity (kind, scale, origin, complex shift)."""
         return (self.kind, self.L, self.origin, self.contour)
 
     def __repr__(self) -> str:
@@ -138,9 +143,11 @@ class CoordinateMap:
         return f"{type(self).__name__}(L={self.L:g}{o}{c})"
 
     def formula(self) -> str:
+        """y(xi) and dxi/dy as text (each map defines it)."""
         raise NotImplementedError
 
     def explain(self) -> str:
+        """The map, its formula and interval, and the complex shift of the path if any."""
         s = f"{self!r}: {self.formula()}, y in {self.bounds}"
         if self.contour:
             s += (f"; path shifted into the complex plane, y(xi) - {self.contour:g} i: eigenvalues "
@@ -162,6 +169,7 @@ class TanhMap(CoordinateMap):
             return self.L / (1 - xi ** 2)
 
     def metric(self, xi):
+        """dxi/dy = (1 - xi^2)/L at ``xi``."""
         xi = np.asarray(xi, float)
         return (1 - xi ** 2) / self.L
 
@@ -172,6 +180,7 @@ class TanhMap(CoordinateMap):
         return np.array([0.5, 0.0, -0.5]) / self.L          # (1 - xi^2)/L = (T0 - T2)/(2L)
 
     def formula(self) -> str:
+        """y = origin + L artanh(xi) and its metric, as text."""
         return f"y = {self.origin:g} + {self.L:g} artanh(xi), dxi/dy = (1 - xi^2)/{self.L:g}"
 
 
@@ -189,6 +198,7 @@ class TanMap(CoordinateMap):
             return self.L * np.pi / 2 / np.cos(np.pi * xi / 2) ** 2
 
     def metric(self, xi):
+        """dxi/dy = 2 cos^2(pi xi/2)/(pi L) at ``xi``."""
         xi = np.asarray(xi, float)
         c2 = np.cos(np.pi * xi / 2) ** 2
         return c2 / (self.L * np.pi / 2)
@@ -197,6 +207,7 @@ class TanMap(CoordinateMap):
         return 2 / np.pi * np.arctan((y - self.origin) / self.L)
 
     def formula(self) -> str:
+        """y = origin + L tan(pi xi/2) and its metric, as text."""
         return (f"y = {self.origin:g} + {self.L:g} tan(pi xi/2), "
                 f"dxi/dy = 2 cos^2(pi xi/2)/(pi {self.L:g})")
 
@@ -215,6 +226,7 @@ class RationalMap(CoordinateMap):
             return 2 * self.L / (1 - xi) ** 2
 
     def metric(self, xi):
+        """dxi/dy = (1 - xi)^2/(2 L) at ``xi``."""
         xi = np.asarray(xi, float)
         return (1 - xi) ** 2 / (2 * self.L)
 
@@ -228,6 +240,7 @@ class RationalMap(CoordinateMap):
         return np.array([0.75, -1.0, 0.25]) / self.L        # (1 - xi)^2/(2L) in T0, T1, T2
 
     def formula(self) -> str:
+        """y = origin + L (1 + xi)/(1 - xi) and its metric, as text."""
         return (f"y = {self.origin:g} + {self.L:g} (1 + xi)/(1 - xi) (rational Chebyshev TL), "
                 f"dxi/dy = (1 - xi)^2/(2 {self.L:g})")
 
@@ -252,6 +265,7 @@ class MappedChebyshev(Chebyshev):
         return super()._params() + self.map.key
 
     def coeff_space(self) -> str:
+        """Chebyshev T_n of xi with the map, as text."""
         return f"T_n(xi), n = 0..{self.size - 1}, {self.map.explain()}"
 
     def __repr__(self) -> str:
@@ -260,4 +274,5 @@ class MappedChebyshev(Chebyshev):
 
 
 def is_mapped(b: Basis | None) -> bool:
+    """True for a MappedChebyshev basis."""
     return isinstance(b, MappedChebyshev)

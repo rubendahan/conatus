@@ -23,7 +23,7 @@ def h5py():
 
 def require_file(path: str | Path, what: str) -> Path:
     """``path`` as a Path if it is an existing file, else a :class:`MissingFileError` naming the
-    call (h5py's "Unable to synchronously open file" reached the user)."""
+    call (N3: h5py's "Unable to synchronously open file" reached the user)."""
     p = Path(path)
     if p.is_file():
         return p

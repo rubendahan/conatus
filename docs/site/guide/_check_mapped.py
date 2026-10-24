@@ -88,9 +88,9 @@ def mapped_convergence() -> None:
     import conatus as cn
 
     eps = 0.05
-    h = lambda x: eps * np.cos(x)                               # noqa: E731
-    ue = lambda x, z: np.exp(np.sin(x)) * np.sin(z) + z**2      # noqa: E731  exact solution
-    fe = lambda x, z: ((np.cos(x)**2 - np.sin(x) - 1) * np.exp(np.sin(x)) * np.sin(z)  # noqa: E731
+    h = lambda x: eps * np.cos(x)
+    ue = lambda x, z: np.exp(np.sin(x)) * np.sin(z) + z**2      # exact solution
+    fe = lambda x, z: ((np.cos(x)**2 - np.sin(x) - 1) * np.exp(np.sin(x)) * np.sin(z)
                        + 2)                                     # its Laplacian
     for N in (16, 20, 24, 28):
         m = cn.Model(cn.MappedBox(x=cn.periodic(2 * np.pi), z=cn.between(bottom=h, top=1.0)))
@@ -115,8 +115,8 @@ def mapped_neumann() -> None:
     box = cn.MappedBox(x=cn.periodic(2 * np.pi),
                        z=cn.between(bottom=lambda x: eps * np.cos(x), top=1.0))
     # [mapped-neumann]
-    slope = lambda x: -eps * np.sin(x)                 # noqa: E731  b'(x)
-    norm = lambda x: np.sqrt(1 + slope(x)**2)          # noqa: E731
+    slope = lambda x: -eps * np.sin(x)                 # b'(x)
+    norm = lambda x: np.sqrt(1 + slope(x)**2)
     m = cn.Model(box, name="heat flux through a wavy wall")
     m.scalar("T")
     m.given("nx", lambda x: slope(x) / norm(x))       # outward unit normal of z = b(x)

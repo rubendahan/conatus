@@ -23,7 +23,7 @@ and the adjoint boundary conditions are *declared by the user* and *checked*: th
 concomitant of Green's identity ⟨a, K u⟩ − ⟨K† a, u⟩ = [P(u, a)] must vanish identically once the
 direct and adjoint conditions are imposed (``show_green_identity``). Nothing is guessed.
 
-Discretization goes through the IR (tau + lifts plan): ``discretize(N)`` returns the
+Discretization goes through the IR (tau + lifts, discretization plan): ``discretize(N)`` returns the
 descriptor pencil M x' + L x = 0 with the exact Chebyshev Gram of the energy. Its *discrete*
 adjoint W⁻¹ Lᴴ W ("discretize, then optimize") differs at finite N; ``tests/nonmodal`` checks that
 both converge to the same quantities. See

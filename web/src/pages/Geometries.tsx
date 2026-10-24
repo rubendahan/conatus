@@ -1,7 +1,7 @@
 // Geometries: the domains of the native layer (cn.Box, cn.Channel, cn.Disk, ...), each with the line
 // that declares it, its coordinates and the names of its boundaries, checked against
 // python/conatus/model/geometry.py. Text and code only (Ruben, 2026-10-02: text-first pages).
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Code, DocLink, PageHead, Section } from "../components/ui";
 import "../styles/geometries.css";
 

@@ -117,6 +117,7 @@ class Basis:
 
     @property
     def length(self) -> float:
+        """Length of the interval, bounds[1] - bounds[0]."""
         return self.bounds[1] - self.bounds[0]
 
     def fft_length(self, M: int) -> int:
@@ -125,7 +126,7 @@ class Basis:
 
     @property
     def grid_size(self) -> int:
-        """Number of points of the dealiased grid: floor(N*d) (Dedalus), or the smallest M above
+        """Number of points of the dealiased grid: floor(N*dealias), or the smallest M above
         it with a 7-smooth FFT length when ``grid="smooth7"`` was declared."""
         M = int(math.floor(self.size * self.dealias))
         if self.grid == "smooth7":
@@ -138,6 +139,8 @@ class Basis:
 
     @property
     def key(self) -> tuple:
+        """Structural identity of the basis (type, coordinate, size, bounds, dealias,
+        parameters, grid)."""
         return (type(self).__name__, self.coord.key, self.size, self.bounds,
                 self.dealias) + self._params() + ((self.grid,) if self.grid != "floor" else ())
 
@@ -148,6 +151,8 @@ class Basis:
         return hash(self.key)
 
     def coeff_space(self) -> str:
+        """The functions the coefficients multiply and the grid, as text (each basis defines
+        it)."""
         raise NotImplementedError
 
     def __repr__(self) -> str:
@@ -156,6 +161,7 @@ class Basis:
                 + (f", grid={self.grid!r}" if self.grid != "floor" else "") + ")")
 
     def explain(self) -> str:
+        """Repr, family, size, bounds, grids and coefficient space of the basis."""
         return "\n".join([
             repr(self),
             f"  family         : {self.family}{' (periodic)' if self.periodic else ''}",
@@ -196,6 +202,7 @@ class RealFourier(_Fourier):
     family = "Fourier (real: cos/sin)"
 
     def coeff_space(self) -> str:
+        """The pairs {cos(k x), -sin(k x)} with the wavenumbers, as text."""
         return (f"{{cos(k x), -sin(k x)}}, n = 0..{self.size // 2 - 1} ({self.size} real "
                 f"coefficients), {self.wavenumbers()}")
 
@@ -206,6 +213,7 @@ class ComplexFourier(_Fourier):
     family = "Fourier (complex)"
 
     def coeff_space(self) -> str:
+        """exp(i k x) with the wavenumbers, as text."""
         return (f"exp(i k x), n = {-(self.size // 2)}..{(self.size - 1) // 2}, "
                 f"{self.wavenumbers()}")
 
@@ -238,6 +246,7 @@ class Jacobi(Basis):
         return (self.a, self.b)
 
     def coeff_space(self) -> str:
+        """Jacobi P_n^(a,b) of the affine variable t in [-1, 1], as text."""
         return (f"P_n^({_frac(self.a)},{_frac(self.b)})(t), n = 0..{self.size - 1}, "
                 f"t = {_affine(self.bounds[0], self.length)}")
 
@@ -261,6 +270,7 @@ class Chebyshev(Jacobi):
         return 2 * M
 
     def coeff_space(self) -> str:
+        """Chebyshev T_n of the affine variable t in [-1, 1], as text."""
         return (f"T_n(t), n = 0..{self.size - 1}, "
                 f"t = {_affine(self.bounds[0], self.length)}")
 
@@ -281,6 +291,7 @@ class Legendre(Jacobi):
         super().__init__(coord, size, bounds, 0.0, 0.0, dealias)
 
     def coeff_space(self) -> str:
+        """Legendre P_n of the affine variable t in [-1, 1], as text."""
         return (f"P_n(t), n = 0..{self.size - 1}, "
                 f"t = {_affine(self.bounds[0], self.length)}")
 
@@ -302,6 +313,7 @@ class Ultraspherical(Jacobi):
         self.lam = float(lam)
 
     def coeff_space(self) -> str:
+        """Gegenbauer C_n^(lam) of the affine variable t in [-1, 1], as text."""
         return (f"C_n^({_frac(self.lam)})(t), n = 0..{self.size - 1}, "
                 f"t = {_affine(self.bounds[0], self.length)}")
 
@@ -312,15 +324,15 @@ class Ultraspherical(Jacobi):
 
 def ChebyshevU(coord: Coordinate, size: int, bounds: tuple[float, float],
                dealias: Any = _REQUIRED) -> Ultraspherical:
-    """Chebyshev polynomials of the second kind U_n = C_n^(1) (Dedalus ``ChebyshevU``)."""
+    """Chebyshev polynomials of the second kind, U_n = C_n^(1) (``Ultraspherical(..., lam=1)``)."""
     return Ultraspherical(coord, size, bounds, lam=1, dealias=dealias)
 
 
 def ChebyshevV(coord: Coordinate, size: int, bounds: tuple[float, float],
                dealias: Any = _REQUIRED) -> Ultraspherical:
-    """Gegenbauer C_n^(2), under Dedalus's name ``ChebyshevV`` (= Ultraspherical(alpha=2)).
-    Not the Chebyshev polynomials of the third kind V_n of the literature:
-    the Dedalus name is kept for scripts that use it; ``Ultraspherical(..., lam=2)`` says it."""
+    """Gegenbauer polynomials C_n^(2), the same basis as ``Ultraspherical(..., lam=2)``, which is the
+    clearer name. This is not the Chebyshev polynomial of the third kind V_n of the literature: the
+    name is kept for compatibility with imported scripts."""
     return Ultraspherical(coord, size, bounds, lam=2, dealias=dealias)
 
 
@@ -352,7 +364,7 @@ class DiskBasis(_Radial):
 
     A spin component of effective wavenumber k (k = m for a scalar, m +- 1 for u_+- of a vector) is
     rho^|k| w(z), with rho = r/R, z = 2 rho^2 - 1 and w a series of Jacobi polynomials
-    P_n^(0,|k|)(z) (Zernike polynomials), n < size - floor(|m|/2) (Dedalus's triangular truncation;
+    P_n^(0,|k|)(z) (Zernike polynomials), n < size - floor(|m|/2) (triangular truncation;
     ``polar_radial.DiskOps``): every representable function is smooth at r = 0 and no axis
     condition is ever imposed. (The standalone toolkit ``discretize.polar.Disk`` keeps a Chebyshev
     T series in z; the IR plans do not use it for the disk.)"""
@@ -368,9 +380,12 @@ class DiskBasis(_Radial):
 
     @property
     def radius(self) -> float:
+        """Radius of the disk."""
         return self.bounds[1]
 
     def coeff_space(self) -> str:
+        """The radial coefficient space of the disk (rho^|k| P_n^(0,|k|) per azimuthal mode), as
+        text."""
         return (f"rho^|k| P_n^(0,|k|)(z), n < {self.size} - floor(|m|/2), rho = r/{self.radius:g}, "
                 "z = 2 rho^2 - 1, k = m (+-1 per spin index); radial grid: Gauss-Legendre nodes in z")
 
@@ -395,9 +410,12 @@ class AnnulusBasis(_Radial):
         super().__init__(coord, size, (ri, ro), dealias)
 
     def fft_length(self, M: int) -> int:
+        """Radial Gauss-Chebyshev grid: the DCT runs as a real FFT of the even extension, length
+        2M."""
         return 2 * M
 
     def coeff_space(self) -> str:
+        """The radial coefficient space (Chebyshev T in the annulus), as text."""
         return (f"T_n(t), n = 0..{self.size - 1}, t = 2(r - {self.bounds[0]:g})/{self.length:g} - 1 "
                 "(spin components for vectors); Gauss-Chebyshev radial grid")
 
@@ -417,8 +435,8 @@ class SphereBasis(Basis):
     ``size`` = Lmax + 1 degrees l = 0..Lmax; a spin-s component of azimuthal mode m holds the degrees
     l >= max(|m|, |s|) (triangular truncation). ``radius`` is the sphere's radius on S2Coordinates
     (ignored in SphericalCoordinates, where the radius is the coordinate r). Grid: Gauss-Legendre nodes
-    in cos(theta), floor(size * dealias) of them. Note: Dedalus's real SphereBasis of shape
-    (Nphi, Ntheta) has Lmax = Ntheta - 2, i.e. size = Ntheta - 1 here (declared, never inferred)."""
+    in cos(theta), floor(size * dealias) of them. ``size`` is always given, never inferred from a
+    grid shape."""
 
     family = "spin-weighted spherical harmonics (colatitude part, Jacobi in cos theta)"
 
@@ -441,12 +459,14 @@ class SphereBasis(Basis):
 
     @property
     def Lmax(self) -> int:
+        """Largest harmonic degree, size - 1."""
         return self.size - 1
 
     def _params(self) -> tuple:
         return (self.radius,)
 
     def coeff_space(self) -> str:
+        """Spin-weighted spherical harmonics (triangular truncation), as text."""
         return (f"spin-weighted harmonics sY_lm(theta), l = max(|m|,|s|)..{self.Lmax} (triangular), "
                 f"sphere radius {self.radius:g}; Gauss-Legendre grid in cos(theta)")
 
@@ -479,7 +499,7 @@ class _SphericalRadial(Basis):
 class ShellBasis(_SphericalRadial):
     """Spherical shell ri <= r <= ro (0 < ri): Chebyshev T_n(t), r = c + h t, for every spin component;
     equations in a declared r-multiplied form (each row times the smallest power of r that makes its
-    coefficients polynomial, as Dedalus's r^-k Jacobi(k-1/2, k-1/2) derivative bases)."""
+    coefficients polynomial)."""
 
     family = "shell radial (Chebyshev T in t, r-multiplied operators)"
 
@@ -493,9 +513,12 @@ class ShellBasis(_SphericalRadial):
         super().__init__(coord, size, (ri, ro), dealias)
 
     def fft_length(self, M: int) -> int:
+        """Radial Gauss-Chebyshev grid: the DCT runs as a real FFT of the even extension, length
+        2M."""
         return 2 * M
 
     def coeff_space(self) -> str:
+        """The radial coefficient space of the shell (Chebyshev T in r), as text."""
         return (f"T_n(t), n = 0..{self.size - 1}, t = 2(r - {self.bounds[0]:g})/{self.length:g} - 1 "
                 "(spin components); Gauss-Chebyshev radial grid")
 
@@ -507,7 +530,7 @@ class ShellBasis(_SphericalRadial):
 class BallBasis(_SphericalRadial):
     """Full ball 0 <= r <= R, regular at the centre (Vasil et al. 2019, Lecoanet et al. 2019): the
     regularity component sigma of degree l is rho^k Q_n^(a, k + 1/2)(2 rho^2 - 1), k = l + sigma,
-    n < size - floor(l/2) (Dedalus's BallBasis truncation), a = derivative level (0 for fields).
+    n < size - floor(l/2), a = derivative level (0 for fields).
     Gauss-Jacobi (0, 1/2) radial grid in z = 2 rho^2 - 1."""
 
     family = "ball radial (regular 3D Zernike: rho^k P_n^(a, k+1/2)(2 rho^2 - 1))"
@@ -521,9 +544,12 @@ class BallBasis(_SphericalRadial):
 
     @property
     def radius(self) -> float:
+        """Radius of the ball."""
         return self.bounds[1]
 
     def coeff_space(self) -> str:
+        """The radial coefficient space of the ball (Zernike-type rho^k Q_n per regularity
+        component), as text."""
         return (f"rho^k Q_n^(a, k+1/2)(z), n < {self.size} - floor(l/2), rho = r/{self.radius:g}, "
                 "z = 2 rho^2 - 1, k = l + sigma (regularity components); Gauss-Jacobi radial grid")
 
@@ -567,6 +593,7 @@ class Hermite(Basis):
         return (self.center, self.scale)
 
     def coeff_space(self) -> str:
+        """Orthonormal Hermite functions of (x - center)/scale, as text."""
         return (f"psi_n(y), n = 0..{self.size - 1}, y = (x - {self.center:g})/{self.scale:g} "
                 "(orthonormal Hermite functions); Gauss-Hermite grid")
 
@@ -601,6 +628,7 @@ class Laguerre(Basis):
         return (self.scale,)
 
     def coeff_space(self) -> str:
+        """Orthonormal Laguerre functions of (x - start)/scale, as text."""
         return (f"L_n(y) exp(-y/2), n = 0..{self.size - 1}, y = (x - {self.start:g})/{self.scale:g} "
                 "(orthonormal Laguerre functions); Gauss-Laguerre grid")
 
@@ -655,6 +683,7 @@ class CompoundChebyshev(Basis):
 
     @property
     def pieces(self) -> list[tuple[float, float]]:
+        """Intervals (a, b) of the pieces, in order."""
         return list(zip(self.breakpoints, self.breakpoints[1:], strict=False))
 
     @property
@@ -668,6 +697,7 @@ class CompoundChebyshev(Basis):
 
     @property
     def interfaces(self) -> tuple[float, ...]:
+        """Inner breakpoints (the interfaces between pieces)."""
         return self.breakpoints[1:-1]
 
     def grid_sizes(self) -> list[int]:
@@ -676,6 +706,7 @@ class CompoundChebyshev(Basis):
 
     @property
     def grid_size(self) -> int:
+        """Total number of grid points (the sum over the pieces)."""
         return sum(self.grid_sizes())
 
     def piece_of(self, pos: float, side: str | None = None) -> int:
@@ -704,6 +735,7 @@ class CompoundChebyshev(Basis):
         raise AssertionError(pos)
 
     def coeff_space(self) -> str:
+        """Chebyshev T per piece, as text."""
         parts = ", ".join(f"[{a:g}, {b:g}]: T_n, n < {n}"
                           for (a, b), n in zip(self.pieces, self.sizes, strict=True))
         return f"piecewise Chebyshev T: {parts}; Gauss-Chebyshev nodes per piece"

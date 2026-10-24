@@ -72,6 +72,7 @@ class GroupMatrices:
 
     @property
     def shape(self) -> tuple[int, int]:
+        """Shape of L."""
         return self.L.shape
 
     def explain(self) -> str:
@@ -99,14 +100,17 @@ class GroupRank:
 
     @property
     def n_unknowns(self) -> int:
+        """Number of unknown columns of the group."""
         return sum(self.unknowns.values())
 
     @property
     def n_equations(self) -> int:
+        """Number of equation rows of the group."""
         return sum(self.equations.values())
 
     @property
     def ok(self) -> bool:
+        """True when the group is square, structurally full rank and not numerically deficient."""
         return (self.n_unknowns == self.n_equations == self.structural_rank
                 and not self.numerical.startswith("deficient"))
 
@@ -254,7 +258,7 @@ def operator_fields(problem: Problem) -> frozenset:
 
 def data_snapshot(ncc: Mapping | None) -> dict:
     """The constructor data of a plan, arrays copied: data changed in place by the caller after
-    discretization is then seen as new data by ``rebind_for_data`` (numerics review)."""
+    discretization is then seen as new data by ``rebind_for_data``."""
     import dataclasses
 
     def copy(d: Any) -> Any:
@@ -283,7 +287,7 @@ def _same_data(old: Any, new: Any) -> bool:
 def rebind_for_data(plan: Any, data: Mapping[E.Field, Any] | None,
                     fields: frozenset | None = None) -> Any:
     """A fresh plan of the same class when ``data`` (``solve(data)``) changes a coefficient of the
-    operator, else None (review finding 4). ``fields``: the fields whose new data needs a new plan
+    operator, else None. ``fields``: the fields whose new data needs a new plan
     (default: the coefficients of the operator, ``operator_fields``).
 
     ``solve(data)`` used to feed the new data to the right-hand side only, while the matrices kept
@@ -491,7 +495,7 @@ class Plan:
 
     def _data_tail(self, x: E.Field) -> float:
         """Relative Chebyshev tail (last 3 / max) of the data of the NCC field ``x`` along the
-        bounded axis; 0 if the data do not depend on it (rounding floor, see above)."""
+        bounded axis; 0 if the data do not depend on it (the rounding floor, see above)."""
         zc = self.layout.zcoord
         if x.domain is None or not x.domain.has(zc):
             return 0.0

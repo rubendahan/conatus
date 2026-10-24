@@ -179,8 +179,8 @@ class Registry:
 
     # ------------------------------------------------------------------ run files
     def run_dir(self, run_id: str) -> Path:
-        """The directory of run ``run_id`` (one path component: no separator, never "." or
-        "..", no NUL; security get("../../x") left the registry)."""
+        """The directory of run ``run_id``. ``run_id`` must be a single safe path component: no
+        separator, not "." or "..", no NUL; anything else is refused."""
         rid = str(run_id)
         if not _RUN_ID.fullmatch(rid) or rid in (".", ".."):
             from ..errors import OptionError

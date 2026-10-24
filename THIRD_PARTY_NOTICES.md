@@ -87,7 +87,8 @@ into the build output (`/THIRD_PARTY_NOTICES.md`, `/licenses/`).
 |---|---|---|---|
 | React (`react`), with `scheduler` 0.23.2 | 18.3.1 | MIT | Facebook, Inc. and its affiliates |
 | React DOM (`react-dom`) | 18.3.1 | MIT | Facebook, Inc. and its affiliates |
-| React Router (`react-router`, `react-router-dom`), with `@remix-run/router` 1.23.4 | 6.30.6 | MIT | React Training LLC 2015–2019, Remix Software Inc. 2020–2021, Shopify Inc. 2022–2023 |
+| React Router (`react-router`) | 7.18.4 | MIT | React Training LLC 2015–2019, Remix Software Inc. 2020–2021, Shopify Inc. 2022–2023 |
+| `cookie` 1.1.1, `set-cookie-parser` 2.7.2 (dependencies of React Router) | — | MIT | Roman Shtylman 2012–2014, Douglas Christopher Wilson 2015; Nathan Friedly 2015 |
 | MiniSearch (`minisearch`, website search) | 7.2.0 | MIT | 2022 Luca Ongaro |
 | `loose-envify` 1.4.0, `js-tokens` 4.0.0 (dependencies of React, build-time transform) | — | MIT | Andres Suarez; Simon Lydell |
 | The four @fontsource faces of section 2 (`.woff2` files in the bundle) | 5.3.0 | OFL-1.1 | as in section 2 |

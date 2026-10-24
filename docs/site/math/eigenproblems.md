@@ -62,7 +62,7 @@ The adjoint depends on the inner product. With a weighted product
 $\langle a, b\rangle_W = a^H W b$ (for example the kinetic energy, with the exact Gram matrix of the
 Chebyshev polynomials), the physical adjoint of a matrix operator is
 
-$$ A^\dagger = W^{-1} A^H W, $$
+$$ A^\dagger = W^{-1} A^H W \qquad (W \text{ Hermitian positive definite}), $$
 
 not the transpose. When $W$ is singular (tau columns carry no energy), the adjoint is refused;
 left eigenvectors, which do not need $W$, are used for sensitivities instead.
@@ -72,7 +72,7 @@ left eigenvectors, which do not need $W$, are used for sensitivities instead.
 - S. A. Orszag, *Accurate solution of the Orr–Sommerfeld stability equation*, J. Fluid Mech. 50
   (1971) 689–703.
 - D. R. Gardner, S. A. Trogdon and R. W. Douglass, *A modified tau spectral method that eliminates
-  spurious eigenvalues*, J. Comput. Phys. 80 (1989).
+  spurious eigenvalues*, J. Comput. Phys. 80 (1989) 137–167.
 - J. P. Boyd, *Chebyshev and Fourier Spectral Methods* (2001), ch. 7 (the drift test).
 - P. J. Schmid and D. S. Henningson, *Stability and Transition in Shear Flows*, Springer (2001).
 - P. Luchini and A. Bottaro, *Adjoint equations in stability analysis*, Annu. Rev. Fluid Mech. 46

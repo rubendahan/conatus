@@ -79,8 +79,12 @@ tokens: see {doc}`studio_agents`.
 
 ## AGENTS.md
 
-The page itself, as an agent reads it:
+The start of the page, as an agent reads it: installation, the mental model, a working example,
+the surface by task and the rules. The rest of
+[`AGENTS.md`](https://github.com/rubendahan/conatus/blob/main/AGENTS.md) covers live runs
+({doc}`studio_agents`) and the JSON contract described above.
 
 ```{include} ../../../AGENTS.md
 :start-line: 1
+:end-before: "## 6. Driving a run live"
 ```

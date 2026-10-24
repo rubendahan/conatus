@@ -12,9 +12,9 @@ against a directly assembled plan at an independent real point: the reconstructi
 reported and a mismatch is refused. A coefficient entry is discarded only when it is at
 rounding level for that entry (``ENTRY_DROP_TOL`` times its largest modulus over the sample
 plans); the discarded entries are counted, and an evaluation where their largest possible
-contribution exceeds ``RECON_TOL`` of the pencil is refused (external review of 0.1.1, F2: a
-whole coefficient matrix 1e-14 times the largest entry of the pencil was deleted as
-"identically zero", and the eigenvalue 1e-14 r read 0 at r = 1e14). A parameter entering
+contribution exceeds ``RECON_TOL`` of the pencil is refused (otherwise a
+whole coefficient matrix 1e-14 times the largest entry of the pencil would be deleted as
+"identically zero", and the eigenvalue 1e-14 r would read 0 at r = 1e14). A parameter entering
 non-polynomially is refused with a message (rebuild the plan per value instead).
 
 ``ParametricEVP`` then evaluates spectra, tracks one eigenpair by bordered Newton, and gives
@@ -52,7 +52,7 @@ __all__ = ["laurent_exponents", "ParametricEVP", "TrackedMode", "CriticalPoint",
 RECON_TOL = 1e-10
 #: A Laurent coefficient entry is discarded when its modulus is at most this times the largest
 #: modulus of the same matrix entry over the sample plans (rounding of the DFT). The threshold is
-#: per entry, not a global amplitude threshold (external review of 0.1.1, F2).
+#: per entry, not a global amplitude threshold.
 ENTRY_DROP_TOL = 1e-13
 # Declared defaults (listed in conatus.tolerances.DECLARED, shown by explain()):
 TRACK_TOL = 1e-13               # bordered-Newton stop |d sigma| <= TRACK_TOL max(|sigma|, 1): at the
@@ -826,7 +826,7 @@ class CriticalPoint:
     growth_rule: Callable[[complex], float] | None = dc_field(default=None, repr=False)
 
     def __repr__(self) -> str:
-        # one line (the dataclass repr printed every eigenvector)
+        # one line (earlier versions: the dataclass repr printed every eigenvector)
         o = "".join(f", {k}={v:.10g}" for k, v in self.over.items())
         return (f"CriticalPoint({self.parameter}_c={self.value:.10g}{o}, growth "
                 f"{self.growth:.1e}, residual {self.mode.residual:.1e}, verified={self.verified}"
@@ -930,7 +930,7 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
         return float(np.max(np.where(keep, g, -np.inf))) if keep.any() else -np.inf
 
     def check_ends(vals) -> None:
-        """Both ends of the bracket, whatever the path (with
+        """Both ends of the bracket, whatever the path (earlier versions: with
         values= Newton started at the midpoint and returned the upper-branch neutral point
         Re = 31956 of Orr-Sommerfeld at alpha = 1 as verified, with the growth negative at both
         ends of (5000, 40000)). No sign change: refused, after a coarse scan of the bracket
@@ -1062,7 +1062,7 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
             ("at the critical point: " + cnote) if "set aside" in cnote else "", pevp.explain(),
             f"verification: full QZ at the critical point, tracked mode is the least stable "
             f"admissible one (max growth {gmax:.1e}), residual {mode.residual:.1e}"]
-    # Y1 (N = 24 OS gave Re_c = 5037.6 for 5772.2 as a normal
+    # Y1 (earlier versions: N = 24 OS gave Re_c = 5037.6 for 5772.2 as a normal
     # result): without a drift pencil, the tail of the critical mode is printed and judged
     pevp._judge_resolution(mode, f"the critical mode at {parameter}_c = {pc:.10g}")
     if mode.tail is not None:
@@ -1166,7 +1166,7 @@ def _bracket_error(parameter: str, lo: float, hi: float, g_lo: float, g_hi: floa
                    gnote: str, vals: Mapping[str, Any], unfiltered: bool, *,
                    what: str = "the tracked mode", crossings: list | None = None,
                    scan: int = 0) -> ConvergenceError:
-    """The refusal of a bracket without a sign change of the growth (it used to be
+    """The refusal of a bracket without a sign change of the growth (earlier versions: it used to be
     SciPy's raw "f(a) and f(b) must have different signs"), with a suggested bracket: the
     sub-brackets of a coarse scan that hold a sign change (``crossings``), else
     the secant through the two ends."""

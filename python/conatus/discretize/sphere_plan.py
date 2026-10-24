@@ -187,6 +187,7 @@ class SpherePlan:
                 if S.valid(group.m, comp, ell, dom)]
 
     def size_of(self, dom: Domain | None, comp: tuple, group: SphereGroup) -> int:
+        """Number of coefficients of component ``comp`` of an object on ``dom`` in ``group``."""
         return sum(n for _, n in self.obj_layout(dom, comp, group))
 
     def flat_index(self, dom: Domain | None, rank: int, comp: tuple, group: SphereGroup) -> tuple:
@@ -215,15 +216,18 @@ class SpherePlan:
         raise KeyError(f"no group m={m}" + (f", l={ell}" if ell is not None else ""))
 
     def coeff_shape(self, dom: Domain | None, rank: int) -> tuple:
+        """Coefficient array shape of a rank-``rank`` object on domain ``dom``."""
         return self.space.coeff_shape(dom, rank)
 
     def Q(self, m: int, ell: int) -> np.ndarray:
+        """Regularity matrix Q of order ``m`` and degree ``ell`` (cached)."""
         key = ("Q", m, ell)
         if key not in self._cache:
             self._cache[key] = regularity_Q(self.space.H, m, ell)
         return self._cache[key]
 
     def ball_map(self, kind: str, m: int, ell: int) -> dict:
+        """Ball index map of kind ``kind`` for order ``m`` and degree ``ell`` (cached)."""
         key = ("bmap", kind, m, ell)
         if key not in self._cache:
             self._cache[key] = ball_map(self.space.H, kind, m, ell)
@@ -375,6 +379,8 @@ class SpherePlan:
 
     # ---------------------------------------------------------------- group layouts
     def var_slots(self, group: SphereGroup) -> list[tuple]:
+        """(variable index, component, offset, size) of every variable component in the group's
+        columns."""
         out, off = [], 0
         for vi, v in enumerate(self.variables):
             for c in comps(v.rank, self.space.nc):
@@ -384,6 +390,8 @@ class SpherePlan:
         return out
 
     def eq_slots(self, group: SphereGroup) -> list[tuple]:
+        """(equation index, component, offset, size) of every equation component in the group's
+        rows."""
         out, off = [], 0
         for i, eq in enumerate(self.problem.equations):
             for c in comps(eq.lhs.rank, self.space.nc):
@@ -550,6 +558,8 @@ class SpherePlan:
         return A
 
     def rhs_coeffs(self, coeffs: Mapping[E.Field, np.ndarray]) -> list:
+        """Coefficients of every right-hand side evaluated with the field data ``coeffs`` and
+        the NCCs (None for a zero right-hand side)."""
         data = dict(self._ncc_coeffs)
         data.update(coeffs)
         S = self.space
@@ -559,6 +569,7 @@ class SpherePlan:
                 for i, (eq, k) in enumerate(zip(self.problem.equations, self.rhs_rpow))]
 
     def group_rhs(self, group: SphereGroup, rhs: list) -> np.ndarray:
+        """Right-hand side vector of ``group`` from the per-equation coefficient arrays ``rhs``."""
         b = np.zeros(self._assemble(group).L.shape[0], dtype=complex)
         for i, r in enumerate(rhs):
             if r is not None:
@@ -594,6 +605,7 @@ class SpherePlan:
         return LBVPSolution(out, residuals, self, False)
 
     def scatter_group(self, group: SphereGroup, x: np.ndarray, out: dict) -> None:
+        """Write the group solution ``x`` into the per-variable coefficient arrays of ``out``."""
         for vi, c, off, n in self.var_slots(group):
             v = self.variables[vi]
             if n == 0:
@@ -606,6 +618,7 @@ class SpherePlan:
         from ..notebook import explain_html; return explain_html(self)  # noqa: E702
 
     def explain(self, group: SphereGroup | None = None) -> str:
+        """Bases, groups, equation spaces and rank report of ``group`` (default the first one)."""
         S = self.space
         g0 = self.groups[0] if group is None else group
         gm = self._assemble(g0)
@@ -656,5 +669,6 @@ class SpherePlan:
         return "\n".join(lines)
 
     def methods(self, solver: Any = None, **kw):
+        """Numerical-methods summary (conatus.methods) of this plan."""
         from ..methods import methods
         return methods(self, solver, **kw)

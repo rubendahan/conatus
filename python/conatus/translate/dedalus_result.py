@@ -55,7 +55,7 @@ class DedalusTranslation:
     def complete(self) -> bool:
         """True when a problem was translated with no known semantic loss: no line unsupported
         and none approximated (an approximated line is a declared difference of method, e.g.
-        a dropped Nyquist mode or another tau projection, finding 6)."""
+        a dropped Nyquist mode or another tau projection)."""
         c = self.counts()
         return self.problem is not None and c["unsupported"] == 0 and c["approximated"] == 0
 
@@ -92,7 +92,7 @@ class DedalusTranslation:
         and are required when the script's dt was not translatable, e.g. an adaptive CFL).
 
         Time-dependent boundary data follow the Dedalus convention, ``bc_time="step"``: the translation reproduces the script, and the Conatus
-        default (``"auto"`` = ``"rk"``: the order of the scheme kept) would change the
+        default (``"auto"`` = ``"rk"``, which keeps the order of the scheme) would change the
         digits of every scheme that loses order with moving boundary data. Pass
         ``bc_time="auto"`` (or ``"stage"``) to get a Conatus convention; ``explain()`` states
         which one is used."""

@@ -16,7 +16,7 @@ evaluated by the solver's own :class:`SphereEvaluator` (same grids, same r^k pro
 time parameter): the derivative of the *discrete* F, exact up to rounding (the products are
 formed on the same dealiased grid, the sums are linear). On a solver with f_backend='fused' the
 tangent and the passive values of the adjoint walk are evaluated by the planned evaluator
-(``timestep/sphere_fused``): the derivative of the fused F, real-field directions (B2).
+(``timestep/sphere_fused``): the derivative of the fused F, real-field directions.
 
 Adjoint: the same expression walked backwards. Every evaluator stage used by le is linear in the
 active field once the passive factors (the state X, the coefficients, a_g(t)) are fixed, and its
@@ -729,6 +729,7 @@ class SphereLinearizedRHS:
     def explain(self) -> str:
         # which terms are explicit (in F, linearized here); everything on the left-hand side
         # (implicit: viscosity, pressure, an implicit Coriolis term) goes through M and L
+        """The explicit terms linearized here, and the evaluator of their tangent and transpose."""
         terms = [f"eq {i}: {str(e)[:90]}" for i, (e, le) in
                  enumerate(zip(self.solver._rhs_exprs, self.lin)) if le is not None]
         tan = ("the planned evaluator of f_backend='fused' (tangent of the fused F, which reads its "

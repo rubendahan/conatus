@@ -81,7 +81,7 @@ def pulsatile_hill(N: int, Re: float, alpha: float, omega: float, eps: float, Nh
                      - L2(L2(v)) / Re, 0))
     pb.add_bc(interp(v, y, -1), interp(v, y, 1), interp(diff(v, y), y, -1), interp(diff(v, y), y, 1))
     k = np.sqrt(1j * omega * Re)                                # Wo = sqrt(omega Re) in these units
-    W = lambda Y: (1 - np.cosh(k * Y) / np.cosh(k)) / (1 - 1 / np.cosh(k))   # noqa: E731, W(0) = 1
+    W = lambda Y: (1 - np.cosh(k * Y) / np.cosh(k)) / (1 - 1 / np.cosh(k))   # W(0) = 1
     harmonics = {0: lambda Y: 1 - Y ** 2 + 0j,                  # steady Poiseuille part
                  1: lambda Y: 0.5 * eps * W(Y), -1: lambda Y: 0.5 * eps * np.conj(W(Y))}
     return hill_from_plan(lambda ncc: discretize(pb, ncc=ncc), {U: harmonics}, Nh=Nh,

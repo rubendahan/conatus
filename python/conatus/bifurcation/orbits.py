@@ -36,6 +36,7 @@ import scipy.sparse.linalg as spla
 
 from ..continuation.core import ContinuationSettings
 from ..errors import ConvergenceError, OptionError, UnsupportedError, did_you_mean
+from .codim2 import _s
 from .driver import ArclengthDriver, Curve, CurvePoint
 from .system import DynamicalSystem
 from .._repr import compact_repr
@@ -351,10 +352,6 @@ RESOLVED_REL = 1e-8
 #: while equilibria have ``marginal_tol``. Above the collocation accuracy of the multipliers (the
 #: stored |μ_triv − 1| is its measure, typically <= 1e-8 on the meshes of the tests).
 MARGINAL_MULTIPLIER_TOL = 1e-6
-
-
-def _s(x):
-    return x / (1.0 + np.abs(x))
 
 
 def continue_orbits(problem: PeriodicOrbitProblem, z0: np.ndarray, settings: ContinuationSettings, *,

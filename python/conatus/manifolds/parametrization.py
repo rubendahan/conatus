@@ -1,5 +1,5 @@
 """Unstable manifolds of equilibria by the parametrization method.
-Notes: §4; Cabré, Fontich & de la Llave (2003, 2005); Haro,
+Notes: Cabré, Fontich & de la Llave (2003, 2005); Haro,
 Canadell, Figueras, Luque & Mondelo, *The Parameterization Method for Invariant Manifolds*
 (Springer 2016), ch. 2.
 

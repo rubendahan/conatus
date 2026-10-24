@@ -152,7 +152,7 @@ class _CupyPool:
     within a bin the oldest free chunk first), otherwise a new device allocation of exactly the
     rounded size; a freed chunk merges with its free neighbours inside the same allocation.
     Replaying 12 measured traces (RB 2D, canal 3D) reproduces the held bytes exactly; taking the
-    newest chunk instead missed two of them by 8.8 % (run)."""
+    newest chunk instead missed two of them by 8.8 %."""
     UNIT = 512
 
     def __init__(self) -> None:
@@ -554,7 +554,7 @@ class _Model(_XTModel):
         # 2D RealFourier x Chebyshev on the GPU: IVPSolver evaluates F with the FourierChebyshev2D
         # pipeline (persistent work buffers and cuFFT plans built once, one output per call), not
         # with the generic fused F modelled below. The planner modelled the generic F only, so its
-        # RB 2D figures were of another program since the-512 merge (gpu4). ``fc2d``: the
+        # RB 2D figures were of another program since the-512 merge. ``fc2d``: the
         # solver's actual choice (memory_report), else the solver's own rule (plan_memory).
         if fc2d is None:
             from ..timestep.fc2d import FourierChebyshev2DRHS
@@ -963,7 +963,7 @@ class _Model(_XTModel):
         # device.py _solve_here: the real buckets gather rhs[rows] and scatter x[cols] inside the
         # solve kernel, and the complexified buckets of a real right-hand side split z = rhs[rc] +
         # i rhs[rs] in the kernel too: no staging copies (the model kept the copies of the
-        # earlier runtime: 4 transient buffers per step too many, gpu4)
+        # earlier runtime: 4 transient buffers per step too many)
         prev = None
         for (_idx, rc, _rs, _cc, _cs) in (host._cbuckets if self.cplx else ()):
             t1 = P.alloc(rc.size * 8, "solve workspace", "rhs[rc]")
@@ -1024,7 +1024,7 @@ class _Model(_XTModel):
         # float64 systems: rk_rhs evaluates the whole combination, CSR products included, in one
         # kernel (one new rhs per stage, nothing else). Complex systems: the array path, where each
         # deferred product is computed at its first use and kept, and each term makes one
-        # temporary (gpu4: the model allocated M X0 and L X_k up front, as before)
+        # temporary (earlier versions: the model allocated M X0 and L X_k up front, as before)
         fused = (not self.cplx) if self.rk_fused is None else bool(self.rk_fused)
         MX0 = None
         rhs = None
@@ -1162,6 +1162,7 @@ class MemoryReport:
                 for k, (a, b) in pairs.items() if b is not None}
 
     def explain(self, measured: dict | None = None) -> str:
+        """The predicted memory per category and, with ``measured``, the comparison."""
         p = self.predicted
         lines = [f"Memory report (declared by the liveness planner, not measured): {self.scheme}, "
                  f"n = {self.n}, {self.steps} steps modelled"]

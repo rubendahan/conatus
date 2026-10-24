@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+import numpy as np
+
 from ..errors import OptionError
 from ..errors import check_count  # noqa: F401  (moved to conatus.errors, shared; re-exported here)
 
@@ -49,8 +51,8 @@ class SecantRun:
 def determinant_secant(f, start: complex, step: complex, *, tol: float, max_iterations: int,
                        stall_after: int | None = None) -> SecantRun:
     """Secant iteration on ``f`` (a scaled determinant) from ``start`` and ``start + step``,
-    (three copies reported a zero secant denominator as "not converged"
-    and counted the step not taken). Converged: the last step is below ``tol``. Otherwise the
+    (one copy: a zero secant denominator is not reported as "not converged"
+    and the step not taken is not counted). Converged: the last step is below ``tol``. Otherwise the
     reason names the stop: equal determinants at the last two iterates (stalled, no step
     possible), no halving of the step for ``stall_after`` iterations (stalled), or the budget."""
     mus, fs = [start, start + step], [f(start), f(start + step)]
@@ -210,17 +212,20 @@ class CertifiedRoot:
                 winding: float | None = None) -> CertifiedRoot:
         """Set the status from explicit tolerances (no default: the caller declares them).
 
-        Certified requires: the secant converged (finding 21: an unconverged
-        root kept with ``allow_unconverged=True`` used to come out "certified"), the residual
-        below ``residual_tol`` and a resolution study (>= 2 resolutions) whose spread is below
-        ``convergence_tol``. Optional evidence, checked when given (finding 20: the docs named
-        these checks without the code running them): ``contrast`` = σ_min/σ_2 of M(μ)
+        Certified requires: the secant converged (a root kept with ``allow_unconverged=True`` is
+        never certified), the residual below ``residual_tol`` and a resolution study
+        (>= 2 resolutions) whose spread is below ``convergence_tol``. Optional evidence, checked
+        when given: ``contrast`` = σ_min/σ_2 of M(μ)
         must be below ``contrast_max``; ``winding`` = winding
         number of det M on a small circle around μ (``winding``) must be a positive integer to
         ``WINDING_INTEGER_TOL`` (``winding()`` returns the integer its adaptive walk certified, or
         raises). What was checked is listed in ``reasons`` / ``explain()``."""
         self.reasons = []
         ok = True
+        mu = complex(self.mu)
+        if not (np.isfinite(mu.real) and np.isfinite(mu.imag)):
+            ok = False
+            self.reasons.append(f"root μ = {mu} is not finite")
         if not self.converged:
             ok = False
             self.reasons.append("secant not converged (allow_unconverged=True)")
@@ -248,22 +253,62 @@ class CertifiedRoot:
             ok = False
             self.reasons.append("no resolution study (need >= 2 resolutions)")
         else:
-            vals = list(self.convergence.values())
-            spread = max(abs(v - vals[-1]) for v in vals[-2:])
-            if not spread < convergence_tol * max(1.0, abs(vals[-1])):
+            vals = [complex(v) for v in self.convergence.values()]
+            if not all(np.isfinite(v.real) and np.isfinite(v.imag) for v in vals):
                 ok = False
-                self.reasons.append(f"resolution spread {spread:.2e} >= {convergence_tol:.1e}")
-        self.status = "certified" if ok else "provisional"
+                self.reasons.append("resolution study holds a non-finite value")
+            else:
+                spread = max(abs(v - vals[-1]) for v in vals[-2:])
+                if not spread < convergence_tol * max(1.0, abs(vals[-1])):
+                    ok = False
+                    self.reasons.append(f"resolution spread {spread:.2e} >= {convergence_tol:.1e}")
+                # the study must be about this root (audit of 0.1.2, F05: a root μ = 100 was
+                # certified by a study converged at 0, and μ = NaN after it)
+                gap = abs(mu - vals[-1])
+                if not gap < convergence_tol * max(1.0, abs(vals[-1])):
+                    ok = False
+                    self.reasons.append(f"root μ differs from the finest resolution of the study "
+                                        f"by {gap:.2e} >= {convergence_tol:.1e} (relative): the "
+                                        "study is not evidence for this root")
+        object.__setattr__(self, "status", "certified" if ok else "provisional")
+        object.__setattr__(self, "_evidence", self._evidence_key() if ok else None)
         if ok and contrast is None and winding is None:
             self.reasons.append("certified on residual and resolution study only (no contrast "
                                 "or winding evidence passed)")
         return self
+
+    #: fields whose change after certify() withdraws the certification
+    _EVIDENCE_FIELDS = ("mu", "residual", "iterations", "params", "convergence", "converged")
+
+    def _evidence_key(self) -> tuple:
+        return (complex(self.mu), float(self.residual), int(self.iterations), bool(self.converged),
+                tuple((k, complex(v)) for k, v in self.convergence.items()))
+
+    def __setattr__(self, name, value) -> None:
+        # a certified root whose root or evidence is changed is no longer certified (audit of
+        # 0.1.2, F05: the status survived replacing μ by NaN); certify() must run again
+        object.__setattr__(self, name, value)
+        if name in self._EVIDENCE_FIELDS:
+            self._check_evidence()
+
+    def _check_evidence(self) -> None:
+        """Withdraw a certification whose root or evidence changed since certify()."""
+        if self.__dict__.get("status") != "certified":
+            return
+        try:
+            same = self._evidence_key() == self.__dict__.get("_evidence")
+        except (TypeError, ValueError):
+            same = False
+        if not same:
+            object.__setattr__(self, "status", "provisional")
+            self.reasons.append("root or evidence changed after certify(): certify again")
 
     def retract(self, why: str) -> None:
         self.status = "retracted"
         self.reasons.append(why)
 
     def explain(self) -> str:
+        self._check_evidence()          # a resolution study changed in place counts too
         f, note = fold_floquet(self.mu)
         head = "" if self.converged else "NOT CONVERGED (allow_unconverged=True): "
         conv = ", ".join(f"{k}: {v.real:.12f}{v.imag:+.12f}i" for k, v in self.convergence.items())

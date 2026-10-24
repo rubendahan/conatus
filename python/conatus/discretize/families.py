@@ -47,6 +47,7 @@ from scipy.special import roots_hermite, roots_laguerre
 from ..ir.bases import Basis, CompoundChebyshev, Hermite, Laguerre, Legendre, Ultraspherical
 from . import ultraspherical as us
 from ..errors import OptionError, ResolutionError
+from ..ir.tails import coefficient_tail
 
 __all__ = ["family_of", "has_family", "HermiteFamily", "LaguerreFamily", "CompoundFamily", "NEW_FAMILIES"]
 
@@ -135,7 +136,7 @@ def laguerre_functions(N: int, y: np.ndarray, k: int = 0) -> np.ndarray:
 
 def _frozen(*arrays: np.ndarray) -> tuple[np.ndarray, ...]:
     """Arrays returned by an ``lru_cache`` are shared by every later caller: read-only, so an
-    in-place update by one caller cannot change the transforms of all the others (cache family)."""
+    in-place update by one caller cannot change the transforms of all the others (a cache keyed by an array's address would)."""
     for a in arrays:
         a.setflags(write=False)
     return arrays
@@ -251,7 +252,7 @@ def _poly_check(name: str, a: np.ndarray, axis_name: str) -> int:
     d = int(big[-1]) if big.size else 0
     if 2 * d >= a.size:
         from ..errors import DiscretizationError
-        tail = float(np.max(np.abs(a[a.size // 2:]))) / amax
+        tail = coefficient_tail(a, a.size - a.size // 2)       # the upper half
         raise DiscretizationError(
             f"non-constant coefficient '{name}' along the unbounded axis {axis_name} is not a "
             f"polynomial (its orthogonal-polynomial coefficients do not vanish: relative tail "
@@ -283,6 +284,8 @@ class _PolyNCCReport:
 # ------------------------------------------------------------------------------------------------
 
 class HermiteFamily(_Family):
+    """Hermite-function family on the whole line: psi_n((x - x0)/s), tridiagonal d/dx and x,
+    Gauss-Hermite grid."""
     kind = "Hermite (whole line)"
 
     def __init__(self, basis: Hermite) -> None:
@@ -290,10 +293,12 @@ class HermiteFamily(_Family):
         self.x0, self.s = basis.center, basis.scale
 
     def grid(self, dealias: bool = True) -> np.ndarray:
+        """Gauss-Hermite points mapped to x0 + s y."""
         y, _ = _hermite_nodes(self.grid_size(dealias))
         return self.x0 + self.s * y
 
     def matrices(self, dealias: bool) -> tuple[np.ndarray, np.ndarray]:
+        """(B, F) transform matrices on the Gauss-Hermite grid."""
         M = self.grid_size(dealias)
         return _hermite_mats(self.N, M)
 
@@ -313,9 +318,11 @@ class HermiteFamily(_Family):
                         format="csr")
 
     def conversion_chain(self, lam_from: int, lam_to: int) -> sp.csr_matrix:
+        """Identity: Hermite functions need no change of basis between levels."""
         return sp.identity(self.N, format="csr")
 
     def differentiation(self, lam: int, order: int = 1) -> sp.csr_matrix:
+        """d^order/dx^order on the Hermite functions (``lam`` is unused: one level)."""
         D = self._D(self.N) / self.s
         out = sp.identity(self.N, format="csr")
         for _ in range(order):
@@ -323,6 +330,8 @@ class HermiteFamily(_Family):
         return out
 
     def evaluation_row(self, lam: int, pos: float, deriv: int = 0, side: str | None = None) -> np.ndarray:
+        """Row evaluating the ``deriv``-th derivative at ``pos`` (exact: the derivative uses N +
+        deriv functions)."""
         y = (pos - self.x0) / self.s
         Ne = self.N + deriv                       # exact: the derivative reaches psi_{N-1+deriv}
         row = hermite_functions(Ne, np.array([y]))[:, 0]
@@ -332,6 +341,8 @@ class HermiteFamily(_Family):
         return np.asarray(row)[:self.N]
 
     def integration_row(self, lam: int) -> np.ndarray:
+        """Row of the integral over the whole line of the Hermite expansion (exact recurrence on
+        the even functions)."""
         I = np.zeros(self.N)
         I[0] = math.sqrt(2.0) * np.pi ** 0.25
         for n in range(0, self.N - 2, 2):
@@ -339,6 +350,7 @@ class HermiteFamily(_Family):
         return I * self.s
 
     def diff_coeffs(self, c: np.ndarray) -> np.ndarray:
+        """d/dx of the coefficients along axis 0 (tridiagonal operator)."""
         D = self.differentiation(0, 1)
         sh = c.shape
         return np.asarray(D @ c.reshape(sh[0], -1)).reshape(sh)
@@ -352,6 +364,8 @@ class HermiteFamily(_Family):
     def multiplication(self, a: np.ndarray, lam: int, *, name: str = "a", cutoff=None,
                        tail_tol=None, exact: bool = False,
                        floor: float = 0.0) -> tuple[sp.csr_matrix, Any]:
+        """Multiplication by a polynomial NCC (refused otherwise), built from the tridiagonal x
+        operator; returns the matrix and the NCC report."""
         a = np.asarray(a)
         d = _poly_check(name, a, self.basis.coord.name)
         Ne = self.N + d + 1
@@ -370,6 +384,7 @@ class HermiteFamily(_Family):
         return out.tocsr(), _PolyNCCReport(name, d, a.size, "Hermite")
 
     def explain(self) -> str:
+        """Centre, scale, size, operators and grid of the Hermite family, one line."""
         return (f"{self.basis.coord.name}: Hermite functions psi_n((x - {self.x0:g})/{self.s:g}), "
                 f"N={self.N} (whole line, no boundary condition); d/dx and x tridiagonal, "
                 f"Gauss-Hermite grid of {self.basis.grid_size} points (products: quadrature "
@@ -388,6 +403,8 @@ def _hermite_mats(N: int, M: int) -> tuple[np.ndarray, np.ndarray]:
 # ------------------------------------------------------------------------------------------------
 
 class LaguerreFamily(_Family):
+    """Laguerre-function family on the half line: L_n((x - a)/s) exp(-(x - a)/(2 s)), bidiagonal
+    d/dy and conversions, Gauss-Laguerre grid."""
     kind = "Laguerre (half line)"
 
     def __init__(self, basis: Laguerre) -> None:
@@ -395,10 +412,12 @@ class LaguerreFamily(_Family):
         self.a, self.s = basis.start, basis.scale
 
     def grid(self, dealias: bool = True) -> np.ndarray:
+        """Gauss-Laguerre points mapped to a + s y."""
         y, _ = _laguerre_nodes(self.grid_size(dealias))
         return self.a + self.s * y
 
     def matrices(self, dealias: bool) -> tuple[np.ndarray, np.ndarray]:
+        """(B, F) transform matrices on the Gauss-Laguerre grid."""
         return _laguerre_mats(self.N, self.grid_size(dealias))
 
     @staticmethod
@@ -419,18 +438,24 @@ class LaguerreFamily(_Family):
                         format="csr")
 
     def conversion_chain(self, lam_from: int, lam_to: int) -> sp.csr_matrix:
+        """Conversion from the derivative basis of level ``lam_from`` to ``lam_to`` (bidiagonal
+        steps)."""
         out = sp.identity(self.N, format="csr")
         for _ in range(lam_from, lam_to):
             out = (self._S(self.N) @ out).tocsr()
         return out
 
     def differentiation(self, lam: int, order: int = 1) -> sp.csr_matrix:
+        """d^order/dx^order from level ``lam`` to ``lam + order`` (bidiagonal d/dy steps over
+        s)."""
         out = sp.identity(self.N, format="csr")
         for _ in range(order):
             out = (self._Dy(self.N) @ out).tocsr() / self.s
         return out.tocsr()
 
     def evaluation_row(self, lam: int, pos: float, deriv: int = 0, side: str | None = None) -> np.ndarray:
+        """Row evaluating the ``deriv``-th derivative at ``pos`` from level-``lam``
+        coefficients."""
         y = (pos - self.a) / self.s
         row = laguerre_functions(self.N, np.array([y]), lam + deriv)[:, 0]
         if deriv:
@@ -438,6 +463,7 @@ class LaguerreFamily(_Family):
         return np.asarray(row).ravel()
 
     def integration_row(self, lam: int) -> np.ndarray:
+        """Row of the integral over the half line from level-``lam`` coefficients (exact sums)."""
         n = np.arange(self.N)
         I = 2.0 * (-1.0) ** n                       # int_0^inf L_n(y) e^{-y/2} dy
         for _ in range(lam):
@@ -451,6 +477,7 @@ class LaguerreFamily(_Family):
         return out / self.s
 
     def ncc_forward(self, g: np.ndarray, axis: int) -> np.ndarray:
+        """Coefficients of an NCC sampled on the variables' grid (Gauss-Laguerre quadrature)."""
         y, W = _laguerre_nodes(self.N)
         A = laguerre_functions(self.N, y) * (W * np.exp(-y / 2))[None, :]   # w_j L_k(y_j)
         return _apply_rows(A, g, axis)
@@ -458,6 +485,8 @@ class LaguerreFamily(_Family):
     def multiplication(self, a: np.ndarray, lam: int, *, name: str = "a", cutoff=None,
                        tail_tol=None, exact: bool = False,
                        floor: float = 0.0) -> tuple[sp.csr_matrix, Any]:
+        """Multiplication by a polynomial NCC (refused otherwise) at level ``lam``; returns the
+        matrix and the NCC report."""
         a = np.asarray(a)
         d = _poly_check(name, a, self.basis.coord.name)
         Ne = self.N + d + 1
@@ -474,6 +503,7 @@ class LaguerreFamily(_Family):
         return out.tocsr(), _PolyNCCReport(name, d, a.size, "Laguerre")
 
     def explain(self) -> str:
+        """Wall, scale, size, operators and grid of the Laguerre family, one line."""
         return (f"{self.basis.coord.name}: Laguerre functions L_n((x - {self.a:g})/{self.s:g}) "
                 f"exp(-(x - {self.a:g})/(2*{self.s:g})), N={self.N} (half line, wall at x = {self.a:g}); "
                 "equations of order q written in the derivative bases L^(q)_n e^{-y/2} (bidiagonal "
@@ -494,6 +524,8 @@ def _laguerre_mats(N: int, M: int) -> tuple[np.ndarray, np.ndarray]:
 # ------------------------------------------------------------------------------------------------
 
 class CompoundFamily(_Family):
+    """Piecewise Chebyshev family of a CompoundChebyshev basis: block-diagonal Olver-Townsend
+    operators per piece, continuity at the interfaces imposed by tau conditions."""
     kind = "compound Chebyshev (piecewise)"
     has_constant = True
 
@@ -512,6 +544,7 @@ class CompoundFamily(_Family):
         return self.basis.grid_sizes() if dealias else list(self.sizes)
 
     def grid(self, dealias: bool = True) -> np.ndarray:
+        """Stacked Gauss-Chebyshev points of the pieces (dealiased grid sizes when ``dealias``)."""
         out = []
         for (a, b), M in zip(self.pieces, self._grid_sizes(dealias), strict=True):
             t = -np.cos(np.pi * (np.arange(M) + 0.5) / M)
@@ -519,9 +552,12 @@ class CompoundFamily(_Family):
         return np.concatenate(out)
 
     def matrices(self, dealias: bool) -> tuple[np.ndarray, np.ndarray]:
+        """(B, F) transform matrices of the compound basis (block-diagonal over the pieces)."""
         return _compound_mats(self.sizes, tuple(self._grid_sizes(dealias)))
 
     def forward(self, f: np.ndarray, axis: int = 0, dealias: bool = True) -> np.ndarray:
+        """Coefficients of the grid values ``f`` (stacked Gauss-Chebyshev grids) along ``axis``,
+        piece by piece."""
         import scipy.fft as sfft
         Ms = self._grid_sizes(dealias)
         fm = _moved(f, axis)
@@ -541,6 +577,8 @@ class CompoundFamily(_Family):
         return np.moveaxis(np.concatenate(parts, axis=0), 0, axis)
 
     def backward(self, c: np.ndarray, axis: int = 0, dealias: bool = True) -> np.ndarray:
+        """Grid values (Gauss-Chebyshev grid of each piece, stacked) of the coefficients ``c``
+        along ``axis``."""
         import scipy.fft as sfft
         Ms = self._grid_sizes(dealias)
         cm = _moved(c, axis)
@@ -559,12 +597,17 @@ class CompoundFamily(_Family):
         return np.moveaxis(np.concatenate(parts, axis=0), 0, axis)
 
     def conversion_chain(self, lam_from: int, lam_to: int) -> sp.csr_matrix:
+        """Block-diagonal conversion from the ultraspherical level ``lam_from`` to ``lam_to``."""
         return self._blocks(lambda j, n: us.conversion_chain(n, lam_from, lam_to))
 
     def differentiation(self, lam: int, order: int = 1) -> sp.csr_matrix:
+        """Block-diagonal d^order/dx^order from level ``lam`` to ``lam + order``, scaled by each
+        piece's length."""
         return self._blocks(lambda j, n: us.differentiation(n, lam, order) * self._scale(j) ** order)
 
     def evaluation_row(self, lam: int, pos: float, deriv: int = 0, side: str | None = None) -> np.ndarray:
+        """Row evaluating the ``deriv``-th derivative at ``pos`` from level-``lam``
+        coefficients; at an interface ``side`` picks the piece."""
         j = self.basis.piece_of(pos, side)
         a, b = self.pieces[j]
         t = 2 * (pos - a) / (b - a) - 1
@@ -574,21 +617,27 @@ class CompoundFamily(_Family):
         return row
 
     def integration_row(self, lam: int) -> np.ndarray:
+        """Row of the integral over the whole interval from level-``lam`` coefficients (sum over
+        the pieces)."""
         return np.concatenate([us.integration_row(n, lam) / self._scale(j)
                                for j, n in enumerate(self.sizes)])
 
     def constant_column(self) -> sp.csr_matrix:
+        """Coefficients of the constant 1: T_0 of every piece."""
         col = np.zeros((self.N, 1))
         col[self.offsets, 0] = 1.0                   # T_0 of every piece
         return sp.csr_matrix(col)
 
     def lift_index(self, n: int, piece: int | None) -> int:
+        """Global index of the lifted mode ``n`` (negative, from the end) of piece ``piece``;
+        ``piece`` is required."""
         if piece is None:
             raise OptionError(f"lift on {self.basis!r} needs piece=",
                               fix="lift(..., piece=k) on a piecewise basis (k = index of the piece)")
         return self.offsets[piece] + self.sizes[piece] + n
 
     def diff_coeffs(self, c: np.ndarray) -> np.ndarray:
+        """d/dx of the coefficients along axis 0, piece by piece (same level as the variables)."""
         out = np.zeros_like(c)
         for j, (N, o) in enumerate(zip(self.sizes, self.offsets, strict=True)):
             cj, dj = c[o:o + N], np.zeros_like(c[o:o + N])
@@ -601,11 +650,15 @@ class CompoundFamily(_Family):
         return out
 
     def ncc_forward(self, g: np.ndarray, axis: int) -> np.ndarray:
+        """Coefficients of an NCC sampled on the variables' grid (non-dealiased forward
+        transform)."""
         return self.forward(g, axis, dealias=False)
 
     def multiplication(self, a: np.ndarray, lam: int, *, name: str = "a", cutoff=None,
                        tail_tol=None, exact: bool = False,
                        floor: float = 0.0) -> tuple[sp.csr_matrix, Any]:
+        """Block-diagonal multiplication by the NCC ``a`` (its coefficients per piece), with one
+        NCC report per piece."""
         mats, reps = [], []
         for j, (N, o) in enumerate(zip(self.sizes, self.offsets, strict=True)):
             M, rep = us.multiplication(np.asarray(a)[o:o + N], N, lam, name=f"{name} (piece {j})",
@@ -616,6 +669,7 @@ class CompoundFamily(_Family):
         return sp.block_diag(mats, format="csr"), _CompoundNCCReport(reps)
 
     def explain(self) -> str:
+        """Pieces, sizes and operators of the compound basis, one line."""
         parts = ", ".join(f"[{a:g}, {b:g}] N={n}" for (a, b), n in zip(self.pieces, self.sizes, strict=True))
         return (f"{self.basis.coord.name}: compound Chebyshev T, pieces {parts} (total N={self.N}); "
                 "block-diagonal Olver–Townsend operators, continuity at the interfaces by tau "

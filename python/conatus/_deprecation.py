@@ -3,7 +3,7 @@
 A renamed argument keeps its former name for one cycle: the old name gives the same value (never
 another behaviour), with a ``DeprecationWarning`` that names the new one; giving both is refused.
 Every alias is listed in :data:`DEPRECATED` (and in CHANGELOG.md);
-the development test suite checks each one. Removal: v0.2.
+the development test suite checks each one. Removal: 0.3.
 """
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from typing import Any
 
 #: The release that narrowed the public surface (``conatus.expert`` lists documented names only,
 #: some modules hide former names) and the release that removes the former names. Every warning
-#: about those names reads its versions here (external review of 0.1.1, F19).
+#: about those names reads its versions here.
 SURFACE_NARROWED_IN = "0.1.1"
 SURFACE_REMOVED_IN = "0.3"
 
@@ -41,7 +41,7 @@ DEPRECATED: dict[str, tuple[str, str, str]] = {
 #: qualname) -> {former name: new name}. Applied by :func:`renames`; listed by the frozen
 #: surface (``[renamed: ...]``);
 #: the development test suite checks that every entry works, warns, refuses both names
-#: together and is documented in CHANGELOG.md. Removal of the old names: v0.2.
+#: together and is documented in CHANGELOG.md. Removal of the old names: 0.3.
 RENAMES: dict[str, dict[str, str]] = {
     # v0.1 freeze: one budget name, the step, the continuation parameter
     "conatus.solvers.parametric:ParametricEVP.track": {"maxit": "max_iterations"},
@@ -147,7 +147,7 @@ VOCABULARY: dict[str, str] = {
 #: that nothing else may): the development test suite enforces both.
 VOCABULARY_KEPT: dict[str, str] = {
     "expert.ContinuationSettings(tolerance)": "a dataclass field that scripts read back "
-    "(cfg.tolerance); renamed with an attribute alias in v0.2",
+    "(cfg.tolerance); renamed with an attribute alias in 0.3",
     "expert.KrylovContinuationSettings(tolerance)": "as ContinuationSettings",
     "expert.ContinuationSettings(max_newton)": "a dataclass field read back (cfg.max_newton); "
     "the property cfg.max_iterations reads it under the API-wide name",
@@ -198,7 +198,7 @@ def renames(site: str):
                     continue
                 if new in kw:
                     # refused whatever the values (renamed() treats None as "not
-                    # given", so f(k=None, n_modes=8) used to pick one name silently)
+                    # given", so f(k=None, n_modes=8) would pick one name silently)
                     from .errors import OptionError
                     raise OptionError(f"{where}: {old}= and {new}= given together",
                                       why=f"{old} is the deprecated name of {new} (same meaning)",
@@ -232,7 +232,7 @@ def positional_order(cls: type, order: tuple[str, ...]) -> type:
             both = [n for n in names if n in kw]
             if both:
                 raise TypeError(f"{cls.__name__}() got multiple values for {both}")
-            warnings.warn(f"{cls.__name__}: positional arguments are deprecated since v0.1 "
+            warnings.warn(f"{cls.__name__}: positional arguments are deprecated since v0.1"
                           f", write keywords: {', '.join(n + '=' for n in names)}",
                           DeprecationWarning, stacklevel=2)
             kw.update(zip(names, args, strict=True))
@@ -260,7 +260,7 @@ def renamed(where: str, old: str, new: str, old_value: Any, new_value: Any, *,
         # renamed one, e.g. floquet_exponents(nsteps=...), where the default filter hides it)
         from .errors import _warn_user
         _warn_user(f"{where}: {old}= is deprecated since v0.1, write {new}= ({meaning}; the "
-                   "old name is removed in v0.2)", DeprecationWarning)
+                   "old name is removed in 0.3)", DeprecationWarning)
         return old_value
     return given(where, new, new_value) if required else new_value
 
@@ -278,7 +278,7 @@ def given(where: str, name: str, value: Any) -> Any:
 
 def former_names(module: str, names: dict[str, tuple[str, Any]]):
     """A module ``__getattr__`` (PEP 562) for names a module showed in 0.1 and no longer does
-    (release 0.1.1, L8): ``names`` maps the former name to (its canonical path, the object). The
+    (release 0.1.1): ``names`` maps the former name to (its canonical path, the object). The
     name resolves to the same object with a DeprecationWarning at the user's line; anything else
     raises AttributeError as usual. Example: ``renames`` of the problem modules, imported there as
     ``_renames`` since 0.1.1 (V5)."""

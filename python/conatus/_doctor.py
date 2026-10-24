@@ -1,17 +1,17 @@
-"""``conatus doctor``: what this machine can run, and what to do about what is missing (v0.1).
+"""``conatus doctor``: what this machine can run, and what to do about what is missing.
 
 ``doctor()`` returns a :class:`DoctorReport`; ``python -m conatus doctor [--json]`` prints it and
 exits 0 when nothing *required* is missing, 1 otherwise. Every check is a line with a status
 (``ok`` / ``missing`` / ``warning`` / ``optional``), the detected version or value, and, when
 something is missing, what to do. ``optional`` is an optional component that is absent (GPU, CuPy,
 MPI, NCCL, Dedalus, ipywidgets, an undeclared run registry): nothing is wrong; ``warning`` is kept
-for something that may be (a clean CPU install showed six warnings for nothing
+for something that may be (earlier versions: a clean CPU install showed six warnings for nothing
 wrong). A check never raises: a failing probe becomes a report line. Checks are
 cheap (lazy imports, subprocesses with a timeout, no MPI initialisation in this process), but
 importing CuPy alone can take ~2 s on a cold network file system.
 
 Required: Python >= MIN_PYTHON (and below MAX_PYTHON, the first untested minor), NumPy, SciPy,
-h5py (outputs and checkpoints: a declared dependency since), the compiled core (CPU
+h5py (outputs and checkpoints: a declared dependency), the compiled core (CPU
 part). The tutorials also need matplotlib (``pip install ".[tutorials]"``), reported with the
 exact install line. Everything else (GPU, CuPy, MPI, NCCL, Dedalus, ipywidgets) is optional.
 
@@ -218,7 +218,7 @@ def _module(label: str, name: str, required: bool, purpose: str, fix: str,
             note: str = "", absent: str = "optional") -> list[Check]:
     """Presence + version of a Python package (module = distribution ``name``), found without
     importing it. A missing optional package has the status ``absent`` (``"optional"``: the
-    tutorials' matplotlib too, an optional extra, external review 0.1.0 acceptance F102)."""
+    tutorials' matplotlib too, an optional extra)."""
     found = importlib.util.find_spec(name) is not None
     ver = _dist_version(name) or ("installed (version unknown)" if found else "-")
     if found:
@@ -290,8 +290,12 @@ def _blas() -> list[Check]:
     try:
         from threadpoolctl import threadpool_info
     except ImportError:
-        libs = sorted({ln.split()[-1] for ln in open("/proc/self/maps")
-                       if re.search(r"(openblas|mkl_rt|libblis|flexiblas|libblas|liblapack)", ln)})
+        try:                    # closed after reading (0.1.1 leftover: the handle was left open)
+            with open("/proc/self/maps") as fh:
+                libs = sorted({ln.split()[-1] for ln in fh
+                               if re.search(r"(openblas|mkl_rt|libblis|flexiblas|libblas|liblapack)", ln)})
+        except OSError:         # no /proc (macOS, Windows): the libraries are not known
+            libs = []
         value = ", ".join(f"{Path(p).name} ({_owner(p)})" for p in libs) or "-"
         return [Check("BLAS threads", "optional", value,
                       f"{cpus} CPUs available; {env}; thread counts need threadpoolctl",
@@ -313,7 +317,7 @@ def blas_threads_check(blas: list[dict], cpus: int | None, value: str, detail: s
     per CPU by default; the pip NumPy, the pip SciPy and the core of a binary wheel load three
     OpenBLAS copies, each then taking every CPU. Measured on 8 CPUs, the computations of tutorial
     6: 1185 s with the defaults (3 pools of 8 threads), 26 s with OMP_NUM_THREADS=1, 16 s with
-    OMP_NUM_THREADS=4 (run). Warned: several pools of which one has
+    OMP_NUM_THREADS=4. Warned: several pools of which one has
     as many threads as CPUs (or more), or one pool with more threads than CPUs."""
     cpus = cpus or 1
     full = [p for p in blas if (p.get("num_threads") or 0) >= cpus]
@@ -401,7 +405,7 @@ def _cupy() -> list[Check]:
 def _mpi() -> list[Check]:
     """mpi4py, the MPI library (queried in a subprocess: no MPI_Init here), CUDA-awareness."""
     if importlib.util.find_spec("mpi4py") is None:
-        return [Check("MPI (mpi4py)", "optional", "-", "distributed runs",
+        return [Check("MPI (mpi4py)", "optional", "-", "the distributed solver, where the release ships it",
                       "conda install mpi4py openmpi (in your env)")]
     ver = _dist_version("mpi4py") or "?"
     code = ("import mpi4py; mpi4py.rc.initialize = False; mpi4py.rc.finalize = False\n"

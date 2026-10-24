@@ -1,0 +1,40 @@
+# kuramoto_sivashinsky_l22/run.py | script sha256 47ecb76fac701eba5641ed73cce7bec4aae485aed7327f45370256c9b7983c87 | conatus 0.2.0 | python 3.12.14 | 2026-10-23 | 14 s | AMD EPYC 9654 96-Core Processor | 4 threads
+E1: residual 6.7e-14, energy 0.260873 (published 0.2609)
+   +0.1308 +0.3341i   Conatus +0.130810 +0.334076i   gap 2.6e-05   yes
+   +0.0824 +0.3402i   Conatus +0.082353 +0.340213i   gap 4.8e-05   yes
+   +0.0000 +0.0000i   Conatus +0.000000 +0.000000i   gap 5.3e-14   yes
+   -0.2287 +0.1963i   Conatus -0.228656 +0.196259i   gap 6.0e-05   yes
+   -0.2455 +0.0000i   Conatus -0.245531 +0.000000i   gap 3.1e-05   yes
+   -2.0554 +0.0000i   Conatus -2.055436 +0.000000i   gap 3.6e-05   yes
+   -2.0619 +0.0000i   Conatus -2.061946 +0.000000i   gap 4.6e-05   yes
+E2: residual 8.0e-13, energy 0.438157 (published 0.4382)
+   +0.1390 +0.2384i   Conatus +0.139040 +0.238420i   gap 4.5e-05   yes
+   +0.0000 +0.0000i   Conatus -0.000000 +0.000000i   gap 6.1e-13   yes
+   -0.0840 +0.1602i   Conatus -0.084027 +0.160194i   gap 2.7e-05   yes
+   -0.1194 +0.0000i   Conatus -0.119414 +0.000000i   gap 1.4e-05   yes
+   -0.2711 +0.3563i   Conatus -0.271123 +0.356307i   gap 2.4e-05   yes
+   -2.0130 +0.0000i   Conatus -2.013030 +0.000000i   gap 3.0e-05   yes
+   -2.0378 +0.0000i   Conatus -2.037753 +0.000000i   gap 4.7e-05   yes
+E3: residual 9.1e-13, energy 1.587597 (published 1.5876)
+   +0.0933 +0.0000i   Conatus +0.093345 +0.000000i   gap 4.5e-05   yes
+   +0.0933 +0.0000i   Conatus +0.093345 +0.000000i   gap 4.5e-05   yes
+   +0.0000 +0.0000i   Conatus -0.000000 +0.000000i   gap 5.1e-13   yes
+   -0.4128 +0.0000i   Conatus -0.412775 +0.000000i   gap 2.5e-05   yes
+   -0.6108 +0.3759i   Conatus -0.610753 +0.375876i   gap 5.3e-05   yes
+   -0.6108 +0.3759i   Conatus -0.610753 +0.375876i   gap 5.3e-05   yes
+   -1.6641 +0.0000i   Conatus -1.664131 +0.000000i   gap 3.1e-05   yes
+   -1.6641 +0.0000i   Conatus -1.664131 +0.000000i   gap 3.1e-05   yes
+TW1: residual 2.9e-16, energy 0.464920 (published 0.4649), speed 0.7369890 (published 0.73699)
+   +0.1156 +0.8173i   Conatus +0.115622 +0.817289i   gap 2.5e-05   yes
+   +0.0337 +0.4189i   Conatus +0.033663 +0.418910i   gap 3.8e-05   yes
+   +0.0000 +0.0000i   Conatus +0.000000 +0.000000i   gap 5.8e-14   yes
+   -0.2457 +0.0000i   Conatus -0.245730 +0.000000i   gap 3.0e-05   yes
+   -0.3213 +0.9813i   Conatus -0.321321 +0.981262i   gap 4.4e-05   yes
+TW2: residual 2.4e-16, energy 0.604820 (published 0.6048), speed 0.3495413 (published 0.34954)
+   +0.3370 +0.0000i   Conatus +0.336999 +0.000000i   gap 1.4e-06   yes
+   +0.0000 +0.0000i   Conatus +0.000000 +0.000000i   gap 1.5e-13   yes
+   -0.0096 +0.6288i   Conatus -0.009601 +0.628841i   gap 4.1e-05   yes
+   -0.2619 +0.5591i   Conatus -0.261927 +0.559142i   gap 5.0e-05   yes
+   -0.3067 +0.0725i   Conatus -0.306725 +0.072478i   gap 3.3e-05   yes
+published values (eigenvalues, energies, speeds): 39; within rounding: 39 of 39
+largest gap 6.0e-05

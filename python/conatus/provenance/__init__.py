@@ -12,7 +12,7 @@
 - the **executed code**, verified at record time: git HEAD, dirty paths under ``python/`` and
   ``core/``, sha256 of the ``conatus`` source tree actually imported, whether that tree is the
   one of the repository, and whether the compiled module is older than the C++ sources
-  (the a logged commit that is not the code that ran).
+  (otherwise a logged commit may not be the code that ran).
 
 Nothing is guessed: a field that cannot be read is recorded as ``None`` with a reason.
 """
@@ -32,10 +32,10 @@ from typing import Any
 
 import numpy as np
 
-import conatus
+from .. import __version__
 from conatus.errors import InputTypeError
 
-PKG_DIR = Path(conatus.__file__).resolve().parent
+PKG_DIR = Path(__file__).resolve().parents[1]      # the conatus package directory
 REPO_ROOT = PKG_DIR.parents[1]
 
 __all__ = ["record", "code_state", "numerics", "environment", "problem_hash", "parameter_values",
@@ -67,7 +67,8 @@ def _git(*args: str) -> str | None:
 
 def _git_status(*paths: str) -> str | None:
     """``git status --porcelain`` NOT stripped: stripping removed the leading space of the first
-    line, so its path lost its first character (``ython/conatus/...`` in every record since). Asked only in a checkout of Conatus itself, like :func:`_git`."""
+    line, so its path lost its first character (``ython/conatus/...`` in every record of
+    earlier versions). Asked only in a checkout of Conatus itself, like :func:`_git`."""
     if not _in_git_checkout():
         return None
     try:
@@ -189,8 +190,8 @@ def changed_since_import() -> list[str]:
     ``git pull`` or a checkout during a session left both the provenance and the run-cache key
     describing code that never ran). By content: the sha256 of each module's source recorded at
     its import (``conatus._import_record``) against the file now; a ``touch`` or a checkout back
-    to the same text is not a change, an edit within any delay of the import is (review F8: the
-    first version compared modification times with a 2 s slack). Modules never imported do not
+    to the same text is not a change, an edit within any delay of the import is (modification
+    times are not compared). Modules never imported do not
     count: if imported later, they run the text on disk, which the tree hash describes."""
     from .. import _import_record
     out = []
@@ -246,7 +247,7 @@ def _submission_code() -> dict | None:
 def code_state() -> dict:
     """What code is executing now, checked at call time.
 
-    In an exported tree (no ``.git``, CI jobs) the base commit and the overlaid paths are
+    In an exported tree (no ``.git``, as in CI jobs) the base commit and the overlaid paths are
     read from the export marker: ``git_head`` is the base commit, the overlaid paths under
     ``python/`` or ``core/`` are reported as dirty, and ``code_matches_commit`` stays False.
     Without a marker ``git_head`` is None and a ``warning`` says why (never a guessed commit).
@@ -294,8 +295,8 @@ def code_state() -> dict:
     elif dirty:
         state["warning"] = f"uncommitted changes in {len(dirty)} path(s) under python/ or core/"
     elif head is None and PKG_DIR.parent.name != "python":
-        state["installed_version"] = conatus.__version__
-        state["warning"] = (f"installed package (conatus {conatus.__version__}, no git checkout): "
+        state["installed_version"] = __version__
+        state["warning"] = (f"installed package (conatus {__version__}, no git checkout): "
                             "the version and python_tree_sha256 identify the code, not a commit")
     elif head is None:
         state["warning"] = (f"no git checkout and no {TREE_MARKER} marker at {REPO_ROOT}: "
@@ -324,7 +325,7 @@ def environment() -> dict:
         "python": sys.version.split()[0],
         "numpy": np.__version__,
         "scipy": scipy.__version__,
-        "conatus": conatus.__version__,
+        "conatus": __version__,
         "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
         "slurm_partition": os.environ.get("SLURM_JOB_PARTITION"),
         "run_id": os.environ.get("CN_RUN_ID"),
@@ -358,7 +359,7 @@ def _basis(b) -> dict:
 
 
 def _method(plan, bases) -> str:
-    """One line naming the spatial method, read from the bases (every plan with a
+    """One line naming the spatial method, read from the bases (earlier versions: every plan with a
     non-periodic axis was recorded as "Chebyshev T + ultraspherical", also Legendre, Hermite or
     Laguerre; a plan without ``layout`` (polar, spherical) raised). The Chebyshev T line is
     unchanged, so that the cache keys and ``reproduce()`` of the runs recorded before still match."""

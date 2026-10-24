@@ -11,7 +11,8 @@
 
 Endpoints
     GET  /healthz                 liveness (no auth, no data)
-    GET  /login, POST /login      password (or user API token) -> session cookie
+    GET  /login, POST /login      password (or user API token) -> session cookie, and a session
+                                  key handed to the page (``/login-done.js`` stores it)
     POST /logout
     GET  /, /run/<key>, /compare  the Studio app (``studio/app``, built into ``--app``; session
                                   required, else redirect to /login); its files (/assets, /fonts,
@@ -55,7 +56,9 @@ token, or an agent token with a scope, ``Authorization: Bearer``; tokens never i
 Security model (see studio/hub/DEPLOY.md): TLS is terminated by the host or by ``--certfile``; outside
 ``--local`` every non-HTTPS request is refused; session cookies are HttpOnly, SameSite=Strict, bound to
 the ``Host`` of the login, and named ``__Host-cn_session`` (Secure) over HTTPS, ``cn_session_<port>`` with
-``--local`` (other services on the same host name receive it: docs/site/guide/studio.md, F11);
+``--local``; the cookie alone opens only the app's pages: data, commands and ``/ws`` also need the
+session key, which the app keeps in the storage of its own origin and sends in ``X-CN-Session-Key``
+(another service on the same host name receives the cookie, not the key);
 state-changing requests must be JSON from the same origin; failed logins are throttled per client;
 commands are filtered against the protocol list (hub *and* relay), stop/fork need an explicit
 confirmation, and every login and command is written to the audit log (who, when, what, result).
@@ -95,7 +98,7 @@ from . import webapp
 
 WEB_DEFAULT = webapp.classic_page()             # the repository's, else the shipped copy
 CONFIRM = ("stop", "fork")          # commands that need an explicit confirmation
-COOKIE = "cn_session"               # base name; see webapp.session_cookie_name (F11)
+COOKIE = "cn_session"               # base name; see webapp.session_cookie_name
 ACK_TIMEOUT_S = 10.0
 JOB_ACK_TIMEOUT_S = {"submit": 150.0, "prepare": 45.0}   # submit.sh runs on the relay; others 15 s
 FILM_MAX_FRAMES = 720               # film frames kept per run and name in memory (then thinned)
@@ -491,7 +494,7 @@ class Hub:
 
 def _bounded(value, limit: int = AUDIT_FIELD_BYTES):
     """A caller-supplied value as written to the audit: itself if its JSON is small, else a
-    note with its size (a 100 MB body used to be copied into the audit line)."""
+    note with its size (earlier versions: a 100 MB body used to be copied into the audit line)."""
     try:
         n = len(json.dumps(value))
     except (TypeError, ValueError):
@@ -557,14 +560,25 @@ class Guard:
 
     @property
     def cookie_name(self) -> str:
-        """The session cookie of this hub as the browser addresses it (review F11, 0.1.2):
+        """The session cookie of this hub as the browser addresses it (0.1.2):
         ``__Host-cn_session`` over HTTPS; ``cn_session_<port>`` with ``--local``, so two Studios
         on one loopback name do not share or overwrite one cookie."""
         return webapp.session_cookie_name(self.request.host or "", secure=not self.hub.local)
 
-    def session_user(self) -> str | None:
-        """The user of the session cookie, if the session was opened at this ``Host`` (F11)."""
-        return self.hub.sessions.user(self.get_cookie(self.cookie_name), origin=self.request.host)
+    def session_key(self) -> str | None:
+        """The session key the request presents (``X-CN-Session-Key`` header)."""
+        return self.request.headers.get(webapp.SESSION_KEY_HEADER)
+
+    def session_user(self, *, page: bool = False) -> str | None:
+        """The user of the session cookie, if the session was opened at this ``Host`` and the
+        request presents its session key; ``page=True``: the cookie is enough
+        (the app's pages, no data)."""
+        return self.hub.sessions.user(self.get_cookie(self.cookie_name), origin=self.request.host,
+                                      key=self.session_key(), page=page)
+
+    def page_user(self) -> str | None:
+        """Who may load a page of the app: a session cookie (no key needed), else a user token."""
+        return self.session_user(page=True) or self.get_current_user()
 
     def get_current_user(self) -> str | None:
         """The user of the session cookie, else of a ``Bearer`` API token, else None."""
@@ -581,7 +595,7 @@ class Guard:
 
         Browsers say it with ``Sec-Fetch-Site`` (``same-origin``, or ``none`` for a request the user
         typed); when that header is absent, an ``Origin`` header, if present, must be this host. A
-        form posted by our own page may carry ``Origin: null`` (login refused in real browsers),
+        form posted by our own page may carry ``Origin: null`` (refusing it would refuse a login in real browsers),
         so ``Origin`` alone is not trusted when ``Sec-Fetch-Site`` says otherwise."""
         return webapp.same_origin(self.request.headers, self.request.host)
 
@@ -645,6 +659,33 @@ button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
 </form></body></html>"""
 
 
+# Answer to a successful sign-in (review F11): the session key goes to the page in a meta tag,
+# and /login-done.js (no inline script: CSP) keeps it in the storage of this origin, then opens the
+# app. The key is never in a URL, a cookie or a log.
+LOGIN_DONE_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="cn-session-key" content="%KEY%"><title>Conatus Studio</title>
+<script src="/login-done.js"></script></head>
+<body style="background:#0B0B0B;color:#EDEBE6;font:16px system-ui;padding:16px">
+<noscript>The Studio needs JavaScript.</noscript></body></html>"""
+LOGIN_DONE_JS = """// Conatus Studio: keep the session key of this sign-in in this origin's storage, then open the app.
+(function () {
+  var m = document.querySelector('meta[name="cn-session-key"]'), k = m ? m.content : "";
+  try { localStorage.setItem("cn_session_key", k); } catch (e) {
+    try { sessionStorage.setItem("cn_session_key", k); } catch (e2) { /* the app will ask to sign in */ }
+  }
+  location.replace("/");
+})();
+"""
+
+
+class LoginDone(Base):
+    """``GET /login-done.js``: the script of the sign-in answer (public: code, no data)."""
+    def get(self) -> None:
+        """Serve the script."""
+        self.set_header("Content-Type", "text/javascript; charset=utf-8")
+        self.write(LOGIN_DONE_JS)
+
+
 class Login(Base):
     """``/login``: sign-in page and password/token login (throttled, audited)."""
     def get(self) -> None:
@@ -681,19 +722,23 @@ class Login(Base):
         if not token:                                   # a token login does not wipe the
             self.hub.throttle.success(ip)               # password failures of a shared address
         self.hub.audit.write(event="login", ip=ip, user=user, result="ok")
-        self.set_cookie(self.cookie_name, self.hub.sessions.create(user, origin=self.request.host),
+        cookie, key = self.hub.sessions.create(user, origin=self.request.host)
+        self.set_cookie(self.cookie_name, cookie,
                         httponly=True, secure=not self.hub.local, samesite="Strict", path="/")
-        self.redirect("/")
+        self.set_header("Content-Type", "text/html; charset=utf-8")
+        self.write(LOGIN_DONE_PAGE.replace("%KEY%", key))        # URL-safe characters only
 
 
 class Logout(Base):
     """``POST /logout``: end the browser session."""
     def post(self) -> None:
-        """Drop the session and its cookie (same origin only, audited); redirect to /login."""
+        """Drop the session (cookie and key required) and clear the cookie (same origin only,
+        audited); redirect to /login."""
         if not self.same_origin():
             raise tornado.web.HTTPError(403, "cross-origin request refused")
         self.hub.audit.write(event="logout", ip=self.client_ip, user=self.current_user)
-        self.hub.sessions.drop(self.get_cookie(self.cookie_name))
+        if self.session_user():                         # the cookie alone cannot end a session
+            self.hub.sessions.drop(self.get_cookie(self.cookie_name))
         self.clear_cookie(self.cookie_name, path="/", secure=not self.hub.local, samesite="Strict")
         self.redirect("/login")
 
@@ -702,7 +747,7 @@ class Classic(Base):
     """``GET /classic``: the former single-file page (inline scripts: its own CSP)."""
     def get(self) -> None:
         """Serve the classic page to a signed-in user; redirect to /login otherwise."""
-        if not self.current_user:
+        if not self.page_user():
             self.redirect("/login")
             return
         self.set_header("Content-Type", "text/html; charset=utf-8")
@@ -718,7 +763,7 @@ class App(Base):
         """Index page (session required) or one file of the bundle (404 if absent)."""
         dist = self.hub.app
         if webapp.is_app_route("/" + path):
-            if not self.current_user:
+            if not self.page_user():
                 self.redirect("/login")
                 return
             got = webapp.static_file(dist, "index.html")
@@ -804,7 +849,7 @@ class Compare(Api):
 
 class NoRegistry(Api):
     """``GET /api/registry...``: the run registry stays on the cluster; the hub answers an
-    empty list with the reason (the app's Details panel asked and got the app's 404)."""
+    empty list with the reason (the app's Details panel asks for it)."""
     def get(self, rest: str = "") -> None:
         """Empty answer, explicit."""
         self.write({"runs": [], "registry": None,
@@ -857,7 +902,7 @@ class V1(Base):
             raise tornado.web.HTTPError(401, "authentication required: session cookie or "
                                              "'Authorization: Bearer <token>'")
         # the token is checked first: a valid one is never refused because someone else at the
-        # same address failed (on a compute node every client is 127.0.0.1, so five bad
+        # same address failed (earlier versions: on a compute node every client is 127.0.0.1, so five bad
         # tokens from any user of the node locked the real agent out for 15 min)
         who = self.hub.auth.principal_for_token(authz[7:].strip())
         if who is None:
@@ -1056,7 +1101,18 @@ class V1Audit(V1):
 
 
 class BrowserSocket(Guard, tornado.websocket.WebSocketHandler):
-    """``/ws``: live updates to a signed-in browser (listen only)."""
+    """``/ws``: live updates to a signed-in browser (listen only). Browsers cannot set headers on
+    a WebSocket: the app offers its session key as the subprotocol ``cn-key.<key>`` next to
+    ``cn.v1``, and the hub answers ``cn.v1``."""
+
+    def session_key(self) -> str | None:
+        """The session key: ``X-CN-Session-Key`` (programs), else the subprotocol list (browsers)."""
+        return (self.request.headers.get(webapp.SESSION_KEY_HEADER)
+                or webapp.ws_session_key(self.request.headers.get("Sec-WebSocket-Protocol")))
+
+    def select_subprotocol(self, subprotocols: list[str]) -> str | None:
+        """Answer ``cn.v1`` when offered; never echo the key."""
+        return webapp.ws_select_protocol(subprotocols)
     def prepare(self) -> None:
         """Guard checks, then 401 unless a user is signed in."""
         Guard.prepare(self)
@@ -1153,7 +1209,7 @@ def make_app(hub: Hub) -> tornado.web.Application:
     h = dict(hub=hub)
     return tornado.web.Application([
         (r"/healthz", Health),
-        (r"/login", Login, h), (r"/logout", Logout, h),
+        (r"/login", Login, h), (r"/login-done.js", LoginDone, h), (r"/logout", Logout, h),
         (r"/classic", Classic, h),
         (r"/api/runs", Runs, h), (r"/api/whoami", WhoAmI, h),
         (r"/api/film/([^/]+)", Film, h), (r"/api/film/([^/]+)/(frames)", Film, h),
@@ -1177,7 +1233,7 @@ STATE_DEFAULT = "hub_state"
 
 
 def state_dir(given: str | None, *, local: bool) -> str:
-    """The state directory of the hub (review F28, 0.1.2): ``--state`` when given (``--state
+    """The state directory of the hub (0.1.2): ``--state`` when given (``--state
     hub_state`` included: that spelling used to be replaced by a temporary directory under
     ``--local``), else ``$CN_HUB_STATE``, else ``hub_state`` for a hosted hub; ``serve --local``
     without either gets a new private (0700) directory ``conatus_hub_*`` in the system temporary
@@ -1219,7 +1275,7 @@ def _write_secret(path: str | Path, tok: str) -> Path:
     never lands in an existing file (another account's, or one with looser permissions) nor
     through a symbolic link planted at the path, and a reader never sees a partial token."""
     out = Path(path).expanduser()
-    private_dir(out.parent)                             # 0700 when created here (F12)
+    private_dir(out.parent)                             # 0700 when created here
     tmp = out.with_name(f".{out.name}.{os.getpid()}.{secrets.token_hex(4)}.tmp")
     fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o600)
     try:
@@ -1309,7 +1365,7 @@ def _is_loopback(host: str) -> bool:
 
 
 def check_proxy_binding(a: argparse.Namespace) -> None:
-    """Refuse a hub that would trust proxy headers while reachable directly (security sweep). Without ``--local`` and without TLS the hub trusts
+    """Refuse a hub that would trust proxy headers while reachable directly. Without ``--local`` and without TLS the hub trusts
     ``X-Forwarded-Proto`` and a client-IP header (the last ``X-Forwarded-For`` entry, or
     ``--client-ip-header``): a client reaching it directly could forge its address (the login
     throttle, the audit) and the HTTPS check. That is safe only behind the proxy. Bound to a

@@ -41,7 +41,7 @@ _COMPANION = {"RK443": ("RK222", 2), "RK222": ("RK111", 1), "RKSMR": ("RK111", 1
 class CFL:
     """dt_cfl = safety / max_x sum_i |u_i(x)| / dx_i(x) on the collocation grid.
 
-    Geometric contract (review finding 65): Cartesian coordinates only. ``u_i`` are the
+    Geometric contract: Cartesian coordinates only. ``u_i`` are the
     components of the velocity along the coordinate axes (lengths per time) and ``dx_i`` the
     distance between neighbouring collocation nodes of axis i (L/N on a periodic axis, the node
     spacing on the others), both in the same length unit. On a curvilinear geometry (disk,
@@ -187,8 +187,7 @@ class EmbeddedError:
         """Advance one step with the main scheme; return ||X - X_low|| / ||X|| (max norm).
 
         ``adapt=True``: a step whose estimate exceeds ``tol`` is rejected, the state (X, t,
-        iteration) restored and the step retried with a smaller dt (review finding 10: the step
-        used to be kept whatever its error, only the next dt changed); the accepted estimate is
+        iteration) restored and the step retried with a smaller dt; the accepted estimate is
         returned and the next dt proposed from it. ``ConvergenceError`` if ``tol`` cannot be met
         at ``dt_min`` or after ``MAX_REJECTIONS`` retries."""
         if not self.adapt:

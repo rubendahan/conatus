@@ -120,7 +120,7 @@ def test_f35_tensor_boundary_rows_survive_rescaling(monkeypatch, geo, N):
     """Finding 35: the rows of a tensor boundary condition dot(C, u) were dropped by an absolute
     threshold 1e-14, so C = 1e-15 (Pt, K) (the same condition, rescaled) lost every row. The
     threshold is relative: the rescaled condition keeps every entry, scaled by 1e-15."""
-    import conatus.model.compiler as mc
+    import conatus.model.taus as mc          # the tau placement reads curved_wall_tensors there
 
     def matrices():
         m = cn.Model(geo, name="free-slip", nu=0.1)

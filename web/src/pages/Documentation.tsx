@@ -3,7 +3,7 @@
 // sources at build time (scripts/gen-data.mjs → generated/docs-map.json), so the map follows the
 // documentation as it is written. Learning (the Tutorial) and reference (this page) are kept apart.
 // Without the Sphinx build, entries are listed without a link, never as dead links.
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { PageHead, Section } from "../components/ui";
 import { withBase } from "../lib/base";
 import { SITE } from "../content/site";

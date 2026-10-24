@@ -113,7 +113,7 @@ class Expr:
     def structural_hash(self) -> str:
         """Process-independent hash (sha256 of the structural key). A user function enters by
         the user's name, not by its registry key (``g__2`` when another model of the process
-        declared its own ``g``, F105): the hash, the order of terms sorted by it and the identity
+        declared its own ``g``): the hash, the order of terms sorted by it and the identity
         of a computation do not depend on what the process declared before (numerics review);
         the function's code enters the identity separately (``io._identity.user_functions``)."""
         from .expr_algebra import _RENAMED
@@ -122,9 +122,11 @@ class Expr:
 
     @property
     def rank(self) -> int:
+        """Tensor rank (number of tensor indices)."""
         return len(self.tensorsig)
 
     def is_zero(self) -> bool:
+        """True only for an expression known to be zero (overridden by the nodes that can tell)."""
         return False
 
     # arithmetic --------------------------------------------------------------
@@ -172,26 +174,32 @@ class Expr:
     # numpy functions of expressions: np.sin(t) calls t.sin() on an object operand, so a
     # native boundary value lambda t: np.sin(2 * t) builds the IR expression sin(2 t)
     def sin(self) -> Expr:
+        """sin of the expression (pointwise)."""
         from .expr_algebra import sin
         return sin(self)
 
     def cos(self) -> Expr:
+        """cos of the expression (pointwise)."""
         from .expr_algebra import cos
         return cos(self)
 
     def exp(self) -> Expr:
+        """exp of the expression (pointwise)."""
         from .expr_algebra import exp
         return exp(self)
 
     def log(self) -> Expr:
+        """log of the expression (pointwise)."""
         from .expr_algebra import log
         return log(self)
 
     def tanh(self) -> Expr:
+        """tanh of the expression (pointwise)."""
         from .expr_algebra import tanh
         return tanh(self)
 
     def sqrt(self) -> Expr:
+        """sqrt of the expression (pointwise)."""
         from .expr_algebra import sqrt
         return sqrt(self)
 
@@ -209,12 +217,15 @@ class Expr:
             stack.extend(reversed(e.args))
 
     def free_fields(self) -> frozenset[Field]:
+        """Every Field appearing in the tree."""
         return frozenset(e for e in self.walk() if isinstance(e, Field))
 
     def free_parameters(self) -> frozenset[Parameter]:
+        """Every Parameter appearing in the tree."""
         return frozenset(e for e in self.walk() if isinstance(e, Parameter))
 
     def depends_on(self, fields: Iterable[Field]) -> bool:
+        """True when any of ``fields`` appears in the expression."""
         fs = frozenset(fields)
         return bool(self.free_fields() & fs)
 
@@ -223,6 +234,8 @@ class Expr:
         raise NotImplementedError(type(self).__name__)
 
     def substitute(self, mapping: Mapping[Expr, Any]) -> Expr:
+        """The expression with every sub-expression found in ``mapping`` replaced by its value
+        (unchanged subtrees are shared)."""
         if self in mapping:
             return as_expr(mapping[self])
         if not self.args:
@@ -260,6 +273,7 @@ class Expr:
         return 0
 
     def time_order(self) -> int:
+        """Highest order of time derivative in the expression (0: none)."""
         return max((a.time_order() for a in self.args), default=0)
 
     # differentiation ---------------------------------------------------------
@@ -340,6 +354,8 @@ class Expr:
         return []
 
     def explain(self) -> str:
+        """The expression, its tensor signature, domain, free fields and parameters, and time
+        order."""
         fields = sorted(f.name for f in self.free_fields())
         params = sorted(p.name for p in self.free_parameters())
         lines = [
@@ -368,6 +384,8 @@ class Expr:
         return cs.coords if cs is not None else ()
 
     def inspect(self) -> dict:
+        """Nested dict of the tree (node type, text, tensor signature, domain, dtype, structural
+        hash, arguments)."""
         return {
             "node": type(self).__name__,
             "expr": str(self),
@@ -379,6 +397,7 @@ class Expr:
         }
 
     def tree(self, indent: int = 0) -> str:
+        """Indented text tree of the expression, one node per line."""
         pad = "  " * indent
         head = f"{pad}{type(self).__name__}"
         label = self._tree_label()
@@ -437,6 +456,7 @@ class Field(Expr):
                     name=name, symmetry=sym)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """A leaf: the field itself."""
         return self
 
     def _degrees(self, fields: frozenset) -> frozenset[int]:
@@ -494,6 +514,7 @@ class UnitVector(Expr):
                     coordsys=coordsys, index=index)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """A leaf: the unit vector itself."""
         return self
 
     def _lin(self, around: dict, direction: dict) -> Expr:
@@ -546,6 +567,7 @@ class Parameter(Expr):
         self._setup((), (), None, dtype, params=(name, np.dtype(dtype).str), name=name, value=value)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """A leaf: the parameter itself."""
         return self
 
     def _lin(self, around: dict, direction: dict) -> Expr:
@@ -578,9 +600,11 @@ class Constant(Expr):
         self._setup((), tensorsig, None, dtype, params=_num_key(c), value=v)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """A leaf: the constant itself."""
         return self
 
     def is_zero(self) -> bool:
+        """True when the constant's value is 0."""
         return self.value == 0
 
     def _lin(self, around: dict, direction: dict) -> Expr:
@@ -633,6 +657,8 @@ class TransposeResult:
         self.boundary = boundary
 
     def assumptions(self) -> list[str]:
+        """Statements the transpose relies on (differentiation order, domain, boundary terms),
+        for the formal layer."""
         coords = self.op._all_coords()
         order = max((self.op.order_in(c) for c in coords), default=0)
         dom = Domain.union(self.op.domain, self.w.domain)
@@ -656,6 +682,7 @@ class TransposeResult:
             ])
 
     def explain(self) -> str:
+        """The operator, its formal transpose, the boundary terms and the assumptions."""
         return "\n".join([
             "Formal transpose (integration by parts, boundary terms explicit)",
             f"  A u      : {self.op}",

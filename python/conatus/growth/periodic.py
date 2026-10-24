@@ -473,7 +473,7 @@ def _fold(mu: np.ndarray, period: float) -> np.ndarray:
     w = 2 * np.pi / period
     im = np.mod(mu.imag + w / 2, w) - w / 2
     # the interval is (-w/2, w/2]: an exponent on its lower end (to the rounding of the mod)
-    # moves by one period, keeping its offset (np.isclose's default
+    # moves by one period, keeping its offset (earlier versions: np.isclose's default
     # rtol = 1e-5 replaced every Im mu within 1e-5 w/2 of -w/2 by w/2 exactly)
     im = np.where(np.abs(im + w / 2) <= FOLD_ROUNDING * w, im + w, im)
     return mu.real + 1j * im
@@ -483,7 +483,7 @@ def _hill_residual(H, mu: complex, x: np.ndarray) -> float:
     """Relative residual of a Hill eigenpair of the mu-linear pencil M(mu) = M(0) + mu B (B = the
     mass block on every harmonic): ||M(mu) x|| / (||M(0) x|| + omega ||B x||).
 
-    the former denominator ||M(0) x|| vanishes with mu, since
+    The former denominator ||M(0) x|| vanishes with mu, since
     M(0) x = -mu B x for an eigenpair, so the ratio grew like 1/|mu| near a neutral point
     and the leading exponent was dropped
     by residual_max = 1e-8 exactly where the neutral curve is decided. The frequency omega of the

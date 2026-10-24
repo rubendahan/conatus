@@ -56,6 +56,7 @@ class ColumnBorderPlan:
     core_cond: float
 
     def explain(self) -> str:
+        """The columns moved to the border, the band before and after, and the conditioning."""
         return (f"column border: {self.n_cols} dense column(s) and {self.n_cols} row(s) moved to the "
                 f"border (rank {self.n_border}); band kl/ku {self.band_before[0]}/{self.band_before[1]} -> "
                 f"{self.band_after[0]}/{self.band_after[1]} (core cond {self.core_cond:.1e} at M + "

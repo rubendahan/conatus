@@ -2,7 +2,7 @@
 // acknowledgements and the origin of the name (presentation review of 0.1.1, priorities 12, 14 and 15).
 // These were spread over the home page, the footer and the README; they are kept here, one short
 // section each, so the home page can stay on the research task.
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { DocLink, PageHead, RepoPath, Section } from "../components/ui";
 import { SITE } from "../content/site";
 import { routes } from "../routes";

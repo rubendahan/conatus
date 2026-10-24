@@ -4,7 +4,7 @@
 the code that runs only if no imported module changed on disk since it was imported (an edit, a
 ``git pull`` or a checkout during a session). This module records, for every ``conatus`` module
 the process imports, the sha256 of its source text at import time; ``provenance
-.changed_since_import()`` compares it with the file now (audit state review F8:
+.changed_since_import()`` compares it with the file now (review F8:
 the first version compared modification times with a 2 s clock slack, so an edit within 2 s of the
 import or a deleted module was not seen, and a ``touch`` or a checkout round trip with the same
 text was reported).

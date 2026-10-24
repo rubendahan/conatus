@@ -1,6 +1,6 @@
 // Coming next: planned features (not in this release) and extensions of tools this release ships.
 // No dates and no performance targets.
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { DocLink, PageHead, Section } from "../components/ui";
 import "../styles/tutorials.css";
 
@@ -9,7 +9,7 @@ export default function ComingNext() {
     <>
       <PageHead eyebrow="Roadmap" title="Coming next">
         <p>This page lists work in progress. Some items are new features. Others extend tools that this release already ships
-          as experimental. No item has a date or a performance target. For what this release does, see{" "}
+          as experimental. These features are planned; release dates are not set. For what this release does, see{" "}
           <Link to="/capabilities">Capabilities</Link>.</p>
       </PageHead>
       <Section id="planned" title="Planned features" intro={<p>

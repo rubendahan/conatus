@@ -163,8 +163,7 @@ class _D3:
             rad = DiskBasis(r, nr, float(1.0 if radius is None else radius), dealias=dl)
             self.tr.note("Dedalus DiskBasis = Zernike polynomials, Conatus DiskBasis = "
                          "r^|m| T_n(2r^2-1): the same polynomial space for each m (pipe-flow "
-                         "EVP: eigenvalues equal to Dedalus's to 5e-14, run "
-                         ")")
+                         "EVP: eigenvalues equal to Dedalus's to 5e-14)")
         else:
             rad = AnnulusBasis(r, nr, tuple(float(x) for x in radii), dealias=dl)
             self.tr.approx("Dedalus AnnulusBasis = Chebyshev with Dedalus's r-weighting of the "

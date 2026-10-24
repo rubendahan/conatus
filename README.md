@@ -2,32 +2,33 @@
 
 # 🌀 Conatus
 
-### *Write a PDE model once, then simulate it, compute its stability and find its invariant solutions from the same object.*
+### *Define a PDE model, then simulate it, compute its stability and search for its invariant solutions.*
 
 Conatus is experimental research software for fluid instability and dynamical systems.
 
 **[Website](https://rubendahan.github.io/conatus/)** ·
 **[Getting started](https://rubendahan.github.io/conatus/tutorials/getting-started/)** ·
 **[Tutorials](https://rubendahan.github.io/conatus/tutorials/)** ·
+**[Published cases](https://rubendahan.github.io/conatus/published/)** ·
 **[Install](https://rubendahan.github.io/conatus/install/)**
 
 ![Python](https://img.shields.io/badge/Python-3.11%20|%203.12%20|%203.13-3776AB?logo=python&logoColor=white)
 ![Platform](https://img.shields.io/badge/Linux-x86--64-FCC624?logo=linux&logoColor=black)
 ![CUDA](https://img.shields.io/badge/CUDA%2012-experimental-76B900?logo=nvidia&logoColor=white)
 ![License](https://img.shields.io/badge/license-BSD--3-success)
-![Version](https://img.shields.io/badge/version-0.1.2-blue)
+![Version](https://img.shields.io/badge/version-0.2.0-blue)
 
 </div>
 
 ## 📦 Install
 
 ```bash
-pip install conatus==0.1.2   # CPU wheel for Linux x86-64, compiled core included
+pip install conatus==0.2.0   # CPU wheel for Linux x86-64, compiled core included
 python -m conatus doctor         # what this machine can run, and what is missing
 ```
 
 CUDA support (one NVIDIA GPU, CUDA 12 wheel attached to the
-[v0.1.2 release](https://github.com/rubendahan/conatus/releases/tag/v0.1.2)) is experimental.
+[v0.2.0 release](https://github.com/rubendahan/conatus/releases/tag/v0.2.0)) is experimental.
 Building from source and the GPU wheel are described on the
 [install page](https://rubendahan.github.io/conatus/install/).
 
@@ -55,7 +56,7 @@ m.at("walls", "v = 0", "dy(v) = 0")
 # Least stable mode at Re = 10000, alpha = 1 (modes kept only if found again at N = 96)
 res = m.eigenvalues(N=64, drift=96, drift_tol=1e-6)
 i = res.values.imag.argmax()
-print(f"c = {res.values[i]:.8f}   residual {res.residuals[i]:.0e}")
+print(f"c = {res.values[i]:.8f}   residual below 1e-15: {res.residuals[i] < 1e-15}")
 
 # Critical Reynolds number: the lowest Re at which Im(c) = 0 for some alpha
 P = m.parametric(N=64, over=("Re", "alpha"), drift=96, drift_tol=1e-6)
@@ -66,7 +67,7 @@ print(f"Re_c = {crit.value:.2f}   alpha_c = {crit.over['alpha']:.5f}")
 It prints:
 
 ```text
-c = 0.23752649+0.00373967j   residual 1e-16
+c = 0.23752649+0.00373967j   residual below 1e-15: True
 Re_c = 5772.22   alpha_c = 1.02055
 ```
 
@@ -87,7 +88,13 @@ continues from this script.
 - Lyapunov exponents, covariant Lyapunov vectors, tracers and dye in a simulated flow.
 
 [`examples/`](https://github.com/rubendahan/conatus/tree/main/examples) holds further cases, each
-checked against a published value.
+checked against a published value. Four published studies are reproduced by the scripts of
+[`examples/published/`](https://github.com/rubendahan/conatus/tree/main/examples/published): the
+Orr-Sommerfeld spectrum of Orszag (1971), linearised pipe flow up to Re = 10⁷ (Meseguer & Trefethen
+2003), the onset of Rayleigh-Bénard convection and the Kuramoto-Sivashinsky solutions of Cvitanović,
+Davidchack & Siminos (2010). Each prints, for every published value, the computed value and the gap,
+and its recorded output is in the same directory. The
+[Published cases](https://rubendahan.github.io/conatus/published/) page draws them.
 
 ## 📚 Getting started
 
@@ -105,12 +112,14 @@ API reference and the numerical methods.
   in the [changelog](https://github.com/rubendahan/conatus/blob/main/CHANGELOG.md).
 - **CPU speed.** The CPU path is a NumPy reference implementation. It suits eigenvalue problems,
   small grids and setting a run up. Large grids can be slow on it.
-- **One process.** 0.1.2 runs a simulation on one CPU process or one GPU. No multi-GPU or MPI yet.
+- **One process.** 0.2.0 runs a simulation on one CPU process or one GPU. No multi-GPU or MPI yet.
 
 ## 🔧 Optional tools
 
 - **Studio**: watch a running simulation in a browser (`pip install "conatus[studio]"`,
-  [Studio guide](https://rubendahan.github.io/conatus/docs/guide/studio.html)).
+  [Studio guide](https://rubendahan.github.io/conatus/docs/guide/studio.html)). A session needs
+  both its cookie and a key that the app keeps, so another service on the same machine cannot reuse
+  the cookie.
 - **Coding agents**: `python -m conatus agent` describes the installation and the API in JSON;
   [`AGENTS.md`](https://github.com/rubendahan/conatus/blob/main/AGENTS.md) is the page to give them.
 

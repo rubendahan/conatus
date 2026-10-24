@@ -21,7 +21,7 @@ solves, ``solver.grid`` also checks a projected state at this tolerance."""
 STATE_REAL_TOL = 1e-8
 """Relative tolerance on the imaginary part of a real field read from arbitrary coefficients
 (``plan.to_grid``; ``solver.grid`` of a state whose m = 0 entries are not exactly real, e.g. set by
-hand or read from a checkpoint written before), declared on ``space.state_real_tol``. That imaginary part is exactly the non-real m = 0 component of the coefficients (B(J c) =
+hand or read from a checkpoint written without the m = 0 projection), declared on ``space.state_real_tol``. That imaginary part is exactly the non-real m = 0 component of the coefficients (B(J c) =
 conj(B c), so Re g is the exact projection onto real fields): without the projection it is born
 from the rounding of the tau solves and is never reprojected by the step. Measured without the
 projection: u 1.4e-12 after 100 steps at 128x63x48 (CPU and GPU), p 1e-11 after 2000 steps of a
@@ -33,9 +33,9 @@ in the RHS evaluator (T**2, exp(T), ...), declared on ``space.func_real_tol``: t
 acts on Re g, the exact projection onto real fields. Without the m = 0 projection that
 imaginary part, relative to a decaying field, grew most when the field fell to the rounding level of
 the coupled state: measured up to 6.2e-8 (T) and 5.7e-7 (p) on a coupled (u, p, T) shell flow
-decaying to 1e-32 (run); REAL_TOL = 1e-12 refused T**2 at amplitude
-1e-20 (run). The bound is a measured margin (175x above the worst
-sound case, 1e4 below an inconsistent state), not a proven one; it is kept after because the
+decaying to 1e-32; REAL_TOL = 1e-12 refused T**2 at amplitude
+1e-20. The bound is a measured margin (175x above the worst
+sound case, 1e4 below an inconsistent state), not a proven one; it is kept with the m = 0 projection because the
 evaluator also serves ``project_m0=False`` solvers, unprojected initial states and FlowMap seeds."""
 
 

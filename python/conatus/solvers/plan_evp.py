@@ -21,7 +21,7 @@ DEFAULT_N_MODES = 6
 
 
 def pencil_rank(gm) -> str:
-    """Rank report of the pencil L + s M (for EVPs), refusing singular pencils.
+    """Rank report of the pencil L + s M, refusing singular pencils.
 
     L alone is singular whenever 0 is an eigenvalue (e.g. exactly at onset), so
     the test is on the pencil at a generic shift s: a pencil singular for every s
@@ -131,10 +131,10 @@ def eigenvalues(plan: Plan, group=None, *, reduced: bool | None = None, method: 
     check_eig_method(method, target, region)          # before any assembly (review, inputs)
     method = _region_method(region, method, target, left)
     if n_modes is not None and method != "shift-invert":
-        # it used to be ignored without a word: said, refused in v0.2
+        # it used to be ignored without a word: said, refused from 0.3
         from ..errors import _warn_user       # the user's line (a fixed level hid it)
         _warn_user(f"eigenvalues(n_modes={n_modes!r}) has no effect with method={method!r} "
-                   "(every mode is returned); drop it (refused in v0.2)",
+                   "(every mode is returned); drop it (refused from 0.3)",
                    DeprecationWarning)
     if method == "shift-invert":
         from ..errors import check_count
@@ -305,8 +305,12 @@ def _annotate(res: EVPResult, plan: Plan, filtered: bool) -> None:
     res.eigenvalue, res.growth, res.growth_note = name, growth, note
     try:
         taus = bool(_tau_names(plan))
-    except Exception:  # noqa: BLE001 -- a plan without the IR layout has no tau to report
+    except AttributeError:                    # a plan without the IR layout has no tau to report
         taus = False
+    except Exception as err:  # noqa: BLE001 -- reported on the result, not hidden
+        res.filter_note = ("spurious-mode filter: unknown whether this problem has tau modes (the "
+                           f"tau variables could not be identified: {type(err).__name__}: {err})")
+        return
     if taus:
         res.filter_note = ("spurious-mode filter: resolution drift (see below)" if filtered
                            else NO_FILTER_NOTE)

@@ -31,8 +31,8 @@ def finger_layer(N: int, R_T: float, tau: float, Pr: float = 7.0):
     u, w, p, T, S = (ch.field(n) for n in ("u", "w", "p", "T", "S"))
     sigma = Parameter("sigma", dtype=complex)
     R_S, k = Parameter("R_S", 1e3), Parameter("k", 2.2)
-    Dz = lambda q: diff(q, z)                                   # noqa: E731
-    lap = lambda q: Dz(Dz(q)) - k ** 2 * q                      # noqa: E731
+    Dz = lambda q: diff(q, z)
+    lap = lambda q: Dz(Dz(q)) - k ** 2 * q
     pb = EVP([u, w, p, T, S], eigenvalue=sigma, name=f"salt fingers (R_T={R_T:g}, tau={tau:g}, Pr={Pr:g})")
     pb.add_equation((sigma * u - Pr * lap(u) + 1j * k * p, 0))
     pb.add_equation((sigma * w - Pr * lap(w) + Dz(p) - Pr * (R_T * T - R_S * S), 0))

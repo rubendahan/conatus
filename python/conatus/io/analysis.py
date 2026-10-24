@@ -26,7 +26,7 @@ the arrays with their coordinates; files written before keep reading.
 The file is opened and closed at each write: a job killed between two writes leaves a valid
 file with every completed row (and only those: the row counter is written last).
 
-One file holds **one computation** (0.1.1, review finding 5): ``mode="a"`` and ``mode="resume"``
+One file holds **one computation** (0.1.1): ``mode="a"`` and ``mode="resume"``
 compare the computation appending with the one the file records (model, equations, parameters,
 given data, resolution, geometry, scheme, dt, cadence, and every task's source) and refuse any
 difference, naming it; before, a run at nu = 0.4 writing dx(u) was appended under the metadata of
@@ -40,6 +40,7 @@ from typing import Any
 
 import numpy as np
 
+from .._arrays import host_array as _host
 from ..errors import InputTypeError, OptionError
 from . import _describe as dsc
 from ._h5 import DOC, json_attr, open_h5, positive, provenance, read_json_attr
@@ -55,12 +56,6 @@ def _is_name(src: str) -> bool:
     return re.fullmatch(r"[A-Za-z_]\w*(\.[A-Za-z_]\w*)?", src) is not None
 
 
-def _host(a: Any) -> np.ndarray:
-    if hasattr(a, "get") and not isinstance(a, np.ndarray):     # CuPy array
-        a = a.get()
-    return np.asarray(a)
-
-
 class AnalysisFile:
     """Write ``tasks`` of a simulation to the HDF5 file ``path`` every ``every`` steps.
 
@@ -74,7 +69,8 @@ class AnalysisFile:
     replaced or cut silently.
 
     ``initial``: also write the state at the start of the first run, when its iteration is a
-    multiple of ``every`` and the file has no row there yet (a time series then starts from the initial condition, as in Dedalus). ``sim.output`` passes
+    multiple of ``every`` and the file has no row there yet (so
+    a time series starts from the initial condition). ``sim.output`` passes
     True by default; this class defaults to False because an expert solver's ``run`` only calls
     it after steps (call :meth:`write` once before the run for the initial row)."""
 
@@ -263,7 +259,7 @@ class AnalysisFile:
         return out
 
     def _check_same_computation(self, f: Any, old_tasks: dict, new_tasks: dict) -> None:
-        """Refuse an append by another computation (review finding 5), naming every difference;
+        """Refuse an append by another computation, naming every difference;
         a file written before the identity record is compared on what it holds (problem name,
         parameters, scheme, task sources) with an :class:`IdentityWarning`."""
         from ._identity import IdentityWarning, _differences, unrecorded

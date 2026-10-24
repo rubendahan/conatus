@@ -155,7 +155,7 @@ def function_parts(target: str, source_sha: str | None, args: dict,
     """Key parts of a call of a decorated function (arguments hashed by content).
     ``dependencies``: :func:`conatus.io._identity.callable_identity` of the function (its code,
     closure values and the module globals it reads): two closures of one factory, or one function
-    after a global it reads changed, are two keys (review finding 49)."""
+    after a global it reads changed, are two keys."""
     return {"kind": "function", "problem": {"target": target, "source_sha256": source_sha,
                                             "dependencies": sha256_of(dependencies)},
             "params": {k: sha256_of(v) for k, v in args.items()}, "numerics": None}

@@ -1,7 +1,7 @@
 // Shared presentational components: page and section heads, figure plates, statistics, source
 // references and code blocks.
 import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { SITE } from "../content/site";
 import { withBase } from "../lib/base";
 
@@ -148,4 +148,9 @@ export function CopyButton({ text, label = "Copy" }: { text: string; label?: str
       setTimeout(() => { b.textContent = label; }, 1600);
     }}>{label}</button>
   );
+}
+
+/** An in-site link through the router, for pages that need no other router import. */
+export function PageLink({ to, children }: { to: string; children: ReactNode }) {
+  return <Link to={to}>{children}</Link>;
 }

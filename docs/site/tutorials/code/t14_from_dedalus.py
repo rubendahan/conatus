@@ -19,6 +19,10 @@ import numpy as np
 import conatus as cn
 # [/imports]
 
+# The page asks the reader to save rb_cell_dedalus.py in the working directory; run as a file, this
+# driver finds it next to itself.
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 # [native]
 # Onset of convection in diffusive units: th is the temperature minus the conduction profile 1 - z,
 # so it vanishes on both walls; u.ez carries the conduction profile into the heat equation.
@@ -53,7 +57,7 @@ print(f"native model: t = {cell.t:.3f}, max|u| = {np.abs(cell.grid('u')).max():.
 # [/native]
 
 # [translate]
-SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "rb_cell_dedalus.py")
+SCRIPT = "rb_cell_dedalus.py"         # the Dedalus script, in the working directory
 tr = cn.from_dedalus(SCRIPT)          # read with `ast`, never executed; Dedalus is not imported
 print(tr.explain())
 counts = tr.counts()

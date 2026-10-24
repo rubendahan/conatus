@@ -11,6 +11,7 @@ export interface FilmItem {
   legend?: string | null;                            // what the colours show (quantity and range)
   details?: string | null;                           // physics and numerics of the run
   span?: string | null;                              // simulated time shown, and the playback length
+  generation?: { command: string; sha256: { webm: string; mp4: string } };   // how to make it again
 }
 
 const found = import.meta.glob<FilmItem[]>("../../public/films/manifest.json", { eager: true, import: "default" });

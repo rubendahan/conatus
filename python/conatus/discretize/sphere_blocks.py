@@ -29,6 +29,7 @@ class SphereGroup:
 
     @property
     def label(self) -> str:
+        """Group label: ``m=...`` (and ``l=...`` for a single-degree group)."""
         return f"m={self.m}" + (f", l={self.ells[0]}" if self.single else "")
 
     def __str__(self) -> str:

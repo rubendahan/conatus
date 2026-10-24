@@ -26,6 +26,7 @@ from ..ir.coords import Coordinate
 from ..ir.domain import Domain
 from ..errors import EquationError, OptionError
 from .._repr import compact_repr
+from .transforms import _family as _fam
 
 __all__ = ["FieldData", "ReferenceEvaluator", "evaluate"]
 
@@ -53,11 +54,6 @@ class FieldData:
 
 def _is_fourier(b: Basis) -> bool:
     return isinstance(b, (RealFourier, ComplexFourier))
-
-
-def _fam(b: Basis):
-    from ..discretize.families import family_of
-    return family_of(b)
 
 
 def _nodes(b: Basis) -> np.ndarray:

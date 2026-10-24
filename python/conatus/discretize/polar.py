@@ -100,9 +100,11 @@ class PolarSystem:
 
     @property
     def N(self) -> int:
+        """Number of unknowns (columns of L)."""
         return self.L.shape[1]
 
     def rank_report(self) -> str:
+        """Equation and boundary-row count against the unknowns, one line."""
         n_bc = self.B.shape[0]
         n_eq = self.N - n_bc
         ok = n_eq + n_bc == self.N
@@ -110,6 +112,8 @@ class PolarSystem:
                 f"(last {n_bc} operator rows replaced by the conditions), square: {'PASS' if ok else 'FAIL'}")
 
     def matrix(self) -> sp.csr_matrix:
+        """The square system: boundary rows B on top of the leading rows of L (tau by row
+        replacement)."""
         n_bc = self.B.shape[0]
         return sp.vstack([sp.csr_matrix(self.B), self.L[: self.N - n_bc]]).tocsr()
 
@@ -124,6 +128,7 @@ class PolarSystem:
         return x, float(res)
 
     def explain(self) -> str:
+        """Rank report and notes of the system."""
         return "\n".join([self.rank_report(), *[f"  {n}" for n in self.notes]])
 
 
@@ -192,6 +197,8 @@ class Disk:
 
     # --- boundary rows at r = R (z = 1) ------------------------------------------------------
     def dirichlet_row(self) -> np.ndarray:
+        """Row of the value at r = R of the radial coefficients (w(1) = sum of the
+        coefficients)."""
         return np.ones(self.N)                                  # rho^m w at rho = 1: w(1) = sum c_n
 
     def neumann_row(self, m: int) -> np.ndarray:
@@ -286,6 +293,7 @@ class Disk:
         return lam[:n_modes]
 
     def explain(self) -> str:
+        """Radius, size, radial basis, regularity and wall condition of the disk, one line."""
         return (f"Disk(R={self.R}, N={self.N}): modes m >= 0, f = rho^|m| w(z), z = 2 rho^2 - 1, "
                 "w in Chebyshev T; spin components u_+- = rho^|m+-1| (a, b)(z); regular at the axis "
                 "by construction (Vasil et al. 2016); tau by row replacement at r = R")
@@ -307,10 +315,12 @@ class Annulus:
 
     @property
     def r_T(self) -> list[float]:
+        """Chebyshev coefficients of r in t (r = c + h t)."""
         return [self.c, self.h]
 
     @property
     def r2_T(self) -> list[float]:
+        """Chebyshev coefficients of r^2 in t (r = c + h t)."""
         c, h = self.c, self.h
         return [c * c + h * h / 2, 2 * c * h, h * h / 2]        # t^2 = (T_0 + T_2)/2
 
@@ -422,6 +432,8 @@ class Annulus:
         return _mult(self.r2_T, self.N, 2) @ conversion_chain(self.N, 0, 2) @ g_T
 
     def explain(self) -> str:
+        """Radii, size, radial basis, operator form and wall conditions of the annulus, one
+        line."""
         return (f"Annulus(ri={self.ri}, ro={self.ro}, N={self.N}): f, u_r, u_phi in Chebyshev T of "
                 "t = (r - c)/h; operators in r-multiplied form (r^2 lap, r grad, r div, r curl), "
                 "banded; Dirichlet walls by row replacement")

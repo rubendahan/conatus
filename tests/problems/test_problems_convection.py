@@ -37,7 +37,7 @@ def test_rayleigh_benard_onset_reid_harris():
 @pytest.mark.slow
 def test_rotating_shell_onset_christensen_geometry():
     """Ra_c = 55.904299, m = 4, omega_c = -0.0230918 Omega at (Nr, Lmax) = (32, 48) (run
-   ); Skene & Tobias 2024: 55.9. Brent on the growth rate of the
+   ); Skene & Tobias 2025: 55.9. Brent on the growth rate of the
     shift-invert mode nearest the drift frequency; residual reported."""
     from scipy.optimize import brentq
 

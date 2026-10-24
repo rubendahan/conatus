@@ -51,4 +51,4 @@ sphere and $(\phi, \theta, r)$ in the ball and shell; the native layer prints th
   J. Comput. Phys. X 3 (2019) 100013; D. Lecoanet et al., *Part-II: implementation and examples*,
   ibid. 100012.
 - J. P. Boyd and F. Yu, *Comparing seven spectral methods for interpolation and for solving the
-  Poisson equation in a disk*, J. Comput. Phys. 230 (2011).
+  Poisson equation in a disk*, J. Comput. Phys. 230 (2011) 1408–1438.

@@ -125,6 +125,19 @@ tr.clickable { cursor:pointer; } tr.clickable:hover td { background:var(--bg); }
 <script src="view3d.js"></script>
 <script>
 "use strict";
+// ---------------------------------------------------------------- session key (hub, review F11)
+// The hub needs the session key of the sign-in next to the cookie: every request of this page
+// sends it (header; subprotocol for the WebSocket). The local server has no key and ignores it.
+const CN_KEY = (() => { for (const st of ["localStorage", "sessionStorage"]) {
+  try { const k = window[st].getItem("cn_session_key"); if (k) return k; } catch (e) { /* blocked */ } }
+  return null; })();
+const _fetch = window.fetch.bind(window);
+window.fetch = (url, opts = {}) => {
+  const h = new Headers(opts.headers || {});
+  if (CN_KEY) h.set("X-CN-Session-Key", CN_KEY);
+  return _fetch(url, { ...opts, headers: h });
+};
+const WS_PROTOCOLS = CN_KEY ? ["cn.v1", "cn-key." + CN_KEY] : ["cn.v1"];
 // ---------------------------------------------------------------- state
 const S = { runs: {}, sel: null, slurm: null, spool: "", relays: {}, cmp: [], seek: {}, jobs: [], catalog: null };
 const MAXPTS = 20000;
@@ -153,7 +166,7 @@ function ingest(r) {
 // ---------------------------------------------------------------- socket
 let ws, dirty = true;
 function connect() {
-  ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws");
+  ws = new WebSocket((location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws", WS_PROTOCOLS);
   ws.onopen = () => setConn(true);
   ws.onclose = async () => { setConn(false);
     try { const r = await fetch("/api/runs"); if (r.status === 401) { location.href = "/login"; return; } }

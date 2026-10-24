@@ -1,4 +1,4 @@
-"""Continuation adapter for an NLBVP in one continuation parameter (Newton system of plans).
+"""Continuation adapter for an NLBVP in one continuation parameter (Newton system of discretization plans).
 
 The discrete residual is the one Newton uses, F_h(x; p) = A(x; p) x - b(x; p), with A = F'(x) the
 exact Fréchet Jacobian of the IR (see solvers/nlbvp.py); the unknown vector x is the packed
@@ -128,7 +128,7 @@ class NLBVPContinuation:
         """Residual scale max(|A x|, |b|, |p G_p|) (∞-norms; G_p by the declared central
         difference). At the fold of a uniform state A x = 0 and b = 0 as assembled vectors (the
         terms cancel), and the former scale max(|A x|, |b|) vanished: the corrector could not
-        converge there (finding 96). |p G_p| is the size of the
+        converge there. |p G_p| is the size of the
         parameter's own terms, which do not cancel; a norm ‖A‖ |x| would instead be dominated by
         the high derivative rows of a spectral matrix and loosen every other point."""
         A, b = self._system(x, p)

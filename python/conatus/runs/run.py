@@ -5,7 +5,7 @@ the disk while the computation is running (same rule as the telemetry):
 
 * scalars are kept in memory; series rows are buffered and handed to the writer thread every
   :data:`SERIES_FLUSH_ROWS` rows (appended to ``.series.jsonl.part``, turned into ``data.h5`` at
-  close), so a long run's series do not grow in memory (review finding 45);
+  close), so a long run's series do not grow in memory;
 * fields, files and solver states are *copied* in the calling thread (a copy is needed anyway: the
   computation will overwrite its arrays) and handed to a bounded queue drained by one background
   thread. A full queue drops the item and counts it (``dropped``); nothing waits;
@@ -673,8 +673,8 @@ class Run:
             return g[keys[index]][()]
 
     def file_path(self, name: str) -> Path:
-        """The attached file ``name`` of this run (a plain file name: no directory part, never
-        "." or ".."; security name="../../x" read outside the run)."""
+        """The attached file ``name`` of this run. ``name`` must be a plain file name: no directory
+        part, not "." or ".."; anything else is refused."""
         if (not isinstance(name, str) or name in ("", ".", "..") or "/" in name or "\\" in name
                 or "\0" in name or Path(name).name != name):
             raise OptionError(f"conatus.runs: file name {name!r} is not a plain file name",

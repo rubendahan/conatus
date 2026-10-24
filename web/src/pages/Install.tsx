@@ -2,10 +2,11 @@
 // builds from source, extras, how to check an installation.
 // Sources: pyproject.toml (build options, extras) and docs/site/install.md.
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Code, PageHead, Section } from "../components/ui";
 import { SITE } from "../content/site";
 import "../styles/info.css";
+import { extras, features } from "../data/status";
 
 const V = SITE.version;
 const PIP_CPU = `$ python3.12 -m venv venv && . venv/bin/activate
@@ -126,15 +127,6 @@ const gpuSteps = (
   </ol>
 );
 
-const extras: [string, string, string][] = [
-  ["tutorials", "matplotlib ≥ 3.7", "The figures of the tutorials."],
-  ["gpu", "cupy-cuda12x ≥ 13", "Device arrays, with the CUDA wheel (a source build also needs CONATUS_CUDA=ON)."],
-  ["notebook", "ipywidgets ≥ 8", "Rich displays of explain() in Jupyter."],
-  ["dedalus-compare", "dedalus ≥ 3.0", "Dedalus 3, needed only by the optional check script of tutorial 14."],
-  ["docs", "sphinx ≥ 7, myst-parser ≥ 2", "Building the documentation site."],
-  ["dev", "pytest ≥ 8, ruff ≥ 0.5, mpmath ≥ 1.3", "Tests and lint."],
-  ["all", "tutorials, notebook, gpu, docs, dev", "Everything above except dedalus-compare."],
-];
 
 export default function Install() {
   return (
@@ -160,8 +152,8 @@ export default function Install() {
           <dt>Build tools (from source)</dt>
           <dd>A C++20 compiler (GCC 13 from conda-forge), CMake ≥ 3.24, scikit-build-core and nanobind (fetched by pip).</dd>
           <dt>LAPACK, BLAS</dt>
-          <dd>From conda-forge, in the active environment; the build looks nowhere else, so you always know which libraries you
-            use. The core has no FFT library of its own: CPU transforms are NumPy/SciPy, GPU transforms cuFFT.</dd>
+          <dd>From conda-forge, in the active environment: the source build searches only the active conda environment for
+            BLAS and LAPACK. The core has no FFT library of its own: CPU transforms are NumPy/SciPy, GPU transforms cuFFT.</dd>
           <dt>GPU (optional)</dt>
           <dd>An NVIDIA GPU; to build from source, the CUDA 12 toolkit (nvcc, cuFFT, cuBLAS) from conda-forge.</dd>
         </dl>
@@ -181,14 +173,28 @@ export default function Install() {
         ]} />
       </Section>
 
+      <Section id="status" title="Release status" intro={<p>What this release supports. The documentation's install page
+        shows the same table, from the same source.</p>}>
+        <div className="table-wrap">
+          <table className="data">
+            <thead><tr><th scope="col">Part</th><th scope="col">Status</th><th scope="col">Note</th></tr></thead>
+            <tbody>
+              {features.map((f) => (
+                <tr key={f.feature}><td>{f.feature}</td><td>{f.status}</td><td>{f.note}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
       <Section id="extras" title="Optional extras" intro={<p>Extras add optional Python packages; they are combined as usual,
         e.g. <code>pip install "conatus[tutorials,notebook]"</code>.</p>}>
         <div className="table-wrap">
           <table className="data">
             <thead><tr><th scope="col">Extra</th><th scope="col">Adds</th><th scope="col">For</th></tr></thead>
             <tbody>
-              {extras.map(([k, pkgs, what]) => (
-                <tr key={k}><td><code>{k}</code></td><td>{pkgs}</td><td>{what}</td></tr>
+              {extras.map((e) => (
+                <tr key={e.name}><td><code>{e.name}</code></td><td>{e.adds}</td><td>{e.for}</td></tr>
               ))}
             </tbody>
           </table>

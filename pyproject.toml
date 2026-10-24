@@ -136,10 +136,13 @@ ignore = [
 "tests/**" = ["E", "W", "UP", "B007", "B023", "B008", "BLE001", "B905"]
 "ci/**" = ["E", "W", "UP", "B007", "B023", "B008", "BLE001", "B905"]
 # Guide snippet checks: a bare expression shows an attribute as at a prompt (B018), and an
-# unpacked handle may stay unused (F841).
-"docs/site/guide/**/_check*.py" = ["B018", "F841"]
+# unpacked handle may stay unused (F841); a named lambda reads better than a def.
+"docs/site/guide/**/_check*.py" = ["B018", "F841", "E731"]
 # Tutorials are literate scripts: each import is written at the step that first needs it.
-"docs/site/tutorials/code/**" = ["E402"]
+"docs/site/tutorials/code/**" = ["E402", "E731"]
+# Gallery and example scripts are shown on the site: a named lambda reads as the formula.
+"examples/**" = ["E731"]
+"web/gallery/**" = ["E731"]
 "python/conatus/adjoint/**" = ["B905"]
 "python/conatus/reference/**" = ["B905"]
 "python/conatus/studio/**" = ["B905"]

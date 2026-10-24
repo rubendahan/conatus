@@ -845,6 +845,23 @@ const generated = new Date().toISOString();
 fs.mkdirSync(OUT, { recursive: true });
 const write = (name, obj) => fs.writeFileSync(path.join(OUT, name), JSON.stringify(obj, null, 1) + "\n");
 write("tutorials.json", { generated, source: "docs/site/tutorials/index.md", statusSource, tutorials });
+
+// Release status (src/content/status.json, the one source the Install page and the documentation
+// share; docs/site/generate.py builds the same tables): the extras are pyproject.toml's optional
+// dependencies, each with the purpose stated in status.json; an extra without one stops the build.
+{
+  const status = JSON.parse(read("web/src/content/status.json"));
+  const toml = read("pyproject.toml");
+  const block = (toml.split(/^\[project\.optional-dependencies\]\s*$/m)[1] ?? "").split(/^\[/m)[0];
+  const extras = [];
+  for (const m of block.matchAll(/^([\w-]+)\s*=\s*\[(.*)\]\s*$/gm)) {
+    const pkgs = [...m[2].matchAll(/"([^"]+)"/g)].map((q) => q[1].replace(">=", " ≥ ").replace(/^conatus\[(.*)\]$/, "$1").replace(/,/g, ", "));
+    if (!status.extras[m[1]]) fail(`src/content/status.json: no purpose for the extra "${m[1]}" of pyproject.toml`);
+    extras.push({ name: m[1], adds: pkgs.join(", "), for: status.extras[m[1]] });
+  }
+  if (!extras.length) fail("pyproject.toml: no [project.optional-dependencies] found");
+  write("status.json", { generated, source: "pyproject.toml, src/content/status.json", extras, features: status.features });
+}
 write("citation.json", citation);
 if (V) {
   const { entries, counts, perf, P, galStart, SCORECARD_FILE, DOMAINS } = V;

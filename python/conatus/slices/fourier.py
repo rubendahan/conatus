@@ -1,5 +1,5 @@
 """First Fourier mode slice: reduction of a continuous translation symmetry.
-Notes: §3; Budanur, Cvitanović, Davidchack & Siminos, PRL 114,
+Notes: Budanur, Cvitanović, Davidchack & Siminos, PRL 114,
 084102 (2015), arXiv:1405.1096.
 
 Group: translations τ_ℓ f(x) = f(x + ℓ) along one periodic RealFourier direction of period L,

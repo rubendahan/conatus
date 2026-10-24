@@ -3,9 +3,11 @@ trajectories, advanced through the same IMEX Runge–Kutta stages as the traject
 
 For one RK step ("Tangent"), stage i of the tangent solves
 
-    (M + dt H_ii L) dX_i = M dX_0 + dt sum_k A_ik F'(X_k) dX_k - dt sum_k H_ik L dX_k,
+    (M + dt H_ii L) dX_i = M dX_0 + dt sum_{k<i} A_ik F'(X_k) dX_k - dt sum_{k<i} H_ik L dX_k,
 
-with the recorded stage states X_k of the trajectory. This is ``FlowMap.jvp`` (exact derivative of
+with the recorded stage states X_k of the trajectory (both sums over the earlier stages k < i: the
+diagonal implicit term is on the left; summing it on the right too would count it twice).
+This is ``FlowMap.jvp`` (exact derivative of
 the discrete map) evaluated for a whole block of directions at once: F'(X_k) V from the batched
 polynomial/general form (``BatchedRHS.jvp``, base grids broadcast over the k directions) and one
 stacked solve per stage for the B x k right-hand sides (``BatchedSystem.solve``). Agreement with

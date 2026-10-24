@@ -367,6 +367,7 @@ class DiskOps:
         return self._cache[key]
 
     def explain(self) -> str:
+        """Radius, size, radial basis, grid and operators of the disk, one line."""
         return (f"disk R={self.R:g}, N={self.N}: component of effective wavenumber k = rho^|k| sum_n "
                 "c_n Q_n^(a,|k|)(2 rho^2 - 1) (normalized Jacobi, Zernike), n < N - floor(|m|/2) in "
                 "group m; Gauss-Legendre radial grid in z; spin derivatives single-diagonal "
@@ -392,22 +393,29 @@ class AnnulusOps:
         self._cache: dict = {}
 
     def size(self, k: int) -> int:
+        """Number of radial coefficients (N for every component)."""
         return self.N
 
     def G(self, sigma: int, k: int, level: int, p: int, size: int):
+        """Spin-raising/lowering radial operator (sigma) of component ``k`` at ``level`` with
+        r-power ``p``."""
         return self.an.G(sigma, k, level, p)
 
     def L(self, k: int, level: int, p: int, size: int):
+        """Radial part of the Laplacian of component ``k`` at ``level`` with r-power ``p``."""
         return self.an.L(k, level, p)
 
     def convert(self, k: int, lev_from: int, lev_to: int, size: int) -> sp.csr_matrix:
+        """Conversion from level ``lev_from`` to ``lev_to``."""
         return us.conversion_chain(self.N, lev_from, lev_to)
 
     def multiply_r(self, k: int, level: int, j: int, size: int) -> sp.csr_matrix:
+        """Multiplication by r^j at ``level``."""
         return self.an.multiplier(level, j)
 
     def ncc(self, g_T: np.ndarray, k: int, level: int, size: int) -> sp.csr_matrix:
         # coefficients already judged and reported by the plan's NCC check
+        """Multiplication by the radial NCC of Chebyshev coefficients ``g_T`` at ``level``."""
         return us.multiplication(np.asarray(g_T), self.N, level, name="ncc", exact=True)[0]
 
     def ncc_spin(self, c_coef: np.ndarray, k_c: int, k_in: int, level: int, size: int) -> sp.csr_matrix:
@@ -416,6 +424,7 @@ class AnnulusOps:
         return us.multiplication(np.asarray(c_coef), self.N, level, name="ncc", exact=True)[0]
 
     def trace_row(self, k: int, level: int, p: int, side: str, size: int) -> np.ndarray:
+        """Row of the value at wall ``side`` of component ``k`` at ``level`` with r-power ``p``."""
         return self.an.trace_row(k, level, p, side)
 
     def point_row(self, k: int, level: int, p: int, r0: float, deriv: int, size: int) -> np.ndarray:
@@ -429,6 +438,7 @@ class AnnulusOps:
         return (us.basis_values(self.N, level, t0, deriv=1) / self.an.h - p * v / r0) / r0 ** p
 
     def integral_row(self, level: int, p: int, size: int) -> np.ndarray:
+        """Row of the radial integral at ``level`` with r-power ``p``."""
         return self.an.integral_row(level, p)
 
     def lift_col(self, k: int, level: int, n: int, size: int) -> np.ndarray:
@@ -442,6 +452,7 @@ class AnnulusOps:
         return col
 
     def grid(self, M: int) -> np.ndarray:
+        """Radial Gauss-Chebyshev grid of ``M`` points in [ri, ro]."""
         t = -np.cos(np.pi * (np.arange(M) + 0.5) / M)
         return self.an.c + self.an.h * t
 
@@ -468,5 +479,6 @@ class AnnulusOps:
         return self._cache[key]
 
     def explain(self) -> str:
+        """Radii, size, radial basis, row multiplication and grid of the annulus, one line."""
         return (f"annulus [{self.ri:g}, {self.ro:g}], N={self.N}: Chebyshev T in t (spin components), "
                 "r-multiplied operators (declared power of r per equation), Gauss-Chebyshev radial grid")

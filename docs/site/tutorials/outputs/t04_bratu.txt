@@ -1,4 +1,4 @@
-# t04_bratu: PASS (exit 0) in 8.7 s | 2026-10-21 | script sha256 9c3b5128628b4e17
+# t04_bratu: PASS (exit 0) in 8.3 s | 2026-10-24 | script sha256 997fc91ce53266ca
 Model 'Bratu': Box(x=walls(-1, 1)) (Cartesian box)
 Unknowns: u (scalar); parameters: lam = 0.3
 Equations as written:

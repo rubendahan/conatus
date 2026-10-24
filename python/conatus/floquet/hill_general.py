@@ -12,8 +12,8 @@ super-blocks), so the cost stays linear in Nh for every M. ``slogdet`` accumulat
 and never forms det M(μ) (no FP64 overflow/underflow whatever the size).
 
 Two builders:
-- ``hill_from_plan``: the blocks come from the plan of any IR problem (EVP convention
-  (L + σ M) x = 0). The base flow enters through NCC fields; L_m is obtained as
+- ``hill_from_plan``: the blocks come from the discretization plan of any IR problem (EVP
+  convention (L + σ M) x = 0). The base flow enters through NCC fields; L_m is obtained as
   L(U := U_m) - L(U := 0), after an explicit linearity check in U (refused otherwise).
   μ-dependent radiation rows, tests).
 
@@ -97,7 +97,7 @@ class HillBlocks:
         inside each super-block, no pivoting across them).
 
         Block-Thomas needs every intermediate Schur complement S_k (k < last) to be well
-        conditioned: a regular Hill matrix can have a singular S_k (finding 11: det -2j, cond 4.98, and slogdet / solve came back NaN). When the reciprocal
+        conditioned: a regular Hill matrix can have a singular S_k. When the reciprocal
         condition of an intermediate S_k is below ``THOMAS_RCOND_MIN``, the whole matrix is
         factored instead by a banded LU with partial pivoting across super-blocks (LAPACK
         gbtrf, still linear in Nh); ``factorization.method`` says which one ran. The last S_k
@@ -426,9 +426,11 @@ def secant_root(hill: HillBlocks, start: complex, *, tol: float, max_iterations:
 def exponents_dense(hill: HillBlocks, *, finite_cap: float) -> np.ndarray:
     """All Floquet exponents of a μ-linear Hill operator (M(μ) = A + μ B), small sizes only.
 
-    Generalized EVP of the assembled matrix; eigenvalues with |μ| > ``finite_cap`` (the infinite
-    ones of the tau/BC rows, whose mass rows vanish) are dropped and their number returned in
-    the attribute ``n_dropped`` of the result (never discarded silently).
+    Generalized EVP of the assembled matrix; eigenvalues with |μ| > ``finite_cap`` are dropped and
+    their number is returned in the attribute ``n_dropped`` of the result. The tau and boundary
+    rows, whose mass rows vanish, give infinite eigenvalues and are dropped this way; a finite
+    exponent larger than ``finite_cap`` is dropped too, so choose the cap above the exponents you
+    need.
     """
     if hill.mass is None:
         raise OptionError("exponents_dense needs a μ-linear operator built with its mass block",

@@ -23,3 +23,4 @@
 .film-details summary:focus-visible { outline: 2px solid #C6F03C; outline-offset: 2px; }
 .film-details p { margin: 0.35rem 0 0; overflow-wrap: anywhere; }
 @media (max-width: 900px) { .films { grid-template-columns: minmax(0, 1fr); } }
+.film-hash { overflow-wrap: anywhere; word-break: break-all; }

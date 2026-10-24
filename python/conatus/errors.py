@@ -1,4 +1,4 @@
-"""Public exception hierarchy of Conatus (v0.1).
+"""Public exception hierarchy of Conatus.
 
 Every error Conatus raises on purpose derives from :class:`ConatusError`. A message says
 
@@ -228,7 +228,7 @@ class SymmetryBreakingError(SymmetryError):
 
 class MissingFileError(ConatusError, FileNotFoundError):
     """A file to read (an output, a checkpoint) does not exist, or is a directory. Derives from
-    ``FileNotFoundError``, which these reads raised before."""
+    ``FileNotFoundError``, which these reads raised before (N3)."""
 
     doc = _doc("missingfileerror")
 
@@ -241,7 +241,7 @@ class InputTypeError(ConatusError, TypeError):
 
 
 class DtypeError(InputTypeError):
-    """Real/complex (dtype) mismatch; conversions are never implicit."""
+    """Real/complex (dtype) mismatch; a conversion is written by the user."""
 
     doc = _doc("dtypeerror")
 
@@ -330,28 +330,29 @@ class CorrectnessWarning(UserWarning):
     """The returned answer may not be the one the call meant: it is about another base state,
     another group of modes, or a choice the call did not declare. Shown under Python's default
     filters wherever it is raised (never a ``DeprecationWarning``, which Python hides outside
-    ``__main__``); the result is still returned. ``explain()`` keeps part of it only (the base
-    residual in ``lin.explain()``, the group in the result's header, the growth rule "inferred
-    from the name";
-    Where the message says "refused in v0.2", the same call raises from v0.2."""
+    ``__main__``); the result is still returned. Some warnings are also kept in ``explain()``: the
+    base residual in ``lin.explain()``, the selected group in the result's header, and the growth
+    rule inferred from the eigenvalue's name.
+
+    Where the message says "refused from 0.3", the same call raises from 0.3."""
 
 
 class BaseStateWarning(CorrectnessWarning):
     """A linearization about a base state that is not a steady solution: its steady residual
     exceeds ``BASE_RESIDUAL_TOL`` and ``base_residual='accept'`` was not given, so the modes are
-    not the normal modes of a flow that exists (accepted in v0.1, refused in v0.2)."""
+    not the normal modes of a flow that exists (accepted in 0.1 and 0.2, refused from 0.3)."""
 
 
 class GroupWarning(CorrectnessWarning):
     """An eigenvalue call without a group (no ``k=`` on a periodic model, no ``m=``/``kz=``/
     ``ell=`` on a curvilinear one) solved one group only (k = 0, or the first group): the modes
-    of every other wavenumber are absent from the result (required in v0.2)."""
+    of every other wavenumber are absent from the result (required from 0.3)."""
 
 
 class DefaultChoiceWarning(CorrectnessWarning):
-    """A choice that decides the answer was left out and the v0.1 default or guess was used: the
-    growth rule of an eigenvalue guessed from its name (``m.eigenvalue("c")`` ranks by Im c), the
-    top condition of ``this case`` (no-slip). Declare it; required from v0.2."""
+    """A choice that decides the answer was left out and the default or guess of 0.1 and 0.2 was
+    used: the growth rule of an eigenvalue guessed from its name (``m.eigenvalue("c")`` ranks by
+    Im c), the top condition of ``this case`` (no-slip). Declare it; required from 0.3."""
 
 
 class ExperimentalWarning(UserWarning):
@@ -461,7 +462,7 @@ def _warn_user(message: str, category: type[Warning]) -> None:
     user's line), whatever the call depth (the renaming wrappers of ``conatus._deprecation`` add
     frames; a fixed ``stacklevel`` pointed into the library, where the default filter hides a
     DeprecationWarning), so that it is shown once per call site of the user's script. The one
-    helper for this (``timestep.integrator._user_level`` duplicated it)."""
+    helper for this (earlier versions: ``timestep.integrator._user_level`` duplicated it)."""
     import os
     import sys
     import warnings

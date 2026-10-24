@@ -20,7 +20,8 @@ Border rows. ``BorderedBandedBatch`` replaces each border row i of the band part
 (s = max |row|, always positive) and moves the row into V^T. The band part of B is then
 D_r A_band D_c only if d_r[i] d_c[i] = +1 on every border row (else the replaced diagonal has the
 wrong sign, the band LU of B is a different factorization, and the shared solve, though exact
-mathematically, is no longer the bits of B's own factors). Such buckets are not shared: the claim "bit-identical" holds for every shared bucket.
+mathematically, is no longer the bits of B's own factors). Such buckets are not shared:
+the claim "bit-identical" holds for every shared bucket.
 """
 from __future__ import annotations
 
@@ -45,6 +46,7 @@ class SharedFactor:
 
     @property
     def uniform(self) -> bool:
+        """True when the scalings dr, dc are the same for every mode of the batch."""
         return self.dr.ndim == 1
 
 

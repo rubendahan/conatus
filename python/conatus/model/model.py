@@ -161,7 +161,7 @@ def _check_drift_finer(N: Any, drift: Any) -> None:
 def _check_value(name: str, value: Any, declared: Any = None) -> float | complex:
     """A parameter value: a finite real or complex number (not a bool), stored as float or
     complex. ``declared``: the value the parameter was declared with; a parameter declared real
-    takes real values only (``m.kappa = 1j`` and ``m.kappa = nan``
+    takes real values only (earlier versions: ``m.kappa = 1j`` and ``m.kappa = nan``
     were accepted, the complex one built a simulation)."""
     if not isinstance(value, numbers.Number) or isinstance(value, bool):
         raise InputTypeError(f"parameter {name}={value!r} is not a number",
@@ -276,8 +276,7 @@ def _k0_warning(want: Mapping[str, float]) -> None:
     ks = ", ".join(f"k_{c} = {v:g}" for c, v in want.items())
     _warn_user(f"eigenvalues() without k=: only the group {ks} is solved (v0.1 behaviour); each "
                "wavenumber of a periodic direction is its own set of modes, so give it: "
-               "eigenvalues(N, k=<wavenumber>) (k=0 for this group). Required in v0.2 "
-               "", GroupWarning)
+               "eigenvalues(N, k=<wavenumber>) (k=0 for this group). Required from 0.3", GroupWarning)
 
 
 def _wavenumber_or_count(fourier: list[str], k: Any, n_modes: Any, method: str) -> tuple[Any, Any]:
@@ -360,7 +359,7 @@ def _select_group(plan: Any, fourier: list[str], k: Any, which: Mapping[str, Any
             from ..errors import GroupWarning, _warn_user
             _warn_user(f"eigenvalues() without a group: only the first group "
                        f"[{plan.matrices(g).label}] of {len(groups)} is solved (v0.1 behaviour); "
-                       "choose it with m= (and kz= or ell=). Required in v0.2",
+                       "choose it with m= (and kz= or ell=). Required from 0.3",
                        GroupWarning)
         return g
     return groups[0]
@@ -371,8 +370,8 @@ class ParameterValues(dict):
 
     ``m.params["Ra"] = 1e5`` (or ``m.Ra = 1e5``) changes a declared parameter, checked as in
     ``Model(...)`` (a number); a name that was not declared is refused with the declared names
-    (``m.params`` used to be a plain dict, so a typo or a string value went
-    through and failed later, or never). Parameters cannot be removed (the equations use them).
+    (a typo or a string value would
+    otherwise fail later, or never). Parameters cannot be removed (the equations use them).
     The next compilation (``simulate``, ``eigenvalues``, ``lin.eigenvalues``, ...) uses the
     new value; an already-built ``Simulation`` keeps the values it was compiled with."""
 
@@ -394,7 +393,7 @@ class ParameterValues(dict):
 
     def _notify(self, key: str, old: Any, new: Any) -> None:
         """A note when simulations built from the model exist: they keep the value they were
-        compiled with (the change was silently ignored by them)."""
+        compiled with (earlier versions: the change was silently ignored by them)."""
         owner = getattr(self, "_owner", None)
         model = owner() if owner is not None else None
         sims = [r() for r in getattr(model, "_sims", ())] if model is not None else []
@@ -451,7 +450,7 @@ class ParameterValues(dict):
     def __reduce__(self) -> tuple:
         # copy/deepcopy/pickle rebuild a dict subclass through __setitem__ on an empty
         # instance, which refuses every (undeclared) name: rebuild by declaration instead
-        # (copy.deepcopy(m) and pickle of a Model failed)
+        # (earlier versions: copy.deepcopy(m) and pickle of a Model failed)
         return (_parameter_values, (dict(self),))
 
 
@@ -679,9 +678,9 @@ class Model:
     def function(self, name: str, f: Any, *, derivative: Any = None, parity: str = "none") -> Any:
         """A pointwise function of a scalar field usable in the equations by its name
         (``m.function("g", np.tanh, derivative=lambda u: 1 - np.tanh(u)**2)``, then
-        ``dt(u) - lap(u) = -g(u)``): the role of Dedalus' ``GeneralFunction`` for pointwise
-        functions (``conatus.ir.pointwise``: evaluated on the dealiased grid, not alias-free,
-        declared; without ``derivative`` linearization and Newton are refused). ``f`` takes and
+        ``dt(u) - lap(u) = -g(u)``). It is evaluated pointwise on the dealiased grid, so it is not
+        alias-free (declared in ``explain()``; ``conatus.ir.pointwise``). Give ``derivative`` to
+        linearize the model or use Newton methods; without it they are refused. ``f`` takes and
         returns arrays (CuPy arrays on the GPU backend)."""
         from ..ir import pointwise
         self._check_name(name, "function")
@@ -729,7 +728,7 @@ class Model:
         imag; ``conatus.solvers.parametric.GROWTH_BY_NAME``; any other name: ``order()`` ranks
         by the real part and ``critical`` refuses) with a ``DefaultChoiceWarning`` naming the rule
         guessed: a ``c`` of a temporal problem (``c*T = ...``) was ranked by Im c. Required from
-        v0.2."""
+        0.3."""
         if growth is not None and not callable(growth) and growth not in ("real", "imag"):
             raise OptionError(f"eigenvalue({name!r}, growth={growth!r})",
                               fix="growth='real' (exp(s t)) or 'imag' (exp(i alpha (x - c t))), "
@@ -746,7 +745,7 @@ class Model:
                 f"modes ranked by Re {name} (v0.1 default; critical() refuses)")
             _warn_user(f"m.eigenvalue({name!r}) without growth=: {rule}. Declare it: "
                        f"m.eigenvalue({name!r}, growth='real') for exp({name} t), "
-                       f"growth='imag' for a phase speed; required from v0.2",
+                       f"growth='imag' for a phase speed; required from 0.3",
                        DefaultChoiceWarning)
         self.eig = name
         self.eig_growth = growth
@@ -941,7 +940,7 @@ class Model:
                                   "LBVP", doc=_DOC)
         if getattr(self.geometry, "terrain", None) is not None:
             # mapped domain: coupled implicit operator, its own stepper (CPU)
-            from ..discretize.terrain_plan import TerrainSimulation
+            from .terrain_simulation import TerrainSimulation
             return TerrainSimulation(comp, scheme=scheme, dt=dt, backend=backend, **solver_kw)
         # each simulation registers itself with its model (_register: id, parameter notes)
         return Simulation(comp, scheme=scheme, dt=dt, backend=backend, **solver_kw)
@@ -993,7 +992,7 @@ class Model:
         ``base_residual``: ``"check"`` (default) evaluates the steady equations and boundary
         conditions at a steady base when the problem is compiled and prints the residual in
         ``explain()``; above ``conatus.tolerances.BASE_RESIDUAL_TOL`` the base is not a steady
-        solution (BaseStateWarning in v0.1, refused in v0.2). ``"accept"``
+        solution (BaseStateWarning in 0.1 and 0.2, refused from 0.3). ``"accept"``
         declares a base that knowingly is not one (a frozen or forced profile)."""
         from .run import Linearization
         return Linearization(self, about, eigenvalue, period, base_residual)
@@ -1006,10 +1005,11 @@ class Model:
 
         ``k``: the wavenumber of the periodic direction(s) (one number, a tuple in coordinate
         order or a dict by name), as in ``lin.eigenvalues(N, k=)``: each wavenumber is its own
-        group of modes. Required on a model with a periodic direction (the k = 0 group alone was solved without a word); left out in v0.1, the
+        group of modes. Required on a model with a periodic direction (otherwise
+        the k = 0 group alone would be solved without a word); left out in v0.1, the
         k = 0 group is solved with a GroupWarning that says so. ``n_modes``: the number of
         modes of ``method="shift-invert"`` (the former meaning of an integer ``k`` on a model
-        without a periodic direction, accepted with a DeprecationWarning until v0.2).
+        without a periodic direction, accepted with a DeprecationWarning until 0.3).
         ``m=``, ``kz=``, ``ell=``: the group of a curvilinear geometry (disk, pipe, sphere)."""
         from ..solvers.plan_evp import eigenvalues
         if not self.eig:
@@ -1022,7 +1022,7 @@ class Model:
         # for this call, as in v0.1
         params = self.params
         which = {n_: kw.pop(n_) for n_ in ("m", "kz", "ell") if n_ in kw and n_ not in params}
-        group = None if "group" in params else kw.pop("group", None)  # an expert group (v0.1)
+        group = None if "group" in params else kw.pop("group", None)  # an expert group
         if k is not None and "k" in params:
             kw["k"], k = k, None
         if n_modes is not None and "n_modes" in params:

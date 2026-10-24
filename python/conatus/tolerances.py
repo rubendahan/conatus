@@ -1,6 +1,6 @@
-"""Tolerances of Conatus: which ones you must give, which ones have a declared default (v0.1).
+"""Tolerances of Conatus: which ones you must give, which ones have a declared default.
 
-Rule (from the proposed of the):
+Rule:
 
 * a tolerance that **decides when an iterative solver stops** (and so how many digits the
   returned value has: Arnoldi/Lanczos, Brent/Newton on a critical parameter), that **filters the
@@ -16,7 +16,7 @@ Rule (from the proposed of the):
   signature gains a numeric tolerance default that is not declared here, or if a declared value
   changes without this table.
 
-Refinement (after the): **algorithm controls default and
+Refinement: **algorithm controls default and
 are declared; accuracy tolerances are required.** A setting that only changes *how fast* or *by
 which path* an iteration reaches a target whose residual is tested and returned (trust radii,
 step growth factors, inexact-Newton/GMRES tolerances and Krylov budgets, corrector budgets, the
@@ -156,7 +156,7 @@ HILL_TAIL_TOL = 1e-6
 #: the steady equations and boundary conditions at the base state (per equation, after a least
 #: squares fit of the unknowns without a base value: pressure, taus) above which the base is not a
 #: steady solution. Above it, a base not declared as such (``linearize(..., base_residual=
-#: "accept")``) gets a BaseStateWarning in v0.1 (refused in v0.2) and a line in explain().
+#: "accept")``) gets a BaseStateWarning in 0.1 and 0.2 (refused from 0.3) and a line in explain().
 #: Measured: the RB conduction state and the forced Poiseuille flow at rounding (0);
 #: RB about T = +z: 2.0 (in T(z=-0.5) = 0.5); unforced Poiseuille: 1.0 (momentum equation).
 BASE_RESIDUAL_TOL = 1e-6
@@ -175,7 +175,7 @@ _NCC_USERS = tuple(f"conatus.{s}(ncc_tail_tol)" for s in (
     "discretize.compiler:Compiler.__init__", "discretize.plan:Plan.__init__",
     "discretize.plan:discretize", "discretize.polar_plan:PolarPlan.__init__",
     "discretize.sphere_plan:SpherePlan.__init__", "discretize.terrain_plan:TerrainPlan.__init__",
-    "model.run:Linearization.periodic_operator",
+    "model.linearization:Linearization.periodic_operator",
     "solvers.nlbvp:NewtonSolver.__init__", "solvers.parametric:ParametricEVP.__init__",
     "growth.periodic:periodic_operator", "growth.periodic:optimal_gain",
     "growth.this case:this case_operator")) + (
@@ -223,8 +223,8 @@ DECLARED: dict[str, Declared] = dict([
        "outermost harmonics is reported truncated in Nh (ResolutionWarning, explain())"),
     _d("conatus.tolerances.BASE_RESIDUAL_TOL", BASE_RESIDUAL_TOL, "detection",
        "a linearization base state whose steady residual (equations and boundary conditions, "
-       "per equation) exceeds it is not a steady solution: BaseStateWarning in v0.1 (refused "
-       "in v0.2) unless declared with base_residual='accept'; the residual is in explain()"),
+       "per equation) exceeds it is not a steady solution: BaseStateWarning in 0.1 and 0.2 (refused "
+       "from 0.3) unless declared with base_residual='accept'; the residual is in explain()"),
     _d("conatus.tolerances.DRIFT_TOL_MAX", DRIFT_TOL_MAX, "refusal",
        "drift_tol above it no longer filters (most modes find a neighbour): refused"),
     # projections of the curvilinear step (m = 0 real part, shift-reflect subspace)
@@ -267,8 +267,7 @@ DECLARED: dict[str, Declared] = dict([
        "factorization; the LU fills in far beyond it)"),
     _d("conatus.solvers.evp.INF_TOL", 1e3 * 2.220446049250313e-16, "detection",
        "infinite eigenvalues: |beta| <= INF_TOL |alpha| (scaled) with M singular, or beta = 0; "
-       "counted and logged. With M of full numerical rank every pair is finite (external review "
-       "of 0.1.1, F7)"),
+       "counted and logged. With M of full numerical rank every pair is finite"),
     _d("conatus.solvers.evp.DRIFT_FLOOR", 1e-3, "detection",
        "floor of the drift ratio as a fraction of the median nonzero |sigma| of the finer spectrum: the "
        "drift test is relative, and a mode below this fraction of the spectrum's scale is near "
@@ -288,8 +287,8 @@ DECLARED: dict[str, Declared] = dict([
     _d("conatus.solvers.parametric.ENTRY_DROP_TOL", 1e-13, "detection",
        "a Laurent coefficient entry at most this x the largest modulus of that matrix entry over "
        "the sample plans is rounding of the DFT and discarded (counted); an evaluation where the "
-       "discarded entries could exceed RECON_TOL of the pencil is refused (external review of "
-       "0.1.1, F2: was a global amplitude threshold that deleted a real parameter term)"),
+       "discarded entries could exceed RECON_TOL of the pencil is refused (a global amplitude "
+       "threshold would delete a real parameter term)"),
     _d("conatus.solvers.parametric.TRACK_TOL", 1e-13, "stop at the floor", _FLOOR,
        ("conatus.solvers.parametric:ParametricEVP.track(tol)",)),
     _d("conatus.solvers.parametric.TRACK_MAX_ITERATIONS", 30, "iteration cap", _CAP,
@@ -320,7 +319,7 @@ DECLARED: dict[str, Declared] = dict([
     _d("conatus.growth.periodic:periodic_operator_from_plan(rank_tol)", 1e-10, "rank", _RANK),
     _d("conatus.growth.periodic:periodic_operator(rank_tol)", 1e-10, "rank", _RANK),
     _d("conatus.growth.periodic:optimal_gain(rank_tol)", 1e-10, "rank", _RANK),
-    _d("conatus.model.run:Linearization.periodic_operator(rank_tol)", 1e-10, "rank", _RANK),
+    _d("conatus.model.linearization:Linearization.periodic_operator(rank_tol)", 1e-10, "rank", _RANK),
     # adjoint
     _d("conatus.adjoint.nlop:AdmissibleProjector.__init__(rank_tol)", 1e-10, "rank", _RANK),
     _d("conatus.adjoint.sphere_energy:SphereAdmissibleProjector.__init__(rank_tol)", 1e-10, "rank",
@@ -348,6 +347,13 @@ DECLARED: dict[str, Declared] = dict([
        "an orbit whose shape change over its period (max_j min_s ‖τ_s u_j − u_0‖/‖u_0‖) is below "
        "STEADY_TOL x the accuracy of the solve is a steady state reached by the orbit search: "
        "retracted, value in the notes (relative to the orbit amplitude)"),
+    _d("conatus.ecs.solutions.FULL_RESIDUAL_FACTOR", 10.0, "refusal",
+       "an invariant solution is returned only if its full residual (frozen mean and symmetry "
+       "rows included) is <= FULL_RESIDUAL_FACTOR x the Newton tol x scale; otherwise "
+       "NewtonNotConverged"),
+    _d("conatus.ecs.solutions.PERIOD_FD_REL", 1e-5, "algorithm control",
+       "relative central-difference step of the period column dPhi_T/dT of the orbit Newton "
+       "(the dT_rel of the 3-D shooting solver)"),
     _d("conatus.ecs.solutions.STEADY_SAMPLES", 64, "detection",
        "states of the period (evenly spaced) at which the steady-state check measures the shape "
        "change of an orbit"),
@@ -409,8 +415,7 @@ DECLARED: dict[str, Declared] = dict([
        "kernel tolerance of the first Lyapunov coefficient along a Hopf curve (diagnostic column)"),
     _d("conatus.bifurcation.codim2.HOPF_PAIR_TOL", 1e-6, "refusal",
        "a point of a Hopf curve is kept only when the eigenvalues of J (QZ, independent of the "
-       "augmented system) hold ±iω, ω = √κ, within it x max(1, |λ|max); κ <= 0 ends the curve "
-       "(external review of 0.1.1, F8)"),
+       "augmented system) hold ±iω, ω = √κ, within it x max(1, |λ|max); κ <= 0 ends the curve"),
     _d("conatus.bifurcation.codim2.BT_KAPPA_TOL", 1e-6, "detection",
        "a zero-Hopf test zero with |ω²| below it x max(1, |λ|max²) is reported as the "
        "Bogdanov–Takens point, not a fold–Hopf point (the event keeps κ = ω²)"),
@@ -593,11 +598,11 @@ ALGORITHM_DEFAULTS: dict[str, Declared] = dict([
     _d("conatus.contour.beyn.SAME_OPERATOR_TOL", 1e-8, "refusal",
        "beyn(counted=...): det T at the boundary points the count recorded must agree with the "
        "counted operator's (unit phase absolute, log modulus relative) to it, else the count is "
-       "of another operator and refused (external review of 0.1.1, F9)"),
+       "of another operator and refused"),
     _d("conatus.contour.beyn.SEPARATION_ROUNDING", 1e3, "detection",
        "Beyn's close roots are separated on squares of their own; a square below this x eps x "
        "max(box radius, largest |root|) is not tried (det T is rounding noise there), the "
-       "group stays a cluster (external review of 0.1.1, F3)"),
+       "group stays a cluster"),
     _d("conatus.contour.beyn.QUADRATURE_POINTS", 32, "algorithm control",
        "Gauss-Legendre nodes per edge for Beyn's moments, doubled at each new round"),
     _d("conatus.contour.beyn.BEYN_MARGIN", 2, "algorithm control",
@@ -620,7 +625,7 @@ from ._tolerances_internal import INTERNAL  # noqa: E402,F401
 
 
 def ncc_floor_text(plan: Any, residual: float | None = None) -> str | None:
-    """The accuracy floor that the coefficients of ``plan`` set on a result, or None when every coefficient is exact or at rounding level.
+    """The accuracy floor that the coefficients of ``plan`` set on a result (P4.4), or None when every coefficient is exact or at rounding level.
 
     Why NCC_TAIL_TOL = 1e-8 coexists with residuals of 1e-12: a residual measures how well the
     *discrete* problem is solved, with the coefficients as represented (the truncated Chebyshev
@@ -650,7 +655,7 @@ def explain() -> str:
              "cap iterations, or stop at the attainable floor with the residual returned:"]
     for d in DECLARED.values():
         lines.append(f"  {d.where} = {_fmt(d.value)}  [{d.role}] {d.why}")
-    lines.append("Algorithm controls (algorithm controls default and are declared; accuracy "
+    lines.append("Algorithm controls (they default and are declared; accuracy "
                  "tolerances are required):")
     for d in ALGORITHM_DEFAULTS.values():
         lines.append(f"  {d.where} = {_fmt(d.value)}  [{d.role}] {d.why}")

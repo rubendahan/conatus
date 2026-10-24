@@ -15,7 +15,7 @@ from conatus.errors import ParameterError
 from conatus.expert import solve_dense
 
 
-@pytest.mark.parametrize("big", [1e10, 1e12, 1e13, 1e14, 1e16])
+@pytest.mark.parametrize("big", [1e10, 1e12, 1e13, 1e14])
 def test_f7_nonsingular_mass_keeps_every_finite_eigenvalue(big):
     """F7: L = -diag(1, big), M = I: both eigenvalues finite (M nonsingular); 1e13 was dropped."""
     L, M = -np.diag([1.0, big]), np.eye(2)
@@ -24,6 +24,22 @@ def test_f7_nonsingular_mass_keeps_every_finite_eigenvalue(big):
     assert r.n_infinite == 0 and r.values.size == 2, (r.values, r.log)
     assert np.allclose(np.sort(r.values.real), exact, rtol=1e-12, atol=0)
     assert "nonsingular" in r.log[-1]
+
+
+def test_f7_eigenvalue_beyond_one_over_eps_is_removed_and_flagged():
+    """Audit of 0.1.2, F03: L = -diag(1, 1e16), M = I is, row by row, the pencil
+    L = -I, M = diag(1, 1e-16) (second equation divided by 1e16), whose mass row is below n eps of
+    its L row. The classification is the same for both (invariant to equation scaling): the
+    eigenvalue 1e16 (scipy.linalg.eigvals) is removed as numerically infinite and reported in
+    ``infinite_ambiguous`` with its modulus, and named in the log; it is not dropped silently."""
+    exact = np.sort(eigvals(np.diag([1.0, 1e16]), np.eye(2)).real)
+    for L, M in ((-np.diag([1.0, 1e16]), np.eye(2)), (-np.eye(2), np.diag([1.0, 1e-16]))):
+        r = solve_dense(L, M)
+        assert r.values.size == 1 and r.n_infinite == 1, (r.values, r.log)
+        assert abs(r.values[0] - exact[0]) < 1e-12
+        assert r.infinite_ambiguous.size == 1
+        assert r.infinite_ambiguous[0] == pytest.approx(exact[1], rel=1e-10)
+        assert "ambiguous" in r.log[-1] and "1.000e+16" in r.log[-1], r.log[-1]
 
 
 def test_f7_singular_mass_still_removes_its_infinite_eigenvalue():
@@ -35,6 +51,7 @@ def test_f7_singular_mass_still_removes_its_infinite_eigenvalue():
     assert r.n_infinite == 1 and r.values.size == 1
     assert abs(r.values[0] - 2.0) < 1e-12
     assert "rank 1 of 2" in r.log[-1]
+    assert r.infinite_ambiguous.size == 0          # an exact zero row: proven infinite
 
 
 def test_f7_mixed_singular_and_large_finite_is_named_ambiguous():

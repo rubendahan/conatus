@@ -42,8 +42,8 @@ __all__ = ["lyapunov_spectrum", "LyapunovResult", "Domination", "kaplan_yorke",
 
 def kaplan_yorke(exponents) -> float:
     """D_KY = j + (λ_1 + … + λ_j) / |λ_{j+1}|, j the largest index with a non-negative partial
-    sum (exponents sorted in decreasing order). Refused (ConvergenceError) if every partial sum of
-    the given exponents is non-negative: more exponents are needed, never extrapolated."""
+    sum (exponents sorted in decreasing order). If every partial sum of the given exponents is
+    non-negative, a ``ConvergenceError`` asks for more exponents."""
     lam = np.asarray(exponents, float)
     if lam.ndim != 1 or lam.size == 0 or not np.all(np.isfinite(lam)):
         # audit inputs: a NaN exponent was sorted last and ended in a bare IndexError,
@@ -68,7 +68,9 @@ def kaplan_yorke(exponents) -> float:
 def clv_subspace_angles(clv, j: int, weight=None) -> np.ndarray:
     """Smallest principal angle between span(γ_1..γ_j) and span(γ_{j+1}..γ_k) for every sample.
     ``clv``: (..., k, n) covariant vectors; ``weight``: diagonal inner-product weight (n,) or None
-    (Euclidean). A vanishing angle is a tangency (no domination between the two groups)."""
+    (Euclidean). Complex vectors use the Hermitian product (the angle does not change when a
+    vector is multiplied by a phase). A vanishing angle is a tangency (no domination between the
+    two groups)."""
     V = np.asarray(clv)
     if weight is not None:
         V = V * np.sqrt(np.asarray(weight))
@@ -79,7 +81,9 @@ def clv_subspace_angles(clv, j: int, weight=None) -> np.ndarray:
     Bm = np.swapaxes(V[..., j:, :], -1, -2)
     Qa, _ = np.linalg.qr(A)
     Qb, _ = np.linalg.qr(Bm)
-    s = np.linalg.svd(np.swapaxes(Qa, -1, -2) @ Qb, compute_uv=False)
+    # Hermitian transpose: for complex vectors the overlap is Q_aᴴ Q_b (audit of 0.1.2, F07: the
+    # plain transpose gave 1.249 rad for (1, i)/√2 and (1, 2i)/√5, whose angle is arccos(3/√10))
+    s = np.linalg.svd(np.swapaxes(Qa, -1, -2).conj() @ Qb, compute_uv=False)
     return np.arccos(np.clip(s[..., 0], -1.0, 1.0))
 
 
@@ -167,7 +171,8 @@ class LyapunovResult:
         if self.inner_weight is not None:
             sq = np.sqrt(self.inner_weight)
             a, b = a * sq, b * sq
-        c = np.abs((a * b).sum(-1)) / (np.linalg.norm(a, axis=-1) * np.linalg.norm(b, axis=-1))
+        c = (np.abs((a.conj() * b).sum(-1))
+             / (np.linalg.norm(a, axis=-1) * np.linalg.norm(b, axis=-1)))
         return np.arctan2(_sine(np, a, b, axis=-1), c)       # accurate near 0 and pi/2
 
     def clv_grid(self, name: str, i: int, sample: int = 0, trajectory: int = 0) -> np.ndarray:
@@ -606,7 +611,7 @@ def _split_sines(xp, C, C2) -> np.ndarray:
     out = np.zeros(k - 1)
     for j in range(1, k):
         A, Bm = xp.linalg.qr(C[:, :, j:])[0], xp.linalg.qr(C2[:, :, j:])[0]
-        D = A - Bm @ (xp.swapaxes(Bm, 1, 2) @ A)                 # part of A outside span(Bm)
+        D = A - Bm @ (xp.swapaxes(Bm, 1, 2).conj() @ A)          # part of A outside span(Bm)
         sv = xp.linalg.norm(D, axis=(1, 2), ord=2)
         out[j - 1] = float(sv.max())
     return out
@@ -617,7 +622,7 @@ def _sine(xp, a, b, axis: int):
     (accurate for small angles, unlike sqrt(1 - cos^2), which bottoms out at sqrt(eps))."""
     bh = b / xp.linalg.norm(b, axis=axis, keepdims=True)
     ah = a / xp.linalg.norm(a, axis=axis, keepdims=True)
-    return xp.linalg.norm(ah - (ah * bh).sum(axis=axis, keepdims=True) * bh, axis=axis)
+    return xp.linalg.norm(ah - (bh.conj() * ah).sum(axis=axis, keepdims=True) * bh, axis=axis)
 
 
 def _ginelli(xp, res: LyapunovResult, items, nstore: int, nback: int, every: int, rngs,

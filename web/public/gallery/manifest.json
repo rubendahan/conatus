@@ -11,14 +11,17 @@
     "colormap": "signed",
     "script": "web/gallery/kelvin_helmholtz.py",
     "example_script": "examples/shear/kelvin_helmholtz.py",
-    "validated": {
-      "value": "ω_i max = 0.189702 at α = 0.44492 (inviscid tanh layer, L = 20, N = 384)",
-      "reference": "Michalke 1964, JFM 19, 543–556, Table 1 (0.1897 at α = 0.4446)"
-    },
     "geometry": "cartesian",
     "domain": "shear",
     "field": "Vorticity ω = −∇²ψ (the component normal to the plane) of two rolled-up shear layers at t = 7.",
-    "colour": "Colour: ω, red for negative, black at zero, glass green for positive; the scale ends at the 99.7th percentile of |ω| (larger values saturate)."
+    "colour": "Colour: ω, red for negative, black at zero, glass green for positive; the scale ends at the 99.7th percentile of |ω| (larger values saturate).",
+    "extent": "Periodic box 4 × 2 (x × z, lengths in units of the layer velocity scale), the full box.",
+    "measured": "Growth rate of the seeded mode 2.05 (times δ: 0.164), fitted for t between 0.7 and 2.9.",
+    "scale": {
+      "kind": "signed",
+      "lo": -10.68098426401966,
+      "hi": 10.68098426401966
+    }
   },
   {
     "slug": "kelvin-helmholtz-dye",
@@ -32,14 +35,17 @@
     "colormap": "smoke",
     "script": "web/gallery/kelvin_helmholtz.py",
     "example_script": "examples/shear/kelvin_helmholtz.py",
-    "validated": {
-      "value": "ω_i max = 0.189702 at α = 0.44492 (inviscid tanh layer, L = 20, N = 384)",
-      "reference": "Michalke 1964, JFM 19, 543–556, Table 1 (0.1897 at α = 0.4446)"
-    },
     "geometry": "cartesian",
     "domain": "shear",
     "field": "Concentration c of a passive dye that starts as the central band, at t = 7; the yellow-green line is c = 1/2.",
-    "colour": "Colour: c, from 0 (black) to 1 (light grey)."
+    "colour": "Colour: c, from 0 (black) to 1 (light grey).",
+    "extent": "Periodic box 4 × 2 (x × z), the full box.",
+    "measured": "Growth rate of the seeded mode 2.05 (times δ: 0.164), fitted for t between 0.7 and 2.9.",
+    "scale": {
+      "kind": "smoke",
+      "lo": 0.0,
+      "hi": 1.0
+    }
   },
   {
     "slug": "rayleigh-benard",
@@ -53,14 +59,17 @@
     "colormap": "smoke",
     "script": "web/gallery/rayleigh_benard.py",
     "example_script": "docs/site/tutorials/code/t02b_rayleigh_benard_gpu.py",
-    "validated": {
-      "value": "Nu = 4.99432 at Ra = 1e5 (2D, Lx = 2, RK443), agreement with Dedalus to 1e-8",
-      "reference": "Dedalus (Burns et al. 2020, Phys. Rev. Research 2, 023068), same equations"
-    },
     "geometry": "cartesian",
     "domain": "convection",
     "field": "Temperature T (the full temperature, conduction profile included) of 2D convection at Ra = 10⁶.",
-    "colour": "Colour: T, from −A (black) to +A (light grey), with A the 99th percentile of |T| in the interior |z| < 0.4; the boundary layers, which reach ±1/2, saturate."
+    "colour": "Colour: T, from −A (black) to +A (light grey), with A the 99th percentile of |T| in the interior |z| < 0.4; the boundary layers, which reach ±1/2, saturate.",
+    "extent": "Box 4 × 1 (x × z), periodic in x, walls at z = ±1/2; lengths in units of the layer depth.",
+    "measured": "Nusselt number 8.32 (volume), 8.19 (bottom wall), 8.26 (top wall), averaged for t between 0.041 and 0.06: a short window of one run, not a converged mean.",
+    "scale": {
+      "kind": "smoke",
+      "lo": -0.32308108675846736,
+      "hi": 0.32308108675846736
+    }
   },
   {
     "slug": "kuramoto-sivashinsky-l22",
@@ -74,14 +83,17 @@
     "colormap": "signed",
     "script": "web/gallery/kuramoto_sivashinsky.py",
     "example_script": "docs/site/tutorials/code/t05_ks_orbits.py",
-    "validated": {
-      "value": "travelling wave TW2 seeded from a live L = 22 run: c = −0.349541, E = 0.604820, Newton residual 4.9e-16",
-      "reference": "Cvitanović, Davidchack & Siminos 2010, SIAM J. Appl. Dyn. Syst. 9, 1–33 (velocity 0.34954, energy 0.6048)"
-    },
     "geometry": "cartesian",
     "domain": "dynamics",
     "field": "The solution u(x, t) of the Kuramoto–Sivashinsky equation, L = 22: x upwards, t to the right.",
-    "colour": "Colour: u, red for negative, black at zero, glass green for positive; the scale ends at the 99.7th percentile of |u|."
+    "colour": "Colour: u, red for negative, black at zero, glass green for positive; the scale ends at the 99.7th percentile of |u|.",
+    "extent": "x from 0 to 22 (periodic) upwards; t from 300 to 550 to the right.",
+    "measured": "Energy over the window: mean 0.714, between 0.4213 and 1.445; spatial mean of u at most 2.7e−15.",
+    "scale": {
+      "kind": "signed",
+      "lo": -2.70854045798244,
+      "hi": 2.70854045798244
+    }
   },
   {
     "slug": "taylor-couette-mode",
@@ -95,14 +107,17 @@
     "colormap": "signed",
     "script": "web/gallery/taylor_couette.py",
     "example_script": "docs/site/tutorials/code/t08_polar.py",
-    "validated": {
-      "value": "η = 0.5, axisymmetric: Re_c = 68.1863 at k_c = 3.1625",
-      "reference": "Recktenwald, Lücke & Müller 1993, Phys. Rev. E 48, 4444, Table I (68.19, 3.16)"
-    },
     "geometry": "cylinder",
     "domain": "rotating",
     "field": "Azimuthal velocity u_φ of the critical axisymmetric mode in the meridional (z, r) plane, with streamlines of the meridional flow (u_r, u_z).",
-    "colour": "Colour: u_φ normalised to a largest magnitude of 1, red for negative, black at zero, glass green for positive."
+    "colour": "Colour: u_φ normalised to a largest magnitude of 1, red for negative, black at zero, glass green for positive.",
+    "extent": "Gap r_i ≤ r ≤ r_o (outer wall at the top) over two axial wavelengths 2π/k, k = 3.1625.",
+    "measured": "Re_c = 68.1863 at the fixed k = 3.1625 (68.1863 at 1.5N), eigenvector residual 2.8e−16. The wavenumber is set, not optimised.",
+    "scale": {
+      "kind": "signed",
+      "lo": -1.0,
+      "hi": 1.0
+    }
   },
   {
     "slug": "swift-hohenberg",
@@ -116,14 +131,17 @@
     "colormap": "smoke",
     "script": "web/gallery/swift_hohenberg.py",
     "example_script": "examples/patterns/swift_hohenberg.py",
-    "validated": {
-      "value": "roll amplitude A(r = 0.1) = 0.3652433015 (N-converged, Newton residual 8e-14); (A² − 4r/3)/r² → 1/144 along the continued branch; 2D IVP on the branch to 1e-9",
-      "reference": "Swift & Hohenberg 1977, Phys. Rev. A 15, 319; Cross & Hohenberg 1993, Rev. Mod. Phys. 65, 851"
-    },
     "geometry": "cartesian",
     "domain": "patterns",
     "field": "The field u(x, y) of the Swift–Hohenberg equation at r = 0.1, t = 600.",
-    "colour": "Colour: u, from −max |u| (black, troughs) to +max |u| (light grey, crests)."
+    "colour": "Colour: u, from −max |u| (black, troughs) to +max |u| (light grey, crests).",
+    "extent": "Periodic box 150.8 × 75.4 (24 × 12 roll wavelengths 2π).",
+    "measured": "r.m.s. of u 0.2466 (straight rolls: 0.2583); largest |∂u/∂t| 0.0043 at the last step.",
+    "scale": {
+      "kind": "smoke",
+      "lo": -0.49941019380571816,
+      "hi": 0.49941019380571816
+    }
   },
   {
     "slug": "rossby-haurwitz",
@@ -137,14 +155,17 @@
     "colormap": "signed",
     "script": "web/gallery/rossby_haurwitz.py",
     "example_script": "benchmarks/spherical/rossby_haurwitz.py",
-    "validated": {
-      "value": "14 days: mass exact, energy conserved to 1.4e-7; pattern 7.7% slower than the non-divergent Haurwitz speed, converged (T42/T63 within 0.13%)",
-      "reference": "Williamson et al. 1992, J. Comput. Phys. 102, 211–224, test case 6; Haurwitz 1940"
-    },
     "geometry": "sphere",
     "domain": "rotating",
     "field": "Relative vorticity ζ (the radial component of the curl of the velocity) of the shallow-water flow after 14 days.",
-    "colour": "Colour: ζ, red for negative, black at zero, glass green for positive, scaled to the largest |ζ|."
+    "colour": "Colour: ζ, red for negative, black at zero, glass green for positive, scaled to the largest |ζ|.",
+    "extent": "Unit sphere in orthographic projection, seen from 35° N.",
+    "measured": "Initial vorticity matches the closed form to 1.4e−13; largest |ζ| after 14 days 1.091.",
+    "scale": {
+      "kind": "signed",
+      "lo": -1.0910730334865504,
+      "hi": 1.0910730334865504
+    }
   },
   {
     "slug": "orr-sommerfeld-mode",
@@ -158,13 +179,16 @@
     "colormap": "signed",
     "script": "web/gallery/orr_sommerfeld.py",
     "example_script": "docs/site/tutorials/code/t01_orr_sommerfeld.py",
-    "validated": {
-      "value": "c = 0.23752648882 + 0.00373967062i at Re = 1e4, α = 1 (8 digits); Re_c = 5772.2218, α_c = 1.020547",
-      "reference": "Orszag 1971, J. Fluid Mech. 50, 689 (0.23752649 + 0.00373967i; Re_c = 5772.22)"
-    },
     "geometry": "cartesian",
     "domain": "shear",
     "field": "Streamwise velocity perturbation u = Re(û(y) exp(iαx)) of the least stable Orr–Sommerfeld mode, over one wavelength.",
-    "colour": "Colour: u normalised to a largest |û| of 1, red for negative, black at zero, glass green for positive."
+    "colour": "Colour: u normalised to a largest |û| of 1, red for negative, black at zero, glass green for positive.",
+    "extent": "Channel −1 ≤ y ≤ 1 over one wavelength 2π/α = 2π in x.",
+    "measured": "c = 0.237526489 + 0.00373967062i, eigenvector residual 4.2e−16, relative wall defect 1.1e−12.",
+    "scale": {
+      "kind": "signed",
+      "lo": -1.0,
+      "hi": 1.0
+    }
   }
 ]

@@ -2,7 +2,7 @@
 :class:`~conatus.bifurcation.DynamicalSystem` to a declared invariant subspace (reflection-even
 states, which removes the translation mode), localized seeds, and the pinning region read from
 the folds of a snaking branch continued with ``conatus.bifurcation.continue_equilibria``.
-Notes: §7; Burke & Knobloch, PRE 73, 056211 (2006) and
+Notes: Burke & Knobloch, PRE 73, 056211 (2006) and
 Phys. Lett. A 360, 681 (2007).
 """
 from __future__ import annotations

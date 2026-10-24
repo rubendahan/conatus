@@ -253,7 +253,7 @@ class Confirmations:
     run, command, parameters), valid :data:`CONFIRM_TTL_S` seconds from its issue and once; the
     second request repeats the command with ``confirm: <token>``. The token carries its expiry
     (``<unix expiry>.<mac>``, the mac covering it), so the advertised lifetime is the real one
-    (a time-bucketed token stayed valid up to twice as long). ``secret`` keys the tokens
+    (a time-bucketed token would stay valid up to twice as long). ``secret`` keys the tokens
     (random per hub process; the spool transport passes a fixed one: there the token proves
     intent, not identity, which Unix permissions already settle)."""
 

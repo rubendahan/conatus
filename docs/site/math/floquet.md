@@ -2,11 +2,18 @@
 
 ## Floquet exponents
 
-The stability of a base flow that is periodic in time, with period $2\pi/\omega$, is governed by a
-linear system with periodic coefficients. By Floquet's theorem its solutions are
-$x(t) = e^{\mu t}\,\hat x(t)$ with $\hat x$ periodic; the Floquet exponents $\mu$ are defined modulo
-$i\omega$ (adding $i k\omega$ only relabels the harmonics), and a real operator has $\mu$ and
-$\bar\mu$ as exponents. Conatus always reports the folded value and says how it folded it.
+The stability of a base flow that is periodic in time, with period $T = 2\pi/\omega$, is governed
+by a linear system $x' = A(t)\,x$ with $A(t + T) = A(t)$ continuous. Floquet's theorem states that
+a fundamental matrix can be written $X(t) = P(t)\,e^{tB}$, with $P$ invertible and periodic and $B$
+a constant matrix ($P$ and $B$ may be complex). The eigenvalues $\mu$ of $B$ are the Floquet
+exponents, and $e^{\mu T}$ are the eigenvalues of the monodromy matrix $X(T)\,X(0)^{-1}$. An
+eigenvector $v$ of $B$ gives a **Floquet mode**
+$$ x(t) = e^{\mu t}\,\hat x(t), \qquad \hat x(t) = P(t)\,v \ \text{periodic} . $$
+A general solution is a combination of Floquet modes. When $B$ is not diagonalisable, polynomial
+factors in $t$ also appear. The exponents are defined modulo $i\omega$: $e^{\mu t}\hat x(t) =
+e^{(\mu + ik\omega)t}\,\big(e^{-ik\omega t}\hat x(t)\big)$ only relabels the harmonics. A real
+operator has $\mu$ and $\bar\mu$ as exponents. Conatus always reports the folded value and says how
+it folded it. Hill's method below looks for Floquet modes.
 
 ## Hill's method
 
@@ -24,7 +31,8 @@ corresponding generalised problem near a shift. Block elimination along the harm
 cost linear in the number of harmonics.
 
 A small residual alone does not validate a root, because the residual of a nearly singular
-matrix is small everywhere. `root.certify(residual_tol=..., convergence_tol=...)` marks a root
+matrix is small everywhere. The checks below are recorded evidence about a computed root; they are
+not a proof that it is an exponent of the continuous problem. `root.certify(residual_tol=..., convergence_tol=...)` marks a root
 certified only if the secant converged, the residual is below the declared tolerance, and the root moves by less than
 `convergence_tol` between two resolutions. Two further checks are run on request and recorded
 when passed to `certify`: the contrast $\sigma_{\min}/\sigma_2$ of $M(\mu)$ (`contrast(mu)`, small
@@ -34,7 +42,7 @@ $\det M$ around the root); `root.explain()` lists which checks were run.
 ## References
 
 - G. Floquet, *Sur les équations différentielles linéaires à coefficients périodiques*, Ann. Sci.
-  ENS 12 (1883).
+  ENS 12 (1883) 47–88.
 - G. W. Hill, *On the part of the motion of the lunar perigee which is a function of the mean
-  motions of the sun and moon*, Acta Math. 8 (1886).
-- C. Davis, *The stability of time-periodic flows*, Annu. Rev. Fluid Mech. 8 (1976) 57–74.
+  motions of the sun and moon*, Acta Math. 8 (1886) 1–36.
+- S. H. Davis, *The stability of time-periodic flows*, Annu. Rev. Fluid Mech. 8 (1976) 57–74.

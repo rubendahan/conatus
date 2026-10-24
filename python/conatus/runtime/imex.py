@@ -21,9 +21,9 @@ class ImexIntegrator:
     Nothing is chosen for the user: scheme and dt are required arguments.
 
     The dtype follows M and L (complex if either is), or ``dtype``; a complex state, matrix or
-    F(x, t) for a real integrator is refused, never cut to its real part (review finding 39).
+    F(x, t) for a real integrator is refused, never cut to its real part.
     SBDF keeps a history: a second :meth:`run` must continue from the (x, t) the previous one
-    returned; :meth:`reset` starts a new trajectory (finding 42).
+    returned; :meth:`reset` starts a new trajectory.
     """
 
     def __init__(self, M, L, border_rows: Sequence[int], scheme: str, dt: float,

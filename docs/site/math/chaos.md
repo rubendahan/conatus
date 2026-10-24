@@ -4,24 +4,30 @@
 
 The Lyapunov spectrum is that of the discrete map $\Phi_{dt}$ of the time stepper (an implicit–
 explicit Runge–Kutta scheme at fixed step), not of a separately discretised variational equation.
-Its tangent is exact: for one stage,
+The tangent vectors are advanced by the derivative of $\Phi_{dt}$ itself. Differentiating the stage
+equation of {doc}`timestepping` gives, for stage $i$,
 
-$$ (M + dt\,H_{ii} L)\,\delta X_i = M\,\delta X_0 + dt \sum_{k} A_{ik}\, F'(X_k)\,\delta X_k
- - dt \sum_k H_{ik}\, L\,\delta X_k , $$
+$$ (M + dt\,H_{ii} L)\,\delta X_i = M\,\delta X_0 + dt \sum_{k<i} A_{ik}\, F'(X_k)\,\delta X_k
+ - dt \sum_{k<i} H_{ik}\, L\,\delta X_k , $$
 
 with the stage states $X_k$ of the trajectory and $F'$ the symbolic Fréchet derivative of the
-nonlinear terms, evaluated on the same dealiased grid. The exponents of $\Phi_{dt}$ converge to those
-of the flow as $dt \to 0$. Multistep schemes are refused: their tangent lives in an augmented state
-and carries the parasitic roots of the scheme.
+nonlinear terms, evaluated on the same dealiased grid. The diagonal implicit term $H_{ii} L$ appears
+only on the left; both sums run over the earlier stages $k < i$. This is the derivative of the
+discrete step, up to rounding. It is not the derivative of the exact flow of the continuous
+equations. The exponents of $\Phi_{dt}$ are expected to approach those of the flow as $dt \to 0$.
+The difference is a time-discretisation error; measure it by repeating the computation at a
+smaller $dt$. Multistep schemes are refused: their tangent lives in an augmented state and carries
+the parasitic roots of the scheme.
 
 ## Algorithm
 
 - **Benettin / QR**: $k$ orthonormal tangent vectors are advanced with the trajectory and
   re-orthonormalised by QR every few steps (positive diagonal of $R$);
-  $\lambda_i = \frac1T \sum \log R_{ii}$. Transients of the trajectory and of the tangent vectors are
+  $\lambda_i = \frac1T \sum \log R_{ii}$, with $T$ the physical time covered by the sum. Transients of the trajectory and of the tangent vectors are
   discarded before averaging, both with declared lengths.
-- **Statistical error**: the average is split into blocks; the standard error of the block means is
-  reported together with the lag-one correlation of consecutive blocks, which must be small.
+- **Statistical error**: the average is split into blocks, and the standard error of the block
+  means is reported. This error bar assumes that the block means are nearly independent. The
+  lag-one correlation of consecutive blocks is reported to check that assumption.
 - **Covariant Lyapunov vectors** (Ginelli et al. 2007): the $R$ factors are stored, a backward
   iteration with upper-triangular matrices gives the coefficients of each covariant vector in the
   Gram–Schmidt basis; principal angles between the unstable and stable subspaces measure
@@ -45,7 +51,8 @@ criteria, and transition probabilities come with a Wilson confidence interval.
 ## References
 
 - G. Benettin, L. Galgani, A. Giorgilli and J.-M. Strelcyn, *Lyapunov characteristic exponents for
-  smooth dynamical systems and for Hamiltonian systems*, Meccanica 15 (1980) 9–30.
+  smooth dynamical systems and for Hamiltonian systems; a method for computing all of them. Part 2:
+  numerical application*, Meccanica 15 (1980) 21–30.
 - I. Shimada and T. Nagashima, *A numerical approach to ergodic problem of dissipative dynamical
   systems*, Prog. Theor. Phys. 61 (1979) 1605–1616.
 - F. Ginelli, P. Poggi, A. Turchi, H. Chaté, R. Livi and A. Politi, *Characterizing dynamics with

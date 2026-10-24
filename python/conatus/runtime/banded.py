@@ -49,9 +49,8 @@ def solve_operand(b, dtype, where: str, xp=np):
 
 def csr_args(A, dtype=None, where: str = "csr_args") -> tuple:
     """(n, indptr, indices, data) contiguous arrays for the C++ side. Refused: a non-square or
-    non-finite matrix (a NaN/Inf entry factored with cond_1 = 0, review finding 41) and complex
-    entries with a non-zero imaginary part for real factors (``dtype`` real: the cast dropped it,
-    finding 39). A complex-typed matrix whose entries are all real converts exactly."""
+    non-finite matrix (a NaN/Inf entry factored with cond_1 = 0) and complex
+    entries with a non-zero imaginary part for real factors (``dtype`` real: the cast dropped it). A complex-typed matrix whose entries are all real converts exactly."""
     A = sp.csr_matrix(A)
     if A.shape[0] != A.shape[1]:
         raise OptionError(f"square matrix required, got {A.shape}", fix='a square matrix')
@@ -78,7 +77,7 @@ def csr_args(A, dtype=None, where: str = "csr_args") -> tuple:
 
 def _check_rhs_shape(b, expected: tuple, where: str, what: str) -> None:
     """Refuse a right-hand side whose shape is not ``expected`` (None = any extent); a reshape
-    used to reinterpret a wrong shape as another valid one (review finding 40)."""
+    used to reinterpret a wrong shape as another valid one."""
     ok = b.ndim == len(expected) and all(e is None or s == e for s, e in zip(b.shape, expected, strict=True))
     if not ok:
         raise InputTypeError(f"{where}: right-hand side of shape {tuple(b.shape)}, expected {what}",
@@ -116,6 +115,8 @@ class BorderedBanded:
         return x.reshape(b.shape)
 
     def explain(self) -> str:
+        """Size, band, border rank, capacitance conditioning and algorithm of the system, one
+        line."""
         return (f"BorderedBanded(n={self.n}, band kl={self.kl} ku={self.ku}, border rank={self.rank}, "
                 f"capacitance cond_1={self.capacitance_cond:.3g}, dtype={np.dtype(self.dtype).name}); "
                 "LAPACK gbtrf + Woodbury/Schur on the boundary rows"
@@ -145,6 +146,7 @@ class BorderedBandedBatch:
         return len(self._s)
 
     def explain(self) -> str:
+        """Batch size, dtype and algorithm of the bordered banded systems, one line."""
         kind = "complex" if self.dtype == np.complex128 else "real"
         return (f"BorderedBandedBatch: {len(self)} {kind} bordered-banded systems (one per mode/group), "
                 "each factorized once: boundary rows first, LAPACK gbtrf on the band "

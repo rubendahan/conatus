@@ -174,9 +174,11 @@ class EnergyInnerProduct:
         return self._apply(X, "R", 1)
 
     def Rinv(self, X):
+        """R^-1 X on the velocity part (zero elsewhere)."""
         return self._apply(X, "Rinv", 2)
 
     def RinvT(self, X):
+        """R^-T X on the velocity part (zero elsewhere)."""
         return self._apply(X, "Rinv", 2, transpose=True)
 
     def Winv(self, Y):
@@ -192,12 +194,15 @@ class EnergyInnerProduct:
         return Y
 
     def inner(self, a, b) -> float:
+        """<a, b> = a^T W b."""
         return float(a @ self.W(b))
 
     def energy(self, X) -> float:
+        """Kinetic energy 0.5 <X, X>."""
         return 0.5 * self.inner(X, X)
 
     def explain(self) -> str:
+        """The inner product, its Gram matrix and the slots of weight zero."""
         return (f"EnergyInnerProduct: <a, b> = aᵀ W b, W = exact energy Gram of {self.fields} "
                 f"(Parseval along Fourier axes, exact Chebyshev Gram along y); zero on pressure, "
                 f"taus, gauges and msin_0 slots ({int((~self.live).sum())} velocity slots of weight "
@@ -298,6 +303,7 @@ class AdmissibleProjector:
         return ip.Rinv(self.project_primed(ip.RinvT(ip.restrict(Y))))
 
     def explain(self) -> str:
+        """The projection, its constraint set and the constrained groups."""
         return (f"AdmissibleProjector: W-orthogonal projection onto {{v : C_v v + C_o o = 0}}, C = "
                 f"algebraic rows (no mass) of the discrete system, o = pressure/taus/gauges; "
                 f"{len(self.groups)} constrained group(s), constraint ranks {min(self.ranks)}.."
@@ -445,6 +451,7 @@ class NLOP:
         return u * float(np.sqrt(self.E0 / e))
 
     def J(self, u0) -> float:
+        """Objective J(u0) = E(Phi_T(u0)), the energy at the horizon (one forward run, timed)."""
         self.n_forward += 1
         t = time.perf_counter()
         out = self.ip.energy(self.fm(u0))
@@ -527,6 +534,7 @@ class NLOP:
         return vals[order], seeds
 
     def tangent(self, u0, g):
+        """Component of ``g`` tangent to the energy sphere at ``u0``."""
         return g - (self.ip.inner(g, u0) / self.ip.inner(u0, u0)) * u0
 
     def rotate(self, u0, d, alpha: float):
@@ -651,6 +659,7 @@ class NLOP:
         return st
 
     def explain(self) -> str:
+        """The optimisation problem, its gradient and the update rule."""
         return ("NLOP: max E(Φ_T(u0)) on E(u0) = E0 = "
                 f"{self.E0:.6e}; gradient P W⁻¹ Jᵀ W X_T (exact discrete adjoint, energy inner "
                 "product on the admissible set); rotation update on the sphere, α accepted if J "

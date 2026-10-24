@@ -1,10 +1,15 @@
 """Pseudo-arclength continuation of G(x, p) = 0.
 
 Unknowns z = (x, p). From a converged point z_k with unit tangent t_k (in the declared weighted
-norm), the predictor is z_pred = z_k + ds t_k and the corrector is Newton on the bordered system
+norm ||z||² = x^T W x + p², W = diag(weights)), the predictor is z_pred = z_k + ds t_k and the
+corrector is Newton on the bordered system
 
-    [ J      G_p ] [dx]     [ G(x, p)                         ]
-    [ t_x^T  t_p ] [dp] = - [ t_x·(x - x_pred) + t_p (p - p_pred) ]
+    [ J        G_p ] [dx]     [ G(x, p)                                  ]
+    [ t_x^T W  t_p ] [dp] = - [ t_x^T W (x - x_pred) + t_p (p - p_pred)   ]
+
+The phase residual h(z) = t_x^T W (x - x_pred) + t_p (p - p_pred) is the weighted product of t
+with z - z_pred, and the bordered row is its gradient (a residual with a plain dot
+would differ from the row whenever W is not the identity).
 
 (Keller 1977). The next tangent solves the same bordered matrix with right-hand side (0, 1) and is
 oriented along the previous one. Events between consecutive points:

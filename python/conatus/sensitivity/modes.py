@@ -31,7 +31,7 @@ import scipy.linalg as sla
 import sympy
 
 from ..errors import OptionError, SpectralError
-from ..nonmodal.adjoint import continuous_adjoint_mode
+from ..nonmodal.adjoint import _eig_near, continuous_adjoint_mode
 from ..nonmodal.statespace import state_space
 from ..nonmodal.system import Descriptor, ModalSystem
 from . import _cheb
@@ -41,12 +41,6 @@ __all__ = ["ModePair", "mode_pair", "StructuralSensitivity", "structural_sensiti
            "feedback_system", "ADJOINT_KINDS"]
 
 ADJOINT_KINDS = ("discrete", "continuous")
-
-
-def _eig_near(A: np.ndarray, target: complex):
-    w, V = np.linalg.eig(A)
-    i = int(np.argmin(np.abs(w - target)))
-    return complex(w[i]), V[:, i]
 
 
 @dataclass

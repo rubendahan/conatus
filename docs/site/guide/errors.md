@@ -26,8 +26,8 @@ them: the base residual of a linearization, the group in a result's header, and 
 
 | Warning | When |
 |---|---|
-| `BaseStateWarning` | `m.linearize(about=...)` about a base whose steady residual exceeds `BASE_RESIDUAL_TOL` (not declared with `base_residual="accept"`); refused in v0.2 |
-| `GroupWarning` | `eigenvalues()` without `k=` on a periodic model (only k = 0 is solved), or without `m=` on a curvilinear one (only the first group); required in v0.2 |
+| `BaseStateWarning` | `m.linearize(about=...)` about a base whose steady residual exceeds `BASE_RESIDUAL_TOL` (not declared with `base_residual="accept"`); refused from 0.3 |
+| `GroupWarning` | `eigenvalues()` without `k=` on a periodic model (only k = 0 is solved), or without `m=` on a curvilinear one (only the first group); required from 0.3 |
 
 Resolution detections are `ResolutionWarning`, `UnderResolvedWarning`, `InitialDataWarning` and
 `IllPosedWarning`. A former spelling with the same meaning (a renamed argument) is a

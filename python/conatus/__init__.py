@@ -1,5 +1,5 @@
 """Conatus: a high-performance mathematical laboratory for PDEs and dynamical systems."""
-__version__ = "0.1.2"  # single source of the version (pyproject reads it)
+__version__ = "0.2.0"  # single source of the version (pyproject reads it)
 # The content of every conatus module this process imports is recorded (sha256 of its source):
 # a module edited on disk afterwards is not the code that runs (conatus.provenance.code_state,
 # changed_since_import, audit state).

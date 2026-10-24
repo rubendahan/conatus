@@ -11,7 +11,7 @@ import pytest
 
 import conatus as cn
 from conatus.contour import beyn, count
-from conatus.errors import OptionError
+from conatus.errors import ConvergenceError, OptionError
 
 BOX = cn.box(re=(-1, 1), im=(-1, 1))
 
@@ -28,9 +28,15 @@ def test_f1_dipole_across_the_edge_is_not_called_certified(eps):
         return (z - a) / (z - p)
 
     c = count(T, BOX, poles=0)
-    r = beyn(T, BOX, poles=0)
+    try:
+        r = beyn(T, BOX, poles=0)
+    except ConvergenceError:          # a root 1e-8 from the edge, next to a pole: refused
+        r = None
     if c.count == exact:
+        if r is not None:
+            assert r.values.size == 1 and abs(r.values[0] - a) < 1e-9, r.values
         return
+    assert r is not None
     assert not c.poles_by_construction
     for text in (c.count_method, c.explain(), r.count_method, r.explain(), repr(r)):
         assert "certif" not in text.lower(), text

@@ -46,6 +46,8 @@ class Differentiate(Expr):
                     params=(coord.key,), coord=coord)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same operator on the argument ``args[0]``, built by ``diff`` (same coordinates
+        and options)."""
         return diff(args[0], self.coord)
 
     def _own_order(self, coord: Coordinate) -> int:
@@ -105,6 +107,8 @@ class Gradient(Expr):
                     params=(coordsys.key,), coordsys=coordsys)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same operator on the argument ``args[0]``, built by ``grad`` (same coordinates
+        and options)."""
         return grad(args[0], self.coordsys)
 
     def _own_order(self, coord: Coordinate) -> int:
@@ -145,9 +149,12 @@ class Divergence(Expr):
 
     @property
     def coordsys(self) -> CoordinateSystem:
+        """The coordinate system of the first tensor index of the argument."""
         return self.args[0].tensorsig[0]
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same operator on the argument ``args[0]``, built by ``div`` (same coordinates and
+        options)."""
         return div(args[0])
 
     def _own_order(self, coord: Coordinate) -> int:
@@ -187,6 +194,8 @@ class Laplacian(Expr):
                     params=(coordsys.key,), coordsys=coordsys)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same operator on the argument ``args[0]``, built by ``lap`` (same coordinates and
+        options)."""
         return lap(args[0], self.coordsys)
 
     def _own_order(self, coord: Coordinate) -> int:
@@ -224,6 +233,8 @@ class Curl(Expr):
                     params=(coordsys.key,), coordsys=coordsys)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same operator on the argument ``args[0]``, built by ``curl`` (same coordinates
+        and options)."""
         return curl(args[0], self.coordsys)
 
     def _own_order(self, coord: Coordinate) -> int:
@@ -274,9 +285,12 @@ class TimeDerivative(Expr):
         self._setup((operand,), operand.tensorsig, operand.domain, operand.dtype)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same operator on the argument ``args[0]``, built by ``dt`` (same coordinates and
+        options)."""
         return dt(args[0])
 
     def time_order(self) -> int:
+        """Time order of the argument plus one."""
         return self.args[0].time_order() + 1
 
     def __str__(self) -> str:
@@ -304,6 +318,8 @@ class Integrate(Expr):
                     params=tuple(c.key for c in coords), coords=coords)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same operator on the argument ``args[0]``, built by ``integ`` (same coordinates
+        and options)."""
         return integ(args[0], self.coords)
 
     def __str__(self) -> str:
@@ -353,6 +369,8 @@ class Interpolate(Expr):
                     position=float(position), label=label, side=side)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same operator on the argument ``args[0]``, built by ``interp`` (same coordinates
+        and options)."""
         return interp(args[0], self.coord, self.position, side=self.side)
 
     def __str__(self) -> str:
@@ -421,6 +439,8 @@ class Lift(Expr):
                     basis=basis, n=n, lam=lam, piece=piece)
 
     def rebuild(self, args: Sequence[Expr]) -> Expr:
+        """The same operator on the argument ``args[0]``, built by ``lift`` (same coordinates
+        and options)."""
         return lift(args[0], self.basis, self.n, lam=self.lam, piece=self.piece)
 
     def __str__(self) -> str:

@@ -1,5 +1,4 @@
-"""The canonical identity of a computation (0.1.1, lot A "identity"; external review 13/10,
-findings 1, 5, 8, 22, 49; first record).
+"""The canonical identity of a computation.
 
 **One** definition of what makes two computations the same, consumed by every place that needs
 it: the registry cache key (``conatus.runs.keys``), the checkpoint restart and overwrite guards
@@ -7,7 +6,7 @@ it: the registry cache key (``conatus.runs.keys``), the checkpoint restart and o
 (``conatus.provenance.numerics``), the registry record and the HDF5 append (``cn.io.AnalysisFile``,
 ``mode="a"``). Before 0.1.1 each of them read its own subset and none read the data of the given
 fields, so two forcings ``f = 1`` and ``f = 2`` shared a cache key and a checkpoint of one
-restarted silently with the other (review finding 1).
+restarted silently with the other.
 
 :func:`computation_identity` (version :data:`IDENTITY_VERSION`) holds:
 
@@ -156,7 +155,7 @@ def _global_names(code: types.CodeType) -> set[str]:
 #: attribute or global name (``getattr(cfg, "factor")``: the name is a string constant, not a
 #: code name), the environment, files, and code built at run time. A function whose code (or
 #: the code of a user function it calls) names one of them has an undeclared dependency, so it
-#: is never given a cache key (review 0.1.1, F5: ``getattr(cfg, 'factor')`` kept the key after
+#: is never given a cache key (earlier versions: ``getattr(cfg, 'factor')`` kept the key after
 #: ``cfg.factor`` changed, a stale cache hit). Conservative: an attribute of the same name used
 #: for something else (``obj.load``) refuses the cache too.
 DYNAMIC_READS = frozenset({
@@ -173,6 +172,81 @@ DYNAMIC_READS = frozenset({
 def _dynamic_reads(code: types.CodeType) -> list[str]:
     """The names of :data:`DYNAMIC_READS` a code object (and the code nested in it) uses."""
     return sorted(_global_names(code) & DYNAMIC_READS)
+
+
+#: Names whose call reads hidden mutable state of a library: the global random generators of
+#: NumPy (``np.random.random``, ``np.random.seed``, ...) and of the standard library
+#: (``random.random``), and the clock or the operating system's entropy. Their result changes
+#: with that state while the function's code, closure and globals do not, so a function that
+#: uses one (as a global or an attribute, see :func:`_hidden_state_reads`) has no content
+#: identity and is never given a cache key (earlier versions: a tracked ``draw()`` returning
+#: ``np.random.random()`` came back from the cache after ``np.random.seed(2)`` with the value
+#: drawn after ``seed(1)``). A generator built from a seed argument (``np.random.default_rng(seed)``)
+#: is a pure function of that argument and is accepted; ``default_rng()``, ``RandomState()``,
+#: ``Random()`` without a seed are refused. Conservative, like :data:`DYNAMIC_READS`: a user
+#: attribute or global of the same name refuses the cache too.
+HIDDEN_STATE_READS = frozenset({
+    # global random generators (numpy.random legacy functions, the random module)
+    "random", "rand", "randn", "randint", "random_integers", "random_sample", "ranf",
+    "standard_normal", "standard_exponential", "seed", "get_state", "set_state", "getrandbits",
+    "randrange", "gauss", "normalvariate", "shuffle", "permutation", "randbytes",
+    # the clock and operating-system entropy
+    "time", "time_ns", "perf_counter", "perf_counter_ns", "monotonic", "process_time", "now",
+    "utcnow", "today", "urandom", "uuid1", "uuid4", "token_bytes", "token_hex", "token_urlsafe"})
+
+#: Generator constructors that are pure functions of their seed argument, and only of it.
+_SEEDED_CONSTRUCTORS = frozenset({"default_rng", "RandomState", "Random", "SeedSequence",
+                                  "Generator", "PCG64", "MT19937", "Philox", "SFC64"})
+_LOADS = ("LOAD_ATTR", "LOAD_GLOBAL", "LOAD_NAME", "LOAD_METHOD", "LOAD_DEREF", "LOAD_FAST",
+          "LOAD_FAST_CHECK", "LOAD_CLOSURE", "IMPORT_FROM", "IMPORT_NAME")
+_SKIP = ("PUSH_NULL", "CACHE", "PRECALL", "NOP", "EXTENDED_ARG")
+#: Names (as written in code) and modules whose attributes of :data:`HIDDEN_STATE_READS` read
+#: hidden state.
+_STATE_NAMESPACES = frozenset({"random", "time", "datetime", "date", "os", "uuid", "secrets"})
+_STATE_MODULES = frozenset({"numpy.random", "random", "time", "datetime", "os", "uuid", "secrets"})
+
+
+def _hidden_state_reads(code: types.CodeType, g: Mapping | None = None) -> list[str]:
+    """What in ``code`` (and nested code) reads hidden library state:
+
+    * a name of :data:`HIDDEN_STATE_READS` loaded as a global (``from numpy.random import rand``;
+      a global bound to a non-callable value, such as ``seed = 7``, is data and is not counted)
+      or as an attribute of a state-holding namespace (:data:`_STATE_NAMESPACES`:
+      ``np.random.random``, ``random.random``, ``time.time``; a global alias of one of those
+      modules counts, through ``g``), and not used as a namespace on the way to another
+      attribute (``np.random.default_rng`` uses ``random`` as a namespace). A method of a
+      generator object (``rng.standard_normal``) is not one: the generator is a value the
+      identity hashes or refuses;
+    * a constructor of :data:`_SEEDED_CONSTRUCTORS` called with no argument (``default_rng()``)."""
+    import dis
+    g = {} if g is None else g
+    out = set()
+    ins = [x for x in dis.get_instructions(code) if x.opname not in _SKIP]
+    for i, x in enumerate(ins):
+        if x.opname not in _LOADS or not isinstance(x.argval, str):
+            continue
+        nxt = ins[i + 1] if i + 1 < len(ins) else None
+        prev = ins[i - 1] if i else None
+        name = x.argval
+        as_namespace = nxt is not None and nxt.opname in ("LOAD_ATTR", "LOAD_METHOD", "IMPORT_FROM")
+        if name in HIDDEN_STATE_READS and not as_namespace:
+            if x.opname in ("LOAD_GLOBAL", "LOAD_NAME", "IMPORT_FROM"):
+                # a module global bound to data (``seed = 7``, ``time = np.linspace(...)``) is a
+                # value the identity hashes, not a read of library state (review of lot N)
+                if not (x.opname == "LOAD_GLOBAL" and name in g and not callable(g[name])):
+                    out.add(name)
+            elif x.opname in ("LOAD_ATTR", "LOAD_METHOD") and prev is not None and \
+                    isinstance(prev.argval, str) and prev.opname in _LOADS and (
+                        prev.argval in _STATE_NAMESPACES or getattr(
+                            g.get(prev.argval), "__name__", None) in _STATE_MODULES):
+                out.add(name)
+        if (name in _SEEDED_CONSTRUCTORS and nxt is not None and nxt.opname.startswith("CALL")
+                and (nxt.arg or 0) == 0):
+            out.add(f"{name}() without a seed")
+    for c in code.co_consts:
+        if isinstance(c, types.CodeType):
+            out |= set(_hidden_state_reads(c, g))
+    return sorted(out)
 
 
 def value_identity(v: Any, what: str, seen: set[int] | None = None,
@@ -219,7 +293,7 @@ def callable_identity(fn: Any, what: str | None = None, seen: set[int] | None = 
     scipy, the standard library, anything installed) by module, name and version; a user function
     by its code and by the content of every value it reads: its closure cells and the module
     globals its code names (followed into the user functions it calls). Two closures of one
-    factory (``make(1)``, ``make(2)``) are two identities (review finding 49). Raises
+    factory (``make(1)``, ``make(2)``) are two identities. Raises
     :class:`Undeclared` when one of those values has no content hash (an object, an empty cell):
     the computation then has an undeclared dynamic dependency."""
     seen = set() if seen is None else seen
@@ -262,6 +336,13 @@ def callable_identity(fn: Any, what: str | None = None, seen: set[int] | None = 
             f"{what}: its code uses {', '.join(dyn)}, a read whose target is chosen at run time "
             "(a computed attribute or name, the environment or a file): what it reads has no "
             "content hash")
+    hidden = _hidden_state_reads(code, getattr(fn, "__globals__", None))
+    if hidden:
+        raise Undeclared(
+            f"{what}: its code uses {', '.join(hidden)}, which reads the hidden state of a "
+            "library (a global random generator, the clock or the system's entropy): the result "
+            "can change while the code and its values do not; pass the seed as an argument and "
+            "build the generator from it (np.random.default_rng(seed))")
     out: dict[str, Any] = {"function": f"{module}:{name}", "code_sha256": _code_digest(code)}
     if id(fn) in seen:                                  # recursion: its code is enough
         return out
@@ -459,7 +540,7 @@ def user_functions(problem: Any) -> tuple[dict, list[str]]:
     undeclared: list[str] = []
     for key in sorted(names, key=lambda k: (A.display_name(k), k)):
         # by the user's name, not the registry key (g__2 depends on what the process declared
-        # before: F105, numerics review); the code below tells two functions named g apart
+        # before: F105); the code below tells two functions named g apart
         f, deriv, parity = A._USER_FUNCS[key]
         n = A.display_name(key)
         try:

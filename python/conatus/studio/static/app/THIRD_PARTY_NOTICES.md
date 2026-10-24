@@ -4,17 +4,16 @@ Conatus itself is distributed under the BSD 3-Clause licence (`LICENSE`, Ruben D
 contributors). Some files that ship with it come from other projects, under their own licences.
 Each is listed below: its version, its licence (SPDX identifier), where it ships, and where its
 licence text is. The texts are in `licenses/` in the repository, in the source distribution, and in
-`.dist-info/licenses/licenses/` of every wheel. How this list was made and checked:
-.
+`.dist-info/licenses/licenses/` of every wheel.
 
 Nothing here is copied into the Conatus sources (`python/conatus/`, `core/`): the components below
 are linked, bundled by the build, or served by the documentation and the website.
 
-## 1. Binary wheels (`conatus-<version>+cpu` and `+cu12`)
+## 1. Binary wheels (`conatus-<version>` on PyPI and `conatus-<version>+cu12`)
 
-`auditwheel repair` copies these shared libraries into `conatus.libs/` of the wheel
-(`packaging/README.md`); the compiled core `conatus._core` links them. They are the conda-forge
-builds of the wheel build environment (`packaging/build_wheels.sh`: OpenBLAS, pthreads build).
+`auditwheel repair` copies these shared libraries into `conatus.libs/` of the wheel; the compiled
+core `conatus._core` links them. They are the conda-forge builds of the wheel build environment
+(OpenBLAS, pthreads build).
 Two of these libraries are under GNU licences, and their terms allow shipping them with BSD
 code: the GCC runtimes (`libgfortran` here, `libstdc++` and `libgcc` below) are under GPL-3.0
 **with the GCC Runtime Library Exception 3.1**, which permits distributing them with programs under
@@ -78,17 +77,18 @@ Written into the built site by the documentation tools (not stored in the reposi
 | sphinx-design | 0.7.0 | MIT |
 | sphinx-copybutton, with clipboard.js 2.0.8 (Zeno Rocha) | 0.5.2 | MIT |
 
-## 3. Website (`web/`) and Studio app (`studio/app/`)
+## 3. Website (`web/`) and Studio app
 
-Bundled by Vite into the built site (`scratch/web_build/`) and the Studio app. The bundles drop
-the licence comments, so `web/build.sh` and `studio/app/build.sh` copy this file and `licenses/`
+Bundled by Vite into the built site and the Studio app (`conatus/studio/static/app/` in the
+package). The bundles drop the licence comments, so the builds copy this file and `licenses/`
 into the build output (`/THIRD_PARTY_NOTICES.md`, `/licenses/`).
 
 | Component | Version | Licence | Copyright |
 |---|---|---|---|
 | React (`react`), with `scheduler` 0.23.2 | 18.3.1 | MIT | Facebook, Inc. and its affiliates |
 | React DOM (`react-dom`) | 18.3.1 | MIT | Facebook, Inc. and its affiliates |
-| React Router (`react-router`, `react-router-dom`), with `@remix-run/router` 1.23.4 | 6.30.6 | MIT | React Training LLC 2015–2019, Remix Software Inc. 2020–2021, Shopify Inc. 2022–2023 |
+| React Router (`react-router`) | 7.18.4 | MIT | React Training LLC 2015–2019, Remix Software Inc. 2020–2021, Shopify Inc. 2022–2023 |
+| `cookie` 1.1.1, `set-cookie-parser` 2.7.2 (dependencies of React Router) | — | MIT | Roman Shtylman 2012–2014, Douglas Christopher Wilson 2015; Nathan Friedly 2015 |
 | MiniSearch (`minisearch`, website search) | 7.2.0 | MIT | 2022 Luca Ongaro |
 | `loose-envify` 1.4.0, `js-tokens` 4.0.0 (dependencies of React, build-time transform) | — | MIT | Andres Suarez; Simon Lydell |
 | The four @fontsource faces of section 2 (`.woff2` files in the bundle) | 5.3.0 | OFL-1.1 | as in section 2 |
@@ -118,9 +118,5 @@ Build tools that do not ship (Vite, TypeScript, Lighthouse, Puppeteer and the re
 ## 4. Dedalus
 
 Dedalus (GPL-3.0, the Dedalus Project developers) is not distributed with Conatus and the
-`conatus` package never imports it. It runs, when installed, in test and benchmark oracles and in
-the optional check script of tutorial 14 (`docs/site/tutorials/code/t14b_dedalus_check.py`). Two
-benchmark oracles, `benchmarks/dedalus/rb2d.py` and `benchmarks/dedalus/poisson2d.py`, follow the
-set-up of a Dedalus example and say so in their header; `benchmarks/` is excluded from the source
-distribution and is not in the wheel. The official Dedalus examples used by the translator tests
-are fetched at test time into `scratch/` and never stored in the repository.
+`conatus` package never imports it. It runs, when installed, only in the optional check script of
+tutorial 14 (`docs/site/tutorials/code/t14b_dedalus_check.py`).

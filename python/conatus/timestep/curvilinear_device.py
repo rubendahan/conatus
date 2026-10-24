@@ -150,6 +150,7 @@ class CurvilinearDeviceSystem:
         return b
 
     def explain(self) -> str:
+        """The host system's explain() with the device solves and the first buckets."""
         lines = [self.host.explain().replace("batched C++ bordered banded solves",
                                              "batched GPU bordered banded solves, one warp per group")]
         for (_idx, _, _), batch in zip(self.host._buckets[:4], self._factors.get(next(iter(self._factors), None), [])):

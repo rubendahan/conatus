@@ -35,17 +35,12 @@ from . import ultraspherical as us
 from .jacobi_family import _nodes as _gauss_jacobi
 from .jacobi_family import gauss_legendre
 from .polar import Annulus
+from .spin import SPIN, spin_of  # noqa: F401 (re-export)
 from .polar_radial import _check_lift_index, _conv_a, _jacobi_z, jacobi_values, log_jacobi_norms
 
 __all__ = ["SphereHarmonics", "ShellOps", "BallOps", "log_jacobi_norm", "regularity_Q", "cross_table",
            "SPIN", "spin_of"]
 
-SPIN = (-1, 1, 0)                     # tensor index 0 -> spin -1, 1 -> +1, 2 (radial) -> 0
-
-
-def spin_of(comp: tuple) -> int:
-    """Total spin (or, for the ball's regularity components, the total regularity shift) of a comp."""
-    return int(sum(SPIN[i] for i in comp))
 
 
 def log_jacobi_norm(a: float, b: float, n: int) -> float:
@@ -73,6 +68,7 @@ class SphereHarmonics:
         self._cache: dict = {}
 
     def lmin(self, m: int, s: int) -> int:
+        """Smallest degree of the spin-``s`` harmonics of order ``m``: max(|m|, |s|)."""
         return max(abs(int(m)), abs(int(s)))
 
     def valid(self, m: int, s: int) -> np.ndarray:
@@ -159,6 +155,8 @@ class SphereHarmonics:
         return self._cache[key]
 
     def explain(self) -> str:
+        """Degree, angular functions, grid and derivative structure of the spin-weighted
+        harmonics."""
         return (f"spin-weighted spherical harmonics, Lmax = {self.L}: Phi_l^(m,s)(cos theta) = "
                 "sin(theta/2)^|m+s| cos(theta/2)^|m-s| P_n^(|m+s|,|m-s|)(cos theta) / s_n, "
                 "l >= max(|m|,|s|); Gauss-Legendre grid; angular derivatives diagonal in l "
@@ -232,6 +230,7 @@ class ShellOps:
         self._cache: dict = {}
 
     def size(self, ell: int) -> int:
+        """Number of radial coefficients (N for every degree)."""
         return self.N
 
     def _memo(self, key, fn):
@@ -245,18 +244,24 @@ class ShellOps:
         return self._memo(("dr", level, p), lambda: self.an.G(1, 0, level, p))
 
     def over_r(self, level: int, p: int, size: int):
+        """Division by r: identity on the coefficients, the row's r power raised by one (rows
+        are r-multiplied)."""
         return sp.identity(self.N, format="csr"), level, p + 1
 
     def convert(self, lev_from: int, lev_to: int, size: int) -> sp.csr_matrix:
+        """Conversion from level ``lev_from`` to ``lev_to`` (ValueError downwards; cached)."""
         if lev_to < lev_from:
             raise ValueError(f"cannot convert level {lev_from} down to {lev_to}")
         return self._memo(("conv", lev_from, lev_to),
                           lambda: us.conversion_chain(self.N, lev_from, lev_to).tocsr())
 
     def multiply_r(self, level: int, j: int, size: int) -> sp.csr_matrix:
+        """Multiplication by r^j at ``level`` (cached)."""
         return self._memo(("mulr", level, j), lambda: self.an.multiplier(level, j).tocsr())
 
     def ncc(self, g_T: np.ndarray, level: int, size: int) -> sp.csr_matrix:
+        """Multiplication by the radial NCC of Chebyshev coefficients ``g_T`` at ``level`` (a
+        constant: scaled identity; cached)."""
         g = np.asarray(g_T)
         if g.size == 1:            # constant in r (e.g. e_z): exact, no series to resolve
             return (complex(g.ravel()[0]) if np.iscomplexobj(g) else float(g.ravel()[0])) * sp.identity(self.N, format="csr")
@@ -278,7 +283,7 @@ class ShellOps:
         """int q r^2 dr = h int X(t) (c + h t)^(2-p) dt by Gauss-Legendre on N + 4 nodes: exact for
         p <= 2 (polynomial integrand); for p > 2 the integrand is rational and the rule converges
         geometrically (error ~ rho^(-2N), rho >= 3.9 for ri/ro >= 0.35): rounding in practice, not
-        exact."""
+        exact (SC6)."""
         key = ("int", level, p)
         if key not in self._cache:
             t, w = gauss_legendre(self.N + 4)
@@ -307,6 +312,7 @@ class ShellOps:
 
     # transforms ----------------------------------------------------------------------------------
     def grid(self, M: int) -> np.ndarray:
+        """Radial Gauss-Chebyshev grid of ``M`` points in [ri, ro]."""
         t = -np.cos(np.pi * (np.arange(M) + 0.5) / M)
         return self.an.c + self.an.h * t
 
@@ -335,6 +341,7 @@ class ShellOps:
         return self._cache[key]
 
     def explain(self) -> str:
+        """Radii, size, radial basis, row multiplication and grid of the shell, one line."""
         return (f"shell [{self.ri:g}, {self.ro:g}], N={self.N}: Chebyshev T in t for every spin "
                 "component, rows multiplied by r^p (declared, p = largest r-power of the row's "
                 "terms), Gauss-Chebyshev radial grid")
@@ -360,6 +367,7 @@ class BallOps:
         self._cache: dict = {}
 
     def size(self, ell: int) -> int:
+        """Number of radial coefficients of degree ``ell``: N - floor(|ell|/2)."""
         return max(self.N - abs(int(ell)) // 2, 0)
 
     def _s(self, level: int, k: int, size: int) -> np.ndarray:
@@ -395,6 +403,8 @@ class BallOps:
         return (self.down(k + 1, level + 1, size) @ self.up(k, level, size)).tocsr()
 
     def convert(self, k: int, lev_from: int, lev_to: int, size: int) -> sp.csr_matrix:
+        """Conversion of regularity component ``k`` from level ``lev_from`` to ``lev_to``
+        (ValueError downwards; cached)."""
         if lev_to < lev_from:
             raise ValueError(f"cannot convert level {lev_from} down to {lev_to}")
         key = ("conv", k, lev_from, lev_to, size)
@@ -471,6 +481,7 @@ class BallOps:
         return self._cache[key]
 
     def grid(self, M: int) -> np.ndarray:
+        """Radial Gauss-Jacobi grid of ``M`` points, r = R sqrt((1 + z)/2)."""
         z, _ = self.nodes(M)
         return self.R * np.sqrt((1 + z) / 2)
 
@@ -509,6 +520,7 @@ class BallOps:
         return self._cache[key]
 
     def explain(self) -> str:
+        """Radius, size, radial basis, grid and operators of the ball, one line."""
         return (f"ball R={self.R:g}, N={self.N}: regularity component k = rho^k sum_n c_n "
                 "Q_n^(a, k+1/2)(2 rho^2 - 1) (normalized Jacobi, 3D Zernike), n < N - floor(l/2); "
                 "Gauss-Jacobi(0, 1/2) radial grid; D_+-, Laplacian single-diagonal (Vasil et al. 2019)")

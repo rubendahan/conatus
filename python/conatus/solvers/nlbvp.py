@@ -8,13 +8,13 @@ the new iterate X directly:
 
 Terms linear in the unknowns cancel on the right (t'(U) U = t(U)), so the right-hand side only
 holds the nonlinear and constant terms, evaluated on the grid from U: no lift/tau term is ever
-evaluated pointwise. Each iteration compiles the linear system with the plan (public
+evaluated pointwise. Each iteration compiles the linear system with the discretization plan (public
 matrices, rank report that refuses a singular Jacobian), and the update is
 
     x_{k+1} = x_k + damping * (X - x_k)            (damping declared, never adapted silently)
 
 The residual reported at each iterate is the discrete one, r_k = A_k x_k - b_k = F_h(x_k).
-Nonlinear products are interpolated on N nodes (as in RHS data) while the Jacobian uses
+Nonlinear products are interpolated on N nodes (as the right-hand-side data of a plan) while the Jacobian uses
 banded multiplication by the interpolated coefficient: the two differ at the aliasing level, so
 convergence is quadratic down to ~round-off / aliasing and the final residual is reported as is.
 """
@@ -400,7 +400,7 @@ class NewtonSolver:
         return max(vals, default=0.0)
 
     def _trivial_note(self, sol: NLBVPSolution, guess0: float) -> None:
-        """Flag a converged solution that is the trivial state (NEWTON_TRIVIAL_FRACTION: a 1e-6 guess converged to u = 0 with converged=True and no word)."""
+        """Flag a converged solution that is the trivial state (NEWTON_TRIVIAL_FRACTION: a 1e-6 guess that converges to u = 0 is not reported as converged without a word)."""
         end = self._size(sol.coeffs)
         thr = NEWTON_TRIVIAL_FRACTION * guess0
         sol.notes.append(f"trivial-state check: max |u| = {end:.3e} vs {NEWTON_TRIVIAL_FRACTION:g} "

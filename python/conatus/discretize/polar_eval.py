@@ -39,34 +39,19 @@ from .curvilinear_common import spin_dot as _dot
 from .real_fields import FUNC_REAL_TOL, REAL_TOL, STATE_REAL_TOL
 from .real_fields import checked_real as _real
 from .polar_radial import AnnulusOps, DiskOps
+from .spin import SPIN  # noqa: F401 (re-export)
+from .spin import apply_index as _apply_index
+from .spin import flip as _flip
+from .spin import spin_of as spin_k
 
 __all__ = ["PolarSpace", "PolarEvaluator", "spin_k", "SPIN", "SP", "PH"]
 
-SPIN = (-1, 1, 0)                                # tensor index 0 -> spin -1, 1 -> +1, 2 (z) -> 0
 SP = np.array([[-1j, 1.0, 0.0], [1j, 1.0, 0.0], [0.0, 0.0, 1.0]])   # physical (phi, r, z) -> spin
 PH = np.linalg.inv(SP)                                              # spin -> physical
 
 
-def spin_k(comp: tuple) -> int:
-    """Sum of the spins of a spin-component tuple (effective wavenumber = m + spin_k)."""
-    return int(sum(SPIN[i] for i in comp))
-
-
-def _flip(comp: tuple) -> tuple:
-    return tuple({0: 1, 1: 0, 2: 2}[i] for i in comp)
-
-
 def _comps(rank: int, nc: int = 2) -> list[tuple]:
     return list(product(*[range(nc)] * rank)) if rank else [()]
-
-
-def _apply_index(M: np.ndarray, g: np.ndarray, rank: int) -> np.ndarray:
-    """Apply the matrix M on each of the first ``rank`` axes of g (NumPy or CuPy g)."""
-    xp = array_module(g)
-    M = M if xp is np else xp.asarray(M)
-    for ax in range(rank):
-        g = xp.moveaxis(xp.tensordot(M, g, axes=([1], [ax])), 0, ax)
-    return g
 
 
 class PolarSpace:
@@ -155,8 +140,8 @@ class PolarSpace:
 
     def embed(self, c, dom: Domain | None, rank: int, what: str = "right-hand side"):
         """Coefficients ``c`` of an expression whose domain lacks coordinates of the equation's
-        domain ``dom``, in the equation's layout (the defect of the
-        spherical solver here too: a forcing f(r) failed at the first step with a matmul
+        domain ``dom``, in the equation's layout (without it, as in the
+        spherical solver before the same fix: a forcing f(r) failed at the first step with a matmul
         dimension error). A missing coordinate is an axis of length 1 holding its m = 0 / k_z = 0 /
         constant radial entry (index 0 of each axis: m = 0 first in both Fourier orderings, the
         constant first in the radial bases at m = 0 and in the annulus's Chebyshev T at every m),
@@ -423,6 +408,7 @@ class PolarSpace:
         return out
 
     def explain(self) -> str:
+        """Bases, groups and grid sizes of the polar space, one line."""
         M = self.sizes(True)
         z = (f"; z: ComplexFourier({self.bz.size}), k_z = 2 pi n / {self.bz.length:g}" if self.cyl else "")
         return (f"PolarSpace: {type(self.bphi).__name__}(phi, {self.bphi.size}) -> {len(self.ms)} "

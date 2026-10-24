@@ -24,13 +24,21 @@ def _write(path: Path, text: str) -> None:
 
 def _readme_rows(readme: Path) -> dict[str, list[str]]:
     """Rows of the examples/README.md table keyed by script path (e.g. 'shear/kelvin_helmholtz.py')."""
-    rows = {}
+    rows, width = {}, None
     for line in readme.read_text().splitlines():
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) >= 5:
-            m = re.search(r"`([\w/]+\.py)`", cells[1])
-            if m:
-                rows[m.group(1)] = cells
+        if not line.startswith("|"):
+            width = None
+            continue
+        # cells are separated by unescaped bars; a bar inside a cell is written \| (|k|)
+        cells = [c.strip() for c in re.split(r"(?<!\\)\|", line.strip()[1:-1])]
+        if width is None:
+            width = len(cells)                        # the header row of the table
+        elif len(cells) != width:
+            raise ValueError(f"{readme}: {len(cells)} cells instead of {width} (an unescaped | ?): "
+                             f"{line[:80]}")
+        m = re.search(r"`([\w/]+\.py)`", cells[1]) if len(cells) > 1 else None
+        if m and len(cells) >= 5:
+            rows[m.group(1)] = cells
     return rows
 
 
@@ -49,6 +57,8 @@ def gallery(site: Path, root: Path) -> None:
         # the script asserts its reference itself (its last lines); the regression tests of the
         # gallery are not part of the published tree, so the page does not name them
         lines = [f"# {title.rstrip('.')}", "",
+                 "**Goal.** Run this case and compare the value it obtains with the reference"
+                 + (" below." if row else " named in the script."), "",
                  f"*Family:* `{script.parent.name}` · *Script:* `examples/{rel}`", ""]
         if row:
             lines += ["```{list-table}", ":widths: 20 80", "",
@@ -130,8 +140,11 @@ def tutorial_status(site: Path, root: Path) -> None:
             lines.append(f"| `{script.name}` | {{.cn-skip}}`not run yet` | — | — |")
             continue
         cls = {"PASS": "cn-pass", "FAIL": "cn-fail"}.get(st["status"], "cn-skip")
-        lines.append(f"| `{script.name}` | {{.{cls}}}`{st['status']}` | "
-                     f"{st.get('elapsed_s', '—')} s | `{st.get('run_id', '—')}` ({st.get('commit', '')}) |")
+        run = f"`{st['run_id']}`" if st.get("run_id") else "—"
+        if st.get("commit"):
+            run += f" ({st['commit']})"
+        time = f"{st['elapsed_s']} s" if st.get("elapsed_s") is not None else "—"
+        lines.append(f"| `{script.name}` | {{.{cls}}}`{st['status']}` | {time} | {run} |")
     _write(site / "tutorials" / "_generated" / "status.md", "\n".join(lines) + "\n")
 
 
@@ -176,7 +189,31 @@ def studio_constants(site: Path, root: Path) -> None:
     _write(out, "\n".join(lines) + "\n")
 
 
+def release_status(site: Path, root: Path) -> None:
+    """The extras table (pyproject.toml, with the purposes of web/src/content/status.json) and the
+    feature status table, included by the install and GPU pages. One source for the site and the
+    documentation; an extra without a stated purpose stops the build."""
+    import json
+    import tomllib
+    status = json.loads((root / "web" / "src" / "content" / "status.json").read_text())
+    extras = tomllib.loads((root / "pyproject.toml").read_text())["project"]["optional-dependencies"]
+    missing = sorted(set(extras) - set(status["extras"]))
+    if missing:
+        raise ValueError(f"web/src/content/status.json: no purpose for the extras {missing}")
+    rows = ["| Extra | Adds | For |", "|---|---|---|"]
+    for name, reqs in extras.items():
+        adds = ", ".join(r.replace(">=", " ≥ ").replace("conatus[", "").rstrip("]").replace(",", ", ")
+                         for r in reqs)
+        rows.append(f"| `{name}` | {adds} | {status['extras'][name]} |")
+    _write(site / "guide" / "_generated" / "status_extras.md", "\n".join(rows) + "\n")
+    rows = ["| Part | Status | Note |", "|---|---|---|"]
+    for f in status["features"]:
+        rows.append(f"| {f['feature']} | {f['status']} | {f['note']} |")
+    _write(site / "guide" / "_generated" / "status_features.md", "\n".join(rows) + "\n")
+
+
 def all(site: Path, root: Path) -> None:  # noqa: A001 (module-level entry point)
+    release_status(site, root)
     error_catalogue(site, root)
     studio_constants(site, root)
     tutorial_status(site, root)

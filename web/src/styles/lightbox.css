@@ -63,6 +63,9 @@ html.lb-lock, html.lb-lock body { overflow: hidden; }
 .lb-prov a { color: var(--cn-silver); }
 .lb-caption a.repo-path { color: var(--cn-silver); text-decoration: underline; text-decoration-color: rgba(237, 235, 230, 0.4); text-underline-offset: 0.2em; }
 .lb-caption .repo-path code, .lb-caption code { background: rgba(237, 235, 230, 0.07); color: var(--cn-silver); }
+.lb-scale { display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.6rem; font-size: 0.78rem;
+  color: #D6D4CE; font-variant-numeric: tabular-nums; }
+.lb-ramp { flex: 0 1 14rem; height: 0.6rem; border: 1px solid rgba(237, 235, 230, 0.25); }
 .lb-hint { margin: 0.6rem 0 0; font-size: 0.72rem; color: #8A8A86; }
 
 @media (max-width: 700px) {

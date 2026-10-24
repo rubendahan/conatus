@@ -138,11 +138,13 @@ def main() -> int:
                         "commit": commit, "host": host, "stderr": bool(err), "script_sha256": sha}
         print(f"{verdict} {name} ({dt:.1f} s){'  [wrote to stderr]' if err else ''}", flush=True)
         if args.sync and verdict == "PASS":
+            shown = "\n".join(p.read_text() for p in (SITE / "tutorials").glob("*.md"))
             SYNC.mkdir(exist_ok=True)
             if not args.figures_only:
                 shutil.copy(out / f"{name}.txt", SYNC / f"{name}.txt")
-            for f in figdir.glob("*.png"):
-                _small_png(f, SYNC / f"{name}_{f.name}")
+            for f in figdir.glob("*.png"):          # only the figures a page shows
+                if f"outputs/{name}_{f.name}" in shown:
+                    _small_png(f, SYNC / f"{name}_{f.name}")
     status_path.write_text(json.dumps(status, indent=2))
     if args.sync and not args.figures_only:
         merged = SYNC / "STATUS.json"

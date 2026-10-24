@@ -1,0 +1,46 @@
+{
+  "_about": "The one source of the installation and feature status shown by the site and the documentation. The extras table is pyproject.toml's [project.optional-dependencies] (packages and versions) with the purpose written here: web/scripts/gen-data.mjs and docs/site/generate.py fail if an extra of pyproject.toml has no purpose here (a purpose of an extra that a tree does not ship is not shown). 'features' is the release status of each part, shown on the Install page and in the documentation (install and GPU pages).",
+  "extras": {
+    "tutorials": "The figures and labelled arrays of the tutorials.",
+    "gpu": "Device arrays for the CUDA backend (the CUDA wheel, or a source build with CONATUS_CUDA=ON).",
+    "mpi": "The distributed solver over several processes.",
+    "notebook": "Widgets for explain() and parameters in Jupyter.",
+    "studio": "The Studio server: watch and control runs from a browser.",
+    "dedalus-compare": "Dedalus 3, needed only by the optional check script of tutorial 14.",
+    "docs": "Building the documentation site.",
+    "dev": "Tests and lint.",
+    "all": "Every extra above except dedalus-compare."
+  },
+  "features": [
+    {
+      "feature": "CPU solvers (every geometry)",
+      "status": "supported",
+      "note": "The configuration the test suite runs for each release."
+    },
+    {
+      "feature": "Single GPU (backend=\"cuda\")",
+      "status": "experimental",
+      "note": "Double precision. Not retested on GPU hardware for the current release."
+    },
+    {
+      "feature": "Fused nonlinear kernels on the GPU",
+      "status": "experimental",
+      "note": "Box and channel: compiled fused kernels. Sphere, ball and shell: a right-hand side planned once, with generated product kernels. Disk, annulus and cylinder: not fused."
+    },
+    {
+      "feature": "Several processes or GPUs (MPI)",
+      "status": "not in this release",
+      "note": "doctor reports mpi4py if it is installed; the public release runs in one process."
+    },
+    {
+      "feature": "Studio, local server",
+      "status": "experimental",
+      "note": "pip install \"conatus[studio]\", then python -m conatus.studio.hub serve --local: the hub module, with a relay in the same process, on 127.0.0.1."
+    },
+    {
+      "feature": "Studio hosted hub and remote relays",
+      "status": "not supported in this release",
+      "note": "The hub and relay modules ship because the local server uses them. Serving the hub outside 127.0.0.1, or running a relay that connects to a remote hub, was not tested for this release, and the deployment files are not included. Planned."
+    }
+  ]
+}

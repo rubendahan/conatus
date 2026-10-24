@@ -89,6 +89,12 @@ def static_file(dist: Path, path: str) -> tuple[bytes, str, bool] | None:
 
 LOOPBACK_HOSTS = ("localhost", "127.0.0.1", "::1")
 SESSION_COOKIE = "cn_session"
+# The second secret of a hub session (review F11): the app sends it in this header, and in
+# the WebSocket subprotocol list as "cn-key.<key>" next to WS_PROTOCOL (browsers cannot set
+# headers on a WebSocket). The server answers with WS_PROTOCOL only, never the key.
+SESSION_KEY_HEADER = "X-CN-Session-Key"
+WS_PROTOCOL = "cn.v1"
+WS_KEY_PREFIX = "cn-key."
 _LABEL = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")
 
 
@@ -107,7 +113,7 @@ def loopback_host(host: str) -> bool:
     those: a page of another site that rebinds its DNS name to 127.0.0.1 (DNS rebinding) reaches
     the ssh tunnel with ITS name in ``Host``, and is refused (review).
 
-    Names under ``.localhost`` (``studio.localhost``) are accepted too (review F11, 0.1.2): the
+    Names under ``.localhost`` (``studio.localhost``) are accepted too (0.1.2): the
     name is reserved for the loopback (RFC 6761), so no outside site can rebind it, and browsers
     resolve it to 127.0.0.1 themselves. A Studio opened at such a name gets a cookie that the
     browser sends only to that name, not to other services on ``localhost``."""
@@ -120,14 +126,14 @@ def loopback_host(host: str) -> bool:
 
 
 def session_cookie_name(host: str, *, secure: bool) -> str:
-    """The name of the Studio session cookie for a request with this ``Host`` (review F11, 0.1.2).
+    """The name of the Studio session cookie for a request with this ``Host`` (0.1.2).
 
     Browsers key cookies by host name, not by port: every service on ``127.0.0.1`` receives
     the cookies set by any other one. Over HTTPS the name is ``__Host-cn_session``, which a
     browser accepts only as Secure, host-only and with ``Path=/``. Over plain HTTP that prefix
     is refused by browsers, so the local Studio uses ``cn_session_<port>``: two Studios on
     one host keep separate sessions. The name does not hide the cookie from another service
-    on the same host name (docs/site/guide/studio.md, F11)."""
+    on the same host name (docs/site/guide/studio.md)."""
     if secure:
         return f"__Host-{SESSION_COOKIE}"
     h = host.strip()
@@ -135,8 +141,26 @@ def session_cookie_name(host: str, *, secure: bool) -> str:
     return f"{SESSION_COOKIE}_{port}" if port.isdigit() else SESSION_COOKIE
 
 
+def ws_session_key(subprotocols: list[str] | str | None) -> str | None:
+    """The session key offered in a WebSocket subprotocol list (``cn-key.<key>``), else None.
+    Accepts the list or the raw ``Sec-WebSocket-Protocol`` header value."""
+    if isinstance(subprotocols, str):
+        subprotocols = subprotocols.split(",")
+    for p in subprotocols or ():
+        p = p.strip()
+        if p.startswith(WS_KEY_PREFIX) and len(p) > len(WS_KEY_PREFIX):
+            return p[len(WS_KEY_PREFIX):]
+    return None
+
+
+def ws_select_protocol(subprotocols: list[str]) -> str | None:
+    """The subprotocol a server answers: ``cn.v1`` when the app offered it (a browser that offered
+    subprotocols fails the socket when none is selected), else None. Never the key."""
+    return WS_PROTOCOL if WS_PROTOCOL in [p.strip() for p in subprotocols] else None
+
+
 def same_origin(headers: Mapping[str, str], host: str) -> bool:
-    """A state-changing request comes from this site's own pages (rule, shared by the hub
+    """A state-changing request comes from this site's own pages (shared by the hub
     and the local server): ``Sec-Fetch-Site`` decides when the browser sends it (``same-origin``
     or ``none``), else an ``Origin`` header, when present, must be this host."""
     site = headers.get("Sec-Fetch-Site")

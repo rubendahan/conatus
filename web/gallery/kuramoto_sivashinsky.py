@@ -94,14 +94,6 @@ def main() -> None:
         "colormap": "signed",
         "script": "web/gallery/kuramoto_sivashinsky.py",
         "example_script": "docs/site/tutorials/code/t05_ks_orbits.py",
-        "validated": {
-            "value": ("travelling wave TW2 seeded from a live L = 22 run: c = −0.349541, E = 0.604820, "
-                      "Newton residual 4.9e-16"),
-            "reference": ("Cvitanović, Davidchack & Siminos 2010, SIAM J. Appl. Dyn. Syst. 9, 1–33 "
-                          "(velocity 0.34954, energy 0.6048)"),
-            "source": "paper/conatus.tex §Live monitoring and control (Studio)",
-            "run_id": "",
-        },
         "geometry": "cartesian",
         "domain": "dynamics",
         "parameters": {"L": L, "N": N, "dealias": 1.5, "scheme": "RK443", "dt": a.dt,

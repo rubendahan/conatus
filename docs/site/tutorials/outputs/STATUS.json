@@ -1,8 +1,8 @@
 {
  "t00_first_steps": {
-  "elapsed_s": 29.2,
+  "elapsed_s": 13.9,
   "exit": 0,
-  "script_sha256": "fc40e6b3eb0132db",
+  "script_sha256": "ab11826364e6e045",
   "status": "PASS",
   "stderr": false
  },
@@ -41,14 +41,14 @@
   "stderr": false
  },
  "t04_bratu": {
-  "elapsed_s": 8.7,
+  "elapsed_s": 8.3,
   "exit": 0,
-  "script_sha256": "9c3b5128628b4e17",
+  "script_sha256": "997fc91ce53266ca",
   "status": "PASS",
   "stderr": false
  },
  "t05_ks_orbits": {
-  "elapsed_s": 66.6,
+  "elapsed_s": 687.3,
   "exit": 0,
   "script_sha256": "1481734c97ed43b4",
   "status": "PASS",
@@ -62,7 +62,7 @@
   "stderr": false
  },
  "t09_studio": {
-  "elapsed_s": 5.3,
+  "elapsed_s": 25.6,
   "exit": 0,
   "script_sha256": "c02d71c99dfd0e23",
   "status": "PASS",
@@ -97,9 +97,9 @@
   "stderr": false
  },
  "t14_from_dedalus": {
-  "elapsed_s": 5.5,
+  "elapsed_s": 2.4,
   "exit": 0,
-  "script_sha256": "835f55b72051bfc6",
+  "script_sha256": "5a740420eb488748",
   "status": "PASS",
   "stderr": false
  },

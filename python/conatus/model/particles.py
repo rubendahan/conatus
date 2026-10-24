@@ -38,7 +38,7 @@ last row of the file if it should continue them).
 
 This is the **in-simulation** interface; :class:`conatus.diagnostics.Particles` is the standalone
 one (any velocity, caller's dt and scheme, boundary "clip"/"raise", no file). The two contracts
-are compared in :mod:`conatus.diagnostics.lagrangian` (finding 63).
+are compared in :mod:`conatus.diagnostics.lagrangian`.
 """
 from __future__ import annotations
 
@@ -259,7 +259,7 @@ class Tracers:
         """The velocity at the start of a run (``Simulation.run`` calls it). The past flow
         states are kept when the run continues the last one (same time, same velocity
         coefficients): splitting a run into one-step calls used to reset them every call and
-        drop the convergence order from 3 to 2 (finding 14). They are
+        drop the convergence order from 3 to 2. They are
         dropped only when the state really changed (``sim.initial``, ``sim.restart``)."""
         c = self.probe.coefficients()
         if self._hist:

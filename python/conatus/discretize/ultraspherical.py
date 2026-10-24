@@ -21,6 +21,7 @@ import numpy as np
 import scipy.sparse as sp
 from scipy.special import eval_gegenbauer
 
+from ..ir.tails import coefficient_tail
 from ..tolerances import NCC_TAIL_TOL
 
 __all__ = [
@@ -109,9 +110,11 @@ class NCCReport:
 
     @property
     def resolved(self) -> bool:
+        """True when the NCC is exact, rounding-level, or its tail is within the accepted level."""
         return self.exact or self.rounding > 0 or self.tail <= self.accepted_tail
 
     def explain(self) -> str:
+        """Coefficients used, tail or exactness, and the accepted level of the NCC, one line."""
         s = (f"NCC {self.name}: {self.n_coeffs} of {self.n_given} Chebyshev coefficients used "
              f"(bandwidth {self.n_coeffs}), ")
         s += "exact polynomial coefficients" if self.exact else f"relative tail {self.tail:.2e}"
@@ -203,7 +206,7 @@ def suggested_size(a: np.ndarray, tol: float) -> int | None:
     slope = float(np.polyfit(k, y, 1)[0])
     if not slope < -1e-3:
         return None
-    tail = float(a[-3:].max()) / amax
+    tail = coefficient_tail(a)
     extra = (np.log10(tol) - np.log10(max(tail, 1e-300))) / slope
     m = int(np.ceil(n + max(extra, 1.0) + 3))
     return m + (m % 2)
@@ -242,7 +245,7 @@ def _ncc_coeffs(a_T: np.ndarray, name: str, cutoff: float | None, *,
     accepted = max(tol, cutoff or 0.0)
     rounding = not exact and amax > 0 and float(np.max(np.abs(a[-3:]))) <= floor
     if not exact and amax > 0 and not rounding:
-        given_tail = float(np.max(np.abs(a[-3:]))) / amax
+        given_tail = coefficient_tail(a)
         if not given_tail <= accepted:
             raise _unresolved(a, name, given_tail, accepted, tol, axis)
     keep = n_given

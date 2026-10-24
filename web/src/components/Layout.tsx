@@ -1,7 +1,7 @@
 // Page chrome: skip link, header (mark, navigation, search, theme), main, footer.
 // Also keeps <title> in sync after client-side navigation and restores scroll / hash targets.
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import { installTransitions } from "../lib/navigation";
 import NextStep from "./NextStep";
 import { findRoute, routes } from "../routes";

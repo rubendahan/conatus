@@ -1,5 +1,5 @@
 """Where the Revolve checkpoints of :class:`conatus.adjoint.FlowMap` live, and how a long reverse
-sweep is suspended and resumed by another job.
+sweep is suspended and resumed by another job (step 2).
 
 Stores (``FlowMap(..., checkpoint_store=...)``, explicit, shown by ``explain()``):
 
@@ -70,6 +70,7 @@ class CheckpointStore:
         self.stats = dict(puts=0, gets=0, bytes_out=0, bytes_in=0, seconds=0.0, peak_held=0)
 
     def held(self) -> list[int]:
+        """Steps whose checkpoint is stored, in increasing order."""
         return sorted(self._d)
 
     def _count(self, hist, t0: float, key: str) -> None:
@@ -80,15 +81,19 @@ class CheckpointStore:
         self.stats["peak_held"] = max(self.stats["peak_held"], len(self._d))
 
     def put(self, k: int, hist: list) -> None:
+        """Store the history ``hist`` of step ``k`` (references to the arrays) and update the
+        counters."""
         self._d[k] = list(hist)                  # references: the arrays are never modified
         self.stats["puts"] += 1
         self.stats["peak_held"] = max(self.stats["peak_held"], len(self._d))
 
     def get(self, k: int) -> list:
+        """The stored history of step ``k`` (a new list of the same arrays)."""
         self.stats["gets"] += 1
         return list(self._d[k])
 
     def drop(self, k: int) -> None:
+        """Forget the checkpoint of step ``k`` (no error if absent)."""
         self._d.pop(k, None)
 
     def to_host(self, k: int) -> list:
@@ -105,10 +110,12 @@ class CheckpointStore:
         self.put(k, [None if a is None else self.xp.asarray(a) for a in arrays])
 
     def clear(self) -> None:
+        """Drop every stored checkpoint."""
         for k in list(self._d):
             self.drop(k)
 
     def describe(self) -> str:
+        """Where the checkpoints are kept, one line."""
         return "device memory (references to the state arrays; default)"
 
 
@@ -118,6 +125,7 @@ class HostStore(CheckpointStore):
     kind = "host"
 
     def put(self, k: int, hist: list) -> None:
+        """Copy the history ``hist`` of step ``k`` to host memory (pinned buffers on the GPU)."""
         t0 = time.perf_counter()
         out = []
         for a in hist:
@@ -134,18 +142,22 @@ class HostStore(CheckpointStore):
         self._count(hist, t0, "puts")
 
     def get(self, k: int) -> list:
+        """Fresh device (or NumPy) copies of the history of step ``k``."""
         t0 = time.perf_counter()
         hist = [None if a is None else self.xp.array(a) for a in self._d[k]]  # fresh copies
         self._count(hist, t0, "gets")
         return hist
 
     def to_host(self, k: int) -> list:
+        """The stored host copies of step ``k``."""
         return list(self._d[k])
 
     def put_host(self, k: int, arrays: list) -> None:
+        """Store host arrays for step ``k`` (same as put)."""
         self.put(k, arrays)
 
     def describe(self) -> str:
+        """Where the checkpoints are kept (pinned host buffers or NumPy copies), one line."""
         return ("host memory (pinned buffers, copies device <-> host at every store and fetch)"
                 if self.xp is not np else "host memory (NumPy copies)")
 
@@ -164,6 +176,8 @@ class DiskStore(CheckpointStore):
         return self.dir / f"ck_{k:09d}_{j}.npy"
 
     def put(self, k: int, hist: list) -> None:
+        """Write the history ``hist`` of step ``k``, one .npy file per array, each written
+        atomically."""
         t0 = time.perf_counter()
         names = []
         for j, a in enumerate(hist):
@@ -177,23 +191,28 @@ class DiskStore(CheckpointStore):
         self._count(hist, t0, "puts")
 
     def get(self, k: int) -> list:
+        """Load the history of step ``k`` into the array module of the store."""
         t0 = time.perf_counter()
         hist = [None if p is None else self.xp.asarray(np.load(p)) for p in self._d[k]]
         self._count(hist, t0, "gets")
         return hist
 
     def drop(self, k: int) -> None:
+        """Delete the files of step ``k`` (no error if absent)."""
         for p in self._d.pop(k, None) or []:
             if p is not None:
                 p.unlink(missing_ok=True)
 
     def to_host(self, k: int) -> list:
+        """The history of step ``k`` as NumPy arrays read from disk."""
         return [None if p is None else np.load(p) for p in self._d[k]]
 
     def files(self, k: int) -> list | None:
+        """Paths of the files of step ``k`` (None for an absent array)."""
         return list(self._d[k])
 
     def put_host(self, k: int, arrays: list) -> None:
+        """Store host arrays for step ``k`` (same as put)."""
         self.put(k, arrays)
 
     def adopt(self, k: int, files: list) -> None:
@@ -209,10 +228,13 @@ class DiskStore(CheckpointStore):
         self._d[k] = names
 
     def describe(self) -> str:
+        """Where the checkpoints are kept (the directory), one line."""
         return f"disk, one .npy file per array in {self.dir} (atomic writes)"
 
 
 def make_store(kind: str, xp, directory=None) -> CheckpointStore:
+    """The checkpoint store of kind 'device', 'host' or 'disk' (the last needs ``directory``);
+    OptionError otherwise."""
     if kind == "device":
         return CheckpointStore(xp)
     if kind == "host":
@@ -339,6 +361,7 @@ class Journal:
         return st
 
     def read_arrays(self, names: list) -> list:
+        """Load the named .npy files of the journal directory (None stays None)."""
         return [None if n is None else np.load(self.dir / n) for n in names]
 
     def save(self, *, cursor: int, progress: int | None, bars: list, work: list | None,

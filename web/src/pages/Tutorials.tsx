@@ -4,7 +4,7 @@
 // differ. Tutorials are shown by topic and title, without course numbers (presentation review of 0.1.1,
 // priority 9: the numbered sequence had gaps). The first-steps tutorial is a page of this site; the others
 // are pages of the documentation.
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { DocLink, PageHead, Section } from "../components/ui";
 import { tutorials } from "../data";
 import type { Tutorial } from "../data/types";

@@ -11,21 +11,9 @@ from typing import Any
 
 import numpy as np
 
+from .._arrays import array_module, is_device  # noqa: F401 (re-export: one definition)
+
 __all__ = ["array_module", "on", "is_device"]
-
-
-def is_device(a: Any) -> bool:
-    """True for a CuPy array (checked by type module name: no CuPy import on CPU-only nodes)."""
-    return type(a).__module__.split(".")[0] == "cupy"
-
-
-def array_module(*arrays: Any):
-    """``cupy`` if any argument is a CuPy array, else ``numpy``."""
-    for a in arrays:
-        if is_device(a):
-            import cupy
-            return cupy
-    return np
 
 
 def on(xp, a: np.ndarray, cache: dict, key) -> Any:

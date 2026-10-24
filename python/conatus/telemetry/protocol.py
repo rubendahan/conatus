@@ -9,7 +9,7 @@ by the Studio server (see :mod:`conatus.telemetry.reader`):
 
 * ``<run_id>.jsonl``            — one JSON record per line, appended (telemetry plane);
 * ``<run_id>.frame.<name>.json`` — latest frame of ``name``, replaced atomically (visualization plane;
-  kinds ``frame`` (2D), and since ``frame3d``, ``points3d``, ``vec2d``: see FRAME_KINDS);
+  kinds ``frame`` (2D), ``frame3d``, ``points3d``, ``vec2d``: see FRAME_KINDS);
 * ``<run_id>.control.jsonl``    — commands written by the Studio, read by the computation;
 * ``<run_id>.film.ndjson``      — the film: frames kept for replay, compact encoding, bounded
   budget (see :func:`film_record`; the name does not match ``*.jsonl`` on purpose: older

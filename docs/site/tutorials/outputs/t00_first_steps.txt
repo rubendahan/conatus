@@ -1,4 +1,4 @@
-# t00_first_steps: PASS (exit 0) in 29.2 s | 2026-10-21 | script sha256 fc40e6b3eb0132db
+# t00_first_steps: PASS (exit 0) in 13.9 s | 2026-10-23 | script sha256 ab11826364e6e045
 Model 'Burgers': Box(x=periodic((0, 6.28319))) (Cartesian box)
 Unknowns: u (scalar); parameters: nu = 0.1
 Equations as written:

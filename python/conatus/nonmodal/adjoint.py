@@ -27,6 +27,7 @@ __all__ = ["AdjointComparison", "compare_adjoints", "discrete_adjoint_mode",
 
 
 def _eig_near(A: np.ndarray, target: complex):
+    """(eigenvalue, eigenvector) of the dense matrix ``A`` nearest to ``target``."""
     w, V = np.linalg.eig(A)
     i = int(np.argmin(np.abs(w - target)))
     return complex(w[i]), V[:, i]

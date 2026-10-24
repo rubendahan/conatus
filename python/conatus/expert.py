@@ -14,7 +14,7 @@ toolkit (adjoint FlowMap, invariant solutions, continuation, Floquet--Hill, tran
 units, study presets, the methods text generator, run provenance, the error classes, the GPU query
 and verification. Nothing is added or changed here.
 
-What is exported is a reviewed list (``_PUBLIC``, decision M5 of release 0.2): a name of a
+What is exported is a reviewed list (``_PUBLIC``): a name of a
 module's ``__all__`` is flattened here only if the documentation shows it
 (the development test suite); every exception class of ``conatus.errors`` is (the
 error catalogue of the guide documents each). The other names stay importable from their module
@@ -36,7 +36,7 @@ Name clashes are never resolved silently. Three kinds, all listed by ``explain()
 * an object takes the name of a module (the function ``linearize``): the module stays
   ``conatus.linearize`` (callable as the function, see above); listed in ``MODULE_NAME_TAKEN``.
 
-``sensitivity`` is the ``conatus.sensitivity`` (``eigenvalue_sensitivity``,
+``sensitivity`` is the package ``conatus.sensitivity`` (``eigenvalue_sensitivity``,
 ``structural_sensitivity``, ...). The low-level ``d sigma / dp`` of a dense EVP result, formerly
 flattened here under that same name, is ``conatus.solvers.sensitivity`` (still
 ``conatus.api.sensitivity`` in the deprecated alias).

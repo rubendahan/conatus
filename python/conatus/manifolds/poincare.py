@@ -1,5 +1,5 @@
 """Poincaré sections and first-return maps with declared dense interpolation.
-Notes: §2.
+Notes:
 
 A section is the zero set of a scalar function g(x) crossed in a declared direction
 (+1: g increasing, −1: decreasing, 0: both). Hyperplanes g(x) = ⟨n, x − x*⟩ are built by

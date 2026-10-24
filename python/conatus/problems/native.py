@@ -272,7 +272,7 @@ def rotating_shell_convection_evp(*, eta: float, Ra: float, E: float,
     Same eigenvalues as :func:`conatus.problems.rotating_shell_convection_evp` (E-scaled rows,
     implicit Coriolis) to round-off (Nr = 24, Lmax = 15: 6e-14 on the leading mode). Validation
     reference: eta = 0.35, E = 1e-3, Pr = 1: m_c = 4, Ra_c = 55.904299, omega_c =
-    -0.0230918 Omega (expert, (Nr, Lmax) = (32, 48)); Skene & Tobias 2024, Table 1: 55.9, 4,
+    -0.0230918 Omega (expert, (Nr, Lmax) = (32, 48)); Skene & Tobias 2025, Table 1: 55.9, 4,
     -0.0231; Barik et al. 2023: 55.904296."""
     return _shell(eta, Ra, E, Pr).linearize(about={"u": 0, "T": 0})
 

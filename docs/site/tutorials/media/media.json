@@ -115,6 +115,13 @@
    "mp4": 114169
   },
   "loop": "the last frame returns to the first (the motion is periodic)",
+  "generation": {
+   "command": "python docs/site/tutorial_media.py capture --out DATA --only t05 && python docs/site/tutorial_media.py render --data DATA --only t05",
+   "sha256": {
+    "webm": "754df14b504ad7d476699e55747cfa7706778b187d3162030210d6e5095bb4a1",
+    "mp4": "917b194d2af5dd331e0a313b7b114198c3a678802ba166507482b5cc70f20c04"
+   }
+  },
   "alt": "A yellow-green curve u(x) wriggles in the upper part of the frame while, below, its history fills a red and blue space-time map from the bottom up over two periods of the orbit.",
   "caption": "The pre-periodic orbit over two periods: the state u(x) (top) and its space-time map filling up (bottom). Every frame is a time step of the orbit's flow map."
  },
@@ -153,7 +160,7 @@
   "file": "tutorials/media/t10_cycles.png",
   "tutorial": "t10",
   "kind": "figure",
-  "alt": "Nested closed loops in the (x, z) plane around the point C+, small ones near it and larger ones further out.",
+  "alt": "Nested closed loops in the (x, z) plane around the point C−, small ones near it and larger ones further out.",
   "caption": "The periodic orbits of the cycle branch (orthogonal collocation, 40 intervals of degree 4) for r from 24.735 down to 22.335 (colour bar): born at the Hopf point around the equilibrium of the continued branch (cross), they grow as r decreases.",
   "width": "100%"
  },
@@ -217,8 +224,8 @@
   "file": "tutorials/media/t15_exponents.png",
   "tutorial": "t15",
   "kind": "figure",
-  "alt": "Twelve Lyapunov exponents with error bars, close to zero for the first eight and dropping near -2 after; the first 10 sit on red ticks of the published values.",
-  "caption": "The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors. Red ticks mark the 10 published values (Cvitanović et al. 2010), so exponents 11 to 12 have no reference tick. The first eight are the entangled modes.",
+  "alt": "Left: twelve Lyapunov exponents with error bars, the first eight between about 0.04 and -0.32, then two near -2 and two near -5.6; the first 10 sit on red ticks of the published values. Right: the first 8 enlarged, with their error bars and reference ticks.",
+  "caption": "The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors (left), and the first 8 on a finer scale (right). Red ticks mark the 10 published values (Cvitanović et al. 2010); exponents 11 to 12 have no reference. The first 8 are the entangled modes.",
   "width": "100%"
  },
  {
@@ -233,8 +240,8 @@
   "file": "tutorials/media/t15_domination.png",
   "tutorial": "t15",
   "kind": "figure",
-  "alt": "A triangular matrix of probabilities: red squares among the first eight indices, near white elsewhere.",
-  "caption": "Domination of Oseledets splitting: how often the local exponent i falls below j over windows of 5 time units. Violations stay among the first eight modes: they form one entangled block.",
+  "alt": "A triangular matrix of probabilities: red squares among the first 8 indices and inside the pairs 9–10 and 11–12; near white across the splits between them.",
+  "caption": "Domination of the Oseledets splitting: how often the local exponent i falls below j over windows of 5 time units. The first 8 modes form the leading cluster: no violation crosses the split 8 | 9. Later modes are entangled among themselves in the pairs 9–10 and 11–12, each separated from the leading cluster.",
   "width": "100%"
  },
  {
@@ -269,6 +276,13 @@
    "mp4": 65103
   },
   "loop": "run frames, then a 0.5 s cross-fade from the last frame to the first",
+  "generation": {
+   "command": "python docs/site/tutorial_media.py capture --out DATA --only t16 && python docs/site/tutorial_media.py render --data DATA --only t16",
+   "sha256": {
+    "webm": "0542d2fb2e0c4d11669956916ead5eb38dea8c57853fdc207d12c6b583a72f11",
+    "mp4": "c2b0bae8dd07348fd1c07eb493ce7fed6e7c59749b21380daaca4fd134519290"
+   }
+  },
   "alt": "A round grey dye blob in a channel is sheared into a long tilted streak while five yellow-green tracers glide left and right at their own heights, those on the walls moving with them.",
   "caption": "The Couette block of the page from t = 0 to 3: the dye field and the five tracers, every two time steps. The film closes its loop with a 0.5 s cross-fade: a display transition, not part of the run."
  }

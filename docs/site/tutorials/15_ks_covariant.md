@@ -9,7 +9,7 @@ an empirical result for these trajectory lengths and thresholds; check how it ch
 **Goal.** Compute the twelve leading exponents and covariant vectors of KS $L = 22$ from a native
 model with `sim.lyapunov`, check their covariance, and count the entangled modes from the
 domination of the Oseledets splitting.
-**Expected.** Cvitanović, Davidchack & Siminos (2010, p. 12) tabulate ten values, $(0.048, 0, 0,
+**Expected.** Cvitanović, Davidchack & Siminos (2010, §2, p. 12 of arXiv:0709.2944) give the leading exponents; the first ten are $(0.048, 0, 0,
 -0.003, -0.189, -0.256, -0.290, -0.310, -1.963, -1.967)$, in the zero-mean subspace; the page
 compares its first ten estimates with them; Ding, Chaté, Cvitanović,
 Siminos & Takeuchi (2016): eight physical modes. **Time:** about two minutes on one CPU core.
@@ -52,13 +52,13 @@ between recomputed and stored factors (zero), the **backward convergence** (the 
 from two independent random starts of the backward iteration, compared: small except inside nearly
 degenerate pairs such as the two zero exponents, which converge slowly) and the **covariance
 residual**: each vector advanced by the tangent of the step over one interval must be parallel to
-the vector there, to its rounding floor.
+the vector there; `explain()` gives the measured residual and its ratio to the rounding scale.
 
 ```{figure} media/t15_exponents.png
-:alt: Twelve Lyapunov exponents with error bars, close to zero for the first eight and dropping near -2 after; the first 10 sit on red ticks of the published values.
+:alt: Left: twelve Lyapunov exponents with error bars, the first eight between about 0.04 and -0.32, then two near -2 and two near -5.6; the first 10 sit on red ticks of the published values. Right: the first 8 enlarged, with their error bars and reference ticks.
 :width: 100%
 
-The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors. Red ticks mark the 10 published values (Cvitanović et al. 2010), so exponents 11 to 12 have no reference tick. The first eight are the entangled modes.
+The twelve leading exponents of Kuramoto-Sivashinsky at L = 22, with their standard errors (left), and the first 8 on a finer scale (right). Red ticks mark the 10 published values (Cvitanović et al. 2010); exponents 11 to 12 have no reference. The first 8 are the entangled modes.
 ```
 
 ## Tangencies and domination
@@ -83,10 +83,10 @@ Angles between the span of the first j covariant vectors and the rest, at each s
 ```
 
 ```{figure} media/t15_domination.png
-:alt: A triangular matrix of probabilities: red squares among the first eight indices, near white elsewhere.
+:alt: A triangular matrix of probabilities: red squares among the first 8 indices and inside the pairs 9–10 and 11–12; near white across the splits between them.
 :width: 100%
 
-Domination of Oseledets splitting: how often the local exponent i falls below j over windows of 5 time units. Violations stay among the first eight modes: they form one entangled block.
+Domination of the Oseledets splitting: how often the local exponent i falls below j over windows of 5 time units. The first 8 modes form the leading cluster: no violation crosses the split 8 | 9. Later modes are entangled among themselves in the pairs 9–10 and 11–12, each separated from the leading cluster.
 ```
 
 ## Check

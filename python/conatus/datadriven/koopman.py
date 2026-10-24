@@ -8,7 +8,7 @@ empirical Gram matrices (uniform sample weights 1/m, declared)
 
 K ξ_k = μ_k ξ_k gives Koopman eigenvalues μ_k and eigenfunctions φ_k(x) = ψ(x) ξ_k. The Koopman
 modes v_k (state = Σ_k φ_k(x) v_k) are the least-squares fit of the full-state observable on the
-eigenfunctions. Residual of each pair (ResDMD, Colbrook & Townsend 2023):
+eigenfunctions. Residual of each pair (ResDMD, Colbrook & Townsend 2024):
 
     res_k² = ξᴴ (L − μ̄ A − μ Aᴴ + |μ|² G) ξ / ξᴴ G ξ,   L = Ψ_Yᴴ Ψ_Y / m,
 

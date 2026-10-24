@@ -87,7 +87,7 @@ def stability_dae(solver, sol: ECSSolution, *, dense_max: int, finite_max: float
     translation vector t = ∂x U is non-zero, lies in the kernel (‖A t‖ ≤ ``translation_kernel_tol``
     · ‖A‖_F ‖t‖, A = J_F − L + c M ∂x) and one eigenvector overlaps it by at least
     ``translation_overlap_min``. Otherwise nothing is removed and ``out["translation"]`` says why
-    (on an x-invariant state the most unstable mode used to be removed)."""
+    (on an x-invariant state the most unstable mode is kept)."""
     sysm = solver.system
     n = sysm.n
     if n > dense_max:

@@ -47,8 +47,9 @@ durations of the problem (each a whole number of steps or of intervals `reortho_
   `explain()`).
 - `explain()` also gives the **backward convergence** (the covariant vectors from two independent
   random starts of the backward iteration, compared: the error left by `clv_backward`), the
-  **covariance residual** (each vector advanced by the exact tangent over one interval is parallel to
-  the vector there, to its rounding floor) and the smallest principal angle at every split.
+  **covariance residual** (each vector advanced by the tangent of the discrete map over one
+  interval is parallel to the vector there; `explain()` gives the measured residual and its ratio
+  to the rounding scale) and the smallest principal angle at every split.
 - `res.angles(j)`, `res.pair_angle(i, j)`: angles at every kept time; `res.clv_grid("u", i)`: a
   covariant vector as grid values.
 - `res.domination(tau)`: the fraction of windows of length $\tau$ where the local growth rates of

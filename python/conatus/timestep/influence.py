@@ -44,6 +44,7 @@ class KleiserSchumannStokes:
         self._modes: dict = {}
 
     def explain(self) -> str:
+        """Size, parameters and solves of the Kleiser-Schumann Stokes solver."""
         return (f"KleiserSchumannStokes: N = {self.N}, Re = {self.Re:g}, c = {self.c:g}; per mode "
                 "1 Poisson + 3 Helmholtz Chebyshev-tau solves (2 boundary rows each) and a 2x2 "
                 "influence matrix for D v(+-1) = 0; no tau-error correction (interior divergence "

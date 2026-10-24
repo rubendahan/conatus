@@ -233,10 +233,12 @@ class FourierFourierChebyshev:
 
     @property
     def grid_shape(self) -> tuple:
+        """Grid shape (non-periodic axis first, then the two Fourier axes)."""
         a, b = self.fa
         return (self.M[self.cy], self.M[a], self.M[b])
 
     def backward(self, c):
+        """Grid values of the coefficients ``c`` (3-D batched transform)."""
         if self._gpu is not None:
             return self._gpu.backward(c)
         xp = self.xp
@@ -272,6 +274,7 @@ class FourierFourierChebyshev:
         return v
 
     def forward(self, g):
+        """Coefficients of the grid values ``g`` (3-D batched transform, dealiasing projection)."""
         if self._gpu is not None:
             return self._gpu.forward(g)
         xp = self.xp

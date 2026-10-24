@@ -48,6 +48,10 @@ from typing import Any
 import numpy as np
 
 from .errors import InputTypeError, OptionError, UnsupportedError
+from .ir.tails import TAIL_FRACTION, TAIL_MIN_MODES, envelope_tail, mode_envelope  # noqa: F401
+from .ir.tails import basis_family as _family
+from .ir.tails import mode_numbers as _mode_numbers
+from .ir.tails import tail_window as _n_tail
 from ._repr import compact_repr
 
 # Documented names only (M5, 0.2); the others stay importable from this module.
@@ -55,8 +59,7 @@ __all__ = ["resolution_report", "estimate_modes", "ResolutionReport", "TAIL_TARG
            "TAIL_MARGINAL"]
 
 # ---------------------------------------------------------------- declared thresholds
-TAIL_FRACTION = 0.10       # the tail window is the last 10 % of the mode numbers ...
-TAIL_MIN_MODES = 2         # ... and at least 2 mode numbers
+# TAIL_FRACTION (0.10), TAIL_MIN_MODES (2): the tail window, defined in conatus.ir.tails
 TAIL_TARGET = 1e-8         # tail <= this: "resolved" (default target of the recommendation)
 TAIL_MARGINAL = 1e-4       # tail <= this: "marginal"; above: "under-resolved"
 FIT_FLOOR = 1e-13          # envelope below FIT_FLOOR * max: round-off plateau, not fitted
@@ -72,36 +75,6 @@ _ASSUMPTION = ("assumes the exponential decay fitted on the resolved modes conti
 
 
 # ---------------------------------------------------------------- basis helpers
-def _family(basis) -> str:
-    """'poly' (degree = index), 'rfourier' or 'cfourier'; UnsupportedError otherwise."""
-    from .ir.bases import ComplexFourier, Jacobi, RealFourier
-    if isinstance(basis, RealFourier):
-        return "rfourier"
-    if isinstance(basis, ComplexFourier):
-        return "cfourier"
-    if isinstance(basis, Jacobi):
-        return "poly"
-    raise UnsupportedError(
-        f"resolution report: basis {type(basis).__name__} is not supported",
-        where=f"direction {basis.coord.name}",
-        why="only Chebyshev/Legendre/Jacobi (degree) and Fourier (|wavenumber|) coefficients have "
-            "a mode number this module interprets; guessing one would give a wrong tail",
-        fix="inspect the coefficients yourself (solver.coeffs(name)) for this basis")
-
-
-def _mode_numbers(basis) -> tuple[np.ndarray, int]:
-    """Mode number of every coefficient index (-1 = excluded) and the number of mode numbers."""
-    N, fam = basis.size, _family(basis)
-    if fam == "poly":
-        return np.arange(N), N
-    if fam == "rfourier":
-        return np.arange(N) // 2, N // 2
-    m = np.abs(np.rint(np.fft.fftfreq(N) * N)).astype(int)
-    if N % 2 == 0:
-        m[N // 2] = -1                 # Nyquist entry, always zero by convention
-    return m, (N + 1) // 2
-
-
 def _size_for(modes: int, basis) -> int:
     """Basis size N that holds ``modes`` mode numbers."""
     return modes if _family(basis) == "poly" else 2 * modes
@@ -116,15 +89,7 @@ def _envelope(c: np.ndarray, axis: int, basis) -> np.ndarray:
         # Python's max(0.0, nan) is 0.0, so an all-NaN field was "zero" and the report
         # said "all resolved"; a NaN in the tail was dropped from the tail)
         return np.full(M, np.nan)
-    e = np.zeros(M)
-    for i, m in enumerate(mnum):
-        if m >= 0:
-            e[m] = max(e[m], a[i])
-    return np.maximum.accumulate(e[::-1])[::-1]
-
-
-def _n_tail(M: int) -> int:
-    return min(M, max(TAIL_MIN_MODES, math.ceil(TAIL_FRACTION * M)))
+    return mode_envelope(a, mnum, M)
 
 
 # ---------------------------------------------------------------- one direction
@@ -214,9 +179,9 @@ def _analyse(variable: str, c: np.ndarray, axis: int, basis, target: float,
     fit, sigma, npts = None, None, 0
     if emax > 0 and np.isfinite(emax):
         # a tail window that covers every mode number holds the mean (mode 0) too: its "tail"
-        # would be 1 whatever the data (F101-10-16: a constant on N = 4 Fourier
+        # would be 1 whatever the data (earlier versions: a constant on N = 4 Fourier
         # modes was "under-resolved, tail 1.0"; same rule as the run-time check of lot B)
-        tail = float(E[M - nt] / emax) if M - nt >= 1 else float("nan")
+        tail = envelope_tail(E, emax) if M - nt >= 1 else float("nan")
         idx = np.nonzero(E > FIT_FLOOR * emax)[0]
         idx = idx[int(len(idx) * (1 - FIT_FRACTION)):] if len(idx) >= 2 * MIN_FIT_POINTS else idx
         npts = int(idx.size)
@@ -288,7 +253,7 @@ class ResolutionReport:
     @property
     def unmeasured(self) -> list[str]:
         """Variables of the plan the report did not measure because the state lacks them (tau
-        variables and constants are not counted). Review 0.1.1, F10: an empty state gave zero
+        variables and constants are not counted). An empty state never gives zero
         entries, ``ok=True`` and "all resolved"."""
         return [v for v, why in self.skipped if why == _NOT_IN_STATE]
 
@@ -439,8 +404,8 @@ def _coefficients(plan, state: Any, layout: str | None) -> dict[str, np.ndarray]
 def _check_shape(plan, v, data: Any, layout: str) -> np.ndarray:
     """``data`` as an array of the shape of variable ``v`` on ``plan`` (components first, then
     one axis per coordinate; coefficient and grid layouts have the same shape on a Cartesian
-    plan). Review 0.1.1, F17: a 2-entry array for an N = 16 variable raised a bare IndexError
-    from inside the tail measurement."""
+    plan). A wrongly shaped array is refused with its shape (a 2-entry array for an N = 16
+    variable would otherwise raise a bare IndexError inside the tail measurement)."""
     a = np.asarray(data)
     want = plan._grid_shape(v.domain, v.tensorsig)
     if a.shape != want:

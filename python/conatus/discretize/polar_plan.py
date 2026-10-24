@@ -941,6 +941,7 @@ class PolarPlan:
         return explain_html(self)
 
     def explain(self, group: PolarGroup | None = None) -> str:
+        """Bases, groups, equation spaces and rank report of ``group`` (default the first one)."""
         S = self.space
         g0 = self.groups[0] if group is None else group
         gm = self._assemble(g0)

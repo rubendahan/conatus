@@ -25,7 +25,8 @@ from typing import Any
 
 import numpy as np
 
-from ..tolerances import SPURIOUS_SIGNIFICANT, SPURIOUS_TAIL_FRACTION, SPURIOUS_TAIL_TOL
+from ..ir.tails import energy_tails as spectral_tails
+from ..tolerances import SPURIOUS_TAIL_FRACTION, SPURIOUS_TAIL_TOL
 
 __all__ = ["SPURIOUS_MODES", "check_spurious", "tail_layout", "spectral_tails", "check_selected",
            "unresolved_sentence"]
@@ -72,8 +73,11 @@ def tail_layout(plan: Any, group: Any, reduced: bool) -> tuple[list, str] | tupl
                       f"({type(plan).__name__}): no spurious-mode flag")
     try:
         taus = _tau_names(plan)
-    except Exception:  # noqa: BLE001 -- a plan without the IR layout has no tau to report
+    except AttributeError:                   # a plan without the IR layout has no tau to report
         taus = set()
+    except Exception as err:  # noqa: BLE001 -- reported on the result, not hidden (audit 0.1.2, F37)
+        return None, ("spectral-tail test unavailable: the tau variables could not be identified "
+                      f"({type(err).__name__}: {err}); no spurious-mode flag")
     if not taus:
         return None, ""                      # no tau: no spurious tau mode to flag
     zc = plan.layout.zcoord
@@ -102,28 +106,6 @@ def tail_layout(plan: Any, group: Any, reduced: bool) -> tuple[list, str] | tupl
     if not out:
         return None, ""
     return out, ""
-
-
-def spectral_tails(layout: list, V: np.ndarray) -> np.ndarray:
-    """Relative tail energy of each column of ``V`` (see the module docstring)."""
-    V = np.asarray(V)
-    m = V.shape[1]
-    ratios, energies = [], []
-    for _name, idx, pieces in layout:
-        C = np.where((idx >= 0)[..., None], V[np.maximum(idx, 0)], 0.0)   # (rows, nz, m)
-        E = np.abs(C) ** 2
-        tot = E.sum(axis=(0, 1))
-        tail = np.zeros(m)
-        for a, b in pieces:
-            k = max(2, int(np.ceil(SPURIOUS_TAIL_FRACTION * (b - a))))
-            tail = tail + E[:, b - k:b, :].sum(axis=(0, 1))
-        energies.append(tot)
-        ratios.append(np.where(tot > 0, tail / np.where(tot > 0, tot, 1.0), 0.0))
-    energies = np.array(energies)
-    ratios = np.array(ratios)
-    top = energies.max(axis=0)
-    significant = energies >= SPURIOUS_SIGNIFICANT * np.where(top > 0, top, 1.0)
-    return np.where(significant, ratios, 0.0).max(axis=0)
 
 
 def flag(res: Any, layout: list | None, note: str) -> None:

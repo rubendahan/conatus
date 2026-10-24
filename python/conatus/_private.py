@@ -1,4 +1,4 @@
-"""Files that only their owner may read: tokens, audit logs, run telemetry (review F12, 0.1.2).
+"""Files that only their owner may read: tokens, audit logs, run telemetry (0.1.2).
 
 A file opened with ``open(path, "a")`` gets ``0666 & ~umask``: ``0644`` under the common umask
 022, so other accounts on a shared machine could read a run's log, scalars and films, and the

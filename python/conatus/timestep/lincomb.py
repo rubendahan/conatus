@@ -32,6 +32,7 @@ class CsrApply:
         self.A, self.x, self._v = A, x, None
 
     def value(self):
+        """A @ x, computed on first use and kept."""
         if self._v is None:
             self._v = self.A @ self.x
         return self._v

@@ -6,11 +6,11 @@ constant step k = dt:
 * SBDF1–4: semi-implicit backward differentiation (Wang & Ruuth 2008); same coefficients as the
   C++ ``ImexIntegrator``.
 * CNAB1, CNAB2, MCNAB2, CNLF2: Crank–Nicolson-type multistep IMEX (Wang & Ruuth 2008,
-  J. Comput. Math. 26, eqs. 2.5.3, 2.9, 2.10, 2.11), written
+  J. Comput. Math. 26, eqs. 2.5 with γ = 1/2, 2.9, 2.10, 2.11), written
   ``sum_j a_j M X^{n+1-j} + sum_j b_j L X^{n+1-j} = sum_{j>=1} c_j F^{n+1-j}``; they keep a
   history of M X, L X and F (``_MXh``, ``_LXh``, ``_Fh``).
 * RK111, RK222, RK443 (Ascher, Ruuth & Spiteri 1997), RKSMR (Spalart, Moser & Rogers 1991,
-  Appendix), RKGFY (Hollerbach 2002): IMEX Runge–Kutta tableaux (A, H, c), one implementation
+  Appendix), RKGFY (Heun / Crank–Nicolson pair): IMEX Runge–Kutta tableaux (A, H, c), one implementation
   (:meth:`IVPSolver.rk_stages`).
 
 The stacked global system of all Fourier groups is solved with batched C++ bordered banded
@@ -45,6 +45,9 @@ Modules that handle only some families (adjoint, ensembles, distributed solver, 
 read ``solver.family`` ("sbdf", "cn", "rk") and refuse the others explicitly
 (:func:`require_family`): ``solver.order`` is the SBDF order only (0 for every other scheme), so
 no CN scheme is ever treated as SBDF.
+
+The scheme catalogue and coefficients are in :mod:`conatus.timestep.schemes`, the checks shared
+by every ``run`` in :mod:`conatus.timestep.run_checks`; this module re-exports their names.
 """
 from __future__ import annotations
 
@@ -64,27 +67,22 @@ from .lincomb import CsrApply, rk_rhs, sbdf_rhs
 from .spectral import SpectralError, SpectralEvaluator
 from .system import GlobalSystem
 from .._deprecation import renames
+from .schemes import (  # noqa: F401 (re-export: moved to schemes.py)
+    BC_TIMES, CN_SCHEMES, RK_SCHEMES, SBDF_SCHEMES, SCHEMES, STARTUPS, _SCHEME_INFO,
+    cn_coefficients, require_family, rk_tableau, sbdf_coefficients, scheme_description,
+    scheme_family, setup_scheme,
+)
+from .run_checks import (  # noqa: F401 (re-export: moved to run_checks.py)
+    FINITE_CHECK_EVERY, WHOLE_STEPS_TOL, _OTHER_FORMATS, backend_hint, check_callback,
+    check_checkpoint_suffix, check_dt_backend, check_params_unchanged, check_state_finite,
+    check_steps, check_substeps, check_time_parameter, finite_cadence, is_whole,
+    solver_finite_check,
+)
 
 __all__ = ["IVPSolver", "SCHEMES", "SBDF_SCHEMES", "CN_SCHEMES", "RK_SCHEMES", "rk_tableau",
            "sbdf_coefficients", "cn_coefficients", "scheme_family", "scheme_description",
            "setup_scheme", "require_family", "STARTUPS", "BC_TIMES"]
 
-SBDF_SCHEMES = ("SBDF1", "SBDF2", "SBDF3", "SBDF4")
-CN_SCHEMES = ("CNAB1", "CNAB2", "MCNAB2", "CNLF2")
-RK_SCHEMES = ("RK111", "RK222", "RK443", "RKSMR", "RKGFY")
-SCHEMES = ("SBDF1", "SBDF2", "SBDF3", "SBDF4", "RK111", "RK222", "RK443",
-           "CNAB1", "CNAB2", "MCNAB2", "CNLF2", "RKSMR", "RKGFY")
-STARTUPS = ("lower_order", "rk443")
-# time-dependent boundary data: "auto" (default) = "rk" when g'(t) is exact, else
-# "stage" (declared); "rk" = stage values from the scheme applied to g'(t); "stage" = g(t_stage);
-# "step" = the Dedalus convention (g carried by F with the explicit weights)
-BC_TIMES = ("auto", "rk", "stage", "step")
-#: Finite-state check: with ``check_finite=True`` (the default) the state is
-#: tested for NaN/inf every FINITE_CHECK_EVERY steps, at the end of every ``run``/``run_graph``
-#: call and before every checkpoint or analysis write; a blown-up run stops with a NumericalError
-#: naming the step, the time and the field. One reduction over the state (one host sync on the
-#: GPU) per check: measured below 1 % of the step cost (docs/site/guide/timesteppers.md).
-FINITE_CHECK_EVERY = 100
 #: Run-time resolution check: at every finite-state check the relative
 #: spectral tail of each unknown along each direction (``conatus.resolution``: largest coefficient
 #: among the last 10 % of the mode numbers over the largest one) is measured on the coefficients
@@ -101,387 +99,6 @@ FINITE_CHECK_EVERY = 100
 RUN_TAIL_TOL = 1e-3
 RUN_TAIL_FLOOR = 1e-12
 RUN_TAIL_MIN_MODES = 3
-#: One whole-number rule for "a horizon is a whole number of steps" (
-#: P4.4: run(until=), the watch's dt setter, flowmap(T), shell Floquet, pipe orbits and edge
-#: tracking used 1e-9 or 1e-12): n = T/dt is whole when |n - round(n)| <= WHOLE_STEPS_TOL x
-#: max(1, |n|). The quotient of two decimals written with ~10 significant digits (T = 0.3999,
-#: dt = T/4000) stays within it; a step that does not divide the horizon misses it by >= 1/n.
-WHOLE_STEPS_TOL = 1e-9
-
-
-def is_whole(n: float) -> bool:
-    """``n`` (a number of steps T/dt) is whole within :data:`WHOLE_STEPS_TOL`."""
-    return abs(n - round(n)) <= WHOLE_STEPS_TOL * max(1.0, abs(n))
-
-
-def finite_cadence(check_finite: Any, where: str) -> int:
-    """Steps between two finite-state checks: ``True`` -> FINITE_CHECK_EVERY, ``False`` -> 0
-    (off, declared by explain()), a positive int -> that cadence."""
-    if check_finite is True:
-        return FINITE_CHECK_EVERY
-    if check_finite is False:
-        return 0
-    if isinstance(check_finite, (int, np.integer)) and not isinstance(check_finite, bool) \
-            and check_finite > 0:
-        return int(check_finite)
-    raise OptionError(f"{where}: check_finite={check_finite!r}",
-                      why="the finite-state check is on (True: every "
-                          f"{FINITE_CHECK_EVERY} steps), off (False) or every n steps (n > 0)",
-                      fix="check_finite=True (default), check_finite=10 or check_finite=False",
-                      doc="docs/site/guide/timesteppers.md")
-
-
-def solver_finite_check(solver: Any, where: str) -> None:
-    """The finite-state check of ``solver`` from outside its step loop (outputs, checkpoints,
-    error control): its own ``_check_finite`` when it has one (collective in the distributed
-    solver: every rank must call it at the same iteration), else :func:`check_state_finite`."""
-    own = getattr(solver, "_check_finite", None)
-    if callable(own):
-        own(where)
-    else:
-        check_state_finite(solver, where)
-
-
-def check_state_finite(solver: Any, where: str) -> None:
-    """Raise NumericalError if the state ``solver.X`` holds a NaN or an inf (one reduction; on
-    the GPU one host synchronisation). Names the first non-finite unknown, the iteration and the
-    time, and the last iteration at which the state was checked finite."""
-    xp = getattr(solver, "xp", np)
-    X = solver.X
-    if bool(xp.isfinite(X).all()):
-        solver._finite_ok = (solver.iteration, solver.t)
-        return
-    from ..errors import NumericalError
-    bad, count = "?", 0
-    try:
-        system = solver.system
-        for v, c in zip(system.variables, system.scatter(X), strict=True):
-            n = int(xp.count_nonzero(~xp.isfinite(c)))
-            if n:
-                bad, count = v.name, n
-                break
-    except Exception:  # noqa: BLE001 -- naming the field is a courtesy; the error is raised anyway
-        pass
-    last = getattr(solver, "_finite_ok", None)
-    since = (f"; last checked finite at iteration {last[0]} (t = {last[1]:.10g})" if last
-             else "")
-    raise NumericalError(
-        f"non-finite state (NaN or inf) at iteration {solver.iteration}, t = {solver.t:.10g}: "
-        f"unknown {bad!r} ({count} non-finite coefficient(s)){since}",
-        where=where,
-        why="the run has blown up (a numerical instability, or a physical one the resolution "
-            "cannot follow); stepping further would only produce NaN outputs and checkpoints",
-        fix=f"reduce dt (now {solver.dt:g}; sim.cfl('u', safety=0.5) gives the advective limit), "
-            "raise the resolution N, check the initial state and the parameters, or use a more "
-            "stable scheme; check_finite=False turns this check off (declared by explain())",
-        doc="docs/site/guide/timesteppers.md")
-
-# (family, implicit part, explicit part, global IMEX order, reference): explain() and the docs.
-_SCHEME_INFO = {
-    "SBDF1": ("multistep", "backward Euler", "forward Euler", 1, "Wang & Ruuth 2008"),
-    "SBDF2": ("multistep", "BDF2", "2-step extrapolation", 2, "Wang & Ruuth 2008"),
-    "SBDF3": ("multistep", "BDF3", "3-step extrapolation", 3, "Wang & Ruuth 2008"),
-    "SBDF4": ("multistep", "BDF4", "4-step extrapolation", 4, "Wang & Ruuth 2008"),
-    "CNAB1": ("multistep", "Crank–Nicolson", "forward Euler", 1, "Wang & Ruuth 2008, eq. 2.5.3"),
-    "CNAB2": ("multistep", "Crank–Nicolson", "2-step Adams–Bashforth", 2,
-              "Wang & Ruuth 2008, eq. 2.9"),
-    "MCNAB2": ("multistep", "modified Crank–Nicolson (9/16, 6/16, 1/16)",
-               "2-step Adams–Bashforth", 2, "Wang & Ruuth 2008, eq. 2.10"),
-    "CNLF2": ("multistep", "Crank–Nicolson over 2 dt", "leapfrog", 2,
-              "Wang & Ruuth 2008, eq. 2.11"),
-    "RK111": ("Runge–Kutta (1 stage)", "backward Euler", "forward Euler", 1,
-              "Ascher, Ruuth & Spiteri 1997, (1,1,1)"),
-    "RK222": ("Runge–Kutta (2 stages)", "L-stable SDIRK2", "2-stage Runge–Kutta", 2,
-              "Ascher, Ruuth & Spiteri 1997, (2,2,2)"),
-    "RK443": ("Runge–Kutta (4 stages)", "L-stable SDIRK3", "4-stage Runge–Kutta", 3,
-              "Ascher, Ruuth & Spiteri 1997, (4,4,3)"),
-    "RKSMR": ("Runge–Kutta (3 stages)", "Crank–Nicolson per stage (order 2)",
-              "Wray's low-storage RK3 (order 3)", 2,
-              "Spalart, Moser & Rogers 1991, J. Comput. Phys. 96, Appendix"),
-    "RKGFY": ("Runge–Kutta (2 stages)", "Crank–Nicolson (order 2)", "Heun (order 2)", 2,
-              "Hollerbach 2002"),
-}
-
-
-def scheme_family(name: str) -> str:
-    """Family of a scheme: "sbdf", "cn" (Crank–Nicolson multistep) or "rk" (IMEX Runge–Kutta)."""
-    if name in SBDF_SCHEMES:
-        return "sbdf"
-    if name in CN_SCHEMES:
-        return "cn"
-    if name in RK_SCHEMES:
-        return "rk"
-    raise OptionError(f"unknown scheme {name!r}; available: {SCHEMES}",
-                      fix="pick one of the listed schemes." + did_you_mean(name, SCHEMES))
-
-
-def scheme_description(name: str, effective: int | None = None) -> str:
-    """One line: family, implicit / explicit parts, global order, reference. ``effective``: the
-    global order of the run when its start-up or its boundary data lower it (review finding 17,
-    audit invariance): the line then gives the formal order of the scheme and that effective
-    order (the next line of explain() says why)."""
-    if name not in _SCHEME_INFO:         # audit inputs: a bare KeyError
-        raise OptionError(f"scheme_description({name!r}): unknown scheme",
-                          fix="one of " + ", ".join(_SCHEME_INFO) + "."
-                              + did_you_mean(str(name), _SCHEME_INFO))
-    fam, imp, exp, p, ref = _SCHEME_INFO[name]
-    order = (f"global order {p}" if effective is None or effective >= p else
-             f"formal order {p}, effective global order {effective}")
-    return f"{name}: IMEX {fam}, implicit {imp} on L, explicit {exp} on F; {order} ({ref})"
-
-
-def sbdf_coefficients(q: int) -> tuple[list[float], list[float]]:
-    """(a, c) for constant-step SBDF-q: a0 M X^n + dt L X^n = dt sum c_j F - sum a_j M X^{n-j}."""
-    if isinstance(q, bool) or not isinstance(q, (int, np.integer)) or q not in (1, 2, 3, 4):
-        raise OptionError(f"sbdf_coefficients({q!r}): the SBDF order is 1, 2, 3 or 4",
-                          fix="sbdf_coefficients(2) for SBDF2")
-    return {1: ([1, -1], [0, 1]),
-            2: ([1.5, -2, 0.5], [0, 2, -1]),
-            3: ([11 / 6, -3, 1.5, -1 / 3], [0, 3, -3, 1]),
-            4: ([25 / 12, -4, 3, -4 / 3, 0.25], [0, 4, -6, 4, -1])}[q]
-
-
-def cn_coefficients(name: str) -> tuple[list[float], list[float], list[float]]:
-    """(a, b, c) of a constant-step CN-family multistep scheme (Wang & Ruuth 2008), ``a`` in units
-    of 1/dt:  sum_j (a_j/dt) M X^{n+1-j} + sum_j b_j L X^{n+1-j} = sum_{j>=1} c_j F^{n+1-j},
-    j = 0..s (c_0 unused); s = len(a) - 1 history levels."""
-    if name == "CNAB1":                                   # eq. 2.5.3
-        return [1.0, -1.0], [0.5, 0.5], [0.0, 1.0]
-    if name == "CNAB2":                                   # eq. 2.9
-        return [1.0, -1.0, 0.0], [0.5, 0.5, 0.0], [0.0, 1.5, -0.5]
-    if name == "MCNAB2":                                  # eq. 2.10
-        return [1.0, -1.0, 0.0], [9 / 16, 6 / 16, 1 / 16], [0.0, 1.5, -0.5]
-    if name == "CNLF2":                                   # eq. 2.11
-        return [0.5, 0.0, -0.5], [0.5, 0.0, 0.5], [0.0, 1.0, 0.0]
-    raise OptionError(f"{name!r} is not a CN-family multistep scheme ({', '.join(CN_SCHEMES)})")
-
-
-def rk_tableau(name: str):
-    """(A, H, c) of an IMEX Runge–Kutta scheme in cumulative form
-    M X_i = M X_0 + dt sum_j A_ij F_j - dt sum_j H_ij L X_j (X_s = next state)."""
-    if name == "RK111":
-        return [[0, 0], [1, 0]], [[0, 0], [0, 1]], [0, 1]
-    if name == "RK222":
-        g = (2 - np.sqrt(2)) / 2
-        d = 1 - 1 / g / 2
-        return ([[0, 0, 0], [g, 0, 0], [d, 1 - d, 0]], [[0, 0, 0], [0, g, 0], [0, 1 - g, g]],
-                [0, g, 1])
-    if name == "RK443":
-        return ([[0, 0, 0, 0, 0], [1 / 2, 0, 0, 0, 0], [11 / 18, 1 / 18, 0, 0, 0],
-                 [5 / 6, -5 / 6, 1 / 2, 0, 0], [1 / 4, 7 / 4, 3 / 4, -7 / 4, 0]],
-                [[0, 0, 0, 0, 0], [0, 1 / 2, 0, 0, 0], [0, 1 / 6, 1 / 2, 0, 0],
-                 [0, -1 / 2, 1 / 2, 1 / 2, 0], [0, 3 / 2, -3 / 2, 1 / 2, 1 / 2]],
-                [0, 1 / 2, 2 / 3, 1 / 2, 1])
-    if name == "RKSMR":
-        # Spalart, Moser & Rogers (1991), Appendix: substep i (i = 1, 2, 3) is
-        #   X_i = X_{i-1} + dt [gamma_i F_{i-1} + zeta_i F_{i-2} - alpha_i L X_{i-1} - beta_i L X_i]
-        # (Crank–Nicolson-like implicit part, Wray's RK3 explicit part), summed into cumulative
-        # rows. Explicit part order 3, implicit part order 2 (tests/ivp/test_new_schemes.py).
-        al, be = (29 / 96, -3 / 40, 1 / 6), (37 / 160, 5 / 24, 1 / 6)
-        ga, ze = (8 / 15, 5 / 12, 3 / 4), (-17 / 60, -5 / 12)
-        A = [[0, 0, 0, 0], [ga[0], 0, 0, 0], [ga[0] + ze[0], ga[1], 0, 0],
-             [ga[0] + ze[0], ga[1] + ze[1], ga[2], 0]]
-        H = [[0, 0, 0, 0], [al[0], be[0], 0, 0], [al[0], be[0] + al[1], be[1], 0],
-             [al[0], be[0] + al[1], be[1] + al[2], be[2]]]
-        return A, H, [0, 8 / 15, 2 / 3, 1]
-    if name == "RKGFY":
-        # Hollerbach (2002): Heun predictor-corrector on F, Crank–Nicolson on L
-        return ([[0, 0, 0], [1, 0, 0], [1 / 2, 1 / 2, 0]],
-                [[0, 0, 0], [1 / 2, 1 / 2, 0], [1 / 2, 0, 1 / 2]], [0, 1, 1])
-    if name in SBDF_SCHEMES or name in CN_SCHEMES:
-        raise OptionError(f"{name} is a multistep scheme: it has no Runge–Kutta tableau",
-                          fix=f"use an IMEX Runge–Kutta scheme ({', '.join(RK_SCHEMES)}) here")
-    raise OptionError(f"unknown RK scheme {name!r}; available: {RK_SCHEMES}",
-                      fix="pick one of the listed schemes." + did_you_mean(name, RK_SCHEMES))
-
-
-def check_steps(nsteps: Any, where: str, name: str = "nsteps") -> int:
-    """A number of steps is a non-negative integer (a float or a bool is refused, never truncated:
-    ``run(2.7)`` used to take 2 steps without a word). Shared by every ``run``."""
-    import numbers
-    if isinstance(nsteps, bool) or not isinstance(nsteps, numbers.Integral) or nsteps < 0:
-        raise OptionError(f"{where}: {name}={nsteps!r} is not a number of steps",
-                          why="steps must be an integer greater than or equal to zero",
-                          fix=f"an integer >= 0, e.g. {name}=100"
-                              + (f" (or {name}=round({nsteps!r}) if that is meant)"
-                                 if isinstance(nsteps, float) and nsteps >= 0 else ""))
-    return int(nsteps)
-
-
-def check_substeps(n: Any, where: str) -> int:
-    """``startup_substeps``: an integer >= 1 (the RK443 startup step is dt / n; a float used to be
-    truncated, 2.5 -> 2, and 0 divided dt by zero at the first step). Shared by every IVP solver."""
-    from ..errors import check_count
-    return check_count(n, "startup_substeps", where)
-
-
-def backend_hint(backend: Any) -> str:
-    """The suggestion for a refused ``backend=`` value (``"CUDA"`` got no hint and
-    ``"cupy"`` was told "'gpu' is spelled 'cuda' here", quoting a word the user did not write)."""
-    b = str(backend)
-    low = b.strip().lower()
-    if low in ("cpu", "cuda"):
-        return f" Did you mean {low!r}? (backend names are lower case)"
-    if low in ("gpu", "cupy", "nvidia", "device", "cuda12", "cuda13"):
-        return f" A GPU backend is spelled 'cuda' here (not {b!r})."
-    if low in ("numpy", "host", "scipy"):
-        return f" The NumPy (host) backend is spelled 'cpu' here (not {b!r})."
-    return did_you_mean(low, ("cpu", "cuda"))
-
-
-def check_dt_backend(dt: Any, backend: Any, where: str) -> None:
-    """The time step and the backend of every IVP solver (Cartesian, polar, spherical,
-    distributed, ensemble): one check, one message (the polar and spherical
-    solvers raised bare ValueError without the fix, the Cartesian one an OptionError)."""
-    if not (isinstance(dt, (int, float, np.floating, np.integer)) and not isinstance(dt, bool)
-            and dt > 0 and np.isfinite(dt)):
-        raise OptionError(f"{where}: dt={dt!r} must be a finite number > 0",
-                          why="the time step is part of the problem's numerics",
-                          fix="dt=1e-3 (a CFL estimate is a stability indicator: sim.cfl('u', safety=0.5))")
-    if backend not in ("cpu", "cuda"):
-        raise OptionError("backend must be 'cpu' or 'cuda' (explicit choice)",
-                          where=f"{where}, backend={backend!r}",
-                          why="the backend is an explicit choice",
-                          fix="backend='cpu', or backend='cuda' for an NVIDIA GPU (a job on "
-                              "a GPU node)." + backend_hint(backend))
-
-
-def check_params_unchanged(solver: Any, where: str) -> None:
-    """``plan.params`` is read at every evaluation of F, but L and M were assembled and factored
-    with the values at construction: a later change (``solver.plan.params["Ra"] = 4000``) was
-    ignored by the implicit part and used by the explicit part, silently.
-    Refused at the next step."""
-    p0 = solver.__dict__.get("_params0")
-    if p0 is None or dict(solver.plan.params) == p0:
-        return
-    now = dict(solver.plan.params)
-    diff = ", ".join(f"{k}: {p0.get(k)!r} -> {now.get(k)!r}" for k in sorted(set(p0) | set(now))
-                     if p0.get(k) != now.get(k))
-    raise OptionError(f"{where}: plan.params changed after the solver was built ({diff})",
-                      why="the factored L and M keep the values they were built with, while F "
-                          "reads plan.params at every stage: the two sides would disagree",
-                      fix="build a new solver: IVPSolver(discretize(problem, params={...}), ...), "
-                          "restarting from the current state (solver.X)")
-
-
-#: Suffixes that name another file format: ``save("state.hdf")`` wrote ``state.hdf.npz`` (a NumPy
-#: archive under a name that reads as HDF5), ``save("state.nc")`` ``state.nc.npz`` (review of the
-#: audit "inputs"). Refused with the two formats a checkpoint has; any other suffix
-#: (``state_t1.5`` has the suffix ".5") keeps the historical rule: ``.npz`` appended.
-_OTHER_FORMATS = (".hdf", ".hd5", ".he5", ".h4", ".hdf4", ".nc", ".nc4", ".cdf", ".zarr", ".mat",
-                  ".npy", ".pkl", ".pickle", ".json", ".txt", ".csv", ".dat", ".bin", ".xmf",
-                  ".xdmf", ".vtk", ".vtu", ".vti")
-
-
-def check_checkpoint_suffix(path: Path, where: str) -> None:
-    """Refuse a checkpoint path whose suffix names a format other than HDF5 (``.h5``/``.hdf5``)
-    and NumPy (``.npz``): the file would be a NumPy archive with ``.npz`` appended."""
-    suf = path.suffix.lower()
-    if suf in _OTHER_FORMATS:
-        stem = path.name[: -len(path.suffix)]
-        hdf = suf in (".hdf", ".hd5", ".he5", ".h4", ".hdf4")
-        raise OptionError(
-            f"{where}({str(path)!r}): {path.suffix!r} is not a checkpoint format",
-            why="a checkpoint is HDF5 ('.h5' or '.hdf5', readable without Conatus) or NumPy "
-                f"('.npz'); this path would have been written as {path.name}.npz"
-                + (" (a NumPy file, not HDF5)" if hdf else ""),
-            fix=f"{where}('{stem}.h5') for HDF5, or {where}('{stem}.npz') for NumPy",
-            doc="docs/site/guide/io.md")
-
-
-def check_time_parameter(plan: Any, time_parameter: Any, where: str) -> None:
-    """``time_parameter`` is None or the name of a Parameter of the problem's equations, the one
-    check of every IVP solver (flat, polar, spherical, distributed). Audit inputs:
-    ``time_parameter="tt"`` was kept and never set, so a forcing in the real time parameter
-    stayed at its declared value without a word; the polar, spherical and distributed solvers
-    kept it too (review of the audit)."""
-    if time_parameter is None:
-        return
-    from ..discretize.param_keys import problem_parameter_names
-    used = problem_parameter_names(plan.problem)
-    if not isinstance(time_parameter, str) or time_parameter not in used:
-        raise OptionError(
-            f"{where}: time_parameter={time_parameter!r} is not a parameter of the problem."
-            + did_you_mean(str(time_parameter), sorted(used)),
-            why="the time parameter is set to the stage time at every evaluation of F; "
-                "a name the equations do not use would leave the forcing frozen",
-            fix="the name of the time Parameter of the equations (parameters: "
-                + (", ".join(sorted(used)) or "none") + "), or drop time_parameter=",
-            doc="docs/site/guide/timesteppers.md")
-
-
-def check_callback(callback: Any, every: Any, where: str) -> None:
-    """``callback`` and ``every`` go together and are both explicit; ``every`` is an
-    integer >= 1 (a float or a bool is refused, not truncated). Shared by every ``run``."""
-    import numbers
-    if callback is not None and every is None:
-        raise OptionError(
-            f"{where}: callback given without every= (callback and every go together)",
-            why="the call frequency is part of the run (cost, what a monitor records); "
-                "it has no default",
-            fix="pass every=1 to call it after each step, or every=k for every k-th step")
-    if callback is None and every is not None:
-        raise OptionError(f"{where}: every= given without a callback (they go together)",
-                          fix="pass callback=cb, or drop every=")
-    if every is not None and (isinstance(every, bool) or not isinstance(every, numbers.Integral)
-                              or every < 1):
-        raise OptionError(f"{where}: every={every!r} must be an integer >= 1",
-                          fix="every=1 calls the callback after each step")
-    if callback is not None and not callable(callback):
-        # refused before the first step (audit inputs: a bare TypeError at the first
-        # call, after `every` steps had run)
-        raise OptionError(f"{where}: callback={callback!r} is not callable",
-                          fix="callback=lambda sim: ..., a function of the simulation")
-
-
-def setup_scheme(obj: Any, scheme: str, startup: str, *, where: str,
-                 families: tuple[str, ...] = ("sbdf", "cn", "rk"), fix: str = "",
-                 bc_time: str = "auto") -> None:
-    """Validate (scheme, startup) and set the scheme attributes shared by every IVP solver
-    (Cartesian, polar, spherical, distributed): ``family``, ``order`` (SBDF order, 0 otherwise),
-    ``_rk`` (RK tableau or None), ``_cn`` (CN coefficients or None), ``_nhist`` (history levels of
-    a multistep scheme, 0 for RK) and the L X history ``_LXh``. A solver that implements only
-    some families lists them in ``families``: the others are refused explicitly."""
-    if scheme not in SCHEMES:
-        raise OptionError(f"unknown scheme {scheme!r}; available: {SCHEMES}",
-                          where=where,
-                          why="the time scheme is an explicit choice",
-                          fix="pick one of the IMEX schemes listed (RK222/RK443/RKSMR/RKGFY "
-                              "multistage, SBDF1-4/CNAB1-2/MCNAB2/CNLF2 multistep)."
-                              + did_you_mean(scheme, SCHEMES))
-    if startup not in STARTUPS:
-        raise OptionError(f"startup must be one of {STARTUPS}", where=where,
-                          fix="startup='lower_order' (Dedalus convention) or startup='rk443'")
-    if bc_time not in BC_TIMES:
-        raise OptionError(f"bc_time={bc_time!r}: one of {BC_TIMES}", where=where,
-                          why="when time-dependent boundary data are imposed is a numerical choice",
-                          fix="bc_time='auto' (default: 'rk' when g'(t) is exact, else 'stage'), "
-                              "'rk' (stage values from the scheme applied to g'(t)), 'stage' "
-                              "(g at every stage time) or 'step' (the Dedalus convention, bit for "
-                              "bit)" + did_you_mean(str(bc_time), BC_TIMES))
-    obj._bc_request = bc_time          # resolved lazily into IVPSolver.bc_time (needs the system)
-    fam = scheme_family(scheme)
-    if fam not in families:
-        ok = [s for s in SCHEMES if scheme_family(s) in families]
-        raise OptionError(f"scheme {scheme} ({fam} family) is not implemented here",
-                          where=where, why="the scheme is not supported here",
-                          fix=fix or "use one of " + ", ".join(ok))
-    obj.family = fam
-    obj.order = int(scheme[4:]) if fam == "sbdf" else 0
-    obj._rk = rk_tableau(scheme) if fam == "rk" else None
-    obj._cn = cn_coefficients(scheme) if fam == "cn" else None
-    obj._nhist = obj.order if fam == "sbdf" else (len(obj._cn[0]) - 1 if fam == "cn" else 0)
-    obj._LXh = deque()
-
-
-def require_family(solver: Any, families: tuple[str, ...], where: str, fix: str) -> None:
-    """Refuse (OptionError) a solver whose scheme family is not in ``families``."""
-    fam = getattr(solver, "family", None) or scheme_family(solver.scheme)
-    if fam not in families:
-        raise OptionError(f"{where}: scheme {solver.scheme} ({fam} family) is not supported",
-                          where=where, why="the scheme is not supported here", fix=fix)
-
-
 def _equation_rows(host, k: int) -> np.ndarray:
     """Global rows of equation k: ``rows_obj`` of the Cartesian system, else the rows that the
     right-hand-side map of the equation reaches (polar and spherical systems)."""
@@ -1110,10 +727,9 @@ class IVPSolver:
         ``cache=True`` (off by default, needs ``record``) reuses the end state of an identical
         recorded computation instead of stepping, with a warning saying what was reused.
 
-        ``callback`` and ``every`` go together and are both explicit: a callback without
-        ``every`` used to be silently never called (``every`` defaulted to 0). The call frequency
-        costs time and changes what a monitor sees, so it is not chosen for the user; the
-        refusal happens before any step is taken."""
+        Supply ``callback`` and ``every`` together; otherwise the call is refused before any step
+        is taken. The call frequency costs time and changes what a monitor sees, so it is not
+        chosen for the user."""
         steps = self._run_arguments(steps, callback, every)
         if record is not None or cache:              # run registry (explicit opt-in only)
             from ..runs.integrations import ivp_run
@@ -1131,7 +747,7 @@ class IVPSolver:
     def _run_arguments(self, steps: int, callback: Callable[[IVPSolver], None] | None = None,
                        every: int | None = None, *, record=None, cache: bool = False) -> int:
         """The checks of :meth:`run` on its arguments, without side effects; returns the number
-        of steps. Shared by ``run`` and by ``python -m conatus agent check`` (review 0.1.1, F13)."""
+        of steps. Shared by ``run`` and by ``python -m conatus agent check``."""
         check_callback(callback, every, "IVPSolver.run")
         return check_steps(steps, "IVPSolver.run", "steps")
 
@@ -1463,7 +1079,7 @@ class IVPSolver:
     # ------------------------------------------------------------------ explain
     @property
     def effective_order(self) -> int:
-        """Global order of the run with its startup (review finding 17): the nominal order of
+        """Global order of the run with its startup: the nominal order of
         the scheme, except that ``startup='lower_order'`` starts a multistep scheme with a
         first-order step (SBDF1, CNAB1), whose O(dt^2) local error caps the global order at 2
         (SBDF3/SBDF4 converge at order 2, not 3/4); ``startup='rk443'`` keeps the nominal order."""
@@ -1607,7 +1223,7 @@ class IVPSolver:
         if "_tail_dirs" in self.__dict__:
             return self._tail_dirs
         from ..discretize.plan import Plan
-        from ..resolution import _family
+        from ..ir.tails import basis_family as _family
         out = None
         plan = getattr(self, "plan", None)
         if isinstance(plan, Plan) and not getattr(plan, "is_polar", False) \
@@ -1644,7 +1260,7 @@ class IVPSolver:
             return
         import math
 
-        from ..resolution import _mode_numbers, _n_tail
+        from ..ir.tails import envelope_tail, mode_envelope, mode_numbers, tail_window
         xp = getattr(self, "xp", np)
         cs = self.system.scatter(self.X, only=frozenset(n for _k, n, _d in dirs))
         envs, meta = [], []
@@ -1664,23 +1280,19 @@ class IVPSolver:
             n = int(e.shape[0])
             raw = host[pos:pos + n]
             pos += n
-            mnum, M = _mode_numbers(b)
-            E = np.zeros(M)
-            for i, m in enumerate(mnum):
-                if m >= 0:
-                    E[m] = max(E[m], raw[i])
-            E = np.maximum.accumulate(E[::-1])[::-1]
+            mnum, M = mode_numbers(b)
+            E = mode_envelope(raw, mnum, M)
             emax = float(E.max()) if E.size else 0.0
             if not emax > RUN_TAIL_FLOOR * top:
                 continue
             # a tail window that covers every mode number holds the mean too: its "tail" is 1
-            # whatever the data (F101-10-16: a constant on N = 4 Fourier modes,
+            # whatever the data (earlier versions: a constant on N = 4 Fourier modes,
             # M = 2, was "under-resolved, tail 1.0"): not judged, like a too-short window
-            if (M - _n_tail(M) < 1
-                    or int(np.count_nonzero(mnum >= M - _n_tail(M))) < RUN_TAIL_MIN_MODES):
+            if (M - tail_window(M) < 1
+                    or int(np.count_nonzero(mnum >= M - tail_window(M))) < RUN_TAIL_MIN_MODES):
                 short.append(f"{name} along {cname} (N = {b.size})")
                 continue
-            tail = float(E[M - _n_tail(M)] / emax)
+            tail = envelope_tail(E, emax)
             if tail > RUN_TAIL_TOL:
                 bad.append(f"{name} along {cname}: tail {tail:.1e} (N = {b.size})")
         if short and not getattr(self, "_tail_short", None):
@@ -1718,7 +1330,7 @@ class IVPSolver:
         else:
             text += ("\n  resolution check: not available for this plan (no Cartesian spectral "
                      "direction)")
-        if getattr(self, "_tail_short", None):       # directions left out (this
+        if getattr(self, "_tail_short", None):       # directions left out (earlier versions: this
             text += f"\n  resolution check: {self._tail_short}"   # line used to break the chain)
         return text
 

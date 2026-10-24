@@ -156,14 +156,10 @@ def main():
     (out / "rb_series.json").write_text(json.dumps({"series": series, "diagnostics": diag}))
     np.savez_compressed(out / "rb_fields.npz", T=Tg, u=s.grid("u"), x=xg, z=Zg, t=s.t)
 
-    validated = {"value": "Nu = 4.99432 at Ra = 1e5 (2D, Lx = 2, RK443), agreement with Dedalus to 1e-8",
-                 "reference": "Dedalus (Burns et al. 2020, Phys. Rev. Research 2, 023068), same equations",
-                 "source": "paper/conatus.tex §Verification table",
-                 "run_id": ""}
     meta = {"title": "Rayleigh–Bénard convection",
             "script": "web/gallery/rayleigh_benard.py",
             "example_script": "docs/site/tutorials/code/t02b_rayleigh_benard_gpu.py",
-            "validated": validated, "geometry": "cartesian", "domain": "convection",
+            "geometry": "cartesian", "domain": "convection",
             "parameters": {"Ra": a.Ra, "Pr": a.Pr, "Lx": a.Lx, "amp": a.amp, "seed": a.seed},
             "numerics": {"Nx": a.Nx, "Nz": a.Nz, "bases": "RealFourier x Chebyshev",
                          "dealias": a.dealias, "scheme": a.scheme, "dt": a.dt,

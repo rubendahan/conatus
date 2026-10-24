@@ -8,7 +8,7 @@
                   stats={"energy": energy,                                 # a scalar per step
                          "E(k)": cn.spectrum("u.x", axis="x"),             # a curve per frame
                          "<c>(z)": cn.profile("c", along="z")},
-                  every=0.5)                                               # s of wall time per frame
+                  every_s=0.5)                                             # s of wall time per frame
     print(w.explain())             # everything that will be sent, losses included
     sim.run(until=20.0)            # the run is watched; numbers identical to an unwatched run
 

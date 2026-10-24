@@ -71,7 +71,7 @@ TUNABLES: tuple[Tunable, ...] = (
     Tunable("conatus.studio.auth.hash_password(r)", 8, "", "security", "= SCRYPT_R", "argument"),
     Tunable("conatus.studio.auth.hash_password(p)", 1, "", "security", "= SCRYPT_P", "argument"),
     Tunable("conatus.studio.auth.TOKEN_BYTES", 32, _B, "security",
-            "random bytes of relay, user and agent tokens and session cookies (256 bits)"),
+            "random bytes of relay, user and agent tokens, session cookies and session keys (256 bits)"),
     Tunable("conatus.studio.auth.MIN_PASSWORD", 12, "characters", "security",
             "shorter passwords are refused at creation"),
     Tunable("conatus.studio.auth.Sessions(ttl_s)", 43200, _S, "security",

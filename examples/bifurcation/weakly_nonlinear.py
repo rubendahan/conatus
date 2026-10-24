@@ -1,4 +1,5 @@
-"""Weakly nonlinear theory derived from the IR: Landau and Ginzburg–Landau coefficients.
+"""Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau
+coefficients.
 
 (a) Swift–Hohenberg, du/dt = r u − (1 + ∂x²)² u − u³ (Swift & Hohenberg 1977). Rolls u = A cos x:
     the pitchfork normal form on the even subspace gives dA/dt = r A − (3/4) A³, i.e. A² = 4r/3
@@ -9,8 +10,8 @@
     for every Pr (Malkus & Veronis 1958; the same number follows from the Lorenz 1963 truncation,
     exact at this order since the O(a²) correction is the sin 2πz mean mode only).
 
-Every coefficient comes from ``normal_form``: symbolic 2nd/3rd Fréchet derivatives of the IR
-right-hand side, bordered solves on the discrete Jacobian. Nothing is derived by hand here.
+Every coefficient comes from ``normal_form``: symbolic 2nd/3rd Fréchet derivatives of the
+right-hand side of the model, bordered solves on the discrete Jacobian. Nothing is derived by hand here.
 
 Run:  python examples/bifurcation/weakly_nonlinear.py
 """
@@ -29,7 +30,7 @@ def swift_hohenberg(k: float, N: int = 16):
     D = C.Domain(cs, [C.RealFourier(x, N, (0, 2 * np.pi / k), dealias=2)])   # cubic: dealias 2
     u, r = C.Field("u", D), C.Parameter("r", 0.0)
     pb = C.IVP([u], name="Swift-Hohenberg", symmetry=C.SymmetrySubspace(C.Reflection(x, about=0), u=C.EVEN))
-    L = lambda f: f + C.diff(C.diff(f, x), x)                                   # noqa: E731
+    L = lambda f: f + C.diff(C.diff(f, x), x)
     pb.add_equation((C.dt(u) - r * u + L(L(u)), -u * u * u))
     s = ir_system(pb, ["r"])
     return s, np.zeros(s.n)

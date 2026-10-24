@@ -1,6 +1,5 @@
 {
-  "_about": "Validation rows whose number a public script of the release prints. Keys are ledger row ids (web/src/generated/ledger.json). For each script: the command (from the repository root, after pip install conatus==<version>), the file where its output is recorded, the printed text (each string appears verbatim in that file) and the pairs [printed number, row number] that agree to the printed precision. Checked by tests/docs/test_validation_sources.py and by web/scripts/gen-data.mjs. Rows not listed here are author-reported.",
-  "version": "0.1.2",
+  "_about": "Validation rows whose number a public script of the release prints. Keys are ledger row ids (web/src/generated/ledger.json). For each script: the command (from the repository root, after pip install conatus==<version>), the file where its output is recorded, the printed text (each string appears verbatim in that file) and the pairs [printed number, row number] that agree to the printed precision; an optional 'note' says which quantity of the row the script does not reproduce; the links point to the tag of the version in the header of the recorded output, or of the site's version for an output without that header (no typed version). Checked by tests/docs/test_validation_sources.py and by web/scripts/gen-data.mjs. Rows not listed here are author-reported.",
   "rows": {
     "orr-sommerfeld-re-104-1": [
       {
@@ -16,6 +15,13 @@
         "output": "docs/site/tutorials/outputs/t01_orr_sommerfeld.txt",
         "printed": ["c = 0.2375264888+0.0037396706j"],
         "numbers": [["0.2375264888", "0.23752648882"], ["0.0037396706", "0.00373967062"]]
+      },
+      {
+        "script": "examples/published/orr_sommerfeld_spectrum/run.py",
+        "command": "python examples/published/orr_sommerfeld_spectrum/run.py",
+        "output": "examples/published/orr_sommerfeld_spectrum/output.txt",
+        "printed": ["0.23752649 +0.00373967i"],
+        "numbers": [["0.23752649", "0.23752648882"], ["0.00373967", "0.00373967062"]]
       }
     ],
     "critical-reynolds-number-plane-poiseuille": [
@@ -32,6 +38,13 @@
         "output": "docs/site/tutorials/outputs/t01_orr_sommerfeld.txt",
         "printed": ["Re_c = 5772.2218   alpha_c = 1.020547"],
         "numbers": [["5772.2218", "5772.2218"], ["1.020547", "1.020547"]]
+      },
+      {
+        "script": "examples/published/orr_sommerfeld_spectrum/run.py",
+        "command": "python examples/published/orr_sommerfeld_spectrum/run.py",
+        "output": "examples/published/orr_sommerfeld_spectrum/output.txt",
+        "printed": ["Re_c = 5772.2218 (Orszag 5772.22), alpha_c = 1.020547 (Orszag 1.02056)"],
+        "numbers": [["5772.2218", "5772.2218"], ["1.020547", "1.020547"]]
       }
     ],
     "taylor-couette-0-5": [
@@ -40,7 +53,8 @@
         "command": "python docs/site/tutorials/code/t08_polar.py",
         "output": "docs/site/tutorials/outputs/t08_polar.txt",
         "printed": ["Re_c(3.16) = 68.1863"],
-        "numbers": [["68.1863", "68.1863"]]
+        "numbers": [["68.1863", "68.1863"]],
+        "note": "It computes Re at k = 3.10, 3.16 and 3.22 only: it reproduces Re_c at k = 3.16, not the critical wavenumber k_c."
       }
     ],
     "rayleigh-benard-onset-rigid": [
@@ -57,6 +71,13 @@
         "output": "docs/site/tutorials/outputs/t00_getting_started.txt",
         "printed": ["Ra_c = 1707.7618   k_c = 3.11632"],
         "numbers": [["1707.7618", "1707.76178"], ["3.11632", "3.116324"]]
+      },
+      {
+        "script": "examples/published/rayleigh_benard_onset/run.py",
+        "command": "python examples/published/rayleigh_benard_onset/run.py",
+        "output": "examples/published/rayleigh_benard_onset/output.txt",
+        "printed": ["rigid-rigid: Ra_c = 1707.761777, k_c = 3.116324"],
+        "numbers": [["1707.761777", "1707.76178"], ["3.116324", "3.116324"]]
       }
     ],
     "bratu-on-1-1": [
@@ -84,6 +105,24 @@
         "output": "docs/site/guide/outputs/unbounded_compound.txt",
         "printed": ["walls(-1, 1): max error 1.3e-07", "walls(-1, -0.15, 0.15, 1): max error 2.5e-14"],
         "numbers": [["1.3e-07", "1.3×10⁻⁷"], ["2.5e-14", "2.5×10⁻¹⁴"]]
+      }
+    ],
+    "rayleigh-benard-onset-rigid-bottom-stress-free-top": [
+      {
+        "script": "examples/published/rayleigh_benard_onset/run.py",
+        "command": "python examples/published/rayleigh_benard_onset/run.py",
+        "output": "examples/published/rayleigh_benard_onset/output.txt",
+        "printed": ["rigid-free: Ra_c = 1100.649607, k_c = 2.682322"],
+        "numbers": [["1100.649607", "1100.6496"], ["2.682322", "2.6823"]]
+      }
+    ],
+    "hagen-poiseuille-n-k-1-1-1-0-r-102-104": [
+      {
+        "script": "examples/published/pipe_flow_spectrum/run.py",
+        "command": "python examples/published/pipe_flow_spectrum/run.py",
+        "output": "examples/published/pipe_flow_spectrum/output.txt",
+        "printed": ["largest gap for R = 10^2 to 10^4: 6.3e-11"],
+        "numbers": [["6.3e-11", "6.3×10⁻¹¹"]]
       }
     ]
   }

@@ -27,18 +27,10 @@ from typing import Any
 
 import numpy as np
 
+from .._arrays import array_module
 from ..errors import CoordinateError, OptionError, UnsupportedError
 
 __all__ = ["Periodic", "Chebyshev", "Grid", "array_module"]
-
-
-def array_module(*arrays: Any):
-    """NumPy, or CuPy if any argument is a CuPy array (CuPy is never imported otherwise)."""
-    for a in arrays:
-        if type(a).__module__.split(".")[0] == "cupy":
-            import cupy
-            return cupy
-    return np
 
 
 @dataclass(frozen=True)
@@ -297,7 +289,7 @@ class Grid:
     def weights(self, axis: int):
         """1D quadrature weights of ``axis`` (sum = length): a new array (the grid keeps its
         own copy: an in-place change of the returned array used to change every later
-        ``integrate``, ``mean`` and ``cell_volumes`` of this grid, audit state)."""
+        ``integrate``, ``mean`` and ``cell_volumes`` of this grid)."""
         return self._weights(axis).copy()
 
     def _weights(self, axis: int):

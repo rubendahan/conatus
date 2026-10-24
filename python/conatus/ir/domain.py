@@ -104,23 +104,28 @@ class Domain:
 
     @property
     def coords(self) -> tuple[Coordinate, ...]:
+        """Coordinates of the bases, in order."""
         return tuple(b.coord for b in self.bases)
 
     @property
     def dim(self) -> int:
+        """Number of bases."""
         return len(self.bases)
 
     @property
     def shape(self) -> tuple[int, ...]:
+        """Sizes of the bases."""
         return tuple(b.size for b in self.bases)
 
     def basis(self, coord: Coordinate) -> Basis | None:
+        """The basis along ``coord``, or None."""
         for b in self.bases:
             if b.coord == coord:
                 return b
         return None
 
     def has(self, coord: Coordinate) -> bool:
+        """True when the domain has a basis along ``coord``."""
         return self.basis(coord) is not None
 
     @property
@@ -130,12 +135,15 @@ class Domain:
 
     @property
     def nonperiodic_coords(self) -> tuple[Coordinate, ...]:
+        """Coordinates of the non-periodic bases."""
         return tuple(b.coord for b in self.bases if not b.periodic)
 
     def without(self, *coords: Coordinate) -> Domain:
+        """A new domain without the bases along ``coords``."""
         return Domain(self.coordsys, [b for b in self.bases if b.coord not in coords])
 
     def with_basis(self, basis: Basis) -> Domain:
+        """A new domain with ``basis`` added (CoordinateError if the coordinate has one)."""
         if self.has(basis.coord):
             raise CoordinateError(f"domain already has a basis for {basis.coord.name}")
         return Domain(self.coordsys, list(self.bases) + [basis])
@@ -160,6 +168,7 @@ class Domain:
 
     @property
     def key(self) -> tuple:
+        """Structural identity (coordinate system and bases)."""
         return ("Domain", self.coordsys.key, tuple(b.key for b in self.bases))
 
     def __eq__(self, other: object) -> bool:
@@ -173,6 +182,7 @@ class Domain:
         return f"Domain[{inner or 'constant'}]"
 
     def explain(self) -> str:
+        """The domain, its coordinate system and every basis."""
         lines = [repr(self), f"  coordinates : {self.coordsys.name}"]
         for b in self.bases:
             lines.append("  " + b.explain().replace("\n", "\n  "))

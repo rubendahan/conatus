@@ -128,6 +128,13 @@ class EVPResult:
     # conatus.solvers.spurious.check_selected): "" or the sentence saying that order()[0] of a
     # result without a drift test has a tail above UNRESOLVED_TAIL_TOL
     unresolved_note: str = ""
+    # moduli |alpha/beta| of the pairs removed as infinite only because M is numerically singular
+    # (singular values of the row-equilibrated M below n eps sigma_max, no exactly zero row or column
+    # behind them): in floating point they cannot be told from finite eigenvalues of that size;
+    # empty when every removed pair is proven infinite (beta = 0, or a zero
+    # row/column of M)
+    infinite_ambiguous: np.ndarray = dc_field(default_factory=lambda: np.zeros(0), repr=False,
+                                              compare=False)
 
     @property
     def flagged(self) -> np.ndarray:
@@ -178,7 +185,8 @@ class EVPResult:
 
     def order(self, key: str = "growth") -> np.ndarray:
         """Indices from the least to the most stable mode by the declared growth convention of
-        the eigenvalue (``key='growth'``: Re s for exp(s t), Im c for a phase speed c; an undeclared convention ranks by Re, said by :meth:`growth_rule`), or by
+        the eigenvalue (``key='growth'``: Re s for exp(s t), Im c for a phase speed c;
+        an undeclared convention ranks by Re, said by :meth:`growth_rule`), or by
         decreasing real part (``'real'``) or imaginary part (``'imag'``).
 
         Modes flagged spurious by the spectral-tail test (:attr:`flagged`) come
@@ -280,7 +288,7 @@ def _residuals(L, M, w, V) -> np.ndarray:
     """Relative backward residual ||L x + w M x|| / ((||L|| + |w| ||M||) ||x||). When ||L|| +
     |w| ||M|| vanishes (w = 0 in a group where L = 0: the k = 0 mode of a periodic advection-
     diffusion operator) the scale is ||M|| instead: the residual of such a mode was 0/0 = NaN
-   ; M = 0 is refused before any solve."""
+    (Y3); M = 0 is refused before any solve."""
     nL, nM = _norm1(L), _norm1(M)
     R = L @ V + (M @ V) * w[None, :]
     scale = nL + np.abs(w) * nM
@@ -330,32 +338,41 @@ def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
         VL = VL / r            # y^H (L + s M) = 0  <=>  (D^-1 y)^H D (L + s M) = 0, D = 1/r
     else:
         VL, VR = None, vecs[0]
-    finite, note = _finite_eigenvalues(a, b, Le, Me, Md)
+    finite, note, amb = _finite_eigenvalues(a, b, Le, Me, Md)
     w = a[finite] / b[finite]
     V = VR[:, finite]
     res = _residuals(Ld, Md, w, V)
     r = EVPResult(w, V, res, "dense QZ (scipy.linalg.eig)", label, int((~finite).sum()),
                   VL[:, finite] if left else None)
+    r.infinite_ambiguous = amb
     r.log.append(note)
     return r
 
 
 def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.ndarray,
                         Md: np.ndarray):
-    """(mask of the finite eigenvalues alpha/beta of the QZ pairs, the sentence for the log).
+    """(mask of the finite eigenvalues alpha/beta of the QZ pairs, the sentence for the log, the
+    moduli of the pairs removed as infinite on numerical rank alone).
 
     A pair is "under the threshold" when beta = 0 exactly, or when |beta| <= INF_TOL |alpha|
     after scaling by ||L|| / ||M|| (rows equilibrated). A regular pencil has at least
     n - rank(M) infinite eigenvalues (more with Jordan blocks at infinity) and none when M is
-    nonsingular, so the threshold alone does not decide (external review of 0.1.1, F7:
-    L = -diag(1, 1e13), M = I lost its exact eigenvalue 1e13 as infinite).
+    nonsingular, so the threshold alone does not decide (earlier versions: L = -diag(1, 1e13),
+    M = I lost its exact eigenvalue 1e13 as infinite).
 
-    The numerical rank of M counts its singular values above n eps sigma_max(M), on M as given.
-    An earlier version divided each row of M by its own largest entry first: a row of rounding
-    noise (1e-17 ||M|| where the exact M has a zero row) became a row of order one, M looked
-    nonsingular, and the infinite eigenvalue of that row was returned as a finite value near
-    1e17. An equation multiplied by a constant below n eps makes M look singular; the
-    classification then falls back to the threshold, as before F7.
+    The numerical rank of M counts the singular values of Me above n eps sigma_max(Me), where Me
+    is M with each row divided by the largest entry of that row in L or M (the rows of the pencil
+    equilibrated together, as for QZ). D (L + s M) has the eigenvalues of L + s M for every positive
+    diagonal D and gives the same Me, so the rank no longer depends on the scale of each equation.
+    Two earlier versions did: the rank of M as given
+    depended on the scale of each equation, so L = -I, M = diag(1, 1e-17) lost its
+    root 1e17 while the same pencil with its second row times 1e17 kept it; the rank of M with each
+    row divided by its own largest M entry turned a row of rounding noise
+    (1e-17 ||M|| where the exact M has a zero row) into a row of order one. A row of M that is
+    below n eps of the L entries of its row is numerically zero in either scaling; the pair it
+    removes is reported as ambiguous (a finite eigenvalue that large cannot be told from infinity
+    in double precision), with its modulus, in the log and in ``EVPResult.infinite_ambiguous``.
+    Pairs with beta = 0, or removed by an exactly zero row or column of M, are infinite.
 
     With M of full rank every pair with beta != 0 is finite; the pairs under the threshold are
     named in the log. With M singular, a pair is infinite when beta = 0, when it is one of the
@@ -369,12 +386,16 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
     scale = max(_norm1(Le), 1e-300) / max(_norm1(Me), 1e-300)
     ratio = np.abs(b) * scale / np.maximum(np.abs(a), np.finfo(float).tiny)
     under = (b == 0) | (np.abs(b) * scale <= INF_TOL * np.abs(a))
-    sv = sl.svdvals(Md) if n else np.zeros(0)
+    sv = sl.svdvals(Me) if n else np.zeros(0)
     rank_tol = n * eps
     rank = int(np.count_nonzero(sv > rank_tol * sv[0])) if n and sv[0] > 0 else 0
     deficiency = n - rank
+    # null directions of M that are exact: zero rows or zero columns of M as given
+    structural = max(int(np.count_nonzero(~Md.any(axis=1))), int(np.count_nonzero(~Md.any(axis=0)))) if n else 0
     rule = (f"|beta| <= {INF_TOL:.1e} |alpha| after scaling by ||L||/||M||, rows equilibrated; "
-            f"M has numerical rank {rank} of {n} (singular values above n eps sigma_max)")
+            f"M has numerical rank {rank} of {n} (singular values of M with the rows of the pencil "
+            "equilibrated, above n eps sigma_max)")
+    none = np.zeros(0)
     if deficiency == 0:
         infinite = b == 0
         kept = under & ~infinite
@@ -382,12 +403,27 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
                 f"nonsingular ({rule}), so no other pair is infinite"
                 + (f": {int(kept.sum())} pair(s) under the threshold kept as finite eigenvalues "
                    f"(|sigma| >= {np.abs(a[kept] / b[kept]).min():.3e})" if kept.any() else ""))
-        return ~infinite, note
+        return ~infinite, note, none
     order = np.argsort(np.where(under, ratio, np.inf), kind="stable")
     by_rank = np.zeros(n, bool)
     by_rank[order[:min(deficiency, int(under.sum()))]] = True
     infinite = (b == 0) | by_rank | (under & (ratio <= rank_tol))
     note = f"{int(infinite.sum())} infinite eigenvalue(s) removed ({rule})"
+    # pairs removed on numerical rank alone: beyond the exact null directions, and beta != 0
+    soft = infinite & (b != 0)
+    n_soft = max(0, min(int(soft.sum()), int(infinite.sum()) - structural))
+    amb_inf = none
+    if n_soft:
+        idx = np.nonzero(soft)[0]
+        # an exact zero row gives beta at rounding level (the largest moduli): the smallest moduli
+        # are the ones only the numerical rank removed
+        idx = idx[np.argsort(np.abs(a[idx] / b[idx]))][:n_soft]
+        amb_inf = np.sort(np.abs(a[idx] / b[idx]))
+        note += (f"; {n_soft} of them removed on numerical rank alone (M has {deficiency} "
+                 f"direction(s) below n eps, {structural} exact zero row(s)/column(s)): ambiguous, "
+                 "a finite eigenvalue of modulus "
+                 f"{amb_inf.min():.3e} .. {amb_inf.max():.3e} cannot be told from an infinite one "
+                 "in double precision (EVPResult.infinite_ambiguous)")
     amb = np.nonzero(under & ~infinite)[0]
     if amb.size:
         sizes = np.abs(a[amb] / b[amb])
@@ -405,7 +441,7 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
                      f"are under the threshold: the {rest.size} pair(s) of smallest |beta|/|alpha| "
                      f"(modulus {sizes.min():.3e} .. {sizes.max():.3e}) are ambiguous and kept as "
                      "finite eigenvalues")
-    return ~infinite, note
+    return ~infinite, note, amb_inf
 
 
 def check_target(target: Any) -> None:

@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import numpy as np
 
+from ..discretize.spin import flip as _flip_comp
 from ..errors import SymmetryError
 from .real_projection import RT_FACTOR, RT_MAX, RT_QUANTILE
 
@@ -39,10 +40,6 @@ LEAK_MAX = 1e-9
 """Declared bound on the relative part removed by the projection in one step (equivariant operators:
 rounding, ~1e-15). Initial data are refused above the verification bound of the inferred map,
 max(PROBE_TOL, RT_FACTOR x the transforms' round-trip rounding) (``tol``, in explain())."""
-
-
-def _flip_comp(comp: tuple) -> tuple:
-    return tuple({0: 1, 1: 0, 2: 2}[i] for i in comp)
 
 
 class ShiftReflectProjection:

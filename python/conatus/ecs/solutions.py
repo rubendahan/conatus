@@ -89,7 +89,8 @@ def _solver_of(obj, where: str, *, N=None, need_scheme: bool = False):
 
 
 def _seed_state(solver, x0, where: str) -> tuple[np.ndarray, str | None]:
-    """The state vector of ``solver`` for the initial guess ``x0`` (grid values from ``sim.grid("u")`` hit a bare IndexError inside the finder). Accepted:
+    """The state vector of ``solver`` for the initial guess ``x0`` (grid values from
+    ``sim.grid("u")`` are accepted, not a bare IndexError inside the finder). Accepted:
     the state vector itself (``sim.solver.X``, ``solver.system.n`` entries), a ``Simulation`` or
     an ``IVPSolver`` (its current state), or the grid values of the single unknown (the shape of
     ``sim.grid(name)``), converted to coefficients with the loss of the round trip declared in the
@@ -181,7 +182,7 @@ class VectorField(Flow):
 TRIVIAL_TOL = 1e-8      # ‖u‖ < TRIVIAL_TOL · scale ⇒ trivial state (declared in every explain())
 #: A travelling wave whose speed term is below the Newton accuracy, |c| ‖∂x U‖ < TW_SPEED_TOL ·
 #: tol · scale (tol, scale: those of the Newton solve), is an equilibrium: c = 0 within the
-#: accuracy of the solve (from c0 = 0 an equilibrium came back as a
+#: accuracy of the solve (earlier versions: from c0 = 0 an equilibrium came back as a
 #: "travelling_wave" with c = -3.7e-17). Relabelled kind "equilibrium" (class Equilibrium),
 #: ``params['c']`` kept, the measured value in the notes.
 TW_SPEED_TOL = 1.0
@@ -211,6 +212,9 @@ def _guard_trivial(sol: ECSSolution, scale: float) -> ECSSolution:
 #: orbit searches A <= 1e-10, the PPO 10.25 A = O(1), an orbit of amplitude 1e-5 about a state of
 #: norm 1 A ~ 1e-5.
 STEADY_TOL = 1e3
+#: Relative step of the central difference that gives the period column ∂Φ_T/∂T of the orbit
+#: Newton (``_Orbit.dPhi_dT``; the dT_rel default of the 3-D shooting solver).
+PERIOD_FD_REL = 1e-5
 #: Number of states of the period at which the shape change is measured (all of them up to it).
 STEADY_SAMPLES = 64
 #: Size up to which the stability problems of invariant solutions are solved densely (a budget
@@ -222,14 +226,14 @@ DENSE_MAX = 2000
 
 def _arpack_tol(arnoldi_tol, where: str) -> float:
     """The ARPACK accuracy (required whichever path runs, so that a script does not
-    change meaning when its size crosses dense_max). the v0.1 surface is frozen, so
+    change meaning when its size crosses dense_max). The v0.1 surface is frozen, so
     omitting it keeps working through v0.1 with the former default 1e-12 and a DeprecationWarning
-    that names the value used; it becomes a hard requirement in v0.2."""
+    that names the value used; it becomes a hard requirement in 0.3."""
     if arnoldi_tol is REQUIRED:
         warnings.warn(
             f"{where}(): arnoldi_tol not given; using the v0.1 default arnoldi_tol={V01_ARNOLDI_TOL:g} "
             "(the relative accuracy of the Ritz values above dense_max). It will be required in "
-            "v0.2: pass it explicitly, e.g. arnoldi_tol=1e-12.", DeprecationWarning, stacklevel=3)
+            "0.3: pass it explicitly, e.g. arnoldi_tol=1e-12.", DeprecationWarning, stacklevel=3)
         return V01_ARNOLDI_TOL
     return require(arnoldi_tol, "arnoldi_tol", where=f"{where}()", suggest="arnoldi_tol=1e-12",
                    why="above dense_max ARPACK stops at this relative accuracy of the Ritz values: "
@@ -316,7 +320,7 @@ class ECSSolution:
     stability: dict = field(default_factory=dict)
 
     def __repr__(self) -> str:
-        # one line (the dataclass repr printed both state
+        # one line (earlier versions: the dataclass repr printed both state
         # arrays in full, about 40 lines in a log)
         p = "".join(f", {k}={v:.10g}" for k, v in self.params.items() if isinstance(v, float))
         return (f"{type(self).__name__}({self.kind}{p}, residual {self.residual:.1e}, "
@@ -357,17 +361,28 @@ def _energy(ops: FourierOps, X: np.ndarray) -> float:
 
 
 class _Space:
-    """Active dofs: all but the frozen mean, optionally restricted to R u = u (odd subspace)."""
+    """Active dofs: all but the frozen mean, optionally restricted to R u = u (odd subspace).
 
-    def __init__(self, ops: FourierOps, n: int, odd: bool) -> None:
+    ``base``: the state that supplies the frozen entries (the seed: its mean, and in the odd
+    subspace its cos components, zero by the seed check). ``full`` writes the active entries into
+    a copy of it, so the mean of the seed is kept (earlier versions: the frozen entries were set to
+    zero, so 1 + cos x came back as cos x). ``base=None`` freezes them at zero (perturbations in
+    the stability problems)."""
+
+    def __init__(self, ops: FourierOps, n: int, odd: bool, base: np.ndarray | None = None) -> None:
         mask = np.ones(n, bool)
         mask[ops.mean_index] = False
         if odd:
             mask &= ops.odd_mask(np.zeros(n))
         self.mask, self.odd, self.n = mask, odd, n
+        # in the odd subspace R u = u forces the mean and the cos components to 0 exactly
+        # (R f(x) = -f(-x)): the seed's rounding there is not kept
+        self.base = np.zeros(n) if base is None or odd else np.array(base, dtype=float)
+        self.base[mask] = 0.0
+        self.mean_index = ops.mean_index
 
     def full(self, x: np.ndarray) -> np.ndarray:
-        X = np.zeros(self.n)
+        X = self.base.copy()
         X[self.mask] = x
         return X
 
@@ -375,8 +390,44 @@ class _Space:
         return np.asarray(X)[self.mask]
 
     def describe(self) -> str:
-        return ("antisymmetric subspace R u = u (cos components frozen at 0), mean frozen"
-                if self.odd else "full space, mean frozen (conserved)")
+        if self.odd:
+            return "antisymmetric subspace R u = u (cos components frozen at 0), mean frozen"
+        return (f"full space, mean frozen at the seed's value {self.base[self.mean_index]:.6g} "
+                "(conserved)")
+
+
+#: The full equations must hold at a returned solution: ‖full residual‖/scale <= FULL_RESIDUAL_FACTOR
+#: x tol (tol, scale: those of the Newton solve, which sees only the active rows). The rows of the
+#: frozen entries (the mean, and the cos components in the odd subspace) hold only if the equations
+#: conserve them; otherwise the search returned a non-solution (earlier versions: for u_t = 1 an
+#: "equilibrium" with full relative residual 1). The factor absorbs rounding in those rows.
+FULL_RESIDUAL_FACTOR = 10.0
+
+
+def _gate_full_residual(where: str, full: np.ndarray, sp: _Space, newton: NewtonKrylovHookstep,
+                        scale: float) -> str:
+    """Refuse a Newton result whose full residual (every row, frozen ones included) is above
+    FULL_RESIDUAL_FACTOR x tol x scale; return the note that records the check otherwise."""
+    full = np.asarray(full)
+    tot = float(np.linalg.norm(full)) / scale
+    frozen = float(np.linalg.norm(full[~sp.mask])) / scale
+    active = float(np.linalg.norm(full[sp.mask])) / scale
+    mean = float(abs(full[sp.mean_index])) / scale
+    bound = FULL_RESIDUAL_FACTOR * float(newton.tol)
+    if not tot <= bound:
+        raise NewtonNotConverged(
+            f"{where}: Newton converged on the active entries, but the full equations are not "
+            f"satisfied: ‖full residual‖/scale = {tot:.3e} > {FULL_RESIDUAL_FACTOR:g} x tol = "
+            f"{bound:.1e} (frozen rows {frozen:.3e}, of which the mean row {mean:.3e})",
+            why="the solver freezes the mean (and, in the odd subspace, the cos components) at "
+                "the seed's values; the equations do not keep them fixed, so no invariant "
+                "solution with these frozen values exists"
+                if frozen > active else "the active rows did not reach the tolerance",
+            fix="check that the equations conserve the mean (no forcing of the k = 0 mode) and "
+                "keep the symmetry of the subspace; or seed with the mean the solution must have",
+            doc=_DOC)
+    return (f"full residual (every row, frozen mean included) ‖·‖/scale = {tot:.3e} <= "
+            f"{FULL_RESIDUAL_FACTOR:g} x tol = {bound:.1e}; frozen rows {frozen:.3e}")
 
 
 # --------------------------------------------------------------------------- equilibria / TW
@@ -396,7 +447,7 @@ def find_equilibrium(solver, x0: np.ndarray, newton: NewtonKrylovHookstep, *, od
                           "family", fix="find_travelling_wave (phase condition, c unknown, c ≈ 0 "
                           "for an equilibrium) instead", doc=_DOC)
     ops, v = FourierOps(solver), Flow(solver)
-    sp = _Space(ops, solver.system.n, odd=True)
+    sp = _Space(ops, solver.system.n, odd=True, base=x0)
     if np.abs(ops.reflect(x0) - x0).max() > 1e-12 * max(1.0, np.abs(x0).max()):
         raise OptionError("find_equilibrium: the initial guess is not in the antisymmetric "
                           "subspace R u = u", fix="project it: x0 = (x0 + R x0) / 2 with "
@@ -406,9 +457,12 @@ def find_equilibrium(solver, x0: np.ndarray, newton: NewtonKrylovHookstep, *, od
                        lambda z, d: sp.active(v.jvp(sp.full(z), sp.full(d))),
                        sp.active(x0), scale=scale, log=log)
     X = sp.full(res.z)
-    rel = float(np.linalg.norm(v(X)) / max(np.linalg.norm(X), 1e-300))  # meaningless if X ≈ 0
+    vX = v(X)
+    gate = _gate_full_residual("find_equilibrium", vX, sp, newton, scale)
+    rel = float(np.linalg.norm(vX) / max(np.linalg.norm(X), 1e-300))  # meaningless if X ≈ 0
     sol = Equilibrium("equilibrium", X, {"space": sp.describe()}, rel, res, _energy(ops, X))
     sol.notes.append("residual = ‖v(u)‖/‖u‖ with v = M⁻¹(F − L u), evaluated in the full space")
+    sol.notes.append(gate)
     sol.notes += [t for t in (note, seed) if t]
     return _guard_trivial(sol, scale)
 
@@ -424,7 +478,7 @@ def find_travelling_wave(solver, x0: np.ndarray, c0: float, newton: NewtonKrylov
     solver, note = _solver_of(solver, "find_travelling_wave", N=N)
     x0, seed = _seed_state(solver, x0, "find_travelling_wave")
     ops, v = FourierOps(solver), Flow(solver)
-    sp = _Space(ops, solver.system.n, odd=False)
+    sp = _Space(ops, solver.system.n, odd=False, base=x0)
     ref = {"t": ops.ddx(x0)}
 
     def R(z):
@@ -444,7 +498,9 @@ def find_travelling_wave(solver, x0: np.ndarray, c0: float, newton: NewtonKrylov
         _note_repeated_stagnation(err, solver, c0)
         raise
     X, c = sp.full(res.z[:-1]), float(res.z[-1])
-    rel = float(np.linalg.norm(v(X) + c * ops.ddx(X)) / np.linalg.norm(X))
+    full = v(X) + c * ops.ddx(X)
+    gate = _gate_full_residual("find_travelling_wave", full, sp, newton, scale)
+    rel = float(np.linalg.norm(full) / np.linalg.norm(X))
     rel = rel if np.linalg.norm(X) > 0 else float("inf")
     speed = abs(c) * float(np.linalg.norm(ops.ddx(X)))
     still = speed < TW_SPEED_TOL * float(newton.tol) * scale
@@ -452,6 +508,7 @@ def find_travelling_wave(solver, x0: np.ndarray, c0: float, newton: NewtonKrylov
     sol = cls(kind, X, {"c": c, "space": sp.describe()}, rel, res, _energy(ops, X))
     sol.notes.append(f"speed check: |c| ‖∂x U‖ = {speed:.3e} vs TW_SPEED_TOL·tol·scale = "
                      f"{TW_SPEED_TOL * float(newton.tol) * scale:.3e}")
+    sol.notes.append(gate)
     if still:
         sol.notes.append(f"c = {c:.3g} is zero within the Newton accuracy: this is an equilibrium "
                          "(relabelled from travelling_wave), not a travelling wave; start from a "
@@ -461,7 +518,7 @@ def find_travelling_wave(solver, x0: np.ndarray, c0: float, newton: NewtonKrylov
 
 
 #: Stalled travelling-wave searches of each solver in this session: (‖R‖/scale, final c, c0),
-#: oldest first (five far seeds stopped on the same ‖R‖ = 4.013e-03, one
+#: oldest first (earlier versions: five far seeds stopped on the same ‖R‖ = 4.013e-03, one
 #: stagnation point found five times, each refusal saying only "not converged"). Weak keys: a
 #: solver that is gone takes its history with it.
 _TW_STAGNATIONS: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
@@ -511,11 +568,21 @@ class _Orbit:
         self._maps: dict[float, _CachedFlowMap] = {}
 
     def flow(self, T: float) -> _CachedFlowMap:
+        """The map of ``nsteps`` steps of size T / nsteps (a few kept, keyed by T). A FlowMap keeps
+        the step it was built with (``FlowMap.dt``), so a kept map evaluates at its own T whatever
+        the solver's step is (earlier versions: G(X, 1), G(X, 2), G(X, 1) gave two different values
+        of G(X, 1), the map of T = 1 running at the step of T = 2). The solver's step is put back
+        after the construction."""
         if T not in self._maps:
             if len(self._maps) > 4:
                 self._maps.clear()
+            old = float(self.solver.dt)
             self.solver.set_dt(T / self.nsteps)
-            self._maps[T] = _CachedFlowMap(self.solver, self.nsteps)
+            try:
+                self._maps[T] = _CachedFlowMap(self.solver, self.nsteps)
+            finally:
+                if float(self.solver.dt) != old:
+                    self.solver.set_dt(old)
         return self._maps[T]
 
     def S(self, X):
@@ -524,10 +591,30 @@ class _Orbit:
     def G(self, X, T, ell):
         return self.S(self.ops.translate(self.flow(T)(X), ell)) - X
 
+    def dPhi_dT(self, X, T):
+        """∂Φ_T(X)/∂T of the discrete map Φ_T = (one step of size T/n)^n, by a central
+        difference of two discrete maps, step PERIOD_FD_REL x T (error O(h²) plus rounding
+        eps/h); cached for the last (X, T): one Newton iterate needs it once, GMRES many times."""
+        key = (np.asarray(X).tobytes(), float(T))
+        if getattr(self, "_dT_key", None) != key:
+            h = PERIOD_FD_REL * abs(float(T))
+            self._dT_col = (self.flow(T + h)(X) - self.flow(T - h)(X)) / (2 * h)
+            self._dT_key = key
+        return self._dT_col
+
     def dG(self, X, T, ell, dX, dT, dell):
+        """Tangent of G. The X column is the exact discrete tangent (FlowMap.jvp); the T column
+        is the derivative of the discrete map with respect to its period, ∂Φ_T/∂T, by a central
+        difference (:meth:`dPhi_dT`, as the 3-D shooting solver). The endpoint velocity
+        v(Φ_T(u)), used before, is the derivative of the continuous flow: it differs from the
+        discrete one by O(dt) (earlier versions: relative 0.1 for RK111, n = 10, T = 1 on
+        u_t = -u) and only slowed Newton; the residual G, hence the converged solution, is
+        unchanged."""
         fm = self.flow(T)
         PhX = fm.trajectory(X)[-1]
-        body = fm.jvp(X, dX) + dT * self.v(PhX)
+        body = fm.jvp(X, dX)
+        if dT != 0:
+            body = body + dT * self.dPhi_dT(X, T)
         body = self.ops.translate(body, ell) + dell * self.ops.ddx(self.ops.translate(PhX, ell))
         return self.S(body) - dX
 
@@ -544,7 +631,7 @@ def find_relative_periodic_orbit(solver, x0: np.ndarray, T0: float, ell0: float,
     solver, _ = _solver_of(solver, "find_relative_periodic_orbit", need_scheme=True)
     x0, seed = _seed_state(solver, x0, "find_relative_periodic_orbit")
     orb = _Orbit(solver, steps, reflect)
-    sp = _Space(orb.ops, solver.system.n, odd=False)
+    sp = _Space(orb.ops, solver.system.n, odd=False, base=x0)
     ref = {"v": orb.v(x0), "t": orb.ops.ddx(x0)}
 
     def R(z):
@@ -561,12 +648,15 @@ def find_relative_periodic_orbit(solver, x0: np.ndarray, T0: float, ell0: float,
     res = newton.solve(R, J, np.concatenate([sp.active(x0), [T0, ell0]]), scale=scale, log=log)
     X, T, ell = sp.full(res.z[:-2]), float(res.z[-2]), float(res.z[-1])
     ell = float((ell + orb.ops.L / 2) % orb.ops.L - orb.ops.L / 2)       # shift in [−L/2, L/2)
-    rel = float(np.linalg.norm(orb.G(X, T, ell)) / np.linalg.norm(X))
+    full = orb.G(X, T, ell)
+    gate = _gate_full_residual("find_relative_periodic_orbit", full, sp, newton, scale)
+    rel = float(np.linalg.norm(full) / np.linalg.norm(X))
     kind = "preperiodic_orbit" if reflect else "relative_periodic_orbit"
     cls = PreperiodicOrbit if reflect else RelativePeriodicOrbit
     sol = cls(kind, X, {"T": T, "ell": ell, "nsteps": steps, "dt": T / steps,
                                 "scheme": solver.scheme}, rel, res, _energy(orb.ops, X))
     sol.notes.append("residual = ‖S τ_ℓ Φ_T(u) − u‖/‖u‖ of the discrete map (exact FlowMap)")
+    sol.notes.append(gate)
     if seed:
         sol.notes.append(seed)
     return _guard_steady(_guard_trivial(sol, scale), orb)
@@ -582,7 +672,7 @@ def equilibrium_eigenvalues(solver, sol: ECSSolution, n_modes: int, *, dense_max
     budget is declared, the tolerance required; ``k=`` is the former name of
     ``n_modes``, k being a wavenumber everywhere else).
     Marginal eigenvalues (translation) are part of the output. A travelling wave must carry
-    ``params['c']`` (it used to fall back to the fixed frame, c = 0); an equilibrium
+    ``params['c']`` (it never falls back to the fixed frame, c = 0); an equilibrium
     without it has c = 0 by definition."""
     if "c" in sol.params:
         c = sol.params["c"]

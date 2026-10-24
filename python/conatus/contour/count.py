@@ -27,7 +27,7 @@ place where it stalled. The winding of the accepted walk is an integer up to rou
 construction (the last point is the first one, evaluated again); a non-integer winding -- an
 evaluation of ``det T`` that does not return the same value at the same point -- is refused.
 
-These are tests on sampled values, not a proof (external review of 0.1.1, F1). What they see:
+These are tests on sampled values, not a proof. What they see:
 
 * a pencil ``L + z M`` or a Hill operator linear in the exponent has a polynomial determinant.
   A zero closer to the boundary than the local step changes the phase by about pi across the
@@ -36,9 +36,19 @@ These are tests on sampled values, not a proof (external review of 0.1.1, F1). W
   between the initial points: each is counted right or refused.
 * a callable ``T`` (or a Hill operator nonlinear in the exponent) may have poles. A zero inside
   and a pole outside (or the reverse), both closer to the boundary than the local step, leave
-  ``|det T|`` near 1 on the boundary and turn its phase by 2 pi between two samples: no sample
-  sees them, and the count is off by one. ``CountResult.poles_by_construction`` is False for
-  these operators, and the result says so.
+  ``|det T|`` near 1 on the boundary and turn its phase by 2 pi between two samples. Seen from a
+  sample at distance ``d``, such a pair ``delta`` off the edge only bends ``log det T`` by about
+  ``delta / d``. For these operators the walk therefore also bisects a step whose two halves
+  change ``log det T`` in opposite directions, or bend it by more than half of their own
+  increment (``SCALE_RATIO``, above ``SCALE_FLOOR`` radians): the bisection follows the bend to
+  the pair, where the phase criterion resolves the turn (a zero 1e-3 inside the top edge with a
+  pole 1e-3 outside is counted 1, as are the pairs at 1e-2, 1e-5 and 1e-8). A pair whose bend is hidden by a stronger smooth variation of
+  ``det T`` (a bend below half the increment at every sample), or below ``SCALE_FLOOR``, is still
+  missed, and the count is then off by one with no sign of it. When the walk had to resolve the
+  phase on a step shorter than ``NEAR_EDGE`` of the perimeter, a zero or pole lies that close to
+  the boundary: the count warns (``CorrectnessWarning``) and suggests moving or shrinking the
+  box. ``CountResult.poles_by_construction`` is False for these operators, and the result says
+  that the count is a sampled test.
 
 The count is the winding number of the *discretised* operator. It counts every eigenvalue of
 the matrix pencil in the region, the spurious ones of a discretisation included.
@@ -56,7 +66,8 @@ from ..errors import ConvergenceError, OptionError
 from .operators import Operator, SingularPoint, as_operator
 from .region import ContourBox
 
-__all__ = ["count", "CountResult", "PHASE_STEP_MAX", "INITIAL_POINTS", "MAX_EVALUATIONS"]
+__all__ = ["count", "CountResult", "PHASE_STEP_MAX", "INITIAL_POINTS", "MAX_EVALUATIONS",
+           "SCALE_RATIO", "SCALE_FLOOR", "NEAR_EDGE"]
 
 _DOC = "docs/site/guide/dynamics/contour.md"
 #: Principal-increment bound (radians): the largest phase increment of det T accepted over one
@@ -69,6 +80,16 @@ INITIAL_POINTS = 16
 #: Budget of determinant evaluations of one walk; reaching it refuses the count (a zero on the
 #: boundary or a discontinuous determinant), with the place where the walk stalled.
 MAX_EVALUATIONS = 20000
+#: Operators that may have poles (module docstring): a step is also bisected when the bend of
+#: log det T over its two halves, |d2 - d1|, exceeds SCALE_RATIO times the larger half increment
+#: (a singularity of log det T closer than about the step) and SCALE_FLOOR radians (rounding).
+#: Below a step of 1e-10 of the perimeter this test stops, so it never refuses a count by itself.
+SCALE_RATIO = 0.5
+SCALE_FLOOR = 1e-8
+#: A step shorter than this fraction of the perimeter on which the phase still had to be resolved
+#: means a zero or pole of det T that close to the boundary: for an operator that may have poles
+#: the count warns (a pair there may be miscounted) and suggests moving or shrinking the box.
+NEAR_EDGE = 1e-3
 _END = 4.0          # the perimeter parameter runs over [0, 4] (conatus.contour.region)
 
 
@@ -87,6 +108,9 @@ class CountResult:
     winding_error: float           # |winding - nearest integer| before rounding
     phase_step: float
     control: str = ""              # the control-box sentence, when one ran
+    #: the warning of count() when a zero or pole of an operator that may have poles comes closer
+    #: to the boundary than NEAR_EDGE of the perimeter ("" otherwise)
+    near_edge: str = ""
     log: list[str] = field(default_factory=list)
     #: True for a pencil and a Hill operator linear in the exponent (det T a polynomial); False
     #: for a callable T, whose poles the walk cannot see (module docstring)
@@ -101,8 +125,10 @@ class CountResult:
         if self.poles_by_construction:
             return ("det T is a polynomial: a zero closer to the boundary than a step turns the "
                     "phase or dips the modulus, and the step is refined")
-        return ("det T may have poles: a zero and a pole on opposite sides of the boundary, both "
-                "closer to it than the local step, cancel at every sample and are not counted")
+        return ("det T may have poles: a zero and a pole on opposite sides of the boundary bend "
+                "log det T at the samples, and the walk follows the bend; a pair whose bend is "
+                "hidden by a stronger smooth variation of det T cancels at every sample and is "
+                "not counted")
 
     @property
     def count_method(self) -> str:
@@ -136,6 +162,8 @@ class CountResult:
                  f"  shortest step {self.smallest_step:.1e} of the perimeter, at z = "
                  f"{self.smallest_at:.6g} (where a zero comes closest to the boundary)",
                  f"  scope: a test on samples, not a proof; {self.scope}"]
+        if self.near_edge:
+            lines.append("  warning: " + self.near_edge)
         if self.control:
             lines.append("  control: " + self.control)
         lines += ["  " + s for s in self.log]
@@ -156,9 +184,10 @@ def _check_options(phase_step: Any, initial_points: Any, max_evaluations: Any) -
 
 
 def _walk(op: Operator, region: ContourBox, phase_step: float, initial_points: int,
-          max_evaluations: int) -> dict:
-    """Adaptive walk of the boundary (module docstring). Returns the winding and the statistics;
-    raises ConvergenceError where the walk cannot be completed."""
+          max_evaluations: int, scale: bool = False) -> dict:
+    """Adaptive walk of the boundary (module docstring). ``scale``: also bisect where log det T
+    bends more than SCALE_RATIO of its increment (operators that may have poles). Returns the
+    winding and the statistics; raises ConvergenceError where the walk cannot be completed."""
     cache: dict[float, tuple[complex, float]] = {}
 
     def ev(s: float) -> tuple[complex, float]:
@@ -184,9 +213,11 @@ def _walk(op: Operator, region: ContourBox, phase_step: float, initial_points: i
     # the closing point s = 4 is the first point evaluated again (the integer check)
     try:
         for s0, s1 in zip(knots[:-1], knots[1:], strict=True):
-            stack = [(s0, s1)]
+            # (a, b, by_phase): by_phase is False for the halves of a step split by the bend test;
+            # their length says nothing about a zero, so they do not set the smallest step
+            stack = [(s0, s1, True)]
             while stack:
-                a, b = stack.pop()
+                a, b, by_phase = stack.pop()
                 if b - a < 1e-12 * _END:
                     raise _Stall(0.5 * (a + b), "step")
                 fa = ev(a)
@@ -195,13 +226,20 @@ def _walk(op: Operator, region: ContourBox, phase_step: float, initial_points: i
                 fm = ev(m)
                 d1, d2 = dlog(fa, fm), dlog(fm, fb)
                 whole = abs(float(np.angle(fb[0] * np.conj(fa[0]))))
-                if (whole <= phase_step and abs(d1.imag) <= phase_step
-                        and abs(d2.imag) <= phase_step and abs(d2 - d1) <= phase_step):
-                    total += d1.imag + d2.imag
-                    if b - a < smallest:
+                resolved = (whole <= phase_step and abs(d1.imag) <= phase_step
+                            and abs(d2.imag) <= phase_step and abs(d2 - d1) <= phase_step)
+                bend = abs(d2 - d1)
+                if resolved:
+                    # the phase test passed on this step: its length is the one the phase needed
+                    if by_phase and b - a < smallest:
                         smallest, smallest_at = b - a, m
+                    if (scale and b - a > 1e-10 * _END and bend > SCALE_FLOOR
+                            and bend > SCALE_RATIO * max(abs(d1), abs(d2))):
+                        stack += [(m, b, False), (a, m, False)]        # split by the bend test only
+                    else:
+                        total += d1.imag + d2.imag
                 else:
-                    stack += [(m, b), (a, m)]          # left half first
+                    stack += [(m, b, True), (a, m, True)]          # left half first
     except _Stall as st:
         z = complex(region.point(st.s))
         why = {"singular": f"det T is exactly zero at z = {z:.12g} on the boundary (an eigenvalue "
@@ -283,7 +321,8 @@ def count(T: Any, region: ContourBox, *, poles: int | None = None, derivative: A
                     "its determinant is not what the count assumes",
                 fix="check T (and poles=) on the control box before trusting any count", doc=_DOC)
         ctrl = f"box {cbox.describe()} counted {got}, as expected ({c.evaluations} evaluations)"
-    w = _walk(op, region, phase_step, initial_points, max_evaluations)
+    may_have_poles = not op.structural_poles
+    w = _walk(op, region, phase_step, initial_points, max_evaluations, scale=may_have_poles)
     n = round(w["winding"])
     err = abs(w["winding"] - n)
     if err > 1e-6:
@@ -296,9 +335,18 @@ def count(T: Any, region: ContourBox, *, poles: int | None = None, derivative: A
             fix="make the evaluation of T(z) deterministic; a user determinant must include "
                 "every permutation sign", doc=_DOC)
     P = op.poles
+    near = ""
+    if may_have_poles and w["smallest"] < NEAR_EDGE:
+        near = (f"det T has a zero or a pole close to the boundary near z = {w['smallest_at']:.6g}: "
+                f"the walk resolved its phase on a step of {w['smallest']:.1e} of the perimeter. "
+                "The count is a test on samples; a zero and a pole on opposite sides of an edge "
+                "can cancel there. Move or shrink the box so that its edges stay clear of them, "
+                "and compare the counts")
+        from ..errors import CorrectnessWarning, _warn_user
+        _warn_user(f"eigenvalue count in {region.describe()}: {near}", CorrectnessWarning)
     return CountResult(count=None if P is None else n + P, winding=n, poles=P, region=region,
                        operator=op.explain(), evaluations=w["evaluations"],
                        smallest_step=w["smallest"], smallest_at=w["smallest_at"],
-                       winding_error=err, phase_step=phase_step, control=ctrl,
+                       winding_error=err, phase_step=phase_step, control=ctrl, near_edge=near,
                        poles_by_construction=bool(op.structural_poles),
                        reference=(op.n, op.kind, w["samples"]))

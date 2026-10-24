@@ -54,8 +54,9 @@ BoundaryConditionError T: 1 boundary condition(s) for 2 needed (order 2 along x,
 
 ## What Conatus does with them
 
-Conatus imposes conditions with the tau method: each condition adds one unknown constant along the
-wall, which enters one equation through a fixed polynomial. You do not write these terms. They are
+Conatus imposes conditions with the tau method: each condition adds one unknown coefficient. It
+does not depend on the wall-normal coordinate and may vary along the wall. It enters one equation
+multiplied by a fixed polynomial in the wall-normal coordinate. You do not write these terms. They are
 placed by one deterministic rule:
 
 - each condition constrains **one** unknown;

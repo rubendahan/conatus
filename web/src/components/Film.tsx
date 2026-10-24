@@ -92,6 +92,8 @@ export default function Film({ f }: { f: FilmItem }) {
             <p>{f.caption}{f.details && <> {f.details}</>}</p>
             {f.legend && <p>{f.legend}</p>}
             {f.span && <p>{f.span}</p>}
+            {f.generation && <p>Made by <code>{f.generation.command}</code>. SHA-256 of the WebM file:{" "}
+              <code className="film-hash">{f.generation.sha256.webm}</code>.</p>}
             {note && <p>{note}</p>}
           </details>
         </figcaption>

@@ -6,8 +6,8 @@ The flow map Φ: X_0 ↦ X_N is the composition of the constant-step IMEX steps 
 
 * tangent: every stage is re-solved with the same operators (a M + b L) applied to the
   linearized right-hand side F'(X_k) δX_k;
-* adjoint: the same relations transposed (bilinear pairing ⟨a, b⟩ = Σ a b, no conjugation,
-  decision D8), stages and steps in reverse order.
+* adjoint: the same relations transposed (bilinear pairing ⟨a, b⟩ = Σ a b, no conjugation),
+  stages and steps in reverse order.
 
 Choices (explicit arguments, shown by ``explain()``):
 
@@ -236,8 +236,8 @@ def _lever_keys(s) -> dict:
     """Fingerprint keys of the levers that change the arithmetic in the last bits:
     complex modes, the level-scheduled solve variants, the F transform options. Only their
     non-default values are added, so the journals of maps without them keep their fingerprint;
-    a journal written without a lever is refused by a map with it and conversely (before, a sweep resumed with complexify=True or compact factors mixed two
-    trajectories silently). Shared factors and the fused complex-mode maps give the same bits:
+    a journal written without a lever is refused by a map with it and conversely (otherwise
+    a sweep resumed with complexify=True or compact factors would mix two trajectories silently). Shared factors and the fused complex-mode maps give the same bits:
     not part of it."""
     out: dict = {}
     sysm = s.system
@@ -408,6 +408,10 @@ class FlowMap:
         self._m0proj = pr if getattr(pr, "active", False) else None
         self._fac: dict = {}
         self.n_recompute = 0                     # forward steps recomputed by the reverse sweep
+        #: the step of the map, fixed at construction: a later solver.set_dt changes neither
+        #: __call__ nor trajectory/jvp/vjp (earlier versions: __call__ ran at the solver's new dt
+        #: while trajectory and jvp kept the old one)
+        self.dt = float(solver.dt)
         self._steps = self._schedule()
 
     # ------------------------------------------------------------------ schedule
@@ -416,24 +420,25 @@ class FlowMap:
         s = self.solver
         out = []
         # start time of step n: t0 + n dt, the expression of IVPSolver.step (t0 exactly at n = 0)
-        self._times = [self.t0] + [self.t0 + n * s.dt for n in range(1, self.nsteps + 1)]
+        dt = self.dt
+        self._times = [self.t0] + [self.t0 + n * dt for n in range(1, self.nsteps + 1)]
         for it in range(self.nsteps):
             t = self._times[it]
             if s.order:
                 if s.startup == "rk443" and it < s.order - 1:
-                    out.append(_Step("rk", s.dt / s.startup_substeps, rk_tableau("RK443"),
+                    out.append(_Step("rk", dt / s.startup_substeps, rk_tableau("RK443"),
                                      substeps=s.startup_substeps, t=t, n=it))
                 else:
-                    out.append(_Step("sbdf", s.dt, q=min(s.order, it + 1), t=t, n=it))
+                    out.append(_Step("sbdf", dt, q=min(s.order, it + 1), t=t, n=it))
             elif getattr(s, "family", "") == "cn":
                 if s.startup == "rk443" and it < s._nhist - 1:
-                    out.append(_Step("rk", s.dt / s.startup_substeps, rk_tableau("RK443"),
+                    out.append(_Step("rk", dt / s.startup_substeps, rk_tableau("RK443"),
                                      substeps=s.startup_substeps, t=t, n=it))
                 else:    # lower-order start-up: CNAB1 until the history is full (IVPSolver._cn_step)
                     co = s._cn if it + 1 >= s._nhist else cn_coefficients("CNAB1")
-                    out.append(_Step("cn", s.dt, q=len(co[0]) - 1, coefs=co, t=t, n=it))
+                    out.append(_Step("cn", dt, q=len(co[0]) - 1, coefs=co, t=t, n=it))
             else:
-                out.append(_Step("rk", s.dt, s._rk, t=t, n=it))
+                out.append(_Step("rk", dt, s._rk, t=t, n=it))
         return out
 
     def _hist_time(self, st: _Step, j: int) -> float:
@@ -611,16 +616,26 @@ class FlowMap:
             _set_solver_state(self.solver, saved)
 
     def _run_from(self, X0: np.ndarray) -> np.ndarray:
-        """Φ(X_0) on the solver itself (its state, clock and history left at the end)."""
+        """Φ(X_0) on the solver itself (its state, clock and history left at the end), at the
+        map's step ``self.dt``: a solver whose step was changed since the map was built runs at
+        the map's step and gets its own step back afterwards (also on an error)."""
         s = self.solver
-        s.X = self.xp.array(X0, dtype=self.dtype)
-        s.t, s.iteration, s._t_origin, s._it_origin = self.t0, 0, self.t0, 0
-        s._MXh.clear()
-        s._Fh.clear()
-        if getattr(s, "_LXh", None) is not None:
-            s._LXh.clear()
-        s.run(self.nsteps)
-        return s.X.copy()
+        old_dt = float(s.dt)
+        moved = old_dt != self.dt
+        if moved:
+            s.set_dt(self.dt)
+        try:
+            s.X = self.xp.array(X0, dtype=self.dtype)
+            s.t, s.iteration, s._t_origin, s._it_origin = self.t0, 0, self.t0, 0
+            s._MXh.clear()
+            s._Fh.clear()
+            if getattr(s, "_LXh", None) is not None:
+                s._LXh.clear()
+            s.run(self.nsteps)
+            return s.X.copy()
+        finally:
+            if moved:
+                s.set_dt(old_dt)
 
     # ------------------------------------------------------------------ tangent
     def _rk_jvp(self, subs, dX0, st: _Step):
@@ -707,7 +722,7 @@ class FlowMap:
             def flush(k, bar=bar, acc=acc, stages=stages, ts=ts):
                 # each stage is transposed exactly once: its factor grids are dropped as soon as
                 # F'(S_k)ᵀ is applied (a per-call cache), instead of being kept for every stage of
-                # the step (same arithmetic, bit-identical: 2/3 of that memory at RK443)
+                # the step (same arithmetic, bit-identical; 2/3 of that memory at RK443)
                 if k in acc:
                     bar[k] += self._JFT(stages[k], acc.pop(k), ts + c[k] * st.dt, {})
             for i in range(s, 0, -1):
@@ -837,7 +852,7 @@ class FlowMap:
         because CPU and GPU arithmetic differ in the last bits."""
         from .checkpoints import array_digest
         s = self.solver
-        fp = dict(nsteps=self.nsteps, checkpoints=self.checkpoints, dt=float(s.dt), t0=self.t0,
+        fp = dict(nsteps=self.nsteps, checkpoints=self.checkpoints, dt=self.dt, t0=self.t0,
                   scheme=s.scheme, n=int(self.n), dtype=str(np.dtype(self.dtype)), Q=self.Q,
                   backend=str(s.backend), operators=self._operator_digest(),
                   X0=array_digest(X0), W=None if W is None else array_digest(W))
@@ -998,6 +1013,7 @@ class FlowMap:
 
     # ------------------------------------------------------------------ explain
     def explain(self) -> str:
+        """The flow map, its scheme and horizon, the checkpointing and the adjoint convention."""
         s = self.solver
         if self.checkpoints is None:
             ck = "full storage of the trajectory (device)"
@@ -1030,15 +1046,15 @@ class FlowMap:
                  f"(bc_time={s.bc_time!r}), zero rows in the tangent and the adjoint"
                  if self._bc_rows is not None else "") + ")"
               if self.tname else "")
-        return (f"FlowMap(Φ: X_0 -> X_{self.nsteps}, T = {self.nsteps * s.dt:g}{tm})\n"
-                f"  steps: {s.scheme}, dt = {s.dt:g}"
+        return (f"FlowMap(Φ: X_0 -> X_{self.nsteps}, T = {self.nsteps * self.dt:g}{tm})\n"
+                f"  steps: {s.scheme}, dt = {self.dt:g}"
                 + (f", startup = {s.startup}" if s.order or getattr(s, "family", "") == "cn" else "")
                 + "\n"
                 + ("  tangent/adjoint: exact discrete (same schemes, same operators), real pairing "
                    "⟨a, b⟩ = Re Σ conj(a) b (complex state of real fields; conjugate-transposed "
                    "solves); physical adjoint via vjp_physical(G)\n" if self.pairing == "real" else
                    "  tangent/adjoint: exact discrete (same schemes, same operators), bilinear "
-                   "pairing ⟨a, b⟩ = Σ a b (D8); physical adjoint via vjp_physical(G)\n") +
+                   "pairing ⟨a, b⟩ = Σ a b (no conjugation); physical adjoint via vjp_physical(G)\n") +
                 f"  linear solves in jvp/vjp: {sv}\n"
                 + ("  m = 0 real projection P after every solve of the step: P after the "
                    "tangent's solves, P before the adjoint's transposed solves (self-adjoint for "

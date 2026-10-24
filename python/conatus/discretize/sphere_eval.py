@@ -39,6 +39,8 @@ from .curvilinear_common import spin_dot as _dot
 from .real_fields import FUNC_REAL_TOL, REAL_TOL, STATE_REAL_TOL
 from .real_fields import checked_real as _real
 from .sphere_ops import BallOps, ShellOps, SphereHarmonics, cross_table, regularity_Q, spin_of
+from .spin import apply_index as _apply_index
+from .spin import flip as _flip
 
 __all__ = ["SphereSpace", "SphereEvaluator", "comps", "rhs_rpow", "embed_coeffs", "REAL_TOL",
            "STATE_REAL_TOL", "FUNC_REAL_TOL"]
@@ -50,20 +52,8 @@ METRIC = np.array([[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])          
 
 
 def comps(rank: int, nc: int) -> list[tuple]:
+    """Every component index tuple of a rank-``rank`` tensor with ``nc`` components per index."""
     return list(product(*[range(nc)] * rank)) if rank else [()]
-
-
-def _flip(comp: tuple) -> tuple:
-    return tuple({0: 1, 1: 0, 2: 2}[i] for i in comp)
-
-
-def _apply_index(M: np.ndarray, g: np.ndarray, rank: int) -> np.ndarray:
-    """Apply the matrix M on each of the first ``rank`` axes of g (NumPy or CuPy g)."""
-    xp = array_module(g)
-    M = M if xp is np else xp.asarray(M)
-    for ax in range(rank):
-        g = xp.moveaxis(xp.tensordot(M, g, axes=([1], [ax])), 0, ax)
-    return g
 
 
 class SphereSpace:
@@ -134,6 +124,7 @@ class SphereSpace:
         return hr if not self.s2 else ht
 
     def coeff_shape(self, dom: Domain | None, rank: int) -> tuple:
+        """Coefficient array shape of a rank-``rank`` object on domain ``dom``."""
         hp, ht, hr = self.has(dom)
         sh = (self.nc,) * rank + (len(self.ms) if hp else 1, self.L + 1 if ht else 1)
         if not self.s2:
@@ -174,6 +165,8 @@ class SphereSpace:
         return out
 
     def mindex(self, dom: Domain | None, m_index: int) -> int:
+        """Index of the azimuthal mode in the arrays of an object on ``dom`` (0 when it does not
+        depend on phi)."""
         return m_index if self.has(dom)[0] else 0
 
     def rsize(self, ell: int) -> int:
@@ -594,10 +587,12 @@ class SphereSpace:
 
     def forward(self, g: np.ndarray, dom: Domain | None, rank: int, dealias,
                 physical: bool = True, fold=None) -> np.ndarray:
+        """Coefficients of the grid values ``g`` (grid -> mixed -> coefficients)."""
         return self.mixed_to_coeff(self.grid_to_mixed(g, dom, rank, dealias, physical, fold), dom, rank, dealias,
                                    fold=fold)
 
     def explain(self) -> str:
+        """Bases, groups, grid sizes and radial operators of the spherical space, one line."""
         M = self.sizes(True)
         rad = "" if self.s2 else f"; {self.ops.explain()}"
         return (f"SphereSpace: {type(self.bphi).__name__}(phi, {self.bphi.size}) -> {len(self.ms)} "

@@ -1,7 +1,7 @@
 # Importing Dedalus scripts
 
-`cn.from_dedalus(script)` reads a Dedalus 3 script and builds the same problem as a Conatus
-problem. It reports, line by line, what it translated. {doc}`../tutorials/14_from_dedalus` goes
+`cn.from_dedalus(script)` builds a Conatus problem from the supported subset of a Dedalus 3 script
+and reports translated, approximated and unsupported constructs. It reports, line by line, what it translated. {doc}`../tutorials/14_from_dedalus` goes
 through one complete example.
 
 ## Usage

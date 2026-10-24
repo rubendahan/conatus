@@ -75,7 +75,7 @@ def contour() -> None:
     try:                                                 # the pair sits on the edge Re mu = 0
         cn.contour.count(H, cn.box(re=(0.0, 0.5), im=(0.25, 1.75)))
     except ConvergenceError as err:
-        print(err.message)                               # refused, never a guessed integer
+        print(err.message)                               # the count is refused: an eigenvalue on the edge
     # [/ct-refuse]
     else:
         raise AssertionError("an eigenvalue on the boundary was counted")

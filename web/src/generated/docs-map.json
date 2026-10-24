@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-22T12:13:44.536Z",
+ "generated": "2026-10-24T00:49:45.595Z",
  "source": "",
  "guide": [
   {
@@ -32,7 +32,7 @@
     },
     {
      "title": "Ready problems",
-     "text": "cn.problems gives the canonical flows and model equations ready to solve, each validated against a published value.",
+     "text": "cn.problems gives canonical flows and model equations ready to solve.",
      "href": "guide/problems.html"
     },
     {
@@ -57,7 +57,7 @@
     },
     {
      "title": "GPU",
-     "text": "The same model runs on an NVIDIA GPU by adding backend=\"cuda\"; the arithmetic is double precision, as on the CPU.",
+     "text": "The same model runs on an NVIDIA GPU by adding backend=\"cuda\".",
      "href": "guide/gpu.html"
     },
     {
@@ -77,13 +77,18 @@
     },
     {
      "title": "The Studio",
-     "text": "The Studio shows a running simulation as a film, from a browser or a phone, and lets you pause, checkpoint, stop or fork it.",
+     "text": "The Studio shows a running simulation as a film in a browser, and lets you pause, checkpoint, stop or fork it.",
      "href": "guide/studio.html"
     },
     {
      "title": "Pilot a run from a script or an agent",
      "text": "Everything the Studio shows about a run, a script can read as JSON, and the commands of the Controls sheet, a script can send (experimental, like the Studio: experimental).",
      "href": "guide/studio_agents.html"
+    },
+    {
+     "title": "Studio limits and timings",
+     "text": "Every number the Studio, the hub, the relay and the telemetry use on their own is declared in one table, conatus.studio.constants.",
+     "href": "guide/studio_limits.html"
     },
     {
      "title": "For AI agents",
@@ -152,7 +157,7 @@
    "entries": [
     {
      "title": "Importing Dedalus scripts",
-     "text": "cn.from_dedalus(script) reads a Dedalus 3 script and builds the same problem as a Conatus problem.",
+     "text": "cn.from_dedalus(script) builds a Conatus problem from the supported subset of a Dedalus 3 script and reports translated, approximated and unsupported constructs.",
      "href": "guide/dedalus.html"
     }
    ]

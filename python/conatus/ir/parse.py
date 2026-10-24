@@ -180,6 +180,7 @@ class Namespace:
 
     # lookups ---------------------------------------------------------------------------------
     def coordinate(self, name: str) -> Coordinate | None:
+        """The coordinate named ``name``, or None when absent or ambiguous."""
         c = self.coords.get(name, False)
         return None if c is False else c    # None = ambiguous or absent (callers tell which)
 
@@ -563,7 +564,7 @@ class _Parser:
 
     def _check_spatial(self, name: str, a: _Pos) -> None:
         """A spatial derivative of an expression without any field (``lap(t)``, ``dx(Ra)``,
-        ``dz(2)``) is identically zero: refused with a did-you-mean of the fields (``lap(t)`` for ``lap(T)`` silently removed the diffusion term)."""
+        ``dz(2)``) is identically zero: refused with a did-you-mean of the fields (earlier versions: ``lap(t)`` for ``lap(T)`` silently removed the diffusion term)."""
         v = self._value(a)
         if isinstance(v, Expr) and v.free_fields():
             return

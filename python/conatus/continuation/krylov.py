@@ -7,7 +7,12 @@ Unknowns z = (x, p), norm ‖z‖² = ‖x‖² + (w_p p)² with a **declared** 
 the last two converged points the tangent is the secant t = (z_k − z_{k−1}) / ‖·‖, the predictor
 z_pred = z_k + ds t, and the corrector solves
 
-    G(x, p) = 0,   ⟨t, z − z_pred⟩ = 0      (x-part plain dot, p-part weighted by w_p²).
+    G(x, p) = 0,   h(z) = t_xᵀ (x − x_pred) + w_p² t_p (p − p_pred) = 0,
+
+h being the product of the declared norm, ⟨a, b⟩ = a_xᵀ b_x + w_p² a_p b_p (Euclidean on x, the
+parameter weighted by w_p²), so the secant tangent is unit in that norm and the bordered
+Jacobian row (t_xᵀ, w_p² t_p) is the gradient of h (the same metric for the residual and its
+row).
 
 A **fold** (limit point in p) is a sign change of Δp between consecutive steps. It is located by
 restarting from the point before it with a step divided by ``fold_refine_factor`` (repeated

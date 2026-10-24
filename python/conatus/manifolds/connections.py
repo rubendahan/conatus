@@ -1,5 +1,5 @@
 """Heteroclinic and homoclinic connections between equilibria by shooting with projection
-boundary conditions. Notes: §5; Beyn, IMA J. Numer. Anal.
+boundary conditions. Notes: Beyn, IMA J. Numer. Anal.
 10, 379–405 (1990) (projection boundary conditions); Doedel & Friedman (1989).
 
 A connecting orbit x(t) from the equilibrium x₋ to x₊ is approximated on a finite interval [0, T]:

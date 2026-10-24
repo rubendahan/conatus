@@ -7,7 +7,7 @@ solver checkpoints) under a declared root (``$CN_RUNS``, else ``$CN_TMP/runs``, 
 Recording (never blocks the computation, never raises into it; see :mod:`conatus.runs.run`)::
 
     import conatus as cn
-    with cn.runs.track("rb_2d", tags=[""], params={"Ra": 1e6}) as run:
+    with cn.runs.track("rb_2d", tags=["convection"], params={"Ra": 1e6}) as run:
         solver.run(2000, record=run)                  # numerics, problem hash, start/end state
         run.log(t=solver.t, Nu=nu)                    # series
         run.result(Nu=nu)                             # scalar results (queryable)
@@ -20,7 +20,7 @@ Recording (never blocks the computation, never raises into it; see :mod:`conatus
     @cn.runs.track("eig", cache=True)                 # one run per call; identical calls reused
     def least_stable(Re: float, N: int) -> dict: ...
 
-Queries: ``find(problem=..., Re__gt=1000, status="certified", tags=[""])``, ``get(id)``,
+Queries: ``find(problem=..., Re__gt=1000, status="certified", tags=["convection"])``, ``get(id)``,
 ``compare(a, b)``, ``lineage(id)``, ``to_dataframe()``; ``run.reproduce(solver)``; exports
 ``export(dir)`` (versioned JSON for ``results/`` and the paper) and ``export_mlflow`` (optional).
 """
@@ -61,8 +61,8 @@ def find(problem: Any = None, *, name: str | None = None, status: str | Iterable
     or a problem name. ``filters``: ``key=value`` or ``key__op=value`` with op in eq, ne, gt, ge,
     lt, le, in, contains. A key is an index column (host, gpu, git_head, slurm_job, ...), else a
     parameter, else a result; a key that is both a parameter and a result is refused (write
-    ``param_<key>`` or ``result_<key>``), and an unknown key is an error (typos never return an
-    empty list silently), except in an empty registry."""
+    ``param_<key>`` or ``result_<key>``). Unknown keys raise an error once the registry holds a
+    run with parameters or results; an empty registry accepts any key."""
     reg = registry(root)
     ids = reg.query_ids(problem=problem, name=name, status=status, state=state, tags=tags,
                         parent=parent, since=since, until=until, limit=limit, order=order,

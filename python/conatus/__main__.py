@@ -14,8 +14,8 @@ import sys
 
 
 def version_line() -> str:
-    """``conatus 0.1.0 (compiled core 0.1.0, Python 3.12.3)``: the first line of a bug report
-   . The core is named "not loaded" when it cannot be imported, and its own
+    """``conatus 0.1.0 (compiled core 0.1.0, Python 3.12.3)``: the first line of a bug report.
+    The core is named "not loaded" when it cannot be imported, and its own
     version when it differs from the package's (a build of another checkout)."""
     import platform
 

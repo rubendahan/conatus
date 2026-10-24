@@ -5,7 +5,7 @@
 * every name resolves to the same object as ``conatus.expert.<name>`` (module ``__getattr__``);
 * two names keep their former meaning here only, so that no old script changes behaviour:
   ``sensitivity`` is the dense-EVP helper ``conatus.solvers.sensitivity`` (in ``conatus.expert``
-  the name is the ``conatus.sensitivity``) and ``Channel`` is the base-flow record
+  the name is the package ``conatus.sensitivity``) and ``Channel`` is the base-flow record
   ``conatus.flows.ChannelBaseFlow`` (``cn.Channel`` is the native geometry).
 
 Replace ``conatus.api`` by ``conatus.expert``; for these two names, see above.

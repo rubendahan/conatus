@@ -1,7 +1,7 @@
 """Coordinates and coordinate systems.
 
 A coordinate system is a first-class object: it owns its coordinates, its metric
-and its regularity conditions. Cartesian systems polar and cylindrical coordinates (regular bases
+and its regularity conditions. Cartesian systems, polar and cylindrical coordinates (regular bases
 in conatus.discretize.polar*) and spherical coordinates (S2, ball, shell: conatus.discretize.sphere*)
 are implemented. No `1/(r+eps)`.
 """
@@ -31,6 +31,8 @@ class Coordinate:
 
     @property
     def key(self) -> tuple:
+        """Structural identity of the coordinate (name and system), used for hashing and
+        equality."""
         return ("Coordinate", self.name, self.system.key)
 
     def __eq__(self, other: object) -> bool:
@@ -46,6 +48,7 @@ class Coordinate:
         return self.name
 
     def explain(self) -> str:
+        """The coordinate's name, index and system."""
         return (f"Coordinate '{self.name}': index {self.index} of {self.system.name}"
                 f"{tuple(c.name for c in self.system.coords)}")
 
@@ -73,14 +76,17 @@ class CoordinateSystem:
 
     @property
     def dim(self) -> int:
+        """Number of coordinates."""
         return len(self.coords)
 
     @property
     def name(self) -> str:
+        """Display name, e.g. ``cartesian(x, z)``."""
         return f"{self.kind}({', '.join(self.names)})"
 
     @property
     def key(self) -> tuple:
+        """Structural identity of the system (kind and coordinate names)."""
         return (self.kind, self.names)
 
     def __eq__(self, other: object) -> bool:
@@ -106,15 +112,20 @@ class CoordinateSystem:
         return self.name
 
     def scale_factors(self) -> tuple:
+        """Lamé scale factors in coordinate order (each concrete system defines them)."""
         raise NotImplementedError(f"{self.kind}: scale factors not implemented")
 
     def metric(self) -> str:
+        """The metric and volume measure as text (each concrete system defines it)."""
         raise NotImplementedError(f"{self.kind}: metric not implemented")
 
     def regularity(self) -> str:
+        """The regularity conditions at the coordinate singularities, as text (each concrete
+        system defines them)."""
         raise NotImplementedError(f"{self.kind}: regularity conditions not implemented")
 
     def explain(self) -> str:
+        """One line: name, dimension, curvilinear or not."""
         return f"{self.name}: dim={self.dim}, curvilinear={self.curvilinear}"
 
 
@@ -134,15 +145,19 @@ class CartesianCoordinates(CoordinateSystem):
         super().__init__(*names)
 
     def scale_factors(self) -> tuple:
+        """Lamé scale factors, all 1."""
         return (1,) * self.dim
 
     def metric(self) -> str:
+        """The metric (identity) and the volume measure, as text."""
         return f"identity ({self.dim}x{self.dim}), Lebesgue measure d{' d'.join(self.names)}"
 
     def regularity(self) -> str:
+        """Regularity conditions: none (no coordinate singularity)."""
         return "none (no coordinate singularity)"
 
     def explain(self) -> str:
+        """Name, metric, scale factors and regularity of the Cartesian system."""
         return "\n".join([
             f"{self.name}",
             f"  metric       : {self.metric()}",
@@ -197,16 +212,20 @@ class PolarCoordinates(CoordinateSystem):
         super().__init__(azimuth, radius)
 
     def scale_factors(self) -> tuple:
+        """Lamé scale factors (h_phi, h_r) = (r, 1)."""
         return ("r", 1)              # (h_phi, h_r)
 
     def metric(self) -> str:
+        """The metric dr^2 + r^2 dphi^2 and the measure r dr dphi, as text."""
         return f"d{self.names[1]}^2 + {self.names[1]}^2 d{self.names[0]}^2, measure {self.names[1]} d{self.names[1]} d{self.names[0]}"
 
     def regularity(self) -> str:
+        """Regularity at the axis of the azimuthal mode m, as text."""
         return ("scalar mode m: r^|m| w(r^2), w polynomial; vector spin components u_+-: r^|m+-1| times "
                 "polynomials in r^2 (regular at the axis by construction, never 1/(r+eps))")
 
     def explain(self) -> str:
+        """Name, metric, scale factors, axis singularity and regularity of the polar system."""
         return "\n".join([
             f"{self.name} (disk and annulus: DiskBasis / AnnulusBasis in r, Fourier in phi)",
             f"  metric       : {self.metric()}",
@@ -231,17 +250,22 @@ class CylindricalCoordinates(CoordinateSystem):
         super().__init__(azimuth, radius, axial)
 
     def scale_factors(self) -> tuple:
+        """Lamé scale factors (h_phi, h_r, h_z) = (r, 1, 1)."""
         return ("r", 1, 1)           # (h_phi, h_r, h_z)
 
     def metric(self) -> str:
+        """The metric dr^2 + r^2 dphi^2 + dz^2 and the measure r dr dphi dz, as text."""
         p, r, z = self.names
         return f"d{r}^2 + {r}^2 d{p}^2 + d{z}^2, measure {r} d{r} d{p} d{z}"
 
     def regularity(self) -> str:
+        """Regularity at the axis of the mode (m, k_z), as text."""
         return ("mode (m, k_z): scalar and u_z r^|m| w(r^2); spin components u_+- r^|m+-1| times "
                 "polynomials in r^2 (regular at the axis by construction, never 1/(r+eps))")
 
     def explain(self) -> str:
+        """Name, metric, scale factors, axis singularity and regularity of the cylindrical
+        system."""
         return "\n".join([
             f"{self.name} (periodic pipe / cylinder: DiskBasis or AnnulusBasis in r, Fourier in z)",
             f"  metric       : {self.metric()}",
@@ -268,18 +292,22 @@ class S2Coordinates(CoordinateSystem):
         super().__init__(azimuth, colatitude)
 
     def scale_factors(self) -> tuple:
+        """Lamé scale factors (h_phi, h_theta) = (R sin(theta), R)."""
         return ("R sin(theta)", "R")          # (h_phi, h_theta)
 
     def metric(self) -> str:
+        """The metric R^2 (dtheta^2 + sin(theta)^2 dphi^2) and its measure, as text."""
         p, t = self.names
         return f"R^2 (d{t}^2 + sin({t})^2 d{p}^2), measure R^2 sin({t}) d{t} d{p}"
 
     def regularity(self) -> str:
+        """Regularity at the poles of the spin-s component of mode m, as text."""
         return ("spin-s component of mode m: sum of spin-weighted harmonics sY_lm, l >= max(|m|, |s|), "
                 "i.e. sin(theta/2)^|m+s| cos(theta/2)^|m-s| P_n^(|m+s|,|m-s|)(cos theta): regular at "
                 "both poles by construction, never 1/(sin(theta)+eps)")
 
     def explain(self) -> str:
+        """Name, metric, scale factors, pole singularities and regularity of the sphere surface."""
         return "\n".join([
             f"{self.name} (sphere surface: SphereBasis in theta)",
             f"  metric       : {self.metric()}",
@@ -306,18 +334,22 @@ class SphericalCoordinates(CoordinateSystem):
         super().__init__(azimuth, colatitude, radius)
 
     def scale_factors(self) -> tuple:
+        """Lamé scale factors (h_phi, h_theta, h_r) = (r sin(theta), r, 1)."""
         return ("r sin(theta)", "r", 1)       # (h_phi, h_theta, h_r)
 
     def metric(self) -> str:
+        """The metric dr^2 + r^2 dtheta^2 + r^2 sin(theta)^2 dphi^2 and its measure, as text."""
         p, t, r = self.names
         return f"d{r}^2 + {r}^2 d{t}^2 + {r}^2 sin({t})^2 d{p}^2, measure {r}^2 sin({t}) d{r} d{t} d{p}"
 
     def regularity(self) -> str:
+        """Regularity at the poles and, on the ball, at the centre, as text."""
         return ("angular: spin-weighted harmonics (regular at the poles); ball: regularity component "
                 "sigma of degree l is r^(l+sigma) w(r^2), w polynomial (regular at the centre); shell: "
                 "no centre, Chebyshev in r, r-multiplied rows (declared)")
 
     def explain(self) -> str:
+        """Name, metric, scale factors, singularities and regularity of the spherical system."""
         return "\n".join([
             f"{self.name} (ball (BallBasis) or shell (ShellBasis) in r, SphereBasis in theta)",
             f"  metric       : {self.metric()}",

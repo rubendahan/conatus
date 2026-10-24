@@ -13,7 +13,7 @@ the flat Cartesian discretizer does per Fourier group (Olver–Townsend: derivat
 conversions S, multiplication by xi tridiagonal) -- but the metric functions J, A, B, H of x are
 **convolutions** in k: the Fourier modes are coupled.
 
-Choice (mapped): the metric terms are **implicit**, in one coupled sparse
+Choice: the metric terms are **implicit**, in one coupled sparse
 system for the whole domain (no splitting of the metric into an explicit correction): along xi
 the bandwidth is the one of the flat channel plus one (metric polynomial of degree <= 1 in xi,
 exact); along k it is the number of kept Fourier coefficients of the metric (reported by
@@ -30,14 +30,12 @@ are checked against ``ncc_tail_tol`` and refused if under-resolved. Explicit ter
 IVP (and data) are evaluated pointwise on the dealiased physical grid (x_j, z(x_j, xi_l)).
 
 Supported: LBVP (``plan.solve()``), EVP (``conatus.eigenvalues(plan)``, one coupled "group"),
-IVP (``TerrainSimulation``: SBDF1-4, RK111/222/443; time-dependent boundary data imposed at the
-stage time). Refused with a message: traces other than at the two surfaces, integrals along x
+IVP (``TerrainSimulation`` in :mod:`conatus.model.terrain_simulation`: SBDF1-4, RK111/222/443;
+time-dependent boundary data imposed at the stage time). Refused with a message: traces other than at the two surfaces, integrals along x
 at fixed z, curl/cross, conj, complex Fourier, GPU.
 """
 from __future__ import annotations
 
-import math
-import numbers
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
@@ -48,8 +46,7 @@ import scipy.sparse as sp
 import scipy.sparse.linalg as spla
 from scipy.sparse.csgraph import structural_rank
 
-from ..errors import (DiscretizationError, DtypeError, InputTypeError, OptionError, RankError,
-                      ResolutionError, UnsupportedError)
+from ..errors import DiscretizationError, DtypeError, OptionError, RankError, UnsupportedError
 from ..ir import expr as E
 from ..ir.bases import RealFourier
 from ..ir.domain import Domain
@@ -57,11 +54,12 @@ from ..ir.problem import EVP, IVP, LBVP, Problem
 from ..ir.terrain import TerrainChebyshev, is_terrain
 from ..tolerances import NCC_ROUNDING, NCC_TAIL_TOL
 from . import ultraspherical as us
+from .ultraspherical import _round_up
 from .compiler import _comps, eigen_split
 from .param_keys import check_param_keys
 from .plan import GroupMatrices, _same_data, data_snapshot, rebind_for_data
 
-__all__ = ["TerrainPlan", "TerrainSolution", "TerrainSimulation", "has_terrain"]
+__all__ = ["TerrainPlan", "TerrainSolution", "has_terrain"]
 
 DATA = "data"                  # pseudo-key of a known coefficient column (data, state)
 _DOC = "docs/site/guide/mapped.md"
@@ -94,14 +92,17 @@ class Ent:
 
     @property
     def empty(self) -> bool:
+        """True for the zero operator (no block)."""
         return not self.blocks
 
     @property
     def is_data(self) -> bool:
+        """True when the component holds only known values (no operator on the unknowns)."""
         return bool(self.blocks) and set(self.blocks) == {DATA}
 
     @property
     def is_scalar(self) -> bool:
+        """True for a known constant: data independent of every coordinate."""
         return self.is_data and self.lam is None and not self.f
 
 
@@ -115,6 +116,8 @@ def _scalar(v: complex) -> Ent:
 
 @dataclass
 class NCCRecord:
+    """How one non-constant coefficient was expanded on the mapped domain: Fourier offsets and
+    Chebyshev coefficients used, sampled tails and the accepted level."""
     name: str
     fourier: int          # Fourier offsets used
     cheb: int             # Chebyshev coefficients used
@@ -123,6 +126,7 @@ class NCCRecord:
     tol: float
 
     def explain(self) -> str:
+        """Sizes, sampled tails and accepted level of the NCC, one line."""
         return (f"NCC {self.name}: {self.fourier} Fourier offsets x {self.cheb} Chebyshev "
                 f"coefficients, sampled tails {self.tail_f:.1e} (Fourier) / {self.tail_z:.1e} "
                 f"(Chebyshev), accepted up to ncc_tail_tol = {self.tol:g}")
@@ -250,6 +254,8 @@ class TerrainPlan:
         return (0 if has_z else None), (has_f or has_z)
 
     def rows(self, lam: int | None, f: bool) -> int:
+        """Number of rows of a component with level ``lam`` (None: constant along xi) and
+        horizontal dependence ``f``."""
         return (self.nk if f else 1) * (self.Nz if lam is not None else 1)
 
     def _layout(self) -> None:
@@ -284,24 +290,30 @@ class TerrainPlan:
         return Ent(lam, f, {k: A @ b for k, b in e.blocks.items()})
 
     def bcast_f(self, e: Ent) -> Ent:
+        """The component made dependent on the horizontal directions (a horizontal constant
+        placed in the mean mode)."""
         if e.f or e.empty:
             return Ent(e.lam, True, e.blocks) if e.empty else e
         col = sp.csr_matrix(([1.0], ([self.k0], [0])), shape=(self.nk, 1))
         return self._left(e, sp.kron(col, self._IZ(e.lam), format="csr"), e.lam, True)
 
     def bcast_z(self, e: Ent) -> Ent:
+        """The component made dependent on xi (a constant along xi placed in T_0, level 0)."""
         if e.lam is not None:
             return e
         col = sp.csr_matrix(([1.0], ([0], [0])), shape=(self.Nz, 1))
         return self._left(e, sp.kron(self._IF(e.f), col, format="csr"), 0, e.f)
 
     def convert(self, e: Ent, lam: int) -> Ent:
+        """The component converted to the ultraspherical level ``lam``."""
         if e.lam == lam:
             return e
         S = us.conversion_chain(self.Nz, e.lam, lam)
         return self._left(e, sp.kron(self._IF(e.f), S, format="csr"), lam, e.f)
 
     def add(self, ents: list[Ent]) -> Ent:
+        """Sum of components, broadcast to a common horizontal dependence and converted to the
+        highest ultraspherical level."""
         ents = [e for e in ents if not e.empty]
         if not ents:
             return _zero()
@@ -320,6 +332,7 @@ class TerrainPlan:
 
     @staticmethod
     def scale(e: Ent, c: complex) -> Ent:
+        """The component multiplied by the number ``c``."""
         if c == 1:
             return e
         if c == 0:
@@ -327,12 +340,14 @@ class TerrainPlan:
         return Ent(e.lam, e.f, {k: c * b for k, b in e.blocks.items()})
 
     def dxi(self, e: Ent) -> Ent:
+        """Derivative along the mapped coordinate xi (level lam -> lam + 1)."""
         if e.empty or e.lam is None:
             return _zero()
         D = us.differentiation(self.Nz, e.lam, 1)
         return self._left(e, sp.kron(self._IF(e.f), D, format="csr"), e.lam + 1, e.f)
 
     def ximul(self, e: Ent) -> Ent:
+        """Multiplication by xi."""
         if e.empty:
             return e
         e = self.bcast_z(e)
@@ -340,6 +355,7 @@ class TerrainPlan:
         return self._left(e, sp.kron(self._IF(e.f), X, format="csr"), e.lam, e.f)
 
     def dfourier(self, e: Ent, d: int) -> Ent:
+        """Spectral derivative along the horizontal Fourier direction ``d`` (i k)."""
         if e.empty or not e.f:
             return _zero()
         Dk = sp.diags(1j * self.kvec[d], format="csr")
@@ -364,6 +380,7 @@ class TerrainPlan:
         return sp.csr_matrix((vals[j], (r, cols)), shape=(self.nk, self.nk))
 
     def metric_conv(self, name: str) -> sp.csr_matrix:
+        """Horizontal convolution matrix of the metric function ``name`` (cached)."""
         if name not in self._conv_cache:
             self._conv_cache[name] = self._conv(self.metric[name])
         return self._conv_cache[name]
@@ -380,6 +397,8 @@ class TerrainPlan:
 
     # physical derivatives (chain rule) ----------------------------------------------------
     def pdiff(self, e: Ent, coord) -> Ent:
+        """Physical derivative along ``coord`` by the chain rule (J d/dxi vertically; d/dx + A
+        d/dxi + B xi d/dxi horizontally)."""
         if e.empty:
             return e
         if coord == self.zc:
@@ -396,12 +415,15 @@ class TerrainPlan:
         return self.add(terms)
 
     def interp_side(self, e: Ent, pos: float) -> Ent:
+        """Value at the surface xi = ``pos`` (the result no longer depends on xi)."""
         if e.empty or e.lam is None:
             return e
         row = sp.csr_matrix(us.evaluation_row(self.Nz, e.lam, pos).reshape(1, -1))
         return self._left(e, sp.kron(self._IF(e.f), row, format="csr"), None, e.f)
 
     def integ_z(self, e: Ent) -> Ent:
+        """Integral along the physical vertical coordinate (xi integral weighted by the metric
+        H)."""
         if e.empty:
             return e
         e = self.bcast_z(self.fmul(e, "H"))
@@ -409,6 +431,7 @@ class TerrainPlan:
         return self._left(e, sp.kron(self._IF(e.f), row, format="csr"), None, e.f)
 
     def integ_f(self, e: Ent) -> Ent:
+        """Integral over the horizontal periodic directions (mean mode times the periods)."""
         if e.empty:
             return e
         L = float(np.prod(self.Ls))
@@ -418,6 +441,7 @@ class TerrainPlan:
         return self._left(e, sp.kron(row, self._IZ(e.lam), format="csr"), e.lam, False)
 
     def lift(self, e: Ent, n: int, lam: int) -> Ent:
+        """Tau lift of a xi-independent operand into the mode ``Nz + n`` at level ``lam``."""
         if e.empty:
             return e
         if e.lam is not None:
@@ -428,6 +452,8 @@ class TerrainPlan:
 
     # ------------------------------------------------------------------ grids and transforms
     def grid_sizes(self, dealias: bool) -> tuple[list[int], int]:
+        """Horizontal grid sizes and the xi grid size (dealiased or not); refuses a Fourier grid
+        smaller than its modes."""
         Ms = [(b.grid_size if dealias else b.size) for _, b in self.fdirs]
         Mz = self.zb.grid_size if dealias else self.Nz
         for M, n in zip(Ms, self.nks, strict=True):
@@ -724,6 +750,8 @@ class TerrainPlan:
         return out
 
     def ncc_mul(self, e: Ent, d: Ent, name: str) -> Ent:
+        """Multiplication of the component ``e`` by the known coefficient ``d`` (scalar,
+        function of the horizontal directions, of xi, or of both)."""
         if e.empty or d.empty:
             return _zero()
         if d.is_scalar:
@@ -1017,6 +1045,8 @@ class TerrainPlan:
         return self._gm
 
     def matrices(self, group=None, reduced: bool | None = None) -> GroupMatrices:
+        """The coupled operators (L, M) of the mapped domain (one group; symmetry subspaces
+        refused)."""
         if reduced:
             raise UnsupportedError("symmetry subspaces on a mapped domain", doc=_DOC)
         return self._check_size(self._assemble())
@@ -1036,6 +1066,8 @@ class TerrainPlan:
         return gm
 
     def check(self, reduced: bool | None = None) -> list:
+        """Square system and structural rank of the coupled operators (RankError otherwise); the
+        rank report lines."""
         gm = self._check_size(self._assemble())
         n, m = gm.L.shape
         if n != m:
@@ -1100,6 +1132,8 @@ class TerrainPlan:
     # ------------------------------------------------------------------ LBVP
     def solve(self, data: Mapping[E.Field, Any] | None = None,
               reduced: bool | None = None) -> TerrainSolution:
+        """Solve the LBVP by one sparse LU of the coupled system, with the relative residual;
+        ``data`` gives the known fields."""
         if not isinstance(self.problem, LBVP):
             raise DiscretizationError("solve() is for LBVPs (IVP: Model.simulate; EVP: "
                                       "eigenvalues(plan))")
@@ -1128,6 +1162,7 @@ class TerrainPlan:
         return TerrainSolution(self.split(x), [(gm.label, res)], self)
 
     def split(self, x: np.ndarray) -> dict:
+        """Coefficient vector ``x`` split per variable and tensor component."""
         out = {}
         for v in self.variables:
             cs = _comps(v.tensorsig)
@@ -1159,6 +1194,7 @@ class TerrainPlan:
 
     # ------------------------------------------------------------------ explain
     def explain(self) -> str:
+        """Map, sizes, metric and NCC expansions, operators and system size of the mapped plan."""
         gm = self._assemble()
         lines = [f"TerrainPlan of {self.problem.kind} '{self.problem.name}' on a mapped domain",
                  "  map: " + self.terrain.formula(),
@@ -1178,14 +1214,6 @@ class TerrainPlan:
         return "\n".join(lines)
 
 
-def _round_up(x: float) -> float:
-    e = 10.0 ** np.floor(np.log10(x))
-    for m in (1, 2, 5, 10):
-        if m * e >= x * (1 - 1e-12):
-            return float(f"{m * e:.0e}")
-    return float(x)
-
-
 class TerrainSolution:
     """Solution of an LBVP on a mapped domain: grid values on the physical grid."""
 
@@ -1197,6 +1225,7 @@ class TerrainSolution:
     def max_residual(self) -> float:
         # np.max keeps a NaN group residual; Python's max hid one after a finite group
         # (max(1e-16, nan) is 1e-16: audit "assurances")
+        """Largest relative residual (NaN if any group residual is NaN; 0 when none)."""
         return float(np.max([r for _, r in self.residuals])) if self.residuals else 0.0
 
     def grid(self, name: str) -> np.ndarray:
@@ -1212,336 +1241,17 @@ class TerrainSolution:
         return self.plan.physical_grid(False)[names.index(name)]
 
     def explain(self) -> str:
+        """One line: the solve and its largest relative residual."""
         worst = (max(self.residuals, key=lambda r: (bool(np.isnan(r[1])), r[1]))   # NaN first
                  if self.residuals else ("-", 0.0))
         return (f"LBVP solution on a mapped domain: one coupled system, relative residual "
                 f"{worst[1]:.2e} (sparse LU, scipy SuperLU)")
 
 
-class TerrainSimulation:
-    """Time integration of a native IVP on a mapped domain (``Model.simulate``).
-
-    M dX/dt + L X = F(X, t) with L, M the coupled sparse operators (metric implicit) and F the
-    right-hand sides evaluated on the dealiased physical grid. Schemes: SBDF1-4 (startup
-    ``lower_order``: orders 1..q-1 for the first steps, declared) and RK111/RK222/RK443 (IMEX
-    Runge–Kutta, same tableaux as the flat solver). Rows of equations without time derivative
-    (boundary conditions, constraints) are imposed at the stage time with their data
-    (``bc_time="stage"`` convention). One sparse LU per distinct implicit coefficient."""
-
-    SCHEMES = ("SBDF1", "SBDF2", "SBDF3", "SBDF4", "RK111", "RK222", "RK443")
-
-
-    # checkpoints (critic review of the invariance audit: these were AttributeErrors)
-    def _no_checkpoint(self, what: str):
-        from ..errors import UnsupportedError
-        raise UnsupportedError(f"{what} on a mapped domain: the mapped-box stepper has no "
-                               "checkpoint format yet",
-                               why="its state and multistep history are not written by "
-                                   "cn.io (an exact restart needs both)",
-                               fix="run the mapped case in one job, or record the fields you "
-                                   "need with sim.grid(...) / cn.runs.track(...).save_field",
-                               doc="docs/site/guide/mapped.md")
-
-    def save(self, *args, **kw):
-        """Refused: no checkpoint format for the mapped-box stepper (UnsupportedError)."""
-        self._no_checkpoint("save()")
-
-    def restart(self, *args, **kw):
-        """Refused: no checkpoint format for the mapped-box stepper (UnsupportedError)."""
-        self._no_checkpoint("restart()")
-
-    def checkpoints(self, *args, **kw):
-        """Refused: no checkpoint format for the mapped-box stepper (UnsupportedError)."""
-        self._no_checkpoint("checkpoints()")
-
-    def resume_or_start(self, *args, **kw):
-        """Refused: no checkpoint format for the mapped-box stepper (UnsupportedError)."""
-        self._no_checkpoint("resume_or_start()")
-
-    def __init__(self, comp: Any, *, scheme: str, dt: float, backend: str = "cpu",
-                 **kw: Any) -> None:
-        from ..model.model import ncc_options
-        if backend != "cpu":
-            raise UnsupportedError(f"backend={backend!r} on a mapped domain",
-                                   why="the coupled sparse solve of the mapped discretization runs "
-                                       "on the CPU only", fix='backend="cpu"', doc=_DOC)
-        if scheme not in self.SCHEMES:
-            raise OptionError(f"scheme={scheme!r} on a mapped domain",
-                              fix="one of " + ", ".join(self.SCHEMES), doc=_DOC)
-        bc_time = kw.pop("bc_time", "auto")
-        if bc_time in ("rk", "step"):
-            raise UnsupportedError(
-                f"bc_time={bc_time!r} on a mapped domain",
-                why="the mapped stepper imposes time-dependent boundary data at the stage times "
-                    "only (the 'rk' variant of the flat solvers and the Dedalus 'step' convention "
-                    "are not implemented here)",
-                fix='bc_time="stage" (or leave the default "auto", which resolves to "stage")',
-                doc=_DOC)
-        if bc_time not in ("auto", "stage"):
-            raise OptionError(f"bc_time={bc_time!r}", fix='"auto" or "stage"', doc=_DOC)
-        # resolved mode (as solver.bc_time of the flat solvers) and the reason of an "auto" fallback
-        self.bc_time = "stage"
-        self._bc_note = ("" if bc_time == "stage" else
-                         ' (bc_time="auto": the "rk" variant is not implemented on a mapped domain)')
-        nkw = ncc_options(kw)
-        from ..timestep.integrator import finite_cadence
-        # finite-state check: same option and cadence as IVPSolver
-        self._finite_every = finite_cadence(kw.pop("check_finite", True), "simulate()")
-        extra = set(kw) - {"ncc_cutoff", "ncc_tail_tol"}
-        if extra:
-            raise OptionError(f"simulate(): option(s) {sorted(extra)} not supported on a mapped "
-                              "domain", doc=_DOC)
-        # finite: dt=inf passed "dt > 0" (review finding 37)
-        if isinstance(dt, bool) or not (isinstance(dt, numbers.Real) and math.isfinite(dt) and dt > 0):
-            raise OptionError(f"dt={dt!r}: a finite positive number is required", doc=_DOC)
-        self.compiled = comp
-        self.problem = comp.problem
-        reg = getattr(comp.model, "_register", None)
-        if reg is not None:                        # sim.id; named by later parameter changes
-            reg(self)
-        self.plan: TerrainPlan = comp.discretize(**nkw)
-        self.scheme, self._dt = scheme, float(dt)
-        P = self.plan
-        P.check()
-        gm = P.matrices()
-        self.L, self.M = gm.L.tocsr(), gm.M.tocsr()
-        self.X = np.zeros(P.ncol, dtype=complex)
-        self._t, self._it = 0.0, 0
-        self._tname = comp.time.name if getattr(comp, "time", None) is not None else None
-        if self._tname is not None and any(
-                self._tname in {p.name for p in eq.lhs.free_parameters()}
-                for eq in self.problem.equations):
-            raise UnsupportedError(
-                f"a left-hand side depends on the time {self._tname} on a mapped domain",
-                why="the coupled operator is factorized once per implicit coefficient; an "
-                    "operator that changes in time would need a factorization per stage",
-                fix=f"move the {self._tname}-dependent terms to the right-hand side (explicit)",
-                doc=_DOC)
-        # equations without time derivative: their rows are imposed at the stage time
-        self.static = []
-        for i, eq in enumerate(self.problem.equations):
-            if not any(isinstance(n, E.TimeDerivative) for n in eq.lhs.walk()):
-                if E.as_expr(eq.rhs).free_fields() & P.V:
-                    raise UnsupportedError(f"equation [{i}] has no time derivative but its right "
-                                           "side depends on the unknowns", doc=_DOC)
-                self.static.append(i)
-        mask = np.zeros(P.nrow, dtype=bool)
-        for (i, c), r0 in P.eq_off.items():
-            if i in self.static:
-                mask[r0:r0 + P.rows(*P.eq_space[(i, c)])] = True
-        self._static_rows = mask
-        self._lu: dict = {}
-        self._hist: list = []         # SBDF history of (X, F)
-
-    # -- state ------------------------------------------------------------------------------
-    @property
-    def effective_order(self) -> int:
-        """Global order of this run (audit invariance; review finding 17 on the flat
-        solvers): the scheme's order, capped at 2 for SBDF3/SBDF4 (the start-up is always
-        lower-order here) and for RK443 with time-dependent boundary data (imposed at the stage
-        times: its stage order 2). Measured on the manufactured mapped diffusion problem of
-        tests/model/test_mapped_box.py: SBDF3 2.01, SBDF4 2.03, RK443 1.97."""
-        from ..timestep.integrator import _SCHEME_INFO
-        p = _SCHEME_INFO[self.scheme][3]
-        if self.scheme.startswith("SBDF"):
-            p = min(p, 2)
-        if self.scheme == "RK443" and self._tname is not None and any(
-                self._tname in {q.name for q in E.as_expr(self.problem.equations[i].rhs)
-                                .free_parameters()} for i in self.static):
-            p = min(p, 2)
-        return p
-
-    @property
-    def t(self) -> float:
-        """Current simulation time."""
-        return self._t
-
-    @property
-    def dt(self) -> float:
-        """Time step (fixed at ``simulate``)."""
-        return self._dt
-
-    @property
-    def iteration(self) -> int:
-        """Number of steps taken."""
-        return self._it
-
-    def initial(self, **values: Any) -> TerrainSimulation:
-        """Initial state by unknown name: callables of the coordinate names (physical z) or
-        numbers; unknowns not given start at zero."""
-        from ..model.compiler import _coord_args, _on_all_grids
-        P = self.plan
-        names = tuple(c.name for c in P.coords)
-        grids = P.physical_grid(False)
-        for k, v in values.items():
-            f = self.compiled.fields.get(k)
-            if f is None or f not in P.V:
-                raise OptionError(f"initial({k}=...): not an unknown", doc=_DOC)
-            fn = (_on_all_grids(v, _coord_args(v, names, f"initial {k}"), names) if callable(v)
-                  else (lambda val0: (lambda *g: np.full(grids[0].shape, val0)))(v))
-            val = np.asarray(fn(*grids))
-            # refused rather than cast or hidden (review finding 36: a deliberate small imaginary
-            # part of real data was dropped by grid(); non-finite data as everywhere else)
-            if not np.all(np.isfinite(val)):
-                raise InputTypeError(f"initial({k}=...): non-finite values on the grid", doc=_DOC)
-            if f.dtype.kind != "c" and np.iscomplexobj(val) and np.any(val.imag != 0):
-                raise DtypeError(f"initial({k}=...): complex values (max |imag| = "
-                                 f"{float(np.abs(val.imag).max()):.3e}) for the real unknown {k}",
-                                 fix="pass real data (the unknowns of a native model are real)",
-                                 doc=_DOC)
-            for c in _comps(f.tensorsig):
-                g = np.broadcast_to(val[c] if c else val, grids[0].shape)
-                o = P.var_off[(f, c)]
-                vec = P.forward(g, False, True)
-                self.X[o:o + vec.size] = vec
-        self._hist = []
-        return self
-
-    def coeffs(self, name: str) -> dict:
-        """Coefficients of unknown ``name``: {component: vector of the coupled layout}, copies
-        (``plan.split`` gives views of the state: an in-place change of the returned arrays
-        used to change the simulation's state, audit state)."""
-        return {c: v.copy() for c, v in self.plan.split(self.X)[name].items()}
-
-    def grid(self, name: str) -> np.ndarray:
-        """Values of unknown ``name`` on the N-point grid (x_j, xi_l)."""
-        return self.plan.to_grid(name, self.coeffs(name))
-
-    def coordinate(self, name: str) -> np.ndarray:
-        """Physical coordinate ``name`` on the grid of :meth:`grid` (z depends on x)."""
-        names = [c.name for c in self.plan.coords]
-        if name not in names:
-            raise OptionError(f"coordinate({name!r}): not a coordinate of the mapped domain",
-                              fix="coordinates: " + ", ".join(names), doc=_DOC)
-        return self.plan.physical_grid(False)[names.index(name)]
-
-    # -- stepping ---------------------------------------------------------------------------
-    def _F(self, X: np.ndarray, t: float) -> np.ndarray:
-        P = self.plan
-        if self._tname is not None:
-            P.params[self._tname] = t
-        P._state = {k: X[o:o + P.rows(*P.var_space[k])] for k, o in P.var_off.items()}
-        return P.rhs_vector()
-
-    def _g(self, t: float) -> np.ndarray:
-        P = self.plan
-        if self._tname is not None:
-            P.params[self._tname] = t
-        P._state = {k: np.zeros(P.rows(*P.var_space[k]), dtype=complex) for k in P.var_off}
-        return P.rhs_vector(lambda i: i in self.static)
-
-    def _solve(self, a: float, b: float, rhs: np.ndarray) -> np.ndarray:
-        key = (a, b)
-        if key not in self._lu:
-            A = (a * self.M + b * self.L).tocsc()
-            try:
-                self._lu[key] = spla.splu(A)
-            except RuntimeError as err:
-                raise RankError(f"mapped domain: the implicit system is singular ({err})") from None
-        return self._lu[key].solve(rhs)
-
-    def step(self) -> None:
-        """One step of the declared scheme (boundary and constraint rows at the stage time)."""
-        dt, t = self._dt, self._t
-        X = self.X
-        if self.scheme.startswith("SBDF"):
-            q = min(int(self.scheme[-1]), len(self._hist) + 1)
-            from ..timestep.integrator import sbdf_coefficients
-            a, c = sbdf_coefficients(q)
-            Fn = self._F(X, t)
-            hist = [(X, Fn)] + self._hist
-            rhs = np.zeros_like(X)
-            for j in range(1, q + 1):
-                Xj, Fj = hist[j - 1]
-                rhs += dt * c[j] * Fj - a[j] * (self.M @ Xj)
-            rhs[self._static_rows] = dt * self._g(t + dt)[self._static_rows]
-            Xn = self._solve(a[0], dt, rhs)
-            self._hist = hist[:3]
-        else:
-            from ..timestep.integrator import rk_tableau
-            A, H, cc = rk_tableau(self.scheme)
-            s = len(cc)
-            Xs, Fs, LXs = [X], [], []
-            MX0 = self.M @ X
-            for i in range(1, s):
-                Fs.append(self._F(Xs[i - 1], t + cc[i - 1] * dt))
-                LXs.append(self.L @ Xs[i - 1])
-                rhs = MX0.copy()
-                for j in range(i):
-                    if A[i][j]:
-                        rhs += dt * A[i][j] * Fs[j]
-                    if H[i][j] and j < i:
-                        rhs -= dt * H[i][j] * LXs[j]
-                hii = H[i][i]
-                rhs[self._static_rows] = dt * hii * self._g(t + cc[i] * dt)[self._static_rows]
-                Xs.append(self._solve(1.0, dt * hii, rhs))
-            Xn = Xs[-1]
-        self.X = Xn
-        self._t = t + dt
-        self._it += 1
-
-    def run(self, until: float | None = None, *, steps: int | None = None,
-            callback: Callable | None = None, every: int | None = None) -> TerrainSimulation:
-        """Advance to ``until`` (a whole number of steps) or by ``steps``; ``callback(sim)`` every
-        ``every`` steps."""
-        from ..timestep.integrator import check_callback, check_steps
-        if (until is None) == (steps is None):     # with a fix line
-            raise OptionError("run(): give until= or steps=" + ("" if until is None else ", not both"),
-                              fix="run(until=<end time, a whole number of steps of dt>) or "
-                                  "run(steps=100)", doc=_DOC)
-        # the checks shared by every run (steps=2.7 took 2 steps
-        # without a word here, and every=0.5 failed only at the first modulo)
-        check_callback(callback, every, "run()")
-        if steps is not None:
-            steps = check_steps(steps, "run()", "steps")
-        if steps is None:
-            n = (until - self._t) / self._dt
-            steps = int(round(n))
-            if steps < 0:                      # (the fix said run(steps=-2))
-                # ResolutionError, as Simulation.run (was OptionError here)
-                raise ResolutionError(f"run(until={until}): the simulation is already at t = "
-                                      f"{self._t:g}, after until",
-                                      why="a run goes forward in time; until is an absolute time, "
-                                          "not a duration",
-                                      fix=f"run(until=t_end) with t_end > {self._t:g}", doc=_DOC)
-            from ..timestep.integrator import is_whole    # the one whole-steps rule
-            if not is_whole(n):
-                raise ResolutionError(f"run(until={until}): not a whole number of steps of dt = "
-                                      f"{self._dt:g}", why="the stop time must be a whole number of time steps",
-                                      fix=f"run(steps={math.floor(n)})", doc=_DOC)
-        from ..timestep.integrator import check_state_finite
-        fe = self._finite_every
-        for _ in range(steps):
-            self.step()
-            if fe and self._it % fe == 0:
-                check_state_finite(self, "TerrainSimulation.run")
-            # on iteration multiples, as IVPSolver.run: the same steps whatever the run chunks
-            if callback is not None and self._it % every == 0:
-                callback(self)
-        if fe and steps:
-            check_state_finite(self, "TerrainSimulation.run (end of the call)")
-        return self
-
-    def _order_text(self) -> str:
-        """The global order said where it is below the scheme's (audit invariance)."""
-        from ..timestep.integrator import _SCHEME_INFO
-        p, eff = _SCHEME_INFO[self.scheme][3], self.effective_order
-        if eff >= p:
-            return f"; global order {p}"
-        why = ("the lower-order start-up" if self.scheme.startswith("SBDF") else
-               "time-dependent boundary data imposed at the stage times")
-        return f"; formal order {p}, effective global order {eff} ({why})"
-
-    def explain(self) -> str:
-        return (f"TerrainSimulation: {self.scheme}, dt = {self._dt:g}, t = {self._t:g} "
-                f"({self._it} steps); implicit: the coupled operator (metric terms implicit), "
-                "explicit: right-hand sides on the dealiased physical grid; equations without "
-                "time derivative imposed with their data at the stage time (bc_time = 'stage'"
-                + self._bc_note + ")"
-                + ("; SBDF startup lower_order (orders 1..q-1 for the first q-1 steps)"
-                   if self.scheme.startswith("SBDF") else "")
-                + self._order_text()
-                + (f"; finite-state check every {self._finite_every} steps and at the end of "
-                   "each run call (check_finite=False turns it off)" if self._finite_every
-                   else "; finite-state check off (check_finite=False)")
-                + "\n" + self.plan.explain())
+def __getattr__(name: str) -> Any:
+    """``TerrainSimulation`` moved to :mod:`conatus.model.terrain_simulation`; the old
+    import path resolves lazily (the model layer sits above the discretization)."""
+    if name == "TerrainSimulation":
+        from ..model.terrain_simulation import TerrainSimulation
+        return TerrainSimulation
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

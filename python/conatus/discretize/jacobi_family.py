@@ -36,6 +36,7 @@ from scipy.special import eval_jacobi, gammaln, roots_jacobi
 from ..ir.bases import Basis, Chebyshev, Jacobi, Legendre, Ultraspherical
 from . import ultraspherical as us
 from ..errors import ResolutionError
+from .families import _frozen
 
 __all__ = ["JacobiFamily", "is_jacobi_trial"]
 
@@ -43,12 +44,6 @@ __all__ = ["JacobiFamily", "is_jacobi_trial"]
 def is_jacobi_trial(b: Any) -> bool:
     """A Jacobi-family basis handled here (Chebyshev T keeps its own code path)."""
     return isinstance(b, Jacobi) and not isinstance(b, Chebyshev)
-
-
-def _frozen(*arrays: np.ndarray) -> tuple[np.ndarray, ...]:
-    for a in arrays:
-        a.setflags(write=False)
-    return arrays
 
 
 def _frozen_sparse(M: sp.csr_matrix) -> sp.csr_matrix:
@@ -204,9 +199,11 @@ class JacobiFamily:
 
     # ---- grids and transforms -----------------------------------------------------------------
     def grid_size(self, dealias: bool) -> int:
+        """Grid size: the dealiased size or N."""
         return self.basis.grid_size if dealias else self.basis.size
 
     def grid(self, dealias: bool = True) -> np.ndarray:
+        """Gauss-Jacobi points mapped to the interval."""
         t, _ = _nodes(self.grid_size(dealias), self.a, self.b)
         return self.x0 + (t + 1) * self.L / 2
 
@@ -215,6 +212,7 @@ class JacobiFamily:
         return _mats(self.N, self.grid_size(dealias), self.a, self.b, tuple(self.s))
 
     def forward(self, f: np.ndarray, axis: int = 0, dealias: bool = True) -> np.ndarray:
+        """Coefficients of the grid values ``f`` along ``axis`` (Gauss-Jacobi quadrature)."""
         from .families import _apply_rows
         M = self.grid_size(dealias)
         if np.shape(f)[axis] != M:
@@ -222,6 +220,8 @@ class JacobiFamily:
         return _apply_rows(self.matrices(dealias)[1], f, axis)
 
     def backward(self, c: np.ndarray, axis: int = 0, dealias: bool = True) -> np.ndarray:
+        """Grid values of the coefficients ``c`` along ``axis`` (dealiased Gauss-Jacobi grid
+        when ``dealias``)."""
         from .families import _apply_rows
         if np.shape(c)[axis] != self.N:
             raise ValueError(f"expected {self.N} coefficients along axis {axis}, got {np.shape(c)[axis]}")
@@ -229,12 +229,14 @@ class JacobiFamily:
 
     # ---- sparse operators (compiler) ----------------------------------------------------------
     def conversion_chain(self, lam_from: int, lam_to: int) -> sp.csr_matrix:
+        """Conversion from the derivative level ``lam_from`` to ``lam_to`` (P^(a+q, b+q) steps)."""
         out = sp.identity(self.N, format="csr")
         for lam in range(lam_from, lam_to):
             out = (_S(self.N, *self._ab(lam)) @ out).tocsr()
         return self._in0(out, lam_from) if lam_to > lam_from else out
 
     def differentiation(self, lam: int, order: int = 1) -> sp.csr_matrix:
+        """d^order/dx^order from level ``lam`` to ``lam + order``."""
         out = sp.identity(self.N, format="csr")
         for k in range(order):
             out = (_D(self.N, *self._ab(lam + k)) @ out).tocsr() * (2.0 / self.L)
@@ -245,6 +247,8 @@ class JacobiFamily:
         return eval_jacobi(np.arange(self.N), a, b, t)
 
     def evaluation_row(self, lam: int, pos: float, deriv: int = 0, side: str | None = None) -> np.ndarray:
+        """Row evaluating the ``deriv``-th derivative at ``pos`` from level-``lam``
+        coefficients."""
         t = 2 * (pos - self.x0) / self.L - 1
         row = self._values(lam + deriv, t)
         if deriv:
@@ -255,17 +259,21 @@ class JacobiFamily:
         return row * self.s if lam == 0 else row
 
     def integration_row(self, lam: int) -> np.ndarray:
+        """Row of the integral over the interval from level-``lam`` coefficients (refined
+        Gauss-Legendre rule, exact)."""
         x, w = gauss_legendre(self.N // 2 + 2)          # exact for degree < N + 3 (refined)
         a, b = self._ab(lam)
         row = eval_jacobi(np.arange(self.N)[:, None], a, b, x[None, :]) @ w * (self.L / 2)
         return row * self.s if lam == 0 else row
 
     def constant_column(self) -> sp.csr_matrix:
+        """Coefficients of the constant 1 (P_0 over its normalisation)."""
         col = np.zeros((self.N, 1))
         col[0, 0] = 1.0 / self.s[0]                     # P_0 = 1 (C_0 = 1 too: s_0 = 1)
         return sp.csr_matrix(col)
 
     def lift_index(self, n: int, piece: int | None) -> int:
+        """Index of the lifted mode ``n`` (negative, from the end)."""
         return self.N + n
 
     # ---- coefficient-space operators at level 0 (explicit RHS) --------------------------------
@@ -280,9 +288,11 @@ class JacobiFamily:
         return solve_triangular(S, p1, lower=False).reshape(sh)
 
     def integ_weights(self) -> np.ndarray:
+        """Integral row of the variables' level (level 0)."""
         return self.integration_row(0)
 
     def interp_row(self, pos: float, side: str | None = None) -> np.ndarray:
+        """Value row at ``pos`` from the variables' level."""
         return self.evaluation_row(0, pos, 0, side)
 
     # ---- non-constant coefficients ------------------------------------------------------------
@@ -318,6 +328,7 @@ class JacobiFamily:
         return out.tocsr(), rep
 
     def explain(self) -> str:
+        """Kind, coefficients, size, affine map and operators of the Jacobi family, one line."""
         return (f"{self.basis.coord.name}: {self.kind} basis, coefficients {self.coeffs_name}(t), "
                 f"N={self.N}, t = 2(x - {self.x0:g})/{self.L:g} - 1; equations of order q written in "
                 f"P^({self.a:g}+q,{self.b:g}+q) (sparse Jacobi derivative/conversion, Olver–Townsend "

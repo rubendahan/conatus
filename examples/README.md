@@ -20,10 +20,20 @@ User lines = lines of code excluding docstrings, comments and blank lines (funct
 | Brusselator (Turing) | `patterns/brusselator.py` | b_c to ≤ 9e-16 relative (3 sets) | Prigogine & Lefever 1968; Peña & Pérez-García 2001, PRE 64 | 26 + 8 |
 | Rotating Rayleigh–Bénard (f-plane) | `convection/rotating_rayleigh_benard.py` | one pencil for all Ta (√Ta declared); free walls: Ra_c(Ta) = closed form to ≤ 2e-15 (Ta = 0…1e5); rigid: 1756.347 / 2151.341 / 4712.042 (Ta = 1e2, 1e3, 1e4) | Chandrasekhar 1961, ch. III | 34 + 16 |
 | Salt fingers (double diffusion) | `convection/salt_fingers.py` | R_S/τ − R_T = 27π⁴/4 to ≤ 4e-16 (4 pairs) | Stern 1960; Baines & Gill 1969, JFM 37 | 25 + 9 |
-| 3D Rayleigh–Bénard (onset) | `convection/rayleigh_benard_3d.py` | Ra = 1707.76178 at |k| = 3.1163, isotropic to 1e-10 | Reid & Harris 1958 | 43 + 9 |
+| 3D Rayleigh–Bénard (onset) | `convection/rayleigh_benard_3d.py` | Ra = 1707.76178 at \|k\| = 3.1163, isotropic to 1e-10 | Reid & Harris 1958 | 43 + 9 |
 | Phase-space geometry: slice, Poincaré section, connection | `manifolds/phase_space_geometry.py` | two-mode model: RPO "1" in the slice, T = 3.6415119771, θ = 0.0809697054; Lorenz homoclinic orbit as a connection, r = 13.9265574075 | Budanur, Borrero-Echeverry & Cvitanović (arXiv:1411.3303), Table I: 3.64151221; Sparrow 1982: 13.926 | 56 + 3 |
 
 Writing the gallery found gaps in the library (`discretize` in `conatus.expert`, (U − c)·L,
 conj() on the left-hand side, the wavenumber as a parameter, √Ta declared, `critical()`
 start/xtol, double eigenvalues, the aliasing alert, periodic NLBVP, mapped domains). They are
 fixed.
+
+## Published cases
+
+`examples/published/` holds one directory per published paper whose curve or table Conatus computes
+again: the Orr–Sommerfeld spectrum of Orszag (1971), the pipe-flow eigenvalues of Meseguer &
+Trefethen (2003) from Re = 10² to 10⁷, the Rayleigh–Bénard marginal curves (Rayleigh 1916;
+Chandrasekhar 1961) and the Kuramoto–Sivashinsky equilibria and travelling waves of Cvitanović,
+Davidchack & Siminos (2010). Each directory has a README (reference, what is computed, the gap and its
+definition, run time), `run.py`, and its recorded output `output.txt`. Run one with
+`python examples/published/<case>/run.py`; `bash examples/published/run.sh <case>` records its output.

@@ -6,10 +6,13 @@ export interface GalleryItem {
   slug: string; title: string; image: string; image_small: string; width: number; height: number;
   alt: string; caption: string; colormap: "smoke" | "signed"; run_id: string; script: string;
   example_script: string | null;
-  validated: { value: string; reference: string; source: string; run_id: string | null };
   geometry: string; domain: string;
-  /** The exact field shown and its colour scale (web/gallery/fields.json, read from the scripts). */
-  field?: string; colour?: string;
+  /** The exact field shown, its colour scale and the region covered (web/gallery/fields.json). */
+  field?: string; colour?: string; extent?: string;
+  /** What the run that drew the picture measured, from its own diagnostics (collect.py). */
+  measured?: string;
+  /** The colour range the run used; null when each panel is normalised separately. */
+  scale?: { kind: "smoke" | "signed"; lo: number; hi: number } | null;
 }
 
 const found = import.meta.glob<GalleryItem[]>("../../public/gallery/manifest.json", { eager: true, import: "default" });
@@ -27,3 +30,11 @@ export const plainCaption = (g: GalleryItem) => {
   const s = g.alt.split(/[:.;]\s/)[0].replace(/\s*\([^)]*\)/g, "").trim();
   return s.endsWith(".") ? s : s + ".";
 };
+
+/** The two brand colormaps (web/gallery/brand_cmaps.py), as CSS gradients for the lightbox scale bar. */
+export const RAMPS = {
+  smoke: "linear-gradient(to right, #0B0B0B 0%, #3A3A38 30%, #8A8A86 62%, #EDEBE6 100%)",
+  signed: "linear-gradient(to right, #D4574A 0%, #6E2019 30%, #0B0B0B 50%, #3F5245 70%, #9DBBA6 100%)",
+} as const;
+/** A scale-bar end value: three significant digits, true minus sign. */
+export const tick = (v: number) => (Math.abs(v) < 1e-12 ? "0" : Number(v.toPrecision(3)).toString().replace("-", "\u2212"));

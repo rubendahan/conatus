@@ -3,9 +3,10 @@
 Branches of solutions followed through folds by pseudo-arclength, with branch points, Hopf points, cycles and codimension-two curves located on the way.
 
 Pseudo-arclength continuation follows a curve of solutions $G(x, p) = 0$ by stepping along its
-tangent and correcting with Newton on the bordered system, so that folds are passed rather than
-hit. Events (folds, branch points, Hopf points) are located on the curve by bisection on test
-functions.
+tangent and correcting with Newton on the bordered system. The bordered matrix stays nonsingular
+at a simple fold, so the branch can be followed around it. Events (folds, branch points, Hopf
+points) are detected by a sign change of a test function between two points and located by a
+secant in arclength.
 
 ## A nonlinear boundary-value problem
 

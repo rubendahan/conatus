@@ -25,6 +25,16 @@ check script finds the translation equal to its result to rounding ($< 10^{-10}$
 
 ## The cell as a native model
 
+The driver is [`t14_from_dedalus.py`](code/t14_from_dedalus.py). To run the blocks of this page
+yourself, save [`rb_cell_dedalus.py`](code/rb_cell_dedalus.py) in your working directory first:
+the translation reads it. The driver starts with its imports:
+
+```{literalinclude} code/t14_from_dedalus.py
+:language: python
+:start-after: "# [imports]"
+:end-before: "# [/imports]"
+```
+
 ```{literalinclude} code/t14_from_dedalus.py
 :language: python
 :start-after: "# [native]"
@@ -41,10 +51,12 @@ rule, and `explain()` prints them.
 ## The same cell as a Dedalus script
 
 [`rb_cell_dedalus.py`](code/rb_cell_dedalus.py) is a Dedalus 3 script written for this tutorial.
-It reduces the equations to first order and declares its own tau fields and lifts:
+It is a separate file: the driver reads it but does not run it, so do not paste it into the
+driver. It reduces the equations to first order and declares its own tau fields and lifts:
 
 ```{literalinclude} code/rb_cell_dedalus.py
 :language: python
+:caption: rb_cell_dedalus.py (separate file, not run by the driver)
 :start-after: "# Coordinates, bases"
 ```
 
@@ -105,6 +117,20 @@ change.
 Relative difference between the native model and the translated script after 40 SBDF2 steps, against nz. The two tau formulations of the same equations differ by an amount that falls spectrally down to rounding.
 ```
 
+## Check
+
+```{literalinclude} code/t14_from_dedalus.py
+:language: python
+:start-after: "# [check]"
+:end-before: "# [/check]"
+```
+
+## Output (as executed)
+
+```{literalinclude} outputs/t14_from_dedalus.txt
+:language: text
+```
+
 ## Optional: run the original script
 
 [`t14b_dedalus_check.py`](code/t14b_dedalus_check.py) runs the original script, if Dedalus is
@@ -113,6 +139,7 @@ translation:
 
 ```{literalinclude} code/t14b_dedalus_check.py
 :language: python
+:caption: t14b_dedalus_check.py (separate script, needs Dedalus)
 :start-after: "# [dedalus]"
 :end-before: "# [/dedalus]"
 ```
@@ -120,13 +147,7 @@ translation:
 The translation keeps the script's bases, tau terms, lifts, scheme, start-up and dealiasing, so
 the difference is rounding.
 
-## Output (as executed)
-
-```{literalinclude} outputs/t14_from_dedalus.txt
-:language: text
-```
-
-The optional check:
+Its output:
 
 ```{literalinclude} outputs/t14b_dedalus_check.txt
 :language: text

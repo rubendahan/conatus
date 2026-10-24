@@ -174,7 +174,7 @@ class BeynResult:
 
 
 def _check_same_operator(op: Operator, counted: CountResult) -> None:
-    """Refuse a count of another operator (external review of 0.1.1, F9): the size and kind of T,
+    """Refuse a count of another operator: the size and kind of T,
     its declared poles, and det T at the boundary points the count recorded must agree."""
     ref = counted.reference
     why = ""
@@ -411,7 +411,7 @@ def _counted_groups(op: Operator, region: ContourBox, roots: np.ndarray, Z: int,
 def _separate(op: Operator, region: ContourBox, roots: np.ndarray, groups: list, mult: np.ndarray,
               halves: np.ndarray, obstacles: np.ndarray, cache: dict):
     """Split the groups of k distinct values whose square holds k eigenvalues into separated roots
-    (external review of 0.1.1, F3: 0.2 and 0.2000001, 1e-7 apart, were one root of multiplicity
+    (earlier versions: 0.2 and 0.2000001, 1e-7 apart, were one root of multiplicity
     2 at their mean). Each value gets a square of half-side a quarter of the distance to every
     other polished root (and 0.9 of the distance to the boundary); the group is split when every
     square holds exactly one eigenvalue. The squares are disjoint, so the k values are k distinct

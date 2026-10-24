@@ -1,4 +1,4 @@
-"""Floquet–Hill toolkit (decision D9).
+"""Floquet–Hill toolkit.
 
 Two methods, always chosen explicitly (never switched silently):
 

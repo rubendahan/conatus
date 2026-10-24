@@ -71,7 +71,7 @@ def main() -> None:
     ap.add_argument("--xtol", type=float, default=1e-9)
     a = ap.parse_args()
     out = Path(os.environ.get("CN_OUT", "."))
-    grow = lambda Re, N=a.N: couette(Re, a.k, N)[2].values.real.max()  # noqa: E731
+    grow = lambda Re, N=a.N: couette(Re, a.k, N)[2].values.real.max()
     Re_c = brentq(grow, 60.0, 80.0, xtol=a.xtol)
     Re_c_fine = brentq(lambda Re: grow(Re, a.N * 3 // 2), 60.0, 80.0, xtol=a.xtol)
     plan, g, res = couette(Re_c, a.k, a.N)
@@ -118,12 +118,6 @@ def main() -> None:
         "colormap": "signed",
         "script": "web/gallery/taylor_couette.py",
         "example_script": "docs/site/tutorials/code/t08_polar.py",
-        "validated": {
-            "value": "η = 0.5, axisymmetric: Re_c = 68.1863 at k_c = 3.1625",
-            "reference": "Recktenwald, Lücke & Müller 1993, Phys. Rev. E 48, 4444, Table I (68.19, 3.16)",
-            "source": "paper/conatus.tex §Verification",
-            "run_id": None,
-        },
         "geometry": "cylinder",
         "domain": "rotating",
         "parameters": {"eta": ETA, "N": a.N, "k": a.k, "brent_xtol": a.xtol},

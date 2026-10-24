@@ -187,11 +187,8 @@ def main():
                 "scheme": a.scheme, "dt": a.dt, "backend": a.backend, "f_backend": "fused",
                 "steps": steps, "wall_s": wall, "build_s": build_s,
                 "cfl_max": max(r["cfl"] for r in series)}
-    validated = {"value": "ω_i max = 0.189702 at α = 0.44492 (inviscid tanh layer, L = 20, N = 384)",
-                 "reference": "Michalke 1964, JFM 19, 543–556, Table 1 (0.1897 at α = 0.4446)",
-                 "source": "paper/conatus.tex §Gallery; examples/README.md", "run_id": None}
     common = {"script": "web/gallery/kelvin_helmholtz.py",
-              "example_script": "examples/shear/kelvin_helmholtz.py", "validated": validated,
+              "example_script": "examples/shear/kelvin_helmholtz.py",
               "geometry": "cartesian", "domain": "shear", "parameters": params, "numerics": numerics,
               "diagnostics": diag}
     W, H = 1600, int(round(1600 * Lz / a.Lx))

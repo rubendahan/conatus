@@ -1,6 +1,6 @@
 """Invariant solutions seen in the slice: relative periodic orbits become periodic orbits,
 travelling waves become equilibria, equilibria stay equilibria (or sit on the slice border).
-Notes: §3.
+Notes:
 
 Checks, all measured on the exact discrete map of the solver used to find the solution:
 
@@ -128,8 +128,7 @@ def find_rpo_in_slice(slc, integrator, section, x0, T0: float, *, tol: float, fd
 
     A relative equilibrium is a fixed point of the reduced flow, hence a "periodic orbit" of any
     period: a solution with in-slice speed ‖v̂(x̂)‖/‖v(x̂)‖ < ``steady_tol`` (declared) is refused
-    (ConvergenceError), never returned as an orbit (found by the example, where the closest
-    recurrence of a trajectory leaving the relative equilibrium converged onto it)."""
+    with a ``ConvergenceError``."""
     x = np.asarray(slc.reduce(np.asarray(x0, float))[0], float)
     T = float(T0)
 

@@ -107,7 +107,8 @@ class DeviceCsr:
 
 
 def _index_map(cp, a):
-    """Integer index map on the device as int32 when every index fits (half the bytes of int64: ~1 GiB of maps at the this case's (640, 64, 192)), else unchanged."""
+    """Integer index map on the device as int32 when every index fits (half the bytes of int64;
+    ~1 GiB of maps at the this case's (640, 64, 192)), else unchanged."""
     a = np.asarray(a)
     if a.dtype.kind in "iu" and (a.size == 0 or (a.min() >= 0 and a.max() < 2 ** 31 - 1)):
         a = a.astype(np.int32)
@@ -180,6 +181,8 @@ class DeviceSystem:
         # refused, never ignored: a core without the transposed level
         # schedule, or solves without level schedule, used to leave every batch uncompacted with
         # only a count in explain() -- the memory plan of the caller then silently did not hold
+        """Turn the compacted storage of the factors on or off (refused when the core or the
+        solves cannot use it)."""
         on = bool(on)
         if on:
             from ..errors import BackendError, OptionError
@@ -250,6 +253,8 @@ class DeviceSystem:
 
     # ------------------------------------------------------------------ solves
     def factor(self, a: float, b: float):
+        """Factorization of a M + b L on the device (cached per (a, b); on the solve device if
+        one is set)."""
         if self.solve_device is not None:
             with self.cp.cuda.Device(self.solve_device):
                 return self._factor(a, b)
@@ -336,6 +341,7 @@ class DeviceSystem:
                     "(complexify, compact_factors, use_solve_device).") from err2
 
     def solve(self, a: float, b: float, rhs):
+        """Solve (a M + b L) x = rhs on the device (on the solve device if one is set)."""
         return self._remote(self._solve_here, a, b, rhs, "DeviceSystem.solve")
 
     def solve_transpose(self, a: float, b: float, rhs):
@@ -496,6 +502,7 @@ class DeviceSystem:
 
     @property
     def n_factorizations(self) -> int:
+        """Number of cached factorizations."""
         return len(self._factors)
 
     # ------------------------------------------------------------------ gather / scatter
@@ -514,10 +521,12 @@ class DeviceSystem:
         return out
 
     def gather_state(self, coeffs: Sequence, check_subspace: bool = True):
+        """State vector on the device from the per-variable coefficients (gathered on the host)."""
         host = [self.cp.asnumpy(c) if hasattr(c, "device") else np.asarray(c) for c in coeffs]
         return self.cp.asarray(self.host.gather_state(host, check_subspace))
 
     def gather_rhs(self, eq_coeffs: Sequence):
+        """Right-hand side vector on the device from the per-equation coefficients."""
         cp = self.cp
         b = cp.zeros(self.n, dtype=self.dtype)
         zc = self.plan.layout.zcoord
@@ -544,6 +553,8 @@ class DeviceSystem:
         return b
 
     def explain(self) -> str:
+        """The host system's explain() with the device solves, the residency of the state and
+        the pivoting."""
         return (self.host.explain().replace("batched C++ bordered banded solves",
                                             "batched GPU bordered banded solves, one warp per mode")
                 + f"\n  state resident on the device (CuPy), pivot={'partial' if self.pivot else 'none (declared)'}"

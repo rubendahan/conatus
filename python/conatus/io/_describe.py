@@ -162,7 +162,7 @@ def _is_cartesian(geo: Any) -> bool:
 
 
 def read_dims(dset: Any) -> list[str] | None:
-    """The ``dims`` attribute of a dataset (None for files written before)."""
+    """The ``dims`` attribute of a dataset (None for files written by versions before 0.1)."""
     v = dset.attrs.get("dims")
     if v is None:
         return None

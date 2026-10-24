@@ -29,18 +29,13 @@ from typing import Any
 
 import numpy as np
 
+from .._arrays import host_array as _host
 from ..errors import DtypeError, InputTypeError, UnsupportedError
 from ..tolerances import IMAG_ROUNDOFF
 
 __all__ = ["FlowProperties"]
 
 _DOC = "docs/site/guide/diagnostics.md"
-
-
-def _host(a: Any) -> np.ndarray:
-    if hasattr(a, "get") and not isinstance(a, np.ndarray):     # CuPy array
-        a = a.get()
-    return np.asarray(a)
 
 
 class FlowProperties:

@@ -34,7 +34,7 @@ from conatus._private import open_private, private_dir
 
 # scrypt cost: 16 MiB of memory per hash, ~50 ms on a laptop; stored with the hash so it can change.
 SCRYPT_N, SCRYPT_R, SCRYPT_P = 2 ** 14, 8, 1
-TOKEN_BYTES = 32                     # 256-bit tokens (relay and user API tokens, session cookies)
+TOKEN_BYTES = 32                     # 256-bit tokens (relay and user API tokens, session cookies and keys)
 MIN_PASSWORD = 12                    # refuse short passwords at creation
 SCOPES = ("read", "command")         # agent token scopes
 
@@ -243,30 +243,38 @@ def _check_name(name: str) -> None:
 
 
 class Sessions:
-    """In-memory browser sessions: random cookie value -> (user, expiry, origin).
+    """In-memory browser sessions: digest of the cookie -> (user, expiry, origin, digest of the key).
+
+    A session has two secrets. The cookie (HttpOnly) is sent by the browser to
+    every port of its host name, so another local service can receive it. The session key is
+    handed to the page once, at login, and kept by the app in the browser storage of its own
+    origin (scheme, name and port), which no other service can read; the app sends it in the
+    ``X-CN-Session-Key`` header (in the WebSocket subprotocol list for ``/ws``). A data or command
+    request needs both. The app's pages, which carry no data, need the cookie only.
 
     ``origin`` is the ``Host`` (name and port) the session was opened at; the session answers only
-    there (review F11, 0.1.2). This keeps a cookie that a browser sends to another port or name
-    from opening a session there. It does not stop a program that has captured the cookie and
-    sends it with the right ``Host``: see docs/site/guide/studio.md (F11)."""
+    there (0.1.2)."""
 
     def __init__(self, ttl_s: float = 12 * 3600) -> None:
         self.ttl_s = float(ttl_s)
-        self._s: dict[str, tuple[str, float, str | None]] = {}
+        self._s: dict[str, tuple[str, float, str | None, str]] = {}
 
-    def create(self, user: str, origin: str | None = None) -> str:
+    def create(self, user: str, origin: str | None = None) -> tuple[str, str]:
         """Open a session for ``user`` at ``origin`` (a ``Host`` value, or None: any); returns
-        the cookie value (only its digest is kept). Expired sessions are dropped here too (a
-        session never used again was kept forever)."""
+        ``(cookie value, session key)`` (only their digests are kept). Expired sessions are
+        dropped here too (a session never used again was kept forever)."""
         now = time.time()
         self._s = {d: v for d, v in self._s.items() if v[1] >= now}
-        tok = new_token()
-        self._s[token_digest(tok)] = (user, now + self.ttl_s, origin.lower() if origin else None)
-        return tok
+        tok, key = new_token(), new_token()
+        self._s[token_digest(tok)] = (user, now + self.ttl_s, origin.lower() if origin else None,
+                                      token_digest(key))
+        return tok, key
 
-    def user(self, tok: str | None, origin: str | None = None) -> str | None:
-        """The user of a live session cookie presented at ``origin``, else None (expired
-        sessions are dropped; a session opened at another ``Host`` answers None)."""
+    def user(self, tok: str | None, origin: str | None = None, key: str | None = None, *,
+             page: bool = False) -> str | None:
+        """The user of a live session cookie presented at ``origin`` with its session ``key``,
+        else None (expired sessions are dropped; a session opened at another ``Host`` answers
+        None). ``page=True``: the cookie alone is enough (the app's pages, which hold no data)."""
         if not tok:
             return None
         hit = self._s.get(token_digest(tok))
@@ -276,6 +284,8 @@ class Sessions:
             self._s.pop(token_digest(tok), None)
             return None
         if hit[2] is not None and (origin or "").lower() != hit[2]:
+            return None
+        if not page and not hmac.compare_digest(token_digest(key or ""), hit[3]):
             return None
         return hit[0]
 

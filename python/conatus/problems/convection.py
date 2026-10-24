@@ -141,16 +141,17 @@ def rotating_shell_convection(*, Nphi: int, Ntheta: int, Nr: int, eta: float,
 
     Ra = alpha g_0 DeltaT D / (nu Omega) (Christensen's modified Rayleigh number), Pr = nu/kappa.
     First-order tau form: tau_1 lifted in the derivative basis ``lam=1`` inside the gradient,
-    tau_2 one basis higher (``lam=2``) in the equation -- the Dedalus shell examples lift both in
-    ``lam=1``, which gives a spurious growing tau mode from N_r ~ 48 (timestep/tau_modes.py); the Coriolis term is explicit (RHS): its rate 2/E bounds the time step of an explicit scheme. NCC data
+    tau_2 one basis higher (``lam=2``) in the equation. Lifting both in ``lam=1`` gives a spurious
+    growing tau mode from N_r ~ 48 (regression: the development test suite).
+    The Coriolis term is explicit (RHS): its rate 2/E bounds the time step of an explicit scheme. NCC data
     ``rvec`` (r e_r), ``ez`` (e_z = cos(theta) e_r - sin(theta) e_theta) and ``gT0``
     (grad T0). Bases: RealFourier(phi, Nphi) x SphereBasis(theta, Ntheta) x ShellBasis(r, Nr).
     ``extras["initial_theta"]``: the benchmark's initial perturbation, eq. (9) (m = 4, A = 0.1).
 
     Validation reference: Christensen et al. (2001), PEPI 128, 25, case 0 (eta = 0.35,
     E = 1e-3, Pr = 1, Ra = 100): E_kin = 58.348 +- 0.050, drift frequency 0.1824 +- 0.005
-    (Table 4); this formulation gave E_kin = 58.347, drift 0.1820 (run
-    preliminary). Linear onset at these E, Pr:
+    (Table 4); this formulation gave E_kin = 58.347, drift 0.1820
+    (preliminary). Linear onset at these E, Pr:
     Ra_c = 55.904299, m_c = 4 (see :func:`rotating_shell_convection_evp`).
     """
     ri = eta / (1 - eta)                                       # D = ro - ri = 1
@@ -208,7 +209,8 @@ def rotating_shell_convection_evp(*, Nr: int, Lmax: int, m: int, eta: float,
     ``plan.group(m)``; e_z couples all degrees l of one m.
 
     Validation reference: eta = 0.35, E = 1e-3, Pr = 1: m_c = 4, Ra_c = 55.904299,
-    omega_c = -0.0230918 Omega at (Nr, Lmax) = (32, 48) (run Skene & Tobias 2024 Table 1: 55.9, 4, -0.0231; Barik et al. 2023: 55.904296).
+    omega_c = -0.0230918 Omega at (Nr, Lmax) = (32, 48)
+    (Skene & Tobias 2025 Table 1: 55.9, 4, -0.0231; Barik et al. 2023: 55.904296).
     """
     ri = eta / (1 - eta)
     ro = 1 / (1 - eta)
@@ -245,7 +247,7 @@ def rotating_shell_convection_evp(*, Nr: int, Lmax: int, m: int, eta: float,
     return ready(pb, [Ra_, E_, Pr_], [bphi, bt, br], ncc,
                  notes=f"r_i = {ri:.6g}, r_o = {ro:.6g}. Use plan.group({m}).",
                  reference="0.35, E = 1e-3, Pr = 1: m_c = 4, Ra_c = 55.904299, omega_c = "
-                           "-0.0230918 Omega (Skene & Tobias 2024; Barik et al. 2023).",
+                           "-0.0230918 Omega (Skene & Tobias 2025; Barik et al. 2023).",
                  extras={"m": m, "ri": ri, "ro": ro})
 
 

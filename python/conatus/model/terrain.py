@@ -100,24 +100,30 @@ class MappedBox(Box):
     # --- Box overrides -------------------------------------------------------------------
     @property
     def wall_coord(self) -> str | None:
+        """The vertical (mapped) coordinate."""
         return self._vert
 
     @property
     def bounded_coord(self) -> str | None:
+        """The vertical (mapped) coordinate."""
         return self._vert
 
     def n_walls(self) -> int:
+        """Two walls (bottom and top surfaces)."""
         return 2
 
     @property
     def sincos_coord(self) -> str | None:
+        """None: no sine/cosine axis on a mapped box."""
         return None
 
     @property
     def interfaces(self) -> tuple[float, ...]:
+        """No interface (one piece)."""
         return ()
 
     def boundaries(self) -> dict[str, list[tuple[str, str]]]:
+        """Named boundaries: bottom, top and walls of the vertical coordinate."""
         c = self._vert
         return {"bottom": [(c, "left")], "top": [(c, "right")],
                 "walls": [(c, "left"), (c, "right")]}
@@ -129,6 +135,7 @@ class MappedBox(Box):
         return TerrainChebyshev(coord, n, self.terrain, dealias=dealias)
 
     def basis_table(self) -> list[str]:
+        """Coordinate -> basis lines of the mapped box (explain())."""
         out = []
         for k, v in self._axes.items():
             if isinstance(v, Periodic):

@@ -643,6 +643,7 @@ class FourierChebyshev2DRHS:
         return b
 
     def explain(self) -> str:
+        """The 2-D pipeline: factors, outputs, grid and kernels."""
         return (f"  F: 2D RealFourier x Chebyshev pipeline ({self.nf} factors -> {self.no} outputs, "
                 f"grid {self.Mx} x {self.Mz}): factors from X ("
                 + ("one block per Fourier pair" if self.factor_kernel == "group" else

@@ -20,7 +20,7 @@ boundary conditions for the dye are not implemented.
 
 This is the **standalone** dye (a velocity you give, periodic grids only); ``sim.dye(...)``
 (:mod:`conatus.model.dye`) is the one inside a running native simulation. Contracts compared in
-:mod:`conatus.diagnostics.lagrangian` (finding 63).
+:mod:`conatus.diagnostics.lagrangian`.
 """
 from __future__ import annotations
 

@@ -30,9 +30,10 @@ In practice:
 - **Singular coordinates use regular bases.** Curvilinear geometries use bases that are regular at
   the axis and the poles (Zernike-type polynomials on the disk, spin-weighted harmonics on the
   sphere). There is no `1/r → 1/(r + ε)`.
-- **The adjoint uses your inner product.** The physical adjoint is $L^\dagger = W^{-1} L^* W$ for
-  the inner product $W$ you declare. The plain matrix transpose corresponds to $W$ equal to the
-  identity.
+- **The adjoint uses your inner product.** For the inner product $\langle a, b\rangle_W = a^H W b$
+  you declare, with $W$ Hermitian positive definite, the physical adjoint is
+  $L^\dagger = W^{-1} L^H W$, where $L^H$ is the conjugate transpose. For real states and
+  $W$ equal to the identity it reduces to the plain transpose.
 - **Stability and accuracy are separate controls.** The CFL controller limits the step for
   stability. `EmbeddedError` estimates the temporal error. You choose which one to use.
 - **Name clashes are listed.** `conatus.expert.explain()` lists every name that two modules export

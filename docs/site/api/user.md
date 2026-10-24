@@ -4,7 +4,8 @@
 import conatus as cn
 ```
 
-`import conatus` is light: nothing heavy (solvers, compiled core, GPU) is loaded until it is used.
+`import conatus` loads the solvers, the compiled core and the GPU modules only when they are first
+used.
 The names below are reached as `cn.<name>`.
 
 ## Geometries

@@ -18,5 +18,7 @@ then put the new `run_id` in `runs.txt` and, on the login node (file copies only
 
     source env/env.sh && python web/gallery/collect.py && python ci/archive_results.py
 
-Every manifest entry carries a `validated` value taken from `paper/conatus.tex`, `examples/README.md`
-or `results/`, with its published reference; the image itself is not a validation.
+Every manifest entry carries what the pictured run measured (`measured`, built by `collect.py` from
+that run's own diagnostics), its colour range (`scale`) and the region it covers (`extent`, in
+`fields.json`). Published benchmarks of the same solvers are on the validation page, not on the
+pictures.

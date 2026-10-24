@@ -1,7 +1,7 @@
 """Declared inner products for snapshot data: ⟨a, b⟩_W = aᴴ W b (data-driven toolkit).
 
 Every decomposition (POD, DMD, SPOD, EDMD) is defined by an inner product on the snapshot space;
-Conatus never picks one for you. Three declared kinds:
+the call declares it. Three declared kinds:
 
 * ``DataInnerProduct.quadrature(w)``: diagonal W = diag(w), w the quadrature weight of each entry
   of a flattened snapshot (e.g. ``conatus.diagnostics.Grid.cell_volumes()``, trapezoidal ×
@@ -23,6 +23,7 @@ from typing import Any
 
 import numpy as np
 
+from .._arrays import array_module
 from ..errors import OptionError
 from .._repr import compact_repr
 
@@ -31,15 +32,6 @@ __all__ = ["DataInnerProduct", "array_module"]
 #: Relative Hermitian defect ||W - W^H|| / ||W|| above which a Gram matrix is refused (declared in
 #: ``conatus.tolerances.DECLARED``; the measured defect is in the message).
 HERMITIAN_TOL = 1e-13
-
-
-def array_module(*arrays: Any):
-    """NumPy, or CuPy if any argument is a CuPy array (CuPy is never imported otherwise)."""
-    for a in arrays:
-        if type(a).__module__.split(".")[0] == "cupy":
-            import cupy
-            return cupy
-    return np
 
 
 def to_host(a) -> np.ndarray:

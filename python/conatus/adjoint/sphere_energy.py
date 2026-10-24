@@ -125,18 +125,23 @@ class SphereEnergyInnerProduct:
         return self._apply(X, "G", 0)
 
     def R(self, X):
+        """R X with W = R^T R on the velocity part (zero elsewhere)."""
         return self._apply(X, "R", 1)
 
     def Rinv(self, X):
+        """R^-1 X on the velocity part (zero elsewhere)."""
         return self._apply(X, "Rinv", 2)
 
     def RinvT(self, X):
+        """R^-T X on the velocity part (zero elsewhere)."""
         return self._apply(X, "Rinv", 2, transpose=True)
 
     def Winv(self, Y):
+        """W^-1 Y = R^-1 R^-T Y on the velocity part."""
         return self.Rinv(self.RinvT(Y))
 
     def restrict(self, X):
+        """X with every non-velocity entry set to zero."""
         xp = self.xp
         Y = xp.zeros_like(X)
         v = xp.asarray(self.vcols)
@@ -144,12 +149,15 @@ class SphereEnergyInnerProduct:
         return Y
 
     def inner(self, a, b) -> float:
+        """<a, b> = Re(a^H W b)."""
         return float(self.xp.real(self.xp.vdot(a, self.W(b))))
 
     def energy(self, X) -> float:
+        """Kinetic energy 0.5 <X, X>."""
         return 0.5 * self.inner(X, X)
 
     def explain(self) -> str:
+        """The inner product, its Gram matrix and the azimuthal weights."""
         return (f"SphereEnergyInnerProduct: <a, b> = Re(a^H W b), W = exact energy Gram of "
                 f"{self.fields} on the shell (w_m = 2π at m = 0, 4π at m > 0 for the stored "
                 f"modes of a real field; spin harmonics orthonormal; Chebyshev Gram ∫ T_i T_j r² dr "
@@ -305,6 +313,7 @@ class SphereAdmissibleProjector:
         return ip.Rinv(self.project_primed(ip.RinvT(ip.restrict(Y))))
 
     def explain(self) -> str:
+        """The projection, its constraint set and what stays free (pressure, taus)."""
         o = "pressure and taus" if self.free_taus else "pressure only (seeds exactly "
         o += "" if self.free_taus else "divergence-free with no slip, taus zero)"
         return (f"SphereAdmissibleProjector: W-orthogonal projection onto {{v real at m = 0 : "

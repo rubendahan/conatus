@@ -5,7 +5,7 @@
 // A plate opens in the lightbox (components/Lightbox.tsx) and its URL hash (#slug) opens it on
 // load; without JavaScript the plate is a plain link to the full-resolution image.
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import { PageHead, Section } from "../components/ui";
+import { PageHead, PageLink, Section } from "../components/ui";
 import Lightbox from "../components/Lightbox";
 import Film from "../components/Film";
 import { films } from "../data/films";
@@ -91,6 +91,8 @@ export default function Gallery() {
           greys from low to high, signed fields through black at zero, from red to glass green. Each plate names the field it
           shows. The plates are illustrations. Open one to see
           it at full size, with its colour scale, the value it was checked against and the script that made it.</p>
+        <p>Results of published papers computed again, with the paper's values next to Conatus's and the gap between
+          them, are on the <PageLink to="/published">Published cases</PageLink> page.</p>
       </PageHead>
       {films.length > 0 && (
         <Section id="films" className="gallery-section" title="In motion" intro={<p>Two Conatus runs, frame by frame, looping.</p>}>

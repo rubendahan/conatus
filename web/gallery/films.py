@@ -32,6 +32,7 @@ the binary of the imageio-ffmpeg package.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -643,6 +644,14 @@ def collect(run_ids: list[str]) -> None:
             for ext in ("webm", "mp4", "webp"):
                 shutil.copyfile(run / f"{m['slug']}.{ext}", PUBLIC / f"{m['slug']}.{ext}")
             found[m["slug"]] = {k: m[k] for k in FIELDS}
+            # how to make the film again: the command of the run that drew it and the sha256 of the
+            # published files
+            cfg = json.loads((run / "config.json").read_text())
+            case = next(c for c, sl in SLUGS.items() if sl == m["slug"])
+            found[m["slug"]]["generation"] = {
+                "command": " ".join(["python web/gallery/films.py --case", case, *cfg.get("args", [])]),
+                "sha256": {ext: hashlib.sha256((run / f"{m['slug']}.{ext}").read_bytes()).hexdigest()
+                           for ext in ("webm", "mp4")}}
             t = m.get("times")
             found[m["slug"]].update(
                 shows=SHOWN[m["slug"]][0] if m["slug"] in SHOWN else None,

@@ -2,7 +2,7 @@
 // loaded before hydration so the server markup is reused without a flash.
 import { StrictMode } from "react";
 import { hydrateRoot, createRoot } from "react-dom/client";
-import { BrowserRouter, HashRouter } from "react-router-dom";
+import { BrowserRouter, HashRouter } from "react-router";
 import App from "./App";
 import { findRoute } from "./routes";
 import { pages, preload } from "./lib/pages";
