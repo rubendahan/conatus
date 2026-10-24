@@ -20,7 +20,7 @@
   <rect x="300" y="200" width="200" height="70" rx="3" fill="#FFFFFF" stroke="#77736B"/>
   <text x="312" y="224" fill="#2B2A27" font-weight="600">token file (mode 0600)</text>
   <text x="312" y="244" fill="#2B2A27">path printed at start</text>
-  <text x="312" y="261" fill="#5E5A52">--state ./hub_state to keep it</text>
+  <text x="312" y="261" fill="#5E5A52">hub --state DIR serve: kept</text>
   <rect x="566" y="60" width="180" height="90" rx="3" fill="#FFFFFF" stroke="#4C6FB0"/>
   <text x="578" y="84" fill="#2B2A27" font-weight="600">browser</text>
   <text x="578" y="104" fill="#2B2A27">localhost:8765/login</text>

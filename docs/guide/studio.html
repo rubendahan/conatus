@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -814,7 +814,9 @@ The one-session login token goes to a 0600 file named <code class="docutils lite
 never through a symbolic link. The command prints the path of that file; read the token there.
 Without <code class="docutils literal notranslate"><span class="pre">--state</span></code>, the file is in a new private directory <code class="docutils literal notranslate"><span class="pre">conatus_hub_*</span></code> under the system
 temporary directory, which changes at every start and is not removed when the hub stops. For a
-fixed place, pass <code class="docutils literal notranslate"><span class="pre">--state</span> <span class="pre">./hub_state</span></code> (or set <code class="docutils literal notranslate"><span class="pre">$CN_HUB_STATE</span></code>), or <code class="docutils literal notranslate"><span class="pre">--user-token-out</span> <span class="pre">FILE</span></code>.
+fixed place, give the state directory before <code class="docutils literal notranslate"><span class="pre">serve</span></code> (it is an option of the hub, not of <code class="docutils literal notranslate"><span class="pre">serve</span></code>):
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">conatus.studio.hub</span> <span class="pre">--state</span> <span class="pre">./hub_state</span> <span class="pre">serve</span> <span class="pre">--local</span> <span class="pre">--spool</span> <span class="pre">&lt;dir&gt;</span> <span class="pre">--port</span> <span class="pre">8765</span></code>; or
+set <code class="docutils literal notranslate"><span class="pre">$CN_HUB_STATE</span></code>, or pass <code class="docutils literal notranslate"><span class="pre">serve</span> <span class="pre">--user-token-out</span> <span class="pre">FILE</span></code>.
 <code class="docutils literal notranslate"><span class="pre">--print-token</span></code> prints the token itself (it then lands in any log of the process).</p></li>
 </ul>
 <p>The solver library does not import <code class="docutils literal notranslate"><span class="pre">tornado</span></code>; only the Studio server needs it.</p>
@@ -917,7 +919,7 @@ hub keeps. They are listed in <a class="reference internal" href="studio_limits.
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=938c9ccc"></script>
+</div><script src="../_static/documentation_options.js?v=37f418d5"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

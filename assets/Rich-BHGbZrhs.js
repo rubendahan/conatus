@@ -1,0 +1,1 @@
+import{i as e}from"./index-B1a7NCV6.js";var t=e();function n({text:e}){let n=[],r=/([_^])\{([^{}]*)\}/g,i=0,a=0,o;for(;o=r.exec(e);)o.index>i&&n.push(e.slice(i,o.index)),n.push(o[1]===`_`?(0,t.jsx)(`sub`,{children:o[2]},a++):(0,t.jsx)(`sup`,{children:o[2]},a++)),i=r.lastIndex;return i<e.length&&n.push(e.slice(i)),(0,t.jsx)(t.Fragment,{children:n})}export{n as t};

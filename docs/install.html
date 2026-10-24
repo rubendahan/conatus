@@ -236,7 +236,7 @@
   <a href="./../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="./../install/" data-cn-route="/install">Install</a>
   <a href="./../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -686,9 +686,9 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
-<p>Install Conatus 0.2.0 from a binary wheel: no compiler is needed. The CPU wheel is on PyPI
+<p>Install Conatus 0.2.1 from a binary wheel: no compiler is needed. The CPU wheel is on PyPI
 (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">conatus</span></code>); the CUDA 12 wheel (beta) is attached to the
-<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.2.0">GitHub release</a>. Building from
+<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.2.1">GitHub release</a>. Building from
 source is described at the end of this page, for developers.</p>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
@@ -737,7 +737,7 @@ later) and CPython 3.11, 3.12 or 3.13:</p>
 </div>
 <p>In a fresh virtual environment (no conda, no compiler):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>.<span class="w"> </span>venv/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[tutorials]==0.2.0"</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[tutorials]==0.2.1"</span>
 python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>--version<span class="w">     </span><span class="c1"># conatus, compiled core and Python versions</span>
 python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>doctor<span class="w">        </span><span class="c1"># what this machine can run, and what is missing</span>
 </pre></div>
@@ -746,7 +746,7 @@ python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> 
 PyPI) the install took under 30 s.</p>
 <p>The CUDA wheel pulls the NVIDIA runtime wheels (CUDA runtime, cuFFT, cuBLAS: about 700 MB) and,
 with the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> extra, CuPy: see <a class="reference internal" href="#gpu-cuda-install">GPU (CUDA) install</a>. <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">show</span> <span class="pre">conatus</span></code> says
-which flavour is installed (<code class="docutils literal notranslate"><span class="pre">0.2.0</span></code> from PyPI, <code class="docutils literal notranslate"><span class="pre">0.2.0+cu12</span></code> for the CUDA wheel).</p>
+which flavour is installed (<code class="docutils literal notranslate"><span class="pre">0.2.1</span></code> from PyPI, <code class="docutils literal notranslate"><span class="pre">0.2.1+cu12</span></code> for the CUDA wheel).</p>
 <p><strong>Threads.</strong> NumPy, SciPy and the core each load their own OpenBLAS, and each starts by default
 one thread per CPU, so the three compete for the same CPUs. On a node where the process could use
 8 CPUs, a Floquet computation of the test set took about 20 minutes with the defaults, 26 s with
@@ -765,10 +765,10 @@ capability 8.0) and L40S (8.9), the two architectures the core is built for by d
 <p>Recipe 1, the CUDA binary wheel (beta; no compiler, no CUDA toolkit; the driver must support
 CUDA 12.9, i.e. driver ≥ 575 or an older 12.x driver through CUDA minor-version compatibility).
 The wheels are attached to the
-<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.2.0">GitHub release</a>, one per Python
+<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.2.1">GitHub release</a>, one per Python
 (<code class="docutils literal notranslate"><span class="pre">cp311</span></code>, <code class="docutils literal notranslate"><span class="pre">cp312</span></code>, <code class="docutils literal notranslate"><span class="pre">cp313</span></code>); for Python 3.12:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>.<span class="w"> </span>venv/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.2.0/conatus-0.2.0+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.2.1/conatus-0.2.1+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"</span>
 </pre></div>
 </div>
 <p>On a GPU node (in a batch job on a cluster), check that the device can be used:</p>
@@ -897,7 +897,7 @@ source, which the website’s Install page uses too.</p>
 <p>The same recipe as the README: a conda environment for the compilers and libraries, then
 <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;.[tutorials]&quot;</span></code>, which compiles the core, installs it inside the package and adds
 what the tutorials need (matplotlib). About two minutes on a cluster node with a warm package cache.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>v0.2.0<span class="w"> </span>https://github.com/rubendahan/conatus<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>conatus
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>v0.2.1<span class="w"> </span>https://github.com/rubendahan/conatus<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>conatus
 micromamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>conatus<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12<span class="w"> </span>gxx_linux-64<span class="o">=</span><span class="m">13</span><span class="w"> </span>liblapack<span class="w"> </span>libblas
 micromamba<span class="w"> </span>activate<span class="w"> </span>conatus
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">".[tutorials]"</span><span class="w">      </span><span class="c1"># CPU core + matplotlib, xarray (the GPU build: next section)</span>
@@ -1050,7 +1050,7 @@ included verbatim in the pages.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=938c9ccc"></script>
+</div><script src="_static/documentation_options.js?v=37f418d5"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

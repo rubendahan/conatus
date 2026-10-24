@@ -1,4 +1,4 @@
-var e=`# kuramoto_sivashinsky_l22/run.py | script sha256 47ecb76fac701eba5641ed73cce7bec4aae485aed7327f45370256c9b7983c87 | conatus 0.2.0 | python 3.12.14 | 2026-10-23 | 14 s | AMD EPYC 9654 96-Core Processor | 4 threads
+var e=`# kuramoto_sivashinsky_l22/run.py | script sha256 47ecb76fac701eba5641ed73cce7bec4aae485aed7327f45370256c9b7983c87 | conatus 0.2.1 | python 3.12.14 | 2026-10-24 | 9 s | AMD EPYC 9654 96-Core Processor | 4 threads
 E1: residual 6.7e-14, energy 0.260873 (published 0.2609)
    +0.1308 +0.3341i   Conatus +0.130810 +0.334076i   gap 2.6e-05   yes
    +0.0824 +0.3402i   Conatus +0.082353 +0.340213i   gap 4.8e-05   yes
@@ -38,7 +38,7 @@ TW2: residual 2.4e-16, energy 0.604820 (published 0.6048), speed 0.3495413 (publ
    -0.3067 +0.0725i   Conatus -0.306725 +0.072478i   gap 3.3e-05   yes
 published values (eigenvalues, energies, speeds): 39; within rounding: 39 of 39
 largest gap 6.0e-05
-`,t=`# orr_sommerfeld_spectrum/run.py | script sha256 0a56c7a57345d1f4d04d6115ac134c0af0fc527d14dcd117e436b1f0501822bf | conatus 0.2.0 | python 3.12.14 | 2026-10-23 | 7 s | AMD EPYC 9654 96-Core Processor | 4 threads
+`,t=`# orr_sommerfeld_spectrum/run.py | script sha256 0a56c7a57345d1f4d04d6115ac134c0af0fc527d14dcd117e436b1f0501822bf | conatus 0.2.1 | python 3.12.14 | 2026-10-24 | 7 s | AMD EPYC 9654 96-Core Processor | 4 threads
 N = 128 (drift test at N = 160, 1e-6): 61 modes kept, max backward residual 7.4e-16
  n   Orszag (1971)               Conatus                  gap      within rounding
  1    0.23752649   0.00373967i   0.23752649 +0.00373967i   1.3e-09  yes
@@ -77,7 +77,7 @@ published eigenvalues: 32; within rounding of the printed digits: 27 of 32; with
 largest gap |c_Conatus - c_Orszag| = 7.1e-06 (n = 20); median 5.3e-08
 Re_c = 5772.2218 (Orszag 5772.22), alpha_c = 1.020547 (Orszag 1.02056)
 gap: Re_c 1.8e-03, alpha_c 1.3e-05
-`,n=`# pipe_flow_spectrum/run.py | script sha256 273e900e47be070659296be0b31066430c0d6d017dea5edba43fd7bfd65562c5 | conatus 0.2.0 | python 3.12.14 | 2026-10-23 | 219 s | AMD EPYC 9654 96-Core Processor | 4 threads
+`,n=`# pipe_flow_spectrum/run.py | script sha256 273e900e47be070659296be0b31066430c0d6d017dea5edba43fd7bfd65562c5 | conatus 0.2.1 | python 3.12.14 | 2026-10-24 | 174 s | AMD EPYC 9654 96-Core Processor | 4 threads
 R      mode     Meseguer & Trefethen (conj.)       Conatus (N2)                         gap      N1-N2   rounding
   1e+02 (1,0)   -0.1468197064 -0.0000000000i   -0.146819706421 +0.000000000000i   2.1e-11  5e-15  yes
   1e+02 wall    -0.1471366653 -0.5725629712i   -0.147136665324 -0.572562971230i   3.9e-11  4e-15  yes
@@ -98,7 +98,7 @@ R      mode     Meseguer & Trefethen (conj.)       Conatus (N2)                 
   1e+07 wall    -0.0074895687 -0.0303389812i   -0.007489568737 -0.030338981221i   4.2e-11  3e-12  yes
 tabulated eigenvalues: 17; within rounding: 15 of 17; within one unit of the last digit: 15 of 17
 largest gap for R = 10^2 to 10^4: 6.3e-11; for R = 10^2 to 10^7: 3.9e-10
-`,r=`# rayleigh_benard_onset/run.py | script sha256 d63b3841da3857132943dc24a70da13e9a580031d67dc82848fe1b8703f29d77 | conatus 0.2.0 | python 3.12.14 | 2026-10-23 | 27 s | AMD EPYC 9654 96-Core Processor | 4 threads
+`,r=`# rayleigh_benard_onset/run.py | script sha256 d63b3841da3857132943dc24a70da13e9a580031d67dc82848fe1b8703f29d77 | conatus 0.2.1 | python 3.12.14 | 2026-10-24 | 30 s | AMD EPYC 9654 96-Core Processor | 4 threads
 rigid-rigid: Ra_c = 1707.761777, k_c = 3.116324   (reference 1707.762, 3.117; relative gaps 1.3e-07, 2.2e-04)
 rigid-free: Ra_c = 1100.649607, k_c = 2.682322   (reference 1100.65, 2.682; relative gaps 3.6e-07, 1.2e-04)
 free-free: Ra_c = 657.511364, k_c = 2.221441   (reference 657.511364, 2.221441; relative gaps 7.3e-10, 2.1e-07)

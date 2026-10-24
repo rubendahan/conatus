@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -827,6 +827,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dropped_frames</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">written_records</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># how the run ended when it did not finish normally, sent with every later status (the</span>
+        <span class="c1"># final one included): ``stopped`` by a Studio stop, ``failed`` (exception type and</span>
+        <span class="c1"># message) by :meth:`fail`. ``error`` above is the telemetry's own failure.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">failed</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_q</span><span class="p">:</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">capacity</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_frames</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_frame_last</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1077,7 +1082,19 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">film_max_bytes</span> <span class="k">else</span> <span class="p">{})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_put</span><span class="p">(</span><span class="n">record</span><span class="p">(</span><span class="s2">"status"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="n">written</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">written_records</span><span class="p">,</span>
                          <span class="n">dropped_records</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dropped_records</span><span class="p">,</span> <span class="n">dropped_frames</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dropped_frames</span><span class="p">,</span>
-                         <span class="n">paused</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="o">**</span><span class="n">film</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">))</span>
+                         <span class="n">paused</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="o">**</span><span class="n">film</span><span class="p">,</span>
+                         <span class="o">**</span><span class="p">({</span><span class="s2">"stopped"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span><span class="p">}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span> <span class="k">else</span> <span class="p">{}),</span>
+                         <span class="o">**</span><span class="p">({</span><span class="s2">"failed"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed</span><span class="p">}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed</span> <span class="k">else</span> <span class="p">{}),</span> <span class="o">**</span><span class="n">extra</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">fail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">:</span> <span class="ne">BaseException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Record that the run raised ``err``: an event ``failed`` (exception type and message) and</span>
+<span class="sd">        a status; every later status, the final one included, carries ``failed``, so the Studio</span>
+<span class="sd">        and the agent API show the run as failed (earlier versions recorded only a Studio stop:</span>
+<span class="sd">        a run that diverged ended as "finished")."""</span>
+        <span class="n">kind</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">failed</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">"</span><span class="p">[:</span><span class="mi">2000</span><span class="p">]</span> <span class="k">if</span> <span class="n">msg</span> <span class="k">else</span> <span class="n">kind</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="p">(</span><span class="s2">"failed"</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">msg</span><span class="p">[:</span><span class="mi">2000</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
 
     <span class="c1"># ------------------------------------------------------------------ integrations</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">ivp_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">scalars</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1211,13 +1228,15 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="kc">False</span>         <span class="c1"># what follows is handled after resuming</span>
                     <span class="k">elif</span> <span class="n">n</span> <span class="o">==</span> <span class="s2">"stop"</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="kc">False</span>
-                        <span class="k">raise</span> <span class="n">StopRun</span><span class="p">(</span><span class="s2">"stopped from the Studio while paused"</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span> <span class="o">=</span> <span class="s2">"stopped from the Studio while paused"</span>
+                        <span class="k">raise</span> <span class="n">StopRun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stopped</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="n">n</span> <span class="o">!=</span> <span class="s2">"pause"</span><span class="p">:</span>              <span class="c1"># already paused otherwise</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_apply</span><span class="p">(</span><span class="n">nxt</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">checkpoint_dir</span><span class="p">,</span> <span class="n">on_checkpoint</span><span class="p">,</span> <span class="n">setters</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="p">(</span><span class="s2">"resumed"</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
             <span class="k">elif</span> <span class="n">c</span> <span class="o">==</span> <span class="s2">"stop"</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">StopRun</span><span class="p">(</span><span class="s2">"stopped from the Studio"</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span> <span class="o">=</span> <span class="s2">"stopped from the Studio"</span>
+                <span class="k">raise</span> <span class="n">StopRun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stopped</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">c</span> <span class="o">==</span> <span class="s2">"resume"</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">"resume received while running: nothing to do"</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">"info"</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1483,7 +1502,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

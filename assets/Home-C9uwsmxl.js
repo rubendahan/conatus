@@ -1,4 +1,4 @@
-import{a as e,i as t,l as n,r,s as i,t as a,u as o}from"./index-DPDPkKkl.js";import{i as s,n as c,s as l,t as u}from"./ui-D93sJ15T.js";/* empty css              */import{t as d}from"./critical_reynolds-DJJkRitv.js";/* empty css               */var f=`# Linear stability of plane Poiseuille flow U(y) = 1 - y^2 between walls at y = -1 and y = 1.
+import{a as e,i as t,l as n,r,s as i,t as a,u as o}from"./index-B1a7NCV6.js";import{i as s,n as c,s as l,t as u}from"./ui-J9ctSEnB.js";/* empty css              */import{t as d}from"./critical_reynolds-q90G_qCQ.js";/* empty css               */var f=`# Linear stability of plane Poiseuille flow U(y) = 1 - y^2 between walls at y = -1 and y = 1.
 # Orr-Sommerfeld equation for v(y) exp(i alpha (x - c t)): a mode grows when Im(c) > 0.
 import conatus as cn
 from conatus.expert import critical
