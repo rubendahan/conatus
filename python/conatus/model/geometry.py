@@ -371,7 +371,7 @@ class Geometry:
             return {c: DEFAULT_DEALIAS for c in names}
         if isinstance(dealias, Mapping):
             missing = [c for c in names if c not in dealias]
-            # a key that names no coordinate (a typo) was ignored (review finding 29)
+            # a key that names no coordinate (a typo) was ignored
             stray = [c for c in dealias if c not in names]
             if stray:
                 raise ResolutionError(f"dealias={dict(dealias)!r}: {stray} not coordinate(s) of the "

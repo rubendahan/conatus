@@ -371,6 +371,7 @@ class PolarIVPSolver(IVPSolver):
         self._check_projected_subspace(self.X, "initial data")
         self.t, self.iteration = float(t), 0
         self._t_origin, self._it_origin = float(t), 0
+        self._history_origin = 0
         self._t_initial = float(t)                  # start time of the chain (checkpoints)
         self._reset_history()
 

@@ -489,7 +489,7 @@ class _SphereCompiler:
             raise DiscretizationError(f"'{x}': at a boundary, dot(coefficient, vector) needs a "
                                       "rank-2 coefficient and a vector")
         M = self.P.surface_tensor(C) @ self.S.G
-        # threshold relative to the tensor's largest entry (review finding 35: an absolute
+        # threshold relative to the tensor's largest entry (an absolute
         # 1e-14 dropped every row of a tensor of size 1e-15)
         scale = float(np.max(np.abs(M), initial=0.0))
         inner = self._trace(X, pos, d)

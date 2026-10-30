@@ -336,7 +336,7 @@ class AuditLog:
         if self.path is not None:
             try:
                 private_dir(self.path.parent)
-                with open_private(self.path, "a") as fh:  # 0600: names, addresses (F12)
+                with open_private(self.path, "a") as fh:  # 0600: names, addresses
                     fh.write(line + "\n")
             except OSError as err:              # never lose the entry: it still goes to stdout
                 if self.error is None:

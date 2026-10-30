@@ -4,7 +4,7 @@ intervals, never rounded), the tangent is the exact derivative of the simulation
 (same scheme, same dt, same factors), and the restriction to zero-mean tangent vectors of
 periodic unknowns is a named option instead of an index computed by hand.
 
-What it computes, the algorithms and the references: and the
+What it computes, the algorithms and the references: the
 guide page ``docs/site/guide/dynamics/chaos.md``.
 """
 from __future__ import annotations

@@ -133,7 +133,7 @@ def _login_and_probe(hosted: bool = False):
                 rr = await c.fetch(base + "/api/runs", raise_error=False,
                                    headers={"Cookie": f"cn_session={morsel.value}"})
                 out["old_name"] = rr.code
-                # review F11, the attack itself: a service on the same host name received the
+                # the attack itself: a service on the same host name received the
                 # cookie and replays it with the hub's own Host, without the key
                 own = f"127.0.0.1:{port}"
                 out["replay"] = {p: await get(p, own, with_key=False)

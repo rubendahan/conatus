@@ -332,7 +332,8 @@ class Run:
     def log(self, step: int | None = None, **scalars: Any) -> None:
         """Append one row of series values (``run.log(t=t, energy=E)``); ``step`` is optional (the
         row number is always kept, so series logged together can be plotted against each other).
-        In-memory only; written to ``data.h5`` at close."""
+        Rows are buffered and written to ``data.h5`` in chunks of ``SERIES_FLUSH_ROWS``; closing the
+        run writes the remaining rows."""
         self._live("log")
         vals = {k: jsonable(v) for k, v in scalars.items()}
         self._rows.append((self._nrows, None if step is None else int(step), vals))
@@ -364,7 +365,7 @@ class Run:
             raise OptionError("save_field: level= applies to gzip only")
         if level is not None and (isinstance(level, bool) or not isinstance(level, (int, np.integer))
                                   or not 0 <= level <= 9):
-            # checked here, in the caller's thread (review finding 58): h5py refused it later in
+            # checked here, in the caller's thread: h5py refused it later in
             # the writer thread, where the field was lost with a warning at close
             raise OptionError(f"save_field: level={level!r}: gzip level is an integer 0-9",
                               why="a bad level used to be refused by HDF5 in the writer thread, "
@@ -380,7 +381,7 @@ class Run:
         name = Path(path).name if name is None else name
         if (not isinstance(name, str) or name in ("", ".", "..") or "/" in name or "\\" in name
                 or "\0" in name or Path(name).name != name):
-            # review finding 47: name="../../../outside.txt" was copied outside the run directory
+            # name="../../../outside.txt" was copied outside the run directory
             raise OptionError(f"save_file: file name {name!r} is not a plain file name",
                               why="attached files are copied into the run's files/ directory; a "
                                   "path in the name would write elsewhere",
@@ -432,7 +433,7 @@ class Run:
             return self
         if state not in STATES:
             raise OptionError(f"conatus.runs: state {state!r} unknown; one of {STATES}")
-        # one deadline for the whole close (review finding 46: two queue puts and the join each
+        # one deadline for the whole close (two queue puts and the join each
         # waited up to ``timeout``)
         deadline = time.monotonic() + float(timeout)
 
@@ -638,7 +639,7 @@ class Run:
         src = self.rec.get("reused_from")
         if not p.exists() and src:
             # a cache hit computed nothing: its series and fields are those of the source run,
-            # read through this run (review finding 52: the report said they were reused, but
+            # read through this run (the report said they were reused, but
             # they could not be reached from the new run)
             p = self.registry.run_dir(src) / "data.h5"
         if not p.exists():

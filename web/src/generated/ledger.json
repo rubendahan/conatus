@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-24T14:20:14.815Z",
+ "generated": "2026-10-30T18:52:45.977Z",
  "commit": null,
  "sources": [],
  "counts": {
@@ -13,7 +13,7 @@
   "date": "2026-10-24"
  },
  "scorecard": "",
- "version": "0.2.1",
+ "version": "0.2.2",
  "domains": [
   {
    "id": "stability",

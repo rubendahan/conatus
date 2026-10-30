@@ -23,8 +23,7 @@ Two analyses share this operator (:class:`PeriodicOperator`):
 "Admissible" = the states for which the algebraic rows of the system (rows without mass:
 continuity, boundary conditions) hold for some value of the non-state unknowns (pressure, taus,
 gauges): the discrete Leray projection with the boundary conditions of this discretization, as
-:class:`conatus.adjoint.nlop.AdmissibleProjector` for the IVP. Mathematics:
-
+:class:`conatus.adjoint.nlop.AdmissibleProjector` for the IVP.
 """
 from __future__ import annotations
 

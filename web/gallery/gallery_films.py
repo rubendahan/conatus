@@ -232,7 +232,7 @@ def kelvin_helmholtz(a, out: Path) -> None:
                     colour=f"Colour: ω, red for negative, black at zero, glass green for positive; one scale "
                            f"for the whole film, ending at the 99.7th percentile of |ω| over all frames "
                            f"({amp:.3g}; larger values saturate).",
-                    extent="Periodic box 4 × 2 (x × z, lengths in units of the layer velocity scale), the full box.",
+                    extent="Periodic box 4 × 2 (x × z), in the unit of length of the half-thickness δ = 0.08, the full box.",
                     caption=f"Vorticity of two tanh shear layers (half-thickness δ = {delta:g}, Re = Uδ/ν = "
                             f"{Re:g}), nonlinear IVP seeded by the box mode nearest the most unstable one "
                             f"(αδ = {kx * delta:.3f}); {span}, one frame every {a.kh_every:g} time units, "

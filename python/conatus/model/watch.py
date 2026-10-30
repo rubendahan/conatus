@@ -36,7 +36,7 @@ import numpy as np
 from .._deprecation import renames
 from ..errors import InputTypeError, OptionError
 
-_DOC = "docs/site/tutorials/09_studio.md"
+_DOC = "docs/site/guide/studio.md"
 # What a Studio ``set`` command may change on a native run (with bounds declared by the user).
 SETTABLE = {"dt": "time step"}
 MODES_3D = ("isosurface", "volume", "slices")

@@ -11,7 +11,7 @@
 
 ``compare_adjoints`` measures the difference on invariant quantities (adjoint eigenvalue,
 eigenfunction in the energy norm, eigenvalue condition number κ = ‖x‖‖a‖/|⟨a, x⟩|) so that
-tests can show both converge to the same limit as N grows. See
+tests can show both converge to the same limit as N grows.
 """
 from __future__ import annotations
 

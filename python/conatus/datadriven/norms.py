@@ -39,6 +39,35 @@ def to_host(a) -> np.ndarray:
     return a.get() if xp is not np else np.asarray(a)
 
 
+def as_inexact(a):
+    """``a`` with a dtype whose products do not wrap: integer and boolean arrays become float64, as
+    does float16.
+    float32, float64 and complex arrays keep their dtype and device. float64 rounds integers above
+    2^53 to 53 significant bits."""
+    if a.dtype.kind in "biu" or (a.dtype.kind == "f" and a.dtype.itemsize < 4):
+        return a.astype(float)
+    return a
+
+
+def safe_norm(a, axis=None) -> np.ndarray:
+    """Euclidean or Frobenius norm that survives entries whose square leaves the floating-point
+    range."""
+    xp = array_module(a)
+    n = to_host(xp.linalg.norm(a, axis=axis))
+    if np.all(np.isfinite(n)) and np.all(n > 0):
+        return n
+    m = to_host(xp.abs(a).max(axis=axis))
+    m = np.where(np.isfinite(m) & (m > 0), m, 1.0)
+    return to_host(xp.linalg.norm(a / xp.asarray(m), axis=axis)) * m
+
+
+def _ldexp(a: np.ndarray, e: int) -> np.ndarray:
+    """a x 2^e for real or complex ``a``, exact unless the result is subnormal."""
+    if np.iscomplexobj(a):
+        return np.ldexp(a.real, e) + 1j * np.ldexp(a.imag, e)
+    return np.ldexp(a, e)
+
+
 @dataclass
 class DataInnerProduct:
     """⟨a, b⟩ = aᴴ W b on flattened snapshots of length n (see module doc)."""
@@ -49,6 +78,13 @@ class DataInnerProduct:
     w: Any = None                   # quadrature weights (length n)
     F: Any = None                   # upper Cholesky factor of the Gram (W = Fᴴ F)
     note: str = ""
+
+    @property
+    def is_real(self) -> bool:
+        """W has no imaginary part beyond the rounding allowed by ``HERMITIAN_TOL``."""
+        if self.kind != "gram" or not np.iscomplexobj(self.F):
+            return True
+        return bool(np.abs(self.F.imag).max() <= HERMITIAN_TOL * np.abs(self.F).max())
 
     # ------------------------------------------------------------------ constructors
     @classmethod
@@ -67,14 +103,24 @@ class DataInnerProduct:
 
     @classmethod
     def gram(cls, W, *, note: str = "") -> DataInnerProduct:
-        W = np.asarray(to_host(W))
-        if W.ndim != 2 or W.shape[0] != W.shape[1]:
-            raise OptionError("gram(W): W must be a square matrix")
-        herm = np.linalg.norm(W - W.conj().T) / np.linalg.norm(W)
+        W = as_inexact(np.asarray(to_host(W)))
+        if W.ndim != 2 or W.shape[0] != W.shape[1] or W.size == 0:
+            raise OptionError(f"gram(W): W must be a non-empty square matrix, got shape {W.shape}")
+        # checked before any arithmetic: a NaN defect passes a comparison, and Cholesky reads one
+        # triangle only, so it would factor another matrix
+        if not np.all(np.isfinite(W)):
+            raise OptionError("gram(W): W has non-finite entries (NaN or inf)",
+                              fix="repair the matrix before declaring the inner product")
+        largest = float(max(np.abs(W.real).max(), np.abs(W.imag).max() if np.iscomplexobj(W) else 0.0))
+        if largest == 0.0:
+            raise OptionError("gram(W): W is not positive definite (it is zero)")
+        e = 2 * (int(np.frexp(largest)[1]) // 2)     # even: the factor scales by the integer 2^(e/2)
+        S = _ldexp(W, -e)                            # entries of order 1 (exact power of two)
+        herm = np.linalg.norm(S - S.conj().T) / np.linalg.norm(S)
         if herm > HERMITIAN_TOL:
             raise OptionError(f"gram(W): W is not Hermitian (relative defect {herm:.1e})")
         try:
-            F = np.linalg.cholesky(W).conj().T
+            F = _ldexp(np.linalg.cholesky(S).conj().T, e // 2)
         except np.linalg.LinAlgError:
             raise OptionError("gram(W): W is not positive definite") from None
         return cls("gram", W.shape[0], F=F, note=note)
@@ -113,6 +159,7 @@ class DataInnerProduct:
         """F X: coordinates in which the product is Euclidean (X: n × m, NumPy or CuPy)."""
         self.check(X)
         xp = array_module(X)
+        X = as_inexact(X)
         if self.kind == "euclidean":
             return X
         if self.kind == "quadrature":

@@ -112,7 +112,7 @@ def ivp_run(solver: Any, nsteps: int, callback: Callable | None, every: int | No
             parts["undeclared"] = [*parts.get("undeclared", []), str(why)]
     undeclared = (parts or {}).get("undeclared")
     if undeclared:
-        parts = None             # no key: never a cache source, never a hit (review finding 1)
+        parts = None             # no key: never a cache source, never a hit
     kw = dict(tags=o.get("tags", ()), params=o.get("params"), parent=o.get("parent"),
               relation=o.get("relation"), status=o.get("status", "provisional"),
               telemetry=o.get("telemetry"), capacity=o.get("capacity", QUEUE_CAPACITY),
@@ -274,6 +274,14 @@ def track(name: str | None = None, *, tags: Iterable[str] = (), params: Mapping[
                               notes=notes, cache=cache, compression=compression))
 
 
+def _seed_is_none(fn: Callable, args: Mapping[str, Any]) -> bool:
+    """Whether a None argument may reach a generator constructor of ``fn`` (conservative)."""
+    from ..io._identity import _SEEDED_CONSTRUCTORS, _global_names
+    code = getattr(fn, "__code__", None)
+    return (code is not None and any(v is None for v in args.values())
+            and bool(_global_names(code) & _SEEDED_CONSTRUCTORS))
+
+
 def call_recorded(fn: Callable, args: tuple, kwargs: dict, *, name: str, cache: bool = False,
                   compression: str | None = None, root: Any = None, _with_run: bool = False,
                   **run_kw: Any) -> Any:
@@ -289,7 +297,7 @@ def call_recorded(fn: Callable, args: tuple, kwargs: dict, *, name: str, cache: 
         src_sha = None
     inexact = [k for k, v in argsd.items() if not exact_hash(v)]
     # what the function reads besides its arguments: closure values, module globals, the user
-    # functions it calls (review finding 49: two closures of one factory shared a key)
+    # functions it calls (two closures of one factory shared a key)
     from ..io._identity import Undeclared, callable_identity
     try:
         # ``fn`` as called, with the user's own decorators (their parameters are part of what
@@ -297,6 +305,9 @@ def call_recorded(fn: Callable, args: tuple, kwargs: dict, *, name: str, cache: 
         deps, undeclared = callable_identity(fn, target), None
     except Undeclared as why:
         deps, undeclared = None, str(why)
+    if undeclared is None and _seed_is_none(raw, argsd):
+        undeclared = (f"{target}: an argument is None and the function builds a random generator: "
+                      "a generator seeded with None draws from the system's entropy")
     parts = (None if (src_sha is None or inexact or undeclared)
              else function_parts(target, src_sha, argsd, deps))
     reg = _registry(root)
@@ -365,7 +376,7 @@ def _store_return(run: Run, out: Any, compression: str | None) -> None:
     """Return value -> results (scalars) and fields (arrays); layout in ``rec['returns']``."""
     def one(key: str, v: Any) -> dict | None:
         if isinstance(v, np.generic) and v.dtype.kind in "biufc":
-            # a NumPy number keeps its dtype (review finding 50: a cache hit returned another
+            # a NumPy number keeps its dtype (a cache hit returned another
             # type): stored as a 0-d field, also indexed as a result. Numbers only: HDF5 has no
             # type for np.str_ or np.datetime64, whose field was lost in the writer thread
             # (identity review); np.str_ stays a string result
@@ -503,14 +514,16 @@ class ReproduceReport:
 
 
 def reproduce(run: Run, solver: Any = None, *, fn: Callable | None = None, record: bool = True,
-              require_same_code: bool = False) -> ReproduceReport:
+              require_same_code: bool = False, trust_record: bool = False) -> ReproduceReport:
     """Run the recorded computation again and compare with the recorded output.
 
     IVP runs: pass a ``solver`` built for the same problem and numerics (checked: problem hash,
     parameters, bases, scheme, dt... ; any difference is refused); the recorded
     start state is loaded, the same number of steps is taken, the end state is compared bit for bit.
-    Decorated calls: the function is re-imported (or ``fn=``) and called with the recorded
-    arguments. If the executed code differs from the recorded one, a :class:`CodeChangedWarning`
+    Decorated calls: pass the function as ``fn=``; it is called with the recorded arguments.
+    ``trust_record=True`` imports and calls the function the record names instead, which runs
+    whatever the record says: use it only for records you made. The ownership and mode checks on
+    the record still apply then. If the executed code differs from the recorded one, a :class:`CodeChangedWarning`
     says how (or an error with ``require_same_code=True``)."""
     inputs = run.rec.get("inputs") or {}
     inv = run.rec.get("invocation") or {}
@@ -539,6 +552,14 @@ def reproduce(run: Run, solver: Any = None, *, fn: Callable | None = None, recor
         if mod == "__main__":
             raise OptionError(f"reproduce({run.id}): {inputs['target']} was defined in a script",
                               fix="pass the function: run.reproduce(fn=my_function)")
+        if not trust_record:
+            raise OptionError(
+                f"reproduce({run.id}): this decorated call needs the function to run",
+                why="a run record can come from someone else (a shared or unpacked registry) and "
+                    "is then owned by you, so reproduce() does not import the function it names "
+                    "unless you say so",
+                fix="pass the function yourself: run.reproduce(fn=my_function); or, only for a "
+                    "record you made: run.reproduce(trust_record=True)")
         problem = _untrusted_record(run)
         if problem is not None:
             raise OptionError(
@@ -559,6 +580,16 @@ def reproduce(run: Run, solver: Any = None, *, fn: Callable | None = None, recor
     raw = inspect.unwrap(fn)
     call = _untracked(fn)                        # the user's decorators kept, track's removed
     src_sha = hashlib.sha256(inspect.getsource(raw).encode()).hexdigest()
+    src_changed = src_sha != inputs.get("source_sha256")
+    if src_changed:
+        code_same = False
+        code_diff["changed"]["user_source"] = (inputs.get("source_sha256"), src_sha)
+        msg = (f"reproduce({run.id}): the source of {inputs['target']} differs from the recorded "
+               f"one ({str(inputs.get('source_sha256'))[:12]} -> {src_sha[:12]})")
+        if require_same_code:
+            raise OptionError(msg, fix="restore the recorded source of the function, or leave "
+                                       "require_same_code off to compare the changed function")
+        warnings.warn(CodeChangedWarning(msg), stacklevel=2)
     pos, kw = _call_args(raw, {k: from_jsonable(v) for k, v in inputs["args"].items()})
     if record:
         opts = {k: v for k, v in rec_opts.items() if k != "name"}
@@ -567,7 +598,7 @@ def reproduce(run: Run, solver: Any = None, *, fn: Callable | None = None, recor
         out, new = call(*pos, **kw), None
     ref = load_return(run)
     same, maxd = _same(ref, out)
-    details = {"source_changed": src_sha != inputs.get("source_sha256")}
+    details = {"source_changed": src_changed}
     return ReproduceReport(run, new, same, maxd, code_same, code_diff, details)
 
 
@@ -613,7 +644,7 @@ def _unrecorded_numerics(rec: Mapping[str, Any], d: Mapping[str, Any]) -> list[s
 def _call_args(fn: Callable, argsd: Mapping[str, Any]) -> tuple[tuple, dict]:
     """(positional, keyword) arguments rebuilding a call from its bound arguments by name
     (``inspect.BoundArguments.arguments``): positional-only parameters and ``*args`` are passed
-    by position, ``**kwargs`` expanded (review finding 51: ``fn(**args)`` broke them)."""
+    by position, ``**kwargs`` expanded (``fn(**args)`` broke them)."""
     P = inspect.Parameter  # noqa: N806
     pos: list = []
     kw: dict = {}
@@ -630,6 +661,17 @@ def _call_args(fn: Callable, argsd: Mapping[str, Any]) -> tuple[tuple, dict]:
         else:
             kw.update(v)
     return tuple(pos), kw
+
+
+def _max_abs_diff(x: np.ndarray, y: np.ndarray) -> float:
+    """Largest |x - y| of numeric arrays: integers and booleans (as 0 and 1) subtracted as Python
+    integers, so that no fixed-width type wraps."""
+    x, y = (a.astype(np.int8) if a.dtype.kind == "b" else a for a in (x, y))
+    if x.dtype.kind in "iu" and y.dtype.kind in "iu":
+        return float(np.max(np.abs(x.astype(object) - y.astype(object))))
+    with np.errstate(invalid="ignore"):
+        diff = np.abs(x.astype(np.result_type(x, y)) - y)
+    return float(np.max(np.where(np.isnan(x) & np.isnan(y), 0.0, diff)))
 
 
 def _same(a: Any, b: Any) -> tuple[bool, float]:
@@ -654,10 +696,10 @@ def _same(a: Any, b: Any) -> tuple[bool, float]:
             return eq, 0.0 if eq else math.inf
         eq = (x.dtype == y.dtype and type(a) is type(b)
               and np.ascontiguousarray(x).tobytes() == np.ascontiguousarray(y).tobytes())
-        if x.size and x.dtype.kind in "biufc" and y.dtype.kind in "biufc":
-            with np.errstate(invalid="ignore"):
-                diff = np.abs(x.astype(np.result_type(x, y)) - y)
-            d = 0.0 if eq else float(np.max(np.where(np.isnan(x) & np.isnan(y), 0.0, diff)))
+        if eq:
+            d = 0.0
+        elif x.size and x.dtype.kind in "biufc" and y.dtype.kind in "biufc":
+            d = _max_abs_diff(x, y)
         else:
             d = 0.0 if eq else math.inf
         return bool(eq), d
@@ -706,7 +748,7 @@ def _reproduce_ivp(run: Run, solver: Any, record: bool, rec_opts: dict, code_sam
     solver.load_checkpoint(start)
     new = ivp_run(solver, inputs["nsteps"], None, None, record=rec_opts, cache=False) if record \
         else solver.run(inputs["nsteps"])
-    # the whole end state (review finding 24: X only was compared): X, every multistep history
+    # the whole end state (X only was compared): X, every multistep history
     # array and the clock, bit for bit
     with np.load(end) as z:
         ref = {k: z[k] for k in z.files if k != "meta"}

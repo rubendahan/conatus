@@ -1,7 +1,7 @@
 """Phase-space geometry: dense-output event location, parametrization of unstable
 manifolds (closed forms, resonance and degree refusals), connections (Lorenz homoclinic orbit as
 a connection), KS U+ manifolds, subspace restriction and the SH23 periodic fold / Maxwell point.
-Notes:"""
+"""
 import numpy as np
 import pytest
 

@@ -12,9 +12,9 @@ from ..discretize.plan import Plan
 from ..ir.problem import EVP
 from .._deprecation import renames
 from ..tolerances import REQUIRED
-from .evp import EVPResult, check_drift_tol, drift_filter, solve_dense, solve_sparse
+from .evp import (PENCIL_SHIFTS, EVPResult, check_drift_tol, drift_filter,
+                  numerically_singular_pencil, solve_dense, solve_sparse)
 
-PENCIL_SHIFT = 0.3719 + 0.6153j     # generic point for the regularity test of L + s M
 NUMERICAL_MAX = 2000
 #: Number of shift-invert modes when n_modes is not given (the v0.1 default of k).
 DEFAULT_N_MODES = 6
@@ -24,8 +24,10 @@ def pencil_rank(gm) -> str:
     """Rank report of the pencil L + s M, refusing singular pencils.
 
     L alone is singular whenever 0 is an eigenvalue (e.g. exactly at onset), so
-    the test is on the pencil at a generic shift s: a pencil singular for every s
-    (missing BC or gauge) has no well-defined spectrum.
+    the test is on the pencil at generic shifts s: a pencil singular for every s
+    (missing BC or gauge) has no well-defined spectrum. A regular pencil is singular at each of
+    its eigenvalues, so the pencil is refused only when every shift of ``PENCIL_SHIFTS`` is
+    rank-deficient. One regular shift establishes regularity to the rank tolerance.
     """
     from ..discretize.plan import RankError
     n, m = gm.L.shape
@@ -49,19 +51,11 @@ def pencil_rank(gm) -> str:
                  "(pb.add_bc places them)")
     if n > NUMERICAL_MAX:
         return f"pencil L + sM: structural rank {n}/{n}; numerical test skipped (size {n})"
-    nL = abs(gm.L).sum(axis=0).max() if gm.L.nnz else 1.0
-    nM = abs(gm.M).sum(axis=0).max() if gm.M.nnz else 1.0
-    A = (gm.L + PENCIL_SHIFT * (nL / max(nM, 1e-300)) * gm.M).toarray()
-    # two sweeps of row/column equilibration: the rank test must not see bad scaling
-    # (e.g. 1/Re in front of D^4 next to O(1) boundary rows) as singularity
-    for _ in range(2):
-        A = A / np.maximum(np.abs(A).max(axis=1, keepdims=True), 1e-300)
-        A = A / np.maximum(np.abs(A).max(axis=0, keepdims=True), 1e-300)
-    sv = np.linalg.svd(A, compute_uv=False)
-    ratio = sv[-1] / sv[0]
-    if ratio < n * np.finfo(float).eps:
+    singular, ratio = numerically_singular_pencil(gm.L.toarray(), gm.M.toarray(),
+                                                  n * np.finfo(float).eps)
+    if singular:
         raise RankError(f"EVP refused before solving [{gm.label}]: pencil L + sM numerically "
-                        f"singular at a generic s (sigma_min/sigma_max = {ratio:.1e})",
+                        f"singular at {len(PENCIL_SHIFTS)} independent s (sigma_min/sigma_max <= {ratio:.1e})",
                         where=f"group [{gm.label}]",
                         why="a null space present for every s: usually an undetermined constant "
                             "(pressure level, pure Neumann) or two conditions fixing the same "

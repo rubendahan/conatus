@@ -251,7 +251,7 @@ class Simulation:
                     warned += warn
             elif isinstance(v, numbers.Number):
                 # a non-finite number is refused like a non-finite array or callable value
-                # (review finding 30: initial(u=np.nan) started a NaN run)
+                # (initial(u=np.nan) started a NaN run)
                 if not np.isfinite(complex(v).real) or not np.isfinite(complex(v).imag):
                     raise InputTypeError(f"initial({k}={v!r}): not a finite number",
                                          why="the run would start from a NaN/inf state, stopped "
@@ -873,7 +873,7 @@ class Simulation:
             params[tname] = sv.t
         ev = sv.evaluator
         if comp.symmetry is not None and comp.model.geometry.sincos_coord is not None:
-            # integrals over the physical interval [a, b], not the doubled period (finding 7)
+            # integrals over the physical interval [a, b], not the doubled period
             ev = getattr(self, "_physical_ev", None)
             if ev is None or ev.domain is not sv.plan.domain:
                 from .sincos import physical_evaluator

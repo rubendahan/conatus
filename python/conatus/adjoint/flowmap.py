@@ -298,8 +298,7 @@ class FlowMap:
     (see the module docstring for the explicit choices ``f_transpose``, ``solves``, ``checkpoints``)."""
 
     #: True: Φ(X_0) puts the solver's state, clock and multistep history back after its run
-    #: (set by ``Simulation.flowmap``; review of the state audit, F6: ``sim.flowmap(T)(X0)``
-    #: moved the simulation to X_N). False (the expert default): they are left at X_N.
+    #: (set by ``Simulation.flowmap``). False (the expert default): they are left at X_N.
     restore: bool = False
 
     @renames("conatus.adjoint.flowmap:FlowMap.__init__")
@@ -494,7 +493,28 @@ class FlowMap:
             e[i] = 1
             J[:, i] = self._JF(X, e, t)
             e[i] = 0
+        self._require_complex_linear(X, J, t)
         return J
+
+    def _require_complex_linear(self, X: np.ndarray, J: np.ndarray, t: float | None) -> None:
+        """A matrix of columns J e_i represents F' only if F' is complex-linear: an antilinear term
+        (conj(u)) is real-linear and has no such matrix, and no bilinear transpose.
+        Tested on one direction with both parts nonzero."""
+        if not np.iscomplexobj(J):
+            return
+        rng = np.random.default_rng(0)
+        v = rng.standard_normal(self.n) + 1j * rng.standard_normal(self.n)
+        Jv = np.asarray(self._JF(X, v, t))
+        scale = max(float(np.abs(J).max(initial=0.0)) * float(np.abs(v).max()), 1e-300)
+        if float(np.abs(Jv - J @ v).max(initial=0.0)) > 1e-12 * scale:
+            from ..errors import UnsupportedError
+            raise UnsupportedError(
+                "FlowMap(f_transpose='dense'): the right-hand side is not complex-linear in the "
+                "state (a conj() term)",
+                why="the dense adjoint needs the matrix of F', and an antilinear F' has no matrix "
+                    "over the complex numbers",
+                fix="write the problem on the real and imaginary parts as separate real fields",
+                doc="docs/site/guide/dynamics/adjoint.md")
 
     def _JFT(self, X: np.ndarray, W: np.ndarray, t: float | None = None,
              cache: dict | None = None) -> np.ndarray:
@@ -994,8 +1014,11 @@ class FlowMap:
     # ------------------------------------------------------------------ physical adjoint
     @renames("conatus.adjoint.flowmap:FlowMap.vjp_physical")
     def vjp_physical(self, x0: np.ndarray, W: np.ndarray, weight) -> np.ndarray:
-        """Adjoint for the inner product ⟨a, b⟩_G = aᵀ G b: Φ† w = G⁻¹ Jᵀ G w.
-        Refused if G is singular (e.g. tau rows carry no weight). CPU backend only."""
+        """Adjoint for the inner product ⟨a, b⟩_G = aᴴ G b: Φ† w = G⁻¹ Jᴴ G w, so that
+        ⟨w, J v⟩_G = ⟨Φ† w, v⟩_G. :meth:`vjp` keeps its bilinear pairing on Cartesian states (it
+        returns Jᵀ z), so Jᴴ z = conj(Jᵀ conj(z)); on the sphere its real pairing is already the
+        Hermitian adjoint. Refused if G is singular (e.g. tau rows carry no weight). CPU backend
+        only."""
         if self.gpu:
             raise OptionError("vjp_physical: CPU backend only for now",
                               fix="build the FlowMap on a CPU solver for the physical adjoint", doc="docs/site/guide/dynamics/adjoint.md")
@@ -1009,7 +1032,10 @@ class FlowMap:
         if np.min(np.abs(d)) <= 1e-14 * np.max(np.abs(d)):
             raise OptionError("weight matrix numerically singular: physical adjoint refused",
                               fix="W must be the (symmetric positive definite) Gram matrix of the inner product")
-        return lu.solve(self.vjp(x0, G @ np.asarray(W, dtype=self.dtype)))
+        Gw = G @ np.asarray(W, dtype=self.dtype)
+        if self.pairing == "real":
+            return lu.solve(self.vjp(x0, Gw))
+        return lu.solve(np.conj(self.vjp(x0, np.conj(Gw))))
 
     # ------------------------------------------------------------------ explain
     def explain(self) -> str:

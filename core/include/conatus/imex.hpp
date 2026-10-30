@@ -101,7 +101,7 @@ public:
     // SBDF keeps the M X and F history of the previous steps: a second run() continues that
     // trajectory, so it must start from the state and time the previous run() returned (checked
     // bit for bit); a new trajectory needs reset() first. Reusing the integrator on another state
-    // used to mix the old history into the new run silently (review finding 42).
+    // used to mix the old history into the new run silently.
     double run(T* x, double t, long nsteps) {
         if (nsteps < 0) throw std::invalid_argument("ImexIntegrator.run: nsteps must be >= 0");
         if (!MXh_.empty() && !continues(x, t))

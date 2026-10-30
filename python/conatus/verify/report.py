@@ -25,6 +25,7 @@ CRITICAL_GROWTH_TOL = 1e-10     # growth of the tracked mode at the neutral valu
 
 @dataclass
 class Check:
+    """One measured verification check: its value, threshold, interpretation and pass/fail status."""
     name: str
     value: float
     threshold: float
@@ -47,6 +48,7 @@ class Check:
 
 @dataclass
 class VerificationReport:
+    """A collection of measured checks; ``manual_steps`` counts the checks that failed."""
     checks: list[Check] = dc_field(default_factory=list)
 
     @property
@@ -91,7 +93,7 @@ def _tail(pevp, x: np.ndarray, k: int = 4) -> float:
 
 
 def _vector(v, n: int, name: str) -> np.ndarray:
-    """``v`` as a 1-D vector of the pencil's size; a wrong size is refused (F4)."""
+    """``v`` as a 1-D vector of the pencil's size; a wrong size is refused."""
     from ..errors import InputTypeError
     a = np.asarray(v)
     if a.ndim != 1 or a.size != n:
@@ -119,7 +121,7 @@ def verify(pevp, mode, critical=None, *, rel_h: float = 1e-4) -> VerificationRep
     r.checks.append(Check("pencil regular", 0.0 if "regular" in pevp.rank_check else np.inf, 0.5,
                           pevp.rank_check))
     # both residuals are measured here, on the pencil at the mode's values and on the vectors the
-    # mode holds now (review 0.1.1, F4: the right residual was the one stored by track(), so a
+    # mode holds now (the right residual was the one stored by track(), so a
     # mode whose x was changed afterwards still printed the old 3e-19 and PASS)
     from ..errors import ParameterError
     try:

@@ -246,7 +246,7 @@ class CertifiedRoot:
                                     f"(to {WINDING_INTEGER_TOL:g})")
             else:
                 self.reasons.append(f"checked: winding number {winding:.3f}")
-        if not self.residual < residual_tol:
+        if not (np.isfinite(self.residual) and 0 <= self.residual < residual_tol):
             ok = False
             self.reasons.append(f"residual {self.residual:.2e} >= {residual_tol:.1e}")
         if len(self.convergence) < 2:
@@ -270,8 +270,8 @@ class CertifiedRoot:
                     self.reasons.append(f"root μ differs from the finest resolution of the study "
                                         f"by {gap:.2e} >= {convergence_tol:.1e} (relative): the "
                                         "study is not evidence for this root")
-        object.__setattr__(self, "status", "certified" if ok else "provisional")
-        object.__setattr__(self, "_evidence", self._evidence_key() if ok else None)
+        self.__dict__["status"] = "certified" if ok else "provisional"
+        self.__dict__["_evidence"] = self._evidence_key() if ok else None
         if ok and contrast is None and winding is None:
             self.reasons.append("certified on residual and resolution study only (no contrast "
                                 "or winding evidence passed)")
@@ -282,25 +282,29 @@ class CertifiedRoot:
 
     def _evidence_key(self) -> tuple:
         return (complex(self.mu), float(self.residual), int(self.iterations), bool(self.converged),
+                repr(sorted(self.params.items(), key=repr)),
                 tuple((k, complex(v)) for k, v in self.convergence.items()))
 
-    def __setattr__(self, name, value) -> None:
-        # a certified root whose root or evidence is changed is no longer certified (audit of
-        # 0.1.2, F05: the status survived replacing μ by NaN); certify() must run again
-        object.__setattr__(self, name, value)
-        if name in self._EVIDENCE_FIELDS:
-            self._check_evidence()
+    def __getattribute__(self, name):
+        # a certified root whose root or evidence changed is no longer certified (audit of 0.1.2,
+        # The status survived replacing μ by NaN; an in-place change of the
+        # study or the parameters was seen only by explain()). The status is compared on each read,
+        # so certify() must run again.
+        if name == "status":
+            object.__getattribute__(self, "_check_evidence")()
+        return object.__getattribute__(self, name)
 
     def _check_evidence(self) -> None:
         """Withdraw a certification whose root or evidence changed since certify()."""
-        if self.__dict__.get("status") != "certified":
+        d = object.__getattribute__(self, "__dict__")
+        if d.get("status") != "certified":
             return
         try:
-            same = self._evidence_key() == self.__dict__.get("_evidence")
+            same = self._evidence_key() == d.get("_evidence")
         except (TypeError, ValueError):
             same = False
         if not same:
-            object.__setattr__(self, "status", "provisional")
+            d["status"] = "provisional"
             self.reasons.append("root or evidence changed after certify(): certify again")
 
     def retract(self, why: str) -> None:

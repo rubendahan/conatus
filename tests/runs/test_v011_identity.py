@@ -39,7 +39,7 @@ def _burgers(nu, n=32):
     return m.simulate(n, scheme="RK443", dt=.002).initial(u=lambda x: np.sin(x) + .3 * np.cos(2 * x))
 
 
-# ------------------------------------------------------------------ finding 1: given-field data
+# ------------------------------------------------------------------ given-field data
 def test_two_forcings_have_two_cache_keys_and_no_hit(tmp_path):
     a, b = _forced(1), _forced(2)
     assert ivp_parts(a.solver, 5) != ivp_parts(b.solver, 5)
@@ -116,7 +116,7 @@ def test_unhashable_pointwise_function_refuses_the_cache(tmp_path):
     assert r.cache_report["hit"] is False and r.rec["cache_key"] is None
 
 
-# ------------------------------------------------------------------ finding 5: HDF5 append
+# ------------------------------------------------------------------ HDF5 append
 def test_append_refuses_another_computation(tmp_path):
     p = Path(tmp_path) / "analysis.h5"
     a = _burgers(.05)
@@ -195,7 +195,7 @@ def test_adoption_validates_every_file_before_deleting(tmp_path):
         "checkpoint_000000001.h5", "checkpoint_000000002.h5"]
 
 
-# ------------------------------------------------------------------ finding 22: provenance
+# ------------------------------------------------------------------ provenance
 def test_provenance_records_every_numerical_choice():
     from conatus import provenance
     s = _forced(1)

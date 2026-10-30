@@ -895,7 +895,7 @@ class SphereEvaluator:
             g = self._grid(self._ev(x.args[0], coeffs, params))
             if x.func not in ("exp", "log", "sin", "cos", "tanh", "sqrt", "abs", "sign"):
                 # a user function (m.function / pointwise) as on the disk and in Cartesian boxes
-                # (review finding 34: KeyError on the sphere)
+                # (KeyError on the sphere)
                 if not E.is_user_function(x.func):
                     raise KeyError(x.func)
                 xp = array_module(g.g)

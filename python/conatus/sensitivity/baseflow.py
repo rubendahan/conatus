@@ -21,12 +21,14 @@ Steady forcing (Marquet et al. 2008, §2.3): if the base state obeys a *declared
 for its variation, Σ_k b_k(y) ∂^k δU + δF = 0 with homogeneous boundary conditions, then
 δσ = ∫ H δF dy with H = −(L_bᵀ)⁻¹ G (the base-flow adjoint). It is computed on a Chebyshev tau
 discretization of the declared operator (size declared), as the covector δF ↦ δσ expressed in the
-exact Chebyshev Gram. See
+exact Chebyshev Gram.
 """
 from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
+
+from dataclasses import replace
 
 import numpy as np
 import sympy
@@ -110,8 +112,20 @@ class BaseFlowSensitivity:
         return complex(v)
 
     def discrete_shift(self, dU) -> complex:
-        """Exact derivative of the discrete eigenvalue along ``dU`` (sympy in Y)."""
-        return self.pair.shift_towards(self.factory(sympy.sympify(self.base) + sympy.sympify(dU)))
+        """Exact derivative of the discrete eigenvalue along ``dU`` (sympy in Y): the operator table
+        is differentiated along ``dU`` before it is discretized, so a table nonlinear in the base
+        contributes only its first-order term (factory(U + dU) - factory(U) would also hold the
+        higher-order ones)."""
+        eps = sympy.Symbol("epsilon_variation")
+        s1 = self.factory(sympy.sympify(self.base) + eps * sympy.sympify(dU))
+        for blk in ("G", "C"):
+            for key, op in getattr(s1, blk).items():
+                if any(sympy.diff(c, eps) != 0 for c in op.values()):
+                    raise UnsupportedError(f"block {blk}{key} depends on the base state: only the "
+                                           "state block A may")
+        tangent = {key: {k: sympy.diff(c, eps).subs(eps, 0) + sympy.sympify(c).subs(eps, 0)
+                         for k, c in op.items()} for key, op in s1.A.items()}
+        return self.pair.shift_towards(replace(s1, A=tangent))
 
     def explain(self) -> str:
         bt = ", ".join(f"{s} φ^({r}): {abs(B):.1e}" for (s, r), B in self.boundary.items())

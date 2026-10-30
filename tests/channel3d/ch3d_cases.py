@@ -7,7 +7,7 @@ Re = U_c h / nu. The mean flow is driven by a *declared* choice (no default):
   * ``flow_rate=Q``: scalar unknown ``P`` (mean pressure gradient) fixed by the constraint
     (1/(Lx Lz)) integ(u_x) = 2 Q, i.e. Q is the bulk velocity (laminar Poiseuille: Q = 2/3).
 Pressure by generalized tau, as in the 2D RB case: the top continuity
-row carries ey.tu2, ``tp`` is the pressure gauge. See"""
+row carries ey.tu2, ``tp`` is the pressure gauge."""
 from __future__ import annotations
 
 import numpy as np

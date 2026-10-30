@@ -23,7 +23,7 @@ def _kind(dtype) -> str:
 
 def _factor_dtype(mats: Sequence, dtype=None):
     """complex128 if ``dtype`` (when given) or any of ``mats`` is complex, else float64. Every
-    matrix counts (review finding 38: the batch looked at its first matrix only)."""
+    matrix counts (the batch looked at its first matrix only)."""
     if dtype is not None:
         return np.complex128 if _kind(dtype) == "Z" else np.float64
     return np.complex128 if any(_kind(m.dtype) == "Z" for m in mats) else np.float64

@@ -30,6 +30,7 @@ import numpy as np
 
 from ..errors import OptionError
 from .._repr import compact_repr
+from .norms import as_inexact
 
 __all__ = ["Dictionary", "monomials", "rbf", "EDMD", "edmd"]
 
@@ -51,7 +52,9 @@ class Dictionary:
                    f"; the state itself in columns {list(self.state_columns)}"))
 
     def __call__(self, x: np.ndarray) -> np.ndarray:
-        P = np.asarray(self.evaluate(np.asarray(x)))
+        # integer states and values are promoted: x^2 and the Gram products of int arrays wrap
+
+        P = as_inexact(np.asarray(self.evaluate(as_inexact(np.asarray(x)))))
         if P.ndim != 2 or P.shape[1] != len(self.names):
             raise OptionError(f"dictionary returned shape {P.shape}, expected (m, {len(self.names)})")
         return P
@@ -76,18 +79,21 @@ def monomials(d: int, degree: int) -> Dictionary:
 
 
 def rbf(centers: np.ndarray, epsilon: float) -> Dictionary:
-    """[1, x_1 … x_d, exp(−ε² ‖x − c_k‖²) for each center] (declared centers and shape ε)."""
+    """[1, x_1 … x_d, exp(−ε² ‖x − c_k‖²) for each center] (declared centers and shape ε);
+    ‖·‖ is the Hermitian norm, so complex states and centers give real Gaussians in (0, 1]."""
     from ..errors import InputTypeError, check_real
     # a finite shape > 0 (exp(-eps^2 r^2) is even in eps: a negative or NaN one was accepted,
     # audit inputs) and centers of shape (K, d)
     epsilon = check_real(epsilon, "epsilon", "rbf()", positive=True)
-    C = np.asarray(centers, float)
+    C = np.asarray(centers)
+    C = C if np.iscomplexobj(C) else C.astype(float)     # complex centers used to lose Im (a cast)
     if C.ndim != 2 or not np.all(np.isfinite(C)):
         raise InputTypeError(f"rbf(centers): an array (K, d) of finite points, got shape {C.shape}")
     d = C.shape[1]
 
     def ev(x):
-        r2 = ((x[:, None, :] - C[None, :, :]) ** 2).sum(-1)
+        # |z|^2, not z^2: x = i must give exp(-1) for the center 0
+        r2 = (np.abs(x[:, None, :] - C[None, :, :]) ** 2).sum(-1)
         return np.concatenate([np.ones((x.shape[0], 1)), x, np.exp(-epsilon ** 2 * r2)], axis=1)
 
     names = ["1"] + [f"x{i}" for i in range(d)] + [f"rbf{k}" for k in range(C.shape[0])]
@@ -124,7 +130,10 @@ class EDMD:
 def edmd(X: np.ndarray, Y: np.ndarray, *, dictionary: Dictionary, rcond: float,
          dt: float | None) -> EDMD:
     """EDMD of the pairs (X[j], Y[j]) (arrays m × d) on the declared ``dictionary``."""
-    X, Y = np.asarray(X), np.asarray(Y)
+    X, Y = as_inexact(np.asarray(X)), as_inexact(np.asarray(Y))
+    if dt is not None:                # one policy with dmd(): a finite Δt > 0
+        from ..errors import check_real
+        dt = check_real(dt, "dt", "edmd()", positive=True)
     if X.shape != Y.shape or X.ndim != 2:
         raise OptionError("X and Y must be (m × d) arrays of the same shape")
     if not rcond > 0:

@@ -79,7 +79,7 @@ def test_f4_coefficient_changed_in_place_is_new_data():
 
 @pytest.mark.parametrize("geometry", ["flat", "mapped"])
 def test_f4_same_new_coefficient_reuses_the_rebuilt_plan(geometry):
-    """Numerics review (cost of finding 4): solve(data) with the same new coefficient again
+    """Numerics review (cost): solve(data) with the same new coefficient again
     reuses the plan rebuilt for it (one slot) instead of assembling the operator every call."""
     if geometry == "mapped":
         geo = cn.MappedBox(x=cn.periodic(2 * np.pi), z=cn.between(bottom=0., top=1.))

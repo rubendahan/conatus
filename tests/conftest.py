@@ -23,7 +23,7 @@ if os.environ.get("CN_ASSERT_MARGINS"):
 
 @pytest.fixture
 def rng(request):
-    """A random generator of the test's own, seeded from its node id (review finding 100). A module-level generator made every draw depend on which tests of the module ran
+    """A random generator of the test's own, seeded from its node id. A module-level generator made every draw depend on which tests of the module ran
     before in the same process (xdist distribution, ``-k``), so a failure did not reproduce alone;
     tests/core/test_test_hygiene.py refuses module-level generators."""
     return np.random.default_rng(zlib.crc32(request.node.nodeid.encode()))

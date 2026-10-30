@@ -1,5 +1,5 @@
 """Unstable manifolds of equilibria by the parametrization method.
-Notes: Cabré, Fontich & de la Llave (2003, 2005); Haro,
+Cabré, Fontich & de la Llave (2003, 2005); Haro,
 Canadell, Figueras, Luque & Mondelo, *The Parameterization Method for Invariant Manifolds*
 (Springer 2016), ch. 2.
 
@@ -39,6 +39,9 @@ from .._deprecation import renames
 from .._repr import compact_repr
 
 __all__ = ["UnstableManifold", "unstable_manifold", "polynomial_degree_defect", "globalize"]
+
+#: radii sampled by validity_radius before its bisection
+RADIUS_SCAN = 64
 
 
 def polynomial_degree_defect(system, x0, degree: int, *, par=None, h: float = 0.5, seed: int = 0) -> float:
@@ -141,10 +144,19 @@ class UnstableManifold:
         return max(self.defect(s) for s in self.circle(rho, m))
 
     def validity_radius(self, tol: float, *, m: int, rho_max: float) -> float:
-        """Largest ρ ≤ ρ_max (bisection, 40 halvings) with max defect on |s| = ρ below ``tol``."""
+        """Largest ρ ≤ ρ_max found with max defect on |s| = ρ below ``tol``: the largest admissible
+        radius of a uniform scan of ``RADIUS_SCAN`` radii, refined by bisection (40 halvings) up
+        to the next radius of the scan. The defect need not be monotone in ρ (a
+        bisection from 0 alone stopped at the lowest edge it met); an admissible interval
+        narrower than the scan spacing can still be missed, so this is a sampled answer."""
         if self.max_defect(rho_max, m) <= tol:
             return float(rho_max)
         lo, hi = 0.0, float(rho_max)
+        for j in range(RADIUS_SCAN - 1, 0, -1):
+            rho = float(rho_max) * j / RADIUS_SCAN
+            if self.max_defect(rho, m) <= tol:
+                lo, hi = rho, rho + float(rho_max) / RADIUS_SCAN
+                break
         for _ in range(40):
             mid = 0.5 * (lo + hi)
             if self.max_defect(mid, m) <= tol:

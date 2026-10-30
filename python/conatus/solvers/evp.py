@@ -317,6 +317,59 @@ def _require_mass(M, L=None) -> None:
                             "(see EVP.check())")
 
 
+#: independent points of the regularity test of L + s M (times ||L||/||M||). A regular pencil is
+#: singular at its eigenvalues, so one singular sample proves nothing.
+PENCIL_SHIFTS = (0.3719 + 0.6153j, -0.5827 + 0.2391j, 0.1643 - 0.8761j)
+
+
+def pencil_sigma_ratio(L: np.ndarray, M: np.ndarray, shift: complex) -> float:
+    """sigma_min / sigma_max of L + s M at s = shift ||L||/||M||, rows and columns equilibrated
+    (two sweeps), so that bad scaling is not read as singularity."""
+    nL, nM = _norm1(L), _norm1(M)
+    A = np.asarray(L + shift * (nL / max(nM, 1e-300) if nL > 0 else 1.0) * M, dtype=complex)
+    for _ in range(2):
+        A = A / np.maximum(np.abs(A).max(axis=1, keepdims=True), 1e-300)
+        A = A / np.maximum(np.abs(A).max(axis=0, keepdims=True), 1e-300)
+    sv = np.linalg.svd(A, compute_uv=False)
+    return float(sv[-1] / sv[0]) if sv.size and sv[0] > 0 else 0.0
+
+
+def numerically_singular_pencil(L: np.ndarray, M: np.ndarray, tol: float) -> tuple[bool, float]:
+    """(L + s M rank-deficient at every shift of PENCIL_SHIFTS, the largest ratio). The rank is
+    numerical: the answer holds to the tolerance ``tol`` on sigma_min / sigma_max."""
+    best = 0.0
+    for s in PENCIL_SHIFTS:
+        best = max(best, pencil_sigma_ratio(L, M, s))
+        if best >= tol:
+            return False, best
+    return True, best
+
+
+def refuse_singular_pencil(L: np.ndarray, M: np.ndarray, a: np.ndarray, b: np.ndarray,
+                           label: str = "") -> None:
+    """Refuse a pencil whose determinant vanishes for every s.
+
+    A QZ pair with alpha and beta both at rounding level of the pencil is indeterminate, neither a
+    finite nor an infinite eigenvalue. Such a pair is only a candidate: a regular pencil near
+    singularity can show one, so the sampled rank of L + s M decides. A regular pencil with
+    infinite eigenvalues has beta = 0 and alpha != 0, and is not concerned."""
+    from ..errors import RankError
+    n = a.size
+    eps = np.finfo(float).eps
+    size = max(float(np.abs(a).max(initial=0.0)), float(np.abs(b).max(initial=0.0)))
+    if not n or not np.any((np.abs(a) <= 100 * n * eps * size) & (np.abs(b) <= 100 * n * eps * size)):
+        return
+    singular, ratio = numerically_singular_pencil(L, M, 10 * n * eps)
+    if singular:
+        raise RankError(f"pencil L + s M{f' [{label}]' if label else ''} is singular: "
+                        f"sigma_min/sigma_max <= {ratio:.1e} at {len(PENCIL_SHIFTS)} independent s",
+                        why="its determinant vanishes for every s, so it has no discrete spectrum: "
+                            "QZ returns an indeterminate pair alpha = beta = 0, and the other "
+                            "pairs depend on rounding",
+                        fix="an unknown is undetermined or two equations are dependent: add the "
+                            "missing condition or gauge")
+
+
 def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
     """All eigenvalues by the QZ algorithm (scipy.linalg.eig), infinite ones counted and removed."""
     Ld = L.toarray() if sp.issparse(L) else np.asarray(L)
@@ -338,6 +391,7 @@ def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
         VL = VL / r            # y^H (L + s M) = 0  <=>  (D^-1 y)^H D (L + s M) = 0, D = 1/r
     else:
         VL, VR = None, vecs[0]
+    refuse_singular_pencil(Le, Me, a, b, label)
     finite, note, amb = _finite_eigenvalues(a, b, Le, Me, Md)
     w = a[finite] / b[finite]
     V = VR[:, finite]

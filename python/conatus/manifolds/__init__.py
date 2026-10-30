@@ -1,7 +1,7 @@
 """Phase-space geometry: trajectories with declared dense output, Poincaré sections and
 first-return maps, unstable manifolds of equilibria (parametrization method), connections
 between equilibria (shooting with projection boundary conditions), unstable manifolds of periodic
-orbits (linear Floquet seeding) and localized-state snaking. Notes:"""
+orbits (linear Floquet seeding) and localized-state snaking."""
 from .connections import (Connection, connection_vs_T, equilibrium_connection, find_connection,
                           projection_gap, scan_connection, unstable_left_basis)
 from .ecs_system import ecs_integrator, ecs_system

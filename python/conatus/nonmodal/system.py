@@ -26,7 +26,7 @@ direct and adjoint conditions are imposed (``show_green_identity``). Nothing is 
 Discretization goes through the IR (tau + lifts, discretization plan): ``discretize(N)`` returns the
 descriptor pencil M x' + L x = 0 with the exact Chebyshev Gram of the energy. Its *discrete*
 adjoint W⁻¹ Lᴴ W ("discretize, then optimize") differs at finite N; ``tests/nonmodal`` checks that
-both converge to the same quantities. See
+both converge to the same quantities.
 """
 from __future__ import annotations
 

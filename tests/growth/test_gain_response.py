@@ -1,4 +1,4 @@
-"""Finding 93: the low-level optimal response was normalised instead of
+"""The low-level optimal response was normalised instead of
 propagated (u_resp must be Φ v_opt, of energy G)."""
 import numpy as np
 

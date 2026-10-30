@@ -12,6 +12,8 @@ from __future__ import annotations
 import argparse
 import sys
 
+DOCS_URL = "https://rubendahan.github.io/conatus/docs"
+
 
 def version_line() -> str:
     """``conatus 0.1.0 (compiled core 0.1.0, Python 3.12.3)``: the first line of a bug report.
@@ -73,7 +75,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _docs(page: str) -> int:
-    """Print where the guide page ``page`` can be read; exit 1 if it is not found."""
+    """Print where the guide page ``page`` can be read: its source in a checkout (exit 1 if there is
+    no such page), its address on the documentation site otherwise."""
     from pathlib import Path
     page = page.split("#", 1)[0].removesuffix(".md").strip("/")
     root = Path(__file__).resolve().parents[2] / "docs" / "site"     # a source tree
@@ -88,10 +91,10 @@ def _docs(page: str) -> int:
         from .errors import did_you_mean
         print(f"no guide page {page!r} in {root}." + did_you_mean(page, pages))
         return 1
-    print(f"this installation has no copy of the user guide: the page {page!r} is "
-          f"docs/site/{page}.md in the Conatus source tree (the website is built from it with "
-          "docs/site/build.sh); no public site yet")
-    return 1
+    print(f"{DOCS_URL}/{page}.html")
+    print("(this installation has no copy of the guide; the address follows the page name and "
+          "was not checked offline)")
+    return 0
 
 
 if __name__ == "__main__":

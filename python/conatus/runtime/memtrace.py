@@ -78,7 +78,7 @@ def trace_device_memory(make_solver, set_state, steps: int, *, warmup: int = 0,
     (run one configuration per process).
 
     ``collect_cycles_after_F=True`` runs ``gc.collect()`` when ``FusedRHS.evaluate`` returns: the
-    derivative memo (a reference cycle, see) is then freed where the
+    derivative memo (a reference cycle) is then freed where the
     one-line fix would free it. This is a *declared measurement mode* (it emulates the fixed
     runtime); the default measures the runtime as it is."""
     import gc

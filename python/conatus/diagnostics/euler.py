@@ -167,10 +167,21 @@ def vector_potential(grid: Grid, u: Sequence[Any]):
     if grid.ndim != 3:
         raise CoordinateError("vector_potential: 3D grid only")
     xp = grid.xp
-    k = _kvec(grid)
+    full = _kvec(grid)
+    # the wavenumbers of the first derivative of grid.d: zero at the Nyquist mode of an even axis,
+    # so that the curl of grid.d returns u at the mixed Nyquist modes too
+    k = [xp.where(xp.abs(q) == np.pi * ax.n / ax.L, 0.0 * q, q) if ax.n % 2 == 0 else q
+         for q, ax in zip(full, grid.axes, strict=True)]
     k2 = k[0]**2 + k[1]**2 + k[2]**2
-    k2 = xp.where(k2 == 0, 1.0, k2)
     U = [xp.fft.fftn(c) for c in u]
+    lost = (k2 == 0) & (full[0]**2 + full[1]**2 + full[2]**2 != 0)
+    top = max(float(xp.max(xp.abs(c))) for c in U)
+    if max(float(xp.max(xp.abs(c * lost))) for c in U) > 1e-12 * top:
+        raise CoordinateError("vector_potential: u has energy in a mode made of Nyquist "
+                              "wavenumbers only, which no curl on this grid can produce",
+                              why="grid.d sets the odd derivative of a Nyquist mode to zero",
+                              fix="filter that mode or use a finer grid")
+    k2 = xp.where(k2 == 0, 1.0, k2)
     A = [1j * (k[1] * U[2] - k[2] * U[1]) / k2,
          1j * (k[2] * U[0] - k[0] * U[2]) / k2,
          1j * (k[0] * U[1] - k[1] * U[0]) / k2]

@@ -128,8 +128,8 @@ class ContinuationSettings:
     # explain(); an event whose secant stops outside its tolerance is flagged converged=False.
     event_max_iterations: int = 30   # secant budget per event (each iterate = one corrected point)
     fold_tol: float = 1e-12          # fold located when |t_p| <= fold_tol (t is a unit vector)
-    crossing_tol: float = 1e-11      # crossing located when |Re λ| <= crossing_tol · max(1, |λ|)
-    hopf_imag_tol: float = 1e-8      # Hopf if both near-threshold |Im λ| > hopf_imag_tol · max(1, |λ|)
+    crossing_tol: float = 1e-11      # crossing located when |Re λ| <= crossing_tol · max(|λ|, 1e-3 median |λ|)
+    hopf_imag_tol: float = 1e-8      # Hopf if both near-threshold |Im λ| > hopf_imag_tol · max(|λ|, 1e-3 median |λ|)
 
     def __post_init__(self) -> None:
         # OptionError is a ValueError: the historical ``except ValueError`` keeps working
@@ -184,8 +184,8 @@ class ContinuationSettings:
                 f"  events: secant budget event_max_iterations = {self.event_max_iterations}"
                 f"{d('event_max_iterations')}, fold_tol = {self.fold_tol:g}{d('fold_tol')} "
                 f"(|t_p|), crossing_tol = {self.crossing_tol:g}{d('crossing_tol')} "
-                f"(|Re λ| / max(1, |λ|)), hopf_imag_tol = {self.hopf_imag_tol:g}"
-                f"{d('hopf_imag_tol')} (|Im λ| / max(1, |λ|))")
+                f"(|Re λ| / max(|λ|, 1e-3 median |λ|)), hopf_imag_tol = {self.hopf_imag_tol:g}"
+                f"{d('hopf_imag_tol')} (|Im λ| / max(|λ|, 1e-3 median |λ|))")
 
 
 # v0.1 positional order, accepted for one cycle with a DeprecationWarning (conatus._deprecation)
@@ -418,10 +418,18 @@ class PseudoArclength:
         return br
 
     def _unstable(self, x: np.ndarray, p: float) -> int | None:
-        """Number of eigenvalues with Re λ > marginal_tol (marginal ones are not counted)."""
+        """Number of eigenvalues with Re λ > marginal_tol (marginal ones are not counted). None when
+        there is no callback, or when it returned a non-finite eigenvalue: the count is then unknown
+        (warned once per branch point, and no stability event is read across that point)."""
         if self.eigen is None:
             return None
         ev = np.asarray(self.eigen(x, p))
+        if not np.all(np.isfinite(ev)):
+            from ..errors import CorrectnessWarning, _warn_user
+            _warn_user(f"continuation stability at p = {p:.6g}: the eigenvalue callback returned "
+                       f"{np.count_nonzero(~np.isfinite(ev))} non-finite value(s); the unstable "
+                       "count of this point is unknown (unstable = None)", CorrectnessWarning)
+            return None
         return int(np.sum(ev.real > self.marginal_tol))
 
     def explain(self) -> str:
@@ -450,8 +458,8 @@ class PseudoArclength:
                                    f"{self.cfg._d('fold_tol')}"))
         if a.unstable is not None and b.unstable is not None and a.unstable != b.unstable:
             d = b.unstable - a.unstable
-            kind = "hopf" if abs(d) == 2 and self._complex_crossing(a, b) else "real crossing"
             p_c, loc, conv, why = self._locate_crossing(a, b)
+            kind = "hopf" if abs(d) == 2 and self._complex_crossing(a, b) else "real crossing"
             br.events.append(Event(kind, (i, i + 1), p_c,
                                    f"#Re>0: {a.unstable} -> {b.unstable}; {loc}", conv, why,
                                    f"|Re λ| <= crossing_tol = {self.cfg.crossing_tol:g}"
@@ -460,11 +468,22 @@ class PseudoArclength:
                                    f"{self.cfg._d('hopf_imag_tol')} x max(|λ|, 1e-3 median |λ|)"))
 
     def _complex_crossing(self, a: BranchPoint, b: BranchPoint) -> bool:
+        """Is the crossing mode complex? Read at the located point when the location converged: the
+        eigenvalue at the threshold there is the crossing mode. Otherwise at the end of the bracket
+        with more unstable modes: the |d| unstable eigenvalues closest to the axis. A stable
+        eigenvalue closer to the axis than the pair is not the crossing mode."""
         from .._scales import spectral_floor
-        ev = np.asarray(self.eigen(b.x, b.p))
-        near = ev[np.argsort(np.abs(ev.real))[:2]]
-        return bool(np.all(np.abs(near.imag) > self.cfg.hopf_imag_tol
-                           * max(np.max(np.abs(near)), spectral_floor(ev))))
+        lam = getattr(self, "_located_lambda", None)
+        if lam is not None:
+            ev = np.asarray(self.eigen(*self._located_point), dtype=complex)
+            near = np.array([lam])
+        else:
+            hi = a if a.unstable > b.unstable else b
+            ev = np.asarray(self.eigen(hi.x, hi.p), dtype=complex)
+            pos = ev[ev.real > self.marginal_tol]
+            near = pos[np.argsort(pos.real)[:abs(a.unstable - b.unstable)]]
+        return bool(near.size and np.all(np.abs(near.imag) > self.cfg.hopf_imag_tol
+                                         * max(np.max(np.abs(near)), spectral_floor(ev))))
 
     def _n_marginal(self, x: np.ndarray, p: float) -> int:
         """Number of eigenvalues with |Re λ| <= marginal_tol (persistent marginal modes)."""
@@ -484,6 +503,8 @@ class PseudoArclength:
         marginal_tol) read a wrong value and the secant exhausted its budget;
         tests/exact/test_exact_continuation.py.)"""
         ev = np.asarray(self.eigen(x, p), dtype=complex)
+        if not np.all(np.isfinite(ev)):
+            return float("nan"), complex("nan")
         from .._scales import spectral_floor
         self._spectral_floor = spectral_floor(ev)       # the crossing test's floor (unit of λ)
         marg = np.abs(ev.real) <= self.marginal_tol
@@ -502,9 +523,13 @@ class PseudoArclength:
 
     def _locate_crossing(self, a: BranchPoint, b: BranchPoint
                          ) -> tuple[float | None, str, bool, str]:
-        """Secant in arclength on Re λ_threshold(s) = 0 (each trial = one corrected point).
-        Returns (p, detail, converged, reason); converged iff |Re λ| <= crossing_tol · max(1, |λ|)."""
+        """Bracketed root of Re λ_threshold(s) in arclength (Illinois, each trial = one corrected
+        point). That eigenvalue, of a fixed rank in decreasing real part, is continuous in s, but
+        it is flat while another mode holds the rank: a free secant stalls there,
+        the bracket does not. Returns (p, detail, converged, reason); converged iff
+        |Re λ| <= crossing_tol · max(1, |λ|)."""
         cfg = self.cfg
+        self._located_lambda, self._located_point = None, None
         m = min(a.unstable, b.unstable)
         za = np.concatenate([a.x, [a.p]])
         s0, s1 = 0.0, b.s - a.s
@@ -515,8 +540,12 @@ class PseudoArclength:
             return None, "not located (threshold eigenvalue not bracketed)", False, "not bracketed"
         best, why = (None, np.inf, 0j), f"secant budget event_max_iterations = {cfg.event_max_iterations} exhausted"
         conv = False
+        w0, w1, side = f0, f1, 0                      # Illinois weights
         for k in range(cfg.event_max_iterations):
-            s2 = s1 - f1 * (s1 - s0) / (f1 - f0) if f1 != f0 else 0.5 * (s0 + s1)
+            s2 = s1 - w1 * (s1 - s0) / (w1 - w0) if w1 != w0 else 0.5 * (s0 + s1)
+            if not min(s0, s1) < s2 < max(s0, s1):
+                # an end of the bracket that is exactly on the root stays the iterate
+                s2 = s1 if w1 == 0 else s0 if w0 == 0 else 0.5 * (s0 + s1)
             try:
                 z, rel, _ = self.correct(za + s2 * a.tangent, a.tangent)
             except (RuntimeError, FloatingPointError, np.linalg.LinAlgError) as e:
@@ -527,10 +556,16 @@ class PseudoArclength:
                 why = f"non-finite threshold eigenvalue at secant iterate {k}"
                 break
             best = (float(z[-1]), abs(f2), lam)
-            s0, f0, s1, f1 = s1, f1, s2, f2
             if abs(f2) <= cfg.crossing_tol * max(abs(lam), self._spectral_floor):
                 conv, why = True, ""
+                self._located_lambda, self._located_point = lam, (z[:-1], float(z[-1]))
                 break
+            if f2 * f1 < 0:                           # the root is between s1 and s2
+                s0, f0, w0, side = s1, f1, f1, 0
+            else:                                     # same side as s1: keep s0, halve its weight
+                w0 = f0 if side == 0 else 0.5 * w0
+                side = 1
+            s1, f1, w1 = s2, f2, f2
         if best[0] is None:
             return None, f"not located ({why})", False, why
         return (best[0], f"|Re λ| = {best[1]:.1e} at the located point, Im λ = {best[2].imag:.6g}",

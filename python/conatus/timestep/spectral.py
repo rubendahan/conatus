@@ -32,6 +32,23 @@ from . import xp_transforms as XT
 __all__ = ["SpectralEvaluator", "SpectralError"]
 
 
+def integration_weights(b: Basis) -> np.ndarray:
+    """Row w of a basis with integral = sum_n w[n] c[n] over the whole axis. Only the Fourier
+    series and the Legendre polynomials have all their weight on the first coefficient; every
+    batched, fused and tangent path takes the weights from here."""
+    fam = family_of(b)
+    if fam is not None:
+        return np.asarray(fam.integ_weights())
+    w = np.zeros(b.size)
+    if isinstance(b, (RealFourier, ComplexFourier)):
+        w[0] = b.length
+        return w
+    n = np.arange(b.size, dtype=float)                 # Chebyshev T_n
+    even = n % 2 == 0
+    w[even] = 2.0 / (1.0 - n[even] ** 2) * (b.length / 2)
+    return w
+
+
 def _ncomp_shape(e: E.Expr) -> tuple[int, ...]:
     return tuple(cs.dim for cs in e.tensorsig)
 
@@ -184,18 +201,7 @@ class SpectralEvaluator:
         if self._gpu:
             A = self._host(("integ", coord), b, coord, lambda r, e: r._integrate(e, coord, 0))
             return self._apply_1d(("integ", coord), A, c, ax)
-        cm = np.moveaxis(c, ax, 0)
-        fam = family_of(b)
-        if fam is not None:
-            val = np.tensordot(fam.integ_weights(), cm, axes=(0, 0))
-        elif isinstance(b, (RealFourier, ComplexFourier)):
-            val = cm[0] * b.length
-        else:
-            n = np.arange(b.size, dtype=float)
-            w = np.zeros(b.size)
-            even = n % 2 == 0
-            w[even] = 2.0 / (1.0 - n[even] ** 2) * (b.length / 2)
-            val = np.tensordot(w, cm, axes=(0, 0))
+        val = np.tensordot(integration_weights(b), np.moveaxis(c, ax, 0), axes=(0, 0))
         return np.expand_dims(val, ax)
 
     def _interp(self, c: np.ndarray, coord, pos: float, rank: int, side: str | None = None) -> np.ndarray:

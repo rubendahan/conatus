@@ -14,7 +14,7 @@ Run: python t08_polar.py   (under a minute of CPU)
 """
 # [imports]
 import numpy as np
-from scipy.optimize import brentq
+from scipy.optimize import brentq, minimize_scalar
 from scipy.special import jn_zeros
 
 import conatus as cn
@@ -58,8 +58,17 @@ def couette_growth(Re, k, N=24):
 
 
 Re_c = {k: brentq(lambda Re, k=k: couette_growth(Re, k), 60.0, 80.0, xtol=1e-6) for k in (3.10, 3.16, 3.22)}
-kc = min(Re_c, key=Re_c.get)
 print("neutral Re(k):", {k: round(v, 4) for k, v in Re_c.items()})
+
+
+def neutral_re(k):
+    return brentq(lambda Re: couette_growth(Re, k), 60.0, 80.0, xtol=1e-8)
+
+
+# Critical wavenumber: the minimum of Re(k) over the bracket of the three samples.
+best = minimize_scalar(neutral_re, bounds=(3.10, 3.22), method="bounded", options={"xatol": 1e-4})
+kc, Re_kc = float(best.x), float(best.fun)
+print(f"minimum of Re(k): k_c = {kc:.3f}, Re_c = {Re_kc:.4f}")
 # [/couette]
 
 # [check]
@@ -69,7 +78,7 @@ MT_CENTRE, MT_WALL, MT_K0 = -0.0708640053 + 0.8467498288j, -0.0911426036 + 0.469
 for ref in (MT_CENTRE, MT_WALL):                    # Table 1 lists the conjugate (see the page)
     assert np.min(np.abs(res.values - np.conj(ref))) < 1e-10
 assert abs(s10 - MT_K0) < 1e-10 and res.residuals.max() < 1e-13
-assert kc == 3.16 and abs(Re_c[kc] - 68.19) < 0.01   # published to 4 digits
+assert abs(kc - 3.16) < 0.005 and abs(Re_kc - 68.19) < 0.005   # to the published digits
 print(f"OK: drum = Bessel zeros; pipe eigenvalues to 1e-10 of Meseguer & Trefethen; "
-      f"Re_c(3.16) = {Re_c[kc]:.4f}")
+      f"Re_c(3.16) = {Re_c[3.16]:.4f}; k_c = {kc:.3f}")
 # [/check]

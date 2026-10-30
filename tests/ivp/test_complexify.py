@@ -60,23 +60,26 @@ def test_complexify_refuses_broken_structure():
 def test_complexified_trajectory_matches_real_path():
     """20 RK443 steps of psi-theta RB: physical fields agree to rounding. (The tau variables
     of the 4th-order psi equation amplify rounding by ~1e7 in either path, so they are not
-    compared; see)"""
+    compared)"""
     from conatus.timestep import IVPSolver
     plan, f = rayleigh_benard_2d_psi_theta(32, 24, 1e5)
     out = []
-    # the third run: the real path from an initial state perturbed by 1e-15 (relative), whose move
+    # the other runs: the real path from an initial state perturbed by 1e-15 (relative), whose move
     # is the rounding level of these 20 steps; the complexified path must agree within 10x of it
     # (rule, as test_m0_projection; the former fixed 1e-11 was met at 5.6e-13, margin 2.8,
-    # run)
-    for cx, noise in ((False, 0.0), (True, 0.0), (False, 1e-15)):
+    # run). The level is the largest of 8 perturbations: one draw spans
+    # a factor of 13 (2.8e-13 to 3.6e-12 for psi on 12 seeds), and the audit of 0.2.1 (N07) saw
+    # one draw fail the rule at a ratio of 11.2 on another machine.
+    for cx, noise, seed in ((False, 0.0, 0), (True, 0.0, 0),
+                            *((False, 1e-15, seed) for seed in range(8))):
         s = IVPSolver(plan, "RK443", 1e-4, complexify=cx)
         s.set_state({f["theta"]: lambda x, z: 1e-2 * np.sin(np.pi * z) * np.cos(np.pi * x)
                      + 1e-3 * np.sin(2 * np.pi * z) * np.sin(3 * np.pi * x)})
-        s.X = s.X * (1 + noise * np.random.default_rng(0).standard_normal(s.X.size))
+        s.X = s.X * (1 + noise * np.random.default_rng(seed).standard_normal(s.X.size))
         s.run(20)
         out.append([s.coeffs("psi"), s.coeffs("theta")])
-    for a, b, p in zip(*out, strict=True):
-        d_rnd = np.abs(a - p).max() / np.abs(a).max()
+    for a, b, *ps in zip(*out, strict=True):
+        d_rnd = max(np.abs(a - p).max() for p in ps) / np.abs(a).max()
         assert np.abs(a - b).max() / np.abs(a).max() <= 10 * max(d_rnd, 1e-15), d_rnd
         assert d_rnd < 1e-9                   # sensitivity: a 1e-6 error of a path shows above it
 

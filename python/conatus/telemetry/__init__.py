@@ -1,6 +1,6 @@
 """Telemetry for the Conatus Studio: protocol v1, non-blocking emitter, spool reader.
 
-See The computation creates a :class:`Telemetry` explicitly and
+ The computation creates a :class:`Telemetry` explicitly and
 passes its callbacks; the Studio server (``studio/server.py``) reads the spool.
 """
 from .film import FilmIndex

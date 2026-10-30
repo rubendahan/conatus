@@ -228,7 +228,7 @@ class SymmetryBreakingError(SymmetryError):
 
 class MissingFileError(ConatusError, FileNotFoundError):
     """A file to read (an output, a checkpoint) does not exist, or is a directory. Derives from
-    ``FileNotFoundError``, which these reads raised before (N3)."""
+    ``FileNotFoundError``."""
 
     doc = _doc("missingfileerror")
 

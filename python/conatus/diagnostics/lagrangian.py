@@ -238,7 +238,7 @@ class GridVelocity:
     def set(self, u, t: float) -> None:
         """Add the snapshot (u at time t); keeps the last two."""
         # a copy: the snapshot must not follow later in-place changes of the caller's array
-        # (finding 68: asarray kept a view of a float array)
+        # (asarray kept a view of a float array)
         U = self.xp.stack([self.xp.asarray(c, dtype=float) for c in u]) if not hasattr(u, "shape") \
             else self.xp.array(u, dtype=float, copy=True)
         if U.shape != (self.d,) + self.grid.shape:
@@ -399,6 +399,8 @@ class Particles:
                 raise ConvergenceError(f"{n_bad} non-finite particle coordinates at t = {self.t + dt:g}",
                                        why="the velocity returned non-finite values",
                                        fix="check the flow field; the particles were not advanced")
+            if self.boundary == "raise":                 # the final state too, before it is kept
+                _bounds_policy(self.axes, xn, "raise", [0], self.xp)
             if self.inertia is None:
                 self.x = s
             else:
@@ -431,7 +433,7 @@ class PathRecorder:
 
     def __init__(self, particles: Particles, *, every: int, max_points: int) -> None:
         from ..errors import check_count
-        # integers, never truncated (finding 66)
+        # integers, never truncated
         self.p = particles
         self.every = check_count(every, "every", "PathRecorder")
         self.max_points = check_count(max_points, "max_points", "PathRecorder", minimum=2)
@@ -482,7 +484,7 @@ class Emitter:
         if mode not in ("streak", "timeline"):
             raise OptionError(f"mode {mode!r}: 'streak' or 'timeline'")
         from ..errors import check_count
-        # integers, never truncated (finding 66)
+        # integers, never truncated
         emit_every = check_count(emit_every, "emit_every", "Emitter")
         capacity = check_count(capacity, "capacity", "Emitter")
         self.xp = xp if xp is not None else getattr(velocity, "xp", np)

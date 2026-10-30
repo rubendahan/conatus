@@ -1,6 +1,6 @@
 """Invariant solutions seen in the slice: relative periodic orbits become periodic orbits,
 travelling waves become equilibria, equilibria stay equilibria (or sit on the slice border).
-Notes:
+
 
 Checks, all measured on the exact discrete map of the solver used to find the solution:
 

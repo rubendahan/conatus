@@ -58,7 +58,7 @@ def test_f2_complex_initial_data_on_real_field_refused():
     assert np.allclose(s.grid("u"), 1.0)
 
 
-# ---------------------------------------------------------------------------------- finding 10
+# ----------------------------------------------------------------------------------
 def _riccati(dt):
     import conatus as cn
     m = cn.Model(cn.Box(x=cn.walls(-1, 1)))
@@ -106,7 +106,7 @@ def test_f10_tol_and_bounds_validated_first(kw):
     assert s.solver.iteration == 0
 
 
-# ---------------------------------------------------------------------------------- finding 17
+# ----------------------------------------------------------------------------------
 def _heat_burgers(scheme, dt, startup=None):
     import conatus as cn
     m = cn.Model(cn.Box(x=cn.periodic(2 * np.pi)))

@@ -15,7 +15,7 @@ Gram); with the thin QR F C Z₁ = Q_e R_e, the coordinates q̃ = R_e q are ener
 
 The finite/infinite split uses |β| > infinite_tol·|α| on the QZ pairs (mandatory tolerance);
 the gap between the largest finite and the smallest infinite |λ| is reported, and a split with a
-gap under 1e4 is refused (it would depend on the tolerance). See
+gap under 1e4 is refused (it would depend on the tolerance).
 """
 from __future__ import annotations
 

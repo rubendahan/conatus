@@ -284,6 +284,7 @@ DECLARED: dict[str, Declared] = dict([
        ("conatus.solvers.evp:solve_sparse(tol)",)),
     # parametric pencils
     _d("conatus.solvers.parametric.RECON_TOL", 1e-10, "refusal", _CHECK),
+    _d("conatus.solvers.parametric.DERIVATIVE_TOL", 1e-8, "refusal", _CHECK),
     _d("conatus.solvers.parametric.ENTRY_DROP_TOL", 1e-13, "detection",
        "a Laurent coefficient entry at most this x the largest modulus of that matrix entry over "
        "the sample plans is rounding of the DFT and discarded (counted); an evaluation where the "

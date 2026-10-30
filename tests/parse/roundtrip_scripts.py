@@ -9,7 +9,7 @@ equation accepted by ``add_equation`` and, at exit, the final equations of every
 equation's parameters and its lift bases; the result must be structurally equal. The script
 itself runs normally (its checks are its own). A script that fails or times out fails the round
 trip (exit 1), even when every equation it declared before stopping round-trips: its later
-equations were never checked (review finding 100: such a run counted as passed).
+equations were never checked (such a run counted as passed).
 """
 from __future__ import annotations
 

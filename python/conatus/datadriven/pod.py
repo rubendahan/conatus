@@ -52,7 +52,7 @@ class POD:
     @property
     def energy_fraction(self) -> float:
         """Fraction of the snapshots' total energy captured by the kept modes, Σ_k λ_k / E_total
-        (finding 92: explain() used to normalise on the kept modes, so it
+        (explain() used to normalise on the kept modes, so it
         always printed 1)."""
         return float(self.energies.sum() / self.total_energy) if self.total_energy > 0 else 1.0
 

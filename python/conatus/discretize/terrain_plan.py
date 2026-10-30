@@ -589,7 +589,7 @@ class TerrainPlan:
             if not np.all(np.isfinite(g)):
                 raise DiscretizationError(f"data of {f.name} has non-finite values on the grid")
             if f.dtype.kind != "c" and np.iscomplexobj(g) and np.any(g.imag != 0):
-                # a real coefficient given complex data: refused, never cast (finding 36)
+                # a real coefficient given complex data: refused, never cast
                 raise DtypeError(f"data of {f.name}: complex values (max |imag| = "
                                  f"{float(np.abs(g.imag).max()):.3e}) for a real field",
                                  fix="pass real data, or declare the field complex", doc=_DOC)
@@ -1139,7 +1139,7 @@ class TerrainPlan:
                                       "eigenvalues(plan))")
         if reduced:
             raise UnsupportedError("symmetry subspaces on a mapped domain", doc=_DOC)
-        # new data: a fresh plan (review finding 4). Updating _ncc_src and clearing the data cache
+        # new data: a fresh plan. Updating _ncc_src and clearing the data cache
         # only left the compiled operator (_ccache, _ncc_ops, _gm) on the old coefficient, so
         # q*u = q solved 2u = 4 with residual 0 after q: 2 -> 4; the plan itself stays unchanged
         fresh = rebind_for_data(self, data)          # a new operator coefficient (memoized)

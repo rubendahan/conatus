@@ -9,7 +9,7 @@ import pytest
 import conatus as cn
 
 
-# ---------------------------------------------------------------------------------- finding 3
+# ----------------------------------------------------------------------------------
 def _rhs_coeffs(m, N, dealias, init):
     s = m.simulate(N, scheme="RK222", dt=.01, dealias=dealias)
     s.initial(u=init)
@@ -84,7 +84,7 @@ def test_f3_function_of_a_given_field_is_one_factor(eq, factor):
     assert bool(c.nonpoly) == ("exp(u)" in eq)
 
 
-# ---------------------------------------------------------------------------------- finding 7
+# ----------------------------------------------------------------------------------
 def _sincos_model(eq="dt(T)-lap(T)=0", bc="dz(T)=0"):
     m = cn.Model(cn.Box(z=cn.walls(0, 1, basis="sincos")))
     m.scalar("T")

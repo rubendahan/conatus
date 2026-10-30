@@ -1,7 +1,7 @@
 """First Fourier mode slice: reduction / reconstruction, slice border, invariant solutions in
 the slice (KS L = 22), and relative periodic orbits of the two-mode model of Budanur,
 Borrero-Echeverry & Cvitanović (arXiv:1411.3303, eqs. 40-41 and Table I, read in the PDF)
-found as periodic orbits of the reduced flow. Notes: §3."""
+found as periodic orbits of the reduced flow. §3."""
 import json
 from pathlib import Path
 

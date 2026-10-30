@@ -4,7 +4,7 @@ Dynamic mode decomposition and spectral proper orthogonal decomposition of snaps
 
 Snapshots are vectors of values on a grid. Each decomposition takes a `DataInnerProduct`, built
 from the quadrature weights of the grid and the weights you give each component, for example the
-energy norm of the flow. SPOD modes are orthonormal in this inner product at each frequency. DMD
+energy norm of the flow. `DataInnerProduct.is_real` says whether its matrix has no imaginary part, which `spod(onesided=True)` requires. SPOD modes are orthonormal in this inner product at each frequency. DMD
 modes are eigenvectors of a fitted evolution operator, which can be non-normal, so they are in
 general not orthogonal; Conatus scales each DMD mode to unit norm. The example uses snapshots of the linear Ginzburg–Landau equation.
 
@@ -24,7 +24,7 @@ general not orthogonal; Conatus scales each DMD mode to unit norm. The example u
 :dedent: 4
 ```
 
-`rank` and `amplitudes` are required. On snapshots of a linear system in the span of a few modes,
+`rank` is required. `amplitudes` defaults to `"first"`; use `"optimal"` to fit all snapshots. On snapshots of a linear system in the span of a few modes,
 DMD returns their eigenvalues to rounding. `edmd` and its dictionaries (`monomials`, `rbf`) extend it
 to observables of the state.
 

@@ -21,7 +21,7 @@ import numpy as np
 #: parameters are replaced by a tagged summary {"array": {shape, dtype, sha256}} (declared)
 INLINE_ARRAY_MAX = 64
 #: strings that stand for non-finite floats in the JSON record: a *string* with one of these
-#: values is stored tagged, {"str": ...}, so that it reads back as a string (review finding 50)
+#: values is stored tagged, {"str": ...}, so that it reads back as a string
 _FLOAT_WORDS = ("nan", "inf", "-inf")
 #: key sets of the tagged encodings: a user dict with one of these key sets is stored wrapped,
 #: {"dict": {...}}, so that it reads back as a dict (not as a complex number or an array)

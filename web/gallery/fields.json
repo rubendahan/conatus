@@ -3,7 +3,7 @@
   "kelvin-helmholtz-vorticity": {
     "field": "Vorticity ω = −∇²ψ (the component normal to the plane) of two rolled-up shear layers at t = 7.",
     "colour": "Colour: ω, red for negative, black at zero, glass green for positive; the scale ends at the 99.7th percentile of |ω| (larger values saturate).",
-    "extent": "Periodic box 4 × 2 (x × z, lengths in units of the layer velocity scale), the full box."
+    "extent": "Periodic box 4 × 2 (x × z), in the unit of length of the half-thickness δ = 0.08, the full box."
   },
   "kelvin-helmholtz-dye": {
     "field": "Concentration c of a passive dye that starts as the central band, at t = 7; the yellow-green line is c = 1/2.",

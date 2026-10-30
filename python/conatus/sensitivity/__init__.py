@@ -10,6 +10,8 @@
   ``EVPResult``, ``ParametricEVP`` and ``ModePair``;
 * ``linear_ginzburg_landau`` / ``ginzburg_landau_exact``: model with closed-form wavemaker
   (Chomaz 2005) used for validation.
+
+
 """
 from .baseflow import (BaseFlowSensitivity, ForcingSensitivity, base_flow_sensitivity,
                        steady_forcing_sensitivity)

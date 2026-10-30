@@ -11,6 +11,8 @@ runs of the registry (``snapshots_from_run``).
   by variable projection (Askham & Kutz 2018);
 * ``spod``: Welch blocks, window, overlap (Towne, Schmidt & Colonius 2018), χ² confidence;
 * ``edmd``: Koopman eigenpairs on a declared dictionary (Williams et al. 2015), ResDMD residuals;
+
+
 """
 from .dmd import AMPLITUDES, DMD, DMD_METHODS, dmd
 from .koopman import EDMD, Dictionary, edmd, monomials, rbf

@@ -511,10 +511,18 @@ class Conj(Expr):
         return ["conjugation is antilinear over C: 'linear' here means R-linear"]
 
 
+def _on_complex_basis(x: Expr) -> bool:
+    from .bases import ComplexFourier
+    return any(isinstance(b, ComplexFourier) for f in x.free_fields()
+               for b in (f.domain.bases if f.domain is not None else ()))
+
+
 def conj(x: Any) -> Expr:
-    """Complex conjugate (the identity on real expressions)."""
+    """Complex conjugate (the identity on real expressions). An expression of fields on a
+    complex-exponential basis is complex whatever its declared dtype: such a field holds complex
+    values (the native ``periodic(L, complex=True)`` declares no dtype)."""
     x = as_expr(x)
-    if x.dtype.kind != "c":
+    if x.dtype.kind != "c" and not _on_complex_basis(x):
         return x
     if isinstance(x, Conj):
         return x.args[0]

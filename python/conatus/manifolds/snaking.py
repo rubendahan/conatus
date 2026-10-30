@@ -2,7 +2,7 @@
 :class:`~conatus.bifurcation.DynamicalSystem` to a declared invariant subspace (reflection-even
 states, which removes the translation mode), localized seeds, and the pinning region read from
 the folds of a snaking branch continued with ``conatus.bifurcation.continue_equilibria``.
-Notes: Burke & Knobloch, PRE 73, 056211 (2006) and
+Burke & Knobloch, PRE 73, 056211 (2006) and
 Phys. Lett. A 360, 681 (2007).
 """
 from __future__ import annotations
@@ -27,8 +27,10 @@ def even_subspace(solver) -> np.ndarray:
 
 def restrict_system(system, index, *, name: str, invariance_tol: float = 1e-12):
     """G_r(y) = Qᵀ G(Q y) with Q = the coordinate columns ``index`` (an invariant coordinate
-    subspace, declared). Invariance is **measured** at a random point, ‖(I − QQᵀ) G(Q y)‖/‖G‖, and
-    refused above ``invariance_tol``; J, B, C, ∂G/∂p are restricted the same way."""
+    subspace, declared). The dynamics are M x' = G: the subspace is invariant when G(Q y) lies in
+    the range of M Q (a massless row of the subspace may hold anything, it is kept as algebraic).
+    Invariance is **measured** at a random point, as the least-squares residual of that inclusion
+    over ‖G‖, and refused above ``invariance_tol``; J, B, C, ∂G/∂p are restricted the same way."""
     from ..bifurcation.system import DynamicalSystem
     idx = np.asarray(index, int)
     n, m = system.n, len(idx)
@@ -41,7 +43,10 @@ def restrict_system(system, index, *, name: str, invariance_tol: float = 1e-12):
     rng = np.random.default_rng(3)
     y = 0.3 * rng.standard_normal(m)
     g = system.G(up(y))
-    leak = np.delete(g, idx)
+    Md = np.asarray(system.M.toarray() if hasattr(system.M, "toarray") else system.M, dtype=float)
+    massless = [i for i in idx if not np.any(Md[i])]
+    A = np.hstack([Md[:, idx], np.eye(n)[:, massless]])
+    leak = g - A @ np.linalg.lstsq(A, g, rcond=None)[0]
     inv = float(np.linalg.norm(leak) / max(np.linalg.norm(g), 1e-300))
     if inv > invariance_tol:
         raise OptionError(f"restrict_system: the subspace is not invariant (leak {inv:.1e} > "

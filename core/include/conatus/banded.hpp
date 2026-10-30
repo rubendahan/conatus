@@ -40,7 +40,7 @@
 
 namespace conatus {
 
-// Every LAPACK call goes through this check (review finding 44): an info code < 0 is an
+// Every LAPACK call goes through this check: an info code < 0 is an
 // illegal argument (a layout bug: the right-hand side would come back untouched and be taken for
 // the solution); > 0 from a solve routine cannot happen, from a factorization it is handled by the
 // caller before this check (singular pivot, with its own message).
@@ -168,7 +168,7 @@ void measure_band(const Csr<T>& A, const std::vector<int>& border_rows, int& kl,
 template <class T>
 BorderedLayout<T> make_bordered_layout(const Csr<T>& A, const std::vector<int>& border_rows,
                                        int kl_min = 0, int ku_min = 0, bool col_border = false) {
-    // A NaN/Inf entry used to factor "fine" with cond_1 = 0 (finding 41): refused before any use,
+    // A NaN/Inf entry used to factor "fine" with cond_1 = 0: refused before any use,
     // here because this layout is the single entry of the CPU and the GPU solvers.
     for (int i = 0; i < A.n; ++i)
         for (int p = A.indptr[i]; p < A.indptr[i + 1]; ++p)
@@ -397,7 +397,7 @@ private:
             for (int b = 0; b < r_; ++b) {
                 double s = 0.0;
                 for (int a = 0; a < r_; ++a) s += std::abs(X[static_cast<std::size_t>(b) * r_ + a]);
-                if (!(s <= m)) m = s;      // std::max(m, NaN) kept m: a NaN norm read as 0 (finding 41)
+                if (!(s <= m)) m = s;      // std::max(m, NaN) kept m: a NaN norm read as 0
             }
             return m;
         };

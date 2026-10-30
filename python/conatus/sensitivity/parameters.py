@@ -17,7 +17,7 @@ and differ only in where the matrices and their derivatives come from:
   steps) — or an explicit (δL, δM).
 
 :func:`eigenvalue_sensitivity` dispatches on the type and returns an :class:`EigenvalueSensitivity`
-that says which mechanism ran. See
+that says which mechanism ran.
 """
 from __future__ import annotations
 

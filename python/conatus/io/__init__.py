@@ -18,11 +18,12 @@ readable with h5py alone (layouts in :mod:`conatus.io.analysis` and :mod:`conatu
 every array names its dimensions (``dims`` attribute and HDF5 dimension scales), vectors name
 their components, the root holds the Conatus version, the parameters and the coordinates
 (:mod:`conatus.io._describe`).
-Guide:.
+
 """
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -84,6 +85,19 @@ def _code_line(prov: dict | None) -> str:
     return f"code: {str(head)[:12]}, {exact}"
 
 
+def _free_names(generated: Iterable[str], user: Iterable[str]) -> dict[str, str]:
+    """{generated coordinate: free name} for those that a user variable already uses: the variable
+    keeps its name in a Dataset, the coordinate (and its dimension) becomes ``<name>_coord``."""
+    user, generated = set(user), set(generated)
+    out = {}
+    for g in sorted(generated & user):
+        new = f"{g}_coord"
+        while new in user or new in generated:
+            new += "_"
+        out[g] = new
+    return out
+
+
 @dataclass
 class AnalysisData:
     """Contents of an analysis file (all rows loaded)."""
@@ -116,8 +130,11 @@ class AnalysisData:
                                   "write_number": ("t", np.asarray(self.write_number))}
         coords.update({c: (c, np.asarray(x)) for c, x in self.scales.items()})
         data = {}
+        renamed = _free_names(coords, self.tasks)
+        coords = {renamed.get(c, c): (renamed.get(d, d), v) for c, (d, v) in coords.items()}
         for k, a in self.tasks.items():
             dims = self.dims.get(k) or _infer_dims(k, a.shape, self.scales, "t")
+            dims = [renamed.get(d, d) for d in dims]
             attrs = {"source": self.sources.get(k, "")}
             if k in self.component_names:
                 attrs["component_names"] = list(self.component_names[k])
@@ -129,7 +146,7 @@ class AnalysisData:
                  if k != "parameters"}                   # JSON below, as before
         attrs.update(conatus_version=self.conatus_version or "unknown (file written before 0.1 "
                      "self-describing layout)", parameters=json.dumps(self.parameters),
-                     path=str(self.path))
+                     path=str(self.path), renamed_coordinates=json.dumps(renamed))
         return xr.Dataset(data, coords=coords, attrs=attrs)
 
     def explain(self) -> str:
@@ -175,6 +192,11 @@ class CheckpointData:
         xr = _xarray()
         coords: dict[str, Any] = {c: (c, np.asarray(x)) for c, x in self.scales.items()}
         data = {}
+        renamed = _free_names(coords, {*self.grids, *self.fields})
+        coords = {renamed.get(c, c): (renamed.get(d, d), v) for c, (d, v) in coords.items()}
+        # the unknowns keep their names; a generated <name>_coeffs that would take the name of
+        # another unknown's grid values gets a free one, listed in the attribute coefficients_of
+        coefficients_of: dict[str, str] = {}
         for group, arrays, suffix in (("grids", self.grids, ""), ("fields", self.fields, "_coeffs")):
             for k, a in arrays.items():
                 dims = self.dims.get(f"{group}/{k}") or [f"{k}{suffix}_dim{i}" for i in range(a.ndim)]
@@ -182,11 +204,19 @@ class CheckpointData:
                     for d in dims:
                         if d.startswith("component") and d not in coords:
                             coords[d] = (d, np.array(self.component_names[k]))
-                data[k + suffix] = (dims, np.asarray(a))
+                dims = [renamed.get(d, d) for d in dims]
+                out = k + suffix
+                while suffix and (out in data or out in self.grids):
+                    out += "_"
+                if suffix:
+                    coefficients_of[out] = k
+                data[out] = (dims, np.asarray(a))
         m = self.meta
         attrs = {"problem": str(m.get("problem", "")), "scheme": str(m["scheme"]),
                  "dt": float(m["dt"]), "iteration": int(m["iteration"]), "sim_time": float(m["t"]),
                  "parameters": json.dumps(self.parameters), "path": str(self.path),
+                 "renamed_coordinates": json.dumps(renamed),
+                 "coefficients_of": json.dumps(coefficients_of),
                  "conatus_version": self.conatus_version or "unknown (written before the "
                  "self-describing layout)"}
         return xr.Dataset(data, coords=coords, attrs=attrs)

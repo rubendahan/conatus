@@ -341,7 +341,7 @@ class HillBlocksOperator(Operator):
         if not (np.isfinite(la) and np.isfinite(ph) and abs(ph) > 0):
             # block-Thomas pivots within each super-block only: a singular Schur complement of a
             # regular Hill matrix breaks it down (det -2j read as NaN, then reported as "an
-            # eigenvalue on the contour"; critic review of L10, review finding 11). The assembled
+            # eigenvalue on the contour"; critic review of L10). The assembled
             # sparse matrix, LU with row pivoting across the blocks, says whether z is singular.
             return _factor(self.assembled(z), z)
 

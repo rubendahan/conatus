@@ -60,6 +60,10 @@ sim.run(steps=20)
 | a declared eigenvalue | eigenvalue problem | `m.eigenvalues(N=...)` ({doc}`dynamics/index`) |
 | neither, linear | boundary-value problem | `m.discretize(N).solve()` |
 
+A small residual does not show that a linear boundary-value solution is resolved. With an under-resolved
+boundary layer (`nu = 1e-10`, `N = 32`), `solve()` returns a wrong answer with residual 7e-18 and no warning,
+and it accepts `nu = 0` with two wall conditions. Check by raising `N`.
+
 An evolution model also gives its linear stability problem: `m.linearize(about={u: 0, T: lambda z: -z})`
 returns normal modes $\propto e^{st}$ about that base state.
 

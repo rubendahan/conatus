@@ -112,7 +112,7 @@ class Telemetry:
                              "e.g. 'kh_demo_2'")
         self.run_id = run_id
         from ..errors import check_count
-        # counts are integers, never truncated (finding 66)
+        # counts are integers, never truncated
         self.capacity = check_count(capacity, "capacity", "Telemetry")
         self.max_px = check_count(max_px, "max_px", "Telemetry")
         self.frame_interval = float(frame_interval)

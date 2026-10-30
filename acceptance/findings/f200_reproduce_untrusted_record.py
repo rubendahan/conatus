@@ -34,9 +34,15 @@ rec["inputs"]["target"] = "f200_evil:payload"
 rec["inputs"]["args"] = {"w": str(marker), "h": 1}
 rec_path.write_text(json.dumps(rec))
 os.chmod(rec_path, 0o666)
-was_refused, out = refused(R.get(run.id, root=root).reproduce, record=False)
+was_refused, out = refused(R.get(run.id, root=root).reproduce, record=False, trust_record=True)
 if marker.exists():
     failed("the function named by a group/other-writable record ran")
 check(was_refused, f"reproduce() of a group/other-writable record returned {out!r}")
 check("fn=" in str(out), "the refusal does not name fn=")
-passed("refused before importing the named module")
+os.chmod(rec_path, 0o600)
+was_refused, out = refused(R.get(run.id, root=root).reproduce, record=False)
+if marker.exists():
+    failed("the function named by a record of this user ran without trust_record=True")
+check(was_refused, f"reproduce() of a record without fn= returned {out!r}")
+check("fn=" in str(out) and "trust_record=True" in str(out), "the refusal does not name both ways out")
+passed("refused by default and when writable by others, before importing the named module")

@@ -294,8 +294,10 @@ def count(T: Any, region: ContourBox, *, poles: int | None = None, derivative: A
     or a callable ``z -> matrix`` (or scalar). ``poles``: poles of ``det T`` inside the region,
     for a callable (0 if ``T`` is holomorphic there; a pencil and a linear Hill operator have none
     by construction); without it the result gives the winding ``Z - P`` and ``count=None``.
-    ``control=(box2, n)``: count ``box2`` first and refuse unless it holds ``n`` (a box whose count
-    is known checks the operator and the walk). ``phase_step``, ``initial_points``,
+    ``control=(box2, n)`` or ``(box2, n, poles2)``: count ``box2`` first and refuse unless it holds
+    ``n`` eigenvalues (a box whose count is known checks the operator and the walk). ``poles2`` are
+    the poles of ``det T`` inside ``box2``, default 0: ``poles`` describes ``region``, not this
+    box. ``phase_step``, ``initial_points``,
     ``max_evaluations``: the walk (declared defaults ``PHASE_STEP_MAX``, ``INITIAL_POINTS``,
     ``MAX_EVALUATIONS``). Raises ConvergenceError when the walk cannot be completed (an
     eigenvalue on the boundary, a discontinuous determinant) or does not close on an integer."""
@@ -308,12 +310,23 @@ def count(T: Any, region: ContourBox, *, poles: int | None = None, derivative: A
     ctrl = ""
     if control is not None:
         try:
-            cbox, expected = control
+            cbox, expected, *rest = control
+            if len(rest) > 1:
+                raise ValueError
         except (TypeError, ValueError):
-            raise OptionError(f"control={control!r}: a pair (cn.box(...), known count)", doc=_DOC) from None
+            raise OptionError(f"control={control!r}: (cn.box(...), known count) or (cn.box(...), "
+                              "known count, poles in that box)", doc=_DOC) from None
+        cpoles = rest[0] if rest else 0
+        if isinstance(cpoles, bool) or not isinstance(cpoles, numbers.Integral) or cpoles < 0:
+            raise OptionError(f"control={control!r}: the poles in the control box must be an "
+                              "integer >= 0", doc=_DOC)
+        if op.structural_poles and cpoles:
+            raise OptionError(f"control={control!r}: this operator has no pole by construction",
+                              fix="drop the third entry", doc=_DOC)
         c = count(op, cbox, phase_step=phase_step, initial_points=initial_points,
                   max_evaluations=max_evaluations)
-        got = c.count if c.count is not None else c.winding
+        # the winding is Z - P of the control box; op.poles belongs to the target region
+        got = c.winding + int(cpoles)
         if got != expected:
             raise ConvergenceError(
                 f"control box {cbox.describe()}: counted {got}, expected {expected}",

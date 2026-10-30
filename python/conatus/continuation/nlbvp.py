@@ -24,7 +24,8 @@ class NLBVPContinuation:
     """Pseudo-arclength continuation of ``solver.problem`` in the parameter ``parameter``
     (``param``: its deprecated former name, v0.1).
 
-    ``settings`` are the explicit continuation settings (no defaults); G_p is computed by the
+    ``settings`` is a required :class:`ContinuationSettings`, whose fields have the defaults its
+    ``explain()`` lists; G_p is computed by the
     declared central finite difference ``settings.dp_fd`` (the Newton system is rebuilt at p ± dp).
     ``eigen(coeffs, p) -> growth rates`` (optional) gives the stability of each branch point, e.g.
     the eigenvalues of the linearized IVP (``linearize`` + ``eigenvalues``): an NLBVP has no time

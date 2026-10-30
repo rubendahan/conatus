@@ -272,9 +272,10 @@ class PeriodicOrbitProblem:
         u, _ = self.colloc_values(U)
         nt, m, n = u.shape
         Jc = self.sys.J_many(u.reshape(-1, n), self.pars(p)).reshape(nt, m, n, n)
-        P, _ = self.monodromy(z)
+        P, logscale = self.monodromy(z)
         w, V = np.linalg.eig(P)
-        v = V[:, np.argmin(np.abs(w - target))]
+        # monodromy() returns P scaled by exp(-logscale): target is a multiplier of the true map
+        v = V[:, np.argmin(np.abs(w * np.exp(logscale) - target))]
         v = np.real(v) if abs(np.imag(target)) == 0 else v
         out = np.zeros((self.mesh.npts, n), dtype=v.dtype)
         out[0] = v

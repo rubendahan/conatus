@@ -54,7 +54,7 @@
         "output": "docs/site/tutorials/outputs/t08_polar.txt",
         "printed": ["Re_c(3.16) = 68.1863"],
         "numbers": [["68.1863", "68.1863"]],
-        "note": "It computes Re at k = 3.10, 3.16 and 3.22 only: it reproduces Re_c at k = 3.16, not the critical wavenumber k_c."
+        "note": "It samples Re at k = 3.10, 3.16 and 3.22, then minimises Re(k) over that bracket and checks k_c against the reference."
       }
     ],
     "rayleigh-benard-onset-rigid": [

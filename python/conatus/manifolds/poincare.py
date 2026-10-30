@@ -1,5 +1,5 @@
 """Poincaré sections and first-return maps with declared dense interpolation.
-Notes:
+
 
 A section is the zero set of a scalar function g(x) crossed in a declared direction
 (+1: g increasing, −1: decreasing, 0: both). Hyperplanes g(x) = ⟨n, x − x*⟩ are built by
@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import scipy.optimize as so
 
-from ..errors import OptionError
+from ..errors import NumericalError, OptionError
 from .._repr import compact_repr
 
 __all__ = ["PoincareSection", "Crossings", "poincare_crossings", "first_return_map"]
@@ -89,6 +89,14 @@ def poincare_crossings(traj, section: PoincareSection, *, xtol: float,
     (Brent, ``xtol`` in time, declared). ``refine=True`` (discrete maps): secant on the exact partial
     step until |g| stops decreasing; the returned state is then a point of the discrete map."""
     g = np.array([section.g(x) for x in traj.X])
+    if not np.all(np.isfinite(g)):
+        k = int(np.flatnonzero(~np.isfinite(g))[0])
+        raise NumericalError(f"poincare_crossings: section {section.name!r} gave {g[k]} at t = "
+                             f"{traj.t[k]:g}",
+                             why="a section value that is not a finite number cannot say on which "
+                                 "side the state is, so no crossing could be told from an invalid "
+                                 "section",
+                             fix="make the section function finite along the trajectory")
     scale = max(float(np.max(np.abs(g))), 1e-300)
     jumps = np.abs(np.diff(g)) / scale
     ts, Xs, ds, res, dfs = [], [], [], [], []
@@ -113,6 +121,10 @@ def poincare_crossings(traj, section: PoincareSection, *, xtol: float,
             defect = float(np.linalg.norm(xr - xd))
             if refine:
                 tc, xd = _secant_restep(traj, section, i, tc, xr)
+                # the defect belongs to the returned time
+                defect = float(np.linalg.norm(xd - traj._dense(i, tc)))
+        if t_min is not None and tc < t_min:          # the cutoff is on the crossing (N30)
+            continue
         ts.append(tc)
         Xs.append(xd)
         ds.append(d)
@@ -129,11 +141,16 @@ def poincare_crossings(traj, section: PoincareSection, *, xtol: float,
 
 
 def _secant_restep(traj, section, i, t0, x0, max_iterations: int = 8):
-    """Secant on t of g(restep(t)) from the dense estimate (exact discrete point)."""
-    t1 = t0 + 1e-3 * (traj.t[i + 1] - traj.t[i])
+    """Secant on t of g(restep(t)) from the dense estimate (exact discrete point), inside the
+    segment: a partial step exists only there, and the returned time is the time of the returned
+    state."""
+    lo, hi = traj.t[i], traj.t[i + 1]
+    t1 = t0 + 1e-3 * (hi - lo)
+    t1 = t1 if t1 <= hi else t0 - 1e-3 * (hi - lo)
     g0, x_best, t_best = section.g(x0), x0, t0
     for _ in range(max_iterations):
-        x1 = traj._restep(i, min(max(t1, traj.t[i]), traj.t[i + 1]))
+        t1 = float(min(max(t1, lo), hi))
+        x1 = traj._restep(i, t1)
         g1 = section.g(x1)
         if abs(g1) < abs(section.g(x_best)):
             x_best, t_best = x1, t1

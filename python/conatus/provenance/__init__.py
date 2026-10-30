@@ -468,7 +468,7 @@ def numerics(run, tolerances: Mapping[str, float] | None = None,
         if und_d or und_f:
             out["undeclared"] = und_d + und_f
     if solver is not None:
-        # every numerical choice that changes the numbers (review finding 22: time_parameter,
+        # every numerical choice that changes the numbers (time_parameter,
         # bc_time, f_backend and the device pivoting were missing), read by the same function
         # as the identity, plus the clock
         from ..io._identity import stepping

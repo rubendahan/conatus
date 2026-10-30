@@ -194,7 +194,7 @@ def _analyse(comp, cond, side: str, ns, R) -> dict:
 
 
 # ------------------------------------------------------------------------------------------------
-# integrals over the physical interval (review finding 7)
+# integrals over the physical interval
 # ------------------------------------------------------------------------------------------------
 # The series lives on the doubled period [a, 2b - a): an integral of the discretized field over
 # that period is twice the physical one for a cosine (even) integrand and zero for a sine (odd)
@@ -452,7 +452,7 @@ def place_parity(comp, eqs, unknowns, V, ns):
                        "time stepping and eigenvalues; symmetry-breaking states do not exist here "
                        "(they would violate the wall conditions).")
     variables = list(unknowns) + [tq for tq, _ in gauges]
-    # integrals written in the equations are over the physical interval [a, b] (review finding 7)
+    # integrals written in the equations are over the physical interval [a, b]
     look = _sub(R, parity).lookup()
     equations = [(_physical_integrals(lhs, coord, R, look, labels[i]),
                   _physical_integrals(as_expr(rhs), coord, R, look, labels[i]))

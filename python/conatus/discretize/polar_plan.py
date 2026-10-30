@@ -362,7 +362,7 @@ class _PolarCompiler:
                                       "rank-2 coefficient and a vector")
         M = self.P.boundary_tensor(C) @ self.P.space.G
         # entries below round-off *of this tensor* are dropped: a threshold relative to its
-        # largest entry (review finding 35: the absolute 1e-14 dropped every row of 1e-15 I)
+        # largest entry (the absolute 1e-14 dropped every row of 1e-15 I)
         scale = float(np.max(np.abs(M), initial=0.0))
         inner = self._trace(X, pos, d)
         out = {}

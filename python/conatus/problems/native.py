@@ -307,7 +307,7 @@ def pipe_evp(*, k: float, Re: float) -> Linearization:
     ``k`` is the axial wavenumber (``alpha=`` is its deprecated v0.1 name).
     Same eigenvalues as :func:`conatus.problems.pipe_evp` to round-off (2e-13 on the ten least
     stable modes, N_r = 32). Validation: Meseguer & Trefethen (2003), Table 1, Re = 1000,
-    (m, k) = (1, 1): -0.0708640053 + 0.8467498288i (frequency sign convention opposite)."""
+    (m, k) = (1, 1): s = -0.0708640053 - 0.8467498288i (the table lists the conjugate)."""
     m = pipe(length=2 * np.pi / k, Re=Re, pressure_gradient=4 / Re)
     return m.linearize(about={"u": lambda r: np.stack([0 * r, 0 * r, 1 - r * r])})
 

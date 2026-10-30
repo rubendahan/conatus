@@ -47,8 +47,8 @@ The core result ends with "Normal forms": the Hopf point and the sign of its Lya
 ```
 
 `continue_equilibria` evaluates three test functions at each point (fold: the parameter component of
-the tangent; branch point: the determinant of the bordered Jacobian; Hopf: a product over eigenvalue
-pairs) and **locates** each sign change by a secant, reporting the residual there. `branch_switch`
+the tangent; branch point: the determinant of the bordered Jacobian; Hopf: the sign of a product over
+eigenvalue pairs, with the size of its smallest factor) and **locates** each sign change by a secant, reporting the residual there. `branch_switch`
 solves the algebraic branching equation with the second derivatives. The declared
 $S = \mathrm{diag}(-1,-1,1)$ classifies the point as a *symmetry-breaking pitchfork*: the kernel is
 $S$-odd, and the two half-branches $C^\pm$ are images of each other. The symmetry declaration and

@@ -83,7 +83,7 @@ def test_resolutions_in_the_wrong_order_refused():
 
 
 def test_unequal_resolution_steps_are_modelled():
-    """Finding 12: N = [1, 4, 5] was modelled as equally spaced, the error
+    """N = [1, 4, 5] was modelled as equally spaced, the error
     was underestimated 13.6x and the report still said trusted."""
     import math
     r = cn.uncertainty(lambda N, dt: 1 + math.exp(-N) + dt ** 2, N=[1, 4, 5],
@@ -105,3 +105,24 @@ def test_untrusted_without_checked_hypotheses():
     r = cn.uncertainty(lambda N, dt: 1 + math.exp(-N[0]) + dt ** 2, N=[(2, 2), (4, 6), (6, 8)],
                        dt=[4e-1, 2e-1, 1e-1], scheme_order=2)
     assert not r.trusted and any("different proportions" in f for f in r.spatial.flags)
+
+
+# Audit of 0.2.1, N62: a real exponential C e^{-a N} has successive differences of one sign.
+@pytest.mark.parametrize("sign", [1, -1])
+@pytest.mark.parametrize("Ns", [[2, 3, 4], [3, 4, 5]])
+def test_n62_alternating_spatial_differences_are_not_trusted(sign, Ns):
+    rep = cn.uncertainty(lambda N, dt: 1 + sign * (-0.5) ** N + dt ** 2, N=Ns,
+                      dt=[0.04, 0.02, 0.01], scheme_order=2)
+    assert not rep.trusted
+    assert any("sign" in f for f in rep.spatial.flags)
+    assert not rep.temporal.flags
+    d = rep.spatial.values
+    assert rep.spatial.estimate == pytest.approx(max(abs(d[1] - d[0]), abs(d[2] - d[1])))
+
+
+@pytest.mark.parametrize("sign", [1, -1])
+@pytest.mark.parametrize("Ns", [[2, 3, 4], [2, 4, 5], [4, 5, 7]])
+def test_n62_monotone_exponential_stays_trusted(sign, Ns):
+    rep = cn.uncertainty(lambda N, dt: 1 + sign * 2.0 ** (-N) + dt ** 2, N=Ns,
+                      dt=[0.04, 0.02, 0.01], scheme_order=2)
+    assert rep.trusted and rep.interval[0] <= 1.0 <= rep.interval[1]

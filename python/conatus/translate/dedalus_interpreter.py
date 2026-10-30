@@ -486,7 +486,7 @@ class _Interpreter:
         effects = self._loop_effects(st.body, scope)
         if effects:
             # the loop body changes the state or the stop rule: solver.run(n) would compute
-            # something else (finding 54: u['g'] += 1 in the loop was ignored
+            # something else (u['g'] += 1 in the loop was ignored
             # and the loop still reported as translated)
             return self._record(st, "unsupported",
                                 "the time loop body changes the simulation, which solver.run(n) "
@@ -851,8 +851,7 @@ class _Interpreter:
         return f(*args, **kw)
 
     def _keywords(self, keywords: list[ast.keyword], scope: dict) -> dict:
-        """Keyword arguments of a call, ``**mapping`` expanded (finding 6:
-        ``**opts`` used to be dropped without a word, so ``RealFourier(..., **{'dealias': 1.5})``
+        """Keyword arguments of a call, ``**mapping`` expanded (``**opts`` used to be dropped without a word, so ``RealFourier(..., **{'dealias': 1.5})``
         came back with dealias=1). A ``**`` value that is not a mapping of names is refused."""
         kw: dict = {}
         for k in keywords:

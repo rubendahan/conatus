@@ -45,7 +45,7 @@ class ImexIntegrator:
         self._last = None                             # (x bytes, t) returned by the last run (SBDF)
         if F is not None:
             # no reference to self (the core owns this callable; a cycle through it is visible
-            # to the garbage collector anyway since finding 43, but none is needed here)
+            # to the garbage collector anyway since but none is needed here)
             dtype_ = self.dtype
             self._s.set_rhs(lambda x, t: solve_operand(F(np.asarray(x), t), dtype_,
                                                        "ImexIntegrator: F(x, t)"))
@@ -64,7 +64,7 @@ class ImexIntegrator:
             raise OptionError(f"ImexIntegrator.run: {self.scheme} holds the history of the previous "
                               "run, and (x0, t0) is not the state and time it returned",
                               why="the multistep history of another trajectory would enter this one "
-                                  "silently (review finding 42)",
+                                  "silently",
                               fix="call reset() to start a new trajectory (lower-order startup "
                                   "again), or pass the (x, t) returned by the previous run")
         x, t = self._s.run(x0, float(t0), nsteps)

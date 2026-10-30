@@ -32,8 +32,8 @@ three resolutions at the finest time step (the finest run is shared).
 - **Space**: spectral convergence is geometric, $q(N) = q_\infty + C e^{-aN}$ at the resolutions
   actually given; the ratio $\rho$ of successive differences fixes $a$, and the estimate is
   $1.25\,|d_2|/(e^{a h_2}-1)$ with $h_2$ the last increment of $N$ (equal increments:
-  $1.25\,|d_2|\,\rho/(1-\rho)$). Differences that do not decrease geometrically, and tuple
-  resolutions refined in different proportions, are flagged.
+  $1.25\,|d_2|\,\rho/(1-\rho)$). Differences that change sign, differences that do not decrease
+  geometrically, and tuple resolutions refined in different proportions are flagged.
 - **Result**: the value at the finest resolution and time step (not the Richardson value), the
   sum of both estimates, and the interval. `rep.trusted` is false when a study is flagged, and also
   without `scheme_order`, because the asymptotic range is then unchecked. `rep.explain()` prints

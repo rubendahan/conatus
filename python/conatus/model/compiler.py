@@ -34,6 +34,7 @@ import numpy as np
 from ..errors import BoundaryConditionError, EquationError, NonlinearLHSError
 from ..ir import (EVP, IVP, LBVP, NLBVP, Add, Constant, Domain, Field, Mul, Parameter, TimeDerivative,
                   VectorField, add, as_expr, neg)
+from ..ir import Conj
 from ..ir.bases import Hermite, Laguerre
 from ..ir.parse import Namespace, parse_equation, parse_expr
 from . import sincos as _sincos
@@ -367,7 +368,7 @@ def _max_degree(raw, V, G=frozenset()) -> tuple[int, int, list[str]]:
     fields ``G``, the same in the unknowns alone, terms that are not polynomial in them).
 
     A given field enters a pseudospectral product exactly like an unknown (its coefficients are
-    truncated at the same N modes), so U*u*u is a cubic product (review finding 3: counting the
+    truncated at the same N modes), so U*u*u is a cubic product (counting the
     unknowns only gave 3/2 and aliased cos(7x)^3 at N = 16). Counting every given field is
     conservative. A non-polynomial function of given fields alone (exp(G), 1/G) is one more
     factor, like a given field; a term not polynomial in the unknowns is listed."""
@@ -670,6 +671,15 @@ def _split(eq, V, kind: str, markers: _Markers, label: str, fields: dict, plain=
                         "of the time stepper",
                     fix="write the term once, with its whole coefficient, marked or unmarked",
                     doc=_DOC)
+            # conj(u) is antilinear: no complex matrix holds it, so an IVP steps it explicitly
+            antilinear = (kind == "IVP" and not has_dt and mark != "implicit"
+                          and any(isinstance(n, Conj) and n.args[0].depends_on(V)
+                                  for n in t.walk()))
+            if deg == frozenset({1}) and antilinear:
+                right.append(t if sign < 0 else neg(t))
+                rows.append((str(right[-1]), "R", "antilinear (conjugate of an unknown), explicit"
+                             + ("; moved from the left side" if sign > 0 else "")))
+                continue
             if deg == frozenset({1}):
                 if mark == "explicit":
                     if has_dt or kind != "IVP":

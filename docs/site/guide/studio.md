@@ -6,8 +6,21 @@ where else the server can run. The Studio is experimental in this release ({doc}
 
 ## A first live view
 
-**Declare** what the Studio may show with `sim.watch`, then run the simulation. The telemetry goes
-to the spool directory `studio_spool`:
+The server starts first, so that the page is open when the run begins.
+
+**Start the server** in one terminal, on a spool directory (it needs `pip install "conatus[studio]"`):
+
+```bash
+python -m conatus.studio.hub serve --local --spool studio_spool --port 8765
+```
+
+It prints the path of a file that holds a one-session login token.
+
+**Open** `http://localhost:8765/login` and paste the token from that file.
+
+**Run** the simulation in a second terminal, from the same directory. Save this script as
+`rb_watch.py` and run `python rb_watch.py`. `sim.watch` declares what the Studio may show, and the
+telemetry goes to `studio_spool`:
 
 ```{literalinclude} _check_features.py
 :language: python
@@ -20,20 +33,12 @@ to the spool directory `studio_spool`:
 :language: text
 ```
 
+The run takes from about 20 s to 2 minutes, depending on the machine. The run appears in the gallery while it advances, and the
+Controls panel can send pause, checkpoint and stop commands until it ends. Afterwards the film can
+still be replayed. Increase `steps` for a longer exercise.
+
 The watch reads the declared fields and never changes them: the check script runs the same
 simulation without the watch and gets the same final state, bit for bit.
-
-**Start the server** on the same machine, on that spool directory (it needs
-`pip install "conatus[studio]"`):
-
-```bash
-python -m conatus.studio.hub serve --local --spool studio_spool --port 8765
-```
-
-It prints the path of a file that holds a one-session login token.
-
-**Open** `http://localhost:8765/login` and paste the token from that file. The Controls panel can
-send pause, checkpoint and stop commands.
 
 ## Only what you declare
 

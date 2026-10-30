@@ -1,4 +1,4 @@
-"""Finding 15: max_growth missed the trivial maximum G = 1 at t = 0."""
+"""max_growth missed the trivial maximum G = 1 at t = 0."""
 import numpy as np
 import pytest
 

@@ -89,7 +89,7 @@ def static_file(dist: Path, path: str) -> tuple[bytes, str, bool] | None:
 
 LOOPBACK_HOSTS = ("localhost", "127.0.0.1", "::1")
 SESSION_COOKIE = "cn_session"
-# The second secret of a hub session (review F11): the app sends it in this header, and in
+# The second secret of a hub session: the app sends it in this header, and in
 # the WebSocket subprotocol list as "cn-key.<key>" next to WS_PROTOCOL (browsers cannot set
 # headers on a WebSocket). The server answers with WS_PROTOCOL only, never the key.
 SESSION_KEY_HEADER = "X-CN-Session-Key"

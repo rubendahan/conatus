@@ -54,7 +54,7 @@ class Ensemble:
         else:
             raw = np.asarray(member_of)
             mo = raw.astype(int)
-            # indices are never truncated (finding 66: 1.7 became 1)
+            # indices are never truncated (1.7 became 1)
             if raw.dtype == bool or not np.array_equal(mo, raw) or raw.ndim != 1 \
                     or (mo.size and (mo.min() < 0 or mo.max() >= len(solvers))):
                 raise OptionError(f"Ensemble.from_solvers: member_of={member_of!r} must be a 1-D "

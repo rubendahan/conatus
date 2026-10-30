@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 from xml.sax.saxutils import escape, quoteattr
 
@@ -40,6 +41,11 @@ __all__ = ["write_xdmf", "XDMFNotCovered"]
 
 class XDMFNotCovered(UnsupportedError):
     """This analysis file cannot be described by the XDMF sidecar (the message says why)."""
+
+
+def _comment(text: str) -> str:
+    """An XML comment: ``--`` is not allowed inside one, whatever the file name holds."""
+    return "<!-- " + re.sub(r"-(?=-)", "- ", text) + " -->"
 
 
 def _attr(f, k, default=None):
@@ -95,12 +101,12 @@ def write_xdmf(path: str | os.PathLike) -> Path:
     geom = "VXVY" if len(coords) == 2 else "VXVYVZ"
     order = list(reversed(coords))                        # XDMF X = fastest = last coordinate
     lines = ['<?xml version="1.0" ?>', '<Xdmf Version="3.0">', "<Domain>",
-             f"<!-- written by conatus.io.xdmf for {escape(h5)}: ParaView X = {order[0]}, "
-             f"Y = {order[1]}" + (f", Z = {order[2]}" if len(order) > 2 else "")
-             + " (row-major arrays in coordinate order " + ", ".join(coords) + ") -->",
+             _comment(f"written by conatus.io.xdmf for {h5}: ParaView X = {order[0]}, "
+                      f"Y = {order[1]}" + (f", Z = {order[2]}" if len(order) > 2 else "")
+                      + " (row-major arrays in coordinate order " + ", ".join(coords) + ")"),
              '<Grid Name="conatus" GridType="Collection" CollectionType="Temporal">']
     if skipped:
-        lines.insert(3, "<!-- not described: " + escape(", ".join(skipped)) + " -->")
+        lines.insert(3, _comment("not described: " + ", ".join(skipped)))
     for w in range(n):
         lines.append(f'  <Grid Name="row{w}" GridType="Uniform">')
         lines.append(f'    <Time Value="{float(times[w])!r}"/>')
@@ -125,7 +131,7 @@ def write_xdmf(path: str | os.PathLike) -> Path:
                       + " ".join(map(str, start)) + "  " + " ".join(["1"] * rank) + "  "
                       + " ".join(map(str, count)) + "</DataItem>",
                       f'        <DataItem Dimensions="{" ".join(map(str, full))}" NumberType="{num}" '
-                      f'Precision="{dt.itemsize}" Format="HDF">{escape(h5)}:{ds}</DataItem>',
+                      f'Precision="{dt.itemsize}" Format="HDF">{escape(h5)}:{escape(ds)}</DataItem>',
                       "      </DataItem>", "    </Attribute>"]
         lines.append("  </Grid>")
     lines += ["</Grid>", "</Domain>", "</Xdmf>", ""]

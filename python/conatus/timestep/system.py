@@ -298,7 +298,7 @@ class GlobalSystem:
         self.rows_obj = np.array(rows_obj, int)
         self.rows_flat = np.array(rows_flat, int)
         self.rows_lam = np.array(rows_lam, int)
-        # Common dtype of the system (review finding 2): complex as soon as the layout, a matrix
+        # Common dtype of the system: complex as soon as the layout, a matrix
         # block or a declared variable is complex. An equation with complex coefficients on
         # variables that are all declared real has no real solution: refused here rather than
         # dropping the imaginary part at every gather.

@@ -1,4 +1,4 @@
-"""Finding 14: splitting a run into one-step calls changed the particle
+"""Splitting a run into one-step calls changed the particle
 convergence order (begin_run cleared the flow history at every call)."""
 import numpy as np
 

@@ -106,14 +106,23 @@ def uniform_dt(times: np.ndarray, *, rtol: float) -> float:
         raise OptionError(f"uniform_dt: times of shape {t.shape}, one time per snapshot (1D)")
     if np.isnan(t).any():
         raise OptionError("some snapshot times are unknown (NaN): declare dt explicitly")
+    if np.isinf(t).any():
+        raise OptionError("uniform_dt: infinite snapshot times", fix="finite times, or declare dt")
     if t.size < 2:                  # np.diff would be empty: no step to measure
         raise OptionError(f"{t.size} snapshot time(s): a time step needs at least two snapshots",
                           fix="give two or more snapshots, or declare dt explicitly")
-    d = np.diff(t)
+    with np.errstate(over="ignore"):
+        d = np.diff(t)
     if not np.all(d > 0):
         raise OptionError("uniform_dt: the snapshot times must increase",
                           fix="snapshots in time order")
-    dt = float(d.mean())
+    if not np.all(np.isfinite(d)):  # finite times, difference beyond the floating-point range
+        raise OptionError("uniform_dt: a time step overflows the floating-point range",
+                          fix="shift or rescale the snapshot times")
+    with np.errstate(over="ignore"):
+        dt = float(d.mean())
+    if not np.isfinite(dt):         # the sum overflowed, not the mean of the steps
+        dt = float((d / d.max()).mean() * d.max())
     if np.abs(d - dt).max() > rtol * abs(dt):
         raise OptionError(f"non-uniform sampling (steps {d.min():.6g} … {d.max():.6g}); DMD/SPOD "
                           "need a uniform Δt (optimized DMD accepts times)")

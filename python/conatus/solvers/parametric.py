@@ -54,6 +54,8 @@ RECON_TOL = 1e-10
 #: modulus of the same matrix entry over the sample plans (rounding of the DFT). The threshold is
 #: per entry, not a global amplitude threshold.
 ENTRY_DROP_TOL = 1e-13
+#: Largest relative change of an exact derivative allowed from the discarded entries.
+DERIVATIVE_TOL = 1e-8
 # Declared defaults (listed in conatus.tolerances.DECLARED, shown by explain()):
 TRACK_TOL = 1e-13               # bordered-Newton stop |d sigma| <= TRACK_TOL max(|sigma|, 1): at the
                                 # attainable floor, the residual of the tracked pair is returned
@@ -457,7 +459,34 @@ class ParametricEVP:
             w = w * ex[j] / self.p0[names[j]]
             dL += w * C
             dM += w * D
+        self._check_partial(j, t, dL, dM)
         return dL, dM
+
+    def _check_partial(self, j: int, t: dict, dL: np.ndarray, dM: np.ndarray) -> None:
+        """Refuse a derivative that the coefficients discarded at rounding level could change by
+        more than DERIVATIVE_TOL: differentiation divides them by the nominal value, so an
+        accurate pencil does not imply an accurate derivative."""
+        if not self._dropped_bound:
+            return
+        names = [p.name for p in self._pen]
+
+        def weight(ex: tuple, skip: int | None = None) -> float:
+            return abs(np.prod([t[n] ** (e - 1 if k == skip else e)
+                                for k, (n, e) in enumerate(zip(names, ex, strict=True))]))
+        p0 = abs(self.p0[names[j]])
+        bound = sum(ex[j] * weight(ex, j) * b / p0 for ex, b in self._dropped_bound.items() if ex[j])
+        size = max([float(np.abs(dL).max()), float(np.abs(dM).max()), 1e-300]
+                   + [weight(ex) * float(max(np.abs(C).max(), np.abs(D).max()))
+                      for ex, (C, D) in self._coef.items()])
+        if not bound <= DERIVATIVE_TOL * size:
+            raise ParameterError(
+                f"derivative along {names[j]}: coefficient entries discarded at rounding level "
+                f"could change it by {bound / size:.1e} (refused above DERIVATIVE_TOL = "
+                f"{DERIVATIVE_TOL:.0e})",
+                why=f"the nominal value {self.p0[names[j]]!r} makes the {names[j]} coefficient "
+                    "small enough to be discarded, and the derivative divides by it",
+                fix="build the pencil with a nominal value of the order of the parameter's "
+                    "range; the derivative is then exact")
 
     def derivative(self, name: str, **values) -> tuple[np.ndarray, np.ndarray]:
         """Exact dL/dp, dM/dp (term by term; chain rule through the derived coordinates, whose
@@ -556,7 +585,8 @@ class ParametricEVP:
                     "from least_stable(...) at the new values")
         A = L + s * M
         nrm = np.linalg.norm(L, 1) + abs(s) * np.linalg.norm(M, 1)
-        res = float(np.linalg.norm(A @ x) / (nrm * np.linalg.norm(x)))
+        # nrm = 0 (L = 0 and s = 0, a scalar neutral mode): no relative scale, A x / ||x|| as it is
+        res = float(np.linalg.norm(A @ x) / ((nrm if nrm > 0 else 1.0) * np.linalg.norm(x)))
         y = None
         if left and not extra.shape[0]:
             # A^H y = 0 with (M x)^H y = 1; the border column x spans null(A) = range(A^H)^perp

@@ -263,5 +263,5 @@ def gain(Phi: np.ndarray, F: np.ndarray, Z: np.ndarray | None) -> GainResult:
         U, s, Vh = sla.svd(A, lapack_driver="gesvd")
     v_opt = Z @ Rinv @ Vh[0].conj()                  # unit energy: ‖F v_opt‖ = 1
     # the response is the propagated optimal state Φ v_opt (energy σ_1² = G), not a unit-energy
-    # vector along it (finding 93: F⁻¹ u_1 was returned, normalised)
+    # vector along it (F⁻¹ u_1 was returned, normalised)
     return GainResult(float(s[0] ** 2), s, v_opt, Phi @ v_opt)

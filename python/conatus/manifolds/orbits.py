@@ -1,5 +1,5 @@
 """Unstable manifolds of periodic orbits by linear Floquet seeding on a Poincaré section.
-Notes: Budanur & Cvitanović, J. Stat. Phys. 167, 636
+Budanur & Cvitanović, J. Stat. Phys. 167, 636
 (2017), arXiv:1509.08133, eqs. (21)-(25).
 
 Order 1 (declared, not a parametrization of the orbit's manifold): with x_p a point of the orbit

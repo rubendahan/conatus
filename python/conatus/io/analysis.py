@@ -155,6 +155,24 @@ class AnalysisFile:
         # plan.problem.domain does not exist, "u.x" raised AttributeError)
         return [c.name for c in self.solver.plan.domain.coordsys.coords]
 
+    def _widen(self, tg: Any, k: str, d: Any, a: np.ndarray) -> Any:
+        """The dataset of task ``k`` able to hold ``a``: a value its type cannot hold (a float after
+        an integer first value, a complex after a real one) moves the rows already written to the
+        common type; writing it as it is would truncate it or fail."""
+        if np.can_cast(a.dtype, d.dtype, "safe"):
+            return d
+        to = np.result_type(d.dtype, a.dtype)
+        rows, attrs = d[()], dict(d.attrs)
+        tmp = f"{k}.widen"
+        new = tg.create_dataset(tmp, data=rows.astype(to), maxshape=d.maxshape, chunks=d.chunks)
+        for n, v in attrs.items():
+            if n not in ("DIMENSION_LIST", "REFERENCE_LIST"):
+                new.attrs[n] = v
+        del tg[k]
+        tg.move(tmp, k)
+        self._label(tg.file, tg[k], k, a.shape)
+        return tg[k]
+
     def _value(self, src: Any) -> np.ndarray:
         if callable(src):
             return _host(src(self.source))
@@ -186,6 +204,7 @@ class AnalysisFile:
             f.attrs["tasks"] = json_attr({k: self._describe(v) for k, v in self.tasks.items()})
             f.attrs["provenance"] = json_attr(provenance(self.solver))
             f.attrs["identity"] = json_attr(checkpoint_identity(self.solver))
+            f.attrs["time_parameter"] = json_attr(self.solver.time_parameter)
             f.attrs["task_identity"] = json_attr(self._task_identity())
             f.attrs["writes"] = 0
             sc = f.create_group("scales")
@@ -273,6 +292,11 @@ class AnalysisFile:
             if params is not None:
                 old["parameters"] = params
         diffs += [t for _k, _c, t in _differences(old, mine, there=here)]
+        if "time_parameter" in f.attrs:
+            role = read_json_attr(f, "time_parameter")
+            if role != self.solver.time_parameter:
+                diffs.append(f"time_parameter: {role!r} {here}, "
+                             f"{self.solver.time_parameter!r} now")
         if _attr_text(f, "scheme") != str(self.solver.scheme):
             diffs.append(f"scheme: {_attr_text(f, 'scheme')!r} {here}, {self.solver.scheme!r} now")
         for k in sorted(new_tasks):
@@ -333,6 +357,7 @@ class AnalysisFile:
                 if d.shape[1:] != a.shape:
                     raise OptionError(f"output(): task {k!r} changed shape {d.shape[1:]} -> {a.shape}",
                                       doc=DOC)
+                d = self._widen(tg, k, d, a)
                 d.resize(w + 1, axis=0)
                 d[w] = a
             sc = f["scales"]

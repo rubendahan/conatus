@@ -150,7 +150,13 @@ history array, the time and the iteration) is compared bit for bit: same dtype a
 functions and six numerical choices that 0.1.1 records: an `IdentityWarning` names them (they are
 not compared) and the end state is still compared bit for bit. If the
 executed code changed since the run, a `CodeChangedWarning` says how (`require_same_code=True`
-makes it an error). A decorated function is re-imported and called with the recorded arguments.
+makes it an error).
+
+A decorated call is reproduced with the function you pass: `run.reproduce(fn=my_function)` calls it with
+the recorded arguments. `run.reproduce(trust_record=True)` imports and calls the function the record
+names, which runs whatever the record says. Use it only for records you made: a registry you unpacked or
+copied belongs to your account whoever wrote it. A record that other accounts can write is refused
+even then.
 
 ## The cache: only when you ask
 
@@ -203,8 +209,9 @@ series and fields are read from the source run through the new run (`run.series(
 
 ## Studio and export
 
-- The {doc}`studio` lists, filters and compares registry runs (read-only), and a live run links to
-  its registry record when it was recorded with `cn.runs.track(..., telemetry=tel)`.
+- The {doc}`studio` server of this release does not read the registry: its Runs view shows the runs of
+  its spool directory. List, filter and compare registry runs in Python with `cn.runs.find` and
+  `cn.runs.compare`.
 - `cn.runs.export(dir)` writes runs as small JSON files (filters as in `find`); `cn.runs.export_mlflow(runs)`
   copies runs to MLflow if you have it (never installed by Conatus).
 

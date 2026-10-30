@@ -53,6 +53,7 @@ from __future__ import annotations
 
 import json
 import os
+import warnings
 from collections import deque
 from collections.abc import Callable, Mapping
 from pathlib import Path
@@ -112,6 +113,8 @@ class IVPSolver:
 
     # run_graph of a time-dependent F: rows of time factors built per block of this many steps
     _GRAPH_TABLE_ROWS = 1024
+
+    _history_origin = 0            # iteration at which the multistep history started
 
     def __init__(self, plan: Plan, scheme: str, dt: float, *, reduced: bool | None = None,
                  ordering: str = "interleaved", startup: str = "lower_order",
@@ -263,6 +266,7 @@ class IVPSolver:
         self._restart_changes = []
         self.t, self.iteration = float(t), 0
         self._t_origin, self._it_origin = float(t), 0
+        self._history_origin = 0                    # see _steps_since_history
         self._t_initial = float(t)                  # start time of the chain (checkpoints)
         self._reset_history()
 
@@ -628,7 +632,7 @@ class IVPSolver:
         """One step of the declared scheme (start-up steps of a multistep scheme included)."""
         check_params_unchanged(self, "IVPSolver.step")
         if self.order:
-            need_startup = self.startup == "rk443" and self.iteration < self.order - 1
+            need_startup = self.startup == "rk443" and self._steps_since_history() < self.order - 1
             if need_startup:
                 # record history at the current state, then advance with RK443 substeps
                 self._MXh.appendleft(self.system.M @ self.X)
@@ -642,7 +646,7 @@ class IVPSolver:
             else:
                 self._sbdf_step(self.order)
         elif self.family == "cn":
-            if self.startup == "rk443" and self.iteration < self._nhist - 1:
+            if self.startup == "rk443" and self._steps_since_history() < self._nhist - 1:
                 # record the history at the current state, then advance with RK443 substeps
                 self._push_cn_history()
                 h = self.dt / self.startup_substeps
@@ -667,6 +671,11 @@ class IVPSolver:
     @property
     def _it0(self) -> int:
         return getattr(self, "_it_origin", 0)
+
+    def _steps_since_history(self) -> int:
+        """Steps since the multistep history started: the iteration, except after a restart that
+        discarded the history (``_stale_history``)."""
+        return self.iteration - self._history_origin
 
     def set_dt(self, dt: float) -> None:
         """Change the step (Runge–Kutta only: multistep coefficients are constant-step here)."""
@@ -839,7 +848,7 @@ class IVPSolver:
     def _sbdf_steady(self) -> bool:
         """History long enough for a full-order multistep step (SBDF or CN; no start-up left)."""
         q = self._nhist
-        startup_left = self.startup == "rk443" and self.iteration < q - 1
+        startup_left = self.startup == "rk443" and self._steps_since_history() < q - 1
         return not startup_left and len(self._MXh) >= q - 1
 
     def _capture_graph(self) -> dict:
@@ -953,7 +962,11 @@ class IVPSolver:
                     iteration=self.iteration, t=self.t, t_origin=self._t0, it_origin=self._it0,
                     reduced=self.system.reduced, ordering=self.system.ordering,
                     problem=self.plan.problem.name, nhist=len(self._MXh),
-                    nhist_LX=len(self._LXh), bc_time=self.bc_time)
+                    nhist_LX=len(self._LXh), bc_time=self.bc_time,
+                    time_parameter=self.time_parameter,
+                    history_origin=self._history_origin)
+        from ..io._identity import history_operators
+        meta["history_operators"] = history_operators(self)
         # what the state is a state of (model, equations, parameters, resolution, geometry):
         # compared at restart, with the differences allowed so far
         from ..io._identity import checkpoint_identity
@@ -1011,6 +1024,7 @@ class IVPSolver:
         ``"functions"``, ``"model"``, ``"equations"``, ``"geometry"``; an allowed difference is
         printed by :meth:`explain` and carried by every later checkpoint."""
         from ..io._identity import allowable_names, check_allow, compare_identity
+        from ..io.checkpoint import check_payload
         # parameter, given-field and function names (0.1.1, lot A: given data are compared)
         allow = check_allow(allow, allowable_names(self), "load_checkpoint")
         path = Path(path)
@@ -1026,14 +1040,22 @@ class IVPSolver:
                 meta = json.loads(str(d["meta"]))
                 arrays = {k: d[k] for k in d.files if k != "meta"}
         changed = compare_identity(meta, self, allow, "load_checkpoint", path)
-        self._apply_checkpoint(meta, arrays)
+        self._check_options(meta)
+        check_payload(meta, arrays, self.X.shape, path)
+        stale = self._stale_history(meta, changed, allow, path)
+        self._apply_checkpoint(meta, arrays, keep_history=not stale)
         self._restart_changes = list(meta.get("restart_changes", [])) + [
             f"restart from {path.name} (t = {float(meta['t']):g}) with {change} (allowed by "
             f"allow={allow!r})" for change in changed]
+        if stale:
+            self._restart_changes.append(
+                f"restart from {path.name}: multistep history discarded ({stale}); the next steps "
+                f"use the start-up {self.startup!r} from the state")
         # read by cn.io.CheckpointSeries: is a checkpoint directory this run's own?
         self._restart_path, self._restart_iteration = path, self.iteration
 
-    def _apply_checkpoint(self, meta: dict, arrays: Mapping[str, np.ndarray]) -> None:
+    def _check_options(self, meta: dict) -> None:
+        """Refuse a checkpoint of other numerics; nothing of the solver changes here."""
         for key in ("scheme", "dt", "startup", "startup_substeps", "n", "reduced", "ordering"):
             mine = dict(scheme=self.scheme, dt=self.dt, startup=self.startup,
                         startup_substeps=self.startup_substeps, n=self.system.n,
@@ -1051,12 +1073,68 @@ class IVPSolver:
                                   "numerics silently)",
                                   fix=f"build the solver with bc_time={old!r} to restart from "
                                       "this checkpoint", doc="docs/site/guide/timesteppers.md")
+        if "time_parameter" not in meta:
+            from ..io._identity import CheckpointWarning
+            warnings.warn("load_checkpoint: the checkpoint was written before checkpoints "
+                          "recorded time_parameter: the role of the time parameter was not "
+                          "compared. Re-save it after the restart to record it.",
+                          CheckpointWarning, stacklevel=3)
+        elif meta["time_parameter"] != self.time_parameter:
+            raise OptionError(f"checkpoint mismatch on time_parameter: "
+                              f"{meta['time_parameter']!r} vs {self.time_parameter!r}",
+                              why="the parameter that follows the clock is part of the equation: "
+                                  "u_t = q is u_t = t with time_parameter='q' and a constant "
+                                  "forcing without it",
+                              fix=f"build the solver with time_parameter="
+                                  f"{meta['time_parameter']!r} to restart from this checkpoint",
+                              doc="docs/site/guide/timesteppers.md")
+
+    def _stale_history(self, meta: dict, changed: list[str], allow: tuple, path: Path) -> str:
+        """What makes the stored multistep history invalid for this solver ('' if nothing). The
+        history holds M X, F and (CN family) L X in the row order of the writer, so it belongs to
+        those operators. With an allowed change the state is continued without it; without one
+        (the same equations declared in another order) the restart is refused."""
+        if not meta["nhist"] and not meta.get("nhist_LX", 0):
+            return ""
+        old = meta.get("history_operators")
+        from ..io._identity import CheckpointWarning, history_operators
+        if old is None:
+            if not changed:
+                return ""
+            why = "the checkpoint does not record its operators"
+        else:
+            mine = history_operators(self)
+            names = {"M": "the mass matrix", "F": "the explicit right-hand side",
+                     "L": "the linear operator"}
+            held = ["M", "F"] + (["L"] if meta.get("nhist_LX", 0) else [])
+            diff = [names[k] for k in held if old.get(k) != mine.get(k)]
+            why = " and ".join(diff) + " changed" if diff else ""
+        if not why:
+            return ""
+        if not changed and "equations" not in allow:
+            raise OptionError(
+                f"load_checkpoint: {path} holds a multistep history of other rows: {why}",
+                why="the equations are the same set, declared in another order; the stored "
+                    "M X, F and L X histories follow the order of the writer",
+                fix="declare the equations in the order of the first run, or "
+                    "allow=('equations',) to continue from the state alone (the history is "
+                    "discarded and recorded by explain())", doc="docs/site/guide/io.md")
+        warnings.warn(f"load_checkpoint: multistep history of {path.name} discarded: {why}. The "
+                      f"next steps use the start-up {self.startup!r} from the state.",
+                      CheckpointWarning, stacklevel=3)
+        return why
+
+    def _apply_checkpoint(self, meta: dict, arrays: Mapping[str, np.ndarray],
+                          keep_history: bool = True) -> None:
         dev = (lambda a: np.array(a, copy=True)) if self.backend == "cpu" else self.xp.asarray
         self.X = dev(arrays["X"])
-        self._MXh = deque(dev(arrays[f"MX{i}"]) for i in range(meta["nhist"]))
-        self._Fh = deque(dev(arrays[f"F{i}"]) for i in range(meta["nhist"]))
-        self._LXh = deque(dev(arrays[f"LX{i}"]) for i in range(meta.get("nhist_LX", 0)))
+        nh, nl = (meta["nhist"], meta.get("nhist_LX", 0)) if keep_history else (0, 0)
+        self._MXh = deque(dev(arrays[f"MX{i}"]) for i in range(nh))
+        self._Fh = deque(dev(arrays[f"F{i}"]) for i in range(nh))
+        self._LXh = deque(dev(arrays[f"LX{i}"]) for i in range(nl))
         self.iteration, self.t = int(meta["iteration"]), float(meta["t"])
+        self._history_origin = (int(meta.get("history_origin", 0)) if keep_history
+                                else self.iteration)
         self._t_origin, self._it_origin = float(meta["t_origin"]), int(meta["it_origin"])
         t_init = meta.get("t_initial")             # None: written before the record
         self._t_initial = None if t_init is None else float(t_init)
@@ -1152,7 +1230,7 @@ class IVPSolver:
         eff = getattr(self, "effective_order", None) if self.scheme in _SCHEME_INFO else None
         lines = [head, "  scheme: " + scheme_description(self.scheme, eff)]
         if eff is not None and eff < _SCHEME_INFO[self.scheme][3]:
-            # the start-up or the boundary data cap the observed order (review finding 17, audit
+            # the start-up or the boundary data cap the observed order (audit
             # invariance): said where the order is
             lines.append("  " + self._effective_order_text(eff))
         if getattr(self, "_fused", None) is not None or getattr(self, "_sfused", None) is not None:

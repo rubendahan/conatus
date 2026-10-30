@@ -62,7 +62,7 @@ def test_spod_of_a_vector_ar1_process_matches_the_closed_form_spectrum():
     # ratios 0.997 / 1.003 / 1.016 on this seed, within 1.6 % on seeds 1-3)
     assert np.all(np.abs(ratio.mean(axis=0) - 1) < 0.03), ratio.mean(axis=0)  # over 64 frequencies
     assert abs(ratio[:, 0].mean() - 1) < 0.02, ratio[:, 0].mean()
-    lo, hi = sp.confidence(0.001)
+    lo, hi = sp.confidence(0.001, approximate=True)
     inside = (lo[:, :3] < exact) & (exact < hi[:, :3])
     assert np.all(inside.mean(axis=0) > 0.95), inside.mean(axis=0)
     # well separated eigenvalues (ratio of exact S_j > 2): the ordering is recovered

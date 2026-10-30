@@ -1,6 +1,6 @@
 """Periodic HDF5 checkpoints on the GPU backend (``sim.checkpoints``) and restart from
 ``cn.io.latest``: a run split in two jobs equals the uninterrupted run bit for bit, for a
-one-step and a multistep scheme (finding 2; gpu1 campaign). Skipped without a GPU."""
+one-step and a multistep scheme (gpu1 campaign). Skipped without a GPU."""
 import numpy as np
 import pytest
 

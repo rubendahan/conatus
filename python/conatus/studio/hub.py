@@ -659,7 +659,7 @@ button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
 </form></body></html>"""
 
 
-# Answer to a successful sign-in (review F11): the session key goes to the page in a meta tag,
+# Answer to a successful sign-in: the session key goes to the page in a meta tag,
 # and /login-done.js (no inline script: CSP) keeps it in the storage of this origin, then opens the
 # app. The key is never in a URL, a cookie or a log.
 LOGIN_DONE_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
@@ -848,13 +848,13 @@ class Compare(Api):
 
 
 class NoRegistry(Api):
-    """``GET /api/registry...``: the run registry stays on the cluster; the hub answers an
-    empty list with the reason (the app's Details panel asks for it)."""
+    """``GET /api/registry...``: the hub, local or remote, does not read the run registry; it answers
+    an empty list with the reason (the app's Details panel asks for it)."""
     def get(self, rest: str = "") -> None:
         """Empty answer, explicit."""
         self.write({"runs": [], "registry": None,
-                    "note": "the hub holds no run registry (conatus.runs stays on the cluster; "
-                            "the local Studio server shows it)"})
+                    "note": "this server does not read the run registry; on the machine or cluster "
+                            "that holds it, use conatus.runs.find and conatus.runs.compare"})
 
 
 class Jobs(Api):

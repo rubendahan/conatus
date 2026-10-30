@@ -94,7 +94,7 @@ conatus::Csr<T> to_csr(int n, IArr1 indptr, IArr1 indices, Arr1<T> data) {
 }
 
 // The host IMEX integrator plus the owning reference to its Python right-hand side (see
-// bind_linalg, finding 43). tp_traverse reports that reference to the garbage collector,
+// bind_linalg). tp_traverse reports that reference to the garbage collector,
 // tp_clear drops it (and the borrowing std::function first) when a cycle is collected.
 template <class T>
 struct ImexPy : conatus::ImexIntegrator<T> {
@@ -195,7 +195,7 @@ void bind_linalg(nb::module_& m, const char* suffix) {
     // The Python callback F is owned by the bound object (ImexPy::py_rhs), not by the C++
     // std::function (which only borrows it): the type then exposes it to the garbage collector
     // (tp_traverse / tp_clear below), so a callback that refers to its integrator is a cycle the
-    // collector sees and frees (review finding 43; it leaked before).
+    // collector sees and frees (it leaked before).
     using IM = ImexPy<T>;
     std::string im = std::string("Imex") + suffix;
     nb::class_<IM>(m, im.c_str(), nb::type_slots(ImexPy<T>::slots))

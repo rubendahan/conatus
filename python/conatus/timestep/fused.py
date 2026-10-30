@@ -46,7 +46,7 @@ import numpy as np
 from ..ir import expr as E
 from ..ir.bases import Chebyshev, ComplexFourier, RealFourier
 from . import xp_transforms as XT
-from .spectral import SpectralError
+from .spectral import SpectralError, integration_weights
 from .fused_expand import (  # noqa: F401 (re-export: moved to fused_expand.py)
     Factor, Mono, _add_into, _akey, _comps, _cross_monos, _fkey, _form, _formkey, _mul_monos, _peel,
     expand_general, expand_polynomial,
@@ -406,7 +406,8 @@ class FusedRHS:
         """General form (see ``expand_general``): distinct linear forms (one backward transform
         each), grid outputs (either one per distinct product, or one per (output, post-operator)
         sum, whichever is fewer: forward transforms), post-operators per equation output."""
-        fourier_axes = [i for i, b in enumerate(self.bases) if not isinstance(b, Chebyshev)]
+        fourier_axes = [i for i, b in enumerate(self.bases)
+                        if isinstance(b, (RealFourier, ComplexFourier))]
         forms: dict = {}
         atoms: dict = {}
         per_out: dict = {}              # (k, comp) -> [(c, post, form indices)]
@@ -940,15 +941,16 @@ class FusedRHS:
         memo: dict = {}
 
         def post(g: int, dc: tuple, ig: tuple):
-            """Integrated terms: integrals first (a zero-mode slice), then the derivatives
+            """Integrated terms: integrals first (the weights of the basis), then the derivatives
             (they commute; the derivative along an integrated axis was dropped at compile).
             Iterative (no recursive closure)."""
             z = (0,) * nd
             if (g, z, ig) not in memo:
                 r = O[g]
                 for ax in [i for i, f in enumerate(ig) if f]:
-                    r = r[tuple(slice(0, 1) if i == ax else slice(None) for i in range(nd))]
-                    r = r * self.bases[ax].length
+                    w = xp.asarray(integration_weights(self.bases[ax]))
+                    w = w.reshape((1,) * ax + (-1,) + (1,) * (nd - ax - 1))
+                    r = xp.sum(r * w, axis=ax, keepdims=True)
                 memo[(g, z, ig)] = r
             for prev, cur, ax in _peel(dc):
                 if (g, cur, ig) not in memo:

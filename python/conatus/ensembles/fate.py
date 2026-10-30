@@ -68,7 +68,7 @@ def ensemble_fate(ens, classify: Callable, *, check_every: int, min_steps: int, 
     ``classify(ens) -> int array (B,)`` (0 = undecided); ``classifier``: its description (thresholds),
     stored in the result; ``record(ens) -> dict`` optional per-check record."""
     from ..errors import check_count
-    # counts are integers, never truncated (finding 66)
+    # counts are integers, never truncated
     check_every = check_count(check_every, "check_every", "ensemble_fate")
     max_steps = check_count(max_steps, "max_steps", "ensemble_fate")
     min_steps = check_count(min_steps, "min_steps", "ensemble_fate", minimum=0)
@@ -81,7 +81,7 @@ def ensemble_fate(ens, classify: Callable, *, check_every: int, min_steps: int, 
     hist = []
     steps = 0
     while steps < max_steps:
-        # the last chunk stops at the horizon (finding 67: check_every=4,
+        # the last chunk stops at the horizon (check_every=4,
         # max_steps=10 ran to step 12); the final check happens at max_steps exactly
         chunk = min(check_every, max_steps - steps)
         ens.run(chunk)
@@ -93,7 +93,7 @@ def ensemble_fate(ens, classify: Callable, *, check_every: int, min_steps: int, 
         if not np.array_equal(lab, raw):
             raise OptionError("classify must return integer labels (0 = undecided); got "
                               f"non-integer values {raw[lab != raw][:3]!r}",
-                              why="a label must fit in full (finding 66)")
+                              why="a label must fit in full")
         if record is not None:
             hist.append(record(ens))
         if steps >= min_steps:

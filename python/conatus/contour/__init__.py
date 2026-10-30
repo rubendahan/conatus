@@ -11,7 +11,7 @@
   ``m.eigenvalues(N, ..., region=...)`` (:class:`RegionEVPResult`).
 
 ``T`` is a pair ``(L, M)`` (the pencil ``L + z M``), a :class:`conatus.floquet.HillBlocks` or a
-callable ``z -> matrix`` (or scalar). Mathematics: guide:
+callable ``z -> matrix`` (or scalar). guide:
 ``docs/site/guide/dynamics/contour.md``.
 """
 from __future__ import annotations

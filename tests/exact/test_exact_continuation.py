@@ -244,7 +244,7 @@ def test_crossing_located_when_the_secant_lands_on_it():
 def test_uniform_fold_relative_residual_scale_vanishes():
     """Same fold without the passive unknown: at r = -1/4 the state u = -1/2 spans the kernel of
     A = 1 + 2u - D d^2, so A x = 0 and b = u^2 + r = 0 as assembled vectors. The former scale
-    max(|A x|, |b|) vanished there: the fold location stalled 1.8e-6 away (finding 96; the old xfail note said 1e-9) and was flagged not converged. The scale now
+    max(|A x|, |b|) vanished there: the fold location stalled 1.8e-6 away (the old xfail note said 1e-9) and was flagged not converged. The scale now
     includes |p G_p| (the parameter's own terms, which do not cancel) and the fold converges."""
     st, _, o = _fold_problems(passive=False)
     newton = NewtonSolver(st, tolerance=1e-13, damping=1.0, max_iterations=30, params={"r": -0.2})

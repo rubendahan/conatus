@@ -27,8 +27,9 @@ The report uses the following formulas and assumptions:
   at the actual N); a from rho = |d_2| / |d_1| = e^{-a h_1} (1 - e^{-a h_2}) / (1 - e^{-a h_1})
   (h_i the increments of N, d_i the successive differences), and e_s = F_s |d_2| / (e^{a h_2} - 1)
   (with equal increments: F_s |d_2| rho / (1 - rho), the geometric tail of the next differences);
-  flagged when the differences do not decrease geometrically (rho >= h_2 / h_1) or when tuple
-  resolutions are refined in different proportions;
+  flagged when the differences change sign (a real exponential is monotone in N; the estimate
+  is then the larger difference), when they do not decrease geometrically (rho >= h_2 / h_1) or
+  when tuple resolutions are refined in different proportions;
 * **total**: value q3 (finest N and dt; the Richardson value is reported, never substituted),
   error = e_t + e_s (a sum: independent sources, no quadrature assumed), interval = value +- error.
 
@@ -206,7 +207,7 @@ def _spatial(values: list[float], Ns: list) -> _Study:
     st.ratio = rho
     spacing = _spacing(Ns)
     if spacing is None:
-        # finding 12: the tail formula assumes the actual increments of N;
+        # the tail formula assumes the actual increments of N;
         # entries refined in different proportions leave no single N to model it with
         st.flags.append("tuple resolutions refined in different proportions: the geometric "
                         "model of the spatial error cannot be applied (refine every entry in the "
@@ -221,8 +222,14 @@ def _spatial(values: list[float], Ns: list) -> _Study:
                         + "): not resolved")
         st.estimate = abs(d2)
         return st
+    if (d1 > 0) != (d2 > 0):
+        # a > 0 has successive differences of one sign
+        st.flags.append("successive differences change sign: the monotone exponential model of "
+                        "the spatial error does not apply")
+        st.estimate = max(abs(d1), abs(d2))
+        return st
     # remaining error after the finest N under q(N) = q_inf + C e^{-a N} at the actual N
-    # (review finding 12: N = [1, 4, 5] was modelled as equally spaced, error 13.6x too small);
+    # (N = [1, 4, 5] was modelled as equally spaced, error 13.6x too small);
     # equal steps give |d2| rho / (1 - rho), the geometric tail sum of the next differences
     st.estimate = SAFETY * abs(d2) / math.expm1(a * h2)
     return st

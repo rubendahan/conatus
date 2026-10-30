@@ -282,7 +282,7 @@ class NewtonSolver:
             plan.check()
         gdata = {f: plan._as_grid(f, d) for f, d in ncc.items()}
         rhs = plan._rhs_coeffs(gdata)
-        dtype = complex if plan.layout.complex else float
+        dtype = complex if plan.layout.complex or self._complex_unknowns() else float
         out = []
         for g in plan.groups:
             gm = plan._assemble(g)
@@ -293,10 +293,14 @@ class NewtonSolver:
             out.append((g, gm.L, b, x))
         return plan, out
 
+    def _complex_unknowns(self) -> bool:
+        """A declared complex unknown is complex on any basis, Fourier or not."""
+        return any(v.dtype.kind == "c" for v in self.problem.variables)
+
     def initial_coeffs(self, guess: Mapping[E.Field, Any]) -> dict[str, np.ndarray]:
         """Coefficient arrays of an initial guess (linear-only unknowns start at 0)."""
         probe = discretize(self.newton, params=self.params)
-        dtype = complex if probe.layout.complex else float
+        dtype = complex if probe.layout.complex or self._complex_unknowns() else float
         coeffs = {}
         for v in self.problem.variables:
             if v in guess:
@@ -312,7 +316,7 @@ class NewtonSolver:
         if missing:
             raise ProblemError(f"initial guess required for {missing} (they enter nonlinearly)")
         probe = discretize(self.newton, params=self.params)
-        cplx = probe.layout.complex
+        cplx = probe.layout.complex or self._complex_unknowns()
         dtype = complex if cplx else float
         coeffs = {}
         for v in self.problem.variables:
@@ -339,6 +343,7 @@ class NewtonSolver:
             rhs = plan._rhs_coeffs(gdata)
             new = {n: a.copy() for n, a in coeffs.items()}
             res = scale = raw = 0.0
+            overflow = False
             targets = []
             for g in plan.groups:
                 gm = plan._assemble(g)
@@ -347,6 +352,9 @@ class NewtonSolver:
                 b = plan._group_rhs(g, rhs, gm)
                 x = _pack(plan, g, coeffs, np.result_type(b, gm.L.dtype, dtype))
                 Ax = gm.L @ x
+                if not (np.all(np.isfinite(Ax)) and np.all(np.isfinite(b))):
+                    overflow = True
+                    break
                 # each row in units of its own largest coefficient (audit invariance,
                 #): the relative residual of c F(u) = 0 is that of F(u) = 0 whatever
                 # c and whichever equation it multiplies; with one global scale an equation
@@ -359,6 +367,11 @@ class NewtonSolver:
                 res = max(res, float(np.max(np.abs(Ax - b) / rn)))
                 scale = max(scale, float(np.max(np.abs(Ax) / rn)), float(np.max(np.abs(b) / rn)))
                 targets.append((g, gm, b, x))
+            if overflow:
+                # Ax - b is not a number: max() would skip it and report a residual of zero
+                #. Not converged, and no further step from such data.
+                iterations.append(NewtonIteration(k, np.inf, np.inf, None))
+                break
             rel = res / max(scale, 1e-300)
             iterations.append(NewtonIteration(k, raw, rel, None))
             if rel <= self.tolerance:

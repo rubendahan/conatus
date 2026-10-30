@@ -418,7 +418,7 @@ class ParameterValues(dict):
             self[k] = v
 
     def __ior__(self, other: Any) -> ParameterValues:  # type: ignore[override,misc]
-        """``m.params |= {...}``: the validated update (review finding 28: dict.__ior__ wrote
+        """``m.params |= {...}``: the validated update (dict.__ior__ wrote
         NaN and undeclared names without any check). All values are checked before any is
         written."""
         new = dict(other)
@@ -701,7 +701,7 @@ class Model:
                                 fix='m.define("L2(f) = dy(dy(f)) - alpha**2*f")', doc=_DOC)
         name, args, body = mt.group(1), tuple(a.strip() for a in mt.group(2).split(",") if a.strip()), mt.group(3)
         self._check_name(name, "operator")
-        # arguments: distinct identifiers (review finding 31: "pick(a, a) = a" was accepted and
+        # arguments: distinct identifiers ("pick(a, a) = a" was accepted and
         # bound the last value silently)
         bad = [a for a in args if not _NAME.match(a)]
         if bad:
@@ -740,7 +740,8 @@ class Model:
             from ..solvers.parametric import GROWTH_BY_NAME
             g = GROWTH_BY_NAME.get(name)
             rule = ({"real": f"growth = Re {name} (a growth rate of exp({name} t))",
-                     "imag": f"growth = Im {name} (a phase speed of exp(i alpha (x - {name} t)))"}
+                     "imag": f"growth rate = alpha Im {name} (a phase speed of exp(i alpha (x - {name} t))); "
+                             f"modes are ranked by Im {name}, which is the growth order for alpha > 0"}
                     [g] + " guessed from the name") if g else (
                 f"modes ranked by Re {name} (v0.1 default; critical() refuses)")
             _warn_user(f"m.eigenvalue({name!r}) without growth=: {rule}. Declare it: "

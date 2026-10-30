@@ -1,5 +1,5 @@
 """tests/parse/roundtrip_scripts.py reports a script that fails or times out as a failed round
-trip (review finding 100: it returned 0 when the equations declared before the failure
+trip (it returned 0 when the equations declared before the failure
 round-tripped, so a crashing tutorial counted as checked)."""
 import json
 import sys

@@ -1,4 +1,4 @@
-# t12_chaos_ensembles: PASS (exit 0) in 136.6 s | 2026-10-21 | script sha256 26241358f979bb75
+# t12_chaos_ensembles: PASS (exit 0) in 103.2 s | 2026-10-30 | script sha256 26241358f979bb75
 Lyapunov spectrum of the discrete map (RK443, dt = 0.01, backend = cpu): 3 vector(s), 32 trajectory(ies)
   transient 1000 steps, tangent transient 1000 steps, average over T = 100 per trajectory (1000 QR every 10 steps = 0.1)
   inner product: Euclidean on the coefficient vector; projection: none; seed 1

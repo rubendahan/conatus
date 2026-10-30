@@ -178,7 +178,7 @@ def least_stable(Re: float, N: int) -> dict:
 def _computed(name: str) -> int:
     """Calls of ``name`` that ran the function (the registry's runs that reuse nothing). Not a
     counter read by least_stable: the values a function reads, module globals and class
-    attributes alike, are part of its cache key (0.1.1, review finding 49 and the identity
+    attributes alike, are part of its cache key (0.1.1, the identity
     review), so a counter it reads would change the key at every call."""
     return sum(r.rec["reused_from"] is None for r in R.find(name=name))
 
@@ -221,7 +221,9 @@ def test_reproduce_a_decorated_call():
     f = R.track("toy_rep")(least_stable)
     f(50.0, 8)
     run = R.find(name="toy_rep")[0]
-    rep = run.reproduce()
+    with pytest.raises(OptionError, match="trust_record=True"):
+        run.reproduce()
+    rep = run.reproduce(trust_record=True)
     assert rep.identical and rep.new.parent == run.id and rep.code_identical
 
     @R.track("with_block")

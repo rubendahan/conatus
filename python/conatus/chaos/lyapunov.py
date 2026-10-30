@@ -1,6 +1,6 @@
 """Lyapunov spectrum (Benettin / QR), covariant Lyapunov vectors (Ginelli et al. 2007),
 Kaplan–Yorke dimension and finite-time exponents of a discretized IVP.
-Notes:
+
 
 What is computed is the spectrum of the **discrete map** of the solver (same scheme, same dt):
 the tangent is the exact derivative of the step (``chaos.tangent``), not a separate discretization
@@ -451,6 +451,16 @@ def lyapunov_spectrum(solver, x0, *, n_vectors: int, transient_steps: int,
     V = xp.asarray(np.stack([r.standard_normal((k, n)) for r in rngs]))
     if project is not None:
         V = project(V)
+        # the vectors must stay independent in the projected subspace: a QR
+        # beyond its dimension fills the rest with directions outside it, of exponent -inf
+        V0 = np.asarray(V if xp is np else xp.asnumpy(V))[0]
+        sv = np.linalg.svd(V0, compute_uv=False)
+        rank = int(np.count_nonzero(sv > max(n, k) * np.finfo(float).eps * 16 * sv[0])) if sv[0] > 0 else 0
+        if rank < k:
+            raise OptionError(f"n_vectors = {k} exceeds the dimension of the projected subspace "
+                              f"(numerical rank {rank} of the projection, on {k} random vectors)",
+                              why="k independent tangent vectors need a subspace of dimension >= k",
+                              fix=f"n_vectors <= {rank}")
     V, _ = _qr(xp, V, sq)
 
     def advance(V, nsteps):

@@ -11,7 +11,7 @@ bool cuda_backend_compiled() { return false; }
 namespace detail {
 [[noreturn]] static void no_cuda(MemorySpace s) {
     throw std::runtime_error(std::string("memory space '") + to_string(s) +
-                             "' needs the CUDA backend: rebuild with CONATUS_CUDA=ON (core/build.sh)");
+                             "' needs the CUDA backend: rebuild with -DCONATUS_CUDA=ON (install guide, building from source)");
 }
 void* space_alloc(MemorySpace s, std::size_t) { no_cuda(s); }
 void space_free(MemorySpace, void*, std::size_t) noexcept {}

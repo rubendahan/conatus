@@ -8,6 +8,7 @@ import numpy as np
 import scipy.linalg as sla
 
 from ..errors import OptionError, SpectralError
+from ..solvers.evp import refuse_singular_pencil
 
 __all__ = ["reduce_pencil"]
 
@@ -34,6 +35,7 @@ def reduce_pencil(M: np.ndarray, L: np.ndarray, cols: np.ndarray, F: np.ndarray,
         return np.abs(beta) > infinite_tol * np.abs(alpha)
 
     S, T, alpha, beta, Q, Z = sla.ordqz(-L / scale, M / scale, sort=finite, output="complex")
+    refuse_singular_pencil(L / scale, M / scale, alpha, beta)
     fin = finite(alpha, beta)
     k = int(fin.sum())
     if not fin[:k].all():

@@ -1,4 +1,4 @@
-# t04_bratu: PASS (exit 0) in 8.3 s | 2026-10-24 | script sha256 997fc91ce53266ca
+# t04_bratu: PASS (exit 0) in 6.1 s | 2026-10-30 | script sha256 997fc91ce53266ca
 Model 'Bratu': Box(x=walls(-1, 1)) (Cartesian box)
 Unknowns: u (scalar); parameters: lam = 0.3
 Equations as written:
@@ -21,7 +21,7 @@ Pseudo-arclength branch: 7 points, p in [0.3, 0.87704], stop: max_points = 6 rea
   ds = 0.2 in [1e-08, 0.6], x1.5 when the corrector takes <= 3 (default) its, /2 on failure
   corrector: tolerance 1e-12, budget 15 its; G_p: central FD, dp = 1e-06 (given)
   max points 6
-  events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(1, |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(1, |λ|))
+  events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(|λ|, 1e-3 median |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(|λ|, 1e-3 median |λ|))
   corrector failures (step halved): 0
   fold at p = 0.878457679781 between points (2, 3): |t_p| = 1.8e-17 at the located point, |G|/scale = 3.2e-16 [located by |t_p| <= fold_tol = 1e-12 (default)]
 fold: lam_c = 0.87845767978129

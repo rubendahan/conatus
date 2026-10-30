@@ -88,13 +88,22 @@ def lazy_images(app, doctree, docname):
 def pin_version(app, docname, source):
     """``@VERSION@`` in a page (code blocks included) becomes the version documented (conf.py
     ``release``, read from the package): the install commands are pinned to the release and stay
-    copyable (external review 0.1.0, finding 79: they held a literal ``<platform>``)."""
+    copyable (they held a literal ``<platform>``)."""
     source[0] = source[0].replace("@VERSION@", app.config.release)
+
+
+def drop_wrapper_ids(app, doctree, docname):
+    """The theme wraps tables and display equations in a container that copies their ids, so the
+    HTML has two elements with one id. The inner element keeps it."""
+    for box in doctree.findall(nodes.container):
+        inner = {i for child in box.children for i in child.get("ids", [])}
+        box["ids"] = [i for i in box["ids"] if i not in inner]
 
 
 def setup(app):
     app.connect("source-read", pin_version)
     app.connect("doctree-resolved", lazy_images)
+    app.connect("doctree-resolved", drop_wrapper_ids)
     app.add_directive("propositio", Propositio)
     app.add_directive("demonstratio", Demonstratio)
     app.add_directive("goal", Propositio)          # preferred names for new pages

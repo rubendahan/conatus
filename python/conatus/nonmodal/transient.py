@@ -4,7 +4,8 @@
 Runge–Kutta, all columns at once) over the admissible inputs Z. For a *steady* base flow the same
 code applies with L₀ = L and B± = 0; with the exact Gram factor F of ``Descriptor`` the result
 must equal G(t) = ‖e^{tA}‖²_E of ``StateSpace`` up to the time-stepping error (tested with the
-too (the historical ``growth.energy_factor`` uses the N-point Fejér rule, exact to degree N − 1
+observed order). ``gram_energy_factor`` gives the exact-Gram factor for any such operator
+(the historical ``growth.energy_factor`` uses the N-point Fejér rule, exact to degree N − 1
 only, while |u|² has degree 2N − 2: both converge spectrally, they differ at finite N).
 """
 from __future__ import annotations
@@ -44,6 +45,8 @@ class SteadyOperator:
         and boundary conditions) holds. Built from the null space of those rows of L0 restricted
         to the state columns; they must not involve pressure or taus (checked)."""
         alg = np.nonzero(~np.any(self.M != 0, axis=1))[0]
+        if alg.size == 0:                             # no algebraic row: every state is admissible
+            return np.eye(len(self.state_cols))
         other = np.setdiff1d(np.arange(self.n), self.state_cols)
         C = self.L0[np.ix_(alg, self.state_cols)]
         leak = self.L0[np.ix_(alg, other)]

@@ -21,6 +21,7 @@ dt u = A u + … moves the eigenvalue by
 so the tensor S_ij(y) = w_i ū†_i(y) u_j(y) / ⟨u†, u⟩ is the structural sensitivity and its norm
 S(y) = ‖u†(y)‖_w ‖u(y)‖_w / |⟨u†, u⟩|, with ‖v‖_w² = Σ_i w_i |v_i|², bounds |δσ| ≤ |g| ‖C₀‖ S(y):
 the *wavemaker*. All integrals are exact Chebyshev-series integrals (see ``_cheb``).
+
 """
 from __future__ import annotations
 

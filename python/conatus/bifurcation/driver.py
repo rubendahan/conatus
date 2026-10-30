@@ -281,7 +281,9 @@ class ArclengthDriver:
         tp_change = bool(a.tangent[-1] * b.tangent[-1] < 0)
         for name in self.tests:
             fa, fb = a.tests[name], b.tests[name]
-            if not (np.isfinite(fa) and np.isfinite(fb)) or fa * fb >= 0:
+            # signs, no product; a
+            # step landing exactly on the root is an event of the interval that ends there
+            if not (np.isfinite(fa) and np.isfinite(fb)) or fa == 0 or np.sign(fa) == np.sign(fb):
                 continue
             ev = self.locate(name, a, b, (i, i + 1))
             if tp_change and name not in ("fold", "lpc"):
@@ -302,15 +304,16 @@ class ArclengthDriver:
         best, why = b, f"secant budget event_max_iterations = {cfg.event_max_iterations} exhausted"
         tol = cfg.fold_tol if name == "fold" else cfg.crossing_tol
         conv = abs(f1) <= tol
+        lo, hi = (s0, f0), (s1, f1)           # the sign bracket
         for k in range(cfg.event_max_iterations):
             if conv:
                 break
-            if f1 == f0:
-                why = f"secant stalled at iterate {k}"
-                break
-            s2 = s1 - f1 * (s1 - s0) / (f1 - f0)
-            if not (min(0.0, b.s - a.s) - abs(b.s - a.s) <= s2 <= 2 * abs(b.s - a.s)):
-                s2 = 0.5 * (s0 + s1)          # keep the iterate near the bracket
+            # a test function can be flat on both sides of its root (N54: the smallest factor is a
+            # spectator pair away from the crossing): then the midpoint of the sign bracket
+            s2 = s1 - f1 * (s1 - s0) / (f1 - f0) if f1 != f0 else 0.5 * (lo[0] + hi[0])
+            if not (min(lo[0], hi[0]) - abs(b.s - a.s) <= s2 <= max(lo[0], hi[0]) + abs(b.s - a.s)) \
+                    or f1 == f0:
+                s2 = 0.5 * (lo[0] + hi[0])    # keep the iterate near the bracket
             try:
                 z, rel, _ = self.correct(a.z + s2 * a.tangent, a.tangent)
                 # Exactly at a branch point the bordered matrix is singular: LAPACK then warns
@@ -343,6 +346,10 @@ class ArclengthDriver:
             f2 = pt.tests[name] if name in pt.tests else float(f(pt))
             best = pt
             s0, f0, s1, f1 = s1, f1, s2, f2
+            if np.sign(f2) == np.sign(lo[1]):
+                lo = (s2, f2)
+            else:
+                hi = (s2, f2)
             if abs(f2) <= tol:
                 conv = True
         ev = CurveEvent(name, between, best, best.tests.get(name), bool(conv), "" if conv else why)

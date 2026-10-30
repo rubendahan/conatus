@@ -47,6 +47,7 @@ _RANK = ("rank or breakdown decision on singular values, pivots or a Krylov subd
 
 _ENTRIES = (
     Internal("ROUNDING_EQUAL", 1e-12, "rounding equality", _EQ, (
+        "conatus.adjoint.flowmap:FlowMap._require_complex_linear",
         "conatus.adjoint.stagetime:StageTimeFused.coefficient_time_of",
         "conatus.bifurcation.orbits:CollocationMesh.explain",
         "conatus.discretize.curvilinear_symmetry:_check_generator",
@@ -97,6 +98,7 @@ _ENTRIES = (
                  "conatus.ecs.solutions:_min_shift_distance",
              )),
     Internal("STRUCTURAL_ZERO", 1e-12, "structural zero", _ZERO, (
+        "conatus.diagnostics.euler:vector_potential",
         "conatus.continuation.ks:KSDomainContinuation.run",
         "conatus.discretize.curvilinear_symmetry:_ball_reg_sign",
         "conatus.discretize.curvilinear_symmetry:check_rows_in_subspace",

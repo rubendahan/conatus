@@ -2,6 +2,111 @@
 
 All notable changes to Conatus.
 
+## [0.2.2] - 2026-10-30
+
+A correction release from an external review of 0.2.1. Upgrading is recommended: several paths returned
+wrong values without an error, listed first under Fixed. Some calls that used to return a value now
+refuse, listed under Changed.
+
+### Security
+
+- Behaviour change: reproducing a decorated call now needs `fn=` or `trust_record=True`, and only trust
+  records you made. `run.reproduce()` used to import and call the function a run record names. A
+  registry you unpack or copy from someone else belongs to your account, so the ownership check did
+  not protect you: such a record could run code of its author's choosing when you called
+  `reproduce()` without `fn=`. Loading and searching a registry never ran code. The ownership and mode
+  checks still apply under `trust_record=True`. `reproduce()` in 0.2.1 and earlier is affected:
+  upgrade, and until then pass `fn=` for any record you did not make.
+
+### Fixed
+
+Wrong results returned without an error:
+
+- `FlowMap.vjp_physical` returns the Hermitian adjoint on complex states. It returned a bilinear
+  transpose, which could reverse the sign of a gradient. Real states are unchanged.
+- Integrals along a nonperiodic axis were wrong in the batched and fused right-hand sides and in their
+  tangent, for Chebyshev, Jacobi and ultraspherical bases.
+- A multistep restart reused its history after an operator had changed. A checkpoint now records the
+  operators: an allowed change discards the history with a warning and the declared start-up runs from
+  the state. Reordered equations with history are refused unless `allow=("equations",)` is passed.
+- `conj` of a native complex unknown is kept; it was dropped.
+- `normal_form` no longer changes its decision when an equation is multiplied by a constant.
+- The SPOD interval `confidence(alpha)` was reported for cases it does not cover. See Changed.
+- Standalone particles check the final position against the walls, and the first adaptive step
+  respects the bounds on `dt`.
+- The vector potential and the dye use the wavenumbers of the first derivative at Nyquist; a mode with
+  only Nyquist wavenumbers, which no grid curl produces, is refused.
+- Dye variance is centred before squaring, so it no longer loses a small variance at a large offset.
+- The first output of an integer value no longer fixes an integer dataset; a complex value after a real
+  one no longer fails. Integer tasks stay integer.
+- Optimized DMD returned NaN modes when the clock origin was far from the data.
+- POD and EDMD of integer snapshots wrapped in their Gram products.
+- `rbf` used an algebraic square for complex states and dropped the imaginary part of complex centers.
+- Hopf events no longer depend on stable spectator modes, in `PseudoArclength` and
+  `continue_equilibria`.
+- `cos_mode_observable` keeps the imaginary part of a complex vector; `discrete_shift` is a first-order
+  derivative for a nonlinear factory; Poincare cutoffs apply to the crossing time, and refined
+  crossings stay in their segment.
+- A parametric derivative no longer loses an order-one entry when its small coefficient is pruned.
+- Newton keeps a declared complex unknown complex on every basis.
+- `validity_radius` scans radii before it bisects, because the defect need not be monotone. The answer
+  is a sampled one and the docstring says so.
+- Subspace invariance is measured as the residual in the range of `M Q`.
+- A scalar neutral mode no longer returns a NaN residual.
+
+Refused or flagged with a clear message:
+
+- Singular pencils (`solve_dense`, descriptors), a degenerate cubic coefficient, non-finite eigenvalue
+  callbacks and Poincare sections, Lyapunov vectors beyond a projected dimension, an antilinear
+  right-hand side with `f_transpose="dense"`, products of different base-flow harmonics in
+  `periodic_operator` and `hill_from_plan`, and Newton on overflowed data.
+- `DataInnerProduct.gram` refuses non-finite and non-Hermitian matrices, also at extreme scales.
+- `uniform_dt` refuses infinite times and an overflowing step.
+- Restart and append guards compare `time_parameter`. `latest` skips an incomplete checkpoint with a
+  warning, and a load validates names and shapes before it changes the solver.
+- `xarray` export keeps user names; a colliding coordinate or coefficient array gets a free name, listed
+  in the Dataset attributes. XDMF comments and dataset references are valid XML.
+- Strict replay compares the source before the call and refuses a change; otherwise it warns and
+  records `code_identical=False`. Differences of booleans and large integers are exact.
+- A cached call that reads a file, the environment or an unseeded generator through an alias no longer
+  gets a content identity.
+
+### Changed
+
+- `SPOD.confidence(alpha)` holds for one entry and non-overlapping blocks and refuses other cases.
+  `confidence(alpha, approximate=True)` returns the same formula with a stated, measured coverage.
+- `spod(onesided=True)` refuses a Gram matrix with an imaginary part.
+- Optimized DMD with `times` not starting at 0: the amplitudes hold at the first time
+  (`DMD.time_origin`), and `reconstruct` takes times on the clock of the data.
+- `edmd(dt=...)` needs a finite `dt > 0` or `None`, as `dmd` does. `spod` and `welch_blocks` check `dt`
+  and the window.
+- `cn.uncertainty` flags spatial differences of opposite sign, so such a study is no longer `trusted`.
+- `count(control=(box, n))` counts no pole in the control box; `(box, n, poles)` declares them.
+
+### Documentation
+
+- The Studio guide starts the server first and then a run long enough to be seen live. It no longer
+  promises a registry view in the local hub.
+- The published pages now match the source pages for the nonmodal mathematics, Floquet and install
+  pages. `docs/site/build.sh --setup` works on the public tree.
+- The pipe-flow API states the tabulated frequencies and the sign of the eigenvalue of `exp(s t)`.
+- Corrections to the Kelvin-Helmholtz caption, the growth-rate rule (alpha Im c, for alpha > 0), the
+  energy slope, the weighted adjoint and tutorial 8, which now minimises over k.
+- Plots stay readable in the dark theme; duplicate page ids are removed.
+
+### Known limitations
+
+- A small residual does not show that a linear boundary-value solution is resolved. With an
+  under-resolved boundary layer (`nu = 1e-10`, `N = 32`, `nu*dz(dz(u)) - u = 1`, `u = 0` at both walls)
+  `solve()` returns values down to -1.995, where the solution lies in [-1, 0], with residual 7e-18 and no
+  warning. It also accepts `nu = 0` with two wall conditions. Check by raising `N`.
+- Contour counts are sampled tests, not proofs. `validity_radius` is sampled as well.
+- `SPOD.confidence(approximate=True)` is a pointwise approximation for many blocks and separated eigenvalues.
+- The dependency tracking of cached calls is name-based for a reader reached through an object method
+  (`Path.read_text` on a variable).
+- `solve_dense` removes a root at the scale of the noise of `M` and reports it in `infinite_ambiguous`,
+  because such a pencil cannot be told apart from a noise row in double precision.
+
 ## [0.2.1] - 2026-10-24
 
 A correction release for the local Studio. Upgrading is recommended for anyone who uses it: in

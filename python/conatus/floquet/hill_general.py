@@ -33,7 +33,7 @@ from ..errors import NumericalError, OptionError
 from .roots import (SECANT_MAX_ITERATIONS, SECANT_STEP, SecantRoot, check_allow_unconverged,
                     check_count, determinant_secant, unconverged)
 from .._deprecation import renames
-from ..errors import EquationError
+from ..errors import DiscretizationError, EquationError
 
 __all__ = ["HillBlocks", "hill_from_plan", "hill_from_blocks", "harmonic_matrices", "secant_root",
            "exponents_dense"]
@@ -285,7 +285,7 @@ class BandedHillFactorization:
 SOLVE_BACKWARD_ERROR_MAX = 1e-10
 
 # Reciprocal 1-norm condition below which an intermediate block-Thomas Schur complement is
-# not trusted (review finding 11): the banded pivoted LU is used instead. 1e-10 leaves ~6 of
+# not trusted: the banded pivoted LU is used instead. 1e-10 leaves ~6 of
 # the 16 digits of FP64 in the worst case of the unpivoted elimination step.
 THOMAS_RCOND_MIN = 1e-10
 
@@ -310,6 +310,12 @@ def _slogdet_from_pivots(d: np.ndarray, swaps: int) -> tuple[complex, float]:
 
 
 # ---------------------------------------------------------------------- builder from the IR plan
+#: relative tolerance of the combined-harmonics check of :func:`harmonic_matrices`
+JOINT_LINEARITY_TOL = 1e-9
+#: phase of the period at which :func:`harmonic_matrices` combines the harmonics (radians, generic)
+JOINT_PHASE = 1.0
+
+
 def harmonic_matrices(build: Callable[[Mapping[Any, Any]], Any],
                       base: Mapping[Any, Mapping[int, Any]], *, group: Any = None,
                       linearity_tol: float = 1e-12):
@@ -317,10 +323,11 @@ def harmonic_matrices(build: Callable[[Mapping[Any, Any]], Any],
 
     ``build(ncc)`` returns the plan (``discretize(problem, ncc=ncc)``); ``base[field][m]``
     is the harmonic U_m of each base field (callable on the grid, like any NCC; a missing
-    harmonic is zero). L_m = L(U := U_m) - L(U := 0). Two checks, both refusals: the base flow
-    must not enter the mass matrix (it would be dropped silently by the Hill form and by an
-    IMEX propagator), and L must be linear in U (L(2 U_m) - L(0) = 2 (L(U_m) - L(0)) to
-    ``linearity_tol`` relative). Shared by :func:`hill_from_plan` (Floquet) and
+    harmonic is zero). L_m = L(U := U_m) - L(U := 0). Two checks, both refusals, on each harmonic
+    and on a combination of all of them: the base flow must not enter the mass matrix (it would be
+    dropped silently by the Hill form and by an IMEX propagator), and L must be linear in U
+    (L(2 U_m) - L(0) = 2 (L(U_m) - L(0)) to ``linearity_tol`` relative; L(Σ w_m U_m) - L(0) =
+    Σ w_m L_m to ``JOINT_LINEARITY_TOL``). These are sampled checks. Shared by :func:`hill_from_plan` (Floquet) and
     :mod:`conatus.growth.periodic` (transient growth), so both see the same operator.
     """
     fields = list(base)
@@ -351,6 +358,39 @@ def harmonic_matrices(build: Callable[[Mapping[Any, Any]], Any],
                                 "Hill harmonics need L affine in the base flow",
                                 fix="make the problem linear in the base-flow NCC")
         blocks[m] = d1
+    if len(ms) > 1:
+        # One harmonic at a time, a product of two base fields with disjoint harmonics vanishes in
+        # every probe. The harmonics
+        # are combined here into the base flow at one phase of the period, exp(i m theta): L must be
+        # their weighted sum, and M must not move. The tolerance is wider than linearity_tol because the coefficient expansion of a
+        # sum is cut differently from the sum of the cut expansions.
+        wt = {m: np.exp(1j * m * JOINT_PHASE) for m in ms}
+
+        def joint(f):
+            parts = [(wt[m], base[f][m]) for m in ms if m in base[f]]
+            return lambda *X: sum(w * g(*X) for w, g in parts) if parts else 0.0 * X[0]
+
+        try:
+            Lj, Mj, _ = mats({f: joint(f) for f in fields})
+        except DiscretizationError as err:
+            from ..errors import CorrectnessWarning, _warn_user
+            _warn_user("the check that different base-flow harmonics do not multiply each other "
+                       f"did not run: the combined base flow is not resolved ({str(err).splitlines()[0]})",
+                       CorrectnessWarning)
+            return Mm, L0z, blocks, cols
+        tol = max(linearity_tol, JOINT_LINEARITY_TOL)
+        if np.abs(Mj - Mm).max() > tol * max(np.abs(Mm).max(), 1e-300):
+            raise EquationError("the base flow enters the mass (σ) term through a product of "
+                                "different harmonics; the Hill form here needs a mass matrix "
+                                "independent of the base flow",
+                                fix="keep the base flow out of the eigenvalue (mass) term")
+        want = sum(wt[m] * blocks[m] for m in ms)
+        scale = max(np.abs(Lj - L0z).max(), np.abs(want).max(), 1e-300)
+        if np.abs(Lj - L0z - want).max() > tol * scale:
+            raise EquationError("the problem is not linear in the base-flow NCC: different "
+                                "harmonics multiply each other; Hill harmonics need L affine in "
+                                "the base flow",
+                                fix="make the problem linear in the base-flow NCC")
     return Mm, L0z, blocks, cols
 
 

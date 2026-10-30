@@ -1,7 +1,7 @@
 """GPU tests: collected everywhere, skipped with a reason when no CUDA device is visible."""
 import pytest
 
-# the C++ core itself is required (never a skip reason, review finding 98): an import error here
+# the C++ core itself is required (never a skip reason): an import error here
 # fails the collection; only the absence of a CUDA build or of a device skips, with that reason
 from conatus.runtime import cuda as _cuda
 

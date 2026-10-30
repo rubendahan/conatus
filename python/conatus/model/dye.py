@@ -124,7 +124,7 @@ class DyeFile(AnalysisFile):
         if not isinstance(field, bool):
             raise OptionError(f"dye(field={field!r}): True (write the grid values) or False "
                               "(diagnostics only)", doc=_DOC)
-        # capabilities checked before any file is created or replaced (review finding 64: on the
+        # capabilities checked before any file is created or replaced (on the
         # sphere the file was created, then the first diagnostic failed in evaluate())
         if sim.compiled.coordsys.curvilinear:
             raise UnsupportedError(
@@ -136,7 +136,7 @@ class DyeFile(AnalysisFile):
         self.dye_name = name
         self.declared = getattr(sim.compiled.model, "_dyes", {}).get(name)
         geo = sim.compiled.model.geometry
-        # physical volume (half the doubled period on a sine/cosine axis: review finding 7)
+        # physical volume (half the doubled period on a sine/cosine axis)
         from .sincos import physical_length
         self.volume = float(np.prod([physical_length(sim.compiled, c) for c in geo.coord_names]))
         c = name
@@ -147,8 +147,9 @@ class DyeFile(AnalysisFile):
             return np.asarray(s.evaluate(f"integ({c})"))
 
         def variance(s):
-            m = float(s.evaluate(f"integ({c})"))
-            return np.asarray(float(s.evaluate(f"integ({c}*{c})")) - m * m / V)
+            # centred before squaring: integ(c*c) - m^2/V cancels all its digits under a large mean
+            d = f"({c} - ({float(s.evaluate(f'integ({c})')) / V!r}))"
+            return np.asarray(float(s.evaluate(f"integ({d}*{d})")))
 
         def minimum(s):
             return np.asarray(float(np.min(s.grid(c))))
@@ -166,7 +167,7 @@ class DyeFile(AnalysisFile):
 
         tasks.update(mass=mass, variance=variance, minimum=minimum, maximum=maximum, tail=tail)
         self._dye_sources = {"mass": f"integ({c}) (integral of the spectral series)",
-                             "variance": f"integ({c}*{c}) - integ({c})^2 / V, V = {V:g}",
+                             "variance": f"integ(({c} - m)^2), m = integ({c}) / V, V = {V:g}",
                              "minimum": f"min of the grid values of {c}",
                              "maximum": f"max of the grid values of {c}",
                              "tail": "largest |coefficient| among the last two modes of each "

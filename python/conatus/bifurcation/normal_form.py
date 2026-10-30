@@ -93,9 +93,18 @@ class ZeroEigenvalueNormalForm:
     h2: np.ndarray
     checks: dict = dc_field(default_factory=dict)
     notes: list = dc_field(default_factory=list)
+    #: a3 is zero up to kernel_tol x the size of its terms: the cubic truncation does not decide
+    degenerate: bool = False
 
     def amplitude(self, dp: float) -> float:
-        """Steady amplitude a of the pitchfork branch at p0 + dp (a² = −μ dp / a3), NaN if none."""
+        """Steady amplitude a of the pitchfork branch at p0 + dp (a² = −μ dp / a3), NaN if none.
+        Refused when a3 vanishes: the branch law then comes from higher orders."""
+        if self.degenerate:
+            raise ConvergenceError(f"normal_form: a3 = {self.a3:.2e} is zero up to kernel_tol: the "
+                                   "cubic normal form has no amplitude law here",
+                                   why="the amplitude is set by terms of order above three, which "
+                                       "this normal form does not compute",
+                                   fix="continue the branch with continue_equilibria")
         a2 = -self.mu * dp / self.a3
         return float(np.sqrt(a2)) if a2 >= 0 else float("nan")
 
@@ -106,7 +115,8 @@ class ZeroEigenvalueNormalForm:
               "pitchfork": "da/dt = μ Δp a + a3 a³"}[self.kind]
         crit = ""
         if self.kind == "pitchfork":
-            crit = " (supercritical)" if self.a3 < 0 else " (subcritical)"
+            crit = (" (degenerate: a3 = 0, the cubic term does not decide)" if self.degenerate
+                    else " (supercritical)" if self.a3 < 0 else " (subcritical)")
         lines = [f"Normal form ({self.kind}{crit}) at {self.parameter} = {self.params[self.parameter]:.12g}: {eq}",
                  f"  β = {self.beta:.10g}, μ = {self.mu:.10g}, a2 = {self.a2:.10g}, a3 = {self.a3:.10g}",
                  "  x ≈ x0 + a q + a²/2 h2, ‖q‖ = 1 (declared norm), pᵀM q = 1"]
@@ -191,8 +201,13 @@ def normal_form(system: DynamicalSystem, x0: np.ndarray, *, kind: str,
     (default Euclidean on the discrete vector, declared). ``symmetry``: optional linear map S
     (matrix or callable) with S G(x) = G(S x); the kernel parity S q = ±q is reported and a
     pitchfork is then *required* to have a2 = 0 up to ``kernel_tol`` (else refused).
-    ``kernel_tol``: the critical eigenvalue must satisfy |λ| (zero) or |Re λ| (Hopf) <= kernel_tol·(1+‖J‖),
-    and x0 must be an equilibrium, max|G(x0)| <= kernel_tol·max(1, ‖J‖)·max(1, ‖x0‖) (else refused).
+    ``kernel_tol``: with each row of (J, M, G) divided by its largest entry r_i in J or M, and
+    ν = max(1, ‖J‖/‖M‖) on those rows, the critical eigenvalue must satisfy |λ| (zero) or |Re λ|
+    (Hopf) <= kernel_tol·ν, and x0 must be an equilibrium, max|G_i(x0)|/r_i <=
+    kernel_tol·max(1, ‖x0‖) (else refused). Multiplying an equation by a constant changes none of
+    these. The fold test compares |β| with kernel_tol·max(1, Σ|p_i G_p,i|), and a3 is degenerate
+    below kernel_tol times the sum of its terms in absolute value; both sums have the same scaling
+    property.
     """
     if kind not in ("zero", "hopf"):
         raise OptionError(f"normal_form: kind must be 'zero' or 'hopf', got {kind!r}")
@@ -200,15 +215,21 @@ def normal_form(system: DynamicalSystem, x0: np.ndarray, *, kind: str,
     x0 = np.asarray(x0, float)
     J = system.J(x0, q_par)
     M = _dense(system.M).astype(float)
-    nJ = max(1.0, np.abs(J).max())
-    res_eq = float(np.max(np.abs(system.G(x0, q_par))))
+    # each equation in its own units, as dense QZ: c M x' = c G is the same equation
+    rows = np.maximum(np.abs(J).max(axis=1, initial=0.0), np.abs(M).max(axis=1, initial=0.0))
+    rows = np.where(rows > 0, rows, 1.0)
+    nJ = max(1.0, float(np.abs(J / rows[:, None]).max(initial=0.0))
+             / max(float(np.abs(M / rows[:, None]).max(initial=0.0)), 1e-300))
+    res_raw = np.abs(system.G(x0, q_par))
+    res_eq = float(np.max(res_raw))
+    res_row = float(np.max(res_raw / rows))
     # a normal form only exists at an equilibrium: x0 off the branch (
-    # finding 91: u' = p + u^2 at p = 1, u = 0, G = 1, was classified a fold) is refused, with
+    # u' = p + u^2 at p = 1, u = 0, G = 1, was classified a fold) is refused, with
     # the same relative tolerance as the critical eigenvalue
-    eq_tol = kernel_tol * nJ * max(1.0, float(np.max(np.abs(x0), initial=0.0)))
-    if not res_eq <= eq_tol:
-        raise ConvergenceError(f"normal_form: x0 is not an equilibrium (max|G(x0)| = {res_eq:.2e} > "
-                               f"kernel_tol·‖J‖·max(1, ‖x0‖) = {eq_tol:.2e})",
+    eq_tol = kernel_tol * max(1.0, float(np.max(np.abs(x0), initial=0.0)))
+    if not res_row <= eq_tol:
+        raise ConvergenceError(f"normal_form: x0 is not an equilibrium (max|G_i(x0)|/r_i = "
+                               f"{res_row:.2e} > kernel_tol·max(1, ‖x0‖) = {eq_tol:.2e})",
                                fix="converge x0 first (newton_equilibrium, or the located "
                                    "continue_equilibria event)")
     lam, vr, vl = generalized_eigenvalues(J, M, vectors=True)
@@ -243,7 +264,9 @@ def _zero_nf(system, x0, par, J, M, lam, vr, vl, i, parameter, weight, symmetry,
     a2 = 0.5 * float(p @ Bqq)
     h2 = _bordered_solve(J, M @ q, p @ M, 2 * a2 * (M @ q) - Bqq)
     res_h2 = float(np.max(np.abs(J @ h2 - (2 * a2 * (M @ q) - Bqq))))
-    a3 = float(p @ (system.C(x0, q, q, q, par) + 3 * system.B(x0, q, h2, par))) / 6.0
+    c3, b3 = system.C(x0, q, q, q, par), 3 * system.B(x0, q, h2, par)
+    a3 = float(p @ (c3 + b3)) / 6.0
+    a3_terms = float(np.abs(p) @ (np.abs(c3) + np.abs(b3))) / 6.0
     checks = {"max|G(x0)|": res_eq, "|λ_0|": float(abs(lam[i])),
               "‖J q‖": float(np.max(np.abs(J @ q))), "‖pᵀJ‖": float(np.max(np.abs(p @ J))),
               "residual h2": res_h2}
@@ -265,7 +288,7 @@ def _zero_nf(system, x0, par, J, M, lam, vr, vl, i, parameter, weight, symmetry,
         mu = float(p @ (system.Jp(x0, q, parameter, par) + system.B(x0, q, xp, par)))
         checks["residual x_p"] = float(np.max(np.abs(J @ xp + Gp - beta * (M @ q))))
     scale = max(abs(a2), abs(a3), abs(mu) if np.isfinite(mu) else 0.0, 1e-300)
-    if parameter is not None and abs(beta) > tol * max(1.0, np.abs(system.Gp(x0, parameter, par)).max()):
+    if parameter is not None and abs(beta) > tol * max(1.0, float(np.abs(p) @ np.abs(Gp))):
         kind = "fold"
     elif sym_parity == -1:
         kind = "pitchfork"
@@ -277,8 +300,12 @@ def _zero_nf(system, x0, par, J, M, lam, vr, vl, i, parameter, weight, symmetry,
         notes.append(f"a2 = {a2:.1e} <= {tol:g} x scale: pitchfork (no symmetry declared)")
     else:
         kind = "transcritical"
+    degenerate = kind == "pitchfork" and abs(a3) <= tol * a3_terms
+    if degenerate:
+        notes.append(f"a3 = {a3:.1e} <= {tol:g} x {a3_terms:.1e} (its terms): degenerate, the "
+                     "criticality and the amplitude law need higher orders")
     return ZeroEigenvalueNormalForm(kind, x0, dict(par), parameter or "", q, p, beta, mu, a2, a3,
-                                    h2, checks, notes)
+                                    h2, checks, notes, degenerate)
 
 
 def _hopf_nf(system, x0, par, J, M, lam, qv, pv, parameter, weight, res_eq):

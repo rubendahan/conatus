@@ -78,7 +78,7 @@ studio = ["tornado>=6.3"]
 # and FFTW; prefer `micromamba install -c conda-forge dedalus`.
 dedalus-compare = ["dedalus>=3.0"]
 # Documentation pages (Sphinx + MyST Markdown, docs/site/).
-docs = ["sphinx>=7", "myst-parser>=2"]
+docs = ["sphinx>=7", "myst-parser>=2", "furo", "numpydoc", "sphinx-copybutton", "sphinx-design", "matplotlib", "mpmath"]
 # Tests and lint (the CI): pytest + ruff; mpmath is used by a few high-precision oracles.
 dev = ["pytest>=8", "ruff>=0.5", "mpmath>=1.3"]
 all = ["conatus[tutorials,notebook,gpu,studio,docs,dev]"]

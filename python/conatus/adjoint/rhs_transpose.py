@@ -61,7 +61,7 @@ from ..ir import expr as E
 from ..ir.bases import Chebyshev, ComplexFourier, RealFourier
 from ..reference import transforms as T
 from ..timestep.fused import _formkey, expand_general, expand_polynomial
-from ..timestep.spectral import SpectralError
+from ..timestep.spectral import SpectralError, integration_weights
 from ..errors import OptionError
 
 __all__ = ["LinearizedRHS", "grid_T", "coeffs_T", "split_time", "eval_scalar"]
@@ -325,7 +325,8 @@ class LinearizedRHS:
         # form refuses a derivative of a product: the same switch, for all equations at once, as
         # FusedRHS._compile (so the tangent differentiates the forward F term by term)
         self.generals: list[dict | None] = [None] * len(s._rhs_exprs)
-        fourier_axes = [i for i, b in enumerate(self.bases) if not isinstance(b, Chebyshev)]
+        fourier_axes = [i for i, b in enumerate(self.bases)
+                        if isinstance(b, (RealFourier, ComplexFourier))]
         general = False
         for parts in parts_all:
             for _, se in parts:
@@ -591,9 +592,9 @@ class LinearizedRHS:
                 r = prodC[key]
                 if r is None:
                     continue
-                for ax, flag in enumerate(ig):                 # integrals first (zero mode)
+                for ax, flag in enumerate(ig):                 # integrals first (basis weights)
                     if flag:
-                        r = xp.take(r, xp.asarray([0]), axis=ax) * self.bases[ax].length
+                        r = ev._integrate(r, self.coords[ax], 0)
                 for ax, n in enumerate(dc):                    # then derivatives
                     for _ in range(n):
                         r = ev._diff(r, self.coords[ax], 0)
@@ -618,13 +619,10 @@ class LinearizedRHS:
                     if n:
                         r = (_apply_axis(self._dmatT(self.coords[ax], n), r, ax, xp)
                              if r.shape[ax] > 1 else 0 * r)     # derivative of a constant: 0
-                for ax, flag in enumerate(ig):                 # integralsᵀ: into the zero mode
+                for ax, flag in enumerate(ig):                 # integralsᵀ: the row of weights
                     if flag:
-                        z = xp.zeros(r.shape[:ax] + (full[ax],) + r.shape[ax + 1:], dtype=r.dtype)
-                        idx = [slice(None)] * r.ndim
-                        idx[ax] = slice(0, 1)
-                        z[tuple(idx)] = r * self.bases[ax].length
-                        r = z
+                        w = xp.asarray(integration_weights(self.bases[ax]))
+                        r = r * w.reshape((1,) * ax + (-1,) + (1,) * (r.ndim - ax - 1))
                 key = tuple(_formkey(f) for f in fs)
                 acc[key] = (fs, c * r if key not in acc else acc[key][1] + c * r)
             for fs, R in acc.values():

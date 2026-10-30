@@ -168,7 +168,7 @@ class DedalusTranslation:
                 "</table></div>")
 
     def to_script(self) -> str:
-        """A runnable Conatus program for this translation (finding 55: it
+        """A runnable Conatus program for this translation (it
         used to be a skeleton that did not run).
 
         The program embeds the Dedalus source, replays ``conatus.from_dedalus`` on it (with the
@@ -323,7 +323,7 @@ class _GridEval:
             if not isinstance(f, _NpFunc):
                 raise UnsupportedError(f"call of {ast.unparse(node.func)} in field data")
             # positional and keyword arguments, starred ones expanded: keywords used to be
-            # dropped (finding 53: np.linspace(0, 1, num=8) gave 50 points)
+            # dropped (np.linspace(0, 1, num=8) gave 50 points)
             args: list = []
             for a in node.args:
                 if isinstance(a, ast.Starred):

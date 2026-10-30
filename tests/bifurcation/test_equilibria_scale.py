@@ -1,4 +1,4 @@
-"""Finding 13: the finite / infinite classification of generalized
+"""The finite / infinite classification of generalized
 eigenvalues depended on the scale of the equations."""
 import numpy as np
 import pytest

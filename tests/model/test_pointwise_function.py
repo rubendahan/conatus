@@ -71,7 +71,7 @@ def test_derivative_name_never_overwrites_a_user_function():
     from conatus.ir.expr_algebra import _FUNCS
     def first(a):
         return a + 1.0
-    # the builders are kept: a declaration nothing uses is dropped from the registry (F5)
+    # the builders are kept: a declaration nothing uses is dropped from the registry
     g1 = pointwise("qrev_prime", first)
     g2 = pointwise("qrev", np.sin, derivative=np.cos)
     assert g1 and g2

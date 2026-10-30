@@ -137,7 +137,7 @@ SIDE_EFFECTS = ("Simulation.watch", "Simulation.output", "Simulation.checkpoints
 NO_WRITE = ("Simulation.resume_or_start",)
 
 # Calls whose argument VALUES ``check`` validates at the stop, by the side-effect-free method
-# the call itself runs first (review 0.1.1, F13: run(steps=-1) was reported ok). For every other
+# the call itself runs first (run(steps=-1) was reported ok). For every other
 # stop only the signature, the conditional tolerances and the discretization are checked; the
 # report's ``validated`` field says which applied.
 PREFLIGHT = {"Simulation.run": "_run_arguments", "IVPSolver.run": "_run_arguments"}

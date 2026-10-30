@@ -19,8 +19,9 @@ __all__ = ["pipe", "pipe_evp", "taylor_couette", "taylor_couette_evp"]
 
 _MT2003 = ("Meseguer & Trefethen (2003), J. Comput. Phys. 186, 178, Table 1, Re = 1000: "
            "(m, k) = (1, 1) centre mode -0.0708640053 + 0.8467498288i, wall mode "
-           "-0.0911426036 + 0.4691428789i (their sign convention of the frequency: the values "
-           "here are the conjugates); (m, k) = (1, 0): -0.0146819706. Linearly stable at every Re.")
+           "-0.0911426036 + 0.4691428789i as tabulated; the eigenvalue s of exp(s t) here is their "
+           "conjugate, -0.0708640053 - 0.8467498288i and -0.0911426036 - 0.4691428789i. "
+           "(m, k) = (1, 0): -0.0146819706. Linearly stable at every Re.")
 _TC_REF = ("eta = 0.5, outer cylinder at rest (mu = 0), axisymmetric modes: Re_c = 68.19 at "
            "k_c = 3.16 (Recktenwald, Luecke & Mueller 1993, Phys. Rev. E 48, 4444, Table I).")
 
@@ -42,9 +43,10 @@ def pipe(*, Nphi: int, Nr: int, Nz: int, Lz: float, Re: float, pressure_gradient
 
     Validation reference: linear stability of the laminar flow, :func:`pipe_evp`:
     Meseguer & Trefethen (2003), J. Comput. Phys. 186,
-    178, Table 1, Re = 1000: (m, k) = (1, 1) centre mode -0.0708640053 + 0.8467498288i, wall mode
-    -0.0911426036 + 0.4691428789i (conjugates of the tabulated values: opposite sign convention
-    of the frequency); (m, k) = (1, 0): -0.0146819706. Linearly stable at every Re.
+    178, Table 1, Re = 1000. The eigenvalues s returned here at (m, k) = (1, 1) are the centre mode
+    -0.0708640053 - 0.8467498288i and the wall mode -0.0911426036 - 0.4691428789i. A mode moving
+    downstream at speed c has Im s = -k c. The table lists the conjugates, with +i. At
+    (m, k) = (1, 0): -0.0146819706. Linearly stable at every Re.
     """
     cc = CylindricalCoordinates("phi", "r", "z")
     phi, r, z = cc["phi"], cc["r"], cc["z"]
@@ -82,9 +84,10 @@ def pipe_evp(*, N: int, Re: float, m: int, k: float) -> Ready:
     N), dealias 1 (linear; U0 is exact). No-slip tau placed by ``add_bc(..., into=0)``.
 
     Validation reference: Meseguer & Trefethen (2003), J. Comput. Phys. 186,
-    178, Table 1, Re = 1000: (m, k) = (1, 1) centre mode -0.0708640053 + 0.8467498288i, wall mode
-    -0.0911426036 + 0.4691428789i (conjugates of the tabulated values: opposite sign convention
-    of the frequency); (m, k) = (1, 0): -0.0146819706. Linearly stable at every Re.
+    178, Table 1, Re = 1000. The eigenvalues s returned here at (m, k) = (1, 1) are the centre mode
+    -0.0708640053 - 0.8467498288i and the wall mode -0.0911426036 - 0.4691428789i. A mode moving
+    downstream at speed c has Im s = -k c. The table lists the conjugates, with +i. At
+    (m, k) = (1, 0): -0.0146819706. Linearly stable at every Re.
     (tests/problems/test_problems_cylinders.py, N = 32.)
     """
     cc = CylindricalCoordinates("phi", "r", "z")

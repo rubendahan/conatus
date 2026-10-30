@@ -141,7 +141,7 @@ class BandedBatch:
                  level_schedule: bool = True, level_merge: bool = True, col_border: bool = False):
         cu = _need()
         mats = [sp.csr_matrix(A) for A in mats]
-        self.dtype = _factor_dtype(mats, dtype)       # every matrix counts (review finding 38)
+        self.dtype = _factor_dtype(mats, dtype)       # every matrix counts
         cls = cu.BandedBatchZ if self.dtype == np.complex128 else cu.BandedBatchD
         self.border_rows = [int(i) for i in border_rows]
         self._s = cls([csr_args(A, self.dtype) for A in mats], self.border_rows, bool(pivot),
@@ -256,7 +256,7 @@ class Imex:
         self.scheme, self.dt = scheme, float(dt)
         self._s = cls([csr_args(A, self.dtype) for A in Ms], [csr_args(A, self.dtype) for A in Ls],
                       [int(i) for i in border_rows], scheme, self.dt, bool(pivot))
-        def conv(a):    # a complex g/h into a real integrator is refused, not cut (finding 39)
+        def conv(a):    # a complex g/h into a real integrator is refused, not cut
             return None if a is None else solve_operand(a, self.dtype, "cuda.Imex (g, h)").ravel()
         self._pointwise = g is not None or h is not None
         self._s.set_pointwise_rhs(conv(g), conv(h))

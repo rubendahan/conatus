@@ -1,5 +1,6 @@
 """conatus.problems cylinders: Hagen--Poiseuille eigenvalues (Meseguer & Trefethen 2003),
 Taylor--Couette onset (Recktenwald et al. 1993), laminar pipe flow steady in the IVP."""
+import re
 import warnings
 
 import numpy as np
@@ -26,6 +27,23 @@ def test_pipe_meseguer_trefethen():
     plan0 = discretize(r0.problem, ncc=r0.ncc)
     v0 = eigenvalues(plan0, plan0.group(1, 0.0)).values
     assert abs(v0[np.argmax(v0.real)] - MT_K0) < 1e-10
+
+
+def test_pipe_reference_frequencies_have_the_sign_of_the_returned_eigenvalues():
+    """N05. Oracle: a mode exp(i k z + s t) moving downstream at speed c has Im s = -k c, and the
+    critical layer of U0 = 1 - r^2 puts c in (0, 1). The values printed in the docstring and in the
+    reference string must be the returned ones."""
+    r = P.pipe_evp(N=32, Re=1000.0, m=1, k=1.0)
+    plan = discretize(r.problem, ncc=r.ncc)
+    values = eigenvalues(plan, plan.group(1, 1.0)).values
+    for text in (P.pipe_evp.__doc__, r.reference):
+        text = " ".join(text.split())
+        for re_part, sign, im_part in re.findall(r"(-0\.0708640053|-0\.0911426036) ([-+]) (0\.\d+)i", text):
+            printed = complex(float(re_part), float(sign + im_part))
+            if sign == "-":
+                assert np.min(np.abs(values - printed)) < 1e-9
+                assert 0.0 < -printed.imag / 1.0 < 1.0
+        assert "-0.0708640053 - 0.8467498288i" in text and "-0.0911426036 - 0.4691428789i" in text
 
 
 def _tc_growth(Re, k=3.16, N=24):

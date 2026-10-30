@@ -259,7 +259,7 @@ class Registry:
                     except (OSError, ValueError, KeyError, TypeError, AttributeError,
                             sqlite3.Error) as err:
                         # one malformed run.json ({} or a list) is skipped and reported, never
-                        # breaks the search of the others (review finding 48: KeyError 'id')
+                        # breaks the search of the others (KeyError 'id')
                         skipped.append(f"{rid}: {type(err).__name__}: {err}")
                         continue
                     added += 1

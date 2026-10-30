@@ -246,12 +246,12 @@ def studio_watch() -> None:
                   every_s=0.5,                                       # wall seconds between frames
                   spool=spool_dir)                                   # where the Studio reads
     print(w.explain().splitlines()[0])
-    sim.run(steps=50)
+    sim.run(steps=6000)
     sim.unwatch()
     # [/watch]
     plain = m.simulate(N=(32, 16), scheme="RK443", dt=1e-3)
     plain.initial(T=lambda x, z: -z + 1e-3 * np.cos(np.pi * x) * np.cos(np.pi * z))
-    plain.run(steps=50)
+    plain.run(steps=6000)
     assert np.array_equal(plain.solver.X, sim.solver.X)      # watching never changes the numbers
     # normalisation (audit of 0.1.2, F08: np.mean over the component axis halved the energy):
     # u = (1, 0) has mean kinetic energy 1/2, u = (0, z) has (1/V) ∫ z²/2 dV = 1/24 on z in [-1/2, 1/2]

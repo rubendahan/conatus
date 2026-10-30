@@ -35,7 +35,7 @@ def _coord_args(fn: Callable, names: tuple[str, ...], what: str) -> tuple[str, .
     if any(p.kind in (p.VAR_POSITIONAL, p.VAR_KEYWORD) for p in params):
         raise InputTypeError(f"{what}: *args/**kwargs callables do not declare their coordinates",
                              fix=f"write lambda {', '.join(names)}: ...", doc=_DOC)
-    # the grids are passed by position (review finding 32: keyword-only arguments were accepted
+    # the grids are passed by position (keyword-only arguments were accepted
     # here, then the call failed with a TypeError far from the declaration)
     kwonly = [p.name for p in params if p.kind is p.KEYWORD_ONLY]
     if kwonly:

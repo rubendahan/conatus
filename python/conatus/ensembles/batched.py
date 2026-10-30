@@ -39,7 +39,7 @@ import numpy as np
 import scipy.sparse as sp
 
 from ..errors import OptionError, SpectralError, UnsupportedError
-from ..ir.bases import Chebyshev
+from ..ir.bases import ComplexFourier, RealFourier
 from ..runtime.banded import solve_operand
 from ..timestep.fused import _formkey, expand_general, expand_polynomial
 
@@ -158,7 +158,8 @@ class BatchedRHS:
                     general = True
                     break
         self.form = "general" if general else "polynomial"
-        fourier_axes = [i for i, b in enumerate(self.bases) if not isinstance(b, Chebyshev)]
+        fourier_axes = [i for i, b in enumerate(self.bases)
+                        if isinstance(b, (RealFourier, ComplexFourier))]
         # per equation: {comp: [(coef (scalar or per-member array), key)]}, keys = factor tuples
         # (polynomial) or (post, forms) (general); the constant RHS (no free field) stays with the
         # evaluator, evaluated once per distinct solver and broadcast
@@ -389,9 +390,9 @@ class BatchedRHS:
         for tag, cm, (dc, ig) in posts:
             k, comp, _ = tag
             r = coefs[tag]
-            for ax, flag in enumerate(ig):                     # integrals (zero mode)
+            for ax, flag in enumerate(ig):                     # integrals (weights of the basis)
                 if flag:
-                    r = xp.take(r, xp.asarray([0]), axis=nl + ax) * self.bases[ax].length
+                    r = ev._integrate(r, self.coords[ax], nl)
             for ax, n in enumerate(dc):                        # then derivatives
                 for _ in range(n):
                     r = ev._diff(r, self.coords[ax], nl)

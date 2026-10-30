@@ -1,6 +1,6 @@
 """tests/core exercises the compiled C++ core, which Conatus requires (it is never optional: the
 banded solves and the IMEX integrators live there). A core that cannot be imported fails the
-collection loudly, with the reason and the fix (review finding 98: these tests used to
+collection loudly, with the reason and the fix (these tests used to
 be dropped with a print, so a broken build passed as "nothing to test")."""
 try:
     import conatus.runtime  # noqa: F401

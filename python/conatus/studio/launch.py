@@ -420,7 +420,7 @@ class Launcher:
                      run_id=m_run.group(1), jobid=m_job.group(1) if m_job else None,
                      digest=out["digest"], command=out["command"])
         private_dir(self.registry.parent)
-        with open_private(self.registry, "a") as fh:     # 0600: user names, commands (F12)
+        with open_private(self.registry, "a") as fh:     # 0600: user names, commands
             fh.write(json.dumps(entry) + "\n")
         self._audit(op="submit", user=user, result="submitted", template=out["template"],
                     name=out["name"], params=out["params"], run_id=entry["run_id"], jobid=entry["jobid"])
@@ -485,7 +485,7 @@ class Launcher:
         entry = {"wall": time.time(), "iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), **entry}
         try:
             private_dir(self.audit_path.parent)
-            with open_private(self.audit_path, "a") as fh:   # 0600 (F12)
+            with open_private(self.audit_path, "a") as fh:   # 0600
                 fh.write(json.dumps(entry, sort_keys=True, default=str) + "\n")
         except OSError as err:                          # never lost: echoed
             print(f"STUDIO AUDIT (file unwritable: {err}) {json.dumps(entry, default=str)}", flush=True)

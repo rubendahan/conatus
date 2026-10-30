@@ -25,6 +25,7 @@ without conversion, so a restart is bit-for-bit (tests/output/test_io_hdf5.py).
 from __future__ import annotations
 
 import os
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +33,7 @@ import numpy as np
 
 from ..errors import OptionError
 from . import _describe as dsc
+from ._identity import CheckpointWarning
 from ._h5 import DOC, json_attr, open_h5, provenance, read_json_attr
 
 FORMAT = "conatus.checkpoint/1"
@@ -112,11 +114,38 @@ DEFAULT_PATTERN = "checkpoint_*.h5"
 _NPZ_PATTERN = "checkpoint_*.npz"
 
 
+def payload_problem(meta: dict, shapes: dict[str, tuple]) -> str | None:
+    """What is missing or misshapen in the arrays of a checkpoint (``shapes``: name -> shape), by
+    the history its ``meta`` declares; None for a complete payload."""
+    want = ["X"] + [f"{k}{i}" for i in range(meta["nhist"]) for k in ("MX", "F")] \
+        + [f"LX{i}" for i in range(meta.get("nhist_LX", 0))]
+    missing = [k for k in want if k not in shapes]
+    if missing:
+        return "missing " + ", ".join(missing)
+    bad = [f"{k} has shape {shapes[k]}, X has {shapes['X']}" for k in want
+           if shapes[k] != shapes["X"]]
+    return "; ".join(bad) or None
+
+
+def check_payload(meta: dict, arrays: dict[str, np.ndarray], state_shape: tuple | None,
+                  path: Path) -> None:
+    """Refuse an incomplete payload before the solver changes."""
+    problem = payload_problem(meta, {k: np.shape(a) for k, a in arrays.items()})
+    if problem is None and state_shape is not None and np.shape(arrays["X"]) != tuple(state_shape):
+        problem = f"X has shape {np.shape(arrays['X'])}, this solver's state {tuple(state_shape)}"
+    if problem:
+        raise OptionError(f"load_checkpoint: {path} is an incomplete checkpoint: {problem}",
+                          why="a restart needs the state and the whole history its record "
+                              "declares; the solver was left unchanged",
+                          fix="restart from an earlier complete checkpoint (cn.io.latest skips "
+                              "incomplete files)", doc=DOC)
+
+
 def checkpoint_meta(p: Path) -> dict | None:
     """The ``meta`` record of a checkpoint file (either format), or None when the file is not a
     complete Conatus checkpoint: an unfinished ``.part``, an unreadable file, an HDF5 file of
     another format (an analysis file, a foreign file with an ``iteration`` attribute), a ``.npz``
-    without the state ``X`` (review finding 56: any file with an ``iteration`` was a candidate)."""
+    without the state ``X`` (any file with an ``iteration`` was a candidate)."""
     if ".part" in p.name:
         return None
     import json
@@ -126,6 +155,7 @@ def checkpoint_meta(p: Path) -> dict | None:
                 if "X" not in d.files or "meta" not in d.files:
                     return None
                 meta = json.loads(str(d["meta"]))
+                shapes = {k: d[k].shape for k in d.files if k != "meta"}
         else:
             with open_h5(p, "r") as f:
                 fmt = f.attrs.get("format")
@@ -133,7 +163,14 @@ def checkpoint_meta(p: Path) -> dict | None:
                 if fmt != FORMAT or "state/X" not in f:
                     return None
                 meta = read_json_attr(f, "meta")
+                hist = f["history"] if "history" in f else {}
+                shapes = {"X": f["state/X"].shape, **{k: hist[k].shape for k in hist}}
         int(meta["iteration"])
+        problem = payload_problem(meta, shapes)
+        if problem:
+            warnings.warn(f"{p}: incomplete checkpoint skipped ({problem})", CheckpointWarning,
+                          stacklevel=2)
+            return None
         return meta
     except (OSError, KeyError, ValueError, TypeError):    # unreadable or foreign file: skipped
         return None

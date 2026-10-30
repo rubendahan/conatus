@@ -11,6 +11,8 @@ Everything is measured in a *declared* energy norm with the exact Chebyshev Gram
   abscissae;
 * ``compare_adjoints`` (continuous vs discrete adjoint of an eigenmode), ``propagator_growth`` (the IMEX
   propagator of ``conatus.growth`` on the same norm).
+
+
 """
 from .adjoint import (AdjointComparison, compare_adjoints, continuous_adjoint_mode,
                       discrete_adjoint_mode)

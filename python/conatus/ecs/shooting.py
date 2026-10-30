@@ -1,5 +1,5 @@
 """Relative periodic orbits of large spectral states by shooting, and their Floquet multipliers by
-Arnoldi on the monodromy. Notes: §"Channel orbits".
+Arnoldi on the monodromy. §"Channel orbits".
 
 The 1D tools of :mod:`conatus.ecs.solutions` (KS) work on a FourierOps state with a dense mean
 mask. Here the state is that of any Runge–Kutta :class:`IVPSolver` whose periodic axes are

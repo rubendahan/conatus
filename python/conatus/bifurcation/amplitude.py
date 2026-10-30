@@ -42,19 +42,25 @@ __all__ = ["LandauEquation", "amplitude_equation", "GinzburgLandau", "ginzburg_l
            "cos_mode_observable"]
 
 
-def cos_mode_observable(system: DynamicalSystem, name: str) -> Callable[[np.ndarray], float]:
-    """Linear functional: coefficient of cos(2π x / L_x) of field ``name`` along the first (Fourier)
-    axis, from its grid values (mean over the other axes' first grid index). IR systems only."""
+def cos_mode_observable(system: DynamicalSystem, name: str) -> Callable[[np.ndarray], complex]:
+    """Complex-linear functional: coefficient of cos(2π x / L_x) of field ``name`` along the first
+    (Fourier) axis, from its grid values (mean over the other axes' first grid index). A complex
+    vector (a Hopf eigenvector) gives ℓ(Re v) + i ℓ(Im v). IR systems only."""
     names = [v.name for v in system.solver.system.variables]
     if name not in names:
         raise OptionError(f"cos_mode_observable: no variable {name!r}", fix=f"variables: {names}")
     k = names.index(name)
 
-    def ell(v):
-        g = system.solver.plan.to_grid(name, system.solver.system.scatter(np.real(v))[k])
+    def real_part(v):
+        g = system.solver.plan.to_grid(name, system.solver.system.scatter(v)[k])
         xs = 2 * np.pi * np.arange(g.shape[0]) / g.shape[0]
         c = np.cos(xs).reshape((-1,) + (1,) * (g.ndim - 1))
         return float(2 * np.mean(g * c, axis=0).ravel()[0])
+
+    def ell(v):
+        if np.iscomplexobj(v):
+            return complex(real_part(np.real(v)), real_part(np.imag(v)))
+        return real_part(v)
     return ell
 
 

@@ -62,7 +62,8 @@ Geometry: Annulus(inner=1, outer=2) (annulus)
 | Shell | spherical harmonics × Chebyshev in $r$ | — |
 
 `cn.periodic(L, complex=True)` uses complex exponentials instead of the real cos/sin series (for
-complex unknowns). For the sphere, the size given for `theta` is the number of spherical-harmonic
+complex unknowns). In an initial value problem `conj(u)` of such an unknown is antilinear and is stepped
+explicitly. For the sphere, the size given for `theta` is the number of spherical-harmonic
 degrees $L_{\max}+1$.
 
 ## Resolution

@@ -262,7 +262,7 @@ class _D3:
     # problems, solvers, runtime objects -------------------------------------------------------
     # ``namespace``: None (``namespace=locals()`` reads as the script's own scope) or the
     # problem's own mapping, which then alone resolves the names of the equation strings, as in
-    # Dedalus (finding 6: it used to be ignored).
+    # Dedalus (it used to be ignored).
     def IVP(self, variables, time=None, namespace=None):
         return self.tr.make_problem("IVP", variables, time=time, namespace=namespace)
 

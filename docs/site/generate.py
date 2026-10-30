@@ -57,8 +57,6 @@ def gallery(site: Path, root: Path) -> None:
         # the script asserts its reference itself (its last lines); the regression tests of the
         # gallery are not part of the published tree, so the page does not name them
         lines = [f"# {title.rstrip('.')}", "",
-                 "**Goal.** Run this case and compare the value it obtains with the reference"
-                 + (" below." if row else " named in the script."), "",
                  f"*Family:* `{script.parent.name}` · *Script:* `examples/{rel}`", ""]
         if row:
             lines += ["```{list-table}", ":widths: 20 80", "",

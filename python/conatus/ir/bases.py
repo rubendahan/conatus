@@ -54,7 +54,7 @@ def _check_dealias(dealias: Any, cls: str) -> float:
                              fix="dealias=1 (no padding) or dealias=3/2 (quadratic products)",
                              doc="docs/site/guide/bases.md")
     d = float(dealias)
-    # not (d >= 1): NaN fails every comparison and passed "d < 1" (review finding 33)
+    # not (d >= 1): NaN fails every comparison and passed "d < 1"
     if not (math.isfinite(d) and d >= 1):
         raise OptionError(f"{cls}: dealias factor must be a finite number >= 1, got {d}",
                           fix="dealias=1 (none) or dealias=3/2 (quadratic products)", doc="docs/site/guide/bases.md")

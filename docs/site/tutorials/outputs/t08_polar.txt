@@ -1,4 +1,4 @@
-# t08_polar: PASS (exit 0) in 8.8 s | 2026-10-21 | script sha256 b188c872c8126df9
+# t08_polar: PASS (exit 0) in 8.8 s | 2026-10-30 | script sha256 599eff30f5da35ed
 Model 'vibrating drum': Disk(radius=1) (disk)
 Unknowns: T (scalar)
 Eigenvalue: s; growth = Re s, declared with the eigenvalue s
@@ -16,4 +16,5 @@ Hagen-Poiseuille stability | Use plan.group(1, 1.0). Eigenvalue s = sigma + i om
 rightmost eigenvalues (m, k) = (1, 1): [-0.07086401-0.84674983j -0.0911426 -0.46914288j -0.15121606-0.74819401j]
 max backward residual 1.3e-15
 neutral Re(k): {3.1: 68.2054, 3.16: 68.1863, 3.22: 68.2021}
-OK: drum = Bessel zeros; pipe eigenvalues to 1e-10 of Meseguer & Trefethen; Re_c(3.16) = 68.1863
+minimum of Re(k): k_c = 3.162, Re_c = 68.1863
+OK: drum = Bessel zeros; pipe eigenvalues to 1e-10 of Meseguer & Trefethen; Re_c(3.16) = 68.1863; k_c = 3.162

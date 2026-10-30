@@ -37,9 +37,8 @@ def generalized_eigenvalues(J: np.ndarray, M, *, vectors: bool = False, left: bo
 
     The classification uses the homogeneous pair (α, β), λ = α/β, of the QZ decomposition:
     infinite when |β| ‖J‖ ≤ |α| ‖M‖ / INF_EIG, i.e. |λ| ≥ INF_EIG ‖J‖/‖M‖ (max-norms). It is
-    invariant under any scaling of J, of M or of both (finding 13: the former
-    bound INF_EIG (1 + ‖J‖) kept two eigenvalues 1e12 of (1e12 I, I) and dropped them for
-    (I, 1e-12 I)). A pair with α = β = 0 (singular pencil) is dropped as well."""
+    invariant under any scaling of J, of M or of both: the eigenvalues 1e12 of (1e12 I, I) and of
+    (I, 1e-12 I) are treated alike. A pair with α = β = 0 (singular pencil) is dropped as well."""
     # M as given (audit inputs: a complex M was cast to float, its imaginary part
     # dropped with a ComplexWarning); square matrices of one shape, finite (bare SciPy errors)
     Jd = np.asarray(J.toarray() if hasattr(J, "toarray") else J)
@@ -90,14 +89,23 @@ def newton_equilibrium(system: DynamicalSystem, x0: np.ndarray, *, tol: float,
 
 
 def _hopf_test(ev: np.ndarray, n_eigs: int) -> float:
+    """Test function with the sign of the bialternate product Π_{i<j} (λ_i + λ_j) and the size of
+    its smallest factor |z| / (1 + |z|). The product itself shrinks with every stable eigenvalue
+    added (below crossing_tol at an ordinary point from dimension 8, zero by
+    underflow at 24); this function vanishes only where one sum does, so |value| <= crossing_tol
+    means that a pair sum is that small. The sign is the accumulated phase of the factors, with no
+    product of small numbers."""
     ev = ev[:n_eigs]
     if ev.size < 2:
         return 1.0
     s = ev[:, None] + ev[None, :]
     iu = np.triu_indices(ev.size, 1)
     z = s[iu]
-    val = np.prod(z / (1.0 + np.abs(z)))
-    return float(val.real)
+    size = np.abs(z)
+    if not np.all(size > 0):
+        return 0.0
+    phase = float(np.sum(np.angle(z)))
+    return float(np.sign(np.cos(phase)) * np.min(size / (1.0 + size)))
 
 
 def _logdet_sign(A: np.ndarray) -> tuple[float, float]:
@@ -203,6 +211,6 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
                   "marginal_tol": marginal_tol}
     cv.notes += [f"equilibria of {system.origin} in {parameter}",
                  f"stability: #Re λ > {marginal_tol:g} (generalized eigenvalues of (J, M), "
-                 f"|λ| > {INF_EIG:g}(1 + max|J|) removed as infinite)",
+                 f"|λ| >= {INF_EIG:g} ‖J‖/‖M‖ (max-norms) removed as infinite)",
                  f"tests: {', '.join(tests)}; Hopf test over {ne} eigenvalue(s)"]
     return cv

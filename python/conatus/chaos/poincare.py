@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from ..ensembles import Ensemble
-from ..errors import ConvergenceError, OptionError
+from ..errors import ConvergenceError, InputTypeError, NumericalError, OptionError
 from .tangent import require_rk
 from .._deprecation import renames
 from .._repr import compact_repr
@@ -105,8 +105,19 @@ def poincare_section(solver, x0, g: Callable, *, direction: int, steps: int, g_t
     tab, dt = ens._rk, ens.dt
 
     def gval(X):
-        v = g(X)
-        return np.asarray(v if xp is np else xp.asnumpy(v), float)
+        v = np.asarray(g(X) if xp is np else xp.asnumpy(g(X)), float)
+        nb = X.shape[0]
+        if v.shape != (nb,):
+            raise InputTypeError(f"poincare section: g(X) has shape {v.shape} for a batch of {nb} "
+                                 f"states, ({nb},) is needed",
+                                 fix="one value per member of the batch: g(X) = X[:, i] - level")
+        if not np.all(np.isfinite(v)):
+            raise NumericalError(f"poincare section: g(X) returned {v[~np.isfinite(v)][0]}",
+                                 why="a section value that is not a finite number cannot say on "
+                                     "which side the state is, so no crossing could be told from "
+                                     "an invalid section",
+                                 fix="make g finite along the trajectory")
+        return v
 
     pts = [[] for _ in range(B)]
     tms = [[] for _ in range(B)]

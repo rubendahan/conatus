@@ -170,7 +170,7 @@ class EmbeddedError:
                                   "steps)", doc=_DOC)
         if safety is not None and not 0 < safety <= 1:
             raise OptionError(f"EmbeddedError: safety must be in (0, 1], got {safety!r}", doc=_DOC)
-        # validated before any step (review finding 10)
+        # validated before any step
         if tol is not None and not (np.isfinite(tol) and tol > 0):
             raise OptionError(f"EmbeddedError: tol must be a finite positive number, got {tol!r}",
                               fix="tol=1e-6 (the per-step relative error you accept)", doc=_DOC)
@@ -193,6 +193,9 @@ class EmbeddedError:
         if not self.adapt:
             return self._attempt()
         sv = self.solver
+        bounded = min(max(sv.dt, self.dt_min), self.dt_max)   # the first attempt obeys them too
+        if bounded != sv.dt:
+            sv.set_dt(bounded)
         X0, t0, it0 = sv.X.copy(), sv.t, sv.iteration
         for _ in range(MAX_REJECTIONS + 1):
             err = self._attempt()

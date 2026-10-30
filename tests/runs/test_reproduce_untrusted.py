@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import tarfile
 
 import pytest
 
@@ -49,8 +50,28 @@ def _forge(run, marker):
 
 def test_own_private_record_is_reproduced(recorded):
     run, _ = recorded
-    rep = R.get(run.id).reproduce(record=False)
+    rep = R.get(run.id).reproduce(record=False, trust_record=True)
     assert rep.identical
+
+
+def test_a_record_is_not_imported_by_default_even_when_it_looks_ours(recorded):
+    """A registry unpacked from an archive is owned by the receiver with ordinary modes: ownership
+    says nothing about its author, so the named function must not run without an explicit choice."""
+    run, marker = recorded
+    _forge(run, marker)
+    src = run.path.parent.parent
+    with tarfile.open(src.parent / "reg.tgz", "w:gz") as t:
+        t.add(src, arcname="registry")
+    dest = src.parent / "received"
+    dest.mkdir()
+    with tarfile.open(src.parent / "reg.tgz") as t:
+        t.extractall(dest, filter="data")
+    got = R.find(name="area", root=dest / "registry")[0]
+    for kw in ({}, {"require_same_code": True}):
+        with pytest.raises(OptionError) as e:
+            got.reproduce(record=False, **kw)
+        assert "fn=" in str(e.value) and "trust_record=True" in str(e.value)
+    assert not marker.exists() and "audit_evilmod" not in sys.modules
 
 
 @pytest.mark.parametrize("where", ["record", "run_dir", "runs_dir"])
@@ -61,7 +82,7 @@ def test_record_writable_by_others_is_refused_before_any_import(recorded, where)
     os.chmod(target, os.stat(target).st_mode | 0o022)
     try:
         with pytest.raises(OptionError, match="writable by group or others") as e:
-            R.get(run.id).reproduce(record=False)
+            R.get(run.id).reproduce(record=False, trust_record=True)
         assert "fn=" in str(e.value)
         assert not marker.exists(), "the function named by a forged record ran"
         assert "audit_evilmod" not in sys.modules, "the module named by the record was imported"

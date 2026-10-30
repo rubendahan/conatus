@@ -65,6 +65,11 @@ class Dye:
             ks.append((2 * np.pi * f / ax.L, f))
         K = np.meshgrid(*[k for k, _ in ks], indexing="ij")
         self._k = [xp.asarray(k) for k in K]
+        # first derivative: zero at the Nyquist mode of an even axis (as grid.d), on the real-FFT
+        # axis and on the others alike, so that the result does not depend on the axis order
+        odd = [k * (np.abs(f) != ax.n / 2 if ax.n % 2 == 0 else 1.0)
+               for (k, f), ax in zip(ks, grid.axes, strict=True)]
+        self._kodd = [xp.asarray(k) for k in np.meshgrid(*odd, indexing="ij")]
         self._k2 = xp.asarray(sum(k**2 for k in K))
         mask = np.ones(K[0].shape)
         if dealias == "2/3":
@@ -102,7 +107,7 @@ class Dye:
     def _N(self, chat, u: Sequence[Any]):
         """Fourier transform of -u . grad c (dealiased as declared)."""
         adv = 0
-        for ui, ki in zip(u, self._k, strict=True):
+        for ui, ki in zip(u, self._kodd, strict=True):
             adv = adv + ui * self._ifft(1j * ki * chat)
         return -self._fft(adv) * self._mask
 

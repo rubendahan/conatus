@@ -47,6 +47,8 @@ from __future__ import annotations
 import builtins
 import hashlib
 import inspect
+import os
+import random as _random_module
 import sys
 import types
 import warnings
@@ -197,6 +199,11 @@ HIDDEN_STATE_READS = frozenset({
 #: Generator constructors that are pure functions of their seed argument, and only of it.
 _SEEDED_CONSTRUCTORS = frozenset({"default_rng", "RandomState", "Random", "SeedSequence",
                                   "Generator", "PCG64", "MT19937", "Philox", "SFC64"})
+#: Methods of the global generators of NumPy and of the standard library
+#: (``np.random.normal``, ``random.choice``): attributes of a state namespace that read its state.
+_GLOBAL_GENERATOR_METHODS = frozenset(
+    n for gen in (np.random.mtrand._rand, _random_module._inst) for n in dir(gen)
+    if not n.startswith("_") and callable(getattr(gen, n)))
 _LOADS = ("LOAD_ATTR", "LOAD_GLOBAL", "LOAD_NAME", "LOAD_METHOD", "LOAD_DEREF", "LOAD_FAST",
           "LOAD_FAST_CHECK", "LOAD_CLOSURE", "IMPORT_FROM", "IMPORT_NAME")
 _SKIP = ("PUSH_NULL", "CACHE", "PRECALL", "NOP", "EXTENDED_ARG")
@@ -240,9 +247,18 @@ def _hidden_state_reads(code: types.CodeType, g: Mapping | None = None) -> list[
                         prev.argval in _STATE_NAMESPACES or getattr(
                             g.get(prev.argval), "__name__", None) in _STATE_MODULES):
                 out.add(name)
-        if (name in _SEEDED_CONSTRUCTORS and nxt is not None and nxt.opname.startswith("CALL")
-                and (nxt.arg or 0) == 0):
-            out.add(f"{name}() without a seed")
+        if (name in _GLOBAL_GENERATOR_METHODS and not as_namespace
+                and x.opname in ("LOAD_ATTR", "LOAD_METHOD") and prev is not None
+                and isinstance(prev.argval, str) and prev.opname in _LOADS and (
+                    prev.argval in _STATE_NAMESPACES
+                    or getattr(g.get(prev.argval), "__name__", None) in _STATE_MODULES)):
+            out.add(name)
+        if name in _SEEDED_CONSTRUCTORS and nxt is not None:
+            after = ins[i + 2] if i + 2 < len(ins) else None
+            if (nxt.opname.startswith("CALL") and (nxt.arg or 0) == 0) or (
+                    nxt.opname == "LOAD_CONST" and nxt.argval is None and after is not None
+                    and after.opname.startswith("CALL") and after.arg == 1):
+                out.add(f"{name}() without a seed")
     for c in code.co_consts:
         if isinstance(c, types.CodeType):
             out |= set(_hidden_state_reads(c, g))
@@ -288,6 +304,22 @@ def value_identity(v: Any, what: str, seen: set[int] | None = None,
     raise Undeclared(f"{what} is a {type(v).__name__}, which has no content hash")
 
 
+def _state_reader(fn: Any) -> str | None:
+    """What the library callable ``fn`` itself reads, whatever name the code calls it by (an alias
+    such as ``from os import getenv as lookup`` has no name the code scan can see)."""
+    owner = getattr(fn, "__self__", None)
+    if owner is np.random.mtrand._rand or owner is _random_module._inst:
+        return "the state of a global random generator"
+    if owner is os.environ or fn is os.getenv:
+        return "the environment"
+    if any(fn is f for f in (builtins.open, np.load, np.loadtxt, np.genfromtxt, np.fromfile)):
+        return "a file"
+    if getattr(fn, "__module__", None) in ("time", "secrets", "uuid") or fn is os.urandom:
+        if getattr(fn, "__name__", None) in HIDDEN_STATE_READS:
+            return "the clock or the entropy of the system"
+    return None
+
+
 def callable_identity(fn: Any, what: str | None = None, seen: set[int] | None = None) -> dict:
     """Identity of a callable a computation depends on: a library function or class (numpy,
     scipy, the standard library, anything installed) by module, name and version; a user function
@@ -307,6 +339,10 @@ def callable_identity(fn: Any, what: str | None = None, seen: set[int] | None = 
         fn = fn.__wrapped__
     name = getattr(fn, "__qualname__", None) or getattr(fn, "__name__", None) or type(fn).__name__
     what = what or name
+    reads = _state_reader(fn)
+    if reads:
+        raise Undeclared(f"{what}: {name} reads {reads}, which has no content hash; pass the "
+                         "value or the seed as an argument")
     if isinstance(fn, functools.partial):
         return {"partial": callable_identity(fn.func, what, seen),
                 "args": value_identity(list(fn.args), f"{what} (partial args)", seen),
@@ -553,6 +589,43 @@ def user_functions(problem: Any) -> tuple[dict, list[str]]:
     return out, undeclared
 
 
+def _sparse_digest(A: Any) -> str | None:
+    """Content hash of a sparse operator, or None when the system has none to read."""
+    if A is None:
+        return None
+    try:
+        A = A.tocsr(copy=True)
+        A.sum_duplicates()
+        A.eliminate_zeros()
+        A.sort_indices()
+    except AttributeError:
+        return None
+    return _sha(b"".join(np.ascontiguousarray(a).tobytes() for a in (A.indptr, A.indices, A.data)))
+
+
+def history_operators(solver: Any) -> dict:
+    """What the multistep history of ``solver`` is a history of: the mass matrix (M X), the linear
+    operator (L X, CN family), the explicit right-hand side (F: its expressions in row order and
+    the parameters, data and functions they read), and the row order of the equations."""
+    system = getattr(solver, "system", None)
+    host = getattr(system, "host", system)
+    plan = getattr(solver, "plan", None)
+    problem = getattr(plan, "problem", None)
+    eqs = list(getattr(problem, "equations", ()))
+    names = {f.name for eq in eqs for f in eq.rhs.free_fields()}
+    pars = {p.name for eq in eqs for p in eq.rhs.free_parameters()}
+    from ._describe import parameters_of
+    values = parameters_of(solver)
+    data, _ = given_data(plan)
+    funcs, _ = user_functions(problem)
+    rhs = {"rhs": [eq.rhs.structural_hash for eq in eqs],
+           "parameters": {k: v for k, v in values.items() if k in pars},
+           "data": {k: v for k, v in data.items() if k in names}, "functions": funcs}
+    return {"M": _sparse_digest(getattr(host, "M", None)),
+            "L": _sparse_digest(getattr(host, "L", None)), "F": digest(rhs),
+            "rows": [f"{eq.lhs.structural_hash}={eq.rhs.structural_hash}" for eq in eqs]}
+
+
 def _attr(obj: Any, name: str) -> Any:
     """``getattr`` that records a failure instead of raising (identity is read, never fails)."""
     try:
@@ -565,7 +638,7 @@ def stepping(solver: Any) -> dict:
     """The numerical choices of a time stepper that change its numbers: scheme, dt, start-up,
     time parameter, boundary-data convention (``bc_time`` as resolved), the backends of the
     solve and of F, dtype, ordering, reduced space, complexify / decouple, and the pivoting of a
-    device system (review finding 22: the record called complete omitted several)."""
+    device system (the record called complete omitted several)."""
     system = getattr(solver, "system", None)
     host = getattr(system, "host", system)
     return {"scheme": _attr(solver, "scheme"), "dt": _attr(solver, "dt"),

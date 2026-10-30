@@ -1,5 +1,5 @@
 """Exact coherent structures: Newton–Krylov–hookstep, equilibria, travelling waves,
-relative / pre-periodic orbits and their stability. Notes:"""
+relative / pre-periodic orbits and their stability."""
 from .edge import EdgeTracker, ThresholdBisection, UndecidedTrajectory
 from .fourier_ops import FourierOps
 from .ks import ks_solver

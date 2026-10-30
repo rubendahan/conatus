@@ -19,7 +19,10 @@ Vandermonde matrix μ_k^j.
 **Optimized DMD** (``method="optimized"``, Askham & Kutz 2018): variable projection on
 min_{ω, B} ‖F X_all − (F Φ B)(e^{ω t_j})‖_F over all snapshots (times may be non-uniform),
 started from exact DMD, solved by ``scipy.optimize.least_squares`` in the rank-r POD subspace of
-F X_all with declared ``tol`` and ``max_nfev``; reports the final relative misfit. Bagging
+F X_all with declared ``tol`` and ``max_nfev``; reports the relative misfit of the returned
+model. The fit runs on times relative to the first one, which ``DMD.time_origin`` records: the
+amplitudes are those at that time, ``reconstruct`` takes times on the clock of the data, and shifting
+that clock does not change the fit. A model with a non-finite or zero column is refused. Bagging
 (BOP-DMD, Sashidhar & Kutz 2022) is not implemented.
 """
 from __future__ import annotations
@@ -30,7 +33,7 @@ from typing import Any
 import numpy as np
 
 from ..errors import ConvergenceError, OptionError
-from .norms import DataInnerProduct, array_module, to_host
+from .norms import DataInnerProduct, array_module, safe_norm, to_host
 from .._repr import compact_repr
 
 __all__ = ["DMD", "dmd", "DMD_METHODS", "AMPLITUDES"]
@@ -62,6 +65,7 @@ class DMD:
     singular_values: np.ndarray
     misfit: float = float("nan")    # ‖F(X − reconstruction)‖_F / ‖F X‖_F over all snapshots
     notes: list[str] = field(default_factory=list)
+    time_origin: float = 0.0        # the time at which the amplitudes b_k hold
 
     @property
     def frequencies(self) -> np.ndarray:
@@ -73,9 +77,9 @@ class DMD:
         return self.omega.real
 
     def reconstruct(self, times) -> Any:
-        """Σ_k b_k φ_k e^{ω_k t} at ``times`` (n × len(times))."""
+        """Σ_k b_k φ_k e^{ω_k (t − time_origin)} at ``times`` (n × len(times))."""
         xp = array_module(self.modes)
-        t = np.asarray(times, float)
+        t = np.asarray(times, float) - self.time_origin
         E = np.exp(np.outer(self.omega, t)) * self.amplitudes[:, None]
         return self.modes @ xp.asarray(E)
 
@@ -86,7 +90,7 @@ class DMD:
         dflt = " (default: least-squares fit of x_0)" if self.amplitude_policy == "first" else ""
         return (f"DMD ({self.method}, rank {self.rank}, Δt = {self.dt:g}, amplitudes "
                 f"'{self.amplitude_policy}'{dflt}, {self.inner_product.kind} product): {rows}; "
-                f"misfit {self.misfit:.1e}; principal log (|Im ω| < π/Δt = {np.pi / self.dt:.6g}). "
+                f"misfit {self.misfit:.1e}; amplitudes at t = {self.time_origin:g}; principal log (|Im ω| < π/Δt = {np.pi / self.dt:.6g}). "
                 + " ".join(self.notes))
 
 
@@ -144,7 +148,7 @@ def dmd(X, *, dt: float, rank: int, inner_product: DataInnerProduct, amplitudes:
     FX, FY = inner_product.half(X), inner_product.half(Y)
     U, s, Vh = xp.linalg.svd(FX, full_matrices=False)
     s_all = to_host(s)
-    # finding 97: zero data used to fail late (NaN, then LinAlgError in eig)
+    # zero data used to fail late (NaN, then LinAlgError in eig)
     if not s_all[0] > 0:
         raise OptionError("DMD: the snapshots X are all zero (no dynamics to decompose)",
                           fix="check the data (a field never written, a wrong variable)")
@@ -164,12 +168,10 @@ def dmd(X, *, dt: float, rank: int, inner_product: DataInnerProduct, amplitudes:
         raise OptionError(f"{int(small.sum())} DMD eigenvalue(s) μ ≈ 0: exact modes undefined "
                           "(reduce the rank)")
     FPhi = (FY @ G) / xp.asarray(mu)[None, :]
-    nrm = to_host(xp.linalg.norm(FPhi, axis=0))
+    nrm = safe_norm(FPhi, axis=0)
     FPhi = FPhi / xp.asarray(nrm)[None, :]
     # ResDMD residual with the linear dictionary
-    num = to_host(xp.linalg.norm(FY @ G - (FX @ G) * xp.asarray(mu)[None, :], axis=0))
-    den = to_host(xp.linalg.norm(FX @ G, axis=0))
-    res = num / den
+    res = safe_norm(FY @ G - (FX @ G) * xp.asarray(mu)[None, :], axis=0) / safe_norm(FX @ G, axis=0)
     omega = np.log(mu.astype(complex)) / dt
     if amplitudes == "first":
         b = to_host(xp.linalg.lstsq(FPhi, FX[:, 0], rcond=None)[0])
@@ -184,8 +186,7 @@ def dmd(X, *, dt: float, rank: int, inner_product: DataInnerProduct, amplitudes:
         return out
     FXall = inner_product.half(Xall)
     tt = np.arange(Xall.shape[1]) * dt
-    out.misfit = float(to_host(xp.linalg.norm(FXall - inner_product.half(out.reconstruct(tt))))
-                       / to_host(xp.linalg.norm(FXall)))
+    out.misfit = float(safe_norm(FXall - inner_product.half(out.reconstruct(tt))) / safe_norm(FXall))
     if method == "exact":
         return out
     return _optimized(Xall, out, inner_product, times, tol, max_nfev)
@@ -199,22 +200,37 @@ def _optimized(Xall, ex: DMD, ip: DataInnerProduct, times, tol, max_nfev) -> DMD
     xp = array_module(Xall)
     FXall = ip.half(Xall)
     t = np.arange(Xall.shape[1]) * ex.dt if times is None else np.asarray(times, float)
-    if t.size != Xall.shape[1]:
+    if t.ndim != 1 or t.size != Xall.shape[1]:
         raise OptionError("times must have one entry per snapshot")
+    if not np.all(np.isfinite(t)):
+        raise OptionError("optimized DMD: the times must be finite")
+    # exp(omega t) underflows or overflows on a far clock origin: the
+    # basis is taken from the first time, and the data are scaled to order 1, so that the absolute
+    # gtol of least_squares does not depend on the units of the data either
+    origin = float(t[0])
+    with np.errstate(over="ignore"):
+        rel = t - origin
+    if not np.all(np.isfinite(rel)):
+        raise OptionError("optimized DMD: the span of the times overflows the floating-point range")
     U, s, Vh = xp.linalg.svd(FXall, full_matrices=False)
     r = ex.rank
     Ur = U[:, :r]
-    Z = to_host(Ur.conj().T @ FXall)                 # r × m: data in its POD subspace
-    lost = float(np.sqrt(max(to_host(xp.linalg.norm(FXall)) ** 2 - np.linalg.norm(Z) ** 2, 0.0)))
+    scale = float(to_host(s)[0])
+    Z = to_host(Ur.conj().T @ FXall) / scale         # r × m: data in its POD subspace, of order 1
 
     def fit(theta):
         om = theta[:r] + 1j * theta[r:]
-        E = np.exp(np.outer(t, om))                  # m × r
+        with np.errstate(over="ignore", invalid="ignore"):
+            E = np.exp(np.outer(rel, om))            # m × r
+        if not np.all(np.isfinite(E)):               # a trial step beyond the range of the basis
+            return om, None, E
         B, *_ = np.linalg.lstsq(E, Z.T, rcond=None)  # r × r (rows: modes)
         return om, B, E
 
     def resid(theta):
         _, B, E = fit(theta)
+        if B is None:
+            return np.full(2 * Z.size, 1e8)          # finite and large: the step is rejected
         R = (E @ B - Z.T).ravel()
         return np.concatenate([R.real, R.imag])
 
@@ -224,16 +240,33 @@ def _optimized(Xall, ex: DMD, ip: DataInnerProduct, times, tol, max_nfev) -> DMD
     if sol.status <= 0:
         raise ConvergenceError(f"optimized DMD: least_squares did not converge ({sol.message})",
                                fix="raise max_nfev or relax tol")
-    om, B, E = fit(sol.x)
-    # modes: columns of Ur Bᵀ, normalized; amplitudes = their norms
+    om, B, _ = fit(sol.x)
+    unusable = ConvergenceError(
+        "optimized DMD: the fitted model is not usable (a non-finite parameter or mode, or a mode of "
+        "zero amplitude)", why=f"least_squares stopped with status {sol.status} ({sol.message}); its "
+        "success flag does not establish a usable model", fix="reduce the rank or check the data")
+    if B is None or not (np.all(np.isfinite(om)) and np.all(np.isfinite(B))):
+        raise unusable
+    # modes: columns of Ur Bᵀ, normalized; amplitudes = their norms. Dividing by the data scale
+    # first keeps the norm of a large column representable.
     FPhi = Ur @ xp.asarray(B.T)
-    b = to_host(xp.linalg.norm(FPhi, axis=0))
+    b = safe_norm(FPhi, axis=0)
+    if not (np.all(np.isfinite(b)) and np.all(b > 0)):
+        raise unusable
     FPhi = FPhi / xp.asarray(b)[None, :]
-    misfit = float(np.sqrt(np.linalg.norm(E @ B - Z.T) ** 2 + lost ** 2)
-                   / to_host(xp.linalg.norm(FXall)))
     dtn = ex.dt
-    return DMD(np.exp(om * dtn), om, ip.unhalf(FPhi), b.astype(complex),
-               np.full(r, np.nan), dtn, r, "optimized", "variable projection", ip,
-               ex.singular_values, misfit,
-               ex.notes + [f"variable projection: {sol.nfev} evaluations, status {sol.status} "
-                           f"({sol.message}); times {'uniform' if times is None else 'given'}"])
+    with np.errstate(over="ignore"):
+        mu = np.exp(om * dtn)
+    out = DMD(mu, om, ip.unhalf(FPhi), (b * scale).astype(complex), np.full(r, np.nan), dtn, r,
+              "optimized", "variable projection", ip, ex.singular_values, float("nan"),
+              ex.notes + [f"variable projection: {sol.nfev} evaluations, status {sol.status} "
+                          f"({sol.message}); times {'uniform' if times is None else 'given'}, "
+                          f"amplitudes at t = {origin:g}"],
+              time_origin=origin)
+    # the misfit of the returned representation, not of the intermediate factorization
+    with np.errstate(over="ignore", invalid="ignore"):
+        R = FXall - ip.half(out.reconstruct(t))
+    if not bool(xp.all(xp.isfinite(R))):
+        raise unusable
+    out.misfit = float(safe_norm(R) / safe_norm(FXall))
+    return out

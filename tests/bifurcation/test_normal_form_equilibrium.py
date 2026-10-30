@@ -1,4 +1,4 @@
-"""Finding 91: a fold normal form was returned at a point that is not an
+"""A fold normal form was returned at a point that is not an
 equilibrium (u' = p + u^2, p = 1, u = 0: G = 1)."""
 import numpy as np
 import pytest

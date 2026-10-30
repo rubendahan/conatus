@@ -93,7 +93,7 @@ class TerrainSimulation:
         if extra:
             raise OptionError(f"simulate(): option(s) {sorted(extra)} not supported on a mapped "
                               "domain", doc=_DOC)
-        # finite: dt=inf passed "dt > 0" (review finding 37)
+        # finite: dt=inf passed "dt > 0"
         if isinstance(dt, bool) or not (isinstance(dt, numbers.Real) and math.isfinite(dt) and dt > 0):
             raise OptionError(f"dt={dt!r}: a finite positive number is required", doc=_DOC)
         self.compiled = comp
@@ -138,7 +138,7 @@ class TerrainSimulation:
     # -- state ------------------------------------------------------------------------------
     @property
     def effective_order(self) -> int:
-        """Global order of this run (audit invariance; review finding 17 on the flat
+        """Global order of this run (audit invariance on the flat
         solvers): the scheme's order, capped at 2 for SBDF3/SBDF4 (the start-up is always
         lower-order here) and for RK443 with time-dependent boundary data (imposed at the stage
         times: its stage order 2). Measured on the manufactured mapped diffusion problem of
@@ -182,7 +182,7 @@ class TerrainSimulation:
             fn = (_on_all_grids(v, _coord_args(v, names, f"initial {k}"), names) if callable(v)
                   else (lambda val0: (lambda *g: np.full(grids[0].shape, val0)))(v))
             val = np.asarray(fn(*grids))
-            # refused rather than cast or hidden (review finding 36: a deliberate small imaginary
+            # refused rather than cast or hidden (a deliberate small imaginary
             # part of real data was dropped by grid(); non-finite data as everywhere else)
             if not np.all(np.isfinite(val)):
                 raise InputTypeError(f"initial({k}=...): non-finite values on the grid", doc=_DOC)

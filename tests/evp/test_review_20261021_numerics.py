@@ -1,8 +1,8 @@
 """External review of 0.1.1, findings F7, F2, F8.
 
-Oracles: SciPy's eigenvalues of a nonsingular pencil (F7), the closed-form eigenvalues -1 and
-1e-14 r of a diagonal problem (F2), NumPy's eigenvalues of the Jacobian of the Bogdanov-Takens
-normal form at each point of its Hopf curve (F8).
+Oracles: SciPy's eigenvalues of a nonsingular pencil, the closed-form eigenvalues -1 and
+1e-14 r of a diagonal problem, NumPy's eigenvalues of the Jacobian of the Bogdanov-Takens
+normal form at each point of its Hopf curve.
 """
 from __future__ import annotations
 
