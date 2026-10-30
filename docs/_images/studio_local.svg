@@ -16,7 +16,7 @@
   <text x="312" y="84" fill="#2B2A27" font-weight="600">Studio server</text>
   <text x="312" y="104" fill="#2B2A27">hub serve --local</text>
   <text x="312" y="121" fill="#2B2A27">127.0.0.1:8765 only</text>
-  <text x="312" y="138" fill="#5E5A52">reads the spool, sends commands</text>
+  <text x="312" y="138" fill="#5E5A52">reads the spool</text>
   <rect x="300" y="200" width="200" height="70" rx="3" fill="#FFFFFF" stroke="#77736B"/>
   <text x="312" y="224" fill="#2B2A27" font-weight="600">token file (mode 0600)</text>
   <text x="312" y="244" fill="#2B2A27">path printed at start</text>

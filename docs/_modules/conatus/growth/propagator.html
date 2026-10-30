@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -955,7 +955,7 @@
         <span class="n">U</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">Vh</span> <span class="o">=</span> <span class="n">sla</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">lapack_driver</span><span class="o">=</span><span class="s2">"gesvd"</span><span class="p">)</span>
     <span class="n">v_opt</span> <span class="o">=</span> <span class="n">Z</span> <span class="o">@</span> <span class="n">Rinv</span> <span class="o">@</span> <span class="n">Vh</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">conj</span><span class="p">()</span>                  <span class="c1"># unit energy: ‖F v_opt‖ = 1</span>
     <span class="c1"># the response is the propagated optimal state Φ v_opt (energy σ_1² = G), not a unit-energy</span>
-    <span class="c1"># vector along it (finding 93: F⁻¹ u_1 was returned, normalised)</span>
+    <span class="c1"># vector along it (F⁻¹ u_1 was returned, normalised)</span>
     <span class="k">return</span> <span class="n">GainResult</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">),</span> <span class="n">s</span><span class="p">,</span> <span class="n">v_opt</span><span class="p">,</span> <span class="n">Phi</span> <span class="o">@</span> <span class="n">v_opt</span><span class="p">)</span></div>
 
 </pre></div>
@@ -990,7 +990,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

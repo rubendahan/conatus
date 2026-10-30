@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -705,12 +705,14 @@
 <span class="sd">for its variation, Σ_k b_k(y) ∂^k δU + δF = 0 with homogeneous boundary conditions, then</span>
 <span class="sd">δσ = ∫ H δF dy with H = −(L_bᵀ)⁻¹ G (the base-flow adjoint). It is computed on a Chebyshev tau</span>
 <span class="sd">discretization of the declared operator (size declared), as the covector δF ↦ δσ expressed in the</span>
-<span class="sd">exact Chebyshev Gram. See</span>
+<span class="sd">exact Chebyshev Gram.</span>
 <span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">replace</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sympy</span>
@@ -794,8 +796,20 @@
         <span class="k">return</span> <span class="nb">complex</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">discrete_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dU</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">complex</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Exact derivative of the discrete eigenvalue along ``dU`` (sympy in Y)."""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="o">.</span><span class="n">shift_towards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">sympify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">)</span> <span class="o">+</span> <span class="n">sympy</span><span class="o">.</span><span class="n">sympify</span><span class="p">(</span><span class="n">dU</span><span class="p">)))</span>
+<span class="w">        </span><span class="sd">"""Exact derivative of the discrete eigenvalue along ``dU`` (sympy in Y): the operator table</span>
+<span class="sd">        is differentiated along ``dU`` before it is discretized, so a table nonlinear in the base</span>
+<span class="sd">        contributes only its first-order term (factory(U + dU) - factory(U) would also hold the</span>
+<span class="sd">        higher-order ones)."""</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">sympy</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">"epsilon_variation"</span><span class="p">)</span>
+        <span class="n">s1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">sympify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">)</span> <span class="o">+</span> <span class="n">eps</span> <span class="o">*</span> <span class="n">sympy</span><span class="o">.</span><span class="n">sympify</span><span class="p">(</span><span class="n">dU</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">blk</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"G"</span><span class="p">,</span> <span class="s2">"C"</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">op</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">blk</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">sympy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                    <span class="k">raise</span> <span class="n">UnsupportedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"block </span><span class="si">{</span><span class="n">blk</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2"> depends on the base state: only the "</span>
+                                           <span class="s2">"state block A may"</span><span class="p">)</span>
+        <span class="n">tangent</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">sympy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">sympy</span><span class="o">.</span><span class="n">sympify</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="n">eps</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">s1</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pair</span><span class="o">.</span><span class="n">shift_towards</span><span class="p">(</span><span class="n">replace</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="n">tangent</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">bt</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2"> φ^(</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="n">B</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
@@ -978,7 +992,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

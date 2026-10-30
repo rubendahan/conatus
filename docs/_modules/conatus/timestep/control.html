@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -865,7 +865,7 @@
                                   <span class="s2">"steps)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">safety</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">safety</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"EmbeddedError: safety must be in (0, 1], got </span><span class="si">{</span><span class="n">safety</span><span class="si">!r}</span><span class="s2">"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
-        <span class="c1"># validated before any step (review finding 10)</span>
+        <span class="c1"># validated before any step</span>
         <span class="k">if</span> <span class="n">tol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">tol</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tol</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"EmbeddedError: tol must be a finite positive number, got </span><span class="si">{</span><span class="n">tol</span><span class="si">!r}</span><span class="s2">"</span><span class="p">,</span>
                               <span class="n">fix</span><span class="o">=</span><span class="s2">"tol=1e-6 (the per-step relative error you accept)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
@@ -890,6 +890,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">adapt</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempt</span><span class="p">()</span>
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span>
+        <span class="n">bounded</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_min</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt_max</span><span class="p">)</span>   <span class="c1"># the first attempt obeys them too</span>
+        <span class="k">if</span> <span class="n">bounded</span> <span class="o">!=</span> <span class="n">sv</span><span class="o">.</span><span class="n">dt</span><span class="p">:</span>
+            <span class="n">sv</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">bounded</span><span class="p">)</span>
         <span class="n">X0</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">it0</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">sv</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">sv</span><span class="o">.</span><span class="n">iteration</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_REJECTIONS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempt</span><span class="p">()</span>
@@ -1057,7 +1060,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

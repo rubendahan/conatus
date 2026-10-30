@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -711,8 +711,9 @@
 <span class="sd">  at the actual N); a from rho = |d_2| / |d_1| = e^{-a h_1} (1 - e^{-a h_2}) / (1 - e^{-a h_1})</span>
 <span class="sd">  (h_i the increments of N, d_i the successive differences), and e_s = F_s |d_2| / (e^{a h_2} - 1)</span>
 <span class="sd">  (with equal increments: F_s |d_2| rho / (1 - rho), the geometric tail of the next differences);</span>
-<span class="sd">  flagged when the differences do not decrease geometrically (rho &gt;= h_2 / h_1) or when tuple</span>
-<span class="sd">  resolutions are refined in different proportions;</span>
+<span class="sd">  flagged when the differences change sign (a real exponential is monotone in N; the estimate</span>
+<span class="sd">  is then the larger difference), when they do not decrease geometrically (rho &gt;= h_2 / h_1) or</span>
+<span class="sd">  when tuple resolutions are refined in different proportions;</span>
 <span class="sd">* **total**: value q3 (finest N and dt; the Richardson value is reported, never substituted),</span>
 <span class="sd">  error = e_t + e_s (a sum: independent sources, no quadrature assumed), interval = value +- error.</span>
 
@@ -890,7 +891,7 @@
     <span class="n">st</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="n">rho</span>
     <span class="n">spacing</span> <span class="o">=</span> <span class="n">_spacing</span><span class="p">(</span><span class="n">Ns</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">spacing</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># finding 12: the tail formula assumes the actual increments of N;</span>
+        <span class="c1"># the tail formula assumes the actual increments of N;</span>
         <span class="c1"># entries refined in different proportions leave no single N to model it with</span>
         <span class="n">st</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"tuple resolutions refined in different proportions: the geometric "</span>
                         <span class="s2">"model of the spatial error cannot be applied (refine every entry in the "</span>
@@ -905,8 +906,14 @@
                         <span class="o">+</span> <span class="s2">"): not resolved"</span><span class="p">)</span>
         <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">st</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">d1</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">d2</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># a &gt; 0 has successive differences of one sign</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"successive differences change sign: the monotone exponential model of "</span>
+                        <span class="s2">"the spatial error does not apply"</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">d1</span><span class="p">),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">st</span>
     <span class="c1"># remaining error after the finest N under q(N) = q_inf + C e^{-a N} at the actual N</span>
-    <span class="c1"># (review finding 12: N = [1, 4, 5] was modelled as equally spaced, error 13.6x too small);</span>
+    <span class="c1"># (N = [1, 4, 5] was modelled as equally spaced, error 13.6x too small);</span>
     <span class="c1"># equal steps give |d2| rho / (1 - rho), the geometric tail sum of the next differences</span>
     <span class="n">st</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="n">SAFETY</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">h2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">st</span>
@@ -1004,7 +1011,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

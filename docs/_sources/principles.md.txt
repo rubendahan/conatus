@@ -56,7 +56,7 @@ refinement studies and independent reference values together:
 | Newton solution (NLBVP, equilibria, orbits) | residual history (quadratic convergence visible), spectral tail |
 | Time integration | observed order of convergence, manufactured solutions, decay rates of known modes |
 | Floquet exponent | convergence in resolution and in number of harmonics, determinant winding |
-| Adjoint | inner-product identity $\langle Jv, w\rangle = \langle v, J^T w\rangle$ and Taylor order 2 |
+| Adjoint | inner-product identity $\langle Jv, w\rangle_W = \langle v, J^\dagger w\rangle_W$, with $J^\dagger = W^{-1} J^H W$ (for a real $J$ and $W = I$, $J^T$), and Taylor order 2 |
 
 `verify(...)` gathers these checks into a report. Each line gives the measurement, the threshold
 and the scope of the check, or asks for an inspection by hand.

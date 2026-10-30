@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -751,6 +751,9 @@ that is applied.</p>
 </section>
 <section id="data-dmd-in-the-exact-norm">
 <h2>Data: DMD in the exact norm<a class="headerlink" href="#data-dmd-in-the-exact-norm" title="Link to this heading">¶</a></h2>
+<p>The modes above came from the equations. This part starts from snapshots of the same model and
+checks that the data give back the eigenvalues whose sensitivity was computed: the known spectrum
+is the reference for the decomposition.</p>
 <p>The data are grid values on Gauss nodes with Fejér weights. This quadrature integrates the resolved
 field without error, so the data norm is the energy norm of the model (EᴴWE = 2I).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The same model, smaller and more damped (mu_c = -0.2), in energy-orthonormal coordinates.</span>
@@ -879,7 +882,7 @@ OK: wavemaker and d lambda/d mu_2 match the closed forms; DMD finds the four lea
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -757,7 +757,7 @@
 <span class="sd">    ``classify(ens) -&gt; int array (B,)`` (0 = undecided); ``classifier``: its description (thresholds),</span>
 <span class="sd">    stored in the result; ``record(ens) -&gt; dict`` optional per-check record."""</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_count</span>
-    <span class="c1"># counts are integers, never truncated (finding 66)</span>
+    <span class="c1"># counts are integers, never truncated</span>
     <span class="n">check_every</span> <span class="o">=</span> <span class="n">check_count</span><span class="p">(</span><span class="n">check_every</span><span class="p">,</span> <span class="s2">"check_every"</span><span class="p">,</span> <span class="s2">"ensemble_fate"</span><span class="p">)</span>
     <span class="n">max_steps</span> <span class="o">=</span> <span class="n">check_count</span><span class="p">(</span><span class="n">max_steps</span><span class="p">,</span> <span class="s2">"max_steps"</span><span class="p">,</span> <span class="s2">"ensemble_fate"</span><span class="p">)</span>
     <span class="n">min_steps</span> <span class="o">=</span> <span class="n">check_count</span><span class="p">(</span><span class="n">min_steps</span><span class="p">,</span> <span class="s2">"min_steps"</span><span class="p">,</span> <span class="s2">"ensemble_fate"</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -770,7 +770,7 @@
     <span class="n">hist</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="n">steps</span> <span class="o">&lt;</span> <span class="n">max_steps</span><span class="p">:</span>
-        <span class="c1"># the last chunk stops at the horizon (finding 67: check_every=4,</span>
+        <span class="c1"># the last chunk stops at the horizon (check_every=4,</span>
         <span class="c1"># max_steps=10 ran to step 12); the final check happens at max_steps exactly</span>
         <span class="n">chunk</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">check_every</span><span class="p">,</span> <span class="n">max_steps</span> <span class="o">-</span> <span class="n">steps</span><span class="p">)</span>
         <span class="n">ens</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
@@ -782,7 +782,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">lab</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"classify must return integer labels (0 = undecided); got "</span>
                               <span class="sa">f</span><span class="s2">"non-integer values </span><span class="si">{</span><span class="n">raw</span><span class="p">[</span><span class="n">lab</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">raw</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span><span class="si">!r}</span><span class="s2">"</span><span class="p">,</span>
-                              <span class="n">why</span><span class="o">=</span><span class="s2">"a label must fit in full (finding 66)"</span><span class="p">)</span>
+                              <span class="n">why</span><span class="o">=</span><span class="s2">"a label must fit in full"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">record</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">hist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">(</span><span class="n">ens</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">steps</span> <span class="o">&gt;=</span> <span class="n">min_steps</span><span class="p">:</span>
@@ -829,7 +829,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

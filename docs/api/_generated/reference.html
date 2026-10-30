@@ -236,7 +236,7 @@
   <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -690,15 +690,15 @@
 it and documented from its docstring.</p>
 <section id="conatus-verify">
 <h2><code class="docutils literal notranslate"><span class="pre">conatus.verify</span></code><a class="headerlink" href="#conatus-verify" title="Link to this heading">¶</a></h2>
-<p>Verification tools: MMS, convergence studies, reports — never a CORRECT flag.</p>
+<p>Verification tools: MMS, convergence studies and reports of measurements, thresholds and failed checks.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.Check.html#conatus.expert.Check" title="conatus.expert.Check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Check</span></code></a>(name, value, threshold, what)</p></td>
-<td><p></p></td>
+<td><p>One measured verification check: its value, threshold, interpretation and pass/fail status.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.VerificationReport.html#conatus.expert.VerificationReport" title="conatus.expert.VerificationReport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VerificationReport</span></code></a>(checks)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.VerificationReport.html#conatus.expert.VerificationReport" title="conatus.expert.VerificationReport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VerificationReport</span></code></a>([checks])</p></td>
+<td><p>A collection of measured checks; <code class="docutils literal notranslate"><span class="pre">manual_steps</span></code> counts the checks that failed.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.verify.html#conatus.expert.verify" title="conatus.expert.verify"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify</span></code></a>(pevp, mode[, critical, rel_h])</p></td>
 <td><p>Residuals, rank, reconstruction, spectral tail, sensitivity Taylor test, critical point.</p></td>
@@ -1110,7 +1110,7 @@ it and documented from its docstring.</p>
 </section>
 <section id="conatus-adjoint">
 <h2><code class="docutils literal notranslate"><span class="pre">conatus.adjoint</span></code><a class="headerlink" href="#conatus-adjoint" title="Link to this heading">¶</a></h2>
-<p>Discrete tangent and adjoint of the IMEX time steppers (see).</p>
+<p>Discrete tangent and adjoint of the IMEX time steppers.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -1129,7 +1129,7 @@ it and documented from its docstring.</p>
 </section>
 <section id="conatus-ecs">
 <h2><code class="docutils literal notranslate"><span class="pre">conatus.ecs</span></code><a class="headerlink" href="#conatus-ecs" title="Link to this heading">¶</a></h2>
-<p>Exact coherent structures: Newton–Krylov–hookstep, equilibria, travelling waves, relative / pre-periodic orbits and their stability. Notes:</p>
+<p>Exact coherent structures: Newton–Krylov–hookstep, equilibria, travelling waves, relative / pre-periodic orbits and their stability.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -1457,7 +1457,7 @@ it and documented from its docstring.</p>
 <td><p>Ginzburg–Landau coefficients of the instability at wavenumber k_c.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.cos_mode_observable.html#conatus.expert.cos_mode_observable" title="conatus.expert.cos_mode_observable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cos_mode_observable</span></code></a>(system, name)</p></td>
-<td><p>Linear functional: coefficient of cos(2π x / L_x) of field <code class="docutils literal notranslate"><span class="pre">name</span></code> along the first (Fourier) axis, from its grid values (mean over the other axes' first grid index).</p></td>
+<td><p>Complex-linear functional: coefficient of cos(2π x / L_x) of field <code class="docutils literal notranslate"><span class="pre">name</span></code> along the first (Fourier) axis, from its grid values (mean over the other axes' first grid index).</p></td>
 </tr>
 </tbody>
 </table>
@@ -1465,7 +1465,7 @@ it and documented from its docstring.</p>
 </section>
 <section id="conatus-slices">
 <h2><code class="docutils literal notranslate"><span class="pre">conatus.slices</span></code><a class="headerlink" href="#conatus-slices" title="Link to this heading">¶</a></h2>
-<p>Symmetry reduction by slices: first Fourier mode slice of a translation symmetry, with phase reconstruction and slice-border detection. Notes:</p>
+<p>Symmetry reduction by slices: first Fourier mode slice of a translation symmetry, with phase reconstruction and slice-border detection.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -1484,7 +1484,7 @@ it and documented from its docstring.</p>
 </section>
 <section id="conatus-manifolds">
 <h2><code class="docutils literal notranslate"><span class="pre">conatus.manifolds</span></code><a class="headerlink" href="#conatus-manifolds" title="Link to this heading">¶</a></h2>
-<p>Phase-space geometry: trajectories with declared dense output, Poincaré sections and first-return maps, unstable manifolds of equilibria (parametrization method), connections between equilibria (shooting with projection boundary conditions), unstable manifolds of periodic orbits (linear Floquet seeding) and localized-state snaking. Notes:</p>
+<p>Phase-space geometry: trajectories with declared dense output, Poincaré sections and first-return maps, unstable manifolds of equilibria (parametrization method), connections between equilibria (shooting with projection boundary conditions), unstable manifolds of periodic orbits (linear Floquet seeding) and localized-state snaking.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -1563,7 +1563,7 @@ it and documented from its docstring.</p>
 <td><p>POD of the snapshot matrix <code class="docutils literal notranslate"><span class="pre">X</span></code> (n × m); every choice is declared (see module doc).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.rbf.html#conatus.expert.rbf" title="conatus.expert.rbf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rbf</span></code></a>(centers, epsilon)</p></td>
-<td><p>[1, x_1 … x_d, exp(−ε² ‖x − c_k‖²) for each center] (declared centers and shape ε).</p></td>
+<td><p>[1, x_1 … x_d, exp(−ε² ‖x − c_k‖²) for each center] (declared centers and shape ε); ‖·‖ is the Hermitian norm, so complex states and centers give real Gaussians in (0, 1].</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.spod.html#conatus.expert.spod" title="conatus.expert.spod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spod</span></code></a>(Q, *, dt, nfft, noverlap, window, mean, ...)</p></td>
 <td><p>SPOD of the time series <code class="docutils literal notranslate"><span class="pre">Q</span></code> (n × nt); every estimation choice is declared.</p></td>
@@ -1574,7 +1574,7 @@ it and documented from its docstring.</p>
 </section>
 <section id="conatus-chaos">
 <h2><code class="docutils literal notranslate"><span class="pre">conatus.chaos</span></code><a class="headerlink" href="#conatus-chaos" title="Link to this heading">¶</a></h2>
-<p>Chaos: Lyapunov spectrum on the exact tangent of the step, covariant Lyapunov vectors, Kaplan–Yorke dimension, finite-time exponents, Poincaré sections and first-return maps. Notes:</p>
+<p>Chaos: Lyapunov spectrum on the exact tangent of the step, covariant Lyapunov vectors, Kaplan–Yorke dimension, finite-time exponents, Poincaré sections and first-return maps.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -1593,7 +1593,7 @@ it and documented from its docstring.</p>
 </section>
 <section id="conatus-ensembles">
 <h2><code class="docutils literal notranslate"><span class="pre">conatus.ensembles</span></code><a class="headerlink" href="#conatus-ensembles" title="Link to this heading">¶</a></h2>
-<p>Ensembles on one batch: batches of initial conditions and/or parameter values advanced together, basins of attraction, transition probabilities. Notes:</p>
+<p>Ensembles on one batch: batches of initial conditions and/or parameter values advanced together, basins of attraction, transition probabilities.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -1727,7 +1727,7 @@ it and documented from its docstring.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

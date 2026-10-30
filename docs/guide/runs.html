@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -843,7 +843,12 @@ history array, the time and the iteration) is compared bit for bit: same dtype a
 functions and six numerical choices that 0.1.1 records: an <code class="docutils literal notranslate"><span class="pre">IdentityWarning</span></code> names them (they are
 not compared) and the end state is still compared bit for bit. If the
 executed code changed since the run, a <code class="docutils literal notranslate"><span class="pre">CodeChangedWarning</span></code> says how (<code class="docutils literal notranslate"><span class="pre">require_same_code=True</span></code>
-makes it an error). A decorated function is re-imported and called with the recorded arguments.</p>
+makes it an error).</p>
+<p>A decorated call is reproduced with the function you pass: <code class="docutils literal notranslate"><span class="pre">run.reproduce(fn=my_function)</span></code> calls it with
+the recorded arguments. <code class="docutils literal notranslate"><span class="pre">run.reproduce(trust_record=True)</span></code> imports and calls the function the record
+names, which runs whatever the record says. Use it only for records you made: a registry you unpacked or
+copied belongs to your account whoever wrote it. A record that other accounts can write is refused
+even then.</p>
 </section>
 <section id="the-cache-only-when-you-ask">
 <h2>The cache: only when you ask<a class="headerlink" href="#the-cache-only-when-you-ask" title="Link to this heading">¶</a></h2>
@@ -896,8 +901,9 @@ series and fields are read from the source run through the new run (<code class=
 <section id="studio-and-export">
 <h2>Studio and export<a class="headerlink" href="#studio-and-export" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>The <a class="reference internal" href="studio.html"><span class="doc">The Studio</span></a> lists, filters and compares registry runs (read-only), and a live run links to
-its registry record when it was recorded with <code class="docutils literal notranslate"><span class="pre">cn.runs.track(...,</span> <span class="pre">telemetry=tel)</span></code>.</p></li>
+<li><p>The <a class="reference internal" href="studio.html"><span class="doc">The Studio</span></a> server of this release does not read the registry: its Runs view shows the runs of
+its spool directory. List, filter and compare registry runs in Python with <code class="docutils literal notranslate"><span class="pre">cn.runs.find</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cn.runs.compare</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cn.runs.export(dir)</span></code> writes runs as small JSON files (filters as in <code class="docutils literal notranslate"><span class="pre">find</span></code>); <code class="docutils literal notranslate"><span class="pre">cn.runs.export_mlflow(runs)</span></code>
 copies runs to MLflow if you have it (never installed by Conatus).</p></li>
 </ul>
@@ -1055,13 +1061,15 @@ run with parameters or results; an empty registry accepts any key.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="conatus.runs.reproduce">
-<span class="sig-prename descclassname"><span class="pre">conatus.runs.</span></span><span class="sig-name descname"><span class="pre">reproduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_same_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/conatus/runs/integrations.html#reproduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.runs.reproduce" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">conatus.runs.</span></span><span class="sig-name descname"><span class="pre">reproduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_same_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/conatus/runs/integrations.html#reproduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.runs.reproduce" title="Link to this definition">¶</a></dt>
 <dd><p>Run the recorded computation again and compare with the recorded output.</p>
 <p>IVP runs: pass a <code class="docutils literal notranslate"><span class="pre">solver</span></code> built for the same problem and numerics (checked: problem hash,
 parameters, bases, scheme, dt… ; any difference is refused); the recorded
 start state is loaded, the same number of steps is taken, the end state is compared bit for bit.
-Decorated calls: the function is re-imported (or <code class="docutils literal notranslate"><span class="pre">fn=</span></code>) and called with the recorded
-arguments. If the executed code differs from the recorded one, a <code class="xref py py-class docutils literal notranslate"><span class="pre">CodeChangedWarning</span></code>
+Decorated calls: pass the function as <code class="docutils literal notranslate"><span class="pre">fn=</span></code>; it is called with the recorded arguments.
+<code class="docutils literal notranslate"><span class="pre">trust_record=True</span></code> imports and calls the function the record names instead, which runs
+whatever the record says: use it only for records you made. The ownership and mode checks on
+the record still apply then. If the executed code differs from the recorded one, a <code class="xref py py-class docutils literal notranslate"><span class="pre">CodeChangedWarning</span></code>
 says how (or an error with <code class="docutils literal notranslate"><span class="pre">require_same_code=True</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1071,6 +1079,7 @@ says how (or an error with <code class="docutils literal notranslate"><span clas
 <li><p><strong>fn</strong> (<em>Callable</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>record</strong> (<em>bool</em>)</p></li>
 <li><p><strong>require_same_code</strong> (<em>bool</em>)</p></li>
+<li><p><strong>trust_record</strong> (<em>bool</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1213,7 +1222,8 @@ a parameter declared twice with different values is refused.</p>
 <span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">scalars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/conatus/runs/run.html#Run.log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.runs.Run.log" title="Link to this definition">¶</a></dt>
 <dd><p>Append one row of series values (<code class="docutils literal notranslate"><span class="pre">run.log(t=t,</span> <span class="pre">energy=E)</span></code>); <code class="docutils literal notranslate"><span class="pre">step</span></code> is optional (the
 row number is always kept, so series logged together can be plotted against each other).
-In-memory only; written to <code class="docutils literal notranslate"><span class="pre">data.h5</span></code> at close.</p>
+Rows are buffered and written to <code class="docutils literal notranslate"><span class="pre">data.h5</span></code> in chunks of <code class="docutils literal notranslate"><span class="pre">SERIES_FLUSH_ROWS</span></code>; closing the
+run writes the remaining rows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1559,7 +1569,7 @@ part, not “.” or “..”; anything else is refused.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

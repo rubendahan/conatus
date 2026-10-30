@@ -236,7 +236,7 @@
   <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -687,8 +687,10 @@
           <section class="tex2jax_ignore mathjax_ignore" id="floquet-analysis">
 <h1>Floquet analysis<a class="headerlink" href="#floquet-analysis" title="Link to this heading">¶</a></h1>
 <p>Stability of time-periodic flows by the Hill method: the Floquet exponents are eigenvalues of one large, structured problem.</p>
-<p>For a linear system with a periodic coefficient, <span class="math notranslate nohighlight">\(\dot q + L(t)\,q = 0\)</span> with period <span class="math notranslate nohighlight">\(2\pi/\omega\)</span>,
-solutions are <span class="math notranslate nohighlight">\(q = e^{\mu t} p(t)\)</span> with <span class="math notranslate nohighlight">\(p\)</span> periodic. Expanding <span class="math notranslate nohighlight">\(p = \sum_n p_n e^{i n \omega t}\)</span>
+<p>For a linear system with a periodic coefficient, <span class="math notranslate nohighlight">\(M\dot q + L(t)\,q = 0\)</span> with <span class="math notranslate nohighlight">\(M\)</span> the mass matrix and
+period <span class="math notranslate nohighlight">\(2\pi/\omega\)</span>, a Floquet mode is a solution <span class="math notranslate nohighlight">\(q = e^{\mu t} p(t)\)</span> with <span class="math notranslate nohighlight">\(p\)</span> periodic. Every solution
+is a combination of these modes, with polynomial factors in <span class="math notranslate nohighlight">\(t\)</span> when a multiplier has a Jordan block
+(for <span class="math notranslate nohighlight">\(\dot q_1 = q_2\)</span>, <span class="math notranslate nohighlight">\(\dot q_2 = 0\)</span>, the solution <span class="math notranslate nohighlight">\((t, 1)\)</span> is not a single mode). Expanding <span class="math notranslate nohighlight">\(p = \sum_n p_n e^{i n \omega t}\)</span>
 turns the problem into the Hill eigenvalue problem</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
@@ -819,7 +821,7 @@ modulo <span class="math notranslate nohighlight">\(i\omega\)</span>: compare th
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

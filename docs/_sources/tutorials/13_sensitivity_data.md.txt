@@ -43,6 +43,10 @@ The direct and adjoint global modes of the Ginzburg-Landau model of the page (to
 
 ## Data: DMD in the exact norm
 
+The modes above came from the equations. This part starts from snapshots of the same model and
+checks that the data give back the eigenvalues whose sensitivity was computed: the known spectrum
+is the reference for the decomposition.
+
 The data are grid values on Gauss nodes with Fejér weights. This quadrature integrates the resolved
 field without error, so the data norm is the energy norm of the model (EᴴWE = 2I).
 

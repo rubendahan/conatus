@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -707,13 +707,20 @@
 <span class="sd">or arbitrary columns beside a zero eigenvalue).</span>
 
 <span class="sd">Confidence interval of λ (Schmidt &amp; Colonius 2020, eq. 20): with ν degrees of freedom,</span>
-<span class="sd">[ν λ / χ²_ν(1 − α/2), ν λ / χ²_ν(α/2)] — valid for independent Gaussian blocks (``explain``</span>
-<span class="sd">states the overlap used). ν = 2N_b at a frequency where the block coefficient q̂ is complex (two</span>
-<span class="sd">real quadratures per block). For real data the coefficient at f = 0 and, for even ``nfft``, at</span>
-<span class="sd">the Nyquist frequency is real: ν = N_b there (2N_b at those two</span>
-<span class="sd">frequencies would give 83.3 % coverage for a nominal 95 % interval with N_b = 16). ``mean="subtract"`` removes the</span>
-<span class="sd">long-time mean, which takes one more degree of freedom from the f = 0 estimate; it is not</span>
-<span class="sd">corrected for.</span>
+<span class="sd">[ν λ / χ²_ν(1 − α/2), ν λ / χ²_ν(α/2)]. This is the law of a *scalar*: one direction fixed in</span>
+<span class="sd">advance, independent Gaussian blocks. ``confidence(alpha)`` therefore holds for n = 1 and</span>
+<span class="sd">``noverlap = 0`` and refuses anything else. ν = 2N_b where the block coefficient q̂ is circular</span>
+<span class="sd">complex (two equal quadratures per block). For real data q̂ of a white block has the relative</span>
+<span class="sd">pseudo-variance ρ_k = |Σ_j w_j² e^{−4πi jk/nfft}| / Σ_j w_j², and ν = 2N_b / (1 + ρ_k²) (Satterthwaite):</span>
+<span class="sd">ν = N_b at f = 0 and at the Nyquist frequency, where q̂ is real (ρ = 1), and for an impulse window at</span>
+<span class="sd">every frequency; ν = 2N_b for a boxcar inside. Real values in a complex array count as real data.</span>
+<span class="sd">Complex data are assumed circular. ``mean="subtract"`` removes the long-time mean, which takes one</span>
+<span class="sd">more degree of freedom from the f = 0 estimate; it is not corrected for.</span>
+
+<span class="sd">For n &gt; 1 the eigenvalues are the ordered eigenvalues of a sample Wishart matrix. They are biased</span>
+<span class="sd">apart (the largest upwards, the smallest downwards), so the scalar law is only an approximation,</span>
+<span class="sd">reached for N_b ≫ n and separated population eigenvalues. ``confidence(alpha, approximate=True)``</span>
+<span class="sd">returns that formula, also with overlap. ``APPROX_COVERAGE`` holds its measured pointwise coverage.</span>
 <span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -727,7 +734,24 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">renames</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._repr</span><span class="w"> </span><span class="kn">import</span> <span class="n">compact_repr</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"SPOD"</span><span class="p">,</span> <span class="s2">"spod"</span><span class="p">,</span> <span class="s2">"welch_blocks"</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"SPOD"</span><span class="p">,</span> <span class="s2">"spod"</span><span class="p">,</span> <span class="s2">"welch_blocks"</span><span class="p">,</span> <span class="s2">"APPROX_COVERAGE"</span><span class="p">]</span>
+
+<span class="c1">#: Measured coverage of the nominal 95 % ``confidence(alpha, approximate=True)`` on independent</span>
+<span class="c1">#: real white Gaussian datasets, boxcar window, no overlap, nfft = 8, interior bin k = 1, 2000</span>
+<span class="c1">#: trials (run script benchmarks/datadriven/spod_coverage_table.py). Keys: population</span>
+<span class="c1">#: spectrum, n, N_b; values: coverage of the leading and of the smallest eigenvalue. "repeated": all</span>
+<span class="c1">#: population eigenvalues equal; "separated": 32, 16, ..., 0.25. The scalar ``confidence(alpha)``</span>
+<span class="c1">#: assumes circular complex data: q = x + 0.5 i y (improper) measured 0.906 at f = 0, 0.944 inside and</span>
+<span class="c1">#: 0.923 at Nyquist on the same setting.</span>
+<span class="n">APPROX_COVERAGE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="s2">"repeated"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span> <span class="p">(</span><span class="mf">0.956</span><span class="p">,</span> <span class="mf">0.956</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"repeated"</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span> <span class="p">(</span><span class="mf">0.84</span><span class="p">,</span> <span class="mf">0.814</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"repeated"</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span> <span class="p">(</span><span class="mf">0.312</span><span class="p">,</span> <span class="mf">0.11</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"repeated"</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span> <span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"repeated"</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">128</span><span class="p">):</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"separated"</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span> <span class="p">(</span><span class="mf">0.951</span><span class="p">,</span> <span class="mf">0.218</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"separated"</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">128</span><span class="p">):</span> <span class="p">(</span><span class="mf">0.952</span><span class="p">,</span> <span class="mf">0.891</span><span class="p">),</span>
+<span class="p">}</span>
 
 <span class="c1">#: Numerical rank of the CSD at one frequency: eigenvalues λ &gt; RANK_RTOL x max(n, N_b) x eps x λ_1</span>
 <span class="c1">#: (the rounding of a Hermitian eigensolve of that size, relative to the largest); a mode beyond the</span>
@@ -747,10 +771,14 @@
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"noverlap = </span><span class="si">{</span><span class="n">noverlap</span><span class="si">}</span><span class="s2">: expected 0 &lt;= noverlap &lt; nfft"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">mean</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"subtract"</span><span class="p">,</span> <span class="s2">"keep"</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"mean='</span><span class="si">{</span><span class="n">mean</span><span class="si">}</span><span class="s2">': expected 'subtract' or 'keep' (declared)"</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_real</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">check_real</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="s2">"dt"</span><span class="p">,</span> <span class="s2">"welch_blocks()"</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">w</span> <span class="o">=</span> <span class="p">(</span><span class="n">ss</span><span class="o">.</span><span class="n">get_window</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">nfft</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
          <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">w</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">nfft</span><span class="p">,):</span>
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"window of length </span><span class="si">{</span><span class="n">w</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> for nfft = </span><span class="si">{</span><span class="n">nfft</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">w</span><span class="p">))</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"window: finite values, not all zero (Σw² normalizes the density)"</span><span class="p">)</span>
     <span class="n">step</span> <span class="o">=</span> <span class="n">nfft</span> <span class="o">-</span> <span class="n">noverlap</span>
     <span class="n">nb</span> <span class="o">=</span> <span class="p">(</span><span class="n">nt</span> <span class="o">-</span> <span class="n">noverlap</span><span class="p">)</span> <span class="o">//</span> <span class="n">step</span>
     <span class="k">if</span> <span class="n">nb</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -784,28 +812,50 @@
     <span class="n">notes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="c1">#: the data were real: the coefficients at f = 0 and at the Nyquist frequency are real</span>
     <span class="n">real_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1">#: the window of the blocks (its squared DFT gives the pseudo-variance of q̂ used by ``dof``)</span>
+    <span class="n">window_values</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SPOD.dof">
 <a class="viewcode-back" href="../../../api/_generated/_stubs/conatus.expert.SPOD.html#conatus.expert.SPOD.dof">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">dof</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Degrees of freedom ν of the χ² law of ν λ̂ / λ at each frequency (nfreq,): 2 N_b, and N_b</span>
-<span class="sd">        at f = 0 and at the Nyquist frequency (even nfft) of real data, where the block</span>
-<span class="sd">        coefficient is real (module docstring)."""</span>
+<span class="w">        </span><span class="sd">"""Degrees of freedom ν of the χ² law of ν λ̂ / λ at each frequency (nfreq,): 2 N_b; for</span>
+<span class="sd">        real data 2 N_b / (1 + ρ_k²) with ρ_k the relative pseudo-variance of the windowed</span>
+<span class="sd">        coefficient (N_b at f = 0 and at the Nyquist frequency; module docstring)."""</span>
         <span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nblocks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">real_data</span><span class="p">:</span>
-            <span class="n">nu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nblocks</span>                    <span class="c1"># f = 0 (index 0, one- and two-sided)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>                  <span class="c1"># Nyquist: index nfft/2 in both layouts</span>
-                <span class="n">nu</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nfft</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nblocks</span>
+            <span class="n">pseudo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_values</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="c1"># index k of the frequency in both layouts (one-sided: 0 ... nfft//2; two-sided: fft)</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="n">pseudo</span><span class="p">[(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nu</span><span class="o">.</span><span class="n">size</span><span class="p">))</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfft</span><span class="p">]</span> <span class="o">/</span> <span class="n">pseudo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">nu</span> <span class="o">=</span> <span class="n">nu</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">nu</span></div>
 
 
 <div class="viewcode-block" id="SPOD.confidence">
 <a class="viewcode-back" href="../../../api/_generated/_stubs/conatus.expert.SPOD.html#conatus.expert.SPOD.confidence">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">confidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">approximate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""(lower, upper) (1 − α) bounds on every eigenvalue: ν λ / χ²_ν(1 − α/2) and</span>
-<span class="sd">        ν λ / χ²_ν(α/2) with ν = :meth:`dof` at each frequency (2 N_b; N_b at f = 0 and Nyquist</span>
-<span class="sd">        of real data)."""</span>
+<span class="sd">        ν λ / χ²_ν(α/2) with ν = :meth:`dof` at each frequency.</span>
+
+<span class="sd">        Holds for one entry (n = 1) and independent blocks (``noverlap = 0``), and is refused</span>
+<span class="sd">        otherwise. ``approximate=True`` returns the same formula for any n and overlap: a pointwise</span>
+<span class="sd">        approximation for N_b ≫ n and separated eigenvalues, whose coverage can be far below 1 − α</span>
+<span class="sd">        (``APPROX_COVERAGE``, module docstring)."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">chi2</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_real</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">check_real</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="s2">"alpha"</span><span class="p">,</span> <span class="s2">"SPOD.confidence()"</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">alpha</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"SPOD.confidence: alpha = </span><span class="si">{</span><span class="n">alpha</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">: expected 0 &lt; alpha &lt; 1"</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">approximate</span> <span class="ow">and</span> <span class="p">(</span><span class="n">n</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">noverlap</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">what</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"n = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> entries"</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"overlapping blocks (noverlap = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">noverlap</span><span class="si">}</span><span class="s2">)"</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"SPOD.confidence: the χ² law holds for one entry and independent blocks; this "</span>
+                <span class="sa">f</span><span class="s2">"estimate has </span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">why</span><span class="o">=</span><span class="s2">"the ordered eigenvalues of a sample CSD matrix do not follow a scalar χ² law: "</span>
+                    <span class="s2">"with 8 white channels and N_b = 16 the nominal 95 </span><span class="si">% i</span><span class="s2">nterval of λ_1 covers "</span>
+                    <span class="s2">"below 1 </span><span class="si">% o</span><span class="s2">f the time"</span><span class="p">,</span>
+                <span class="n">fix</span><span class="o">=</span><span class="s2">"confidence(alpha, approximate=True) for the pointwise approximation "</span>
+                    <span class="s2">"(measured coverage: conatus.datadriven.spod.APPROX_COVERAGE)"</span><span class="p">)</span>
         <span class="n">nu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">nu</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span> <span class="o">/</span> <span class="n">chi2</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nu</span><span class="p">),</span>
                 <span class="n">nu</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span> <span class="o">/</span> <span class="n">chi2</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">alpha</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nu</span><span class="p">))</span></div>
@@ -815,11 +865,14 @@
 <a class="viewcode-back" href="../../../api/_generated/_stubs/conatus.expert.SPOD.html#conatus.expert.SPOD.explain">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span>
-        <span class="n">dof</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"N_b dof at f = 0 and Nyquist (real data), 2 N_b elsewhere"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">real_data</span>
-               <span class="k">else</span> <span class="s2">"2 N_b dof"</span><span class="p">)</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"N_b dof at f = 0 and Nyquist (real data), up to 2 N_b elsewhere"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">real_data</span>
+               <span class="k">else</span> <span class="s2">"2 N_b dof, circular data assumed"</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"χ² confidence for independent Gaussian blocks"</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">noverlap</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="k">else</span> <span class="s2">"χ² confidence only as an approximate=True pointwise approximation for "</span>
+                     <span class="s2">"N_b &gt;&gt; n and separated eigenvalues"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"SPOD (Towne et al. 2018): N_b = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nblocks</span><span class="si">}</span><span class="s2"> blocks of nfft = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nfft</span><span class="si">}</span><span class="s2"> "</span>
-                <span class="sa">f</span><span class="s2">"(overlap </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">noverlap</span><span class="si">}</span><span class="s2">; the χ² confidence assumes independent blocks, "</span>
-                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dof</span><span class="si">}</span><span class="s2">), window "</span>
+                <span class="sa">f</span><span class="s2">"(overlap </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">noverlap</span><span class="si">}</span><span class="s2">; </span><span class="si">{</span><span class="n">conf</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">dof</span><span class="si">}</span><span class="s2">), window "</span>
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="si">}</span><span class="s2">, Δt = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, mean: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_policy</span><span class="si">}</span><span class="s2">, "</span>
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'one'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">onesided</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'two'</span><span class="si">}</span><span class="s2">-sided density (scipy.signal.csd "</span>
                 <span class="sa">f</span><span class="s2">"conventions), </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">inner_product</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2"> product; largest λ_1 = "</span>
@@ -845,6 +898,13 @@
         <span class="c1"># n &lt; n_modes &lt;= N_b used to crash in the n x n branch (n modes into n_modes columns)</span>
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"n_modes = </span><span class="si">{</span><span class="n">n_modes</span><span class="si">}</span><span class="s2">: expected 1 &lt;= n_modes &lt;= min(N_b, n) = "</span>
                           <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">min</span><span class="p">(</span><span class="n">nb</span><span class="p">,</span><span class="w"> </span><span class="n">n_space</span><span class="p">)</span><span class="si">}</span><span class="s2"> (N_b = </span><span class="si">{</span><span class="n">nb</span><span class="si">}</span><span class="s2"> blocks, n = </span><span class="si">{</span><span class="n">n_space</span><span class="si">}</span><span class="s2"> entries)"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">onesided</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">inner_product</span><span class="o">.</span><span class="n">is_real</span><span class="p">:</span>
+        <span class="c1"># z = q̂(f), q̂(−f) = conj(z): zᴴ W z and zᵀ W conj(z) differ when Im W ≠ 0, so doubling the</span>
+        <span class="c1"># positive side does not give the energy</span>
+        <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span>
+            <span class="s2">"onesided=True with a complex Gram matrix: the energies at +f and -f of real data "</span>
+            <span class="s2">"differ, and doubling one side does not keep the energy"</span><span class="p">,</span>
+            <span class="n">fix</span><span class="o">=</span><span class="s2">"onesided=False; or Re(W), which gives real data the same time-domain energy"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">onesided</span><span class="p">:</span>
         <span class="n">nf</span> <span class="o">=</span> <span class="n">nfft</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">Qh</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">Qh</span><span class="p">[:</span><span class="n">nf</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">f</span><span class="p">[:</span><span class="n">nf</span><span class="p">])</span>
@@ -893,7 +953,9 @@
     <span class="n">note</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"eigenproblem of size N_b (method of snapshots)"</span> <span class="k">if</span> <span class="n">small</span> <span class="o">==</span> <span class="s2">"blocks"</span> <span class="k">else</span>
             <span class="sa">f</span><span class="s2">"eigenproblem of size n = </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> &lt; N_b (the weighted CSD; same eigenvalues)"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">SPOD</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">nb</span><span class="p">,</span> <span class="n">nfft</span><span class="p">,</span> <span class="n">noverlap</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">dt</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">wname</span><span class="p">),</span> <span class="n">onesided</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span>
-                <span class="n">inner_product</span><span class="p">,</span> <span class="p">[</span><span class="n">note</span><span class="p">],</span> <span class="n">real_data</span><span class="o">=</span><span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">Q</span><span class="p">)))</span></div>
+                <span class="n">inner_product</span><span class="p">,</span> <span class="p">[</span><span class="n">note</span><span class="p">],</span>
+                <span class="n">real_data</span><span class="o">=</span><span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">Q</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">Q</span><span class="o">.</span><span class="n">imag</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)),</span>
+                <span class="n">window_values</span><span class="o">=</span><span class="n">w</span><span class="p">)</span></div>
 
 
 
@@ -934,7 +996,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

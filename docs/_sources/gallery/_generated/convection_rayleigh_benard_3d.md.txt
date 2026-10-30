@@ -1,7 +1,5 @@
 # Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR
 
-**Goal.** Run this case and compare the value it obtains with the reference below.
-
 *Family:* `convection` · *Script:* `examples/convection/rayleigh_benard_3d.py`
 
 ```{list-table}

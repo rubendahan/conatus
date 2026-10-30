@@ -236,7 +236,7 @@
   <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -766,7 +766,8 @@ mode, coarser removes resolved ones), <code class="docutils literal notranslate"
 (<code class="docutils literal notranslate"><span class="pre">cn.tolerances.DRIFT_TOL_MAX</span></code>: above it most modes find a neighbour and nothing is filtered), and a
 drift test that removes every mode raises <code class="docutils literal notranslate"><span class="pre">ResolutionError</span></code> instead of returning an empty result.</p>
 <p><code class="docutils literal notranslate"><span class="pre">res.order()</span></code> ranks the modes from the least stable by the growth convention of the eigenvalue
-(here the phase speed <code class="docutils literal notranslate"><span class="pre">c</span></code>, declared <code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code>: <span class="math notranslate nohighlight">\(\operatorname{Im} c\)</span>), and
+(here the phase speed <code class="docutils literal notranslate"><span class="pre">c</span></code>, declared <code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code>: the mode <span class="math notranslate nohighlight">\(e^{i\alpha(x-ct)}\)</span> grows as
+<span class="math notranslate nohighlight">\(e^{\alpha\operatorname{Im}(c)\,t}\)</span>, so the sign of <span class="math notranslate nohighlight">\(\operatorname{Im} c\)</span> decides for <span class="math notranslate nohighlight">\(\alpha &gt; 0\)</span>), and
 <code class="docutils literal notranslate"><span class="pre">res.explain()</span></code> prints them in that order with the rule it used; <code class="docutils literal notranslate"><span class="pre">res.order(&quot;real&quot;)</span></code> and <code class="docutils literal notranslate"><span class="pre">res.order(&quot;imag&quot;)</span></code> sort by a part.</p>
 </section>
 <section id="eigenfunctions-on-the-grid">
@@ -886,7 +887,7 @@ one. The finite/infinite classification of QZ is a separate filter with its own 
 <code class="docutils literal notranslate"><span class="pre">select=</span></code> remains available for a physical restriction, and is logged. Modes flagged by the
 spectral-tail test are not candidates. The growth of a mode
 is declared with the eigenvalue: <code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code> for a phase speed (mode
-<span class="math notranslate nohighlight">\(e^{i\alpha(x - ct)}\)</span>, growth <span class="math notranslate nohighlight">\(\operatorname{Im} c\)</span>), <code class="docutils literal notranslate"><span class="pre">growth=&quot;real&quot;</span></code> for a rate (mode <span class="math notranslate nohighlight">\(e^{st}\)</span>),
+<span class="math notranslate nohighlight">\(e^{i\alpha(x - ct)}\)</span>, of temporal growth rate <span class="math notranslate nohighlight">\(\alpha\operatorname{Im} c\)</span>; <code class="docutils literal notranslate"><span class="pre">Im</span> <span class="pre">c</span></code> is the value ranked), <code class="docutils literal notranslate"><span class="pre">growth=&quot;real&quot;</span></code> for a rate (mode <span class="math notranslate nohighlight">\(e^{st}\)</span>),
 or <code class="docutils literal notranslate"><span class="pre">critical(growth=...)</span></code> for one call; a linearization’s eigenvalue is the <span class="math notranslate nohighlight">\(s\)</span> of <span class="math notranslate nohighlight">\(e^{st}\)</span>
 (growth <span class="math notranslate nohighlight">\(\operatorname{Re} s\)</span>, declared by construction). In v0.1 an undeclared convention is still
 guessed from the name (<code class="docutils literal notranslate"><span class="pre">c</span></code> → Im, <code class="docutils literal notranslate"><span class="pre">s</span></code>, <code class="docutils literal notranslate"><span class="pre">sigma</span></code>, <code class="docutils literal notranslate"><span class="pre">lam</span></code> → Re) with a <code class="docutils literal notranslate"><span class="pre">cn.errors.DefaultChoiceWarning</span></code>
@@ -1010,7 +1011,7 @@ of the eigenvector is checked by <code class="docutils literal notranslate"><spa
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

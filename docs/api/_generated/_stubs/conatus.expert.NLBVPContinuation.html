@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -692,7 +692,8 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Pseudo-arclength continuation of <code class="docutils literal notranslate"><span class="pre">solver.problem</span></code> in the parameter <code class="docutils literal notranslate"><span class="pre">parameter</span></code>
 (<code class="docutils literal notranslate"><span class="pre">param</span></code>: its deprecated former name, v0.1).</p>
-<p><code class="docutils literal notranslate"><span class="pre">settings</span></code> are the explicit continuation settings (no defaults); G_p is computed by the
+<p><code class="docutils literal notranslate"><span class="pre">settings</span></code> is a required <a class="reference internal" href="conatus.expert.ContinuationSettings.html#conatus.expert.ContinuationSettings" title="conatus.expert.ContinuationSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContinuationSettings</span></code></a>, whose fields have the defaults its
+<code class="docutils literal notranslate"><span class="pre">explain()</span></code> lists; G_p is computed by the
 declared central finite difference <code class="docutils literal notranslate"><span class="pre">settings.dp_fd</span></code> (the Newton system is rebuilt at p ± dp).
 <code class="docutils literal notranslate"><span class="pre">eigen(coeffs,</span> <span class="pre">p)</span> <span class="pre">-&gt;</span> <span class="pre">growth</span> <span class="pre">rates</span></code> (optional) gives the stability of each branch point, e.g.
 the eigenvalues of the linearized IVP (<code class="docutils literal notranslate"><span class="pre">linearize</span></code> + <code class="docutils literal notranslate"><span class="pre">eigenvalues</span></code>): an NLBVP has no time
@@ -847,7 +848,7 @@ derivative, so its own Jacobian cannot provide growth rates (see <code class="do
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

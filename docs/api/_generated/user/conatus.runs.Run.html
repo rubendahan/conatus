@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -800,7 +800,8 @@ a parameter declared twice with different values is refused.</p>
 <span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">scalars</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/runs/run.html#Run.log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.runs.Run.log" title="Link to this definition">¶</a></dt>
 <dd><p>Append one row of series values (<code class="docutils literal notranslate"><span class="pre">run.log(t=t,</span> <span class="pre">energy=E)</span></code>); <code class="docutils literal notranslate"><span class="pre">step</span></code> is optional (the
 row number is always kept, so series logged together can be plotted against each other).
-In-memory only; written to <code class="docutils literal notranslate"><span class="pre">data.h5</span></code> at close.</p>
+Rows are buffered and written to <code class="docutils literal notranslate"><span class="pre">data.h5</span></code> in chunks of <code class="docutils literal notranslate"><span class="pre">SERIES_FLUSH_ROWS</span></code>; closing the
+run writes the remaining rows.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1128,7 +1129,7 @@ part, not “.” or “..”; anything else is refused.</p>
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

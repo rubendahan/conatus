@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -696,9 +696,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..ir.problem</span><span class="w"> </span><span class="kn">import</span> <span class="n">EVP</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">renames</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..tolerances</span><span class="w"> </span><span class="kn">import</span> <span class="n">REQUIRED</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.evp</span><span class="w"> </span><span class="kn">import</span> <span class="n">EVPResult</span><span class="p">,</span> <span class="n">check_drift_tol</span><span class="p">,</span> <span class="n">drift_filter</span><span class="p">,</span> <span class="n">solve_dense</span><span class="p">,</span> <span class="n">solve_sparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.evp</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">PENCIL_SHIFTS</span><span class="p">,</span> <span class="n">EVPResult</span><span class="p">,</span> <span class="n">check_drift_tol</span><span class="p">,</span> <span class="n">drift_filter</span><span class="p">,</span>
+                  <span class="n">numerically_singular_pencil</span><span class="p">,</span> <span class="n">solve_dense</span><span class="p">,</span> <span class="n">solve_sparse</span><span class="p">)</span>
 
-<span class="n">PENCIL_SHIFT</span> <span class="o">=</span> <span class="mf">0.3719</span> <span class="o">+</span> <span class="mf">0.6153</span><span class="n">j</span>     <span class="c1"># generic point for the regularity test of L + s M</span>
 <span class="n">NUMERICAL_MAX</span> <span class="o">=</span> <span class="mi">2000</span>
 <span class="c1">#: Number of shift-invert modes when n_modes is not given (the v0.1 default of k).</span>
 <span class="n">DEFAULT_N_MODES</span> <span class="o">=</span> <span class="mi">6</span>
@@ -708,8 +708,10 @@
 <span class="w">    </span><span class="sd">"""Rank report of the pencil L + s M, refusing singular pencils.</span>
 
 <span class="sd">    L alone is singular whenever 0 is an eigenvalue (e.g. exactly at onset), so</span>
-<span class="sd">    the test is on the pencil at a generic shift s: a pencil singular for every s</span>
-<span class="sd">    (missing BC or gauge) has no well-defined spectrum.</span>
+<span class="sd">    the test is on the pencil at generic shifts s: a pencil singular for every s</span>
+<span class="sd">    (missing BC or gauge) has no well-defined spectrum. A regular pencil is singular at each of</span>
+<span class="sd">    its eigenvalues, so the pencil is refused only when every shift of ``PENCIL_SHIFTS`` is</span>
+<span class="sd">    rank-deficient. One regular shift establishes regularity to the rank tolerance.</span>
 <span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">..discretize.plan</span><span class="w"> </span><span class="kn">import</span> <span class="n">RankError</span>
     <span class="n">n</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">L</span><span class="o">.</span><span class="n">shape</span>
@@ -733,19 +735,11 @@
                  <span class="s2">"(pb.add_bc places them)"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">NUMERICAL_MAX</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">"pencil L + sM: structural rank </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">; numerical test skipped (size </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)"</span>
-    <span class="n">nL</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">gm</span><span class="o">.</span><span class="n">L</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="k">if</span> <span class="n">gm</span><span class="o">.</span><span class="n">L</span><span class="o">.</span><span class="n">nnz</span> <span class="k">else</span> <span class="mf">1.0</span>
-    <span class="n">nM</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">gm</span><span class="o">.</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="k">if</span> <span class="n">gm</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">nnz</span> <span class="k">else</span> <span class="mf">1.0</span>
-    <span class="n">A</span> <span class="o">=</span> <span class="p">(</span><span class="n">gm</span><span class="o">.</span><span class="n">L</span> <span class="o">+</span> <span class="n">PENCIL_SHIFT</span> <span class="o">*</span> <span class="p">(</span><span class="n">nL</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">nM</span><span class="p">,</span> <span class="mf">1e-300</span><span class="p">))</span> <span class="o">*</span> <span class="n">gm</span><span class="o">.</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
-    <span class="c1"># two sweeps of row/column equilibration: the rank test must not see bad scaling</span>
-    <span class="c1"># (e.g. 1/Re in front of D^4 next to O(1) boundary rows) as singularity</span>
-    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="mf">1e-300</span><span class="p">)</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="mf">1e-300</span><span class="p">)</span>
-    <span class="n">sv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">ratio</span> <span class="o">=</span> <span class="n">sv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">sv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">ratio</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="p">:</span>
+    <span class="n">singular</span><span class="p">,</span> <span class="n">ratio</span> <span class="o">=</span> <span class="n">numerically_singular_pencil</span><span class="p">(</span><span class="n">gm</span><span class="o">.</span><span class="n">L</span><span class="o">.</span><span class="n">toarray</span><span class="p">(),</span> <span class="n">gm</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">toarray</span><span class="p">(),</span>
+                                                  <span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">singular</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">RankError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"EVP refused before solving [</span><span class="si">{</span><span class="n">gm</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">]: pencil L + sM numerically "</span>
-                        <span class="sa">f</span><span class="s2">"singular at a generic s (sigma_min/sigma_max = </span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">"singular at </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">PENCIL_SHIFTS</span><span class="p">)</span><span class="si">}</span><span class="s2"> independent s (sigma_min/sigma_max &lt;= </span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
                         <span class="n">where</span><span class="o">=</span><span class="sa">f</span><span class="s2">"group [</span><span class="si">{</span><span class="n">gm</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">]"</span><span class="p">,</span>
                         <span class="n">why</span><span class="o">=</span><span class="s2">"a null space present for every s: usually an undetermined constant "</span>
                             <span class="s2">"(pressure level, pure Neumann) or two conditions fixing the same "</span>
@@ -1044,7 +1038,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

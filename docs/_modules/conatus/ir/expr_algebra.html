@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -1207,12 +1207,20 @@
         <span class="k">return</span> <span class="p">[</span><span class="s2">"conjugation is antilinear over C: 'linear' here means R-linear"</span><span class="p">]</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_on_complex_basis</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Expr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.bases</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComplexFourier</span>
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">ComplexFourier</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">free_fields</span><span class="p">()</span>
+               <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">bases</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">domain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">()))</span>
+
+
 <div class="viewcode-block" id="conj">
 <a class="viewcode-back" href="../../../api/_generated/_stubs/conatus.expert.conj.html#conatus.expert.conj">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">conj</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expr</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Complex conjugate (the identity on real expressions)."""</span>
+<span class="w">    </span><span class="sd">"""Complex conjugate (the identity on real expressions). An expression of fields on a</span>
+<span class="sd">    complex-exponential basis is complex whatever its declared dtype: such a field holds complex</span>
+<span class="sd">    values (the native ``periodic(L, complex=True)`` declares no dtype)."""</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">as_expr</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s2">"c"</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s2">"c"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_on_complex_basis</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Conj</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1657,7 +1665,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

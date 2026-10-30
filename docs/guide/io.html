@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -747,6 +747,12 @@ are equal bit for bit.</p>
 <h2>Recipe: continue a state with another parameter<a class="headerlink" href="#recipe-continue-a-state-with-another-parameter" title="Link to this heading">¶</a></h2>
 <p>A restart refuses a checkpoint written with another parameter value. To continue the state at a
 new value on purpose, name the change with <code class="docutils literal notranslate"><span class="pre">allow=</span></code>:</p>
+<p>A multistep scheme stores M X, F and, in the CN family, L X. When the change touches an operator
+held in that history, the history is discarded with a <code class="docutils literal notranslate"><span class="pre">CheckpointWarning</span></code>, the next steps use the
+declared start-up from the state, and <code class="docutils literal notranslate"><span class="pre">explain()</span></code> records it. A parameter that enters only an
+operator the history does not hold (L under SBDF) keeps the history. A checkpoint with history is
+refused when the same equations are declared in another order: declare them in the first order, or
+name <code class="docutils literal notranslate"><span class="pre">allow=(&quot;equations&quot;,)</span></code> to continue from the state alone.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
@@ -1102,7 +1108,7 @@ simulation instead.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

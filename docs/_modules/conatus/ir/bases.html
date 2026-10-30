@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -738,7 +738,7 @@
                              <span class="n">fix</span><span class="o">=</span><span class="s2">"dealias=1 (no padding) or dealias=3/2 (quadratic products)"</span><span class="p">,</span>
                              <span class="n">doc</span><span class="o">=</span><span class="s2">"docs/site/guide/bases.md"</span><span class="p">)</span>
     <span class="n">d</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dealias</span><span class="p">)</span>
-    <span class="c1"># not (d &gt;= 1): NaN fails every comparison and passed "d &lt; 1" (review finding 33)</span>
+    <span class="c1"># not (d &gt;= 1): NaN fails every comparison and passed "d &lt; 1"</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="ow">and</span> <span class="n">d</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">: dealias factor must be a finite number &gt;= 1, got </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                           <span class="n">fix</span><span class="o">=</span><span class="s2">"dealias=1 (none) or dealias=3/2 (quadratic products)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">"docs/site/guide/bases.md"</span><span class="p">)</span>
@@ -1565,7 +1565,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -683,7 +683,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for conatus.manifolds.poincare</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Poincaré sections and first-return maps with declared dense interpolation.</span>
-<span class="sd">Notes:</span>
+
 
 <span class="sd">A section is the zero set of a scalar function g(x) crossed in a declared direction</span>
 <span class="sd">(+1: g increasing, −1: decreasing, 0: both). Hyperplanes g(x) = ⟨n, x − x*⟩ are built by</span>
@@ -706,7 +706,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">so</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptionError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">NumericalError</span><span class="p">,</span> <span class="n">OptionError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._repr</span><span class="w"> </span><span class="kn">import</span> <span class="n">compact_repr</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PoincareSection"</span><span class="p">,</span> <span class="s2">"Crossings"</span><span class="p">,</span> <span class="s2">"poincare_crossings"</span><span class="p">,</span> <span class="s2">"first_return_map"</span><span class="p">]</span>
@@ -782,6 +782,14 @@
 <span class="sd">    (Brent, ``xtol`` in time, declared). ``refine=True`` (discrete maps): secant on the exact partial</span>
 <span class="sd">    step until |g| stops decreasing; the returned state is then a point of the discrete map."""</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">section</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">traj</span><span class="o">.</span><span class="n">X</span><span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">g</span><span class="p">)):</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">g</span><span class="p">))[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"poincare_crossings: section </span><span class="si">{</span><span class="n">section</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> gave </span><span class="si">{</span><span class="n">g</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">}</span><span class="s2"> at t = "</span>
+                             <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">traj</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                             <span class="n">why</span><span class="o">=</span><span class="s2">"a section value that is not a finite number cannot say on which "</span>
+                                 <span class="s2">"side the state is, so no crossing could be told from an invalid "</span>
+                                 <span class="s2">"section"</span><span class="p">,</span>
+                             <span class="n">fix</span><span class="o">=</span><span class="s2">"make the section function finite along the trajectory"</span><span class="p">)</span>
     <span class="n">scale</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">g</span><span class="p">))),</span> <span class="mf">1e-300</span><span class="p">)</span>
     <span class="n">jumps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">g</span><span class="p">))</span> <span class="o">/</span> <span class="n">scale</span>
     <span class="n">ts</span><span class="p">,</span> <span class="n">Xs</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">dfs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
@@ -806,6 +814,10 @@
             <span class="n">defect</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">xr</span> <span class="o">-</span> <span class="n">xd</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">refine</span><span class="p">:</span>
                 <span class="n">tc</span><span class="p">,</span> <span class="n">xd</span> <span class="o">=</span> <span class="n">_secant_restep</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">tc</span><span class="p">,</span> <span class="n">xr</span><span class="p">)</span>
+                <span class="c1"># the defect belongs to the returned time</span>
+                <span class="n">defect</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">xd</span> <span class="o">-</span> <span class="n">traj</span><span class="o">.</span><span class="n">_dense</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">tc</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">t_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tc</span> <span class="o">&lt;</span> <span class="n">t_min</span><span class="p">:</span>          <span class="c1"># the cutoff is on the crossing (N30)</span>
+            <span class="k">continue</span>
         <span class="n">ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tc</span><span class="p">)</span>
         <span class="n">Xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xd</span><span class="p">)</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -822,11 +834,16 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_secant_restep</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Secant on t of g(restep(t)) from the dense estimate (exact discrete point)."""</span>
-    <span class="n">t1</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">traj</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="w">    </span><span class="sd">"""Secant on t of g(restep(t)) from the dense estimate (exact discrete point), inside the</span>
+<span class="sd">    segment: a partial step exists only there, and the returned time is the time of the returned</span>
+<span class="sd">    state."""</span>
+    <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">traj</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="p">(</span><span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">t1</span> <span class="k">if</span> <span class="n">t1</span> <span class="o">&lt;=</span> <span class="n">hi</span> <span class="k">else</span> <span class="n">t0</span> <span class="o">-</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="p">(</span><span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span>
     <span class="n">g0</span><span class="p">,</span> <span class="n">x_best</span><span class="p">,</span> <span class="n">t_best</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="n">x0</span><span class="p">),</span> <span class="n">x0</span><span class="p">,</span> <span class="n">t0</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iterations</span><span class="p">):</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">_restep</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">traj</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">traj</span><span class="o">.</span><span class="n">t</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">lo</span><span class="p">),</span> <span class="n">hi</span><span class="p">))</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">_restep</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">t1</span><span class="p">)</span>
         <span class="n">g1</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">g1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">g</span><span class="p">(</span><span class="n">x_best</span><span class="p">)):</span>
             <span class="n">x_best</span><span class="p">,</span> <span class="n">t_best</span> <span class="o">=</span> <span class="n">x1</span><span class="p">,</span> <span class="n">t1</span>
@@ -877,7 +894,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -691,8 +691,16 @@ or fork it. This page gets a first live view on your own machine, then explains 
 where else the server can run. The Studio is experimental in this release (<a class="reference internal" href="experimental.html"><span class="doc">Experimental features</span></a>).</p>
 <section id="a-first-live-view">
 <h2>A first live view<a class="headerlink" href="#a-first-live-view" title="Link to this heading">¶</a></h2>
-<p><strong>Declare</strong> what the Studio may show with <code class="docutils literal notranslate"><span class="pre">sim.watch</span></code>, then run the simulation. The telemetry goes
-to the spool directory <code class="docutils literal notranslate"><span class="pre">studio_spool</span></code>:</p>
+<p>The server starts first, so that the page is open when the run begins.</p>
+<p><strong>Start the server</strong> in one terminal, on a spool directory (it needs <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;conatus[studio]&quot;</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>conatus.studio.hub<span class="w"> </span>serve<span class="w"> </span>--local<span class="w"> </span>--spool<span class="w"> </span>studio_spool<span class="w"> </span>--port<span class="w"> </span><span class="m">8765</span>
+</pre></div>
+</div>
+<p>It prints the path of a file that holds a one-session login token.</p>
+<p><strong>Open</strong> <code class="docutils literal notranslate"><span class="pre">http://localhost:8765/login</span></code> and paste the token from that file.</p>
+<p><strong>Run</strong> the simulation in a second terminal, from the same directory. Save this script as
+<code class="docutils literal notranslate"><span class="pre">rb_watch.py</span></code> and run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">rb_watch.py</span></code>. <code class="docutils literal notranslate"><span class="pre">sim.watch</span></code> declares what the Studio may show, and the
+telemetry goes to <code class="docutils literal notranslate"><span class="pre">studio_spool</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -730,23 +738,18 @@ to the spool directory <code class="docutils literal notranslate"><span class="p
               <span class="n">every_s</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>                                       <span class="c1"># wall seconds between frames</span>
               <span class="n">spool</span><span class="o">=</span><span class="n">spool_dir</span><span class="p">)</span>                                   <span class="c1"># where the Studio reads</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">explain</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="mi">6000</span><span class="p">)</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">unwatch</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Watch 'rb_demo': the callback reads the state every 10 step(s) (never changes it); frames at most every 0.5 s of wall time per name, declared numbers at most every 0.25 s; t, iteration, dt, wall time per step are always sent.
 </pre></div>
 </div>
+<p>The run takes from about 20 s to 2 minutes, depending on the machine. The run appears in the gallery while it advances, and the
+Controls panel can send pause, checkpoint and stop commands until it ends. Afterwards the film can
+still be replayed. Increase <code class="docutils literal notranslate"><span class="pre">steps</span></code> for a longer exercise.</p>
 <p>The watch reads the declared fields and never changes them: the check script runs the same
 simulation without the watch and gets the same final state, bit for bit.</p>
-<p><strong>Start the server</strong> on the same machine, on that spool directory (it needs
-<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;conatus[studio]&quot;</span></code>):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>conatus.studio.hub<span class="w"> </span>serve<span class="w"> </span>--local<span class="w"> </span>--spool<span class="w"> </span>studio_spool<span class="w"> </span>--port<span class="w"> </span><span class="m">8765</span>
-</pre></div>
-</div>
-<p>It prints the path of a file that holds a one-session login token.</p>
-<p><strong>Open</strong> <code class="docutils literal notranslate"><span class="pre">http://localhost:8765/login</span></code> and paste the token from that file. The Controls panel can
-send pause, checkpoint and stop commands.</p>
 </section>
 <section id="only-what-you-declare">
 <h2>Only what you declare<a class="headerlink" href="#only-what-you-declare" title="Link to this heading">¶</a></h2>
@@ -919,7 +922,7 @@ hub keeps. They are listed in <a class="reference internal" href="studio_limits.
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

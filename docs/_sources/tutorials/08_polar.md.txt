@@ -90,16 +90,14 @@ Hagen-Poiseuille flow, R = 1000, (m, k) = (1, 1): the spectrum of the pipe block
 Units: gap $d = r_o - r_i = 1$, inner wall speed $\Omega_i r_i = 1$, $Re = \Omega_i r_i d/\nu$. The base
 flow is circular Couette flow $V(r) = Ar + B/r$. For each $k$ the neutral Reynolds number (largest
 growth rate $= 0$) is found by Brent's method on the dense spectrum of the axisymmetric block
-$(m, k_z) = (0, k)$. The script samples three wavenumbers. Re is lowest at $k = 3.16$, so
-$k_c$ lies between 3.10 and 3.22 if the neutral curve has a single minimum there; the script
-does not locate $k_c$ more precisely.
+$(m, k_z) = (0, k)$. The script samples three wavenumbers, then minimises $Re(k)$ over the bracket
+$[3.10, 3.22]$ with `scipy.optimize.minimize_scalar`, which gives $k_c$ and $Re_c$.
 
 ## Check against the references
 
 The drum eigenvalues equal $-j_{m,n}^2$ to $10^{-12}$ relative. The pipe eigenvalues match
-Meseguer & Trefethen's to the 10 published decimals. The Taylor–Couette threshold
-at $k = 3.16$, $Re = 68.1863$, converged in $N$, agrees with the published $Re_c = 68.19$ to its
-4 digits.
+Meseguer & Trefethen's to the 10 published decimals. The minimum of the
+Taylor–Couette neutral curve agrees with the published $Re_c = 68.19$ and $k_c = 3.16$ to their digits.
 
 ```{literalinclude} code/t08_polar.py
 :language: python

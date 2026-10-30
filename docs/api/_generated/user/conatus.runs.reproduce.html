@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -688,13 +688,15 @@
 <h1>conatus.runs.reproduce<a class="headerlink" href="#conatus-runs-reproduce" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="conatus.runs.reproduce">
-<span class="sig-prename descclassname"><span class="pre">conatus.runs.</span></span><span class="sig-name descname"><span class="pre">reproduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_same_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/runs/integrations.html#reproduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.runs.reproduce" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">conatus.runs.</span></span><span class="sig-name descname"><span class="pre">reproduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_same_code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trust_record</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/runs/integrations.html#reproduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.runs.reproduce" title="Link to this definition">¶</a></dt>
 <dd><p>Run the recorded computation again and compare with the recorded output.</p>
 <p>IVP runs: pass a <code class="docutils literal notranslate"><span class="pre">solver</span></code> built for the same problem and numerics (checked: problem hash,
 parameters, bases, scheme, dt… ; any difference is refused); the recorded
 start state is loaded, the same number of steps is taken, the end state is compared bit for bit.
-Decorated calls: the function is re-imported (or <code class="docutils literal notranslate"><span class="pre">fn=</span></code>) and called with the recorded
-arguments. If the executed code differs from the recorded one, a <code class="xref py py-class docutils literal notranslate"><span class="pre">CodeChangedWarning</span></code>
+Decorated calls: pass the function as <code class="docutils literal notranslate"><span class="pre">fn=</span></code>; it is called with the recorded arguments.
+<code class="docutils literal notranslate"><span class="pre">trust_record=True</span></code> imports and calls the function the record names instead, which runs
+whatever the record says: use it only for records you made. The ownership and mode checks on
+the record still apply then. If the executed code differs from the recorded one, a <code class="xref py py-class docutils literal notranslate"><span class="pre">CodeChangedWarning</span></code>
 says how (or an error with <code class="docutils literal notranslate"><span class="pre">require_same_code=True</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -704,6 +706,7 @@ says how (or an error with <code class="docutils literal notranslate"><span clas
 <li><p><strong>fn</strong> (<em>Callable</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>record</strong> (<em>bool</em>)</p></li>
 <li><p><strong>require_same_code</strong> (<em>bool</em>)</p></li>
+<li><p><strong>trust_record</strong> (<em>bool</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -782,7 +785,7 @@ says how (or an error with <code class="docutils literal notranslate"><span clas
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

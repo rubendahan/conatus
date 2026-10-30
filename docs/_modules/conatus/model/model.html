@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -1102,7 +1102,7 @@
             <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__ior__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParameterValues</span><span class="p">:</span>  <span class="c1"># type: ignore[override,misc]</span>
-<span class="w">        </span><span class="sd">"""``m.params |= {...}``: the validated update (review finding 28: dict.__ior__ wrote</span>
+<span class="w">        </span><span class="sd">"""``m.params |= {...}``: the validated update (dict.__ior__ wrote</span>
 <span class="sd">        NaN and undeclared names without any check). All values are checked before any is</span>
 <span class="sd">        written."""</span>
         <span class="n">new</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
@@ -1410,7 +1410,7 @@
                                 <span class="n">fix</span><span class="o">=</span><span class="s1">'m.define("L2(f) = dy(dy(f)) - alpha**2*f")'</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">body</span> <span class="o">=</span> <span class="n">mt</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">mt</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span> <span class="n">mt</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">"operator"</span><span class="p">)</span>
-        <span class="c1"># arguments: distinct identifiers (review finding 31: "pick(a, a) = a" was accepted and</span>
+        <span class="c1"># arguments: distinct identifiers ("pick(a, a) = a" was accepted and</span>
         <span class="c1"># bound the last value silently)</span>
         <span class="n">bad</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">_NAME</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">a</span><span class="p">)]</span>
         <span class="k">if</span> <span class="n">bad</span><span class="p">:</span>
@@ -1452,7 +1452,8 @@
             <span class="kn">from</span><span class="w"> </span><span class="nn">..solvers.parametric</span><span class="w"> </span><span class="kn">import</span> <span class="n">GROWTH_BY_NAME</span>
             <span class="n">g</span> <span class="o">=</span> <span class="n">GROWTH_BY_NAME</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="n">rule</span> <span class="o">=</span> <span class="p">({</span><span class="s2">"real"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"growth = Re </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (a growth rate of exp(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> t))"</span><span class="p">,</span>
-                     <span class="s2">"imag"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"growth = Im </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (a phase speed of exp(i alpha (x - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> t)))"</span><span class="p">}</span>
+                     <span class="s2">"imag"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"growth rate = alpha Im </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (a phase speed of exp(i alpha (x - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> t))); "</span>
+                             <span class="sa">f</span><span class="s2">"modes are ranked by Im </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, which is the growth order for alpha &gt; 0"</span><span class="p">}</span>
                     <span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" guessed from the name"</span><span class="p">)</span> <span class="k">if</span> <span class="n">g</span> <span class="k">else</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"modes ranked by Re </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (v0.1 default; critical() refuses)"</span><span class="p">)</span>
             <span class="n">_warn_user</span><span class="p">(</span><span class="sa">f</span><span class="s2">"m.eigenvalue(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">) without growth=: </span><span class="si">{</span><span class="n">rule</span><span class="si">}</span><span class="s2">. Declare it: "</span>
@@ -1892,7 +1893,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

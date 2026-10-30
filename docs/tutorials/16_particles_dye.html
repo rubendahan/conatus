@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -820,7 +820,7 @@ its mass, variance, extrema and spectral tail; <code class="docutils literal not
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t16_particles_dye: PASS (exit 0) in 45.4 s | 2026-10-21 | script sha256 5421cf06aaa42843
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t16_particles_dye: PASS (exit 0) in 7.5 s | 2026-10-30 | script sha256 5421cf06aaa42843
 dt = 0.1   : largest tracer error 6.46e-05
 dt = 0.05  : largest tracer error 8.40e-06
 dt = 0.025 : largest tracer error 1.07e-06
@@ -844,17 +844,17 @@ Gauge: the mean of p is fixed (integ(p) = 0)
 Dealiasing: x: 3/2, y: 3/2 (declared default for products of degree 2)
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
 (compiler decisions, tau by tau and term by term: m.explain(full=True))
-Dye file &lt;path&gt;/tmp9363hz08/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (= 0.5 time units), 7 write(s) so far
+Dye file &lt;path&gt;/tmpisp8etbb/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (= 0.5 time units), 7 write(s) so far
   dye c (m.dye): dt(c) - 0.01*lap(c) = -div(c*u); no flux: dy(c) = 0 at the walls; advected by u, same scheme and dt as the flow
   c: grid values of c
   mass: integ(c) (integral of the spectral series)
-  variance: integ(c*c) - integ(c)^2 / V, V = 8
+  variance: integ((c - m)^2), m = integ(c) / V, V = 8
   minimum: min of the grid values of c
   maximum: max of the grid values of c
   tail: largest |coefficient| among the last two modes of each axis, relative to the largest
   the state at the start (iteration 0, t = 0) written as a row (initial=True, the default of sim.output)
   scales: sim_time, iteration, write_number, x, y; every array labelled with its dimensions (HDF5 dimension scales)
-  XDMF sidecar (ParaView): &lt;path&gt;/tmp9363hz08/dye.xmf
+  XDMF sidecar (ParaView): &lt;path&gt;/tmpisp8etbb/dye.xmf
 [[-3.  -1. ]
  [-0.5 -0.5]
  [ 2.   0. ]
@@ -946,7 +946,7 @@ checks passed: order 3 in time, Couette tracers exact, dye mass conserved
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

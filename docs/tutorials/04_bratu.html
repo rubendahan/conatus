@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -748,7 +748,7 @@ both explicitly (1 and 20). All three are printed with the result. <code class="
 convergence <span class="math notranslate nohighlight">\(q_k = \log(r_{k+1}/r_k)/\log(r_k/r_{k-1})\)</span>, about 2 here, consistent with local
 quadratic convergence of Newton’s method. Non-convergence raises <code class="docutils literal notranslate"><span class="pre">NewtonNotConverged</span></code> with the history of the iterations.</p>
 <!-- written by docs/site/tutorial_media_render.py from the captured data; do not edit -->
-<div class="table-wrapper colwidths-auto docutils container" id="t04-newton">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default" id="t04-newton">
 <caption><span class="caption-text">Newton from u = 0 at λ = 0.3, as printed by sol.explain(): the relative residual after each iteration, 3 iterations down to 3e-14, below the declared tolerance 1e-13. The observed order log(r(k+1)/r(k)) / log(r(k)/r(k−1)) is 1.99, 2.00 (2 for quadratic convergence).</span><a class="headerlink" href="#t04-newton" title="Link to this table">¶</a></caption>
 <thead>
@@ -828,7 +828,7 @@ agrees with the root of <span class="math notranslate nohighlight">\(a\tanh a = 
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t04_bratu: PASS (exit 0) in 8.3 s | 2026-10-24 | script sha256 997fc91ce53266ca
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t04_bratu: PASS (exit 0) in 6.1 s | 2026-10-30 | script sha256 997fc91ce53266ca
 Model 'Bratu': Box(x=walls(-1, 1)) (Cartesian box)
 Unknowns: u (scalar); parameters: lam = 0.3
 Equations as written:
@@ -851,7 +851,7 @@ Pseudo-arclength branch: 7 points, p in [0.3, 0.87704], stop: max_points = 6 rea
   ds = 0.2 in [1e-08, 0.6], x1.5 when the corrector takes &lt;= 3 (default) its, /2 on failure
   corrector: tolerance 1e-12, budget 15 its; G_p: central FD, dp = 1e-06 (given)
   max points 6
-  events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(1, |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(1, |λ|))
+  events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(|λ|, 1e-3 median |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(|λ|, 1e-3 median |λ|))
   corrector failures (step halved): 0
   fold at p = 0.878457679781 between points (2, 3): |t_p| = 1.8e-17 at the located point, |G|/scale = 3.2e-16 [located by |t_p| &lt;= fold_tol = 1e-12 (default)]
 fold: lam_c = 0.87845767978129
@@ -946,7 +946,7 @@ OK: lam_c within 1.1e-16 of the closed form 0.87845767978129
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

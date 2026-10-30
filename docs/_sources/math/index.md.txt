@@ -1,7 +1,7 @@
 # Mathematics
 
 Short notes on the methods behind Conatus: what is computed, in which form, and why. They are
-written for a reader who uses the library and wants to know what happens underneath; each one ends
+written for a reader who uses the library and checks the equations, numerical choices and assumptions behind a calculation; each one ends
 with the references it follows.
 
 The notes describe the discrete problem Conatus actually solves. Where the native layer makes a

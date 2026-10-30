@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -1026,7 +1026,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">scalars</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Append one row of series values (``run.log(t=t, energy=E)``); ``step`` is optional (the</span>
 <span class="sd">        row number is always kept, so series logged together can be plotted against each other).</span>
-<span class="sd">        In-memory only; written to ``data.h5`` at close."""</span>
+<span class="sd">        Rows are buffered and written to ``data.h5`` in chunks of ``SERIES_FLUSH_ROWS``; closing the</span>
+<span class="sd">        run writes the remaining rows."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_live</span><span class="p">(</span><span class="s2">"log"</span><span class="p">)</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">jsonable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">scalars</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span><span class="p">,</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">),</span> <span class="n">vals</span><span class="p">))</span>
@@ -1064,7 +1065,7 @@
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"save_field: level= applies to gzip only"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
                                   <span class="ow">or</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">level</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">):</span>
-            <span class="c1"># checked here, in the caller's thread (review finding 58): h5py refused it later in</span>
+            <span class="c1"># checked here, in the caller's thread: h5py refused it later in</span>
             <span class="c1"># the writer thread, where the field was lost with a warning at close</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"save_field: level=</span><span class="si">{</span><span class="n">level</span><span class="si">!r}</span><span class="s2">: gzip level is an integer 0-9"</span><span class="p">,</span>
                               <span class="n">why</span><span class="o">=</span><span class="s2">"a bad level used to be refused by HDF5 in the writer thread, "</span>
@@ -1083,7 +1084,7 @@
         <span class="n">name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">name</span>
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"."</span><span class="p">,</span> <span class="s2">".."</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"/"</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">"</span><span class="se">\\</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">name</span>
                 <span class="ow">or</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">Path</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">name</span><span class="p">):</span>
-            <span class="c1"># review finding 47: name="../../../outside.txt" was copied outside the run directory</span>
+            <span class="c1"># name="../../../outside.txt" was copied outside the run directory</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"save_file: file name </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> is not a plain file name"</span><span class="p">,</span>
                               <span class="n">why</span><span class="o">=</span><span class="s2">"attached files are copied into the run's files/ directory; a "</span>
                                   <span class="s2">"path in the name would write elsewhere"</span><span class="p">,</span>
@@ -1147,7 +1148,7 @@
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">STATES</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"conatus.runs: state </span><span class="si">{</span><span class="n">state</span><span class="si">!r}</span><span class="s2"> unknown; one of </span><span class="si">{</span><span class="n">STATES</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="c1"># one deadline for the whole close (review finding 46: two queue puts and the join each</span>
+        <span class="c1"># one deadline for the whole close (two queue puts and the join each</span>
         <span class="c1"># waited up to ``timeout``)</span>
         <span class="n">deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
 
@@ -1354,7 +1355,7 @@
         <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"reused_from"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">src</span><span class="p">:</span>
             <span class="c1"># a cache hit computed nothing: its series and fields are those of the source run,</span>
-            <span class="c1"># read through this run (review finding 52: the report said they were reused, but</span>
+            <span class="c1"># read through this run (the report said they were reused, but</span>
             <span class="c1"># they could not be reached from the new run)</span>
             <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">run_dir</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"data.h5"</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -1531,7 +1532,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

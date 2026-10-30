@@ -1,7 +1,5 @@
 # Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients
 
-**Goal.** Run this case and compare the value it obtains with the reference named in the script.
-
 *Family:* `bifurcation` · *Script:* `examples/bifurcation/weakly_nonlinear.py`
 
 ```text

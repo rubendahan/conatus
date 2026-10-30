@@ -15,7 +15,7 @@
     "domain": "shear",
     "field": "Vorticity ω = −∇²ψ (normal to the plane) of two shear layers rolling up, t = 3 to 9.",
     "colour": "Colour: ω, red for negative, black at zero, glass green for positive; one scale for the whole film, ending at the 99.7th percentile of |ω| over all frames (10.8; larger values saturate).",
-    "extent": "Periodic box 4 × 2 (x × z, lengths in units of the layer velocity scale), the full box.",
+    "extent": "Periodic box 4 × 2 (x × z), in the unit of length of the half-thickness δ = 0.08, the full box.",
     "measured": "Growth rate of the seeded mode 2.05 (times δ: 0.164), fitted for t between 0.7 and 2.9.",
     "scale": {
       "kind": "signed",

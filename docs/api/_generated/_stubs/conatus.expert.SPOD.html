@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -688,7 +688,7 @@
 <h1>conatus.expert.SPOD<a class="headerlink" href="#conatus-expert-spod" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="conatus.expert.SPOD">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">conatus.expert.</span></span><span class="sig-name descname"><span class="pre">SPOD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'np.ndarray'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eigenvalues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'np.ndarray'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Any'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nblocks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noverlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onesided</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'bool'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inner_product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'DataInnerProduct'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'list[str]'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'bool'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/datadriven/spod.html#SPOD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.SPOD" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">conatus.expert.</span></span><span class="sig-name descname"><span class="pre">SPOD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'np.ndarray'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eigenvalues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'np.ndarray'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Any'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nblocks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noverlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">onesided</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'bool'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inner_product</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'DataInnerProduct'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">notes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'list[str]'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'bool'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'Any'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/datadriven/spod.html#SPOD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.SPOD" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -706,6 +706,7 @@
 <li><p><strong>inner_product</strong> (<a class="reference internal" href="conatus.expert.DataInnerProduct.html#conatus.expert.DataInnerProduct" title="conatus.datadriven.norms.DataInnerProduct"><em>DataInnerProduct</em></a>)</p></li>
 <li><p><strong>notes</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>)</p></li>
 <li><p><strong>real_data</strong> (<em>bool</em>)</p></li>
+<li><p><strong>window_values</strong> (<em>Any</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -775,12 +776,18 @@
 <dd><p>the data were real: the coefficients at f = 0 and at the Nyquist frequency are real</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="conatus.expert.SPOD.window_values">
+<span class="sig-name descname"><span class="pre">window_values</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#conatus.expert.SPOD.window_values" title="Link to this definition">¶</a></dt>
+<dd><p>the window of the blocks (its squared DFT gives the pseudo-variance of q̂ used by <code class="docutils literal notranslate"><span class="pre">dof</span></code>)</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="conatus.expert.SPOD.dof">
 <span class="sig-name descname"><span class="pre">dof</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/datadriven/spod.html#SPOD.dof"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.SPOD.dof" title="Link to this definition">¶</a></dt>
-<dd><p>Degrees of freedom ν of the χ² law of ν λ̂ / λ at each frequency (nfreq,): 2 N_b, and N_b
-at f = 0 and at the Nyquist frequency (even nfft) of real data, where the block
-coefficient is real (module docstring).</p>
+<dd><p>Degrees of freedom ν of the χ² law of ν λ̂ / λ at each frequency (nfreq,): 2 N_b; for
+real data 2 N_b / (1 + ρ_k²) with ρ_k the relative pseudo-variance of the windowed
+coefficient (N_b at f = 0 and at the Nyquist frequency; module docstring).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><em>ndarray</em></p>
@@ -790,13 +797,19 @@ coefficient is real (module docstring).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="conatus.expert.SPOD.confidence">
-<span class="sig-name descname"><span class="pre">confidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/datadriven/spod.html#SPOD.confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.SPOD.confidence" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">confidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">approximate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/datadriven/spod.html#SPOD.confidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.SPOD.confidence" title="Link to this definition">¶</a></dt>
 <dd><p>(lower, upper) (1 − α) bounds on every eigenvalue: ν λ / χ²_ν(1 − α/2) and
-ν λ / χ²_ν(α/2) with ν = <a class="reference internal" href="#conatus.expert.SPOD.dof" title="conatus.expert.SPOD.dof"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dof()</span></code></a> at each frequency (2 N_b; N_b at f = 0 and Nyquist
-of real data).</p>
+ν λ / χ²_ν(α/2) with ν = <a class="reference internal" href="#conatus.expert.SPOD.dof" title="conatus.expert.SPOD.dof"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dof()</span></code></a> at each frequency.</p>
+<p>Holds for one entry (n = 1) and independent blocks (<code class="docutils literal notranslate"><span class="pre">noverlap</span> <span class="pre">=</span> <span class="pre">0</span></code>), and is refused
+otherwise. <code class="docutils literal notranslate"><span class="pre">approximate=True</span></code> returns the same formula for any n and overlap: a pointwise
+approximation for N_b ≫ n and separated eigenvalues, whose coverage can be far below 1 − α
+(<code class="docutils literal notranslate"><span class="pre">APPROX_COVERAGE</span></code>, module docstring).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>alpha</strong> (<em>float</em>)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<em>float</em>)</p></li>
+<li><p><strong>approximate</strong> (<em>bool</em>)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>tuple[<em>ndarray</em>, <em>ndarray</em>]</p>
@@ -888,6 +901,7 @@ of real data).</p>
 <li><a class="reference internal" href="#conatus.expert.SPOD.inner_product"><code class="docutils literal notranslate"><span class="pre">SPOD.inner_product</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.SPOD.notes"><code class="docutils literal notranslate"><span class="pre">SPOD.notes</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.SPOD.real_data"><code class="docutils literal notranslate"><span class="pre">SPOD.real_data</span></code></a></li>
+<li><a class="reference internal" href="#conatus.expert.SPOD.window_values"><code class="docutils literal notranslate"><span class="pre">SPOD.window_values</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.SPOD.dof"><code class="docutils literal notranslate"><span class="pre">SPOD.dof()</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.SPOD.confidence"><code class="docutils literal notranslate"><span class="pre">SPOD.confidence()</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.SPOD.explain"><code class="docutils literal notranslate"><span class="pre">SPOD.explain()</span></code></a></li>
@@ -904,7 +918,7 @@ of real data).</p>
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

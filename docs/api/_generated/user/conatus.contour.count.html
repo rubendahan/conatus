@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -696,8 +696,10 @@ what the walk checks, and what it can miss for an operator with poles).</p>
 or a callable <code class="docutils literal notranslate"><span class="pre">z</span> <span class="pre">-&gt;</span> <span class="pre">matrix</span></code> (or scalar). <code class="docutils literal notranslate"><span class="pre">poles</span></code>: poles of <code class="docutils literal notranslate"><span class="pre">det</span> <span class="pre">T</span></code> inside the region,
 for a callable (0 if <code class="docutils literal notranslate"><span class="pre">T</span></code> is holomorphic there; a pencil and a linear Hill operator have none
 by construction); without it the result gives the winding <code class="docutils literal notranslate"><span class="pre">Z</span> <span class="pre">-</span> <span class="pre">P</span></code> and <code class="docutils literal notranslate"><span class="pre">count=None</span></code>.
-<code class="docutils literal notranslate"><span class="pre">control=(box2,</span> <span class="pre">n)</span></code>: count <code class="docutils literal notranslate"><span class="pre">box2</span></code> first and refuse unless it holds <code class="docutils literal notranslate"><span class="pre">n</span></code> (a box whose count
-is known checks the operator and the walk). <code class="docutils literal notranslate"><span class="pre">phase_step</span></code>, <code class="docutils literal notranslate"><span class="pre">initial_points</span></code>,
+<code class="docutils literal notranslate"><span class="pre">control=(box2,</span> <span class="pre">n)</span></code> or <code class="docutils literal notranslate"><span class="pre">(box2,</span> <span class="pre">n,</span> <span class="pre">poles2)</span></code>: count <code class="docutils literal notranslate"><span class="pre">box2</span></code> first and refuse unless it holds
+<code class="docutils literal notranslate"><span class="pre">n</span></code> eigenvalues (a box whose count is known checks the operator and the walk). <code class="docutils literal notranslate"><span class="pre">poles2</span></code> are
+the poles of <code class="docutils literal notranslate"><span class="pre">det</span> <span class="pre">T</span></code> inside <code class="docutils literal notranslate"><span class="pre">box2</span></code>, default 0: <code class="docutils literal notranslate"><span class="pre">poles</span></code> describes <code class="docutils literal notranslate"><span class="pre">region</span></code>, not this
+box. <code class="docutils literal notranslate"><span class="pre">phase_step</span></code>, <code class="docutils literal notranslate"><span class="pre">initial_points</span></code>,
 <code class="docutils literal notranslate"><span class="pre">max_evaluations</span></code>: the walk (declared defaults <code class="docutils literal notranslate"><span class="pre">PHASE_STEP_MAX</span></code>, <code class="docutils literal notranslate"><span class="pre">INITIAL_POINTS</span></code>,
 <code class="docutils literal notranslate"><span class="pre">MAX_EVALUATIONS</span></code>). Raises ConvergenceError when the walk cannot be completed (an
 eigenvalue on the boundary, a discontinuous determinant) or does not close on an integer.</p>
@@ -790,7 +792,7 @@ eigenvalue on the boundary, a discontinuous determinant) or does not close on an
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

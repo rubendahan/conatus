@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -721,9 +721,8 @@
 
 <span class="sd">    The classification uses the homogeneous pair (α, β), λ = α/β, of the QZ decomposition:</span>
 <span class="sd">    infinite when |β| ‖J‖ ≤ |α| ‖M‖ / INF_EIG, i.e. |λ| ≥ INF_EIG ‖J‖/‖M‖ (max-norms). It is</span>
-<span class="sd">    invariant under any scaling of J, of M or of both (finding 13: the former</span>
-<span class="sd">    bound INF_EIG (1 + ‖J‖) kept two eigenvalues 1e12 of (1e12 I, I) and dropped them for</span>
-<span class="sd">    (I, 1e-12 I)). A pair with α = β = 0 (singular pencil) is dropped as well."""</span>
+<span class="sd">    invariant under any scaling of J, of M or of both: the eigenvalues 1e12 of (1e12 I, I) and of</span>
+<span class="sd">    (I, 1e-12 I) are treated alike. A pair with α = β = 0 (singular pencil) is dropped as well."""</span>
     <span class="c1"># M as given (audit inputs: a complex M was cast to float, its imaginary part</span>
     <span class="c1"># dropped with a ComplexWarning); square matrices of one shape, finite (bare SciPy errors)</span>
     <span class="n">Jd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">J</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="s2">"toarray"</span><span class="p">)</span> <span class="k">else</span> <span class="n">J</span><span class="p">)</span>
@@ -774,14 +773,23 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_hopf_test</span><span class="p">(</span><span class="n">ev</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">n_eigs</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Test function with the sign of the bialternate product Π_{i&lt;j} (λ_i + λ_j) and the size of</span>
+<span class="sd">    its smallest factor |z| / (1 + |z|). The product itself shrinks with every stable eigenvalue</span>
+<span class="sd">    added (below crossing_tol at an ordinary point from dimension 8, zero by</span>
+<span class="sd">    underflow at 24); this function vanishes only where one sum does, so |value| &lt;= crossing_tol</span>
+<span class="sd">    means that a pair sum is that small. The sign is the accumulated phase of the factors, with no</span>
+<span class="sd">    product of small numbers."""</span>
     <span class="n">ev</span> <span class="o">=</span> <span class="n">ev</span><span class="p">[:</span><span class="n">n_eigs</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">ev</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span> <span class="mf">1.0</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">ev</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">ev</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">iu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">iu</span><span class="p">]</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">z</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)))</span>
-    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">z</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phase</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">size</span><span class="p">)))</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_logdet_sign</span><span class="p">(</span><span class="n">A</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
@@ -889,7 +897,7 @@
                   <span class="s2">"marginal_tol"</span><span class="p">:</span> <span class="n">marginal_tol</span><span class="p">}</span>
     <span class="n">cv</span><span class="o">.</span><span class="n">notes</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"equilibria of </span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">origin</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                  <span class="sa">f</span><span class="s2">"stability: #Re λ &gt; </span><span class="si">{</span><span class="n">marginal_tol</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> (generalized eigenvalues of (J, M), "</span>
-                 <span class="sa">f</span><span class="s2">"|λ| &gt; </span><span class="si">{</span><span class="n">INF_EIG</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">(1 + max|J|) removed as infinite)"</span><span class="p">,</span>
+                 <span class="sa">f</span><span class="s2">"|λ| &gt;= </span><span class="si">{</span><span class="n">INF_EIG</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> ‖J‖/‖M‖ (max-norms) removed as infinite)"</span><span class="p">,</span>
                  <span class="sa">f</span><span class="s2">"tests: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span><span class="si">}</span><span class="s2">; Hopf test over </span><span class="si">{</span><span class="n">ne</span><span class="si">}</span><span class="s2"> eigenvalue(s)"</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">cv</span></div>
 
@@ -925,7 +933,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

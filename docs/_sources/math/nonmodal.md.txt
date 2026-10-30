@@ -32,15 +32,17 @@ without any truncated eigenvector expansion.
 
 - **Transient growth** $G(t) = \max_{x_0} E(t)/E(0) = \lVert e^{t\tilde A}\rVert_2^2$ and its
   optimal initial condition (leading right singular vector).
-- **Numerical abscissa**: the initial slope $\max \lambda(\tilde A + \tilde A^H)/2$.
+- **Numerical abscissa** $\omega(\tilde A) = \lambda_{\max}\big((\tilde A + \tilde A^H)/2\big)$. It is
+  the initial slope of the norm, $\frac{d}{dt}\lVert e^{t\tilde A}\rVert_2$ at $t = 0^+$. The energy
+  gain $G(t)$ is the square of that norm, so its initial slope is $G'(0^+) = 2\,\omega(\tilde A)$.
 
 ## Time-periodic base flows
 
 For a base flow periodic in time the propagator $\Phi(t_0, T)$ is built by the
 same implicit–explicit schemes as the time stepper, applied to all unit initial states at once: the
 base-flow terms are explicit and evaluated at the exact stage times, the time step is $T/n$ exactly,
-and the gain is the largest singular value of $F\Phi F^{-1}$ restricted to admissible initial
-states (those satisfying continuity and the boundary conditions). Whether inadmissible inputs are
+and the energy gain is $\sigma_{\max}^2$, the square of the largest singular value of
+$F\Phi F^{-1}$ restricted to admissible initial states (those satisfying continuity and the boundary conditions). Whether inadmissible inputs are
 allowed is an explicit choice.
 
 ## References

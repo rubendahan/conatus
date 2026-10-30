@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -684,7 +684,7 @@
           <h1>Source code for conatus.chaos.lyapunov</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Lyapunov spectrum (Benettin / QR), covariant Lyapunov vectors (Ginelli et al. 2007),</span>
 <span class="sd">Kaplan–Yorke dimension and finite-time exponents of a discretized IVP.</span>
-<span class="sd">Notes:</span>
+
 
 <span class="sd">What is computed is the spectrum of the **discrete map** of the solver (same scheme, same dt):</span>
 <span class="sd">the tangent is the exact derivative of the step (``chaos.tangent``), not a separate discretization</span>
@@ -1140,6 +1140,16 @@
     <span class="n">V</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rngs</span><span class="p">]))</span>
     <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">V</span> <span class="o">=</span> <span class="n">project</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+        <span class="c1"># the vectors must stay independent in the projected subspace: a QR</span>
+        <span class="c1"># beyond its dimension fills the rest with directions outside it, of exponent -inf</span>
+        <span class="n">V0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">V</span> <span class="k">if</span> <span class="n">xp</span> <span class="ow">is</span> <span class="n">np</span> <span class="k">else</span> <span class="n">xp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">V</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">sv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">V0</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">sv</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="mi">16</span> <span class="o">*</span> <span class="n">sv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="k">if</span> <span class="n">sv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"n_vectors = </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> exceeds the dimension of the projected subspace "</span>
+                              <span class="sa">f</span><span class="s2">"(numerical rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> of the projection, on </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> random vectors)"</span><span class="p">,</span>
+                              <span class="n">why</span><span class="o">=</span><span class="s2">"k independent tangent vectors need a subspace of dimension &gt;= k"</span><span class="p">,</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"n_vectors &lt;= </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">V</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_qr</span><span class="p">(</span><span class="n">xp</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">sq</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">advance</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">):</span>
@@ -1398,7 +1408,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -5,7 +5,7 @@ it and documented from its docstring.
 
 ## `conatus.verify`
 
-Verification tools: MMS, convergence studies, reports — never a CORRECT flag.
+Verification tools: MMS, convergence studies and reports of measurements, thresholds and failed checks.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert
@@ -235,7 +235,7 @@ Time integration of IVPs: pseudospectral F, stacked groups, IMEX schemes.
 
 ## `conatus.adjoint`
 
-Discrete tangent and adjoint of the IMEX time steppers (see).
+Discrete tangent and adjoint of the IMEX time steppers.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert
@@ -251,7 +251,7 @@ Discrete tangent and adjoint of the IMEX time steppers (see).
 
 ## `conatus.ecs`
 
-Exact coherent structures: Newton–Krylov–hookstep, equilibria, travelling waves, relative / pre-periodic orbits and their stability. Notes:
+Exact coherent structures: Newton–Krylov–hookstep, equilibria, travelling waves, relative / pre-periodic orbits and their stability.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert
@@ -460,7 +460,7 @@ Native bifurcation core on the Conatus IR.
 
 ## `conatus.slices`
 
-Symmetry reduction by slices: first Fourier mode slice of a translation symmetry, with phase reconstruction and slice-border detection. Notes:
+Symmetry reduction by slices: first Fourier mode slice of a translation symmetry, with phase reconstruction and slice-border detection.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert
@@ -476,7 +476,7 @@ Symmetry reduction by slices: first Fourier mode slice of a translation symmetry
 
 ## `conatus.manifolds`
 
-Phase-space geometry: trajectories with declared dense output, Poincaré sections and first-return maps, unstable manifolds of equilibria (parametrization method), connections between equilibria (shooting with projection boundary conditions), unstable manifolds of periodic orbits (linear Floquet seeding) and localized-state snaking. Notes:
+Phase-space geometry: trajectories with declared dense output, Poincaré sections and first-return maps, unstable manifolds of equilibria (parametrization method), connections between equilibria (shooting with projection boundary conditions), unstable manifolds of periodic orbits (linear Floquet seeding) and localized-state snaking.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert
@@ -535,7 +535,7 @@ Data-driven decompositions: POD, DMD, SPOD, EDMD/Koopman.
 
 ## `conatus.chaos`
 
-Chaos: Lyapunov spectrum on the exact tangent of the step, covariant Lyapunov vectors, Kaplan–Yorke dimension, finite-time exponents, Poincaré sections and first-return maps. Notes:
+Chaos: Lyapunov spectrum on the exact tangent of the step, covariant Lyapunov vectors, Kaplan–Yorke dimension, finite-time exponents, Poincaré sections and first-return maps.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert
@@ -551,7 +551,7 @@ Chaos: Lyapunov spectrum on the exact tangent of the step, covariant Lyapunov ve
 
 ## `conatus.ensembles`
 
-Ensembles on one batch: batches of initial conditions and/or parameter values advanced together, basins of attraction, transition probabilities. Notes:
+Ensembles on one batch: batches of initial conditions and/or parameter values advanced together, basins of attraction, transition probabilities.
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert

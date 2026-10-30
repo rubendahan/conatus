@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -707,7 +707,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..ensembles</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ensemble</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConvergenceError</span><span class="p">,</span> <span class="n">OptionError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConvergenceError</span><span class="p">,</span> <span class="n">InputTypeError</span><span class="p">,</span> <span class="n">NumericalError</span><span class="p">,</span> <span class="n">OptionError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.tangent</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_rk</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">renames</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._repr</span><span class="w"> </span><span class="kn">import</span> <span class="n">compact_repr</span>
@@ -791,8 +791,19 @@
     <span class="n">tab</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">ens</span><span class="o">.</span><span class="n">_rk</span><span class="p">,</span> <span class="n">ens</span><span class="o">.</span><span class="n">dt</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">gval</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span> <span class="k">if</span> <span class="n">xp</span> <span class="ow">is</span> <span class="n">np</span> <span class="k">else</span> <span class="n">xp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="k">if</span> <span class="n">xp</span> <span class="ow">is</span> <span class="n">np</span> <span class="k">else</span> <span class="n">xp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">X</span><span class="p">)),</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="n">nb</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">nb</span><span class="p">,):</span>
+            <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"poincare section: g(X) has shape </span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> for a batch of </span><span class="si">{</span><span class="n">nb</span><span class="si">}</span><span class="s2"> "</span>
+                                 <span class="sa">f</span><span class="s2">"states, (</span><span class="si">{</span><span class="n">nb</span><span class="si">}</span><span class="s2">,) is needed"</span><span class="p">,</span>
+                                 <span class="n">fix</span><span class="o">=</span><span class="s2">"one value per member of the batch: g(X) = X[:, i] - level"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">v</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">NumericalError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"poincare section: g(X) returned </span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">v</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                                 <span class="n">why</span><span class="o">=</span><span class="s2">"a section value that is not a finite number cannot say on "</span>
+                                     <span class="s2">"which side the state is, so no crossing could be told from "</span>
+                                     <span class="s2">"an invalid section"</span><span class="p">,</span>
+                                 <span class="n">fix</span><span class="o">=</span><span class="s2">"make g finite along the trajectory"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
 
     <span class="n">pts</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="p">)]</span>
     <span class="n">tms</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="p">)]</span>
@@ -879,7 +890,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

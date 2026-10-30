@@ -35,6 +35,13 @@ are equal bit for bit.
 A restart refuses a checkpoint written with another parameter value. To continue the state at a
 new value on purpose, name the change with `allow=`:
 
+A multistep scheme stores M X, F and, in the CN family, L X. When the change touches an operator
+held in that history, the history is discarded with a `CheckpointWarning`, the next steps use the
+declared start-up from the state, and `explain()` records it. A parameter that enters only an
+operator the history does not hold (L under SBDF) keeps the history. A checkpoint with history is
+refused when the same equations are declared in another order: declare them in the first order, or
+name `allow=("equations",)` to continue from the state alone.
+
 ```{literalinclude} _check_features.py
 :language: python
 :start-after: "# [io-allow]"

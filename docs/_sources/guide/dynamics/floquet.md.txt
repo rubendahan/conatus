@@ -2,8 +2,10 @@
 
 Stability of time-periodic flows by the Hill method: the Floquet exponents are eigenvalues of one large, structured problem.
 
-For a linear system with a periodic coefficient, $\dot q + L(t)\,q = 0$ with period $2\pi/\omega$,
-solutions are $q = e^{\mu t} p(t)$ with $p$ periodic. Expanding $p = \sum_n p_n e^{i n \omega t}$
+For a linear system with a periodic coefficient, $M\dot q + L(t)\,q = 0$ with $M$ the mass matrix and
+period $2\pi/\omega$, a Floquet mode is a solution $q = e^{\mu t} p(t)$ with $p$ periodic. Every solution
+is a combination of these modes, with polynomial factors in $t$ when a multiplier has a Jordan block
+(for $\dot q_1 = q_2$, $\dot q_2 = 0$, the solution $(t, 1)$ is not a single mode). Expanding $p = \sum_n p_n e^{i n \omega t}$
 turns the problem into the Hill eigenvalue problem
 
 $$ \big(L_0 + (\mu + i n\omega) M\big)\,p_n + \sum_{m \neq 0} L_m\, p_{n-m} = 0 , $$

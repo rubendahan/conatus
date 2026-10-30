@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -986,8 +986,10 @@
 <span class="sd">    or a callable ``z -&gt; matrix`` (or scalar). ``poles``: poles of ``det T`` inside the region,</span>
 <span class="sd">    for a callable (0 if ``T`` is holomorphic there; a pencil and a linear Hill operator have none</span>
 <span class="sd">    by construction); without it the result gives the winding ``Z - P`` and ``count=None``.</span>
-<span class="sd">    ``control=(box2, n)``: count ``box2`` first and refuse unless it holds ``n`` (a box whose count</span>
-<span class="sd">    is known checks the operator and the walk). ``phase_step``, ``initial_points``,</span>
+<span class="sd">    ``control=(box2, n)`` or ``(box2, n, poles2)``: count ``box2`` first and refuse unless it holds</span>
+<span class="sd">    ``n`` eigenvalues (a box whose count is known checks the operator and the walk). ``poles2`` are</span>
+<span class="sd">    the poles of ``det T`` inside ``box2``, default 0: ``poles`` describes ``region``, not this</span>
+<span class="sd">    box. ``phase_step``, ``initial_points``,</span>
 <span class="sd">    ``max_evaluations``: the walk (declared defaults ``PHASE_STEP_MAX``, ``INITIAL_POINTS``,</span>
 <span class="sd">    ``MAX_EVALUATIONS``). Raises ConvergenceError when the walk cannot be completed (an</span>
 <span class="sd">    eigenvalue on the boundary, a discontinuous determinant) or does not close on an integer."""</span>
@@ -1000,12 +1002,23 @@
     <span class="n">ctrl</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="k">if</span> <span class="n">control</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">cbox</span><span class="p">,</span> <span class="n">expected</span> <span class="o">=</span> <span class="n">control</span>
+            <span class="n">cbox</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="o">*</span><span class="n">rest</span> <span class="o">=</span> <span class="n">control</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"control=</span><span class="si">{</span><span class="n">control</span><span class="si">!r}</span><span class="s2">: a pair (cn.box(...), known count)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"control=</span><span class="si">{</span><span class="n">control</span><span class="si">!r}</span><span class="s2">: (cn.box(...), known count) or (cn.box(...), "</span>
+                              <span class="s2">"known count, poles in that box)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+        <span class="n">cpoles</span> <span class="o">=</span> <span class="n">rest</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">rest</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cpoles</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cpoles</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Integral</span><span class="p">)</span> <span class="ow">or</span> <span class="n">cpoles</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"control=</span><span class="si">{</span><span class="n">control</span><span class="si">!r}</span><span class="s2">: the poles in the control box must be an "</span>
+                              <span class="s2">"integer &gt;= 0"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">structural_poles</span> <span class="ow">and</span> <span class="n">cpoles</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"control=</span><span class="si">{</span><span class="n">control</span><span class="si">!r}</span><span class="s2">: this operator has no pole by construction"</span><span class="p">,</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="s2">"drop the third entry"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">count</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">cbox</span><span class="p">,</span> <span class="n">phase_step</span><span class="o">=</span><span class="n">phase_step</span><span class="p">,</span> <span class="n">initial_points</span><span class="o">=</span><span class="n">initial_points</span><span class="p">,</span>
                   <span class="n">max_evaluations</span><span class="o">=</span><span class="n">max_evaluations</span><span class="p">)</span>
-        <span class="n">got</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">count</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">c</span><span class="o">.</span><span class="n">winding</span>
+        <span class="c1"># the winding is Z - P of the control box; op.poles belongs to the target region</span>
+        <span class="n">got</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">winding</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">cpoles</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">got</span> <span class="o">!=</span> <span class="n">expected</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ConvergenceError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"control box </span><span class="si">{</span><span class="n">cbox</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="si">}</span><span class="s2">: counted </span><span class="si">{</span><span class="n">got</span><span class="si">}</span><span class="s2">, expected </span><span class="si">{</span><span class="n">expected</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
@@ -1075,7 +1088,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

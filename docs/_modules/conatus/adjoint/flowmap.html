@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -987,8 +987,7 @@
 <span class="sd">    (see the module docstring for the explicit choices ``f_transpose``, ``solves``, ``checkpoints``)."""</span>
 
     <span class="c1">#: True: Φ(X_0) puts the solver's state, clock and multistep history back after its run</span>
-    <span class="c1">#: (set by ``Simulation.flowmap``; review of the state audit, F6: ``sim.flowmap(T)(X0)``</span>
-    <span class="c1">#: moved the simulation to X_N). False (the expert default): they are left at X_N.</span>
+    <span class="c1">#: (set by ``Simulation.flowmap``). False (the expert default): they are left at X_N.</span>
     <span class="n">restore</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@renames</span><span class="p">(</span><span class="s2">"conatus.adjoint.flowmap:FlowMap.__init__"</span><span class="p">)</span>
@@ -1183,7 +1182,28 @@
             <span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">J</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_JF</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
             <span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_require_complex_linear</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">J</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_require_complex_linear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">J</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""A matrix of columns J e_i represents F' only if F' is complex-linear: an antilinear term</span>
+<span class="sd">        (conj(u)) is real-linear and has no such matrix, and no bilinear transpose.</span>
+<span class="sd">        Tested on one direction with both parts nonzero."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">J</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">Jv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_JF</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">t</span><span class="p">))</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">J</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">))</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="mf">1e-300</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Jv</span> <span class="o">-</span> <span class="n">J</span> <span class="o">@</span> <span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="mf">0.0</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1e-12</span> <span class="o">*</span> <span class="n">scale</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnsupportedError</span>
+            <span class="k">raise</span> <span class="n">UnsupportedError</span><span class="p">(</span>
+                <span class="s2">"FlowMap(f_transpose='dense'): the right-hand side is not complex-linear in the "</span>
+                <span class="s2">"state (a conj() term)"</span><span class="p">,</span>
+                <span class="n">why</span><span class="o">=</span><span class="s2">"the dense adjoint needs the matrix of F', and an antilinear F' has no matrix "</span>
+                    <span class="s2">"over the complex numbers"</span><span class="p">,</span>
+                <span class="n">fix</span><span class="o">=</span><span class="s2">"write the problem on the real and imaginary parts as separate real fields"</span><span class="p">,</span>
+                <span class="n">doc</span><span class="o">=</span><span class="s2">"docs/site/guide/dynamics/adjoint.md"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_JFT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">W</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
              <span class="n">cache</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -1697,8 +1717,11 @@
 <a class="viewcode-back" href="../../../api/_generated/_stubs/conatus.expert.FlowMap.html#conatus.expert.FlowMap.vjp_physical">[docs]</a>
     <span class="nd">@renames</span><span class="p">(</span><span class="s2">"conatus.adjoint.flowmap:FlowMap.vjp_physical"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">vjp_physical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">W</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Adjoint for the inner product ⟨a, b⟩_G = aᵀ G b: Φ† w = G⁻¹ Jᵀ G w.</span>
-<span class="sd">        Refused if G is singular (e.g. tau rows carry no weight). CPU backend only."""</span>
+<span class="w">        </span><span class="sd">"""Adjoint for the inner product ⟨a, b⟩_G = aᴴ G b: Φ† w = G⁻¹ Jᴴ G w, so that</span>
+<span class="sd">        ⟨w, J v⟩_G = ⟨Φ† w, v⟩_G. :meth:`vjp` keeps its bilinear pairing on Cartesian states (it</span>
+<span class="sd">        returns Jᵀ z), so Jᴴ z = conj(Jᵀ conj(z)); on the sphere its real pairing is already the</span>
+<span class="sd">        Hermitian adjoint. Refused if G is singular (e.g. tau rows carry no weight). CPU backend</span>
+<span class="sd">        only."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gpu</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"vjp_physical: CPU backend only for now"</span><span class="p">,</span>
                               <span class="n">fix</span><span class="o">=</span><span class="s2">"build the FlowMap on a CPU solver for the physical adjoint"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">"docs/site/guide/dynamics/adjoint.md"</span><span class="p">)</span>
@@ -1712,7 +1735,10 @@
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="mf">1e-14</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">d</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"weight matrix numerically singular: physical adjoint refused"</span><span class="p">,</span>
                               <span class="n">fix</span><span class="o">=</span><span class="s2">"W must be the (symmetric positive definite) Gram matrix of the inner product"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">lu</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vjp</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">G</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)))</span></div>
+        <span class="n">Gw</span> <span class="o">=</span> <span class="n">G</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pairing</span> <span class="o">==</span> <span class="s2">"real"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lu</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vjp</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">Gw</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">lu</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vjp</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">Gw</span><span class="p">))))</span></div>
 
 
     <span class="c1"># ------------------------------------------------------------------ explain</span>
@@ -1832,7 +1858,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

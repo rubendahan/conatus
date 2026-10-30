@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -700,9 +700,10 @@ group <code class="docutils literal notranslate"><span class="pre">plan.group(m,
 2|m| + 4 and 4 (structural: they hold m and k), the z period is 2 pi / k. DiskBasis(r,
 N), dealias 1 (linear; U0 is exact). No-slip tau placed by <code class="docutils literal notranslate"><span class="pre">add_bc(...,</span> <span class="pre">into=0)</span></code>.</p>
 <p>Validation reference: Meseguer &amp; Trefethen (2003), J. Comput. Phys. 186,
-178, Table 1, Re = 1000: (m, k) = (1, 1) centre mode -0.0708640053 + 0.8467498288i, wall mode
--0.0911426036 + 0.4691428789i (conjugates of the tabulated values: opposite sign convention
-of the frequency); (m, k) = (1, 0): -0.0146819706. Linearly stable at every Re.
+178, Table 1, Re = 1000. The eigenvalues s returned here at (m, k) = (1, 1) are the centre mode
+-0.0708640053 - 0.8467498288i and the wall mode -0.0911426036 - 0.4691428789i. A mode moving
+downstream at speed c has Im s = -k c. The table lists the conjugates, with +i. At
+(m, k) = (1, 0): -0.0146819706. Linearly stable at every Re.
 (tests/problems/test_problems_cylinders.py, N = 32.)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -789,7 +790,7 @@ of the frequency); (m, k) = (1, 0): -0.0146819706. Linearly stable at every Re.
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -717,7 +717,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.roots</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">SECANT_MAX_ITERATIONS</span><span class="p">,</span> <span class="n">SECANT_STEP</span><span class="p">,</span> <span class="n">SecantRoot</span><span class="p">,</span> <span class="n">check_allow_unconverged</span><span class="p">,</span>
                     <span class="n">check_count</span><span class="p">,</span> <span class="n">determinant_secant</span><span class="p">,</span> <span class="n">unconverged</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">renames</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">EquationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscretizationError</span><span class="p">,</span> <span class="n">EquationError</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"HillBlocks"</span><span class="p">,</span> <span class="s2">"hill_from_plan"</span><span class="p">,</span> <span class="s2">"hill_from_blocks"</span><span class="p">,</span> <span class="s2">"harmonic_matrices"</span><span class="p">,</span> <span class="s2">"secant_root"</span><span class="p">,</span>
            <span class="s2">"exponents_dense"</span><span class="p">]</span>
@@ -996,7 +996,7 @@
 <span class="n">SOLVE_BACKWARD_ERROR_MAX</span> <span class="o">=</span> <span class="mf">1e-10</span>
 
 <span class="c1"># Reciprocal 1-norm condition below which an intermediate block-Thomas Schur complement is</span>
-<span class="c1"># not trusted (review finding 11): the banded pivoted LU is used instead. 1e-10 leaves ~6 of</span>
+<span class="c1"># not trusted: the banded pivoted LU is used instead. 1e-10 leaves ~6 of</span>
 <span class="c1"># the 16 digits of FP64 in the worst case of the unpivoted elimination step.</span>
 <span class="n">THOMAS_RCOND_MIN</span> <span class="o">=</span> <span class="mf">1e-10</span>
 
@@ -1021,6 +1021,12 @@
 
 
 <span class="c1"># ---------------------------------------------------------------------- builder from the IR plan</span>
+<span class="c1">#: relative tolerance of the combined-harmonics check of :func:`harmonic_matrices`</span>
+<span class="n">JOINT_LINEARITY_TOL</span> <span class="o">=</span> <span class="mf">1e-9</span>
+<span class="c1">#: phase of the period at which :func:`harmonic_matrices` combines the harmonics (radians, generic)</span>
+<span class="n">JOINT_PHASE</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">harmonic_matrices</span><span class="p">(</span><span class="n">build</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Mapping</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">Any</span><span class="p">],</span>
                       <span class="n">base</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                       <span class="n">linearity_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="p">):</span>
@@ -1028,10 +1034,11 @@
 
 <span class="sd">    ``build(ncc)`` returns the plan (``discretize(problem, ncc=ncc)``); ``base[field][m]``</span>
 <span class="sd">    is the harmonic U_m of each base field (callable on the grid, like any NCC; a missing</span>
-<span class="sd">    harmonic is zero). L_m = L(U := U_m) - L(U := 0). Two checks, both refusals: the base flow</span>
-<span class="sd">    must not enter the mass matrix (it would be dropped silently by the Hill form and by an</span>
-<span class="sd">    IMEX propagator), and L must be linear in U (L(2 U_m) - L(0) = 2 (L(U_m) - L(0)) to</span>
-<span class="sd">    ``linearity_tol`` relative). Shared by :func:`hill_from_plan` (Floquet) and</span>
+<span class="sd">    harmonic is zero). L_m = L(U := U_m) - L(U := 0). Two checks, both refusals, on each harmonic</span>
+<span class="sd">    and on a combination of all of them: the base flow must not enter the mass matrix (it would be</span>
+<span class="sd">    dropped silently by the Hill form and by an IMEX propagator), and L must be linear in U</span>
+<span class="sd">    (L(2 U_m) - L(0) = 2 (L(U_m) - L(0)) to ``linearity_tol`` relative; L(Σ w_m U_m) - L(0) =</span>
+<span class="sd">    Σ w_m L_m to ``JOINT_LINEARITY_TOL``). These are sampled checks. Shared by :func:`hill_from_plan` (Floquet) and</span>
 <span class="sd">    :mod:`conatus.growth.periodic` (transient growth), so both see the same operator.</span>
 <span class="sd">    """</span>
     <span class="n">fields</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
@@ -1062,6 +1069,39 @@
                                 <span class="s2">"Hill harmonics need L affine in the base flow"</span><span class="p">,</span>
                                 <span class="n">fix</span><span class="o">=</span><span class="s2">"make the problem linear in the base-flow NCC"</span><span class="p">)</span>
         <span class="n">blocks</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ms</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># One harmonic at a time, a product of two base fields with disjoint harmonics vanishes in</span>
+        <span class="c1"># every probe. The harmonics</span>
+        <span class="c1"># are combined here into the base flow at one phase of the period, exp(i m theta): L must be</span>
+        <span class="c1"># their weighted sum, and M must not move. The tolerance is wider than linearity_tol because the coefficient expansion of a</span>
+        <span class="c1"># sum is cut differently from the sum of the cut expansions.</span>
+        <span class="n">wt</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">m</span> <span class="o">*</span> <span class="n">JOINT_PHASE</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ms</span><span class="p">}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">joint</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[(</span><span class="n">wt</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">base</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="n">m</span><span class="p">])</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ms</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">base</span><span class="p">[</span><span class="n">f</span><span class="p">]]</span>
+            <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">X</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">g</span><span class="p">(</span><span class="o">*</span><span class="n">X</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">)</span> <span class="k">if</span> <span class="n">parts</span> <span class="k">else</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">Lj</span><span class="p">,</span> <span class="n">Mj</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">mats</span><span class="p">({</span><span class="n">f</span><span class="p">:</span> <span class="n">joint</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">})</span>
+        <span class="k">except</span> <span class="n">DiscretizationError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">CorrectnessWarning</span><span class="p">,</span> <span class="n">_warn_user</span>
+            <span class="n">_warn_user</span><span class="p">(</span><span class="s2">"the check that different base-flow harmonics do not multiply each other "</span>
+                       <span class="sa">f</span><span class="s2">"did not run: the combined base flow is not resolved (</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
+                       <span class="n">CorrectnessWarning</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">Mm</span><span class="p">,</span> <span class="n">L0z</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">cols</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">linearity_tol</span><span class="p">,</span> <span class="n">JOINT_LINEARITY_TOL</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Mj</span> <span class="o">-</span> <span class="n">Mm</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">tol</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Mm</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mf">1e-300</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">EquationError</span><span class="p">(</span><span class="s2">"the base flow enters the mass (σ) term through a product of "</span>
+                                <span class="s2">"different harmonics; the Hill form here needs a mass matrix "</span>
+                                <span class="s2">"independent of the base flow"</span><span class="p">,</span>
+                                <span class="n">fix</span><span class="o">=</span><span class="s2">"keep the base flow out of the eigenvalue (mass) term"</span><span class="p">)</span>
+        <span class="n">want</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">wt</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">*</span> <span class="n">blocks</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">ms</span><span class="p">)</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Lj</span> <span class="o">-</span> <span class="n">L0z</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">want</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mf">1e-300</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Lj</span> <span class="o">-</span> <span class="n">L0z</span> <span class="o">-</span> <span class="n">want</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">tol</span> <span class="o">*</span> <span class="n">scale</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">EquationError</span><span class="p">(</span><span class="s2">"the problem is not linear in the base-flow NCC: different "</span>
+                                <span class="s2">"harmonics multiply each other; Hill harmonics need L affine in "</span>
+                                <span class="s2">"the base flow"</span><span class="p">,</span>
+                                <span class="n">fix</span><span class="o">=</span><span class="s2">"make the problem linear in the base-flow NCC"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Mm</span><span class="p">,</span> <span class="n">L0z</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">cols</span>
 
 
@@ -1202,7 +1242,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

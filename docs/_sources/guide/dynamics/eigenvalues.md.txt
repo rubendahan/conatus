@@ -80,7 +80,8 @@ mode, coarser removes resolved ones), `drift_tol` must lie in $(0, 10^{-2}]$
 drift test that removes every mode raises `ResolutionError` instead of returning an empty result.
 
 `res.order()` ranks the modes from the least stable by the growth convention of the eigenvalue
-(here the phase speed `c`, declared `m.eigenvalue("c", growth="imag")`: $\operatorname{Im} c$), and
+(here the phase speed `c`, declared `m.eigenvalue("c", growth="imag")`: the mode $e^{i\alpha(x-ct)}$ grows as
+$e^{\alpha\operatorname{Im}(c)\,t}$, so the sign of $\operatorname{Im} c$ decides for $\alpha > 0$), and
 `res.explain()` prints them in that order with the rule it used; `res.order("real")` and `res.order("imag")` sort by a part.
 
 ## Eigenfunctions on the grid
@@ -195,7 +196,7 @@ one. The finite/infinite classification of QZ is a separate filter with its own 
 `select=` remains available for a physical restriction, and is logged. Modes flagged by the
 spectral-tail test are not candidates. The growth of a mode
 is declared with the eigenvalue: `m.eigenvalue("c", growth="imag")` for a phase speed (mode
-$e^{i\alpha(x - ct)}$, growth $\operatorname{Im} c$), `growth="real"` for a rate (mode $e^{st}$),
+$e^{i\alpha(x - ct)}$, of temporal growth rate $\alpha\operatorname{Im} c$; `Im c` is the value ranked), `growth="real"` for a rate (mode $e^{st}$),
 or `critical(growth=...)` for one call; a linearization's eigenvalue is the $s$ of $e^{st}$
 (growth $\operatorname{Re} s$, declared by construction). In v0.1 an undeclared convention is still
 guessed from the name (`c` → Im, `s`, `sigma`, `lam` → Re) with a `cn.errors.DefaultChoiceWarning`

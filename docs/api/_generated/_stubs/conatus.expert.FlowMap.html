@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -710,8 +710,7 @@
 <dt class="sig sig-object py" id="conatus.expert.FlowMap.restore">
 <span class="sig-name descname"><span class="pre">restore</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#conatus.expert.FlowMap.restore" title="Link to this definition">¶</a></dt>
 <dd><p>True: Φ(X_0) puts the solver’s state, clock and multistep history back after its run
-(set by <code class="docutils literal notranslate"><span class="pre">Simulation.flowmap</span></code>; review of the state audit, F6: <code class="docutils literal notranslate"><span class="pre">sim.flowmap(T)(X0)</span></code>
-moved the simulation to X_N). False (the expert default): they are left at X_N.</p>
+(set by <code class="docutils literal notranslate"><span class="pre">Simulation.flowmap</span></code>). False (the expert default): they are left at X_N.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -793,8 +792,11 @@ Without <code class="docutils literal notranslate"><span class="pre">journal</sp
 <dl class="py method">
 <dt class="sig sig-object py" id="conatus.expert.FlowMap.vjp_physical">
 <span class="sig-name descname"><span class="pre">vjp_physical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/adjoint/flowmap.html#FlowMap.vjp_physical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.FlowMap.vjp_physical" title="Link to this definition">¶</a></dt>
-<dd><p>Adjoint for the inner product ⟨a, b⟩_G = aᵀ G b: Φ† w = G⁻¹ Jᵀ G w.
-Refused if G is singular (e.g. tau rows carry no weight). CPU backend only.</p>
+<dd><p>Adjoint for the inner product ⟨a, b⟩_G = aᴴ G b: Φ† w = G⁻¹ Jᴴ G w, so that
+⟨w, J v⟩_G = ⟨Φ† w, v⟩_G. <a class="reference internal" href="#conatus.expert.FlowMap.vjp" title="conatus.expert.FlowMap.vjp"><code class="xref py py-meth docutils literal notranslate"><span class="pre">vjp()</span></code></a> keeps its bilinear pairing on Cartesian states (it
+returns Jᵀ z), so Jᴴ z = conj(Jᵀ conj(z)); on the sphere its real pairing is already the
+Hermitian adjoint. Refused if G is singular (e.g. tau rows carry no weight). CPU backend
+only.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -901,7 +903,7 @@ Refused if G is singular (e.g. tau rows carry no weight). CPU backend only.</p>
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

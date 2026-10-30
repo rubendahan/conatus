@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -696,8 +696,13 @@ critical pair closest to the imaginary axis). <code class="docutils literal notr
 (default Euclidean on the discrete vector, declared). <code class="docutils literal notranslate"><span class="pre">symmetry</span></code>: optional linear map S
 (matrix or callable) with S G(x) = G(S x); the kernel parity S q = ±q is reported and a
 pitchfork is then <em>required</em> to have a2 = 0 up to <code class="docutils literal notranslate"><span class="pre">kernel_tol</span></code> (else refused).
-<code class="docutils literal notranslate"><span class="pre">kernel_tol</span></code>: the critical eigenvalue must satisfy |λ| (zero) or |Re λ| (Hopf) &lt;= kernel_tol·(1+‖J‖),
-and x0 must be an equilibrium, max|G(x0)| &lt;= kernel_tol·max(1, ‖J‖)·max(1, ‖x0‖) (else refused).</p>
+<code class="docutils literal notranslate"><span class="pre">kernel_tol</span></code>: with each row of (J, M, G) divided by its largest entry r_i in J or M, and
+ν = max(1, ‖J‖/‖M‖) on those rows, the critical eigenvalue must satisfy |λ| (zero) or |Re λ|
+(Hopf) &lt;= kernel_tol·ν, and x0 must be an equilibrium, max|G_i(x0)|/r_i &lt;=
+kernel_tol·max(1, ‖x0‖) (else refused). Multiplying an equation by a constant changes none of
+these. The fold test compares |β| with kernel_tol·max(1, Σ|p_i G_p,i|), and a3 is degenerate
+below kernel_tol times the sum of its terms in absolute value; both sums have the same scaling
+property.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -788,7 +793,7 @@ and x0 must be an equilibrium, max|G(x0)| &lt;= kernel_tol·max(1, ‖J‖)·max
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

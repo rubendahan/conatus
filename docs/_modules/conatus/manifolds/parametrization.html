@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -683,7 +683,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for conatus.manifolds.parametrization</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Unstable manifolds of equilibria by the parametrization method.</span>
-<span class="sd">Notes: Cabré, Fontich &amp; de la Llave (2003, 2005); Haro,</span>
+<span class="sd">Cabré, Fontich &amp; de la Llave (2003, 2005); Haro,</span>
 <span class="sd">Canadell, Figueras, Luque &amp; Mondelo, *The Parameterization Method for Invariant Manifolds*</span>
 <span class="sd">(Springer 2016), ch. 2.</span>
 
@@ -723,6 +723,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._repr</span><span class="w"> </span><span class="kn">import</span> <span class="n">compact_repr</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"UnstableManifold"</span><span class="p">,</span> <span class="s2">"unstable_manifold"</span><span class="p">,</span> <span class="s2">"polynomial_degree_defect"</span><span class="p">,</span> <span class="s2">"globalize"</span><span class="p">]</span>
+
+<span class="c1">#: radii sampled by validity_radius before its bisection</span>
+<span class="n">RADIUS_SCAN</span> <span class="o">=</span> <span class="mi">64</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">polynomial_degree_defect</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">degree</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">par</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -825,10 +828,19 @@
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defect</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">validity_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rho_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Largest ρ ≤ ρ_max (bisection, 40 halvings) with max defect on |s| = ρ below ``tol``."""</span>
+<span class="w">        </span><span class="sd">"""Largest ρ ≤ ρ_max found with max defect on |s| = ρ below ``tol``: the largest admissible</span>
+<span class="sd">        radius of a uniform scan of ``RADIUS_SCAN`` radii, refined by bisection (40 halvings) up</span>
+<span class="sd">        to the next radius of the scan. The defect need not be monotone in ρ (a</span>
+<span class="sd">        bisection from 0 alone stopped at the lowest edge it met); an admissible interval</span>
+<span class="sd">        narrower than the scan spacing can still be missed, so this is a sampled answer."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_defect</span><span class="p">(</span><span class="n">rho_max</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">rho_max</span><span class="p">)</span>
         <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">rho_max</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">RADIUS_SCAN</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">rho</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">rho_max</span><span class="p">)</span> <span class="o">*</span> <span class="n">j</span> <span class="o">/</span> <span class="n">RADIUS_SCAN</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_defect</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">:</span>
+                <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">rho</span><span class="p">,</span> <span class="n">rho</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">rho_max</span><span class="p">)</span> <span class="o">/</span> <span class="n">RADIUS_SCAN</span>
+                <span class="k">break</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">):</span>
             <span class="n">mid</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">lo</span> <span class="o">+</span> <span class="n">hi</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_defect</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tol</span><span class="p">:</span>
@@ -1006,7 +1018,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
