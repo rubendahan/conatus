@@ -626,7 +626,14 @@ class Run:
         if not p.exists():
             raise OptionError(f"conatus.runs: run {self.id} has no data.h5",
                               why="no series or field was recorded (or the run is still running)")
-        return _h5_open(p, "r")
+        f = _h5_open(p, "r")
+        try:
+            from ..io._h5 import refuse_indirect_storage
+            refuse_indirect_storage(f, p, "a run's data file")
+        except ValueError:
+            f.close()
+            raise
+        return f
 
     def series(self, name: str, x: str | None = None) -> dict:
         """{"row", "step", "value"} arrays of one series; with ``x`` (another series logged in the

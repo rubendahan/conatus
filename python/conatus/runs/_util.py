@@ -99,6 +99,72 @@ def from_jsonable(v: Any) -> Any:
     return v
 
 
+def typed_jsonable(v: Any, _active: set[int] | None = None) -> Any:
+    """JSON form of an argument that keeps its Python type (format 2 of ``inputs.args``): a tuple
+    {"tuple": [...]}, a list a list, a dict with string keys {"items": [[k, v], ...]} in its own
+    order, a NumPy scalar {"npscalar": [dtype, value]}, bytes {"bytes": hex}. Subclasses and other
+    objects are {"repr": ...}, which :func:`is_typed_exact` calls inexact."""
+    t = type(v)
+    if v is None or t in (bool, int, float, complex, str):
+        return jsonable(v)
+    if isinstance(v, np.generic):
+        if v.dtype.kind in "biufc" and str(v.dtype) in _INLINE_DTYPES:
+            return {"npscalar": [str(v.dtype), jsonable(v.item())]}
+        return {"repr": repr(v)}
+    if t is bytes:
+        return {"bytes": v.hex()}
+    if t is np.ndarray:
+        return jsonable(v)
+    if t in (list, tuple) or (t is dict and all(type(k) is str for k in v)):
+        _active = set() if _active is None else _active
+        if id(v) in _active:
+            return {"repr": "<a container that contains itself>"}
+        _active.add(id(v))
+        try:
+            if t is dict:
+                return {"items": [[k, typed_jsonable(x, _active)] for k, x in v.items()]}
+            items = [typed_jsonable(x, _active) for x in v]
+        finally:
+            _active.discard(id(v))
+        return items if t is list else {"tuple": items}
+    return {"repr": repr(v)}
+
+
+def from_typed(v: Any) -> Any:
+    """Inverse of :func:`typed_jsonable`. A record is untrusted data: the only values built are
+    numbers, strings, containers and inline arrays with a checked dtype and shape."""
+    if isinstance(v, list):
+        return [from_typed(x) for x in v]
+    if isinstance(v, dict):
+        if set(v) == {"tuple"}:
+            return tuple(from_typed(x) for x in v["tuple"])
+        if set(v) == {"items"}:
+            return {str(k): from_typed(x) for k, x in v["items"]}
+        if set(v) == {"bytes"}:
+            return bytes.fromhex(v["bytes"])
+        if set(v) == {"npscalar"}:
+            dtype, value = v["npscalar"]
+            if str(dtype) not in _INLINE_DTYPES:
+                raise ValueError(f"NumPy scalar of dtype {dtype!r}: not a value this library writes")
+            return np.dtype(str(dtype)).type(from_jsonable(value))
+    return from_jsonable(v)
+
+
+def is_typed_exact(v: Any) -> bool:
+    """True if ``from_typed(typed_jsonable(v))`` gives back ``v`` with its types."""
+    def ok(x: Any) -> bool:
+        if isinstance(x, list):
+            return all(ok(y) for y in x)
+        if isinstance(x, dict):
+            if len(x) == 1 and ("repr" in x or "array" in x):
+                return False
+            if set(x) == {"items"}:
+                return all(ok(y) for _, y in x["items"])
+            return all(ok(y) for y in x.values())
+        return True
+    return ok(typed_jsonable(v))
+
+
 def is_exact(v: Any) -> bool:
     """True if ``from_jsonable(jsonable(v))`` gives back ``v`` (used before a function is re-called
     by ``reproduce()``: arguments stored as summaries or repr cannot be replayed)."""
@@ -139,6 +205,38 @@ def canonical(v: Any) -> bytes:
             return x
         return {"r": repr(x)}
     return json.dumps(enc(v), sort_keys=True, separators=(",", ":")).encode()
+
+
+def typed_sha256(v: Any, *, ordered: bool = True) -> str:
+    """sha256 of a value by content and type: a list and a tuple, a Python and a NumPy scalar, bytes
+    and text differ. ``ordered=True`` also separates two orders of a dict. A value made of lists,
+    Python numbers and strings hashes as :func:`sha256_of` when ``ordered`` is False, so identities
+    without tuples keep the digest stored in existing checkpoints."""
+    def enc(x: Any) -> Any:
+        if isinstance(x, np.generic) and not isinstance(x, (str, bytes)):
+            item = x.item()      # a long double has no Python value: item() returns it unchanged
+            return {"n": [str(x.dtype), x.tobytes().hex() if isinstance(item, np.generic) else enc(item)]}
+        if isinstance(x, (float,)):
+            return {"f": float(x).hex()}
+        if isinstance(x, complex):
+            return {"c": [x.real.hex(), x.imag.hex()]}
+        if isinstance(x, np.ndarray):
+            return {"a": [list(x.shape), str(x.dtype), array_sha256(x)]}
+        if isinstance(x, bytes):
+            return {"b": x.hex()}
+        if isinstance(x, Mapping):
+            if ordered:
+                return {"o": [[str(k), enc(y)] for k, y in x.items()]}
+            return {str(k): enc(y) for k, y in sorted(x.items(), key=lambda kv: str(kv[0]))}
+        if isinstance(x, tuple):
+            return {"t": [enc(y) for y in x]}
+        if isinstance(x, list):
+            return [enc(y) for y in x]
+        if x is None or isinstance(x, (bool, int, str)):
+            return x
+        return {"r": repr(x)}
+    data = json.dumps(enc(v), sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(data).hexdigest()
 
 
 def sha256_of(v: Any) -> str:

@@ -37,7 +37,7 @@ import numpy as np
 
 from ..continuation.core import ContinuationSettings
 from ..errors import ConvergenceError, OptionError, UnsupportedError
-from .driver import ArclengthDriver, Curve
+from .driver import ArclengthDriver, Curve, factor_test
 from .equilibria import generalized_eigenvalues
 from .normal_form import normal_form
 from .system import DynamicalSystem
@@ -54,11 +54,6 @@ BT_KAPPA_TOL = 1e-6
 HOPF_PAIR_TOL = 1e-6
 
 __all__ = ["continue_codim2"]
-
-
-def _s(x):
-    """Bounded test function x / (1 + |x|) (same sign and zeros as x)."""
-    return x / (1.0 + np.abs(x))
 
 
 def _Bmat(system, x, v, par) -> np.ndarray:
@@ -154,7 +149,7 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
             if ev.size < 2:
                 return 1.0
             s = ev[:, None] + ev[None, :]
-            return float(np.real(np.prod(_s(s[np.triu_indices(ev.size, 1)]))))
+            return factor_test(s[np.triu_indices(ev.size, 1)])
 
         all_tests = {"cusp": lambda pt: pt.data["cusp"], "bt": lambda pt: pt.data["bt"], "zh": t_zh}
         z0 = np.concatenate([x0, [base[p1], base[p2]]])
@@ -258,8 +253,7 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
                     d["l1"], d["l1_error"] = np.nan, str(e).splitlines()[0]
             else:
                 d["l1"] = np.nan
-            sg, ld = np.linalg.slogdet(J)
-            d["logdet"] = (float(sg), float(ld))
+            d["det_sign"] = float(np.real(np.linalg.slogdet(J)[0]))
             if kap > 0:          # distance of ±iω from the spectrum (independent of G = 0)
                 w = np.sqrt(kap)
                 d["hopf_pair_error"] = float(max(np.min(np.abs(ev - 1j * w)),
@@ -279,12 +273,11 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
                         "not a Hopf point; the curve ends before it")
             return None
 
-        ref = {}
-
         def t_zh(pt):
-            sg, ld = pt.data["logdet"]
-            ref.setdefault("ld", ld)
-            return sg * float(np.exp(np.clip(ld - ref["ld"], -300, 300)))
+            # the sign of det J, the size of the eigenvalue closest to 0: the determinant carries
+            # every other direction of the system
+            small = float(np.abs(pt.data["eigenvalues"]).min(initial=np.inf))
+            return pt.data["det_sign"] * small / (1.0 + small)
 
         def t_hh(pt):
             ev = pt.data["eigenvalues"]
@@ -294,7 +287,7 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
             if ev.size < 2:
                 return 1.0
             s = ev[:, None] + ev[None, :]
-            return float(np.real(np.prod(_s(s[np.triu_indices(ev.size, 1)]))))
+            return factor_test(s[np.triu_indices(ev.size, 1)])
 
         all_tests = {"bt": lambda pt: float(pt.z[n]), "gh": lambda pt: pt.data["l1"],
                      "zh": t_zh, "hh": t_hh}

@@ -282,6 +282,15 @@ DECLARED: dict[str, Declared] = dict([
     _d("conatus.solvers.evp.ARNOLDI_TOL", 0.0, "stop at the floor",
        "ARPACK tol = 0 is machine precision (the strictest), each mode's residual is returned",
        ("conatus.solvers.evp:solve_sparse(tol)",)),
+    _d("conatus.resolution.SOLVE_DATA_PROBE_TOL", 1e-2, "detection",
+       "relative misfit of a callable given field off the grid against the interpolant of its grid "
+       "values, above which the grid does not represent it (warned, nothing changed)"),
+    _d("conatus.resolution.SOLVE_DATA_PROBE_BUDGET", 1.0, "limiter",
+       "seconds for one evaluation of a callable given field on a line, above which the callable is "
+       "not sampled off the grid (stated in explain())"),
+    _d("conatus.ecs.equivariance.EQUIVARIANCE_TOL", 1e-9, "refusal",
+       "relative defect of the right-hand side under one grid-cell translation, a reflection or a "
+       "change of time, above which a finder that assumes the symmetry refuses the problem"),
     # parametric pencils
     _d("conatus.solvers.parametric.RECON_TOL", 1e-10, "refusal", _CHECK),
     _d("conatus.solvers.parametric.DERIVATIVE_TOL", 1e-8, "refusal", _CHECK),
@@ -417,6 +426,9 @@ DECLARED: dict[str, Declared] = dict([
     _d("conatus.timestep.control.DT_FACTOR_MAX", 2.0, "limiter",
        "adaptive step: largest change factor per step (EmbeddedError.explain() prints it)"),
     # bifurcation and manifolds
+    _d("conatus.bifurcation.system.MASS_PROBE", 1e15, "refusal",
+       "ir_system samples the mass matrix at p0 x and p0 / this value; a change beyond rounding is a "
+       "parameter-dependent mass (refused), and evaluation outside this range is refused"),
     _d("conatus.bifurcation.normal_form:normal_form(kernel_tol)", 1e-8, "detection",
        "kernel of the Jacobian at the bifurcation point; its singular values are in the result"),
     _d("conatus.bifurcation.orbits.MARGINAL_MULTIPLIER_TOL", 1e-6, "detection",

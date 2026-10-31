@@ -274,10 +274,12 @@ def value_identity(v: Any, what: str, seen: set[int] | None = None,
     A container that contains itself is undeclared too (identity review: it used to recurse
     until RecursionError, a crash instead of a refusal); ``_active`` holds the containers being
     walked."""
-    from ..runs._util import sha256_of
+    from ..runs._util import typed_sha256
     from ..runs.keys import exact_hash
     if exact_hash(v):
-        return {"data": sha256_of(v)}
+        # dict keys sorted (no order in the digest): identities without a tuple or a NumPy
+        # scalar keep the digest that existing checkpoints hold
+        return {"data": typed_sha256(v, ordered=False)}
     if isinstance(v, types.ModuleType):
         return {"module": v.__name__, "version": _version(v.__name__)}
     import enum
@@ -289,7 +291,7 @@ def value_identity(v: Any, what: str, seen: set[int] | None = None,
                       np.ufunc, functools.partial, type)) or (
             callable(v) and callable(getattr(v, "__wrapped__", None))):
         return callable_identity(v, what, seen)
-    if isinstance(v, (list, tuple)) or (isinstance(v, dict) and all(isinstance(k, str) for k in v)):
+    if type(v) in (list, tuple) or (type(v) is dict and all(type(k) is str for k in v)):
         _active = set() if _active is None else _active
         if id(v) in _active:
             raise Undeclared(f"{what} contains itself (a recursive container has no content hash)")
@@ -298,7 +300,8 @@ def value_identity(v: Any, what: str, seen: set[int] | None = None,
             if isinstance(v, dict):
                 return {k: value_identity(x, f"{what}[{k!r}]", seen, _active)
                         for k, x in sorted(v.items())}
-            return [value_identity(x, f"{what}[{i}]", seen, _active) for i, x in enumerate(v)]
+            items = [value_identity(x, f"{what}[{i}]", seen, _active) for i, x in enumerate(v)]
+            return items if type(v) is list else {"tuple": items}
         finally:
             _active.discard(id(v))
     raise Undeclared(f"{what} is a {type(v).__name__}, which has no content hash")

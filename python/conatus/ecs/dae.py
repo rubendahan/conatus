@@ -46,6 +46,12 @@ def find_relative_equilibrium_dae(solver, X0: np.ndarray, c0: float, newton: New
     lin = _Lin(solver)
     M, L = sysm.M.tocsr(), sysm.L.tocsr()
     P = spla.splu((-L).tocsc())                     # declared left preconditioner (−L)⁻¹
+    from .equivariance import grid_cell, require_autonomous, require_equivariant
+    require_autonomous(solver, [X0], "find_relative_equilibrium_dae")
+    cell = grid_cell(solver, coord)
+    require_equivariant(solver, lambda X: ops.translate(X, cell), [X0],
+                        "find_relative_equilibrium_dae", f"translation symmetry along {coord}",
+                        f"a relative equilibrium needs equations without an explicit {coord}")
     ref = ops.ddx(X0)
     if np.linalg.norm(ref) == 0:
         raise OptionError(f"initial guess is invariant along {coord}: the phase condition is void",

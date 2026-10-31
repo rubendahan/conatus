@@ -354,6 +354,30 @@ class PreperiodicOrbit(ECSSolution):
     """R τ_ℓ Φ_T(u) = u (periodic with period 2T); ``params['T']``, ``params['ell']``."""
 
 
+def _require_relative(solver, ops: FourierOps, x0: np.ndarray, where: str, *, reflect: bool = False) -> None:
+    """The preconditions of a relative solution: translation equivariance (and reflection, for
+    pre-periodic orbits). A seed and a low-mode random state are the probes. ``Flow`` already
+    refuses a right-hand side that depends on the time; an equilibrium needs no spatial symmetry,
+    since v(u) = 0 is its definition and the full residual is gated."""
+    from .equivariance import grid_cell, low_mode_probe, require_equivariant
+    probes = [x0, ops._map(x0 + low_mode_probe(x0), _low_half)]
+    cell = grid_cell(solver, ops.basis.coord.name)
+    require_equivariant(solver, lambda X: ops.translate(X, cell), probes, where, "translation symmetry",
+                        "a relative solution needs equations without an explicit dependence on "
+                        f"{ops.basis.coord.name}: use find_equilibrium, or integrate in time")
+    if reflect:
+        require_equivariant(solver, ops.reflect, probes, where, "reflection symmetry R u(x) = -u(-x)",
+                            "use reflect=False, or check the equations under the reflection")
+
+
+def _low_half(c: np.ndarray, s: np.ndarray, out: np.ndarray) -> np.ndarray:
+    """Coefficient kernel of ``FourierOps._map``: keep the lower half of the mode pairs."""
+    half = c.size // 2
+    c[half:], s[half:] = 0.0, 0.0
+    out[0::2], out[1::2] = c, s
+    return out
+
+
 def _energy(ops: FourierOps, X: np.ndarray) -> float:
     c = ops.system.scatter(X)[0]
     # ∫ cos² = ∫ sin² = L/2 for n ≥ 1, mean contributes c0²·L
@@ -472,12 +496,14 @@ def find_travelling_wave(solver, x0: np.ndarray, c0: float, newton: NewtonKrylov
                          log=None, N=None) -> ECSSolution:
     """u(x, t) = U(x − c t): v(U) + c ∂x U = 0, unknowns (U, c), phase ⟨∂x U*, δU⟩ = 0.
     ``solver``: a ``Simulation``, an ``IVPSolver`` or a ``cn.Model`` with ``N=``; scope as
-    :func:`find_equilibrium` (``SCOPE``). A solution whose speed is zero within the Newton
+    :func:`find_equilibrium` (``SCOPE``). Equations that depend on x or on t are refused with
+    :class:`SymmetryError`: such a state is no travelling wave. A solution whose speed is zero within the Newton
     accuracy (``TW_SPEED_TOL``) is returned as an :class:`Equilibrium` (kind "equilibrium",
     ``params['c']`` kept, the measured value in the notes)."""
     solver, note = _solver_of(solver, "find_travelling_wave", N=N)
     x0, seed = _seed_state(solver, x0, "find_travelling_wave")
     ops, v = FourierOps(solver), Flow(solver)
+    _require_relative(solver, ops, x0, "find_travelling_wave")
     sp = _Space(ops, solver.system.n, odd=False, base=x0)
     ref = {"t": ops.ddx(x0)}
 
@@ -631,6 +657,7 @@ def find_relative_periodic_orbit(solver, x0: np.ndarray, T0: float, ell0: float,
     solver, _ = _solver_of(solver, "find_relative_periodic_orbit", need_scheme=True)
     x0, seed = _seed_state(solver, x0, "find_relative_periodic_orbit")
     orb = _Orbit(solver, steps, reflect)
+    _require_relative(solver, orb.ops, x0, "find_relative_periodic_orbit", reflect=reflect)
     sp = _Space(orb.ops, solver.system.n, odd=False, base=x0)
     ref = {"v": orb.v(x0), "t": orb.ops.ddx(x0)}
 

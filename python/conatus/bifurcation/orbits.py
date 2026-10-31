@@ -36,8 +36,7 @@ import scipy.sparse.linalg as spla
 
 from ..continuation.core import ContinuationSettings
 from ..errors import ConvergenceError, OptionError, UnsupportedError, did_you_mean
-from .codim2 import _s
-from .driver import ArclengthDriver, Curve, CurvePoint
+from .driver import ArclengthDriver, Curve, CurvePoint, factor_test
 from .system import DynamicalSystem
 from .._repr import compact_repr
 
@@ -346,6 +345,8 @@ def floquet_from_collocation(problem: PeriodicOrbitProblem, z: np.ndarray) -> di
 #: Multipliers with |μ| < RESOLVED_REL x max(1, |μ|max) are not resolved by the collocation product
 #: (counted, left out of the tests; declared in ``conatus.tolerances.DECLARED``).
 RESOLVED_REL = 1e-8
+#: Two multipliers closer than this, relative to max(1, their size), count as a conjugate pair.
+_CONJUGATE_TOL = 1e-6
 #: Stability count of an orbit (declared in ``conatus.tolerances.DECLARED``): a nontrivial
 #: multiplier counts as unstable when |μ| > 1 + MARGINAL_MULTIPLIER_TOL; those with
 #: ||μ| − 1| <= MARGINAL_MULTIPLIER_TOL are near-marginal (stored per point, listed by explain()).
@@ -498,18 +499,16 @@ def _run_segment(pb, z0, cfg, t_dir, tests, bounds, period_max) -> Curve:
         return float(pt.tangent[-1])
 
     def t_pd(pt: CurvePoint) -> float:
-        return float(np.real(np.prod(_s(pt.data["nontrivial"] + 1.0))))
+        return factor_test(pt.data["nontrivial"] + 1.0)
 
     def t_ns(pt: CurvePoint) -> float:
         mu = pt.data["nontrivial"]
         if mu.size < 2:
             return 1.0
-        prod = mu[:, None] * mu[None, :] - 1.0
-        iu = np.triu_indices(mu.size, 1)
-        return float(np.real(np.prod(_s(prod[iu]))))
+        return factor_test((mu[:, None] * mu[None, :] - 1.0)[np.triu_indices(mu.size, 1)])
 
     def t_bpc(pt: CurvePoint) -> float:
-        return float(np.real(np.prod(_s(pt.data["nontrivial"] - 1.0))))
+        return factor_test(pt.data["nontrivial"] - 1.0)
 
     all_t = {"lpc": t_lpc, "pd": t_pd, "ns": t_ns, "bpc": t_bpc}
 
@@ -522,21 +521,28 @@ def _run_segment(pb, z0, cfg, t_dir, tests, bounds, period_max) -> Curve:
             if "tp_sign_change" in ev.data:
                 return None, "coincides with a fold of cycles"
             k = int(np.argmin(np.abs(mu - 1.0)))
+            ev.data["critical_distance"] = float(abs(mu[k] - 1.0))
             ev.detail = f"second multiplier μ = {mu[k].real:+.10f} at +1 (branch point of cycles)"
             return "bpc", None
         if name == "pd":
             k = int(np.argmin(np.abs(mu + 1.0)))
             ev.data["multiplier"] = mu[k]
+            ev.data["critical_distance"] = float(abs(mu[k] + 1.0))
             ev.detail = f"μ = {mu[k].real:+.10f}{mu[k].imag:+.1e}i, |μ_triv − 1| = {ev.point.data['trivial_error']:.1e}"
             return "pd", None
         prod = np.abs(mu[:, None] * mu[None, :] - 1.0) + np.diag(np.full(mu.size, np.inf))
         i, j = np.unravel_index(np.argmin(prod), prod.shape)
         pair = mu[[i, j]]
+        ev.data["critical_distance"] = float(np.abs(np.abs(pair) - 1.0).max())
         ev.data["classification"] = (f"Neimark-Sacker if |Im μ| > hopf_imag_tol = "
                                      f"{cfg.hopf_imag_tol:g} x max(1, |μ|) for the pair of product "
                                      "closest to 1, else neutral saddle cycle")
         # same relative threshold as the Hopf/neutral-saddle split of equilibria (was an absolute
         # 1e-8, identical for |μ| <= 1)
+        if abs(pair[0] - np.conj(pair[1])) > _CONJUGATE_TOL * max(1.0, float(np.abs(pair).max())):
+            # μ and 1/μ of a complex quadruple: the product is 1 off the unit circle
+            return None, (f"neutral saddle cycle (pair {pair[0]:.4g}, {pair[1]:.4g} has product 1 "
+                          "and is not conjugate)")
         if np.all(np.abs(pair.imag) > cfg.hopf_imag_tol * max(1.0, float(np.abs(pair).max()))):
             ang = float(abs(np.angle(pair[0])))
             ev.data.update(multiplier=pair[0], angle=ang)

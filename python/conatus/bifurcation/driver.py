@@ -65,6 +65,23 @@ class CurvePoint:
                 + f"; unknowns of {np.size(self.z)} entries in .z")
 
 
+def factor_test(factors: np.ndarray) -> float:
+    """Test function built from the factors of a characteristic product: the sign of the product
+    (accumulated phase, so nothing underflows) and the size |z| / (1 + |z|) of its smallest factor.
+
+    Its value is the distance of the critical factor to zero. The product itself carries every
+    other factor: adding decoupled stable variables moved a located event by 6e-4 and marked it
+    converged (external review of 0.2.3). The function is flat where another factor is the
+    smallest; ``locate`` then bisects its sign bracket."""
+    z = np.asarray(factors, dtype=complex)
+    if z.size == 0:
+        return 1.0
+    size = np.abs(z)
+    if not np.all(size > 0):
+        return 0.0
+    return float(np.sign(np.cos(float(np.sum(np.angle(z))))) * np.min(size / (1.0 + size)))
+
+
 @dataclass
 class CurveEvent:
     """A located sign change of a test function (``converged``/``reason`` tell how well)."""
@@ -311,9 +328,8 @@ class ArclengthDriver:
             # a test function can be flat on both sides of its root (N54: the smallest factor is a
             # spectator pair away from the crossing): then the midpoint of the sign bracket
             s2 = s1 - f1 * (s1 - s0) / (f1 - f0) if f1 != f0 else 0.5 * (lo[0] + hi[0])
-            if not (min(lo[0], hi[0]) - abs(b.s - a.s) <= s2 <= max(lo[0], hi[0]) + abs(b.s - a.s)) \
-                    or f1 == f0:
-                s2 = 0.5 * (lo[0] + hi[0])    # keep the iterate near the bracket
+            if not min(lo[0], hi[0]) < s2 < max(lo[0], hi[0]):
+                s2 = 0.5 * (lo[0] + hi[0])    # a secant step outside the sign bracket
             try:
                 z, rel, _ = self.correct(a.z + s2 * a.tangent, a.tangent)
                 # Exactly at a branch point the bordered matrix is singular: LAPACK then warns

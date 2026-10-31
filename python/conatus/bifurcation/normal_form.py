@@ -80,7 +80,7 @@ class ZeroEigenvalueNormalForm:
     """Centre-manifold normal form at a simple zero eigenvalue (fold, transcritical, pitchfork)."""
     __repr__ = compact_repr   # one line, arrays by shape
 
-    kind: str                    # "fold" | "transcritical" | "pitchfork"
+    kind: str                    # "fold" | "transcritical" | "pitchfork" | "unresolved"
     x0: np.ndarray
     params: dict
     parameter: str
@@ -112,12 +112,13 @@ class ZeroEigenvalueNormalForm:
         """Reduced equation, its coefficients, normalization and the residual checks."""
         eq = {"fold": "da/dt = β Δp + a2 a²",
               "transcritical": "da/dt = μ Δp a + a2 a²",
-              "pitchfork": "da/dt = μ Δp a + a3 a³"}[self.kind]
+              "pitchfork": "da/dt = μ Δp a + a3 a³",
+              "unresolved": "not established (see the notes)"}[self.kind]
         crit = ""
         if self.kind == "pitchfork":
             crit = (" (degenerate: a3 = 0, the cubic term does not decide)" if self.degenerate
                     else " (supercritical)" if self.a3 < 0 else " (subcritical)")
-        lines = [f"Normal form ({self.kind}{crit}) at {self.parameter} = {self.params[self.parameter]:.12g}: {eq}",
+        lines = [f"Normal form ({self.kind}{crit}) at {self.parameter} = {self.params[self.parameter]:.12g}: {eq}" if self.parameter else f"Normal form ({self.kind}{crit}): {eq}",
                  f"  β = {self.beta:.10g}, μ = {self.mu:.10g}, a2 = {self.a2:.10g}, a3 = {self.a3:.10g}",
                  "  x ≈ x0 + a q + a²/2 h2, ‖q‖ = 1 (declared norm), pᵀM q = 1"]
         lines += [f"  check {k}: {v:.1e}" for k, v in self.checks.items()]
@@ -205,9 +206,13 @@ def normal_form(system: DynamicalSystem, x0: np.ndarray, *, kind: str,
     ν = max(1, ‖J‖/‖M‖) on those rows, the critical eigenvalue must satisfy |λ| (zero) or |Re λ|
     (Hopf) <= kernel_tol·ν, and x0 must be an equilibrium, max|G_i(x0)|/r_i <=
     kernel_tol·max(1, ‖x0‖) (else refused). Multiplying an equation by a constant changes none of
-    these. The fold test compares |β| with kernel_tol·max(1, Σ|p_i G_p,i|), and a3 is degenerate
-    below kernel_tol times the sum of its terms in absolute value; both sums have the same scaling
-    property.
+    these. β counts as zero at rounding level of Σ|p_i G_p,i|, or when |β| <= kernel_tol·|μ|·max(1,
+    ‖x0‖): the two branches of a transcritical point are then displaced by less than that.
+    Otherwise the point is a fold. With β = 0: "transcritical" needs μ ≠ 0 and a2 ≠ 0, "pitchfork"
+    needs a2 = 0 (|a2| <= kernel_tol·|a3|, or rounding) and is flagged degenerate when μ or a3
+    vanishes. Without ``parameter``, or with β = μ = 0, the kind is "unresolved" (and ``degenerate``
+    is True). These tests compare quantities with the same units, so a positive change of the
+    parameter's units does not change the kind.
     """
     if kind not in ("zero", "hopf"):
         raise OptionError(f"normal_form: kind must be 'zero' or 'hopf', got {kind!r}")
@@ -249,6 +254,10 @@ def normal_form(system: DynamicalSystem, x0: np.ndarray, *, kind: str,
     if cand.size == 0:
         raise ConvergenceError("normal_form: no complex eigenvalue at x0 (not a Hopf point)")
     i = int(cand[0])
+    if not lam[i].imag > kernel_tol * nJ:
+        raise ConvergenceError(f"normal_form: the closest pair is real within kernel_tol "
+                               f"(Im λ = {lam[i].imag:.2e}): not a Hopf point",
+                               fix="locate the Hopf point first (continue_equilibria event)")
     if abs(lam[i].real) > kernel_tol * nJ:
         raise ConvergenceError(f"normal_form: critical pair not on the axis (Re λ = {lam[i].real:.2e})",
                                fix="locate the Hopf point first (continue_equilibria event)")
@@ -287,23 +296,50 @@ def _zero_nf(system, x0, par, J, M, lam, vr, vl, i, parameter, weight, symmetry,
         xp = _bordered_solve(J, M @ q, p @ M, -Gp + beta * (M @ q))
         mu = float(p @ (system.Jp(x0, q, parameter, par) + system.B(x0, q, xp, par)))
         checks["residual x_p"] = float(np.max(np.abs(J @ xp + Gp - beta * (M @ q))))
-    scale = max(abs(a2), abs(a3), abs(mu) if np.isfinite(mu) else 0.0, 1e-300)
-    if parameter is not None and abs(beta) > tol * max(1.0, float(np.abs(p) @ np.abs(Gp))):
-        kind = "fold"
-    elif sym_parity == -1:
+    # Every comparison is between quantities with the same units: a sum against its own terms, a2
+    # against a3 (both per unit of the normalised amplitude), β against μ (both per unit of the
+    # parameter). Multiplying the parameter or an equation by a positive constant changes none.
+    round_level = 8 * x0.size * np.finfo(float).eps
+    a2_terms = 0.5 * float(np.abs(p) @ np.abs(Bqq))
+    a2_zero = abs(a2) <= max(tol * abs(a3), round_level * a2_terms)
+    size_x = max(1.0, float(np.max(np.abs(x0), initial=0.0)))
+    beta_zero = mu_zero = None
+    if parameter is not None:
+        beta_terms = float(np.abs(p) @ np.abs(Gp))
+        mu_terms = float(np.abs(p) @ (np.abs(system.Jp(x0, q, parameter, par))
+                                      + np.abs(system.B(x0, q, xp, par))))
+        mu_zero = abs(mu) <= round_level * mu_terms
+        beta_zero = abs(beta) <= round_level * beta_terms or abs(beta) <= tol * abs(mu) * size_x
+    if sym_parity == -1:
         kind = "pitchfork"
-        if abs(a2) > tol * scale:
+        if not a2_zero:
             raise SymmetryError(f"normal_form: antisymmetric kernel but a2 = {a2:.2e} ≠ 0 "
                                 "(the declared S is not a symmetry of G)")
-    elif abs(a2) <= tol * scale:
+    elif parameter is None:
+        kind = "unresolved"
+        notes.append("no parameter given: β and μ are unknown, so fold, transcritical and pitchfork "
+                     "cannot be told apart (pass parameter=)")
+    elif not beta_zero:
+        kind = "fold"
+        if a2_zero:
+            notes.append(f"a2 = {a2:.1e}: a fold with no quadratic term, degenerate (cusp or higher)")
+    elif mu_zero:
+        kind = "unresolved"
+        notes.append(f"β = {beta:.1e} and μ = {mu:.1e} are both negligible: the parameter does not "
+                     "unfold this point at first order, no bifurcation type is established")
+    elif a2_zero:
         kind = "pitchfork"
-        notes.append(f"a2 = {a2:.1e} <= {tol:g} x scale: pitchfork (no symmetry declared)")
+        notes.append(f"a2 = {a2:.1e} <= {tol:g} |a3|: pitchfork (no symmetry declared)")
     else:
         kind = "transcritical"
-    degenerate = kind == "pitchfork" and abs(a3) <= tol * a3_terms
-    if degenerate:
+    degenerate = (kind == "pitchfork" and abs(a3) <= tol * a3_terms) or \
+        (kind == "fold" and a2_zero) or kind == "unresolved"
+    if kind == "pitchfork" and abs(a3) <= tol * a3_terms:
         notes.append(f"a3 = {a3:.1e} <= {tol:g} x {a3_terms:.1e} (its terms): degenerate, the "
                      "criticality and the amplitude law need higher orders")
+    if kind == "pitchfork" and mu_zero:
+        degenerate = True
+        notes.append(f"μ = {mu:.1e}: the parameter does not unfold this pitchfork at first order")
     return ZeroEigenvalueNormalForm(kind, x0, dict(par), parameter or "", q, p, beta, mu, a2, a3,
                                     h2, checks, notes, degenerate)
 

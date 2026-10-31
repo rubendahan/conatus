@@ -79,3 +79,33 @@ def positive(n: Any, where: str, name: str) -> int:
                           why="cadences and counts must be integers",
                           fix=f"{name}=10, for example", doc=DOC)
     return int(n)
+
+
+def refuse_indirect_storage(f: Any, p: Path | str, what: str = "this file") -> None:
+    """Refuse an HDF5 file that reaches other files: external or soft links, datasets with external
+    raw storage, virtual datasets. Metadata only: no payload is read, so call it first."""
+    import h5py
+    links: list[str] = []
+    stored: list[str] = []
+    visited: set[int] = set()     # a hard link may close a loop of groups
+
+    def walk(group: Any, prefix: str) -> None:
+        for name in group:
+            link = group.get(name, getlink=True)
+            if not isinstance(link, h5py.HardLink):
+                links.append(prefix + name)
+                continue
+            obj = group[name]
+            if isinstance(obj, h5py.Group):
+                addr = h5py.h5o.get_info(obj.id).addr
+                if addr not in visited:
+                    visited.add(addr)
+                    walk(obj, prefix + name + "/")
+            elif isinstance(obj, h5py.Dataset) and (
+                    obj.is_virtual or obj.id.get_create_plist().get_external_count() > 0):
+                stored.append(prefix + name)
+    walk(f, "")
+    if links:
+        raise ValueError(f"{p}: links to other data refused in {what}: {links[:4]}")
+    if stored:
+        raise ValueError(f"{p}: datasets stored in other files refused in {what}: {stored[:4]}")

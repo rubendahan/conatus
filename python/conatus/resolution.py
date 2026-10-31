@@ -83,6 +83,17 @@ SOLVE_TAIL_FLOOR = 1e-10
 #: an exact low-degree polynomial fills the tail window.
 SOLVE_TAIL_MIN_MODES = 8
 
+#: A callable given field is sampled at points off the grid and compared with the interpolant of its
+#: grid values. A misfit above this fraction of its largest value means the grid does not see it (T64
+#: at N = 32 is constant on the grid). Same level as ``SOLVE_DATA_TAIL_TOL``.
+SOLVE_DATA_PROBE_TOL = 1e-2
+#: Directions larger than this are not probed (the interpolation costs N^2 per line).
+SOLVE_DATA_PROBE_MAX = 4096
+#: At most this many points off the grid per line: the misfit needs a sample, and each point costs N.
+SOLVE_DATA_PROBE_POINTS = 1031
+#: A callable that takes longer than this for one evaluation on a line is not probed (seconds).
+SOLVE_DATA_PROBE_BUDGET = 1.0
+
 # ---------------------------------------------------------------- declared thresholds
 # TAIL_FRACTION (0.10), TAIL_MIN_MODES (2): the tail window, defined in conatus.ir.tails
 TAIL_TARGET = 1e-8         # tail <= this: "resolved" (default target of the recommendation)
@@ -527,6 +538,8 @@ class SolutionTails:
     unread: list[str] = field(default_factory=list)     # directions without readable mode numbers
     small: list[str] = field(default_factory=list)      # unknowns too small beside the others
     data_worst: float | None = None                     # largest tail of the data
+    aliased: list[str] = field(default_factory=list)    # given fields the grid cannot see
+    unprobed: list[str] = field(default_factory=list)   # callables the probe left alone, and why
 
     def statement(self) -> str:
         """The explain() line(s) of the check."""
@@ -545,6 +558,13 @@ class SolutionTails:
                          "is a necessary sign of convergence, not a proof")
         elif self.skipped:
             lines.append(f"resolution check: not run ({self.skipped})")
+        if self.unprobed:
+            lines.append("resolution check: not sampled off the grid: " + "; ".join(self.unprobed))
+        if self.aliased:
+            lines.append("resolution check: INPUT DATA NOT RESOLVED, " + "; ".join(self.aliased)
+                         + f" (largest misfit off the grid, above SOLVE_DATA_PROBE_TOL = "
+                         f"{SOLVE_DATA_PROBE_TOL:g}): the grid values of this data do not represent "
+                         "it, whatever the tails say; raise N")
         if self.short:
             lines.append(f"resolution check: not judged, fewer than {SOLVE_TAIL_MIN_MODES} mode "
                          "numbers: " + "; ".join(self.short))
@@ -567,6 +587,7 @@ class SolutionTails:
                        "not converged: raise N along these directions "
                        "(resolution_report(sol.plan, sol) estimates how many modes). Nothing was "
                        "changed.", UnderResolvedWarning)
+        warn_aliased(self.aliased)
 
 
 def _solution_axes(plan, v, c: np.ndarray, unread: list[str]
@@ -658,11 +679,195 @@ def _rhs_tails(out: SolutionTails, plan, rhs: Any) -> None:
                                f"SOLVE_DATA_TAIL_TOL = {SOLVE_DATA_TAIL_TOL:g}")
 
 
+def _probe_points(basis: Any, count: int) -> np.ndarray:
+    """``count`` points off the grid: equidistributed in the interval, denser at the ends of a
+    polynomial basis, as its nodes are; the ends themselves are left out."""
+    lo, hi = basis.bounds
+    frac = (np.arange(count) * 0.6180339887498949 + 0.25) % 1.0
+    if getattr(basis, "periodic", False):
+        return lo + (hi - lo) * frac
+    return 0.5 * (lo + hi) + 0.5 * (hi - lo) * np.cos(np.pi * (0.02 + 0.96 * frac))
+
+
+def _interpolate_fourier(values: np.ndarray, g0: float, length: float, x: np.ndarray) -> np.ndarray:
+    """Trigonometric interpolant of the columns of ``values`` (equispaced nodes along axis 0) at x."""
+    n = values.shape[0]
+    c = np.fft.fft(values, axis=0) / n
+    k = np.fft.fftfreq(n, 1.0 / n)
+    E = np.exp(2j * np.pi * np.outer(x - g0, k) / length)
+    if n % 2 == 0:                    # the Nyquist mode, as a cosine
+        E[:, n // 2] = np.cos(2 * np.pi * (n // 2) * (x - g0) / length)
+    out = E @ c
+    return out.real if np.isrealobj(values) else out
+
+
+def _interpolate_polynomial(values: np.ndarray, nodes: np.ndarray, x: np.ndarray) -> np.ndarray:
+    """Barycentric interpolant of the columns of ``values`` at x (distinct nodes, x off the nodes)."""
+    d = nodes[:, None] - nodes[None, :]
+    np.fill_diagonal(d, 1.0)
+    logw = -np.sum(np.log(np.abs(d)), axis=1)
+    w = np.exp(logw - logw.max()) * np.where(np.sum(d < 0, axis=1) % 2 == 0, 1.0, -1.0)
+    r = w[None, :] / (x[:, None] - nodes[None, :])
+    return (r @ values) / np.sum(r, axis=1, keepdims=True)
+
+
+def _on_line(fn: Any, native: list, i: int, x: np.ndarray, frac: float) -> np.ndarray:
+    """Values of the callable ``fn`` at x along direction i, the other coordinates at the grid
+    point at fraction ``frac``: one row per point, one column per component."""
+    grids = []
+    for j, (_, g) in enumerate(native):
+        g = np.asarray(g).ravel()
+        v = x if j == i else g[int(frac * g.size)][None]
+        sh = [1] * len(native)
+        sh[j] = v.size
+        grids.append(v.reshape(sh))
+    raw = fn(*grids)
+    if isinstance(raw, (tuple, list)):
+        comps = [np.broadcast_to(np.asarray(r), np.broadcast_shapes(np.shape(r), grids[i].shape))
+                 for r in raw]
+        return np.stack([q.ravel() for q in comps], axis=1)
+    arr = np.broadcast_to(np.asarray(raw), np.broadcast_shapes(np.shape(raw), grids[i].shape))
+    return np.moveaxis(arr, arr.ndim - len(native) + i, 0).reshape(x.size, -1)
+
+
+def _reads_generator(fn: Any) -> bool:
+    """True when ``fn`` holds or names a random generator (its closure, its globals, its ``self``):
+    evaluating it again would advance a stream the user's next draws come from."""
+    from random import Random
+    kinds = (np.random.Generator, np.random.RandomState, np.random.BitGenerator, Random)
+    fn = getattr(fn, "__wrapped__", fn)
+    seen = [getattr(fn, "__self__", None)]
+    seen += [c.cell_contents for c in (getattr(fn, "__closure__", None) or ()) if _cell_full(c)]
+    code, names = getattr(fn, "__code__", None), getattr(fn, "__globals__", {})
+    seen += [names[n] for n in (code.co_names if code else ()) if n in names]
+    return any(isinstance(v, kinds) for v in seen)
+
+
+def _cell_full(cell: Any) -> bool:
+    try:
+        cell.cell_contents  # noqa: B018 -- an empty closure cell raises on reading
+    except ValueError:
+        return False
+    return True
+
+
+def data_alias_probe(plan: Any, unprobed: list[str] | None = None) -> list[tuple[str, str, int, float]]:
+    """(given field, coordinate, N, misfit) of each callable given field and each direction whose
+    grid does not represent it: the callable at points off the grid against the interpolant of its
+    values on the grid, along lines through the grid, relative to its largest value. A sampled
+    tail cannot see this: T64 is constant on the N = 32 Chebyshev grid. On Fourier and Jacobi
+    directions; a callable that fails or gives non-finite values off the grid is not judged.
+
+    The probe calls the user's function again, up to 5 times per direction. The values of the solve
+    were computed before it and do not change. The global NumPy and Python random states are
+    restored afterwards. A callable that holds a random generator, gives two different answers at
+    the same points, or takes longer than ``SOLVE_DATA_PROBE_BUDGET`` for one evaluation is left
+    alone and named in ``unprobed``. A callable that counts its calls in its own state does see
+    the extra calls."""
+    import random
+    numpy_state, python_state = np.random.get_state(), random.getstate()
+    try:
+        return _probe_callables(plan, [] if unprobed is None else unprobed)
+    finally:
+        np.random.set_state(numpy_state)
+        random.setstate(python_state)
+
+
+def _probe_callables(plan: Any, unprobed: list[str]) -> list[tuple[str, str, int, float]]:
+    """The body of :func:`data_alias_probe`, inside its restored random states."""
+    import time
+    from .ir.bases import Jacobi, _Fourier
+    from .reference import transforms as T
+    bad = []
+    callables = getattr(plan, "_ncc_callables", None) or {}
+    coords = plan.domain.coordsys.coords
+    # data of round-off size beside the other data is not judged, as in the tails
+    top_all = max((float(np.abs(plan._ncc_data[f]).max(initial=0.0)) for f in callables
+                   if np.all(np.isfinite(plan._ncc_data[f]))), default=0.0)
+    for f, fn in callables.items():
+        if f.domain is None or not float(np.abs(plan._ncc_data[f]).max(initial=0.0)) > SOLVE_TAIL_FLOOR * top_all:
+            continue
+        if _reads_generator(fn):
+            unprobed.append(f"given {f.name} holds a random generator")
+            continue
+        native = []
+        for c in coords:
+            b = f.domain.basis(c)
+            native.append((b, T.grid(b, dealias=False) if b is not None else np.zeros(1)))
+        repeatable = None
+        for i, c in enumerate(coords):
+            b = native[i][0]
+            if not isinstance(b, (Jacobi, _Fourier)) or not 4 <= b.size <= SOLVE_DATA_PROBE_MAX:
+                continue
+            nodes = np.asarray(native[i][1]).ravel()
+            pts = _probe_points(b, min(2 * nodes.size + 7, SOLVE_DATA_PROBE_POINTS))
+            worst = 0.0
+            reason = None
+            for line in (0.37, 0.71):
+                try:
+                    started = time.perf_counter()
+                    v = _on_line(fn, native, i, nodes, line)
+                    took = time.perf_counter() - started
+                    if took > SOLVE_DATA_PROBE_BUDGET:
+                        reason = f"given {f.name} takes {took:.1f} s for one evaluation on a line"
+                        worst = 0.0
+                        break
+                    if repeatable is None:
+                        again = _on_line(fn, native, i, nodes, line)
+                        repeatable = bool(np.array_equal(v, again, equal_nan=True))
+                    if not repeatable:
+                        reason = f"given {f.name} gives different values at the same points"
+                        worst = 0.0
+                        break
+                    p = _on_line(fn, native, i, pts, line)
+                except Exception:  # noqa: BLE001 -- user code off its grid: stated as not judged
+                    worst = 0.0
+                    break
+                if v.shape[1] != p.shape[1] or not (np.all(np.isfinite(v)) and np.all(np.isfinite(p))):
+                    worst = 0.0
+                    break
+                top = max(float(np.abs(v).max()), float(np.abs(p).max()))
+                if not top > 0:
+                    continue
+                if isinstance(b, _Fourier):
+                    q = _interpolate_fourier(v, float(nodes[0]), float(b.bounds[1] - b.bounds[0]), pts)
+                else:
+                    q = _interpolate_polynomial(v, nodes, pts)
+                worst = max(worst, float(np.abs(q - p).max()) / top)
+            if reason:
+                unprobed.append(reason)
+                break
+            if worst > SOLVE_DATA_PROBE_TOL:
+                bad.append((f.name, c.name, int(b.size), worst))
+    return bad
+
+
+def _aliased_text(found: list[tuple[str, str, int, float]]) -> list[str]:
+    return [f"given {n} along {c}: misfit {m:.1e} off the grid (N = {size})" for n, c, size, m in found]
+
+
+def warn_aliased(aliased: list[str]) -> None:
+    """UnderResolvedWarning naming the given fields the grid does not represent."""
+    if aliased:
+        from .errors import UnderResolvedWarning, _warn_user
+        _warn_user("input data is not resolved by this grid: " + "; ".join(aliased)
+                   + f" (relative misfit between the callable off the grid and the interpolant of "
+                   f"its grid values, above SOLVE_DATA_PROBE_TOL = {SOLVE_DATA_PROBE_TOL:g}). The "
+                   "computed fields see the aliased data; raise N. Nothing was changed.",
+                   UnderResolvedWarning)
+
+
+def check_given_data(plan: Any) -> None:
+    """The data probe alone, for a time stepper or an eigenvalue problem built from callables."""
+    warn_aliased(_aliased_text(data_alias_probe(plan)))
+
+
 def solution_tails(plan, coeffs: Mapping[str, np.ndarray], rhs: Any = None) -> SolutionTails:
     """Relative spectral tail of each unknown of a solved boundary-value problem along each
     direction, and of the data ``rhs`` when given (coefficients per equation, ``SOLVE_TAIL_TOL``).
     Read-only, and cheap beside the solve."""
     out = SolutionTails()
+    out.aliased = _aliased_text(data_alias_probe(plan, out.unprobed))
     taus = set(getattr(plan, "taus", ()) or ())
     variables = [v for v in getattr(plan, "variables", ()) if v not in taus]
     arrays = {}

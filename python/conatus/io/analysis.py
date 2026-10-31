@@ -43,7 +43,7 @@ import numpy as np
 from .._arrays import host_array as _host
 from ..errors import InputTypeError, OptionError
 from . import _describe as dsc
-from ._h5 import DOC, json_attr, open_h5, positive, provenance, read_json_attr
+from ._h5 import DOC, json_attr, open_h5, positive, provenance, read_json_attr, refuse_indirect_storage
 from ._identity import checkpoint_identity
 
 FORMAT = "conatus.analysis/1"
@@ -221,6 +221,7 @@ class AnalysisFile:
 
     def _check_append(self) -> None:
         with open_h5(self.path, "r") as f:
+            refuse_indirect_storage(f, self.path, "an analysis file")
             fmt = f.attrs.get("format")
             fmt = fmt.decode() if isinstance(fmt, bytes) else fmt
             if fmt != FORMAT:

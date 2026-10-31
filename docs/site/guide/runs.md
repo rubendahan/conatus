@@ -153,7 +153,12 @@ executed code changed since the run, a `CodeChangedWarning` says how (`require_s
 makes it an error).
 
 A decorated call is reproduced with the function you pass: `run.reproduce(fn=my_function)` calls it with
-the recorded arguments. **A run registry is code-bearing input**: treat one you receive as you would a script (`SECURITY.md`). `run.reproduce(trust_record=True)` imports and calls the function the record
+the recorded arguments. `report.code_identical` is True when the Conatus and environment fingerprint, the
+function's source, and what it reads (the helpers it calls, its closure values and the module globals it names,
+followed as for a cache key) all match the record. It is False when one of them differs, and None when no
+difference was found but what it reads cannot be compared: an object without a content hash, or a record
+written before 0.2.4. `require_same_code=True` makes False and None errors. Arguments come back with their
+types, so a tuple stays a tuple; a record written before 0.2.4 that holds a list is refused. **A run registry is code-bearing input**: treat one you receive as you would a script (`SECURITY.md`). `run.reproduce(trust_record=True)` imports and calls the function the record
 names, which runs whatever the record says. Use it only for records you made: a registry you unpacked or
 copied belongs to your account whoever wrote it. A record that other accounts can write is refused
 even then.

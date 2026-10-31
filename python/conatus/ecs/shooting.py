@@ -172,6 +172,19 @@ class ShootingRPO:
                 raise SymmetryError(f"translations along {c} leave the symmetry subspace: not a free "
                                     "shift of this group (do not list it in shifts=)",
                                     fix="leave this direction out of shifts= (it is not a free shift of the group)")
+        # the flow must keep the subspace and commute with each declared shift (external review
+        # of 0.2.3: a finder that assumes a symmetry checks it)
+        from .equivariance import LOW_MODE_FRACTION, grid_cell, require_autonomous, require_equivariant
+        amp = 1e-3
+        probe = self.base + amp * V if self.base is not None else amp * V
+        where = "ShootingRPO"
+        require_autonomous(solver, [probe], where)
+        for c, op in self.shift_ops.items():
+            low = np.where(op.k <= LOW_MODE_FRACTION * float(op.k.max()), probe, 0.0)
+            cell = grid_cell(solver, c)
+            require_equivariant(solver, lambda X, op=op, a=cell: op.shift(X, a), [low], where,
+                                f"translation symmetry along {c}",
+                                f"leave {c} out of shifts=, or remove the explicit dependence on {c}")
 
     def explain(self) -> str:
         """The declared shooting problem: unknowns, discrete map, phase conditions, Jacobian."""

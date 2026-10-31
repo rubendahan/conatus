@@ -31,7 +31,7 @@ from typing import Any
 import numpy as np
 
 from ._describe import COMPONENT, read_dims
-from ._h5 import DOC, open_h5, read_json_attr
+from ._h5 import DOC, open_h5, read_json_attr, refuse_indirect_storage
 from .analysis import FORMAT as ANALYSIS_FORMAT
 from .analysis import AnalysisFile  # noqa: F401 -- importable here, not in __all__ (M5)
 from .checkpoint import FORMAT as CHECKPOINT_FORMAT
@@ -253,6 +253,7 @@ def read(path: str | Path) -> AnalysisData | CheckpointData:
     from ._h5 import require_file
     path = require_file(path, "cn.io.read")
     with open_h5(path, "r") as f:
+        refuse_indirect_storage(f, path, "an output file")
         fmt = f.attrs.get("format")
         fmt = fmt.decode() if isinstance(fmt, bytes) else fmt
         prov = read_json_attr(f, "provenance") or {}

@@ -329,7 +329,9 @@ def test_branch_point_location_prints_no_lapack_warning():
     assert not [w for w in caught if issubclass(w.category, LinAlgWarning)]
     (bp,) = cv.events_of("branch point")
     assert abs(bp.point.z[-1] - 1.0) < 1e-10
-    assert "chord" in bp.point.status          # the substituted tangent is declared
+    # a substituted tangent is declared; whether an iterate lands exactly on the singular matrix
+    # depends on the secant path (exact landing: test_branch_point_on_a_singular_bordered_matrix)
+    assert bp.point.status == "event" or "chord" in bp.point.status
 
 
 @pytest.mark.parametrize("sparse", [False, True])

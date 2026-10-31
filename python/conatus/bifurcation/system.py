@@ -34,6 +34,8 @@ from ..ir import expr as E
 __all__ = ["DynamicalSystem", "ir_system", "ode_problem", "RECON_TOL"]
 
 RECON_TOL = 1e-10      # relative error of the Laurent reconstruction at the check point
+MASS_PROBE = 1e15      # the mass is checked constant at p0 x and p0 / this value, and refused outside
+MASS_ROUNDING = 8 * np.finfo(float).eps    # an entry that moves by this x its size is rounding
 
 
 # ---------------------------------------------------------------------------- pointwise compiler
@@ -428,16 +430,39 @@ def ir_system(problem, parameters: Sequence[str | E.Parameter], *,
     else:
         p0 = {}
     mass_depends = False
+    mass_range = {}
     if lhs_coef:
-        # relative threshold: the reconstructed M coefficients of nonzero exponents are round-off
-        mref = max(abs(M0).max(), 1e-300)
-        mass_depends = any(abs(Mm).max() > RECON_TOL * mref for ex, (_, Mm) in lhs_coef.items() if any(ex))
-        if not mass_depends:          # drop the round-off (M independent of the parameters)
+        # The mass decides by the samples themselves: an entry is constant when it stays at
+        # rounding level of its own value (a threshold on the coefficients removed a small term,
+        # (1 + 1e-12 r) dx/dt, which matters at r = 1e12). Two far samples of each parameter see a
+        # term that the nearby samples cannot; below that, the term changes M by less than
+        # MASS_ROUNDING inside |p / p0| <= MASS_PROBE, and LM refuses outside (exponents < 0: also
+        # |p / p0| < 1 / MASS_PROBE).
+        far = []
+        for nm in lhs_params:
+            for f in (MASS_PROBE, 1.0 / MASS_PROBE):
+                pv = dict(vals)
+                pv[nm] = p0[nm] * f
+                far.append(build(pv).system.M.toarray())
+        M00 = M0.toarray() if sp.issparse(M0) else np.asarray(M0)
+        mass_depends = any(_mass_differs(m, M00) for m in [v[1] for v in samples.values()] + far)
+        if not mass_depends:          # M independent of the parameters, within the stated range
             lhs_coef = {ex: (Lm, Mm if not any(ex) else 0 * Mm) for ex, (Lm, Mm) in lhs_coef.items()}
+            mass_range = {nm: min(lhs_exp[nm] | {0}) < 0 for nm in lhs_params}
+            notes.append(f"mass matrix constant: every entry within {MASS_ROUNDING:.1e} of its own "
+                         f"size at |p / p0| up to {MASS_PROBE:g}; evaluation outside that range "
+                         "is refused")
 
     def LM(par):
         if not lhs_coef:
             return L0, M0
+        for nm, negative in mass_range.items():
+            w = abs(par[nm] / p0[nm])
+            if w > MASS_PROBE or (negative and 0 < w < 1.0 / MASS_PROBE):
+                raise UnsupportedError(
+                    f"ir_system: {nm} = {par[nm]:g} is outside the range in which the mass matrix "
+                    f"was checked to be constant (|p / p0| up to {MASS_PROBE:g}, p0 = {p0[nm]:g})",
+                    fix="rescale the parameter, or build the system at a reference value close to it")
         return _lm(lhs_coef, lhs_params, p0, par)
 
     # --- symbolic derivatives of the RHS
@@ -665,6 +690,11 @@ def ir_system(problem, parameters: Sequence[str | E.Parameter], *,
     ds.solver, ds.problem, ds.pointwise = solver, problem, bool(pointwise)
     ds.lm = LM
     return ds
+
+
+def _mass_differs(M: np.ndarray, M0: np.ndarray) -> bool:
+    """True when an entry of M differs from M0 beyond the rounding of its own size (NaN included)."""
+    return not np.all(np.abs(M - M0) <= MASS_ROUNDING * np.maximum(np.abs(M), np.abs(M0)))
 
 
 def _lm(coef, names, p0, par):

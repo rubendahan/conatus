@@ -400,6 +400,9 @@ class Plan:
         self.params = PlanParams(self.params, problem_parameter_names(problem), "plan.params")
         self._params_assembled: dict = {}   # the values of the first assembly (param_keys)
         self._ncc_data = {f: self._as_grid(f, d) for f, d in (ncc or {}).items()}
+        # the callables themselves: resolution.data_alias_probe samples them off the grid
+        self._ncc_callables = {f: d for f, d in (ncc or {}).items()
+                               if callable(d) and not isinstance(d, (np.ndarray, FieldData))}
         # coefficient data of a field is an exact polynomial (not a grid sample): no tail to judge
         # when it multiplies an unknown as is (e.g. the Newton iterate of an NLBVP)
         self._ncc_exact = frozenset(f for f, d in (ncc or {}).items()

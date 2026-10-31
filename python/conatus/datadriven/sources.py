@@ -78,6 +78,8 @@ def snapshots_from_run(run, fields: Sequence[str], *, start: int = 0,
         raise OptionError(f"run {run.id} has no data.h5 (no saved field, or still running)")
     arrays, times = {}, None
     with h5py.File(path, "r", locking=False) as h5:
+        from ..io._h5 import refuse_indirect_storage
+        refuse_indirect_storage(h5, path, "a run's data file")
         for f in fields:
             if f"fields/{f}" not in h5:
                 raise OptionError(f"run {run.id} has no field {f!r}",

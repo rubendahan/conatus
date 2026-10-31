@@ -1,4 +1,4 @@
-# t10_bifurcations: PASS (exit 0) in 4.1 s | 2026-10-31 | script sha256 6cba9156f3e55076
+# t10_bifurcations: PASS (exit 0) in 4.8 s | 2026-10-31 | script sha256 6cba9156f3e55076
 DynamicalSystem: M dx/dt = G(x; p), n = 3, origin: IR: Lorenz (0-D: one constant Fourier mode)
   parameters: r = 0.5
   mass matrix: identity
@@ -7,23 +7,23 @@ DynamicalSystem: M dx/dt = G(x; p), n = 3, origin: IR: Lorenz (0-D: one constant
   pointwise=True: 0-D system, IR expressions compiled to vectorised numpy (same expressions as the spectral evaluator)
   dG/dr (RHS): exact Laurent reconstruction, exponents [0, 1]
 equilibrium curve: 32 points, r in [1.00047, 31.1039]; stop: r = 31.1039 left (0, 30)
-  branch switch at r = 1: pitchfork (symmetry-breaking); ABE c = (0.000e+00, -7.036e-01, 0.000e+00), known-branch alignment 1.000000000000, step 0.05 (direction +1); first corrected point residual 2.2e-19; S φ = −φ on an S-invariant branch: the other half-branch is the S-image
+  branch switch at r = 0.999999999999: pitchfork (symmetry-breaking); ABE c = (0.000e+00, -7.036e-01, 0.000e+00), known-branch alignment 1.000000000000, step 0.05 (direction +1); first corrected point residual 2.2e-19; S φ = −φ on an S-invariant branch: the other half-branch is the S-image
   equilibria of IR: Lorenz (0-D: one constant Fourier mode) in r
-  stability: #Re λ > 1e-09 (generalized eigenvalues of (J, M), |λ| >= 1e+10 ‖J‖/‖M‖ (max-norms) removed as infinite)
+  stability: #Re λ > 1e-09 (generalized eigenvalues of (J, M); roots are infinite only when M is numerically singular, and data['ambiguous'] counts the roots that test cannot settle)
   tests: fold, branch point, hopf; Hopf test over 3 eigenvalue(s)
   ds = 0.1 in [1e-09, 2], x1.3 (default) when the corrector takes <= 4 its, /2 on failure
   corrector: tolerance 1e-11, budget 12 (default) its; G_p: analytic G_p (dp_fd=None)
   max points 60
   events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(|λ|, 1e-3 median |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(|λ|, 1e-3 median |λ|))
   corrector failures (step halved): 0; max residual on the curve 8.4e-12
-  hopf at r = 24.7368421053 between points (26, 27), |test| = 6.9e-13, residual 7.1e-15: λ = -3.44e-13 ± 9.62453006371 i [located by |test hopf| <= crossing_tol = 1e-11, secant budget 30]
-Normal form (pitchfork (supercritical)) at r = 1: da/dt = μ Δp a + a3 a³
+  hopf at r = 24.7368421053 between points (26, 27), |test| = 6.9e-13, residual 0.0e+00: λ = -3.44e-13 ± 9.62453006371 i [located by |test hopf| <= crossing_tol = 1e-11, secant budget 30]
+Normal form (pitchfork (supercritical)) at r = 0.999999999999: da/dt = μ Δp a + a3 a³
   β = 0, μ = 0.9090909091, a2 = 0, a3 = -0.1704545455
   x ≈ x0 + a q + a²/2 h2, ‖q‖ = 1 (declared norm), pᵀM q = 1
   check max|G(x0)|: 0.0e+00
-  check |λ_0|: 0.0e+00
-  check ‖J q‖: 2.2e-16
-  check ‖pᵀJ‖: 2.2e-16
+  check |λ_0|: 8.7e-13
+  check ‖J q‖: 6.2e-13
+  check ‖pᵀJ‖: 1.1e-12
   check residual h2: 0.0e+00
   check residual x_p: 0.0e+00
   declared symmetry: S q = −q
@@ -31,11 +31,11 @@ Hopf normal form at r = 24.7368421053: ω = 9.62453006371
   c1 = 0.002555495334 -0.02765775717 i, first Lyapunov coefficient l1 = Re c1 / ω = 0.0002655189726 (subcritical)
   normalization: ‖q‖ = 1 (declared norm), pᴴM q = 1 (Kuznetsov); Re c1 / ‖q‖² is invariant
   λ'(r) = 0.03022248268 +0.1814503065 i -> Landau: dz/dt = λ' Δr z + c1 z|z|²
-  check max|G(x0)|: 7.1e-15
+  check max|G(x0)|: 0.0e+00
   check |Re λ|: 3.4e-13
   check ‖(J − iωM) q‖: 2.5e-13
   check ‖pᴴ(J − iωM)‖: 2.6e-13
-  check |pᴴ M q − 1|: 2.4e-17
+  check |pᴴ M q − 1|: 8.5e-17
   check Re h11 imag part: 0.0e+00
 periodic orbit curve: 13 points, r in [22.3351, 24.7352], T in [0.652887, 0.748573]; stop: max_points = 12 reached
   Hopf → cycles at r = 24.7368421053 (ω = 9.624530064, l1 = 0.000265519, subcritical); predictor: amplitude 0.2 (declared), Δr = -1.6370e-03, T = 0.65288682; corrected at fixed r: T = 0.65288682
@@ -48,7 +48,7 @@ periodic orbit curve: 13 points, r in [22.3351, 24.7352], T in [0.652887, 0.7485
   corrector: tolerance 1e-09, budget 12 (default) its; G_p: analytic G_p (dp_fd=None)
   max points 12
   events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(|λ|, 1e-3 median |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(|λ|, 1e-3 median |λ|))
-  corrector failures (step halved): 0; max residual on the curve 5.8e-10
+  corrector failures (step halved): 0; max residual on the curve 5.9e-10
   no event detected
 fold (codim 2) curve: 15 points, b1 in [0.000137149, 0.58141], b2 in [-1, 1.52501]; stop: b2 = 1.52501 left (-1.5, 1.5)
   fold curve of IR: Bogdanov-Takens (0-D: one constant Fourier mode) in (b1, b2), minimally augmented system (Govaerts 2000); bordering vectors refreshed after every accepted point
@@ -70,7 +70,7 @@ hopf (codim 2) curve: 9 points, b1 in [1.90207e-14, 1.97369e-14], b2 in [-1, -0.
   events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(|λ|, 1e-3 median |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(|λ|, 1e-3 median |λ|))
   corrector failures (step halved): 0; max residual on the curve 2.0e-14
   bt at b1 = 1.90259931987e-14, b2 = -2.65065747129e-13, kappa = -5.55111512313e-17 between points (8, 9), |test| = 5.6e-17, residual 1.9e-14: κ = ω² = -5.55e-17 [located by |test bt| <= crossing_tol = 1e-11, secant budget 30]
-  (rejected zh between (8, 9): det J = 0 with κ = ω² = -4.7e-16: the Bogdanov–Takens point)
+  (rejected zh between (8, 9): det J = 0 with κ = ω² = -8.7e-15: the Bogdanov–Takens point)
 Landau equation (stationary) at r_c = 0: dA/dt = μ Δr A + g3 A³
   μ = 1+0j, g3 = -0.75+0j (observable of q: 1+0j)
   A² = −Re μ Δp / Re g3 = 1.333333333 Δr

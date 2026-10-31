@@ -79,6 +79,11 @@ class AffineSteadyProblem:
                  translations: list | None = None) -> None:
         s = solver_ref
         self.s, self.xp = s, s.xp
+        # a steady state of F(X, 0) means nothing when F depends on the time
+        if s.xp is np:
+            from .equivariance import low_mode_probe, require_autonomous
+            host_n = getattr(s.system, "host", s.system).n
+            require_autonomous(s, [low_mode_probe(np.zeros(host_n), seed=2)], "AffineSteadyProblem")
         self.gpu = self.xp is not np
         host = getattr(s.system, "host", s.system)
         self.n = host.n

@@ -33,7 +33,7 @@ from pathlib import Path
 from xml.sax.saxutils import escape, quoteattr
 
 from ..errors import UnsupportedError
-from ._h5 import DOC, open_h5
+from ._h5 import DOC, open_h5, refuse_indirect_storage
 from ._describe import COMPONENT, read_dims
 
 __all__ = ["write_xdmf", "XDMFNotCovered"]
@@ -59,6 +59,7 @@ def write_xdmf(path: str | os.PathLike) -> Path:
     from .analysis import FORMAT
     path = Path(path)
     with open_h5(path, "r") as f:
+        refuse_indirect_storage(f, path, "an analysis file")
         if _attr(f, "format") != FORMAT:
             raise XDMFNotCovered(f"write_xdmf({str(path)!r}): not a Conatus analysis file",
                                  fix="a file written by sim.output(...)", doc=DOC)

@@ -32,7 +32,7 @@ from typing import Any
 
 import numpy as np
 
-from ._util import jsonable, sha256_of
+from ._util import jsonable, sha256_of, typed_sha256
 
 _CORE_SHA: dict[tuple, str] = {}
 
@@ -134,9 +134,13 @@ def exact_hash(v: Any, _active: set[int] | None = None) -> bool:
     An object hashed by its ``repr`` could collide with a different object: never a cache key.
     A container that contains itself is not (it has no finite content; it used to recurse until
     RecursionError, identity review)."""
-    if v is None or isinstance(v, (bool, int, float, complex, str, np.number, np.bool_, np.ndarray)):
-        return not (isinstance(v, np.ndarray) and v.dtype == object)
-    if not isinstance(v, (dict, list, tuple)):
+    # exact types: a subclass (an IntEnum, a namedtuple, np.matrix) behaves differently from the
+    # value its content encodes
+    t = type(v)
+    if v is None or t in (bool, int, float, complex, str, bytes, np.ndarray) \
+            or isinstance(v, (np.number, np.bool_)):
+        return not (t is np.ndarray and v.dtype == object)
+    if t not in (dict, list, tuple):
         return False
     _active = set() if _active is None else _active
     if id(v) in _active:
@@ -144,7 +148,7 @@ def exact_hash(v: Any, _active: set[int] | None = None) -> bool:
     _active.add(id(v))
     try:
         if isinstance(v, dict):
-            return all(isinstance(k, str) and exact_hash(x, _active) for k, x in v.items())
+            return all(type(k) is str and exact_hash(x, _active) for k, x in v.items())
         return all(exact_hash(x, _active) for x in v)
     finally:
         _active.discard(id(v))
@@ -155,10 +159,13 @@ def function_parts(target: str, source_sha: str | None, args: dict,
     """Key parts of a call of a decorated function (arguments hashed by content).
     ``dependencies``: :func:`conatus.io._identity.callable_identity` of the function (its code,
     closure values and the module globals it reads): two closures of one factory, or one function
-    after a global it reads changed, are two keys."""
+    after a global it reads changed, are two keys. Arguments hash by content and type
+    (:func:`~conatus.runs._util.typed_sha256`): the hash changed in 0.2.4 (``key_format`` 2), so a
+    call that an earlier version cached is computed again, never read back."""
     return {"kind": "function", "problem": {"target": target, "source_sha256": source_sha,
                                             "dependencies": sha256_of(dependencies)},
-            "params": {k: sha256_of(v) for k, v in args.items()}, "numerics": None}
+            "params": {k: typed_sha256(v) for k, v in args.items()}, "numerics": None,
+            "key_format": 2}
 
 
 def finish_key(parts: dict, fingerprint: dict) -> tuple[str, dict]:

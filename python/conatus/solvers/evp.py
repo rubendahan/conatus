@@ -392,7 +392,7 @@ def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
     else:
         VL, VR = None, vecs[0]
     refuse_singular_pencil(Le, Me, a, b, label)
-    finite, note, amb = _finite_eigenvalues(a, b, Le, Me, Md)
+    finite, note, amb, _kept = _finite_eigenvalues(a, b, Le, Me, Md)
     w = a[finite] / b[finite]
     V = VR[:, finite]
     res = _residuals(Ld, Md, w, V)
@@ -406,7 +406,8 @@ def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
 def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.ndarray,
                         Md: np.ndarray):
     """(mask of the finite eigenvalues alpha/beta of the QZ pairs, the sentence for the log, the
-    moduli of the pairs removed as infinite on numerical rank alone).
+    moduli of the pairs removed as infinite on numerical rank alone, the moduli of the pairs kept
+    as finite although they are ambiguous).
 
     A pair is "under the threshold" when beta = 0 exactly, or when |beta| <= INF_TOL |alpha|
     after scaling by ||L|| / ||M|| (rows equilibrated). A regular pencil has at least
@@ -457,7 +458,7 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
                 f"nonsingular ({rule}), so no other pair is infinite"
                 + (f": {int(kept.sum())} pair(s) under the threshold kept as finite eigenvalues "
                    f"(|sigma| >= {np.abs(a[kept] / b[kept]).min():.3e})" if kept.any() else ""))
-        return ~infinite, note, none
+        return ~infinite, note, none, none
     order = np.argsort(np.where(under, ratio, np.inf), kind="stable")
     by_rank = np.zeros(n, bool)
     by_rank[order[:min(deficiency, int(under.sum()))]] = True
@@ -479,8 +480,10 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
                  f"{amb_inf.min():.3e} .. {amb_inf.max():.3e} cannot be told from an infinite one "
                  "in double precision (EVPResult.infinite_ambiguous)")
     amb = np.nonzero(under & ~infinite)[0]
+    kept = none
     if amb.size:
         sizes = np.abs(a[amb] / b[amb])
+        kept = np.sort(sizes)
         note += (f"; {amb.size} pair(s) under the threshold beyond n - rank(M) = {deficiency}, with "
                  f"|beta|/|alpha| above n eps = {rank_tol:.1e}, are ambiguous (finite eigenvalues, "
                  "or a Jordan block at infinity) and are kept as finite eigenvalues of modulus "
@@ -491,11 +494,12 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
         rest = rest[~infinite[rest]]
         if rest.size:
             sizes = np.abs(a[rest] / b[rest])
+            kept = np.sort(np.concatenate([kept, sizes]))
             note += (f"; M has {deficiency} null direction(s) but only {int(under.sum())} pair(s) "
                      f"are under the threshold: the {rest.size} pair(s) of smallest |beta|/|alpha| "
                      f"(modulus {sizes.min():.3e} .. {sizes.max():.3e}) are ambiguous and kept as "
                      "finite eigenvalues")
-    return ~infinite, note, amb_inf
+    return ~infinite, note, amb_inf, kept
 
 
 def check_target(target: Any) -> None:

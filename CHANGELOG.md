@@ -2,6 +2,51 @@
 
 All notable changes to Conatus.
 
+## [0.2.4] - 2026-10-31
+
+A correction release, from an external review of 0.2.3. Several results can differ from 0.2.3; they are listed here.
+
+### Security
+- HDF5 loaders refuse datasets stored in other files (external storage, virtual datasets), as they
+  already refused links, before any payload read. This covers checkpoints, `cn.io.read`, analysis
+  files and the HDF5 data of run records. A virtual dataset you made yourself is refused too.
+
+### Changed: results that can differ
+- `generalized_eigenvalues` and everything built on it (`continue_equilibria`, codimension-2
+  continuation, normal forms, manifolds, amplitude equations) keep every finite root when M is
+  nonsingular. Stiff systems gain large roots and can gain unstable counts. A root at rounding level of
+  a singular M is still removed; `continue_equilibria` counts it in `data['ambiguous']` and warns.
+- Period-doubling, Neimark-Sacker, branch-point and zero-Hopf events are located and judged by the
+  distance of their own critical multiplier or eigenvalue. Locations change in systems with several
+  noncritical modes, and an event can now report not converged where a product used to pass. Pairs
+  with sum 0 or product 1 that are not conjugate are no longer reported as Hopf or Neimark-Sacker.
+- `normal_form(kind="zero")`: the kind no longer depends on parameter units. "transcritical" needs
+  its own conditions. The new kind "unresolved" (with `degenerate` True) replaces the former answer
+  when `parameter` is missing or the parameter does not unfold the point. A fold with a2 = 0 and a
+  pitchfork with mu = 0 are flagged degenerate. A Hopf normal form at a real pair is refused.
+- `record()` stores `growth_max` by the declared growth convention, plus `growth_convention`.
+- Function cache keys and records distinguish list and tuple, NumPy and Python scalars, int, float and
+  bool, bytes and dict order. Calls cached by earlier versions are computed again. Cached results are
+  not reused across this change.
+
+### Changed: new refusals and warnings
+- `find_travelling_wave`, `find_relative_periodic_orbit`, `find_relative_equilibrium_dae` and
+  `ShootingRPO` refuse, with `SymmetryError`, equations that do not commute with the translation they
+  assume. The DAE finder and `AffineSteadyProblem` refuse time-dependent right-hand sides.
+- `ir_system` refuses any parameter-dependent mass above rounding, however small, and refuses evaluation
+  beyond 1e15 times the reference value of a left-hand-side parameter.
+- `reproduce`: `code_identical` also covers helpers, closures and globals, and is None when they cannot
+  be compared. `require_same_code=True` raises in both cases. A decorated-call record from before 0.2.4
+  that holds a list is refused.
+- `m.solve` and `m.simulate` warn (`UnderResolvedWarning`) when a callable given field disagrees with the
+  interpolant of its grid values off the grid. Coordinates written inside an equation's text are not probed.
+- `m.solve` and `m.simulate` call a callable given up to five more times per direction, off the grid. The
+  computed values do not change. The global random states are restored. A callable that holds a random
+  generator, is not repeatable or takes over one second per evaluation is not checked, and a solve's
+  `explain()` names it. A callable that counts its own calls sees the extra ones.
+- A closure or global holding a tuple or NumPy scalar changes the computation identity, so a checkpoint
+  or HDF5 append from an earlier version that holds one reports an identity difference.
+
 ## [0.2.3] - 2026-10-31
 
 A correction release. It adds a resolution statement to boundary-value solves, fixes the security

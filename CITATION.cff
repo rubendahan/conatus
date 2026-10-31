@@ -6,7 +6,7 @@ type: software
 authors:
   - family-names: Dahan
     given-names: Ruben
-version: 0.2.3
+version: 0.2.4
 date-released: 2026-10-31
 license: BSD-3-Clause
 repository-code: "https://github.com/rubendahan/conatus"

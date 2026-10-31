@@ -1,5 +1,5 @@
 # t03_symmetries: PASS (exit 0) in 2.3 s | 2026-10-31 | script sha256 06b9053531b4dd1f
- full space: leading sigma = +1.6955e-06   n = 268   QZ 135.5 ms   residual 5.3e-17
+ full space: leading sigma = +1.6955e-06   n = 268   QZ 137.0 ms   residual 5.3e-17
 unknowns of the perturbation problem: du, dp, dT, dtau_u1, dtau_u2, dtau_T1, dtau_T2, dtau_p
 Symmetry subspace: Z2 (order 2)
   generator: Reflection(z -> -z): reflection of z about z = 0; vector components along it change sign, others do not
@@ -14,7 +14,7 @@ Symmetry subspace: Z2 (order 2)
   du         odd under Reflection(z -> -z)
   expected reduction: up to x2 per reflection, x m0 per m0-fold rotation (adapted bases: parity blocks, kept azimuthal classes, docs/site/tutorials/03_symmetries.md)
   WARNING: computing in the invariant subspace hides symmetry-breaking instabilities; a symmetric solution is not declared stable before symmetry_breaking_check().
-onset class: leading sigma = +1.6955e-06   n = 134   QZ  66.8 ms   residual 9.8e-18
+onset class: leading sigma = +1.6955e-06   n = 134   QZ  68.0 ms   residual 9.8e-18
 Symmetry subspace: Z2 (order 2)
   generator: Reflection(z -> -z): reflection of z about z = 0; vector components along it change sign, others do not
   T0         odd under Reflection(z -> -z)

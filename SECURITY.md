@@ -13,8 +13,8 @@ Conatus runs on your own account. Treat these inputs as you would treat code.
 - **A run registry carries code.** A run record names a function and its arguments, and
   `run.reproduce()` can call it. `reproduce()` needs `fn=` or an explicit `trust_record=True`; pass
   `trust_record=True` only for records you made. Loading and searching a registry run nothing.
-- **A checkpoint is data, but a large one.** The loaders refuse pickled arrays and HDF5 links to other
-  files. A malformed file can still cost memory and time. Read files from people you trust.
+- **A checkpoint is data, but a large one.** The loaders refuse pickled arrays and HDF5 files that reach other
+  files (links, external storage, virtual datasets). A malformed file can still cost memory and time. Read files from people you trust.
 - **A translated script is a program.** `from_dedalus` reads a script without executing it. The file
   `to_script()` writes is a program: read it before you run it.
 - **SymPy strings are code.** Functions that take a base flow or a coefficient as an expression refuse

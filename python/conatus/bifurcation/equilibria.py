@@ -17,28 +17,66 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
+from dataclasses import dataclass
+
 import numpy as np
 import scipy.linalg as sla
 
 from ..continuation.core import ContinuationSettings
 from ..errors import ConvergenceError, OptionError
-from .driver import ArclengthDriver, Curve, CurvePoint
+from .driver import ArclengthDriver, Curve, CurvePoint, factor_test
 from .system import DynamicalSystem
 from .._deprecation import renames
 
-__all__ = ["continue_equilibria", "newton_equilibrium", "generalized_eigenvalues", "INF_EIG"]
+#: Two roots closer than this, relative to their size, count as a conjugate pair in an event check.
+_CONJUGATE_TOL = 1e-6
 
-INF_EIG = 1e10     # |λ| ‖M‖ / ‖J‖ above INF_EIG: an infinite eigenvalue of (J, M) (DAE rows)
+__all__ = ["continue_equilibria", "newton_equilibrium", "generalized_eigenvalues",
+           "pencil_spectrum", "PencilSpectrum", "INF_EIG"]
+
+#: Former threshold of the finite/infinite split, kept for code that imports the name. It decides
+#: nothing since 0.2.4: :func:`pencil_spectrum` uses the rank rule of dense QZ.
+INF_EIG = 1e10
 
 
-def generalized_eigenvalues(J: np.ndarray, M, *, vectors: bool = False, left: bool = False):
-    """Finite eigenvalues of J v = λ M v, sorted by decreasing real part (infinite ones, from
-    singular rows of M, removed with the declared threshold INF_EIG).
+@dataclass
+class PencilSpectrum:
+    """Finite spectrum of J v = λ M v with what was left out of it.
 
-    The classification uses the homogeneous pair (α, β), λ = α/β, of the QZ decomposition:
-    infinite when |β| ‖J‖ ≤ |α| ‖M‖ / INF_EIG, i.e. |λ| ≥ INF_EIG ‖J‖/‖M‖ (max-norms). It is
-    invariant under any scaling of J, of M or of both: the eigenvalues 1e12 of (1e12 I, I) and of
-    (I, 1e-12 I) are treated alike. A pair with α = β = 0 (singular pencil) is dropped as well."""
+    ``values`` (sorted by decreasing real part), ``right`` and ``left`` (unit vectors, or None)
+    hold the finite eigenvalues. ``infinite`` counts the pairs removed as infinite.
+    ``ambiguous_removed`` holds the moduli of the removed pairs that only the numerical rank of M
+    calls infinite: a finite root that large cannot be told from an infinite one in double
+    precision. ``ambiguous_kept`` holds the moduli of the kept pairs the same test cannot settle.
+    ``undetermined`` counts the pairs with α and β both at rounding level (a singular pencil),
+    which define no eigenvalue and are not in ``values``. ``ambiguous`` is the number of roots whose
+    finite or infinite status is unresolved, so an unstable count from ``values`` is exact only
+    when it is 0. ``note`` states the rule that was applied."""
+
+    values: np.ndarray
+    right: np.ndarray | None
+    left: np.ndarray | None
+    infinite: int
+    ambiguous_removed: np.ndarray
+    ambiguous_kept: np.ndarray
+    undetermined: int
+    note: str
+
+    @property
+    def ambiguous(self) -> int:
+        """Number of roots whose finite or infinite status is unresolved."""
+        return int(self.ambiguous_removed.size + self.ambiguous_kept.size + self.undetermined)
+
+
+def pencil_spectrum(J: np.ndarray, M, *, vectors: bool = False) -> PencilSpectrum:
+    """Finite eigenvalues of J v = λ M v, classified as dense QZ classifies them.
+
+    Each row of the pencil is divided by its largest entry in J or M. A nonsingular M (numerical
+    rank n of those rows, singular values above n eps) has no infinite eigenvalue, however large
+    its finite roots are: J = diag(1, -1), M = diag(1e-12, 1) keeps 1e12. A singular M has at
+    least n - rank(M) infinite ones, removed by the rule of ``solvers.evp._finite_eigenvalues``.
+    A row of M at rounding level beside its row of J counts as a zero row (J = -I,
+    M = diag(1, 1e-17)): its root is removed and reported in ``ambiguous_removed``."""
     # M as given (audit inputs: a complex M was cast to float, its imaginary part
     # dropped with a ComplexWarning); square matrices of one shape, finite (bare SciPy errors)
     Jd = np.asarray(J.toarray() if hasattr(J, "toarray") else J)
@@ -53,20 +91,50 @@ def generalized_eigenvalues(J: np.ndarray, M, *, vectors: bool = False, left: bo
         from ..errors import InputTypeError
         raise InputTypeError("generalized_eigenvalues: non-finite entries in J or M",
                              fix="check the state and parameters the Jacobian was built at")
-    if vectors:
-        ab, vl, vr = sla.eig(Jd, Md, left=True, right=True, homogeneous_eigvals=True)
-    else:
-        ab = sla.eigvals(Jd, Md, homogeneous_eigvals=True)
-    alpha, beta = ab[0], ab[1]
+    from ..solvers.evp import _finite_eigenvalues
+    # J and M each at unit size first (QZ balances them separately): the rows then mix them in a
+    # proportion that scaling J or M does not change, and λ scales exactly as nJ / nM
     nJ, nM = float(np.abs(Jd).max(initial=0.0)), float(np.abs(Md).max(initial=0.0))
+    nJ, nM = nJ if nJ > 0 else 1.0, nM if nM > 0 else 1.0
+    J1, M1 = Jd / nJ, Md / nM
+    r = np.maximum(np.abs(J1).max(axis=1, initial=0.0), np.abs(M1).max(axis=1, initial=0.0))
+    r = np.where(r > 0, r, 1.0)[:, None]
+    Je, Me = J1 / r, M1 / r
+    if vectors:
+        ab, vl, vr = sla.eig(Je, Me, left=True, right=True, homogeneous_eigvals=True)
+        # y^H (J - λ M) = 0  <=>  (D^-1 y)^H D (J - λ M) = 0, with D = 1/r
+        vl = vl / r
+        vl = vl / np.maximum(np.linalg.norm(vl, axis=0), np.finfo(float).tiny)
+    else:
+        ab = sla.eigvals(Je, Me, homogeneous_eigvals=True)
+        vl = vr = None
+    alpha, beta = ab[0], ab[1]
+    finite, note, removed, kept = _finite_eigenvalues(alpha, beta, Je, Me, Md)
+    n = alpha.size
+    level = n * np.finfo(float).eps
+    both = (np.abs(alpha) <= level * max(np.abs(Je).max(initial=0.0), np.finfo(float).tiny)) & \
+        (np.abs(beta) <= level * max(np.abs(Me).max(initial=0.0), np.finfo(float).tiny))
     with np.errstate(divide="ignore", invalid="ignore"):
-        w = alpha / beta
-    keep = (beta != 0) & (np.abs(beta) * nJ >= np.abs(alpha) * nM / INF_EIG) & np.isfinite(w)
+        w = alpha / beta * (nJ / nM)
+    keep = finite & ~both & np.isfinite(w)
     idx = np.flatnonzero(keep)
     idx = idx[np.argsort(-w[idx].real, kind="stable")]
-    if vectors:
-        return w[idx], vr[:, idx], vl[:, idx]
-    return w[idx]
+    undetermined = int(both.sum())
+    if undetermined:
+        note += (f"; {undetermined} pair(s) with alpha and beta both at rounding level define no "
+                 "eigenvalue (singular pencil) and are left out")
+    return PencilSpectrum(w[idx], vr[:, idx] if vectors else None, vl[:, idx] if vectors else None,
+                          int(n - idx.size - undetermined), removed, kept, undetermined, note)
+
+
+def generalized_eigenvalues(J: np.ndarray, M, *, vectors: bool = False, left: bool = False):
+    """Finite eigenvalues of J v = λ M v, sorted by decreasing real part. The split between finite
+    and infinite roots is that of :func:`pencil_spectrum`, which also reports the roots it could
+    not settle: use it when a count of unstable roots is read from the result. Scaling J, M or
+    both does not change the result: the eigenvalues 1e12 of (1e12 I, I) and of (I, 1e-12 I) are
+    treated alike."""
+    s = pencil_spectrum(J, M, vectors=vectors)
+    return (s.values, s.right, s.left) if vectors else s.values
 
 
 @renames("conatus.bifurcation.equilibria:newton_equilibrium")
@@ -90,27 +158,13 @@ def newton_equilibrium(system: DynamicalSystem, x0: np.ndarray, *, tol: float,
 
 def _hopf_test(ev: np.ndarray, n_eigs: int) -> float:
     """Test function with the sign of the bialternate product Π_{i<j} (λ_i + λ_j) and the size of
-    its smallest factor |z| / (1 + |z|). The product itself shrinks with every stable eigenvalue
-    added (below crossing_tol at an ordinary point from dimension 8, zero by
-    underflow at 24); this function vanishes only where one sum does, so |value| <= crossing_tol
-    means that a pair sum is that small. The sign is the accumulated phase of the factors, with no
-    product of small numbers."""
+    its smallest factor (:func:`factor_test`). The product itself shrinks with every stable
+    eigenvalue added: below crossing_tol at an ordinary point from dimension 8, zero by underflow
+    at 24."""
     ev = ev[:n_eigs]
     if ev.size < 2:
         return 1.0
-    s = ev[:, None] + ev[None, :]
-    iu = np.triu_indices(ev.size, 1)
-    z = s[iu]
-    size = np.abs(z)
-    if not np.all(size > 0):
-        return 0.0
-    phase = float(np.sum(np.angle(z)))
-    return float(np.sign(np.cos(phase)) * np.min(size / (1.0 + size)))
-
-
-def _logdet_sign(A: np.ndarray) -> tuple[float, float]:
-    sign, logdet = np.linalg.slogdet(A)
-    return float(np.real(sign)), float(logdet)
+    return factor_test((ev[:, None] + ev[None, :])[np.triu_indices(ev.size, 1)])
 
 
 def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
@@ -154,9 +208,18 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
     def data(z):
         q = pars(z)
         J = system.J(z[:-1], q)
-        ev = generalized_eigenvalues(J, M)
-        return {"eigenvalues": ev, "unstable": int(np.sum(ev.real > marginal_tol)),
-                "parameters": q}
+        spec = pencil_spectrum(J, M)
+        ev = spec.values
+        out = {"eigenvalues": ev, "unstable": int(np.sum(ev.real > marginal_tol)),
+               "ambiguous": spec.ambiguous, "parameters": q}
+        if spec.ambiguous and not ref.get("warned"):
+            ref["warned"] = True
+            from ..errors import CorrectnessWarning, _warn_user
+            _warn_user(f"continue_equilibria: {spec.ambiguous} root(s) of (J, M) cannot be told "
+                       "finite or infinite in double precision (M is numerically singular at "
+                       "rounding level), so the unstable count is a count of the settled roots "
+                       f"only (data['ambiguous'] on each point): {spec.note}", CorrectnessWarning)
+        return out
 
     ne = n if n_eigs is None else int(n_eigs)
 
@@ -164,11 +227,12 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
         return float(pt.tangent[-1])
 
     def t_bp(pt: CurvePoint) -> float:
+        # the sign of det A, the size of its smallest singular value: the determinant carries
+        # every other direction of the system, so its size says nothing about this event
         A = np.vstack([Hz(pt.z), pt.tangent[None, :]])
-        sg, ld = _logdet_sign(A)
-        if "bp" not in ref:
-            ref["bp"] = ld
-        return sg * float(np.exp(np.clip(ld - ref["bp"], -300, 300)))
+        sg = float(np.real(np.linalg.slogdet(A)[0]))
+        smin = float(np.linalg.svd(A, compute_uv=False).min())
+        return sg * smin / (1.0 + smin)
 
     def t_hopf(pt: CurvePoint) -> float:
         return _hopf_test(pt.data["eigenvalues"], ne)
@@ -188,6 +252,13 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
                                      " x max(|λ|, 1e-3 x the median |λ| of the spectrum) for the "
                                      "pair of sum closest to 0, else neutral saddle")
         from .._scales import spectral_floor
+        ev.data["critical_distance"] = float(np.abs(pair.real).max())
+        size = float(np.abs(pair).max())
+        if abs(pair[0] - np.conj(pair[1])) > _CONJUGATE_TOL * max(size, np.finfo(float).tiny):
+            # λ and -λ of a real matrix with their conjugates: the sum vanishes off the axis
+            word = "saddle-focus" if np.abs(pair.imag).max() > _CONJUGATE_TOL * size else "saddle"
+            return None, (f"neutral {word} (pair {pair[0]:.4g}, {pair[1]:.4g} has sum 0 and "
+                          "is not conjugate)")
         if np.all(np.abs(pair.imag) > settings.hopf_imag_tol * max(np.abs(pair).max(),
                                                                      spectral_floor(lam))):
             ev.data.update(omega=float(abs(pair[0].imag)), pair=pair)
@@ -210,7 +281,8 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
     cv.context = {"system": system, "parameter": parameter, "base": base, "driver": drv,
                   "marginal_tol": marginal_tol}
     cv.notes += [f"equilibria of {system.origin} in {parameter}",
-                 f"stability: #Re λ > {marginal_tol:g} (generalized eigenvalues of (J, M), "
-                 f"|λ| >= {INF_EIG:g} ‖J‖/‖M‖ (max-norms) removed as infinite)",
+                 f"stability: #Re λ > {marginal_tol:g} (generalized eigenvalues of (J, M); roots "
+                 "are infinite only when M is numerically singular, and data['ambiguous'] counts "
+                 "the roots that test cannot settle)",
                  f"tests: {', '.join(tests)}; Hopf test over {ne} eigenvalue(s)"]
     return cv

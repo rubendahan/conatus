@@ -139,6 +139,8 @@ class Simulation:
             if tp != comp.time.name:
                 raise OptionError(f"time_parameter={tp!r}: the time of a native model is "
                                   f"{comp.time.name!r}", fix="drop time_parameter=", doc=_DOC)
+        from ..resolution import check_given_data
+        check_given_data(self.plan)
         self.solver = IVPSolver(self.plan, scheme, dt, backend=backend, **solver_kw)
         plan_cache.remember(comp, self.plan, cache_key)
         self.watching = None                       # a conatus.model.watch.Watch, or None

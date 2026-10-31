@@ -24,7 +24,8 @@ import numpy as np
 
 from ..errors import MissingDependencyError, OptionError, UnsupportedError, check_count, did_you_mean
 from .._explain import full_explain
-from ._util import atomic_write_json, diff_dicts, from_jsonable, is_exact, jsonable
+from ._util import (atomic_write_json, diff_dicts, from_jsonable, from_typed, is_typed_exact, jsonable, sha256_of,
+                    typed_jsonable)
 from .keys import (_clockless, code_fingerprint, describe_parts, exact_hash, finish_key, function_parts,
                    ivp_parts)
 from .run import QUEUE_CAPACITY, Run, _to_host, problem_info
@@ -305,6 +306,7 @@ def call_recorded(fn: Callable, args: tuple, kwargs: dict, *, name: str, cache: 
         deps, undeclared = callable_identity(fn, target), None
     except Undeclared as why:
         deps, undeclared = None, str(why)
+    dep_sha = None if deps is None else sha256_of(deps)
     if undeclared is None and _seed_is_none(raw, argsd):
         undeclared = (f"{target}: an argument is None and the function builds a random generator: "
                       "a generator seeded with None draws from the system's entropy")
@@ -342,7 +344,7 @@ def call_recorded(fn: Callable, args: tuple, kwargs: dict, *, name: str, cache: 
                                   source_duration_s=src.rec.get("duration_s"))
                     with run._lock:
                         run.rec.update(reused_from=src_id, cache=report, returns=src.rec.get("returns"),
-                                       inputs=_fn_inputs(target, src_sha, argsd))
+                                       inputs=_fn_inputs(target, src_sha, argsd, dep_sha, undeclared))
                         run.rec["results"].update(src.results)
                     run.close()
                     warnings.warn(CacheReuseWarning(
@@ -351,7 +353,7 @@ def call_recorded(fn: Callable, args: tuple, kwargs: dict, *, name: str, cache: 
                     return (value, run) if _with_run else value
     run = Run(reg, name, params=params, key_parts=parts, **run_kw)
     with run._lock:
-        run.rec["inputs"] = _fn_inputs(target, src_sha, argsd)
+        run.rec["inputs"] = _fn_inputs(target, src_sha, argsd, dep_sha, undeclared)
         if report is not None:
             run.rec["cache"] = report
     with run:
@@ -363,9 +365,25 @@ def call_recorded(fn: Callable, args: tuple, kwargs: dict, *, name: str, cache: 
     return (out, run) if _with_run else out
 
 
-def _fn_inputs(target: str, src_sha: str | None, argsd: dict) -> dict:
-    return {"kind": "function", "target": target, "source_sha256": src_sha,
-            "args": jsonable(argsd), "args_exact": all(is_exact(v) for v in argsd.values())}
+def _fn_inputs(target: str, src_sha: str | None, argsd: dict, deps: str | None,
+               undeclared: str | None) -> dict:
+    """The replayable call. ``args`` is in the typed encoding (format 2): a tuple stays a tuple, a
+    NumPy scalar keeps its dtype, a dict its order. ``dependencies_sha256`` is the digest of the
+    transitive identity cache keys use; None, with ``dependencies_unknown`` saying why, when a
+    dependency has no content hash."""
+    return {"kind": "function", "target": target, "source_sha256": src_sha, "args_format": 2,
+            "args": {k: typed_jsonable(v) for k, v in argsd.items()},
+            "args_exact": all(is_typed_exact(v) for v in argsd.values()),
+            "dependencies_sha256": deps, "dependencies_unknown": undeclared}
+
+
+def _dependency_digest(fn: Callable, target: str) -> tuple[str | None, str | None]:
+    """(digest of the transitive identity of ``fn``, None) or (None, why it has none)."""
+    from ..io._identity import Undeclared, callable_identity
+    try:
+        return sha256_of(callable_identity(fn, target)), None
+    except Undeclared as why:
+        return None, str(why)
 
 
 def _scalar(v: Any) -> bool:
@@ -457,7 +475,10 @@ def record(obj: Any = None, *, name: str | None = None, params: Mapping[str, Any
         arrays.setdefault("residuals", np.asarray(obj.residuals))
         res.setdefault("n_modes", int(vals.size))
         if vals.size:
-            res.setdefault("growth_max", float(np.max(vals.real)))
+            # by the declared convention, as EVPResult.order ranks the modes
+            growth = obj._growth_fn()(vals) if hasattr(obj, "_growth_fn") else vals.real
+            res.setdefault("growth_max", float(np.max(growth)))
+            res.setdefault("growth_convention", _growth_word(obj))
             res.setdefault("residual_max", float(np.max(obj.residuals)))
     if arrays and compression is _REQUIRED:
         raise OptionError("record(): arrays to store but no compression= declared",
@@ -489,12 +510,23 @@ def record(obj: Any = None, *, name: str | None = None, params: Mapping[str, Any
     return run
 
 
+def _growth_word(evp: Any) -> str:
+    """The growth convention of an EVP result in the record: real, imag, callable or undeclared."""
+    g = getattr(evp, "growth", None)
+    return "undeclared (real part)" if g is None else "callable" if callable(g) else str(g)
+
+
 # ------------------------------------------------------------------------------------ reproduce
 class ReproduceReport:
-    """Outcome of :func:`reproduce`: new run, identical or not (and by how much), code identical."""
+    """Outcome of :func:`reproduce`: new run, identical or not (and by how much), code identical.
+
+    ``code_identical``: True when the Conatus and environment fingerprint, the function's source and
+    the transitive identity of what it reads (helpers, closures, globals, as in cache keys) all
+    match the record; False when one differs; None when no difference was found but what the
+    function reads could not be compared (a value without a content hash, or an older record)."""
 
     def __init__(self, original: Run, new: Run | None, identical: bool, max_abs_diff: float,
-                 code_identical: bool, code_diff: dict, details: dict) -> None:
+                 code_identical: bool | None, code_diff: dict, details: dict) -> None:
         self.original, self.new, self.identical = original, new, identical
         self.max_abs_diff, self.code_identical, self.code_diff = max_abs_diff, code_identical, code_diff
         self.details = details
@@ -504,6 +536,8 @@ class ReproduceReport:
                  + ("bit-for-bit identical" if self.identical
                     else f"DIFFERENT (max |diff| = {self.max_abs_diff:.3e})"),
                  "  code: " + ("identical to the recorded code" if self.code_identical else
+                               "UNKNOWN: what the function reads could not be compared"
+                               if self.code_identical is None else
                                "CHANGED since the original run: " + ", ".join(
                                    f"{k}: {str(a)[:12]} -> {str(b)[:12]}"
                                    for k, (a, b) in self.code_diff.get("changed", {}).items()))]
@@ -577,6 +611,12 @@ def reproduce(run: Run, solver: Any = None, *, fn: Callable | None = None, recor
     if not inputs.get("args_exact"):
         raise UnsupportedError(f"reproduce({run.id}): some arguments were stored as summaries "
                                "(large arrays or objects) and cannot be replayed exactly")
+    typed = inputs.get("args_format") == 2
+    if not typed and _holds_list(inputs["args"]):
+        raise UnsupportedError(
+            f"reproduce({run.id}): this record was written before 0.2.4, which stored a tuple as a "
+            "list, so the recorded arguments cannot be replayed with their types",
+            fix="run the function again with the current version to make a new record")
     raw = inspect.unwrap(fn)
     call = _untracked(fn)                        # the user's decorators kept, track's removed
     src_sha = hashlib.sha256(inspect.getsource(raw).encode()).hexdigest()
@@ -590,7 +630,35 @@ def reproduce(run: Run, solver: Any = None, *, fn: Callable | None = None, recor
             raise OptionError(msg, fix="restore the recorded source of the function, or leave "
                                        "require_same_code off to compare the changed function")
         warnings.warn(CodeChangedWarning(msg), stacklevel=2)
-    pos, kw = _call_args(raw, {k: from_jsonable(v) for k, v in inputs["args"].items()})
+    # what the function reads besides its source: helpers, closures, globals (the identity of the
+    # cache key). Not comparable (a value without a content hash, or an older record): unknown
+    now_sha, why = _dependency_digest(call, inputs["target"])
+    was_sha = inputs.get("dependencies_sha256")
+    if "dependencies_sha256" not in inputs:
+        why = "the record was written before 0.2.4 and holds no dependency identity"
+    elif was_sha is None:
+        why = inputs.get("dependencies_unknown") or "no dependency identity recorded"
+    dep_changed = why is None and now_sha != was_sha
+    dep_unknown = why is not None
+    if dep_changed:
+        code_same = False
+        code_diff["changed"]["user_dependencies"] = (was_sha, now_sha)
+        msg = (f"reproduce({run.id}): a function or value that {inputs['target']} reads differs "
+               f"from the recorded one (identity {str(was_sha)[:12]} -> {str(now_sha)[:12]})")
+        if require_same_code:
+            raise OptionError(msg, fix="restore the helper, closure or global it reads, or leave "
+                                       "require_same_code off to compare the changed code")
+        warnings.warn(CodeChangedWarning(msg), stacklevel=2)
+    elif dep_unknown:
+        msg = f"reproduce({run.id}): what {inputs['target']} reads cannot be compared: {why}"
+        if require_same_code:
+            raise OptionError(msg, fix="pass such values as arguments so that they are recorded, "
+                                       "or leave require_same_code off (code_identical is then None)")
+        if code_same:
+            code_same = None
+        warnings.warn(CodeChangedWarning(msg), stacklevel=2)
+    decode = from_typed if typed else from_jsonable
+    pos, kw = _call_args(raw, {k: decode(v) for k, v in inputs["args"].items()})
     if record:
         opts = {k: v for k, v in rec_opts.items() if k != "name"}
         out, new = call_recorded(call, pos, kw, name=run.name, _with_run=True, **opts)
@@ -598,8 +666,18 @@ def reproduce(run: Run, solver: Any = None, *, fn: Callable | None = None, recor
         out, new = call(*pos, **kw), None
     ref = load_return(run)
     same, maxd = _same(ref, out)
-    details = {"source_changed": src_changed}
+    details = {"source_changed": src_changed, "dependencies_changed": dep_changed,
+               "dependencies_unknown": why}
     return ReproduceReport(run, new, same, maxd, code_same, code_diff, details)
+
+
+def _holds_list(v: Any) -> bool:
+    """True when a record's JSON holds a list that is not the values of a stored array."""
+    if isinstance(v, list):
+        return True
+    if isinstance(v, dict):
+        return any(_holds_list(x) for k, x in v.items() if k not in ("ndarray", "shape", "complex"))
+    return False
 
 
 def _untrusted_record(run: Run) -> str | None:

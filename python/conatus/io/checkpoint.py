@@ -34,7 +34,7 @@ import numpy as np
 from ..errors import OptionError
 from . import _describe as dsc
 from ._identity import CheckpointWarning
-from ._h5 import DOC, json_attr, open_h5, provenance, read_json_attr
+from ._h5 import DOC, json_attr, open_h5, provenance, read_json_attr, refuse_indirect_storage
 
 FORMAT = "conatus.checkpoint/1"
 
@@ -100,7 +100,7 @@ def read_checkpoint(path: str | Path) -> tuple[dict, dict[str, np.ndarray]]:
                                   "multistep history an exact restart needs",
                               fix="restart from a file written by save_checkpoint / sim.save "
                                   "(or sim.checkpoints)", doc=DOC)
-        _refuse_links(f, path)
+        refuse_indirect_storage(f, path, "a checkpoint")
         meta = read_json_attr(f, "meta")
         arrays = {"X": f["state/X"][()]}
         for k in f["history"]:
@@ -160,7 +160,7 @@ def checkpoint_meta(p: Path) -> dict | None:
                 fmt = fmt.decode() if isinstance(fmt, bytes) else fmt
                 if fmt != FORMAT or "state/X" not in f:
                     return None
-                _refuse_links(f, p)
+                refuse_indirect_storage(f, p, "a checkpoint")
                 meta = read_json_attr(f, "meta")
                 hist = f["history"] if "history" in f else {}
                 shapes = {"X": f["state/X"].shape, **{k: hist[k].shape for k in hist}}
@@ -202,26 +202,6 @@ def _npz_header(p: Path) -> tuple[dict, Any]:
                 shapes[k] = reader(fh)[0]
     with np.load(p, allow_pickle=False) as d:
         return shapes, json.loads(str(d["meta"]))
-
-
-def _refuse_links(f: Any, p: Path) -> None:
-    """A checkpoint is one self-contained file: an external or soft link would make a restart read
-    another file, chosen by whoever wrote this one."""
-    import h5py
-    seen: list[str] = []
-
-    def walk(group: Any, prefix: str) -> None:
-        for name in group:
-            link = group.get(name, getlink=True)
-            if not isinstance(link, h5py.HardLink):
-                seen.append(prefix + name)
-                continue
-            obj = group[name]
-            if isinstance(obj, h5py.Group):
-                walk(obj, prefix + name + "/")
-    walk(f, "")
-    if seen:
-        raise ValueError(f"{p}: links to other data refused in a checkpoint: {seen[:4]}")
 
 
 def checkpoint_iteration(p: Path) -> int | None:
