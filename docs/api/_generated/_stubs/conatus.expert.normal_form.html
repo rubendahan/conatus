@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.3 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -700,9 +700,13 @@ pitchfork is then <em>required</em> to have a2 = 0 up to <code class="docutils l
 ν = max(1, ‖J‖/‖M‖) on those rows, the critical eigenvalue must satisfy |λ| (zero) or |Re λ|
 (Hopf) &lt;= kernel_tol·ν, and x0 must be an equilibrium, max|G_i(x0)|/r_i &lt;=
 kernel_tol·max(1, ‖x0‖) (else refused). Multiplying an equation by a constant changes none of
-these. The fold test compares |β| with kernel_tol·max(1, Σ|p_i G_p,i|), and a3 is degenerate
-below kernel_tol times the sum of its terms in absolute value; both sums have the same scaling
-property.</p>
+these. β counts as zero at rounding level of Σ|p_i G_p,i|, or when |β| &lt;= kernel_tol·|μ|·max(1,
+‖x0‖): the two branches of a transcritical point are then displaced by less than that.
+Otherwise the point is a fold. With β = 0: “transcritical” needs μ ≠ 0 and a2 ≠ 0, “pitchfork”
+needs a2 = 0 (|a2| &lt;= kernel_tol·|a3|, or rounding) and is flagged degenerate when μ or a3
+vanishes. Without <code class="docutils literal notranslate"><span class="pre">parameter</span></code>, or with β = μ = 0, the kind is “unresolved” (and <code class="docutils literal notranslate"><span class="pre">degenerate</span></code>
+is True). These tests compare quantities with the same units, so a positive change of the
+parameter’s units does not change the kind.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -793,7 +797,7 @@ property.</p>
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=a47416a6"></script>
+</div><script src="../../../_static/documentation_options.js?v=6ffd866b"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

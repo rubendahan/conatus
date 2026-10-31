@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.3 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -845,7 +845,12 @@ not compared) and the end state is still compared bit for bit. If the
 executed code changed since the run, a <code class="docutils literal notranslate"><span class="pre">CodeChangedWarning</span></code> says how (<code class="docutils literal notranslate"><span class="pre">require_same_code=True</span></code>
 makes it an error).</p>
 <p>A decorated call is reproduced with the function you pass: <code class="docutils literal notranslate"><span class="pre">run.reproduce(fn=my_function)</span></code> calls it with
-the recorded arguments. <strong>A run registry is code-bearing input</strong>: treat one you receive as you would a script (<code class="docutils literal notranslate"><span class="pre">SECURITY.md</span></code>). <code class="docutils literal notranslate"><span class="pre">run.reproduce(trust_record=True)</span></code> imports and calls the function the record
+the recorded arguments. <code class="docutils literal notranslate"><span class="pre">report.code_identical</span></code> is True when the Conatus and environment fingerprint, the
+function’s source, and what it reads (the helpers it calls, its closure values and the module globals it names,
+followed as for a cache key) all match the record. It is False when one of them differs, and None when no
+difference was found but what it reads cannot be compared: an object without a content hash, or a record
+written before 0.2.4. <code class="docutils literal notranslate"><span class="pre">require_same_code=True</span></code> makes False and None errors. Arguments come back with their
+types, so a tuple stays a tuple; a record written before 0.2.4 that holds a list is refused. <strong>A run registry is code-bearing input</strong>: treat one you receive as you would a script (<code class="docutils literal notranslate"><span class="pre">SECURITY.md</span></code>). <code class="docutils literal notranslate"><span class="pre">run.reproduce(trust_record=True)</span></code> imports and calls the function the record
 names, which runs whatever the record says. Use it only for records you made: a registry you unpacked or
 copied belongs to your account whoever wrote it. A record that other accounts can write is refused
 even then.</p>
@@ -1569,7 +1574,7 @@ part, not “.” or “..”; anything else is refused.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a47416a6"></script>
+</div><script src="../_static/documentation_options.js?v=6ffd866b"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

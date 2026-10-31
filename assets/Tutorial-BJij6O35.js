@@ -1,4 +1,4 @@
-import{i as e}from"./index-D8hlPbJ5.js";import{a as t,i as n,n as r,s as i}from"./ui-DsRxI41o.js";/* empty css               */import{t as a}from"./Rich-D5q0GxV5.js";var o=`/conatus/assets/t00_first_steps_burgers-DvhRiWRh.png`,s=`/conatus/assets/t00_getting_started_rolls-CMzpMwXs.png`,c=`"""A Dedalus 3 script, written for tutorial 14 of Conatus (not taken from the Dedalus examples).
+import{i as e}from"./index-Qfl0oMhq.js";import{a as t,i as n,n as r,s as i}from"./ui-DQKojMX0.js";/* empty css               */import{t as a}from"./Rich-CcqzQgLZ.js";var o=`/conatus/assets/t00_first_steps_burgers-DvhRiWRh.png`,s=`/conatus/assets/t00_getting_started_rolls-CMzpMwXs.png`,c=`"""A Dedalus 3 script, written for tutorial 14 of Conatus (not taken from the Dedalus examples).
 
 Onset of Rayleigh-Benard convection between two no-slip walls, periodic sideways, in diffusive
 units (length: the depth; time: depth^2 / thermal diffusivity). The temperature is the conduction
@@ -1636,7 +1636,7 @@ assert np.abs(tracers.positions(unwrapped=True) - exact).max() < 1e-12
 assert drift < 1e-8
 print("checks passed: order 3 in time, Couette tracers exact, dye mass conserved")
 # [/checks]
-`,S=`# t00_first_steps: PASS (exit 0) in 3.8 s | 2026-10-31 | script sha256 ab11826364e6e045
+`,S=`# t00_first_steps: PASS (exit 0) in 4.0 s | 2026-10-31 | script sha256 ab11826364e6e045
 Model 'Burgers': Box(x=periodic((0, 6.28319))) (Cartesian box)
 Unknowns: u (scalar); parameters: nu = 0.1
 Equations as written:
@@ -1648,7 +1648,7 @@ Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
 (compiler decisions, tau by tau and term by term: m.explain(full=True))
 kinetic energy at t = 2: E = 0.759908
 exact (Cole-Hopf): E = 0.759908, relative error 3.7e-11
-`,C=`# t00_getting_started: PASS (exit 0) in 108.6 s | 2026-10-31 | script sha256 aa3c621c10b74264
+`,C=`# t00_getting_started: PASS (exit 0) in 108.0 s | 2026-10-31 | script sha256 aa3c621c10b74264
 Model 'Rayleigh-Benard': Box(x=periodic((0, 2)), z=walls(-0.5, 0.5)) (Cartesian box)
 Unknowns: u (velocity), p (pressure), T (scalar); parameters: Ra = 2500, Pr = 1
 Equations as written:
@@ -1667,7 +1667,7 @@ Ra = 2500: largest growth rate +5.542506
 Ra_c = 1707.7618   k_c = 3.11632
 measured growth rate 5.542508   eigenvalue 5.542506
 t = 6.0: Nu = 1.474455 (layer)  1.474455 (bottom plate)  1.474455 (top plate)
-Run (rb_Ra2500): state completed, status provisional, 87.3 s
+Run (rb_Ra2500): state completed, status provisional, 87.8 s
 Methods paragraph generated from the plan (edit before publishing):
 
 The IVP 'Rayleigh-Benard' for (u, p, T) was solved with Conatus. The domain is discretized as follows: x ∈ [0, 2) is periodic and expanded in a real (cosine/sine) Fourier series of 32 modes; z ∈ [-0.5, 0.5] is expanded in 24 Chebyshev polynomials of the first kind. Derivatives, basis conversions and multiplications by non-constant coefficients use the sparse, banded ultraspherical operators of Olver & Townsend, and boundary conditions are imposed with the generalized tau method (4 tau variable(s), each entering through a lift polynomial), following Burns et al. The Fourier directions decouple, giving 16 independent systems, one per wavenumber. Nonlinear terms are evaluated pseudospectrally with dealiasing factors 3/2 in x, 3/2 in z. The structural rank of every system was checked before factorization. Time integration uses the third-order, four-stage IMEX Runge–Kutta scheme (4,4,3) of Ascher, Ruuth & Spiteri, whose implicit diagonal is constant so that a single factorization serves all stages, with a constant step Δt = 0.0005. The implicit systems are solved by banded LU factorization with a low-rank (Woodbury) correction for the tau rows, batched over wavenumbers on CPU, in float64 arithmetic. The equations were declared in the native layer of Conatus as written on paper; the implicit-explicit split, the 4 tau term(s) (each in the equation where its unknown has its highest wall-normal order) and the pressure gauge and its integral constraint were placed by fixed, declared rules (listed by explain()). The dealiasing factor 3/2 is the declared default of the native layer ((p+1)/2 for the highest polynomial degree p = 2 of the equations in the unknowns and given fields, at least 3/2).
@@ -1747,7 +1747,7 @@ Verification report: 9 checks, 0 to investigate by hand
   [PASS] critical point mode: 0.00e+00 (threshold 5e-01) — recorded by critical(): its full QZ at the critical point found the tracked mode the least stable (not repeated here)
   [PASS] critical growth: 6.39e-19 (threshold 1e-10) — growth of the critical mode at the neutral value, measured on its current eigenvalue
 OK: c and Re_c agree with Orszag (1971) to the published digits; alpha_c within 2e-5
-`,T=`# t02a_rayleigh_benard_cpu: PASS (exit 0) in 24.6 s | 2026-10-31 | script sha256 90eb240188d497ff
+`,T=`# t02a_rayleigh_benard_cpu: PASS (exit 0) in 24.3 s | 2026-10-31 | script sha256 90eb240188d497ff
 Model 'Rayleigh-Benard 2D': Box(x=periodic((0, 2)), z=walls(-0.5, 0.5)) (Cartesian box)
 Unknowns: u (velocity), p (pressure), T (scalar); parameters: Ra = 2500, Pr = 1
 Equations as written:
@@ -1789,8 +1789,8 @@ The IVP 'Rayleigh-Benard 2D' for (u, p, T) was solved with Conatus. The domain i
 
 Citations: olver2013, burns2020, ascher1997
 Facts used: kind=IVP, groups=8, N_x=16, N_z=24, zbasis=Chebyshev, taus=4, dealias={'x': 1.5, 'z': 1.5}, scheme=RK443, dt=0.0005, backend=cpu, native=True, dealias_default=True
-resume_or_start('<path>/rb_chain_ww5sioyb/chk'): continued from checkpoint_000000600.h5 (iteration 600, t = 0.3); outputs without mode= continue their file (mode='resume')
-AnalysisFile <path>/rb_chain_ww5sioyb/rb.h5 (HDF5, conatus.analysis/1): every 100 steps (= 0.05 time units), 17 write(s) so far [mode 'resume' chosen by resume_or_start (restart)]
+resume_or_start('<path>/rb_chain_r2a_0rud/chk'): continued from checkpoint_000000600.h5 (iteration 600, t = 0.3); outputs without mode= continue their file (mode='resume')
+AnalysisFile <path>/rb_chain_r2a_0rud/rb.h5 (HDF5, conatus.analysis/1): every 100 steps (= 0.05 time units), 17 write(s) so far [mode 'resume' chosen by resume_or_start (restart)]
 17 rows, t = 0.00 ... 0.80, kinetic energy at the end 1.028e-06
 OK: the IVP grows at the EVP rate; the EVP matches the psi-theta formulation; the two-job chain is the uninterrupted run bit for bit
 `,E=`# t02b_rayleigh_benard_gpu: PASS (exit 0) in 14.5 s | 2026-10-02
@@ -1854,7 +1854,7 @@ after 20 steps: relative max |T_cpu - T_gpu| = 8.6e-15; graph vs plain = 0.0e+00
 after 200 steps: max |T_cpu - T_gpu| = 9.1e-07 (rounding amplified by the instability)
 OK: CPU and GPU agree to rounding; the graph replay is the same computation
 `,D=`# t03_symmetries: PASS (exit 0) in 2.3 s | 2026-10-31 | script sha256 06b9053531b4dd1f
- full space: leading sigma = +1.6955e-06   n = 268   QZ 135.5 ms   residual 5.3e-17
+ full space: leading sigma = +1.6955e-06   n = 268   QZ 137.0 ms   residual 5.3e-17
 unknowns of the perturbation problem: du, dp, dT, dtau_u1, dtau_u2, dtau_T1, dtau_T2, dtau_p
 Symmetry subspace: Z2 (order 2)
   generator: Reflection(z -> -z): reflection of z about z = 0; vector components along it change sign, others do not
@@ -1869,7 +1869,7 @@ Symmetry subspace: Z2 (order 2)
   du         odd under Reflection(z -> -z)
   expected reduction: up to x2 per reflection, x m0 per m0-fold rotation (adapted bases: parity blocks, kept azimuthal classes, docs/site/tutorials/03_symmetries.md)
   WARNING: computing in the invariant subspace hides symmetry-breaking instabilities; a symmetric solution is not declared stable before symmetry_breaking_check().
-onset class: leading sigma = +1.6955e-06   n = 134   QZ  66.8 ms   residual 9.8e-18
+onset class: leading sigma = +1.6955e-06   n = 134   QZ  68.0 ms   residual 9.8e-18
 Symmetry subspace: Z2 (order 2)
   generator: Reflection(z -> -z): reflection of z about z = 0; vector components along it change sign, others do not
   T0         odd under Reflection(z -> -z)
@@ -1907,7 +1907,7 @@ other class: leading sigma = -4.2627e+01   n = 134   QZ  66.7 ms   residual 1.5e
 refused: equation 's*du - Pr*lap(du) + lift(dtau_u1, z, -1) + grad(dp) + lift(dtau_u2, z, -2) - Ra*dT*Pr*ez = 0' is not equivariant under Reflection(z -> -z): term '-Ra*dT*Pr*ez' is odd but 's*du' is even. The term breaks the declared symmetry (fix the parities or drop the symmetry).
   docs:  guide/errors#symmetrybreakingerror  (python -m conatus docs guide/errors)
 OK: neutral mode at Reid & Harris' (Ra_c, k_c) in the onset class, n = 134 vs 268
-`,O=`# t04_bratu: PASS (exit 0) in 8.1 s | 2026-10-31 | script sha256 997fc91ce53266ca
+`,O=`# t04_bratu: PASS (exit 0) in 8.0 s | 2026-10-31 | script sha256 997fc91ce53266ca
 Model 'Bratu': Box(x=walls(-1, 1)) (Cartesian box)
 Unknowns: u (scalar); parameters: lam = 0.3
 Equations as written:
@@ -1936,7 +1936,7 @@ Pseudo-arclength branch: 7 points, p in [0.3, 0.87704], stop: max_points = 6 rea
   fold at p = 0.878457679781 between points (2, 3): |t_p| = 1.8e-17 at the located point, |G|/scale = 3.2e-16 [located by |t_p| <= fold_tol = 1e-12 (default)]
 fold: lam_c = 0.87845767978129
 OK: lam_c within 1.1e-16 of the closed form 0.87845767978129
-`,k=`# t05_ks_orbits: PASS (exit 0) in 68.4 s | 2026-10-31 | script sha256 1481734c97ed43b4
+`,k=`# t05_ks_orbits: PASS (exit 0) in 69.5 s | 2026-10-31 | script sha256 1481734c97ed43b4
 equilibrium: space=antisymmetric subspace R u = u (cos components frozen at 0), mean frozen
   relative residual 1.385e-16 (7 Newton iterations), energy E = 0.260873, status provisional
   note: residual = ‖v(u)‖/‖u‖ with v = M⁻¹(F − L u), evaluated in the full space
@@ -1967,7 +1967,7 @@ max backward residual 1.3e-15
 neutral Re(k): {3.1: 68.2054, 3.16: 68.1863, 3.22: 68.2021}
 minimum of Re(k): k_c = 3.162, Re_c = 68.1863
 OK: drum = Bessel zeros; pipe eigenvalues to 1e-10 of Meseguer & Trefethen; Re_c(3.16) = 68.1863; k_c = 3.162
-`,j=`# t10_bifurcations: PASS (exit 0) in 4.1 s | 2026-10-31 | script sha256 6cba9156f3e55076
+`,j=`# t10_bifurcations: PASS (exit 0) in 4.8 s | 2026-10-31 | script sha256 6cba9156f3e55076
 DynamicalSystem: M dx/dt = G(x; p), n = 3, origin: IR: Lorenz (0-D: one constant Fourier mode)
   parameters: r = 0.5
   mass matrix: identity
@@ -1976,23 +1976,23 @@ DynamicalSystem: M dx/dt = G(x; p), n = 3, origin: IR: Lorenz (0-D: one constant
   pointwise=True: 0-D system, IR expressions compiled to vectorised numpy (same expressions as the spectral evaluator)
   dG/dr (RHS): exact Laurent reconstruction, exponents [0, 1]
 equilibrium curve: 32 points, r in [1.00047, 31.1039]; stop: r = 31.1039 left (0, 30)
-  branch switch at r = 1: pitchfork (symmetry-breaking); ABE c = (0.000e+00, -7.036e-01, 0.000e+00), known-branch alignment 1.000000000000, step 0.05 (direction +1); first corrected point residual 2.2e-19; S φ = −φ on an S-invariant branch: the other half-branch is the S-image
+  branch switch at r = 0.999999999999: pitchfork (symmetry-breaking); ABE c = (0.000e+00, -7.036e-01, 0.000e+00), known-branch alignment 1.000000000000, step 0.05 (direction +1); first corrected point residual 2.2e-19; S φ = −φ on an S-invariant branch: the other half-branch is the S-image
   equilibria of IR: Lorenz (0-D: one constant Fourier mode) in r
-  stability: #Re λ > 1e-09 (generalized eigenvalues of (J, M), |λ| >= 1e+10 ‖J‖/‖M‖ (max-norms) removed as infinite)
+  stability: #Re λ > 1e-09 (generalized eigenvalues of (J, M); roots are infinite only when M is numerically singular, and data['ambiguous'] counts the roots that test cannot settle)
   tests: fold, branch point, hopf; Hopf test over 3 eigenvalue(s)
   ds = 0.1 in [1e-09, 2], x1.3 (default) when the corrector takes <= 4 its, /2 on failure
   corrector: tolerance 1e-11, budget 12 (default) its; G_p: analytic G_p (dp_fd=None)
   max points 60
   events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(|λ|, 1e-3 median |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(|λ|, 1e-3 median |λ|))
   corrector failures (step halved): 0; max residual on the curve 8.4e-12
-  hopf at r = 24.7368421053 between points (26, 27), |test| = 6.9e-13, residual 7.1e-15: λ = -3.44e-13 ± 9.62453006371 i [located by |test hopf| <= crossing_tol = 1e-11, secant budget 30]
-Normal form (pitchfork (supercritical)) at r = 1: da/dt = μ Δp a + a3 a³
+  hopf at r = 24.7368421053 between points (26, 27), |test| = 6.9e-13, residual 0.0e+00: λ = -3.44e-13 ± 9.62453006371 i [located by |test hopf| <= crossing_tol = 1e-11, secant budget 30]
+Normal form (pitchfork (supercritical)) at r = 0.999999999999: da/dt = μ Δp a + a3 a³
   β = 0, μ = 0.9090909091, a2 = 0, a3 = -0.1704545455
   x ≈ x0 + a q + a²/2 h2, ‖q‖ = 1 (declared norm), pᵀM q = 1
   check max|G(x0)|: 0.0e+00
-  check |λ_0|: 0.0e+00
-  check ‖J q‖: 2.2e-16
-  check ‖pᵀJ‖: 2.2e-16
+  check |λ_0|: 8.7e-13
+  check ‖J q‖: 6.2e-13
+  check ‖pᵀJ‖: 1.1e-12
   check residual h2: 0.0e+00
   check residual x_p: 0.0e+00
   declared symmetry: S q = −q
@@ -2000,11 +2000,11 @@ Hopf normal form at r = 24.7368421053: ω = 9.62453006371
   c1 = 0.002555495334 -0.02765775717 i, first Lyapunov coefficient l1 = Re c1 / ω = 0.0002655189726 (subcritical)
   normalization: ‖q‖ = 1 (declared norm), pᴴM q = 1 (Kuznetsov); Re c1 / ‖q‖² is invariant
   λ'(r) = 0.03022248268 +0.1814503065 i -> Landau: dz/dt = λ' Δr z + c1 z|z|²
-  check max|G(x0)|: 7.1e-15
+  check max|G(x0)|: 0.0e+00
   check |Re λ|: 3.4e-13
   check ‖(J − iωM) q‖: 2.5e-13
   check ‖pᴴ(J − iωM)‖: 2.6e-13
-  check |pᴴ M q − 1|: 2.4e-17
+  check |pᴴ M q − 1|: 8.5e-17
   check Re h11 imag part: 0.0e+00
 periodic orbit curve: 13 points, r in [22.3351, 24.7352], T in [0.652887, 0.748573]; stop: max_points = 12 reached
   Hopf → cycles at r = 24.7368421053 (ω = 9.624530064, l1 = 0.000265519, subcritical); predictor: amplitude 0.2 (declared), Δr = -1.6370e-03, T = 0.65288682; corrected at fixed r: T = 0.65288682
@@ -2017,7 +2017,7 @@ periodic orbit curve: 13 points, r in [22.3351, 24.7352], T in [0.652887, 0.7485
   corrector: tolerance 1e-09, budget 12 (default) its; G_p: analytic G_p (dp_fd=None)
   max points 12
   events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(|λ|, 1e-3 median |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(|λ|, 1e-3 median |λ|))
-  corrector failures (step halved): 0; max residual on the curve 5.8e-10
+  corrector failures (step halved): 0; max residual on the curve 5.9e-10
   no event detected
 fold (codim 2) curve: 15 points, b1 in [0.000137149, 0.58141], b2 in [-1, 1.52501]; stop: b2 = 1.52501 left (-1.5, 1.5)
   fold curve of IR: Bogdanov-Takens (0-D: one constant Fourier mode) in (b1, b2), minimally augmented system (Govaerts 2000); bordering vectors refreshed after every accepted point
@@ -2039,7 +2039,7 @@ hopf (codim 2) curve: 9 points, b1 in [1.90207e-14, 1.97369e-14], b2 in [-1, -0.
   events: secant budget event_max_iterations = 30 (default), fold_tol = 1e-12 (default) (|t_p|), crossing_tol = 1e-11 (default) (|Re λ| / max(|λ|, 1e-3 median |λ|)), hopf_imag_tol = 1e-08 (default) (|Im λ| / max(|λ|, 1e-3 median |λ|))
   corrector failures (step halved): 0; max residual on the curve 2.0e-14
   bt at b1 = 1.90259931987e-14, b2 = -2.65065747129e-13, kappa = -5.55111512313e-17 between points (8, 9), |test| = 5.6e-17, residual 1.9e-14: κ = ω² = -5.55e-17 [located by |test bt| <= crossing_tol = 1e-11, secant budget 30]
-  (rejected zh between (8, 9): det J = 0 with κ = ω² = -4.7e-16: the Bogdanov–Takens point)
+  (rejected zh between (8, 9): det J = 0 with κ = ω² = -8.7e-15: the Bogdanov–Takens point)
 Landau equation (stationary) at r_c = 0: dA/dt = μ Δr A + g3 A³
   μ = 1+0j, g3 = -0.75+0j (observable of q: 1+0j)
   A² = −Re μ Δp / Re g3 = 1.333333333 Δr
@@ -2051,10 +2051,10 @@ Ginzburg–Landau at k_c = 1, r_c = 0:
   σ_kk: 4th-order central differences, h = 0.01 (declared); |4th − 2nd order| = 1.0e-04
   g = 4 g3 (u = A e^{ikx} + c.c. = 2|A| cos kx)
 CHECK r_H = 24.736842105252 (470/19 = 24.736842105263), l1 = 2.655190e-04 > 0; SH: A^2/r = 1.333333333333 (4/3), xi0^2 = 4.0000000000, g0 = 3.000000000000
-`,M=`# t11_runs: PASS (exit 0) in 2.3 s | 2026-10-31 | script sha256 8a4e7db6a6b083fd
-Run (heat_k0.1): state completed, status provisional, 0.0633 s
-Run (heat_k0.2): state completed, status provisional, 0.039 s
-Run (heat_k0.4): state completed, status provisional, 0.0386 s
+`,M=`# t11_runs: PASS (exit 0) in 2.4 s | 2026-10-31 | script sha256 8a4e7db6a6b083fd
+Run (heat_k0.1): state completed, status provisional, 0.0752 s
+Run (heat_k0.2): state completed, status provisional, 0.0394 s
+Run (heat_k0.4): state completed, status provisional, 0.0387 s
   completed certified   rate=1.8000000002184402, rel_error=1.2135564158515738e-10
   completed certified   rate=3.600000003494189, rel_error=9.706080383864446e-10
 compare (a) vs (b)
@@ -2063,18 +2063,18 @@ compare (a) vs (b)
   numerics problem.parameters.kappa: 0.2 -> 0.4
   result rate: a=1.8000000002184402 b=3.600000003494189 (rel. diff 5.000e-01)
   result rel_error: a=1.2135564158515738e-10 b=9.706080383864446e-10 (rel. diff 8.750e-01)
-  code: identical executed tree; git d1bfe01644 -> d1bfe01644
+  code: identical executed tree; git 8efff78142 -> 8efff78142
 reproduce -> bit-for-bit identical
   code: identical to the recorded code
   steps: 200
   compared: end state: X, multistep history (), t, iteration
   differ: nothing
-conatus.runs cache hit: nothing computed; state after 200 steps read from run (took 0.038461 s); key 2a0f5e778f94, report in run.cache_report
+conatus.runs cache hit: nothing computed; state after 200 steps read from run (took 0.038628 s); key 0c9ee9d3e0c6, report in run.cache_report
 {'hit': True, 'reused_from': '', 'computed': 'nothing: 0 steps taken'}
  (this run)
   └─ (cache reuse)
 OK: decay rates exact, query, bit-for-bit reproduce, cache only on request
-`,ie=`# t12_chaos_ensembles: PASS (exit 0) in 128.0 s | 2026-10-31 | script sha256 26241358f979bb75
+`,ie=`# t12_chaos_ensembles: PASS (exit 0) in 232.5 s | 2026-10-31 | script sha256 26241358f979bb75
 Lyapunov spectrum of the discrete map (RK443, dt = 0.01, backend = cpu): 3 vector(s), 32 trajectory(ies)
   transient 1000 steps, tangent transient 1000 steps, average over T = 100 per trajectory (1000 QR every 10 steps = 0.1)
   inner product: Euclidean on the coefficient vector; projection: none; seed 1
@@ -2108,7 +2108,7 @@ wavemaker maximum S = 0.137574776291 at x = 3.98e-11
 d lambda/d mu_2 = 3.884434935074-1.608985632263j (density)  3.884434935072-1.608985632266j (pencil)
 DMD (exact, rank 4, Δt = 0.5, amplitudes 'optimal', quadrature product): ω = -0.5576897846-0.6478195408j (|b| 1.41, res 1.2e-14); ω = -0.7130915004-0.5834606995j (|b| 0.707, res 8.2e-14); ω = -0.8686490565-0.5192373431j (|b| 0.424, res 2.4e-13); ω = -1.024295602-0.4562651356j (|b| 0.316, res 1.4e-13); misfit 3.5e-14; principal log (|Im ω| < π/Δt = 6.28319). 
 OK: wavemaker and d lambda/d mu_2 match the closed forms; DMD finds the four least stable eigenvalues
-`,P=`# t14_from_dedalus: PASS (exit 0) in 4.0 s | 2026-10-31 | script sha256 5a740420eb488748
+`,P=`# t14_from_dedalus: PASS (exit 0) in 7.9 s | 2026-10-31 | script sha256 5a740420eb488748
 native model: t = 0.020, max|u| = 4.225e-02
 Dedalus -> Conatus: rb_cell_dedalus.py
   39 translated, 0 approximated, 0 unsupported, 0 skipped (output only)
@@ -2168,13 +2168,13 @@ nz = 12: native vs translated, relative difference th 1.2e-06, u 3.0e-07
 nz = 16: native vs translated, relative difference th 7.2e-09, u 2.2e-10
 nz = 32: native vs translated, relative difference th 3.8e-15, u 2.8e-15
 PASS
-`,F=`# t14b_dedalus_check: PASS (exit 0) in 6.0 s | 2026-10-31 | script sha256 763cece2d005a63e
+`,F=`# t14b_dedalus_check: PASS (exit 0) in 9.4 s | 2026-10-31 | script sha256 763cece2d005a63e
 Conatus: t = 0.020 after 40 steps
-2026-10-31 01:20:13,388 dedalus 0/1 WARNING :: Threading has not been disabled. This may massively degrade Dedalus performance.
-2026-10-31 01:20:13,389 dedalus 0/1 WARNING :: We strongly suggest setting the "OMP_NUM_THREADS" environment variable to "1".
+2026-10-31 10:54:36,581 dedalus 0/1 WARNING :: Threading has not been disabled. This may massively degrade Dedalus performance.
+2026-10-31 10:54:36,582 dedalus 0/1 WARNING :: We strongly suggest setting the "OMP_NUM_THREADS" environment variable to "1".
 Dedalus: t = 0.020; relative difference th 3.0e-14, u 3.8e-15
 PASS
-`,I=`# t15_ks_covariant: PASS (exit 0) in 45.3 s | 2026-10-31 | script sha256 77224d7831ae3936
+`,I=`# t15_ks_covariant: PASS (exit 0) in 85.9 s | 2026-10-31 | script sha256 77224d7831ae3936
 Lyapunov spectrum of the discrete map (RK443, dt = 0.05, backend = cpu): 12 vector(s), 4 trajectory(ies)
   transient 2000 steps, tangent transient 1000 steps, average over T = 200 per trajectory (400 QR every 10 steps = 0.5)
   inner product: Euclidean on the coefficient vector; projection: zero mean: the wavenumber-zero coefficient of u set to 0 in every tangent vector (1 component(s) of the state vector); seed 1
@@ -2209,7 +2209,7 @@ Domination of the Oseledets splitting at tau = 5: 32 samples (windows x trajecto
   a violation fraction is a sample estimate: 0 means none observed in 32 samples; modes near k may entangle with modes not computed
 smallest angle at the split 8 | 9: 0.448 rad; at 4 | 5: 0.0008 rad (47% of the samples below 0.1 rad)
 checks passed: exponents within their errors of CDS 2010, eight physical modes
-`,L=`# t16_particles_dye: PASS (exit 0) in 9.6 s | 2026-10-31 | script sha256 5421cf06aaa42843
+`,L=`# t16_particles_dye: PASS (exit 0) in 24.9 s | 2026-10-31 | script sha256 5421cf06aaa42843
 dt = 0.1   : largest tracer error 6.46e-05
 dt = 0.05  : largest tracer error 8.40e-06
 dt = 0.025 : largest tracer error 1.07e-06
@@ -2233,7 +2233,7 @@ Gauge: the mean of p is fixed (integ(p) = 0)
 Dealiasing: x: 3/2, y: 3/2 (declared default for products of degree 2)
 Resolution: not chosen yet (simulate/eigenvalues/discretize(N=...))
 (compiler decisions, tau by tau and term by term: m.explain(full=True))
-Dye file <path>/tmp24dfuoms/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (= 0.5 time units), 7 write(s) so far
+Dye file <path>/tmp1b6ouwbr/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (= 0.5 time units), 7 write(s) so far
   dye c (m.dye): dt(c) - 0.01*lap(c) = -div(c*u); no flux: dy(c) = 0 at the walls; advected by u, same scheme and dt as the flow
   c: grid values of c
   mass: integ(c) (integral of the spectral series)
@@ -2243,7 +2243,7 @@ Dye file <path>/tmp24dfuoms/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (=
   tail: largest |coefficient| among the last two modes of each axis, relative to the largest
   the state at the start (iteration 0, t = 0) written as a row (initial=True, the default of sim.output)
   scales: sim_time, iteration, write_number, x, y; every array labelled with its dimensions (HDF5 dimension scales)
-  XDMF sidecar (ParaView): <path>/tmp24dfuoms/dye.xmf
+  XDMF sidecar (ParaView): <path>/tmp1b6ouwbr/dye.xmf
 [[-3.  -1. ]
  [-0.5 -0.5]
  [ 2.   0. ]
@@ -2251,9 +2251,9 @@ Dye file <path>/tmp24dfuoms/dye.h5 (HDF5, conatus.analysis/1): every 50 steps (=
  [ 3.5  1. ]]
 dye mass 0.933219300417, largest relative drift 1.1e-11
 checks passed: order 3 in time, Couette tracers exact, dye mass conserved
-`,R={generated:`2026-10-31T04:28:50.258Z`,tutorials:{t00_first_steps:{fresh:!0,by:`script hash`,reason:null},t00_getting_started:{fresh:!0,by:`script hash`,reason:null},t01_orr_sommerfeld:{fresh:!0,by:`script hash`,reason:null},t02a_rayleigh_benard_cpu:{fresh:!0,by:`script hash`,reason:null},t02b_rayleigh_benard_gpu:{fresh:!0,by:`commit`,reason:null},t03_symmetries:{fresh:!0,by:`script hash`,reason:null},t04_bratu:{fresh:!0,by:`script hash`,reason:null},t05_ks_orbits:{fresh:!0,by:`script hash`,reason:null},t08_polar:{fresh:!0,by:`script hash`,reason:null},t10_bifurcations:{fresh:!0,by:`script hash`,reason:null},t11_runs:{fresh:!0,by:`script hash`,reason:null},t12_chaos_ensembles:{fresh:!0,by:`script hash`,reason:null},t13_sensitivity_data:{fresh:!0,by:`script hash`,reason:null},t14_from_dedalus:{fresh:!0,by:`script hash`,reason:null},t14b_dedalus_check:{fresh:!0,by:`script hash`,reason:null},t15_ks_covariant:{fresh:!0,by:`script hash`,reason:null},t16_particles_dye:{fresh:!0,by:`script hash`,reason:null}}},z=Object.assign({"../../../docs/site/tutorials/code/rb_cell_dedalus.py":c,"../../../docs/site/tutorials/code/t00_first_steps.py":l,"../../../docs/site/tutorials/code/t00_getting_started.py":u,"../../../docs/site/tutorials/code/t01_orr_sommerfeld.py":d,"../../../docs/site/tutorials/code/t02a_rayleigh_benard_cpu.py":f,"../../../docs/site/tutorials/code/t02b_rayleigh_benard_gpu.py":ee,"../../../docs/site/tutorials/code/t03_symmetries.py":te,"../../../docs/site/tutorials/code/t04_bratu.py":ne,"../../../docs/site/tutorials/code/t05_ks_orbits.py":re,"../../../docs/site/tutorials/code/t08_polar.py":p,"../../../docs/site/tutorials/code/t10_bifurcations.py":m,"../../../docs/site/tutorials/code/t11_runs.py":h,"../../../docs/site/tutorials/code/t12_chaos_ensembles.py":g,"../../../docs/site/tutorials/code/t13_sensitivity_data.py":_,"../../../docs/site/tutorials/code/t14_from_dedalus.py":v,"../../../docs/site/tutorials/code/t14b_dedalus_check.py":y,"../../../docs/site/tutorials/code/t15_ks_covariant.py":b,"../../../docs/site/tutorials/code/t16_particles_dye.py":x}),B=Object.assign({"../generated/outputs/t00_first_steps.txt":S,"../generated/outputs/t00_getting_started.txt":C,"../generated/outputs/t01_orr_sommerfeld.txt":w,"../generated/outputs/t02a_rayleigh_benard_cpu.txt":T,"../generated/outputs/t02b_rayleigh_benard_gpu.txt":E,"../generated/outputs/t03_symmetries.txt":D,"../generated/outputs/t04_bratu.txt":O,"../generated/outputs/t05_ks_orbits.txt":k,"../generated/outputs/t08_polar.txt":A,"../generated/outputs/t10_bifurcations.txt":j,"../generated/outputs/t11_runs.txt":M,"../generated/outputs/t12_chaos_ensembles.txt":ie,"../generated/outputs/t13_sensitivity_data.txt":N,"../generated/outputs/t14_from_dedalus.txt":P,"../generated/outputs/t14b_dedalus_check.txt":F,"../generated/outputs/t15_ks_covariant.txt":I,"../generated/outputs/t16_particles_dye.txt":L}),V=R.tutorials;function H(e,t,n){throw Error(`[web/snippet] ${e.path}: ${t}.\n  The site cuts this from the executed tutorial; the tutorial changed. Update the cut`+(n?` in ${n}`:``)+` (web/src/lib/snippet.ts explains the markers).`)}function U(e){let t=Object.entries(z).find(([t])=>t.endsWith(`/code/${e}.py`)),n=Object.entries(B).find(([t])=>t.endsWith(`/outputs/${e}.txt`));if(!t)throw Error(`[web/snippet] docs/site/tutorials/code/${e}.py not found (renamed or removed tutorial?)`);let r=!!n&&V[e]?.fresh===!0;return{code:{path:`docs/site/tutorials/code/${e}.py`,text:t[1]},out:r?{path:`docs/site/tutorials/outputs/${e}.txt`,text:n[1]}:null}}function W(e,t,n){let r=e.text.split(`
+`,R={generated:`2026-10-31T12:08:55.211Z`,tutorials:{t00_first_steps:{fresh:!0,by:`script hash`,reason:null},t00_getting_started:{fresh:!0,by:`script hash`,reason:null},t01_orr_sommerfeld:{fresh:!0,by:`script hash`,reason:null},t02a_rayleigh_benard_cpu:{fresh:!0,by:`script hash`,reason:null},t02b_rayleigh_benard_gpu:{fresh:!0,by:`commit`,reason:null},t03_symmetries:{fresh:!0,by:`script hash`,reason:null},t04_bratu:{fresh:!0,by:`script hash`,reason:null},t05_ks_orbits:{fresh:!0,by:`script hash`,reason:null},t08_polar:{fresh:!0,by:`script hash`,reason:null},t10_bifurcations:{fresh:!0,by:`script hash`,reason:null},t11_runs:{fresh:!0,by:`script hash`,reason:null},t12_chaos_ensembles:{fresh:!0,by:`script hash`,reason:null},t13_sensitivity_data:{fresh:!0,by:`script hash`,reason:null},t14_from_dedalus:{fresh:!0,by:`script hash`,reason:null},t14b_dedalus_check:{fresh:!0,by:`script hash`,reason:null},t15_ks_covariant:{fresh:!0,by:`script hash`,reason:null},t16_particles_dye:{fresh:!0,by:`script hash`,reason:null}}},z=Object.assign({"../../../docs/site/tutorials/code/rb_cell_dedalus.py":c,"../../../docs/site/tutorials/code/t00_first_steps.py":l,"../../../docs/site/tutorials/code/t00_getting_started.py":u,"../../../docs/site/tutorials/code/t01_orr_sommerfeld.py":d,"../../../docs/site/tutorials/code/t02a_rayleigh_benard_cpu.py":f,"../../../docs/site/tutorials/code/t02b_rayleigh_benard_gpu.py":ee,"../../../docs/site/tutorials/code/t03_symmetries.py":te,"../../../docs/site/tutorials/code/t04_bratu.py":ne,"../../../docs/site/tutorials/code/t05_ks_orbits.py":re,"../../../docs/site/tutorials/code/t08_polar.py":p,"../../../docs/site/tutorials/code/t10_bifurcations.py":m,"../../../docs/site/tutorials/code/t11_runs.py":h,"../../../docs/site/tutorials/code/t12_chaos_ensembles.py":g,"../../../docs/site/tutorials/code/t13_sensitivity_data.py":_,"../../../docs/site/tutorials/code/t14_from_dedalus.py":v,"../../../docs/site/tutorials/code/t14b_dedalus_check.py":y,"../../../docs/site/tutorials/code/t15_ks_covariant.py":b,"../../../docs/site/tutorials/code/t16_particles_dye.py":x}),B=Object.assign({"../generated/outputs/t00_first_steps.txt":S,"../generated/outputs/t00_getting_started.txt":C,"../generated/outputs/t01_orr_sommerfeld.txt":w,"../generated/outputs/t02a_rayleigh_benard_cpu.txt":T,"../generated/outputs/t02b_rayleigh_benard_gpu.txt":E,"../generated/outputs/t03_symmetries.txt":D,"../generated/outputs/t04_bratu.txt":O,"../generated/outputs/t05_ks_orbits.txt":k,"../generated/outputs/t08_polar.txt":A,"../generated/outputs/t10_bifurcations.txt":j,"../generated/outputs/t11_runs.txt":M,"../generated/outputs/t12_chaos_ensembles.txt":ie,"../generated/outputs/t13_sensitivity_data.txt":N,"../generated/outputs/t14_from_dedalus.txt":P,"../generated/outputs/t14b_dedalus_check.txt":F,"../generated/outputs/t15_ks_covariant.txt":I,"../generated/outputs/t16_particles_dye.txt":L}),V=R.tutorials;function H(e,t,n){throw Error(`[web/snippet] ${e.path}: ${t}.\n  The site cuts this from the executed tutorial; the tutorial changed. Update the cut`+(n?` in ${n}`:``)+` (web/src/lib/snippet.ts explains the markers).`)}function U(e){let t=Object.entries(z).find(([t])=>t.endsWith(`/code/${e}.py`)),n=Object.entries(B).find(([t])=>t.endsWith(`/outputs/${e}.txt`));if(!t)throw Error(`[web/snippet] docs/site/tutorials/code/${e}.py not found (renamed or removed tutorial?)`);let r=!!n&&V[e]?.fresh===!0;return{code:{path:`docs/site/tutorials/code/${e}.py`,text:t[1]},out:r?{path:`docs/site/tutorials/outputs/${e}.txt`,text:n[1]}:null}}function W(e,t,n){let r=e.text.split(`
 `),i=r.findIndex(e=>e.trim()===`# [${t}]`),a=r.findIndex((e,n)=>n>i&&e.trim()===`# [/${t}]`);(i<0||a<0)&&H(e,`region "# [${t}]" … "# [/${t}]" not found`,n);let o=r.slice(i+1,a).filter(e=>!/^\s*# \[\/?[\w-]+\]\s*$/.test(e)).join(`
-`).replace(/^\n+|\s+$/g,``);return o||H(e,`region "${t}" is empty`,n),o}var G={generated:`2026-10-31T04:28:50.258Z`,source:``,title:`First steps: the Burgers equation in ten minutes`,blocks:[{t:`p`,inl:[{k:`t`,v:`Simulate the viscous Burgers equation, plot its evolution and measure its kinetic energy. Then change one line at a time and see what changes. The longer path through one problem, from stability to a simulation of convection rolls, is `},{k:`doc`,to:`tutorials/00_getting_started.html`,v:`Convection between two plates: from onset to simulation`},{k:`t`,v:`.`}]},{t:`p`,inl:[{k:`b`,v:`Time:`},{k:`t`,v:` ten minutes; the script runs in a few seconds. `},{k:`b`,v:`Script:`},{k:`t`,v:` `},{k:`repo`,path:`docs/site/tutorials/code/t00_first_steps.py`,v:`t00_first_steps.py`},{k:`t`,v:`.`}]},{t:`h2`,id:`install`,text:`Install`},{t:`fence`,lang:`bash`,text:`python3.12 -m venv venv && . venv/bin/activate
+`).replace(/^\n+|\s+$/g,``);return o||H(e,`region "${t}" is empty`,n),o}var G={generated:`2026-10-31T12:08:55.211Z`,source:``,title:`First steps: the Burgers equation in ten minutes`,blocks:[{t:`p`,inl:[{k:`t`,v:`Simulate the viscous Burgers equation, plot its evolution and measure its kinetic energy. Then change one line at a time and see what changes. The longer path through one problem, from stability to a simulation of convection rolls, is `},{k:`doc`,to:`tutorials/00_getting_started.html`,v:`Convection between two plates: from onset to simulation`},{k:`t`,v:`.`}]},{t:`p`,inl:[{k:`b`,v:`Time:`},{k:`t`,v:` ten minutes; the script runs in a few seconds. `},{k:`b`,v:`Script:`},{k:`t`,v:` `},{k:`repo`,path:`docs/site/tutorials/code/t00_first_steps.py`,v:`t00_first_steps.py`},{k:`t`,v:`.`}]},{t:`h2`,id:`install`,text:`Install`},{t:`fence`,lang:`bash`,text:`python3.12 -m venv venv && . venv/bin/activate
 pip install "conatus[tutorials]"
 python -m conatus doctor`},{t:`p`,inl:[{k:`t`,v:`The last line says what this machine can run; `},{k:`doc`,to:`install.html`,v:`Installation`},{k:`t`,v:` has the other ways to install.`}]},{t:`h2`,id:`the-equation`,text:`The equation`},{t:`p`,inl:[{k:`t`,v:`A wave `},{k:`m`,v:`u(x,t)`},{k:`t`,v:` on a periodic line of length `},{k:`m`,v:`2π`},{k:`t`,v:` steepens under its own advection and is held back by viscosity `},{k:`m`,v:`ν`},{k:`t`,v:`:`}]},{t:`math`,rich:`∂_{t}u+u ∂_{x}u = ν ∂_{x}²u, u(x,0) = sinx.`},{t:`code`,script:`t00_first_steps`,region:`model`},{t:`p`,inl:[{k:`t`,v:`You write the domain, the unknown, the parameter and the equation. `},{k:`code`,v:`m.explain()`},{k:`t`,v:` prints how Conatus will treat each term. The linear term is implicit, the product `},{k:`code`,v:`u*dx(u)`},{k:`t`,v:` is explicit, and the product is dealiased by the 3/2 rule:`}]},{t:`out`,script:`t00_first_steps`,startAt:`Time stepping:`,endAt:`Dealiasing:`},{t:`h2`,id:`simulate-and-plot`,text:`Simulate and plot`},{t:`p`,inl:[{k:`t`,v:`Specify the resolution `},{k:`code`,v:`N`},{k:`t`,v:`, the time-stepping scheme and the time step `},{k:`code`,v:`dt`},{k:`t`,v:`. `},{k:`code`,v:`run(until=t)`},{k:`t`,v:` advances to time `},{k:`m`,v:`t`},{k:`t`,v:`, which must be a whole number of steps.`}]},{t:`code`,script:`t00_first_steps`,region:`simulate`},{t:`code`,script:`t00_first_steps`,region:`plot`},{t:`img`,file:`t00_first_steps_burgers.png`,alt:`Five profiles of u against x from t = 0 to 2: the sine wave tilts forward and its front at x = pi becomes steep.`},{t:`h2`,id:`the-kinetic-energy`,text:`The kinetic energy`},{t:`p`,inl:[{k:`t`,v:`The kinetic energy `},{k:`m`,v:`E = 1/2∫u² dx`},{k:`t`,v:` starts at `},{k:`m`,v:`π/2`},{k:`t`,v:` and decreases as viscosity dissipates the steepening front.`}]},{t:`code`,script:`t00_first_steps`,region:`energy`},{t:`out`,script:`t00_first_steps`,startAt:`kinetic energy at t`,endAt:`relative error`},{t:`p`,inl:[{k:`t`,v:`The second line compares `},{k:`m`,v:`E`},{k:`t`,v:` with the exact solution, given by the Cole–Hopf transformation (Cole 1951; Hopf 1950). The code of that comparison is below.`}]},{t:`details`,label:`Verification against the exact solution`,blocks:[{t:`p`,inl:[{k:`t`,v:`The Cole–Hopf transformation turns the Burgers equation into the heat equation, whose solution from `},{k:`m`,v:`u(x,0) = sinx`},{k:`t`,v:` is a series of Bessel functions. The script computes the exact energy from that series and checks the simulation against it to `},{k:`m`,v:`10⁻⁹`},{k:`t`,v:` relative.`}]},{t:`code`,script:`t00_first_steps`,region:`check`}]},{t:`h2`,id:`changes-to-try`,text:`Changes to try`},{t:`p`,inl:[{k:`t`,v:`Change one line of the script, run it again and read what happens.`}]},{t:`ol`,items:[[{k:`b`,v:`Less viscosity.`},{k:`t`,v:` `},{k:`code`,v:`cn.Model(..., nu=0.05)`},{k:`t`,v:` makes the front twice as steep. Change the `},{k:`code`,v:`0.1`},{k:`t`,v:` of `},{k:`code`,v:`cole_hopf_energy`},{k:`t`,v:` too: the energy still matches the exact solution, to `},{k:`m`,v:`2×10⁻¹⁰`},{k:`t`,v:`.`}],[{k:`b`,v:`Too few modes.`},{k:`t`,v:` With `},{k:`code`,v:`m.simulate(N=32, ...)`},{k:`t`,v:` the front is not resolved. Conatus keeps the resolution you gave and warns once, with an `},{k:`code`,v:`UnderResolvedWarning`},{k:`t`,v:` that names the unknown, the direction and the spectral tail. The energy is then right to about `},{k:`m`,v:`4×10⁻⁶`},{k:`t`,v:`.`}],[{k:`b`,v:`A larger time step.`},{k:`t`,v:` `},{k:`code`,v:`dt=0.05`},{k:`t`,v:` takes 40 steps instead of 2000. The scheme is third order in time, so the energy error grows to about `},{k:`m`,v:`4×10⁻⁶`},{k:`t`,v:`. `},{k:`code`,v:`sim.cfl(safety=0.5)`},{k:`t`,v:` suggests a stable step; the run keeps the `},{k:`code`,v:`dt`},{k:`t`,v:` you gave.`}],[{k:`b`,v:`Another equation.`},{k:`t`,v:` Drop the nonlinear term: `},{k:`code`,v:`m.equations("dt(u) - nu*lap(u) = 0")`},{k:`t`,v:` is the heat equation, and the energy decays exactly as `},{k:`m`,v:`E(t) = π/2e^{−2νt}`},{k:`t`,v:`.`}]]},{t:`h2`,id:`next`,text:`Next`},{t:`p`,inl:[{k:`doc`,to:`tutorials/00_getting_started.html`,v:`Convection between two plates: from onset to simulation`},{k:`t`,v:` takes one problem, convection between two plates, from its equations to its stability, its onset and a simulation. Each tutorial of `},{k:`doc`,to:`tutorials/index.html`,v:`Tutorials`},{k:`t`,v:` ends on a published value.`}]},{t:`details`,label:`The whole output of the script`,blocks:[{t:`out`,script:`t00_first_steps`,startAt:null,endAt:null}]}]},K=e(),q=`web/src/pages/Tutorial.tsx`,J=G,Y=Object.assign({"../../../docs/site/tutorials/outputs/t00_first_steps_burgers.png":o,"../../../docs/site/tutorials/outputs/t00_getting_started_rolls.png":s});function X({parts:e}){return(0,K.jsx)(K.Fragment,{children:e.map((e,t)=>{switch(e.k){case`code`:return(0,K.jsx)(`code`,{children:e.v},t);case`b`:return(0,K.jsx)(`strong`,{children:e.v},t);case`m`:return(0,K.jsx)(`span`,{className:`tu-math`,children:(0,K.jsx)(a,{text:e.v})},t);case`doc`:return(0,K.jsx)(n,{to:e.to,children:e.v},t);case`a`:return(0,K.jsx)(`a`,{href:e.href,children:e.v},t);case`repo`:return(0,K.jsx)(i,{path:e.path,children:e.v},t);default:return(0,K.jsx)(`span`,{children:e.v},t)}})})}function ae({out:e,from:t,to:n}){let r=e.text.replace(/\s+$/,``).split(`
 `).slice(1),i=t?r.findIndex(e=>e.includes(t)):0,a=n?r.findIndex((e,t)=>t>=i&&e.includes(n)):r.length-1;if(i<0||a<0)throw Error(`[web/snippet] ${e.path}: lines "${t}" … "${n}" not found (${q}, ${J.source})`);return(0,K.jsxs)(`figure`,{className:`replay`,children:[(0,K.jsx)(`figcaption`,{className:`replay-head`,children:(0,K.jsx)(`span`,{className:`replay-label`,children:`Output`})}),(0,K.jsx)(`pre`,{tabIndex:0,children:(0,K.jsx)(`code`,{children:r.slice(i,a+1).map((e,t)=>(0,K.jsxs)(`span`,{className:/^OK:/.test(e.trim())?`replay-ok`:void 0,children:[e,`

@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.3 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -825,6 +825,8 @@
             <span class="k">if</span> <span class="n">tp</span> <span class="o">!=</span> <span class="n">comp</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"time_parameter=</span><span class="si">{</span><span class="n">tp</span><span class="si">!r}</span><span class="s2">: the time of a native model is "</span>
                                   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">comp</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">"</span><span class="p">,</span> <span class="n">fix</span><span class="o">=</span><span class="s2">"drop time_parameter="</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..resolution</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_given_data</span>
+        <span class="n">check_given_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver</span> <span class="o">=</span> <span class="n">IVPSolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="p">,</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="o">**</span><span class="n">solver_kw</span><span class="p">)</span>
         <span class="n">plan_cache</span><span class="o">.</span><span class="n">remember</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="p">,</span> <span class="n">cache_key</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">watching</span> <span class="o">=</span> <span class="kc">None</span>                       <span class="c1"># a conatus.model.watch.Watch, or None</span>
@@ -1835,7 +1837,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=a47416a6"></script>
+</div><script src="../../../_static/documentation_options.js?v=6ffd866b"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

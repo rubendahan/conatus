@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.3 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -691,7 +691,8 @@
 <span class="sig-prename descclassname"><span class="pre">conatus.expert.</span></span><span class="sig-name descname"><span class="pre">find_travelling_wave</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newton</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/ecs/solutions.html#find_travelling_wave"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.find_travelling_wave" title="Link to this definition">¶</a></dt>
 <dd><p>u(x, t) = U(x − c t): v(U) + c ∂x U = 0, unknowns (U, c), phase ⟨∂x U*, δU⟩ = 0.
 <code class="docutils literal notranslate"><span class="pre">solver</span></code>: a <code class="docutils literal notranslate"><span class="pre">Simulation</span></code>, an <code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code> or a <code class="docutils literal notranslate"><span class="pre">cn.Model</span></code> with <code class="docutils literal notranslate"><span class="pre">N=</span></code>; scope as
-<a class="reference internal" href="conatus.expert.find_equilibrium.html#conatus.expert.find_equilibrium" title="conatus.expert.find_equilibrium"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_equilibrium()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">SCOPE</span></code>). A solution whose speed is zero within the Newton
+<a class="reference internal" href="conatus.expert.find_equilibrium.html#conatus.expert.find_equilibrium" title="conatus.expert.find_equilibrium"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_equilibrium()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">SCOPE</span></code>). Equations that depend on x or on t are refused with
+<a class="reference internal" href="conatus.expert.SymmetryError.html#conatus.expert.SymmetryError" title="conatus.expert.SymmetryError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SymmetryError</span></code></a>: such a state is no travelling wave. A solution whose speed is zero within the Newton
 accuracy (<code class="docutils literal notranslate"><span class="pre">TW_SPEED_TOL</span></code>) is returned as an <a class="reference internal" href="conatus.expert.Equilibrium.html#conatus.expert.Equilibrium" title="conatus.expert.Equilibrium"><code class="xref py py-class docutils literal notranslate"><span class="pre">Equilibrium</span></code></a> (kind “equilibrium”,
 <code class="docutils literal notranslate"><span class="pre">params['c']</span></code> kept, the measured value in the notes).</p>
 <dl class="field-list simple">
@@ -778,7 +779,7 @@ accuracy (<code class="docutils literal notranslate"><span class="pre">TW_SPEED_
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=a47416a6"></script>
+</div><script src="../../../_static/documentation_options.js?v=6ffd866b"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

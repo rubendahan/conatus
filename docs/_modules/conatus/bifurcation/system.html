@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.3 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -718,6 +718,8 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"DynamicalSystem"</span><span class="p">,</span> <span class="s2">"ir_system"</span><span class="p">,</span> <span class="s2">"ode_problem"</span><span class="p">,</span> <span class="s2">"RECON_TOL"</span><span class="p">]</span>
 
 <span class="n">RECON_TOL</span> <span class="o">=</span> <span class="mf">1e-10</span>      <span class="c1"># relative error of the Laurent reconstruction at the check point</span>
+<span class="n">MASS_PROBE</span> <span class="o">=</span> <span class="mf">1e15</span>      <span class="c1"># the mass is checked constant at p0 x and p0 / this value, and refused outside</span>
+<span class="n">MASS_ROUNDING</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>    <span class="c1"># an entry that moves by this x its size is rounding</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------- pointwise compiler</span>
@@ -1117,16 +1119,39 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">p0</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">mass_depends</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">mass_range</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">lhs_coef</span><span class="p">:</span>
-        <span class="c1"># relative threshold: the reconstructed M coefficients of nonzero exponents are round-off</span>
-        <span class="n">mref</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">M0</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mf">1e-300</span><span class="p">)</span>
-        <span class="n">mass_depends</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Mm</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">RECON_TOL</span> <span class="o">*</span> <span class="n">mref</span> <span class="k">for</span> <span class="n">ex</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">Mm</span><span class="p">)</span> <span class="ow">in</span> <span class="n">lhs_coef</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">mass_depends</span><span class="p">:</span>          <span class="c1"># drop the round-off (M independent of the parameters)</span>
+        <span class="c1"># The mass decides by the samples themselves: an entry is constant when it stays at</span>
+        <span class="c1"># rounding level of its own value (a threshold on the coefficients removed a small term,</span>
+        <span class="c1"># (1 + 1e-12 r) dx/dt, which matters at r = 1e12). Two far samples of each parameter see a</span>
+        <span class="c1"># term that the nearby samples cannot; below that, the term changes M by less than</span>
+        <span class="c1"># MASS_ROUNDING inside |p / p0| &lt;= MASS_PROBE, and LM refuses outside (exponents &lt; 0: also</span>
+        <span class="c1"># |p / p0| &lt; 1 / MASS_PROBE).</span>
+        <span class="n">far</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">nm</span> <span class="ow">in</span> <span class="n">lhs_params</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="n">MASS_PROBE</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">MASS_PROBE</span><span class="p">):</span>
+                <span class="n">pv</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+                <span class="n">pv</span><span class="p">[</span><span class="n">nm</span><span class="p">]</span> <span class="o">=</span> <span class="n">p0</span><span class="p">[</span><span class="n">nm</span><span class="p">]</span> <span class="o">*</span> <span class="n">f</span>
+                <span class="n">far</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">build</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">M</span><span class="o">.</span><span class="n">toarray</span><span class="p">())</span>
+        <span class="n">M00</span> <span class="o">=</span> <span class="n">M0</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span> <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">M0</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">M0</span><span class="p">)</span>
+        <span class="n">mass_depends</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">_mass_differs</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">M00</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">samples</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span> <span class="o">+</span> <span class="n">far</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mass_depends</span><span class="p">:</span>          <span class="c1"># M independent of the parameters, within the stated range</span>
             <span class="n">lhs_coef</span> <span class="o">=</span> <span class="p">{</span><span class="n">ex</span><span class="p">:</span> <span class="p">(</span><span class="n">Lm</span><span class="p">,</span> <span class="n">Mm</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">Mm</span><span class="p">)</span> <span class="k">for</span> <span class="n">ex</span><span class="p">,</span> <span class="p">(</span><span class="n">Lm</span><span class="p">,</span> <span class="n">Mm</span><span class="p">)</span> <span class="ow">in</span> <span class="n">lhs_coef</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="n">mass_range</span> <span class="o">=</span> <span class="p">{</span><span class="n">nm</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">lhs_exp</span><span class="p">[</span><span class="n">nm</span><span class="p">]</span> <span class="o">|</span> <span class="p">{</span><span class="mi">0</span><span class="p">})</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">nm</span> <span class="ow">in</span> <span class="n">lhs_params</span><span class="p">}</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"mass matrix constant: every entry within </span><span class="si">{</span><span class="n">MASS_ROUNDING</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> of its own "</span>
+                         <span class="sa">f</span><span class="s2">"size at |p / p0| up to </span><span class="si">{</span><span class="n">MASS_PROBE</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">; evaluation outside that range "</span>
+                         <span class="s2">"is refused"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">LM</span><span class="p">(</span><span class="n">par</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">lhs_coef</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">L0</span><span class="p">,</span> <span class="n">M0</span>
+        <span class="k">for</span> <span class="n">nm</span><span class="p">,</span> <span class="n">negative</span> <span class="ow">in</span> <span class="n">mass_range</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">par</span><span class="p">[</span><span class="n">nm</span><span class="p">]</span> <span class="o">/</span> <span class="n">p0</span><span class="p">[</span><span class="n">nm</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="n">MASS_PROBE</span> <span class="ow">or</span> <span class="p">(</span><span class="n">negative</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">MASS_PROBE</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">UnsupportedError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"ir_system: </span><span class="si">{</span><span class="n">nm</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">par</span><span class="p">[</span><span class="n">nm</span><span class="p">]</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> is outside the range in which the mass matrix "</span>
+                    <span class="sa">f</span><span class="s2">"was checked to be constant (|p / p0| up to </span><span class="si">{</span><span class="n">MASS_PROBE</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">, p0 = </span><span class="si">{</span><span class="n">p0</span><span class="p">[</span><span class="n">nm</span><span class="p">]</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
+                    <span class="n">fix</span><span class="o">=</span><span class="s2">"rescale the parameter, or build the system at a reference value close to it"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_lm</span><span class="p">(</span><span class="n">lhs_coef</span><span class="p">,</span> <span class="n">lhs_params</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">par</span><span class="p">)</span>
 
     <span class="c1"># --- symbolic derivatives of the RHS</span>
@@ -1357,6 +1382,11 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_mass_differs</span><span class="p">(</span><span class="n">M</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">M0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""True when an entry of M differs from M0 beyond the rounding of its own size (NaN included)."""</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">M</span> <span class="o">-</span> <span class="n">M0</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">MASS_ROUNDING</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">M</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">M0</span><span class="p">)))</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_lm</span><span class="p">(</span><span class="n">coef</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">par</span><span class="p">):</span>
     <span class="n">L</span> <span class="o">=</span> <span class="n">M</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">ex</span><span class="p">,</span> <span class="p">(</span><span class="n">Lm</span><span class="p">,</span> <span class="n">Mm</span><span class="p">)</span> <span class="ow">in</span> <span class="n">coef</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1396,7 +1426,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=a47416a6"></script>
+</div><script src="../../../_static/documentation_options.js?v=6ffd866b"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -37,6 +37,13 @@ print(m.explain())
 Every unknown is declared before the equations. Names are checked: a name already used, a
 coordinate name, an operator name or a name starting with `tau_` is refused.
 
+A callable given by `m.given` is called on the grid to build the problem. `m.solve` and `m.simulate`
+then call it up to five more times per direction, off the grid, to check that the grid represents
+it. Those calls do not change the computed values. The global NumPy and Python random states are
+restored. A callable that holds a random generator, gives two different answers at the same points,
+or takes more than one second per evaluation is not checked, and the `explain()` of a solve says so. A callable that
+counts its own calls sees the extra ones.
+
 A function of your own enters the equations by its name. It is evaluated on the dealiased grid
 (not alias-free, as `explain()` says), and takes and returns arrays (CuPy arrays on the GPU):
 
