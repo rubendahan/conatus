@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.3 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -786,9 +786,21 @@ coordinate name, an operator name or a name starting with <code class="docutils 
 </tbody>
 </table>
 </div>
-<p>A small residual does not show that a linear boundary-value solution is resolved. With an under-resolved
-boundary layer (<code class="docutils literal notranslate"><span class="pre">nu</span> <span class="pre">=</span> <span class="pre">1e-10</span></code>, <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">32</span></code>), <code class="docutils literal notranslate"><span class="pre">solve()</span></code> returns a wrong answer with residual 7e-18 and no warning,
-and it accepts <code class="docutils literal notranslate"><span class="pre">nu</span> <span class="pre">=</span> <span class="pre">0</span></code> with two wall conditions. Check by raising <code class="docutils literal notranslate"><span class="pre">N</span></code>.</p>
+<p>A small residual does not show that a linear boundary-value solution is resolved, since it measures the
+discrete system. So <code class="docutils literal notranslate"><span class="pre">solve()</span></code> also measures the spectral tail of each unknown along each direction: above
+<code class="docutils literal notranslate"><span class="pre">SOLVE_TAIL_TOL</span></code> it issues an <code class="docutils literal notranslate"><span class="pre">UnderResolvedWarning</span></code>, and <code class="docutils literal notranslate"><span class="pre">sol.explain()</span></code> prints the tail in every case.
+It never changes <code class="docutils literal notranslate"><span class="pre">N</span></code>: <code class="docutils literal notranslate"><span class="pre">resolution_report(sol.plan,</span> <span class="pre">sol)</span></code> estimates how many modes are needed. A tail is a
+necessary sign of convergence, not a proof. A direction below 8 mode numbers is not judged, nor is a mapped
+domain or a compound, Hermite or Laguerre direction. <code class="docutils literal notranslate"><span class="pre">explain()</span></code> says so, so compare two values of <code class="docutils literal notranslate"><span class="pre">N</span></code> there.
+On a Cartesian domain the right-hand side is read too, above <code class="docutils literal notranslate"><span class="pre">SOLVE_DATA_TAIL_TOL</span></code>, because integrating
+a step in the data can leave a small tail on the solution and wrong values. A solution with real content
+in the last 10 % of its modes is warned even if it is exact there, such as a polynomial of degree <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">-</span> <span class="pre">1</span></code>
+or a Fourier mode just below Nyquist.</p>
+<p>Conditions are counted from the order the values of this call leave. With <code class="docutils literal notranslate"><span class="pre">nu</span> <span class="pre">=</span> <span class="pre">0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">nu*dz(dz(u))</span> <span class="pre">-</span> <span class="pre">u</span> <span class="pre">=</span> <span class="pre">1</span></code> has order 0 along <code class="docutils literal notranslate"><span class="pre">z</span></code>, so two wall conditions are refused with a
+<code class="docutils literal notranslate"><span class="pre">BoundaryConditionError</span></code>. The same holds for any coefficient that vanishes or terms that cancel, on boundary-value, evolution and
+eigenvalue models. A pencil from <code class="docutils literal notranslate"><span class="pre">m.parametric</span></code> is compiled at its non-zero nominal value and its later
+points are not counted again, so compare with <code class="docutils literal notranslate"><span class="pre">m.eigenvalues(N,</span> <span class="pre">nu=...)</span></code> at a point where a term vanishes.</p>
 <p>An evolution model also gives its linear stability problem: <code class="docutils literal notranslate"><span class="pre">m.linearize(about={u:</span> <span class="pre">0,</span> <span class="pre">T:</span> <span class="pre">lambda</span> <span class="pre">z:</span> <span class="pre">-z})</span></code>
 returns normal modes <span class="math notranslate nohighlight">\(\propto e^{st}\)</span> about that base state.</p>
 </section>
@@ -961,7 +973,7 @@ problem, or a list of fields and parameters):</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=000c92bf"></script>
+</div><script src="../_static/documentation_options.js?v=a47416a6"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

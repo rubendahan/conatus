@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.3 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -709,7 +709,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">queue</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
@@ -724,6 +723,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._redact</span><span class="w"> </span><span class="kn">import</span> <span class="n">redact_argv</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptionError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._explain</span><span class="w"> </span><span class="kn">import</span> <span class="n">full_explain</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._util</span><span class="w"> </span><span class="kn">import</span> <span class="n">atomic_write_json</span><span class="p">,</span> <span class="n">file_sha256</span><span class="p">,</span> <span class="n">from_jsonable</span><span class="p">,</span> <span class="n">jsonable</span><span class="p">,</span> <span class="n">slug</span>
@@ -779,29 +779,10 @@
             <span class="s2">"slurm_gpus"</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SLURM_JOB_GPUS"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SLURM_GPUS_ON_NODE"</span><span class="p">)}</span>
 
 
-<span class="c1">#: ``--passes`` nor ``--keyframes``)</span>
-<span class="n">_SECRET_OPTION</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">"TOKEN|SECRET|PASSW|PASSPHRASE|CREDENTIAL|(API|PRIVATE|ACCESS)[-_]?KEY|"</span>
-                            <span class="sa">r</span><span class="s2">"AUTH|COOKIE|SESSION"</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-
-
 <span class="k">def</span><span class="w"> </span><span class="nf">_argv</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">"""``sys.argv`` with the value of every credential-like option (``--token X``,</span>
-<span class="sd">    ``--api-key=X``) replaced by ``&lt;redacted&gt;`` (security the run record, kept</span>
-<span class="sd">    on a shared store and shown by the Studio, held the command line verbatim)."""</span>
-    <span class="n">out</span><span class="p">,</span> <span class="n">hide</span> <span class="o">=</span> <span class="p">[],</span> <span class="kc">False</span>
-    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">hide</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"-"</span><span class="p">):</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"&lt;redacted&gt;"</span><span class="p">)</span>
-            <span class="n">hide</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">continue</span>
-        <span class="n">hide</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_SECRET_OPTION</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="k">if</span> <span class="s2">"="</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">"=&lt;redacted&gt;"</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">hide</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">out</span>
+<span class="w">    </span><span class="sd">"""``sys.argv`` without credentials (:func:`conatus._redact.redact_argv`): the run record, kept</span>
+<span class="sd">    on a shared store and shown by the Studio, used to hold the command line verbatim."""</span>
+    <span class="k">return</span> <span class="n">redact_argv</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_slurm</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -1532,7 +1513,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
+</div><script src="../../../_static/documentation_options.js?v=a47416a6"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

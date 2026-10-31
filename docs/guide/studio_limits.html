@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.3 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -900,6 +900,42 @@ value is changed: some are command-line options, others are constants of the sou
 <td><p>largest HTTP request body (commands and jobs are a few kB)</p></td>
 <td><p>edit the constant (and this table)</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.IDLE_CONNECTION_S</span></code></p></td>
+<td><p>300 s</p></td>
+<td><p>security</p></td>
+<td><p>an HTTP connection silent this long is closed</p></td>
+<td><p>edit the constant (and this table)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.COMMANDS_PER_MINUTE</span></code></p></td>
+<td><p>60 commands</p></td>
+<td><p>security</p></td>
+<td><p>commands of one agent or user on the API per COMMAND_WINDOW_S (above: 429)</p></td>
+<td><p>edit the constant (and this table)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.COMMAND_WINDOW_S</span></code></p></td>
+<td><p>60.0 s</p></td>
+<td><p>security</p></td>
+<td><p>window of COMMANDS_PER_MINUTE</p></td>
+<td><p>edit the constant (and this table)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.THROTTLE_AUDIT_S</span></code></p></td>
+<td><p>900.0 s</p></td>
+<td><p>security</p></td>
+<td><p>one audit line per throttled address in this time</p></td>
+<td><p>edit the constant (and this table)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.agentapi.MAX_PNG_PIXELS</span></code></p></td>
+<td><p>16777216 values</p></td>
+<td><p>security</p></td>
+<td><p>largest frame drawn as PNG, and largest image returned</p></td>
+<td><p>edit the constant (and this table)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub</span> <span class="pre">--max-runs</span></code></p></td>
+<td><p>200 runs</p></td>
+<td><p>limit</p></td>
+<td><p>= Hub(max_runs)</p></td>
+<td><p>hub serve –max-runs</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.MAX_WAITS</span></code></p></td>
 <td><p>4 requests</p></td>
 <td><p>security</p></td>
@@ -1344,7 +1380,7 @@ value is changed: some are command-line options, others are constants of the sou
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=000c92bf"></script>
+</div><script src="../_static/documentation_options.js?v=a47416a6"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

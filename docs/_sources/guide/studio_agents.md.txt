@@ -118,6 +118,11 @@ $H delagent claude             # revoke
 The token is written to a file readable only by you and shown nowhere else; the hub keeps only
 its digest.
 
+The default scope of `--agent-scope` is `read`. Commands are limited to 60 a minute for each agent or
+user, and the hub answers 429 above that. An agent with the command scope can confirm its own stop or
+fork, since the confirmation guards against a slip and not against the agent. Text from a run's log
+reaches the agent unmarked, so treat it as untrusted input.
+
 ## From Python
 
 ```python

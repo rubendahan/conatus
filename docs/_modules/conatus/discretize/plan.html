@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.3 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -700,6 +700,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">field</span> <span class="k">as</span> <span class="n">dc_field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -885,6 +886,15 @@
             <span class="s2">"(integ(u) = 0 with a constant tau)"</span><span class="p">,</span> <span class="n">where</span><span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_solution_statement</span><span class="p">(</span><span class="n">plan</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">rhs</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Spectral tails of a direct solve (``conatus.resolution.solution_tails``), warned when above</span>
+<span class="sd">    ``SOLVE_TAIL_TOL``. The solve's residual cannot say this: it is small on any grid."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..resolution</span><span class="w"> </span><span class="kn">import</span> <span class="n">solution_tails</span>
+    <span class="n">tails</span> <span class="o">=</span> <span class="n">solution_tails</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">coeffs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">)</span>
+    <span class="n">tails</span><span class="o">.</span><span class="n">warn</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">tails</span>
+
+
 <div class="viewcode-block" id="LBVPSolution">
 <a class="viewcode-back" href="../../../api/_generated/_stubs/conatus.expert.LBVPSolution.html#conatus.expert.LBVPSolution">[docs]</a>
 <span class="nd">@dataclass</span>
@@ -897,6 +907,10 @@
     <span class="n">residuals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>      <span class="c1"># (group label, relative residual)</span>
     <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span>
     <span class="n">reduced</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">rhs</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">dc_field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>    <span class="c1"># data per equation, read by the statement</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tails</span> <span class="o">=</span> <span class="n">_solution_statement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coeffs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">max_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -933,7 +947,8 @@
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residuals</span><span class="p">)</span><span class="si">}</span><span class="s2"> group(s), max relative residual </span><span class="si">{</span><span class="n">worst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> "</span>
                 <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">worst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">] (sparse LU, scipy SuperLU)"</span><span class="p">)</span>
         <span class="n">floor</span> <span class="o">=</span> <span class="n">ncc_floor_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="p">,</span> <span class="n">worst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>        <span class="c1"># digits claimed honestly</span>
-        <span class="k">return</span> <span class="n">text</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">floor</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">floor</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span></div>
+        <span class="n">tails</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tails</span><span class="o">.</span><span class="n">statement</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">text</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">floor</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">floor</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">tails</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">tails</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span></div>
 </div>
 
 
@@ -1741,7 +1756,7 @@
                             <span class="n">out</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="nb">tuple</span><span class="p">(</span><span class="n">idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">xf</span><span class="p">[</span><span class="n">r0</span> <span class="o">+</span> <span class="n">fj</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">cplx</span><span class="p">:</span>
             <span class="n">out</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="k">return</span> <span class="n">LBVPSolution</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">residuals</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">reduced</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">LBVPSolution</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">residuals</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">reduced</span><span class="p">,</span> <span class="n">rhs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Plan.resolution_report">
@@ -1881,7 +1896,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=000c92bf"></script>
+</div><script src="../../../_static/documentation_options.js?v=a47416a6"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

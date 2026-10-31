@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.2 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.2.3 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -828,7 +828,7 @@ agrees with the root of <span class="math notranslate nohighlight">\(a\tanh a = 
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t04_bratu: PASS (exit 0) in 6.1 s | 2026-10-30 | script sha256 997fc91ce53266ca
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t04_bratu: PASS (exit 0) in 8.1 s | 2026-10-31 | script sha256 997fc91ce53266ca
 Model 'Bratu': Box(x=walls(-1, 1)) (Cartesian box)
 Unknowns: u (scalar); parameters: lam = 0.3
 Equations as written:
@@ -847,6 +847,7 @@ Newton on NLBVP 'Newton step of Bratu': converged in 3 iteration(s)
   k= 3  |F|=8.715e-15  |F|/scale=2.941e-14  |dx|=-
   observed orders: 1.99
   note: trivial-state check: max |u| = 8.665e-02 vs 1e-08 x the guess (0.000e+00)
+  note: resolution check: largest spectral tail 9.7e-21 (u along x, N = 64), below SOLVE_TAIL_TOL = 0.0001; a tail is a necessary sign of convergence, not a proof
 Pseudo-arclength branch: 7 points, p in [0.3, 0.87704], stop: max_points = 6 reached
   ds = 0.2 in [1e-08, 0.6], x1.5 when the corrector takes &lt;= 3 (default) its, /2 on failure
   corrector: tolerance 1e-12, budget 15 its; G_p: central FD, dp = 1e-06 (given)
@@ -946,7 +947,7 @@ OK: lam_c within 1.1e-16 of the closed form 0.87845767978129
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=000c92bf"></script>
+</div><script src="../_static/documentation_options.js?v=a47416a6"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
