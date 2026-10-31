@@ -1220,6 +1220,8 @@ class TerrainSolution:
     def __init__(self, coeffs: dict, residuals: list, plan: TerrainPlan) -> None:
         self.coeffs, self.residuals, self.plan = coeffs, residuals, plan
         self.reduced = False
+        from .plan import _solution_statement
+        self._tails = _solution_statement(plan, coeffs)
 
     @property
     def max_residual(self) -> float:
@@ -1244,8 +1246,9 @@ class TerrainSolution:
         """One line: the solve and its largest relative residual."""
         worst = (max(self.residuals, key=lambda r: (bool(np.isnan(r[1])), r[1]))   # NaN first
                  if self.residuals else ("-", 0.0))
+        tails = self._tails.statement()
         return (f"LBVP solution on a mapped domain: one coupled system, relative residual "
-                f"{worst[1]:.2e} (sparse LU, scipy SuperLU)")
+                f"{worst[1]:.2e} (sparse LU, scipy SuperLU)" + (f"\n  {tails}" if tails else ""))
 
 
 def __getattr__(name: str) -> Any:

@@ -395,6 +395,10 @@ class NewtonSolver:
                              "max_iterations": self.max_iterations})
         if converged:
             self._trivial_note(sol, guess0)
+            from ..discretize.plan import _solution_statement
+            tails = _solution_statement(plan, coeffs).statement()   # as a linear solve
+            if tails:
+                sol.notes.append(tails)
         if require_convergence and not converged:
             raise NewtonNotConverged(
                 sol.explain(), where=f"NewtonSolver on NLBVP '{self.problem.name}'",

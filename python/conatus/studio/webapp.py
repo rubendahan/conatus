@@ -102,7 +102,10 @@ def _host_name(host: str) -> str:
     """The name part of a ``Host`` header, lower case, without the port or IPv6 brackets."""
     h = host.strip().lower()
     if h.startswith("["):                                   # [::1]:8765
-        return h[1:h.find("]")] if "]" in h else h
+        close = h.find("]")
+        if close < 0 or (h[close + 1:] and not h[close + 1:].startswith(":")):
+            return h                                        # [::1]evil.com: not a loopback name
+        return h[1:close]
     if h.count(":") == 1:
         return h.split(":", 1)[0]
     return h

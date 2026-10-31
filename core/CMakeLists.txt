@@ -64,6 +64,14 @@ endif()
 
 nanobind_add_module(_core NB_STATIC bindings/module.cpp)
 target_link_libraries(_core PRIVATE conatus_core)
+# Hardening of the extension module; ci/check_hardening.sh verifies the result with readelf.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    foreach(_t conatus_core _core)
+        target_compile_options(${_t} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fstack-protector-strong>
+                               $<$<COMPILE_LANGUAGE:CXX>:-D_FORTIFY_SOURCE=2>)
+    endforeach()
+    target_link_options(_core PRIVATE -Wl,-z,relro,-z,now)
+endif()
 # conatus._core.__version__ = the package version (top-level CMakeLists.txt reads it from
 # python/conatus/__init__.py)
 target_compile_definitions(_core PRIVATE CONATUS_VERSION="${CONATUS_VERSION}")

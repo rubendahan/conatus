@@ -371,6 +371,40 @@ _RULES = {"cartesian": "Chebyshev lift into the last modes",
                    "lift both in lam=1, which has a spurious growing tau mode from N_r ~ 48)"}
 
 
+def _refuse_order_drop(comp: Compiled, eqs, unknowns, pressures, conds, coord, n_walls) -> None:
+    """The conditions were counted from the written order. The values of this call can lower it:
+    with nu = 0, ``nu*dz(dz(u)) - u = 1`` has order 0 along z, its two wall conditions have nothing
+    to close, and their taus absorb the difference while the residual stays zero."""
+    from .wellposed import vanishing_terms
+    unread = frozenset(p for p in (getattr(comp, "_time_candidate", None),) if p is not None)
+
+    def sample():                     # the unknown's grid in every coordinate: a given is read on it
+        from ..reference.transforms import grid
+        names = comp.model.geometry.coord_names
+        return [np.asarray(grid(comp.bases[c], dealias=False)).reshape(
+            [-1 if j == i else 1 for j in range(len(names))]) for i, c in enumerate(names)]
+    for f in unknowns:
+        if f in pressures:
+            continue
+        written = max((lhs.order_in(coord, [f]) for lhs, _ in eqs), default=0)
+        found = [vanishing_terms(lhs, coord, f, given=comp.ncc, unread=unread, sample=sample)
+                 for lhs, _ in eqs]
+        q = max((o for o, _ in found), default=0)
+        have = sum(1 for c in conds if c["f"] == f)
+        if q >= written or have <= q * n_walls // 2:
+            continue
+        gone = [t for _, ts in found for t in ts if t.order_in(coord, [f]) > q]
+        raise BoundaryConditionError(
+            f"{f.name}: the terms {', '.join(map(str, gone))} vanish with the values of this call, "
+            f"so the order along {coord.name} drops from {written} to {q} and {have} boundary "
+            f"condition(s) overdetermine {f.name}",
+            where="at(...) calls: " + ", ".join(c["where"] for c in conds if c["f"] == f),
+            why="a condition closes one order of the equation; the taus of the extra conditions "
+                "would absorb the difference and the solve would still report a small residual",
+            fix=f"use a non-zero coefficient, or remove these terms from the equations and declare "
+                f"{q * n_walls // 2} condition(s) on {f.name}", doc=_DOC)
+
+
 def _place_taus(comp: Compiled, eqs, unknowns, V, ns):
     """Conditions -> tau variables, lifts, gauges; returns (variables, [(lhs, rhs)])."""
     model, geo = comp.model, comp.model.geometry
@@ -502,6 +536,7 @@ def _place_taus(comp: Compiled, eqs, unknowns, V, ns):
                          "an extra condition would perturb the equation (one tau too many)"),
                     fix=f"declare {need} condition(s) on {f.name} (boundaries: {sides})" + hint,
                     doc=_DOC)
+        _refuse_order_drop(comp, eqs, unknowns, pressures + mode_pressures, conds, coord, n_walls)
         for i, lst in assign.items():
             cap = eqs[i][0].order_in(coord, V) * n_walls // 2
             if len(lst) > cap:

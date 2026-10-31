@@ -14,6 +14,8 @@ from collections.abc import Callable
 
 import numpy as np
 import sympy
+
+from .._sym import expr as _sym_expr
 from numpy.polynomial import Chebyshev
 
 from ..errors import ConvergenceError
@@ -32,7 +34,7 @@ def as_function(f) -> Callable[[np.ndarray], np.ndarray]:
     """sympy expression in Y, number or callable -> vectorized numpy function of y."""
     if callable(f) and not isinstance(f, sympy.Basic):
         return lambda y: np.asarray(f(y), dtype=complex) + 0 * y
-    e = sympy.sympify(f)
+    e = _sym_expr(f)
     fn = sympy.lambdify(Y, e, "numpy")
     return lambda y: np.asarray(fn(y), dtype=complex) + 0 * y
 

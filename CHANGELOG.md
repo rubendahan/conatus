@@ -2,6 +2,75 @@
 
 All notable changes to Conatus.
 
+## [0.2.3] - 2026-10-31
+
+A correction release. It adds a resolution statement to boundary-value solves, fixes the security
+items listed below, and fixes the Studio gallery. Some calls now warn or refuse, listed under Changed.
+
+### Security
+
+- `to_script()`: a Dedalus file name with quotes and a newline could put code into the generated program.
+  It is now escaped, and only the template's imports are generated.
+- `?format=png` on a frame is limited to 2^24 values, checked before anything is allocated, and runs off
+  the hub's event loop. A small planted frame could exhaust memory and stall the hub.
+- `HubClient` refuses a redirect to another origin. It used to send the bearer token to the new address.
+- Control files, relay reads and atomic record writes do not follow planted links.
+- Recorded command lines also hide `--pass`, `--pwd`, `--key`, `--bearer`, `--signature`, `TOKEN=value`,
+  a value that starts with a dash, and URL passwords and secret query values.
+- Checkpoint discovery reads `.npz` shapes from headers, so a small file declaring gigabytes no longer
+  allocates them. HDF5 checkpoints holding a link to other data are skipped.
+- The native core refuses an `ldab` above the range of `int`, is safe when an RHS callback calls
+  `set_rhs(None)` on itself, and is built with a stack protector and full RELRO. FORTIFY is on, and it rewrites no call in this code.
+- Added `SECURITY.md`. A run registry carries code: treat one you receive as you would a script.
+- Hub: an HTTP connection idle for 300 s is closed, and a throttled address writes one audit line per 15 minutes.
+  `[::1]evil.com` is no longer read as loopback.
+
+### Changed
+
+Behaviour changes:
+
+- `m.solve()` and other boundary-value solves warn with `UnderResolvedWarning` when an unknown's relative
+  spectral tail exceeds `SOLVE_TAIL_TOL = 1e-4` (8 or more mode numbers), and `explain()` prints the
+  tail. They used to say nothing. Nothing else changes: the values and `N` are as before. A mapped domain
+  or a compound, Hermite or Laguerre direction is not judged, and `explain()` says so. The right-hand side of a
+  Cartesian linear solve is read as well, with `SOLVE_DATA_TAIL_TOL = 1e-2`. This fixes the limitation
+  listed under 0.2.2. A solution with real content in the last 10 % of its modes is warned even if it is
+  exact there, such as a polynomial of degree `N - 1`.
+- A coefficient that is exactly zero, or terms that cancel, now lower the order that boundary conditions
+  are counted against. `nu*dz(dz(u)) - u = 1` with `nu = 0` and two wall conditions raises
+  `BoundaryConditionError`. It used to return a wrong answer with residual 0. This also applies to
+  evolution and eigenvalue models: Euler written as `nu*lap(u)` with `nu = 0` and no-slip or free-slip
+  conditions on Chebyshev walls is refused. A zero number or a given callable that is zero on the grid
+  counts as a zero coefficient, also under a derivative.
+- A SymPy string given as a base flow or coefficient (`parallel_shear_flow`, `conatus.sensitivity`) raises
+  `InputTypeError`, because SymPy evaluates a string as Python. Pass an expression, a number or a callable.
+- `conatus[studio]` needs `tornado>=6.6`.
+- `hub serve --agent-scope` defaults to `read`, and an agent or user is limited to 60 commands a minute on
+  the API (429 above).
+- `?format=png` scales a frame by its longest side, not its width, to reach 256 px.
+
+### Fixed
+
+- One NaN in a run's watch metadata emptied the Studio gallery for every run. Non-finite values are now
+  stored and sent as the strings `nan`, `inf` and `-inf`, and displayed as such. The hub also reads them
+  from older files.
+- One malformed status record made `/api/v1/runs` and `/board` answer 500 for all runs. A run whose
+  records cannot be read is now listed as `unreadable`.
+- The hub's limit of 200 runs is stated in the gallery, and a deep link to a dropped run says so.
+  `hub serve --max-runs` raises it, and the hub logs the first time it drops a run.
+- `0**-1` in an equation raises a typed error instead of `ZeroDivisionError`.
+
+### Known limitations
+
+- An order drop that shows only across a first-order system, or a point `nu = 0` of a `parametric` pencil, is
+  not refused. The resolution statement reads the solution and the data, and passes a small unresolved
+  layer beside a much larger smooth part. Compare two values of `N`.
+- A malformed checkpoint can still cost time before it is refused. Read files from people you trust.
+- Recorded command lines keep short options such as `-p` and code records keep the diff of tracked
+  files, so a secret passed or committed that way stays in the record.
+- The hub's content security policy allows any WebSocket address, and it accepts HTTP/1.0 requests without
+  a `Host` header. The hosted mode, which is not part of the public release, trusts proxy headers on its port.
+
 ## [0.2.2] - 2026-10-30
 
 A correction release from an external review of 0.2.1. Upgrading is recommended: several paths returned

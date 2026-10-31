@@ -1,4 +1,4 @@
-# t08_polar: PASS (exit 0) in 8.8 s | 2026-10-30 | script sha256 599eff30f5da35ed
+# t08_polar: PASS (exit 0) in 11.4 s | 2026-10-31 | script sha256 599eff30f5da35ed
 Model 'vibrating drum': Disk(radius=1) (disk)
 Unknowns: T (scalar)
 Eigenvalue: s; growth = Re s, declared with the eigenvalue s

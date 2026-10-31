@@ -90,6 +90,14 @@ def run_state(st: Any, now: float | None = None) -> str:
     return "running" if now - float(st.last_wall or 0) < LIVE_S else "stale"
 
 
+def _count(v: Any) -> int:
+    """A counter from a telemetry record; anything that is not a number counts as 0."""
+    try:
+        return max(0, int(v or 0))
+    except (TypeError, ValueError, OverflowError):
+        return 0
+
+
 def _non_finite(v: Any) -> bool:
     return isinstance(v, str) and v.strip().lower() in ("nan", "inf", "-inf", "+inf")
 
@@ -134,7 +142,7 @@ def alerts(st: Any, now: float | None = None, relay_connected: bool | None = Non
     if logged:
         out.append(dict(code="log_errors", level="warning",
                         message=f"{len(logged)} error(s) in the log; last: {logged[-1].get('message')}"))
-    dr, df = int(status.get("dropped_records") or 0), int(status.get("dropped_frames") or 0)
+    dr, df = _count(status.get("dropped_records")), _count(status.get("dropped_frames"))
     if dr or df:
         out.append(dict(code="dropped", level="info",
                         message=f"telemetry dropped {dr} record(s) and {df} frame(s) (declared; the "
@@ -347,15 +355,26 @@ def _png(rgb: np.ndarray) -> bytes:
             + chunk(b"IDAT", zlib.compress(raw, 6)) + chunk(b"IEND", b""))
 
 
+#: Largest frame ``frame_png`` draws, and largest image it returns (about 4096 x 4096).
+MAX_PNG_PIXELS = 1 << 24
+
+
 def frame_png(fr: Mapping, *, scale: str | None = None, upscale: int = 0) -> bytes:
     """PNG of an 8-bit frame (2D, or the middle slice of axis 1 of a 3D frame) in its declared
     brand scale (``signed``: zero is black, symmetric about 0, like the app). First array axis
     across, second up (the app's orientation). ``upscale``: nearest-neighbour factor (0: so that
-    the image is at least 256 px wide). ValueError for other kinds or encodings."""
+    the longest side is at least 256 px). ValueError for other kinds or encodings, and for a frame
+    above ``MAX_PNG_PIXELS``, checked before anything is decoded or allocated."""
     if fr.get("kind") not in ("frame", "frame3d") or fr.get("encoding") != "uint8-minmax-base64":
         raise ValueError(f"no picture for a {fr.get('kind')!r} frame (encoding {fr.get('encoding')!r})")
     shape = [int(n) for n in fr["shape"]]
-    q = np.frombuffer(base64.b64decode(fr["data"]), np.uint8).reshape(shape)
+    data = fr["data"]
+    size = math.prod(shape)
+    if len(shape) not in (2, 3) or min(shape) < 1 or size > MAX_PNG_PIXELS:
+        raise ValueError(f"no picture for a frame of shape {shape} (at most {MAX_PNG_PIXELS} values)")
+    if not isinstance(data, str) or len(data) > 4 * (size // 3 + 1):
+        raise ValueError(f"frame data larger than its shape {shape}")
+    q = np.frombuffer(base64.b64decode(data), np.uint8).reshape(shape)
     if q.ndim == 3:
         q = q[:, shape[1] // 2, :]
     lo, hi = float(fr["min"]), float(fr["max"])
@@ -368,7 +387,8 @@ def frame_png(fr: Mapping, *, scale: str | None = None, upscale: int = 0) -> byt
         p = (v - lo) / ((hi - lo) or 1.0)
     idx = np.clip(np.round(p * 255), 0, 255).astype(np.uint8)
     img = _lut(sc)[idx.T[::-1]]                     # x across, y up
-    k = int(upscale) or max(1, -(-256 // img.shape[1]))
+    k = int(upscale) or max(1, -(-256 // max(img.shape[:2])))
+    k = min(k, max(1, math.isqrt(MAX_PNG_PIXELS // (img.shape[0] * img.shape[1]))))
     if k > 1:
         img = np.repeat(np.repeat(img, k, axis=0), k, axis=1)
     return _png(np.ascontiguousarray(img))

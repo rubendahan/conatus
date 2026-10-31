@@ -28,6 +28,8 @@ from dataclasses import dataclass
 
 import numpy as np
 import sympy
+
+from .._sym import expr as _sym_expr
 from numpy.polynomial.hermite import hermval
 
 from ..errors import OptionError
@@ -49,7 +51,7 @@ def linear_ginzburg_landau(*, nu: complex, gamma: complex, mu, bounds: tuple[flo
     if not b > a:
         raise OptionError(f"bounds = {bounds}: expected (a, b) with b > a")
     nu_, g_ = sympy.nsimplify(complex(nu)), sympy.nsimplify(complex(gamma))
-    op = {2: g_, 1: -nu_, 0: sympy.sympify(mu)}
+    op = {2: g_, 1: -nu_, 0: _sym_expr(mu)}
     op = {k: c for k, c in op.items() if c != 0}
     bcs = (("q", 0, "left"), ("q", 0, "right"))
     return ModalSystem(f"{name}: nu = {complex(nu)}, gamma = {complex(gamma)}, mu = {mu}",

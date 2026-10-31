@@ -60,9 +60,22 @@ sim.run(steps=20)
 | a declared eigenvalue | eigenvalue problem | `m.eigenvalues(N=...)` ({doc}`dynamics/index`) |
 | neither, linear | boundary-value problem | `m.discretize(N).solve()` |
 
-A small residual does not show that a linear boundary-value solution is resolved. With an under-resolved
-boundary layer (`nu = 1e-10`, `N = 32`), `solve()` returns a wrong answer with residual 7e-18 and no warning,
-and it accepts `nu = 0` with two wall conditions. Check by raising `N`.
+A small residual does not show that a linear boundary-value solution is resolved, since it measures the
+discrete system. So `solve()` also measures the spectral tail of each unknown along each direction: above
+`SOLVE_TAIL_TOL` it issues an `UnderResolvedWarning`, and `sol.explain()` prints the tail in every case.
+It never changes `N`: `resolution_report(sol.plan, sol)` estimates how many modes are needed. A tail is a
+necessary sign of convergence, not a proof. A direction below 8 mode numbers is not judged, nor is a mapped
+domain or a compound, Hermite or Laguerre direction. `explain()` says so, so compare two values of `N` there.
+On a Cartesian domain the right-hand side is read too, above `SOLVE_DATA_TAIL_TOL`, because integrating
+a step in the data can leave a small tail on the solution and wrong values. A solution with real content
+in the last 10 % of its modes is warned even if it is exact there, such as a polynomial of degree `N - 1`
+or a Fourier mode just below Nyquist.
+
+Conditions are counted from the order the values of this call leave. With `nu = 0`,
+`nu*dz(dz(u)) - u = 1` has order 0 along `z`, so two wall conditions are refused with a
+`BoundaryConditionError`. The same holds for any coefficient that vanishes or terms that cancel, on boundary-value, evolution and
+eigenvalue models. A pencil from `m.parametric` is compiled at its non-zero nominal value and its later
+points are not counted again, so compare with `m.eigenvalues(N, nu=...)` at a point where a term vanishes.
 
 An evolution model also gives its linear stability problem: `m.linearize(about={u: 0, T: lambda z: -z})`
 returns normal modes $\propto e^{st}$ about that base state.

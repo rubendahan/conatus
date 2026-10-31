@@ -51,6 +51,20 @@ class StudioError(Exception):
 
 
 # ============================================================================== hub transport
+class _SameOriginRedirect(urllib.request.HTTPRedirectHandler):
+    """Follow a redirect only within scheme, host and port. urllib would otherwise send the
+    ``Authorization`` header to the new address, also over plain HTTP."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        old, new = urllib.parse.urlsplit(req.full_url), urllib.parse.urlsplit(newurl)
+        if (old.scheme, old.hostname, old.port) != (new.scheme, new.hostname, new.port):
+            return None                                 # urllib then raises the HTTPError
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_OPENER = urllib.request.build_opener(_SameOriginRedirect)
+
+
 class HubClient:
     """The hub's ``/api/v1`` over HTTP(S). Every method returns the JSON answer (a dict with
     ``ok``; refusals are answers too, with ``error`` and ``code``), except :meth:`frame` with
@@ -78,10 +92,14 @@ class HubClient:
             "Authorization": f"Bearer {self.token}", "Accept": "application/json",
             **({"Content-Type": "application/json"} if data is not None else {})})
         try:
-            with urllib.request.urlopen(req, timeout=timeout or self.timeout) as r:
+            with _OPENER.open(req, timeout=timeout or self.timeout) as r:
                 payload = r.read()
                 status = r.status
         except urllib.error.HTTPError as err:
+            if 300 <= err.code < 400:
+                raise StudioError(f"hub {self.url} redirected to {err.headers.get('Location')!r}: "
+                                  "refused, a token is sent only to its own origin; check the "
+                                  "hub's address", err.code) from None
             payload, status = err.read(), err.code
         except (urllib.error.URLError, OSError, TimeoutError) as err:
             raise StudioError(f"hub {self.url} unreachable: {getattr(err, 'reason', err)}") from None

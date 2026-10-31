@@ -32,6 +32,8 @@ from dataclasses import replace
 
 import numpy as np
 import sympy
+
+from .._sym import expr as _sym_expr
 from numpy.polynomial import Chebyshev
 
 from ..errors import BoundaryConditionError, OptionError, UnsupportedError
@@ -51,7 +53,7 @@ def _variation(factory: Callable, base) -> dict:
     """{(i, j): {k: {m: e_{k,m}(y)}}}: ∂A_ij/∂U·φ = Σ_k Σ_m e_{k,m} φ^{(m)} ∂^k (sympy)."""
     phi = sympy.Function("delta_base")(Y)
     eps = sympy.Symbol("epsilon_variation")
-    s1 = factory(sympy.sympify(base) + eps * phi)
+    s1 = factory(_sym_expr(base) + eps * phi)
     P = [sympy.Symbol(f"P{m}") for m in range(MAX_PHI_ORDER + 1)]
     rep = {sympy.Derivative(phi, (Y, m)): P[m] for m in range(MAX_PHI_ORDER, 0, -1)}
     for blk in ("G", "C"):
@@ -117,13 +119,13 @@ class BaseFlowSensitivity:
         contributes only its first-order term (factory(U + dU) - factory(U) would also hold the
         higher-order ones)."""
         eps = sympy.Symbol("epsilon_variation")
-        s1 = self.factory(sympy.sympify(self.base) + eps * sympy.sympify(dU))
+        s1 = self.factory(_sym_expr(self.base) + eps * _sym_expr(dU))
         for blk in ("G", "C"):
             for key, op in getattr(s1, blk).items():
                 if any(sympy.diff(c, eps) != 0 for c in op.values()):
                     raise UnsupportedError(f"block {blk}{key} depends on the base state: only the "
                                            "state block A may")
-        tangent = {key: {k: sympy.diff(c, eps).subs(eps, 0) + sympy.sympify(c).subs(eps, 0)
+        tangent = {key: {k: sympy.diff(c, eps).subs(eps, 0) + _sym_expr(c).subs(eps, 0)
                          for k, c in op.items()} for key, op in s1.A.items()}
         return self.pair.shift_towards(replace(s1, A=tangent))
 
@@ -138,7 +140,7 @@ class BaseFlowSensitivity:
 def base_flow_sensitivity(factory: Callable, base, *, N: int, target: complex, adjoint: str,
                           infinite_tol: float, adjoint_bcs=None) -> BaseFlowSensitivity:
     """Gradient of the eigenvalue nearest ``target`` of ``factory(base)`` w.r.t. the base state."""
-    system = factory(sympy.sympify(base))
+    system = factory(_sym_expr(base))
     if not isinstance(system, ModalSystem):
         raise OptionError("factory(U) must return a ModalSystem")
     pair = mode_pair(system, N=N, target=target, adjoint=adjoint, infinite_tol=infinite_tol,

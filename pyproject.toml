@@ -73,7 +73,7 @@ gpu = ["cupy-cuda12x>=13"]
 notebook = ["ipywidgets>=8"]
 # Studio server, outbound relay and hosted hub. Never needed by the library itself:
 # `import conatus` and `conatus.telemetry` work without it (tests/studio/test_relay_hub.py).
-studio = ["tornado>=6.3"]
+studio = ["tornado>=6.6"]
 # Dedalus, for the optional comparison scripts only (never imported by conatus). Its pip build needs MPI
 # and FFTW; prefer `micromamba install -c conda-forge dedalus`.
 dedalus-compare = ["dedalus>=3.0"]

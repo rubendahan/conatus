@@ -177,11 +177,11 @@ class Telemetry:
         self._thread.start()
         head = dict(protocol=PROTOCOL_VERSION, host=socket.gethostname(), pid=os.getpid(),
                     slurm_job=os.environ.get("SLURM_JOB_ID"), settings=self.settings(),
-                    meta=dict(meta or {}))
+                    meta=_deep_jsonable(dict(meta or {})))
         if self.views is not None:
-            head["views"] = self.views
+            head["views"] = _deep_jsonable(self.views)
         if self.stats is not None:
-            head["stats"] = self.stats
+            head["stats"] = _deep_jsonable(self.stats)
         if self.settable is not None:
             head["controls"] = self.settable
         if self.film_max_bytes:
@@ -344,7 +344,8 @@ class Telemetry:
         self._control_last = now
         path = self.spool / f"{self.run_id}.control.jsonl"
         try:
-            with path.open("rb") as fh:
+            # never through a planted link: the control file is the only way into a run
+            with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW), "rb") as fh:
                 problem = control_file_problem(os.fstat(fh.fileno()))
                 fh.seek(self._control_pos)
                 chunk = fh.read()

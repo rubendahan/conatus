@@ -1,27 +1,27 @@
 {
  "t00_first_steps": {
-  "elapsed_s": 3.2,
+  "elapsed_s": 3.8,
   "exit": 0,
   "script_sha256": "ab11826364e6e045",
   "status": "PASS",
   "stderr": false
  },
  "t00_getting_started": {
-  "elapsed_s": 91.4,
+  "elapsed_s": 108.6,
   "exit": 0,
   "script_sha256": "aa3c621c10b74264",
   "status": "PASS",
   "stderr": false
  },
  "t01_orr_sommerfeld": {
-  "elapsed_s": 5.9,
+  "elapsed_s": 6.8,
   "exit": 0,
   "script_sha256": "2f9874f5c6622a51",
   "status": "PASS",
   "stderr": false
  },
  "t02a_rayleigh_benard_cpu": {
-  "elapsed_s": 19.7,
+  "elapsed_s": 24.6,
   "exit": 0,
   "script_sha256": "90eb240188d497ff",
   "status": "PASS",
@@ -34,91 +34,91 @@
   "stderr": false
  },
  "t03_symmetries": {
-  "elapsed_s": 1.8,
+  "elapsed_s": 2.3,
   "exit": 0,
   "script_sha256": "06b9053531b4dd1f",
   "status": "PASS",
   "stderr": false
  },
  "t04_bratu": {
-  "elapsed_s": 6.1,
+  "elapsed_s": 8.1,
   "exit": 0,
   "script_sha256": "997fc91ce53266ca",
   "status": "PASS",
   "stderr": false
  },
  "t05_ks_orbits": {
-  "elapsed_s": 56.7,
+  "elapsed_s": 68.4,
   "exit": 0,
   "script_sha256": "1481734c97ed43b4",
   "status": "PASS",
   "stderr": false
  },
  "t08_polar": {
-  "elapsed_s": 8.8,
+  "elapsed_s": 11.4,
   "exit": 0,
   "script_sha256": "599eff30f5da35ed",
   "status": "PASS",
   "stderr": false
  },
  "t09_studio": {
-  "elapsed_s": 1.5,
+  "elapsed_s": 2.0,
   "exit": 0,
   "script_sha256": "c02d71c99dfd0e23",
   "status": "PASS",
   "stderr": false
  },
  "t10_bifurcations": {
-  "elapsed_s": 3.2,
+  "elapsed_s": 4.1,
   "exit": 0,
   "script_sha256": "6cba9156f3e55076",
   "status": "PASS",
   "stderr": false
  },
  "t11_runs": {
-  "elapsed_s": 1.9,
+  "elapsed_s": 2.3,
   "exit": 0,
   "script_sha256": "8a4e7db6a6b083fd",
   "status": "PASS",
   "stderr": false
  },
  "t12_chaos_ensembles": {
-  "elapsed_s": 103.2,
+  "elapsed_s": 128.0,
   "exit": 0,
   "script_sha256": "26241358f979bb75",
   "status": "PASS",
   "stderr": false
  },
  "t13_sensitivity_data": {
-  "elapsed_s": 2.6,
+  "elapsed_s": 3.3,
   "exit": 0,
   "script_sha256": "04d7e972756e5e53",
   "status": "PASS",
   "stderr": false
  },
  "t14_from_dedalus": {
-  "elapsed_s": 3.1,
+  "elapsed_s": 4.0,
   "exit": 0,
   "script_sha256": "5a740420eb488748",
   "status": "PASS",
   "stderr": false
  },
  "t14b_dedalus_check": {
-  "elapsed_s": 5.5,
+  "elapsed_s": 6.0,
   "exit": 0,
   "script_sha256": "763cece2d005a63e",
   "status": "PASS",
   "stderr": false
  },
  "t15_ks_covariant": {
-  "elapsed_s": 38.6,
+  "elapsed_s": 45.3,
   "exit": 0,
   "script_sha256": "77224d7831ae3936",
   "status": "PASS",
   "stderr": false
  },
  "t16_particles_dye": {
-  "elapsed_s": 7.5,
+  "elapsed_s": 9.6,
   "exit": 0,
   "script_sha256": "5421cf06aaa42843",
   "status": "PASS",

@@ -195,7 +195,10 @@ class DedalusTranslation:
             call += f", overrides={self.overrides!r}"
         if self.entry is not None:
             call += f", entry={self.entry!r}"
-        out = [f'"""Conatus program translated from {self.source_name} (conatus.from_dedalus).',
+        # a file name can hold quotes and newlines: repr() escapes the newlines and backslashes, and
+        # the double quotes are escaped so that no name can close this docstring
+        name = repr(str(self.source_name)).replace('"', '\\"')
+        out = [f'"""Conatus program translated from {name} (conatus.from_dedalus).',
                "",
                "Runnable: the Dedalus source below is translated again (never executed) and the",
                "translated problem is solved with the settings the script declares. The program",

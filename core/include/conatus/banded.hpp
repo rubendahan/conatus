@@ -34,6 +34,8 @@
 #include <numeric>
 #include <stdexcept>
 #include <string>
+#include <cstdint>
+#include <limits>
 #include <vector>
 
 #include "conatus/lapack.hpp"
@@ -190,7 +192,10 @@ BorderedLayout<T> make_bordered_layout(const Csr<T>& A, const std::vector<int>& 
     Lo.perm = border_rows;
     for (int i = 0; i < n; ++i)
         if (!is_border[i]) Lo.perm.push_back(i);
-    Lo.ldab = 2 * Lo.kl + Lo.ku + 1;
+    const std::int64_t ldab64 = std::int64_t{2} * Lo.kl + Lo.ku + 1;   // the sum can overflow int
+    if (ldab64 > std::numeric_limits<int>::max())
+        throw std::invalid_argument("banded layout: LAPACK's ldab exceeds the range of int");
+    Lo.ldab = static_cast<int>(ldab64);
     Lo.ab.assign(static_cast<std::size_t>(Lo.ldab) * n, T(0));
     Lo.Vt.assign(static_cast<std::size_t>(r) * n, T(0));
     auto AB = [&](int i, int j) -> T& {

@@ -37,6 +37,8 @@ from math import comb
 import numpy as np
 import sympy
 
+from .._sym import expr as _sym_expr
+
 from ..errors import BoundaryConditionError, EquationError, OptionError
 from ..linearize.inner_product import chebyshev_gram
 from .._repr import compact_repr
@@ -366,7 +368,7 @@ def parallel_shear_flow(U, *, kx: float, kz: float, Re: float,
         raise OptionError(f"walls='{walls}': only 'no-slip' is implemented")
     if not Re > 0:
         raise OptionError(f"Re must be > 0 (got {Re})")
-    U = sympy.sympify(U)
+    U = _sym_expr(U)
     kx_, kz_, Re_ = sympy.Float(kx), sympy.Float(kz), sympy.Float(Re)
     lap = {2: 1 / Re_, 0: -(kx_ ** 2 + kz_ ** 2) / Re_}
     adv = _add(lap, {0: -sympy.I * kx_ * U})

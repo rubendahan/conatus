@@ -386,7 +386,12 @@ class _Parser:
                                 why="power() is defined for numeric exponents; a field exponent "
                                     "would be exp(b*log(a))", fix="write exp(b*log(a)) explicitly")
             if _is_number(base.value):
-                return _Pos(base.value ** ex.value, base.pos)
+                try:
+                    return _Pos(base.value ** ex.value, base.pos)
+                except (ZeroDivisionError, OverflowError) as err:
+                    raise self._err(f"{base.value!r}**{ex.value!r} has no finite value ({err})",
+                                    op.pos, why="the power of these two numbers is not a number",
+                                    fix="correct the exponent or the base") from None
             return _Pos(self._apply(lambda a: power(a, _real_if_close(ex.value)), base, op.pos),
                         base.pos)
         return base

@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-30T18:52:45.977Z",
+ "generated": "2026-10-31T04:28:50.258Z",
  "source": "",
  "extras": [
   {
@@ -19,7 +19,7 @@
   },
   {
    "name": "studio",
-   "adds": "tornado ≥ 6.3",
+   "adds": "tornado ≥ 6.6",
    "for": "The Studio server: watch and control runs from a browser."
   },
   {

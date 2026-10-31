@@ -11,6 +11,7 @@ import json
 import math
 import os
 import re
+import secrets
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -167,9 +168,16 @@ def slug(name: str) -> str:
 def atomic_write_json(path: Path, obj: Any) -> None:
     """Write JSON next to ``path`` then ``os.replace`` (atomic on POSIX, also on CephFS): a reader
     sees the old file or the new one, never a half-written one."""
-    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    tmp.write_text(json.dumps(obj, indent=1, sort_keys=True, default=str))
-    os.replace(tmp, path)
+    # O_EXCL with a random name: a link planted at a predictable name is never followed
+    tmp = path.with_name(f".{path.name}.{secrets.token_hex(8)}.tmp")
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666)
+    try:
+        with os.fdopen(fd, "w") as fh:
+            fh.write(json.dumps(obj, indent=1, sort_keys=True, default=str))
+        os.replace(tmp, path)
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
 
 
 class FileLock:

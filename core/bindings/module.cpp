@@ -214,12 +214,15 @@ void bind_linalg(nb::module_& m, const char* suffix) {
             s.py_rhs = f;                            // the owning reference, visible to the GC
             PyObject* fp = f.ptr();                  // borrowed: valid while py_rhs holds it
             s.set_rhs([fp, n](const T* x, double t, T* out) {
-                size_t shape[1] = {size_t(n)};
+                // locals: the callback may call set_rhs(None), which destroys this closure
+                const int size = n;
+                nb::object callback = nb::borrow<nb::object>(fp);
+                size_t shape[1] = {size_t(size)};
                 nb::ndarray<nb::numpy, const T> xv(x, 1, shape, nb::handle());
-                nb::object r = nb::borrow<nb::object>(fp)(xv, t);
+                nb::object r = callback(xv, t);
                 auto ra = nb::cast<nb::ndarray<const T, nb::ndim<1>, nb::c_contig>>(r);
-                if (ra.shape(0) != size_t(n)) throw std::invalid_argument("rhs callback: wrong length");
-                std::memcpy(out, ra.data(), sizeof(T) * n);
+                if (ra.shape(0) != size_t(size)) throw std::invalid_argument("rhs callback: wrong length");
+                if (size > 0) std::memcpy(out, ra.data(), sizeof(T) * size);
             });
         }, nb::arg("f").none())
         .def("reset", [](IM& s) { s.reset(); },

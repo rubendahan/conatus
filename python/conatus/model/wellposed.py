@@ -23,7 +23,10 @@ Kuramoto--Sivashinsky is dominated by ``+lap(lap(u))``) and are not reported. No
 from __future__ import annotations
 
 import warnings
+from collections.abc import Mapping
 from typing import Any
+
+import numpy as np
 
 from ..ir import Add, Constant, Field, Mul, Parameter
 from ..ir.expr_algebra import Power
@@ -95,6 +98,71 @@ def _symbol(e: Any, u: Field, coord: Any) -> dict[int, complex] | None:
                 out[p] = out.get(p, 0) + c
         return out
     return None
+
+
+def _given_zero(e: Any, given: Mapping[Any, Any], sample: Any = None) -> bool:
+    """A given field identically zero: a number or an array, or a callable (the compiled form of
+    every native given) that is zero on the grids ``sample()``."""
+    if not isinstance(e, Field) or e not in given:
+        return False
+    data = given[e]
+    try:
+        if callable(data):
+            if sample is None:
+                return False
+            data = data(*sample())
+        return bool(np.all(np.asarray(data) == 0))
+    except Exception:  # noqa: BLE001 -- user callable: a failure here is not this check's to report
+        return False
+
+
+def vanishing_terms(lhs: Any, coord: Any, f: Field, *, given: Mapping[Any, Any] | None = None,
+                    unread: frozenset = frozenset(), sample: Any = None) -> tuple[int, list]:
+    """Differential order of ``lhs`` in ``f`` along ``coord`` once the values of this call are in,
+    and the terms that those values remove.
+
+    A term of ``lhs`` is a numeric coefficient times the rest. A zero coefficient or an identically
+    zero given factor removes it, also under a derivative (``dz(nu*dz(u))``), and like terms are
+    added first, so ``a*dz(u) + b*dz(u)`` with ``a = -b`` is removed as well. Parameters in
+    ``unread`` (time, the free parameters of a pencil) and anything else without a number stay, so
+    the result is an upper bound on the order: a drop is never guessed. ``sample()`` gives the
+    coordinate grids on which a callable given is read."""
+    given = given or {}
+
+    def value(a: Any) -> complex | None:
+        return None if a.free_parameters() & unread else _num(a)
+
+    def vanishes(e: Any) -> bool:
+        if isinstance(e, Mul):
+            return any(value(a) == 0 or vanishes(a) for a in e.args)
+        if isinstance(e, Add):
+            return all(vanishes(a) for a in e.args)
+        if isinstance(e, (Differentiate, Laplacian, Gradient, Divergence, Curl)):
+            return vanishes(e.args[0])
+        return _given_zero(e, given, sample)
+
+    groups: dict[str, list] = {}
+    for t in (lhs.args if isinstance(lhs, Add) else ((lhs,) if not lhs.is_zero() else ())):
+        if f not in t.free_fields():
+            continue
+        coef, rest = 1 + 0j, []
+        for a in (t.args if isinstance(t, Mul) else (t,)):
+            v = value(a)
+            if v is None:
+                rest.append(a)
+            else:
+                coef *= v
+        if any(vanishes(a) for a in rest):
+            coef = 0j
+        key = " * ".join(sorted(str(a) for a in rest))
+        groups.setdefault(key, []).append((coef, t))
+    order, gone = 0, []
+    for items in groups.values():
+        if sum(c for c, _ in items) == 0:
+            gone.extend(t for _, t in items)
+        else:
+            order = max(order, max(t.order_in(coord, [f]) for _, t in items))
+    return order, gone
 
 
 def _order(e: Any) -> int:

@@ -25,7 +25,6 @@ import json
 import os
 import platform
 import queue
-import re
 import secrets
 import shutil
 import socket
@@ -40,6 +39,7 @@ from typing import Any
 
 import numpy as np
 
+from .._redact import redact_argv
 from ..errors import OptionError
 from .._explain import full_explain
 from ._util import atomic_write_json, file_sha256, from_jsonable, jsonable, slug
@@ -95,29 +95,10 @@ def _hardware() -> dict:
             "slurm_gpus": os.environ.get("SLURM_JOB_GPUS") or os.environ.get("SLURM_GPUS_ON_NODE")}
 
 
-#: ``--passes`` nor ``--keyframes``)
-_SECRET_OPTION = re.compile(r"TOKEN|SECRET|PASSW|PASSPHRASE|CREDENTIAL|(API|PRIVATE|ACCESS)[-_]?KEY|"
-                            r"AUTH|COOKIE|SESSION", re.I)
-
-
 def _argv() -> list[str]:
-    """``sys.argv`` with the value of every credential-like option (``--token X``,
-    ``--api-key=X``) replaced by ``<redacted>`` (security the run record, kept
-    on a shared store and shown by the Studio, held the command line verbatim)."""
-    out, hide = [], False
-    for a in sys.argv:
-        if hide and not a.startswith("-"):
-            out.append("<redacted>")
-            hide = False
-            continue
-        hide = False
-        if a.startswith("-") and _SECRET_OPTION.search(a.split("=", 1)[0]):
-            if "=" in a:
-                a = a.split("=", 1)[0] + "=<redacted>"
-            else:
-                hide = True
-        out.append(a)
-    return out
+    """``sys.argv`` without credentials (:func:`conatus._redact.redact_argv`): the run record, kept
+    on a shared store and shown by the Studio, used to hold the command line verbatim."""
+    return redact_argv(sys.argv)
 
 
 def _slurm() -> dict:

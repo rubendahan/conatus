@@ -100,6 +100,7 @@ def read_checkpoint(path: str | Path) -> tuple[dict, dict[str, np.ndarray]]:
                                   "multistep history an exact restart needs",
                               fix="restart from a file written by save_checkpoint / sim.save "
                                   "(or sim.checkpoints)", doc=DOC)
+        _refuse_links(f, path)
         meta = read_json_attr(f, "meta")
         arrays = {"X": f["state/X"][()]}
         for k in f["history"]:
@@ -148,20 +149,18 @@ def checkpoint_meta(p: Path) -> dict | None:
     without the state ``X`` (any file with an ``iteration`` was a candidate)."""
     if ".part" in p.name:
         return None
-    import json
     try:
         if p.suffix == ".npz":
-            with np.load(p) as d:
-                if "X" not in d.files or "meta" not in d.files:
-                    return None
-                meta = json.loads(str(d["meta"]))
-                shapes = {k: d[k].shape for k in d.files if k != "meta"}
+            shapes, meta = _npz_header(p)
+            if meta is None:
+                return None
         else:
             with open_h5(p, "r") as f:
                 fmt = f.attrs.get("format")
                 fmt = fmt.decode() if isinstance(fmt, bytes) else fmt
                 if fmt != FORMAT or "state/X" not in f:
                     return None
+                _refuse_links(f, p)
                 meta = read_json_attr(f, "meta")
                 hist = f["history"] if "history" in f else {}
                 shapes = {"X": f["state/X"].shape, **{k: hist[k].shape for k in hist}}
@@ -174,6 +173,55 @@ def checkpoint_meta(p: Path) -> dict | None:
         return meta
     except (OSError, KeyError, ValueError, TypeError):    # unreadable or foreign file: skipped
         return None
+
+
+#: Largest ``meta`` entry of a ``.npz`` checkpoint read to find its iteration.
+_META_MAX_BYTES = 1 << 24
+
+
+def _npz_header(p: Path) -> tuple[dict, Any]:
+    """Shapes of a ``.npz`` checkpoint from its array headers, and its ``meta`` (None when ``X`` or
+    ``meta`` is missing or ``meta`` is oversized). Nothing but ``meta`` is decompressed: a small
+    file can declare gigabytes, and asking a checkpoint for its iteration must not allocate them."""
+    import json
+    import zipfile
+    shapes: dict = {}
+    with zipfile.ZipFile(p) as z:
+        names = {n.removesuffix(".npy"): n for n in z.namelist()}
+        if "X" not in names or "meta" not in names:
+            return shapes, None
+        if z.getinfo(names["meta"]).file_size > _META_MAX_BYTES:
+            return shapes, None
+        for k, n in names.items():
+            if k == "meta":
+                continue
+            with z.open(n) as fh:
+                version = np.lib.format.read_magic(fh)
+                reader = (np.lib.format.read_array_header_1_0 if version == (1, 0)
+                          else np.lib.format.read_array_header_2_0)
+                shapes[k] = reader(fh)[0]
+    with np.load(p, allow_pickle=False) as d:
+        return shapes, json.loads(str(d["meta"]))
+
+
+def _refuse_links(f: Any, p: Path) -> None:
+    """A checkpoint is one self-contained file: an external or soft link would make a restart read
+    another file, chosen by whoever wrote this one."""
+    import h5py
+    seen: list[str] = []
+
+    def walk(group: Any, prefix: str) -> None:
+        for name in group:
+            link = group.get(name, getlink=True)
+            if not isinstance(link, h5py.HardLink):
+                seen.append(prefix + name)
+                continue
+            obj = group[name]
+            if isinstance(obj, h5py.Group):
+                walk(obj, prefix + name + "/")
+    walk(f, "")
+    if seen:
+        raise ValueError(f"{p}: links to other data refused in a checkpoint: {seen[:4]}")
 
 
 def checkpoint_iteration(p: Path) -> int | None:

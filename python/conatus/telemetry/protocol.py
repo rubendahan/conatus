@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import base64
 import json
+import math
 import os
 import re
 import time
@@ -147,11 +148,42 @@ def check_set(controls: Any, params: Any) -> tuple[str, float]:
     return str(name), float(v)
 
 
+def finite_json(v: Any) -> Any:
+    """``v`` with every non-finite float replaced by its string (``nan``, ``inf``, ``-inf``), the
+    form the telemetry stores in a scalar; dicts and lists are walked. JSON has no NaN: Python
+    writes a bare ``NaN`` that ``JSON.parse`` in a browser refuses, and one such value in a
+    snapshot loses the whole message, so every run of the gallery."""
+    if isinstance(v, float):
+        return v if math.isfinite(v) else str(v)
+    if isinstance(v, dict):
+        return {k: finite_json(x) for k, x in v.items()}
+    if isinstance(v, (list, tuple)):
+        return [finite_json(x) for x in v]
+    return v
+
+
+def strict_dumps(msg: Any, **kw: Any) -> str:
+    """JSON text every parser accepts: non-finite floats as strings (:func:`finite_json`)."""
+    try:
+        return json.dumps(msg, allow_nan=False, **kw)
+    except ValueError:
+        return json.dumps(finite_json(msg), allow_nan=False, **kw)
+
+
+_CONSTANTS = {"NaN": "nan", "Infinity": "inf", "-Infinity": "-inf"}
+
+
+def strict_loads(text: Any) -> Any:
+    """``json.loads`` of a telemetry line from any writer: bare ``NaN``, ``Infinity`` (older runs,
+    other writers) and numbers too large for a float come back as strings, displayed as they are."""
+    return finite_json(json.loads(text, parse_constant=_CONSTANTS.__getitem__))
+
+
 def append_control(path: Any, line: dict) -> None:
     """Append one command line to a run's control file, creating it with mode 0600: the control
     file is the only way into a run, so only the run's own user may write it (the run refuses a
     control file owned by someone else or writable by group/others, :func:`control_file_problem`)."""
-    fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o600)
+    fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     with os.fdopen(fd, "a", encoding="utf-8") as fh:
         fh.write(json.dumps(line) + "\n")
 

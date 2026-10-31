@@ -43,6 +43,7 @@ import html
 import math
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from types import SimpleNamespace
 from typing import Any
 
 import numpy as np
@@ -57,6 +58,30 @@ from ._repr import compact_repr
 # Documented names only (M5, 0.2); the others stay importable from this module.
 __all__ = ["resolution_report", "estimate_modes", "ResolutionReport", "TAIL_TARGET",
            "TAIL_MARGINAL"]
+
+#: Statement on a direct solve (``LBVPSolution``, ``NLBVPSolution``, ``TerrainSolution``): the
+#: relative envelope tail of each unknown along each direction, above which the solution is
+#: stated under-resolved. It is ``TAIL_MARGINAL``, the "under-resolved" verdict of
+#: ``resolution_report``. The small residual of a direct solve says nothing here: it measures the
+#: discrete system, which is solved to round-off whether or not the grid resolves the solution.
+#: Level, measured on every direct solve of the fast suite, guide pages and acceptance scripts: no
+#: resolved case above 2.6e-5; the deliberately coarse N = 10 rows of a convergence study at 1.6e-3
+#: and above; an annulus Poisson solve with a 3 % error at 1.8e-4. The time steppers' 1e-3 is looser
+#: because a turbulent state sits at higher tails. A solution with real content in the last 10 % of its modes is warned even when it
+#: is exact there (a polynomial of degree N - 1, a Fourier mode just below Nyquist): the coefficients
+#: cannot tell the two apart.
+SOLVE_TAIL_TOL = 1e-4
+#: The same tail of the data of a Cartesian linear solve (its right-hand sides on the grid). The level
+#: is higher because integration damps the top modes of the data. Measured: a step of width 1e-3 at
+#: N = 64 has data tail 2.5e-2, solution tail 8.8e-5 and values 3 % off; a Gaussian of width 0.02 at
+#: N = 128 has data tail 4.2e-3 and solution tail 9.5e-7.
+SOLVE_DATA_TAIL_TOL = 1e-2
+#: An unknown whose largest coefficient is below this fraction of the largest of the solution is
+#: round-off-sized and not judged (the time steppers' ``RUN_TAIL_FLOOR``).
+SOLVE_TAIL_FLOOR = 1e-10
+#: Fewer mode numbers than this along a direction: not judged and stated. On so few coefficients
+#: an exact low-degree polynomial fills the tail window.
+SOLVE_TAIL_MIN_MODES = 8
 
 # ---------------------------------------------------------------- declared thresholds
 # TAIL_FRACTION (0.10), TAIL_MIN_MODES (2): the tail window, defined in conatus.ir.tails
@@ -489,3 +514,192 @@ def resolution_report(plan, state: Any, *, target: float = TAIL_TARGET,
                "cfl": (0.0 if dt_max == np.inf else np.inf if dt_max == 0
                        else float(dt) / float(dt_max))}
     return ResolutionReport(plan.problem.name, entries, skipped, float(target), float(marginal), cfl)
+
+
+@dataclass
+class SolutionTails:
+    """Spectral tails of a solved boundary-value problem (``solution_tails``)."""
+    bad: list[str] = field(default_factory=list)        # "u along z: tail 2e-01 (N = 32)"
+    short: list[str] = field(default_factory=list)      # too few modes to judge
+    worst: tuple[str, float] | None = None              # largest judged tail and where
+    skipped: str = ""                                   # why nothing was judged
+    nonfinite: list[str] = field(default_factory=list)  # unknowns holding NaN or inf
+    unread: list[str] = field(default_factory=list)     # directions without readable mode numbers
+    small: list[str] = field(default_factory=list)      # unknowns too small beside the others
+    data_worst: float | None = None                     # largest tail of the data
+
+    def statement(self) -> str:
+        """The explain() line(s) of the check."""
+        lines = []
+        if self.nonfinite:
+            lines.append("resolution check: non-finite coefficients in "
+                         + ", ".join(self.nonfinite))
+        if self.bad:
+            lines.append(f"resolution check: UNDER-RESOLVED, {'; '.join(self.bad)} (relative "
+                         f"spectral tail above SOLVE_TAIL_TOL = {SOLVE_TAIL_TOL:g}): the solution "
+                         "is not converged although its residual may be small; raise N "
+                         "(resolution_report(sol.plan, sol) estimates how many modes)")
+        elif self.worst is not None:
+            lines.append(f"resolution check: largest spectral tail {self.worst[1]:.1e} "
+                         f"({self.worst[0]}), below SOLVE_TAIL_TOL = {SOLVE_TAIL_TOL:g}; a tail "
+                         "is a necessary sign of convergence, not a proof")
+        elif self.skipped:
+            lines.append(f"resolution check: not run ({self.skipped})")
+        if self.short:
+            lines.append(f"resolution check: not judged, fewer than {SOLVE_TAIL_MIN_MODES} mode "
+                         "numbers: " + "; ".join(self.short))
+        if self.unread:
+            lines.append("resolution check: not judged, no mode numbers read here (a mapped domain, "
+                         "or a compound, Hermite or Laguerre basis): " + "; ".join(self.unread)
+                         + "; compare two values of N")
+        if self.small:
+            lines.append(f"resolution check: not judged, below {SOLVE_TAIL_FLOOR:g} of the largest "
+                         "unknown: " + ", ".join(self.small))
+        return "\n  ".join(lines)
+
+    def warn(self) -> None:
+        """UnderResolvedWarning when a direction is under-resolved; nothing else changes."""
+        if self.bad:
+            from .errors import UnderResolvedWarning, _warn_user
+            _warn_user("the boundary-value solution is under-resolved: " + "; ".join(self.bad)
+                       + f" (relative spectral tail above SOLVE_TAIL_TOL = {SOLVE_TAIL_TOL:g}; the "
+                       "solve's small residual measures the discrete system only). Its values are "
+                       "not converged: raise N along these directions "
+                       "(resolution_report(sol.plan, sol) estimates how many modes). Nothing was "
+                       "changed.", UnderResolvedWarning)
+
+
+def _solution_axes(plan, v, c: np.ndarray, unread: list[str]
+                   ) -> list[tuple[str, int, np.ndarray, int, int]]:
+    """(coordinate, axis, mode number per index, number of mode numbers, size) of each direction
+    of the coefficient array ``c`` of variable ``v``, in the layout of its plan. A direction whose
+    mode numbers cannot be read goes to ``unread``."""
+    rank = int(getattr(v, "rank", 0) or 0)
+    axes = []
+    if getattr(plan, "is_polar", False) or getattr(plan, "is_sphere", False):
+        s = plan.space
+        mm = np.abs(np.asarray(s.ms, dtype=int))
+        if c.shape[rank] == mm.size:
+            axes.append(("phi", rank, mm, int(mm.max()) + 1 if mm.size else 0, c.shape[rank]))
+        rest = c.shape[rank + 1:]
+        if getattr(plan, "is_sphere", False):
+            names = ("theta", "r")
+        else:
+            names = ("r", "z") if getattr(s, "cyl", False) else ("r",)  # layout: m, radial[, k_z]
+        for i, (name, size) in enumerate(zip(names, rest, strict=False)):
+            if name == "z":              # Fourier in z: |n|, the Nyquist entry excluded
+                m = np.abs(np.asarray(s.zfreq)).copy()
+                if m.size != size:
+                    continue
+                m[size // 2] = -1
+                axes.append((name, rank + 1 + i, m, int(m.max()) + 1, size))
+            else:
+                axes.append((name, rank + 1 + i, np.arange(size), size, size))
+        return axes
+    coords = plan.domain.coordsys.coords
+    dom = v.domain
+    for i, co in enumerate(coords):
+        b = dom.basis(co) if dom is not None else None
+        if b is None:
+            continue
+        if rank + i >= c.ndim or c.shape[rank + i] != b.size:
+            unread.append(f"{v.name} along {co.name}")
+            continue
+        try:
+            mnum, M = _mode_numbers(b)
+        except UnsupportedError:      # no interpretable mode numbers: not judged
+            unread.append(f"{v.name} along {co.name}")
+            continue
+        axes.append((co.name, rank + i, mnum, M, b.size))
+    return axes
+
+
+def _axis_tails(plan, v, a: np.ndarray, unread: list[str], short: list[str], label: str
+                ) -> list[tuple[str, int, float]]:
+    """(coordinate, size, tail) of the coefficient array ``a`` of ``v`` along each direction that
+    has enough modes to judge; a direction with too few goes to ``short``."""
+    from .ir.tails import envelope_tail, mode_envelope, tail_window
+    abs_a = np.abs(a)
+    out = []
+    for cname, axis, mnum, M, size in _solution_axes(plan, v, a, unread):
+        if size <= 2 or M < 1:
+            continue
+        host = np.moveaxis(abs_a, axis, 0).reshape(size, -1).max(axis=1)
+        E = mode_envelope(host, mnum, M)
+        emax = float(E.max()) if E.size else 0.0
+        if not emax > 0:
+            continue
+        if M < SOLVE_TAIL_MIN_MODES or M - tail_window(M) < 1:
+            short.append(f"{label} along {cname} (N = {size})")
+            continue
+        out.append((cname, size, envelope_tail(E, emax)))
+    return out
+
+
+def _rhs_tails(out: SolutionTails, plan, rhs: Any) -> None:
+    """The right-hand sides as the grid sees them (``SOLVE_DATA_TAIL_TOL``). Integrating data smooths
+    it, so a step in the data can leave a tail below ``SOLVE_TAIL_TOL`` on the solution and values 3 %
+    off. Data of round-off size beside the others is left out."""
+    arrays = [(i, eq, np.asarray(r)) for i, (eq, r) in enumerate(zip(plan.problem.equations, rhs,
+                                                                     strict=True)) if np.size(r)]
+    if not arrays or not all(np.all(np.isfinite(a)) for _, _, a in arrays):
+        return
+    top = max(float(np.abs(a).max()) for _, _, a in arrays)
+    for i, eq, a in arrays:
+        if not float(np.abs(a).max()) > SOLVE_TAIL_FLOOR * top:
+            continue
+        label = f"data of equation {i}"
+        v = SimpleNamespace(name=label, rank=int(eq.rhs.rank), domain=eq.domain)
+        for cname, size, tail in _axis_tails(plan, v, a, [], [], label):
+            if out.data_worst is None or tail > out.data_worst:
+                out.data_worst = tail
+            if tail > SOLVE_DATA_TAIL_TOL:
+                out.bad.append(f"{label} along {cname}: tail {tail:.1e} (N = {size}), level "
+                               f"SOLVE_DATA_TAIL_TOL = {SOLVE_DATA_TAIL_TOL:g}")
+
+
+def solution_tails(plan, coeffs: Mapping[str, np.ndarray], rhs: Any = None) -> SolutionTails:
+    """Relative spectral tail of each unknown of a solved boundary-value problem along each
+    direction, and of the data ``rhs`` when given (coefficients per equation, ``SOLVE_TAIL_TOL``).
+    Read-only, and cheap beside the solve."""
+    out = SolutionTails()
+    taus = set(getattr(plan, "taus", ()) or ())
+    variables = [v for v in getattr(plan, "variables", ()) if v not in taus]
+    arrays = {}
+    for v in variables:
+        a = coeffs.get(v.name)
+        if isinstance(a, Mapping):        # mapped domains: {component: array}
+            parts = [np.asarray(x) for x in a.values()]
+            if not parts or any(x.shape != parts[0].shape for x in parts):
+                continue
+            a = np.stack(parts) if v.rank else parts[0]
+        if a is not None:
+            arrays[v.name] = np.asarray(a)
+    if not arrays:
+        out.skipped = "no coefficients of an unknown in this solution"
+        return out
+    for name, a in arrays.items():
+        if a.size and not np.all(np.isfinite(a)):
+            out.nonfinite.append(name)
+    tops = [float(np.abs(a).max()) for n, a in arrays.items()
+            if a.size and n not in out.nonfinite]
+    top = max(tops, default=0.0)
+    if not top > 0:
+        out.skipped = "the solution is identically zero" if not out.nonfinite else ""
+        return out
+    for v in variables:
+        a = arrays.get(v.name)
+        if a is None or not a.size or v.name in out.nonfinite:
+            continue
+        if not float(np.abs(a).max()) > SOLVE_TAIL_FLOOR * top:
+            if float(np.abs(a).max()) > 0:
+                out.small.append(v.name)
+            continue
+        for cname, size, tail in _axis_tails(plan, v, a, out.unread, out.short, v.name):
+            if out.worst is None or tail > out.worst[1]:
+                out.worst = (f"{v.name} along {cname}, N = {size}", tail)
+            if tail > SOLVE_TAIL_TOL:
+                out.bad.append(f"{v.name} along {cname}: tail {tail:.1e} (N = {size})")
+    if rhs is not None:
+        _rhs_tails(out, plan, rhs)
+    return out

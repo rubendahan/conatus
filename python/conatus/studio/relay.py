@@ -53,7 +53,7 @@ import tornado.websocket
 from tornado.iostream import StreamClosedError
 
 from conatus.telemetry import COMMANDS, PROTOCOL_VERSION, check_set, default_spool
-from conatus.telemetry.protocol import RUN_ID_RE, append_control, run_file_id
+from conatus.telemetry.protocol import RUN_ID_RE, append_control, run_file_id, strict_dumps
 
 from .launch import JOB_OPS, Launcher, LaunchError
 
@@ -244,7 +244,7 @@ class Relay:
 
     # ------------------------------------------------------------------ spool -> hub
     async def _send(self, conn, msg: dict) -> None:
-        text = json.dumps(msg, separators=(",", ":"))
+        text = strict_dumps(msg, separators=(",", ":"))
         wait = self.bucket.delay(len(text))
         if wait > 0:
             await asyncio.sleep(wait)
@@ -300,13 +300,13 @@ class Relay:
         cursors = self.cursors if cursors is None else cursors
         start = cursors.get(run_id, 0)
         try:
-            size = path.stat().st_size
+            size = path.lstat().st_size
             reset = size < start                             # file truncated / replaced
             if reset:
                 start = 0
             if size == start:
                 return None
-            with path.open("rb") as fh:
+            with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW), "rb") as fh:
                 fh.seek(start)
                 chunk = fh.read(min(size - start, self.max_batch))
                 if b"\n" not in chunk and size - start > len(chunk):

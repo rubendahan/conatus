@@ -87,6 +87,7 @@ import tornado.websocket
 
 from conatus._private import private_dir
 from conatus.telemetry import COMMANDS, RunState, default_spool
+from conatus.telemetry.protocol import strict_dumps, strict_loads
 from conatus.telemetry.film import FilmIndex, thin_to_budget
 
 from . import agentapi
@@ -104,6 +105,10 @@ JOB_ACK_TIMEOUT_S = {"submit": 150.0, "prepare": 45.0}   # submit.sh runs on the
 FILM_MAX_FRAMES = 720               # film frames kept per run and name in memory (then thinned)
 MAX_BODY_BYTES = 1 << 20            # HTTP request bodies (commands and jobs are a few kB)
 MAX_WAITS = 4                       # concurrent long polls per caller (more: 429)
+IDLE_CONNECTION_S = 300             # an HTTP connection silent this long is closed
+THROTTLE_AUDIT_S = 900.0            # one audit line per throttled address in this time
+COMMAND_WINDOW_S = 60.0             # window of COMMANDS_PER_MINUTE
+COMMANDS_PER_MINUTE = 60            # per agent or user, on the API: above it 429
 AUDIT_FIELD_BYTES = 512             # a command's cmd/params larger than this are not copied whole
 
 
@@ -123,6 +128,9 @@ class Hub:
         self.film_max_bytes = int(film_mb * 2**20)
         self.film_max_frames = int(film_max_frames)
         self.max_scalars, self.max_logs, self.max_runs = int(max_scalars), int(max_logs), int(max_runs)
+        self._command_times: dict[str, list[float]] = {}
+        self._throttled_at: dict[str, float] = {}
+        self.dropped_runs: set[str] = set()     # keys evicted by max_runs, stated to the user
         self.sessions = Sessions(session_ttl_s)
         self.throttle = LoginThrottle()
         self.relays: dict[str, RelaySocket] = {}
@@ -181,9 +189,15 @@ class Hub:
     def run_view(self, key: str, *, brief: bool = False, log: int = 20, events: int = 20) -> dict:
         """The API v1 view of one run (:func:`agentapi.run_view`) with its relay's link state."""
         relay = key.partition(":")[0]
-        return agentapi.run_view(key, self.runs[key], relay=relay,
-                                 relay_connected=relay in self.relays, brief=brief, log=log,
-                                 events=events, pilots=self.pilots_of(key))
+        try:
+            return agentapi.run_view(key, self.runs[key], relay=relay,
+                                     relay_connected=relay in self.relays, brief=brief, log=log,
+                                     events=events, pilots=self.pilots_of(key))
+        except (TypeError, ValueError, AttributeError) as err:  # one bad run never hides the others
+            return {"key": key, "relay": relay, "state": "unreadable",
+                    "alerts": [dict(code="telemetry_error", level="error",
+                                    message=f"this run's records cannot be read: "
+                                            f"{type(err).__name__}: {err}")]}
 
     async def wait_change(self, timeout: float) -> None:
         """Return when the hub ingests anything new, or after ``timeout`` s (long poll)."""
@@ -237,7 +251,47 @@ class Hub:
         return {"type": "snapshot", "mode": "hub", "local": self.local, "user": user,
                 "relays": self.relays_view(),
                 "spool": f"hub · relays: {names or 'none yet'}", "slurm": self.slurm_view(),
-                "runs": {k: st.snapshot() for k, st in self.runs.items()}}
+                "runs_limit": self.runs_limit(),
+                "runs": {k: self._run_snapshot(k, st) for k, st in self.runs.items()}}
+
+    def first_throttled(self, ip: str) -> bool:
+        """True once per address in ``THROTTLE_AUDIT_S``: the audit records a throttled address
+        without one line per refused attempt."""
+        now = time.monotonic()
+        if len(self._throttled_at) > 10000:
+            self._throttled_at.clear()
+        first = now - self._throttled_at.get(ip, -THROTTLE_AUDIT_S) >= THROTTLE_AUDIT_S
+        if first:
+            self._throttled_at[ip] = now
+        return first
+
+    def command_allowed(self, who: object) -> bool:
+        """Sliding-window limit on the commands of one caller. A disk-filling loop of
+        ``checkpoint`` commands is then bounded by this rate."""
+        name = str(getattr(who, "name", who))
+        now = time.monotonic()
+        recent = [t for t in self._command_times.get(name, ()) if now - t < COMMAND_WINDOW_S]
+        allowed = len(recent) < COMMANDS_PER_MINUTE
+        if allowed:
+            recent.append(now)
+        self._command_times[name] = recent
+        return allowed
+
+    def runs_limit(self) -> dict:
+        """The bound on the runs kept (``--max-runs``) and how many runs it has dropped: a list of
+        runs that was cut says so, in the gallery and in the API."""
+        return {"max": self.max_runs, "dropped": len(self.dropped_runs)}
+
+    @staticmethod
+    def _run_snapshot(key: str, st: RunState) -> dict:
+        """One run of a snapshot. A record that breaks the snapshot of its own run leaves that run
+        listed as malformed and never hides the others."""
+        try:
+            return st.snapshot()
+        except (TypeError, ValueError, KeyError, AttributeError) as err:
+            print(f"hub: {key}: unreadable run state: {type(err).__name__}: {err}", file=sys.stderr)
+            return {"summary": {"header": None, "status": {}, "last": {}, "malformed": 1,
+                                "last_wall": getattr(st, "last_wall", 0) or 0}}
 
     def broadcast(self, msg: dict) -> None:
         """Send one JSON message to every browser; drops the ones found closed. Wakes the long
@@ -248,7 +302,7 @@ class Hub:
         for c in list(self.clients):
             lite = getattr(c, "lite", False)            # phones: light stream (webapp.lite)
             if lite not in texts:
-                texts[lite] = json.dumps(webapp.lite(msg) if lite else msg, separators=(",", ":"))
+                texts[lite] = strict_dumps(webapp.lite(msg) if lite else msg, separators=(",", ":"))
             try:
                 c.write_message(texts[lite])
             except tornado.websocket.WebSocketClosedError:
@@ -280,6 +334,13 @@ class Hub:
             old = min(self.runs, key=lambda x: self.runs[x].last_wall)
             del self.runs[old]
             self.films.pop(old, None)
+            if not self.dropped_runs:
+                print(f"hub: more than {self.max_runs} runs: the stalest are dropped from this "
+                      "hub's list (--max-runs raises the limit); their files are untouched",
+                      file=sys.stderr)
+            self.dropped_runs.add(old)
+            self.broadcast({"type": "runs_limit", **self.runs_limit()})
+        self.dropped_runs.discard(k)
         return self.runs.setdefault(k, RunState(k, self.max_scalars, self.max_logs))
 
     def ingest_lines(self, relay: str, msg: dict) -> dict | None:
@@ -302,7 +363,7 @@ class Hub:
         items = []
         for line in raw.decode("utf-8", "replace").splitlines():
             try:
-                rec = json.loads(line)
+                rec = strict_loads(line)
             except ValueError:
                 st.malformed += 1
                 continue
@@ -602,6 +663,14 @@ class Guard:
 
 class Base(Guard, tornado.web.RequestHandler):
     """HTTP handler base: :class:`Guard` plus errors rendered as JSON."""
+
+    def write(self, chunk) -> None:
+        """A dict goes out as strict JSON: a non-finite value is a string, never a bare ``NaN``."""
+        if isinstance(chunk, dict):
+            self.set_header("Content-Type", "application/json; charset=UTF-8")
+            chunk = strict_dumps(chunk)
+        super().write(chunk)
+
     def write_error(self, status_code: int, **kw) -> None:
         """Finish with ``{"error": reason}``, the HTTPError message when there is one."""
         reason = self._reason
@@ -705,8 +774,10 @@ class Login(Base):
         # compute node every client is 127.0.0.1); passwords are throttled before hashing
         user = self.hub.auth.user_for_token(token) if token else None
         if user is None and self.hub.throttle.blocked(ip):
-            self.hub.audit.write(event="login", ip=ip, result="throttled")
+            if self.hub.first_throttled(ip):   # one line per address and window: a blocked address
+                self.hub.audit.write(event="login", ip=ip, result="throttled")  # cannot grow the log
             self.set_status(429)
+            self.set_header("Retry-After", "900")
             self.set_header("Content-Type", "text/html; charset=utf-8")
             self.write(LOGIN_PAGE.replace("%ERR%", '<div class="err">Too many failures; wait 15 min.</div>'))
             return
@@ -1013,8 +1084,10 @@ class V1RunPart(V1):
                                                  f"{sorted(st.frames)})")
             if self.get_query_argument("format", "json") == "png":
                 try:
-                    png = agentapi.frame_png(fr)
-                except ValueError as err:
+                    # off the event loop: a large frame must not stall the other clients
+                    png = await tornado.ioloop.IOLoop.current().run_in_executor(
+                        None, agentapi.frame_png, fr)
+                except (ValueError, TypeError, KeyError) as err:
                     raise tornado.web.HTTPError(415, str(err)) from None
                 self.set_header("Content-Type", "image/png")
                 self.write(png)
@@ -1063,6 +1136,9 @@ class V1Commands(V1):
         except ValueError:
             raise tornado.web.HTTPError(400, "body must be a JSON object") from None
         key = self.key(ref)
+        if not self.hub.command_allowed(self.who):
+            self.set_header("Retry-After", "60")
+            raise tornado.web.HTTPError(429, f"more than {COMMANDS_PER_MINUTE} commands in a minute")
         code, out = await self.hub.command(self.who, self.client_ip, key, body, api=1)
         self.answer({"key": key, **out}, code)
 
@@ -1125,7 +1201,7 @@ class BrowserSocket(Guard, tornado.websocket.WebSocketHandler):
         self.hub.clients.add(self)
         self.hub.ensure_ticker()
         snap = self.hub.snapshot(self.current_user)
-        self.write_message(json.dumps(webapp.lite(snap) if self.lite else snap, separators=(",", ":")))
+        self.write_message(strict_dumps(webapp.lite(snap) if self.lite else snap, separators=(",", ":")))
 
     def on_message(self, message) -> None:
         """Answer ``{"type": "ping", "id"}`` with a pong (the app measures its latency); ignore
@@ -1429,7 +1505,8 @@ async def _serve(a: argparse.Namespace) -> None:
                      "(see studio/hub/DEPLOY.md)")
     audit = AuditLog(state / "audit.jsonl")
     hub = Hub(db, audit=audit, local=a.local, web=Path(a.web),
-              app=Path(a.app) if a.app else None, film_mb=a.film_mb)
+              app=Path(a.app) if a.app else None, film_mb=a.film_mb,
+              max_runs=a.max_runs)
     ssl = None
     if a.certfile:
         import ssl as _ssl
@@ -1440,7 +1517,8 @@ async def _serve(a: argparse.Namespace) -> None:
     # behind a TLS-terminating proxy, the scheme comes from X-Forwarded-Proto (xheaders)
     server = tornado.httpserver.HTTPServer(make_app(hub), ssl_options=ssl,
                                            xheaders=not a.local and ssl is None,
-                                           max_body_size=MAX_BODY_BYTES)
+                                           max_body_size=MAX_BODY_BYTES,
+                                           idle_connection_timeout=IDLE_CONNECTION_S)
     server.listen(a.port, address=host)
     scheme = "https" if ssl else "http"
     print(f"Conatus Studio hub on {scheme}://{host}:{a.port} ({'LOCAL mode' if a.local else 'hub mode'};"
@@ -1479,6 +1557,9 @@ def build_parser() -> argparse.ArgumentParser:
                    help="address to bind (default 127.0.0.1: behind a proxy on the same machine; "
                         "another address needs TLS (--certfile/--keyfile) or --behind-proxy)")
     s.add_argument("--port", type=int, default=int(os.environ.get("PORT", 8080)))
+    s.add_argument("--max-runs", type=int, default=200,
+                   help="runs kept in this hub's list; above it the stalest are dropped from the "
+                        "list and the count of dropped runs is shown (default 200)")
     s.add_argument("--local", action="store_true",
                    help="hub + relay on this machine, 127.0.0.1 only, plain HTTP allowed (tests)")
     s.add_argument("--spool", default=None, help="--local: spool to relay")
@@ -1500,7 +1581,7 @@ def build_parser() -> argparse.ArgumentParser:
                         "it then lands in any log of this process)")
     s.add_argument("--agent-token-out", default=None,
                    help="--local: also make an agent token for this session, written to this file (0600)")
-    s.add_argument("--agent-scope", default="command", choices=("read", "command"),
+    s.add_argument("--agent-scope", default="read", choices=("read", "command"),
                    help="--local: scope of that agent token")
     s.add_argument("--certfile", default=None, help="serve TLS directly (else a proxy terminates it)")
     s.add_argument("--keyfile", default=None)

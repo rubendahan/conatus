@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from dataclasses import field as dc_field
 from typing import Any
 
 import numpy as np
@@ -201,6 +202,15 @@ def _rank_diagnosis(r: GroupRank, problem: Problem) -> tuple[str, str, str]:
             "(integ(u) = 0 with a constant tau)", where)
 
 
+def _solution_statement(plan: Any, coeffs: Mapping[str, np.ndarray], rhs: Any = None) -> Any:
+    """Spectral tails of a direct solve (``conatus.resolution.solution_tails``), warned when above
+    ``SOLVE_TAIL_TOL``. The solve's residual cannot say this: it is small on any grid."""
+    from ..resolution import solution_tails
+    tails = solution_tails(plan, coeffs, rhs)
+    tails.warn()
+    return tails
+
+
 @dataclass
 class LBVPSolution:
     """Solution of an LBVP (``plan.solve()``): coefficients by variable and the relative residual
@@ -211,6 +221,10 @@ class LBVPSolution:
     residuals: list[tuple[str, float]]      # (group label, relative residual)
     plan: Plan
     reduced: bool
+    rhs: Any = dc_field(default=None, repr=False)    # data per equation, read by the statement
+
+    def __post_init__(self) -> None:
+        self._tails = _solution_statement(self.plan, self.coeffs, self.rhs)
 
     @property
     def max_residual(self) -> float:
@@ -239,7 +253,8 @@ class LBVPSolution:
                 f"{len(self.residuals)} group(s), max relative residual {worst[1]:.2e} "
                 f"[{worst[0]}] (sparse LU, scipy SuperLU)")
         floor = ncc_floor_text(self.plan, worst[1])        # digits claimed honestly
-        return text + (f"\n  {floor}" if floor else "")
+        tails = self._tails.statement()
+        return text + (f"\n  {floor}" if floor else "") + (f"\n  {tails}" if tails else "")
 
 
 def _ncomp(tensorsig) -> int:
@@ -1017,7 +1032,7 @@ class Plan:
                             out[v.name][tuple(idx)] = xf[r0 + fj]
         if not cplx:
             out = {k: np.real(v) for k, v in out.items()}
-        return LBVPSolution(out, residuals, self, reduced)
+        return LBVPSolution(out, residuals, self, reduced, rhs)
 
     def resolution_report(self, state, **kw):
         """Spectral-tail resolution report of ``state`` (``conatus.resolution``); read-only."""

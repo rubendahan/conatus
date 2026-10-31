@@ -374,6 +374,16 @@ DECLARED: dict[str, Declared] = dict([
        "relative spectral tail (amplitude) of an unknown along a direction, measured at each "
        "finite-state check: above it the run is under-resolved, warned once and printed by "
        "explain() (1e-4 warned on the resolved KS run L = 22, N = 32)"),
+    _d("conatus.resolution.SOLVE_TAIL_TOL", 1e-4, "detection",
+       "relative spectral tail (amplitude) of an unknown along a direction of a solved boundary-value "
+       "problem: above it the solution is stated under-resolved, warned and printed by explain() "
+       "(the small residual of a direct solve cannot show this); nothing is changed"),
+    _d("conatus.resolution.SOLVE_DATA_TAIL_TOL", 1e-2, "detection",
+       "relative spectral tail of the right-hand side of a Cartesian linear solve: above it the "
+       "solution is stated under-resolved (a step in the data can leave a small tail on the solution "
+       "and values 3 % off); nothing is changed"),
+    _d("conatus.resolution.SOLVE_TAIL_MIN_MODES", 8, "detection",
+       "fewer mode numbers along a direction: not judged, and explain() says so"),
     _d("conatus.timestep.integrator.RUN_TAIL_MIN_MODES", 3, "detection",
        "a direction whose tail window holds fewer coefficients is not judged by the run-time "
        "resolution check (one top mode is not a tail); explain() lists it"),

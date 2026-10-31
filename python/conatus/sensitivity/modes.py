@@ -31,6 +31,8 @@ import numpy as np
 import scipy.linalg as sla
 import sympy
 
+from .._sym import expr as _sym_expr
+
 from ..errors import OptionError, SpectralError
 from ..nonmodal.adjoint import _eig_near, continuous_adjoint_mode
 from ..nonmodal.statespace import state_space
@@ -243,7 +245,7 @@ def feedback_system(system: ModalSystem, g, C0: dict, *, epsilon: float) -> Moda
     finite-difference checks of :meth:`StructuralSensitivity.feedback_shift`)."""
     from ..nonmodal.system import _add
     A = {k: dict(v) for k, v in system.A.items()}
-    gs = sympy.sympify(g)
+    gs = _sym_expr(g)
     for (i, j), c in C0.items():
         A[(i, j)] = _add(A.get((i, j), {}), {0: sympy.nsimplify(epsilon) * sympy.nsimplify(c) * gs})
     return ModalSystem(system.name + f" + {epsilon:g} g C0 feedback", system.bounds, system.state,
