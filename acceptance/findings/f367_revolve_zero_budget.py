@@ -8,7 +8,7 @@ import numpy as np
 from _acceptance import check, passed, refused, start
 
 import conatus as cn
-from conatus.expert import revolve_actions, revolve_cost
+from conatus.adjoint.flowmap import revolve_actions, revolve_cost
 
 start(367, "Revolve budget 0 refused; budgets bound the peak")
 for f in (revolve_actions, revolve_cost):

@@ -77,6 +77,7 @@ import tempfile
 import time
 import uuid
 from collections import deque
+from http import HTTPStatus
 from pathlib import Path
 
 import tornado.httpserver
@@ -107,8 +108,9 @@ MAX_BODY_BYTES = 1 << 20            # HTTP request bodies (commands and jobs are
 MAX_WAITS = 4                       # concurrent long polls per caller (more: 429)
 IDLE_CONNECTION_S = 300             # an HTTP connection silent this long is closed
 THROTTLE_AUDIT_S = 900.0            # one audit line per throttled address in this time
-COMMAND_WINDOW_S = 60.0             # window of COMMANDS_PER_MINUTE
-COMMANDS_PER_MINUTE = 60            # per agent or user, on the API: above it 429
+LOCAL_RELAY_RATE = 8e6               # bytes/s of the relay of `hub serve --local`: it stays on this machine
+COMMAND_WINDOW_S = agentapi.COMMAND_WINDOW_S        # window of COMMANDS_PER_MINUTE
+COMMANDS_PER_MINUTE = agentapi.COMMANDS_PER_MINUTE  # per agent or user, on the API: above it 429
 AUDIT_FIELD_BYTES = 512             # a command's cmd/params larger than this are not copied whole
 
 
@@ -375,7 +377,8 @@ class Hub:
             items.append(rec)
         self.cursors[ck] = end
         if items:
-            self.broadcast({"type": "items", "items": items})
+            st.last_received = time.time()         # a hub behind a fast run is still hearing from it
+            self.broadcast({"type": "items", "items": items, "recv": st.last_received})
         return None
 
     def ingest_film(self, relay: str, msg: dict) -> dict | None:
@@ -570,6 +573,12 @@ class Guard:
 
     hub: Hub
 
+
+    def _request_summary(self) -> str:
+        """The access-log line: method and path, never the query string (a token pasted into a
+        URL by mistake must not reach a log)."""
+        return f"{self.request.method} {self.request.path} ({self.request.remote_ip})"
+
     def initialize(self, hub: Hub) -> None:
         """Keep the shared :class:`Hub` (tornado handler hook)."""
         self.hub = hub
@@ -691,41 +700,56 @@ class Health(tornado.web.RequestHandler):
 # from the app bundle at fixed URLs (studio/app/build.sh copies them; system fonts if absent).
 LOGIN_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0B0B0B"><title>Conatus Studio · sign in</title>
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<title>Sign in · Conatus Studio</title>
 <link rel="icon" href="/icons/mark-silver.svg" type="image/svg+xml">
-<link rel="manifest" href="/manifest.webmanifest">
 <style>
 @font-face{font-family:"IM Fell English";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/im-fell-english-latin-400-normal.woff2) format("woff2")}
 @font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2")}
 @font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2")}
-:root{--bg:#0B0B0B;--text:#EDEBE6;--muted:#A3A29D;--rule:#2A2A28;--surface:#161615;--signal:#C6F03C;--bad:#D4574A;color-scheme:dark}
+:root{--bg:#EFEAE0;--text:#151310;--muted:#5E5A52;--rule:#8F887A;--focus:#A8281E;--bad:#A8281E;--mark:url(/icons/mark-ink.svg)}
+@media (prefers-color-scheme:dark){:root{--bg:#0B0B0B;--text:#EDEBE6;--muted:#A3A29D;--rule:#55554F;--focus:#C6F03C;--bad:#E8796D;--mark:url(/icons/mark-silver.svg)}}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%}
 body{background:var(--bg);color:var(--text);font:16px/1.55 "IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
 padding:max(16px,env(safe-area-inset-top)) 16px 16px;display:grid;place-items:center;min-height:100dvh}
-form{width:100%;max-width:22rem}
-.mark{display:flex;align-items:center;gap:.6rem;margin:0 0 2.2rem}
-.mark img{width:28px;height:28px}
+main{width:100%;max-width:24rem}
+.mark{display:flex;align-items:center;gap:.6rem;margin:0 0 1.6rem}
+.mark i{display:block;width:28px;height:28px;background:var(--mark) center/contain no-repeat}
 h1{font:400 2.1rem/1.1 "IM Fell English",Georgia,serif;margin:0}
-label{display:block;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:1.1rem 0 .35rem}
-input{width:100%;font:inherit;color:var(--text);background:transparent;border:0;border-bottom:1px solid var(--rule);
-padding:.5rem 0;border-radius:0;outline:none}
-input:focus{border-bottom-color:var(--signal)}
-.or{margin:1.4rem 0 0;font-size:.8rem;color:var(--muted)}
-button{margin-top:2rem;width:100%;min-height:44px;font:500 .95rem "IBM Plex Sans",Arial,sans-serif;color:var(--bg);
+label{display:block;font-size:.85rem;font-weight:500;margin:1.1rem 0 .35rem}
+input{width:100%;font:inherit;color:var(--text);background:transparent;border:1px solid var(--rule);
+padding:.55rem .6rem;border-radius:2px;min-height:44px}
+input:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.or{margin:1.4rem 0 0;font-size:.85rem;color:var(--muted)}
+button{margin-top:1.6rem;width:100%;min-height:44px;font:500 .95rem "IBM Plex Sans",Arial,sans-serif;color:var(--bg);
 background:var(--text);border:0;border-radius:2px;cursor:pointer}
-button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
-.err{color:var(--bad);font-size:.9rem;margin-top:1rem}
-.note{color:var(--muted);font-size:.8rem;margin-top:2rem;border-top:1px solid var(--rule);padding-top:1rem}
+.err{color:var(--bad);font-size:.92rem;margin:1rem 0 0;font-weight:500}
+.note{color:var(--muted);font-size:.85rem;margin:1rem 0 0}
+.note code{font-family:"JetBrains Mono",Menlo,Consolas,monospace;font-size:.92em;overflow-wrap:anywhere}
 </style></head>
-<body><form method="post" action="/login">
-<div class="mark"><img src="/icons/mark-silver.svg" alt=""><h1>Studio</h1></div>
-<label for="u">User</label><input id="u" name="user" autocomplete="username" autocapitalize="none" spellcheck="false">
+<body><main>
+<div class="mark"><i aria-hidden="true"></i><h1>Studio</h1></div>
+%ERR%
+<form method="post" action="/login">
+%FIELDS%
+<button type="submit">Sign in</button>
+</form>
+<p class="note">%NOTE%</p>
+</main></body></html>"""
+LOGIN_FIELDS_LOCAL = """<label for="t">One-session token</label>
+<input id="t" name="token" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" autofocus>"""
+LOGIN_FIELDS_HUB = """<label for="u">User</label><input id="u" name="user" autocomplete="username" autocapitalize="none" spellcheck="false">
 <label for="p">Password</label><input id="p" name="password" type="password" autocomplete="current-password">
 <p class="or">or an access token</p>
-<label for="t">Token</label><input id="t" name="token" type="password" autocomplete="off">
-<button type="submit">Sign in</button>%ERR%
-<p class="note">Commands sent from the Studio (pause, resume, checkpoint, stop, fork) are logged with your name.</p>
-</form></body></html>"""
+<label for="t">Token</label><input id="t" name="token" type="password" autocomplete="off" autocapitalize="none" spellcheck="false">"""
+LOGIN_NOTE_LOCAL = ("<code>hub serve --local</code> writes this token to a private file and prints the file's path "
+                    "in its terminal. A new token is made each time the hub starts.")
+LOGIN_NOTE_HUB = "Commands sent from the Studio (pause, resume, checkpoint, stop, fork) are logged with your name."
+# Why the sign-in page is shown. Fixed texts only: nothing the client sent is echoed.
+LOGIN_REASONS = {
+    "expired": "Your session has ended (the hub restarted, or you signed out elsewhere). Sign in again.",
+}
 
 
 # Answer to a successful sign-in: the session key goes to the page in a meta tag,
@@ -733,6 +757,7 @@ button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
 # app. The key is never in a URL, a cookie or a log.
 LOGIN_DONE_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="cn-session-key" content="%KEY%"><title>Conatus Studio</title>
+<link rel="icon" href="/icons/mark-silver.svg" type="image/svg+xml">
 <script src="/login-done.js"></script></head>
 <body style="background:#0B0B0B;color:#EDEBE6;font:16px system-ui;padding:16px">
 <noscript>The Studio needs JavaScript.</noscript></body></html>"""
@@ -757,38 +782,52 @@ class LoginDone(Base):
 
 class Login(Base):
     """``/login``: sign-in page and password/token login (throttled, audited)."""
-    def get(self) -> None:
-        """Serve the sign-in page."""
+    def page(self, error: str, status: int) -> None:
+        """Write the sign-in page; ``error`` is a fixed text, never what the client sent."""
+        self.set_status(int(status))
         self.set_header("Content-Type", "text/html; charset=utf-8")
-        self.write(LOGIN_PAGE.replace("%ERR%", ""))
+        local = self.hub.local
+        err = f'<p class="err" role="alert">{error}</p>' if error else ""
+        self.write(LOGIN_PAGE.replace("%ERR%", err)
+                   .replace("%FIELDS%", LOGIN_FIELDS_LOCAL if local else LOGIN_FIELDS_HUB)
+                   .replace("%NOTE%", LOGIN_NOTE_LOCAL if local else LOGIN_NOTE_HUB))
+
+    def get(self) -> None:
+        """Serve the sign-in page, with the reason when the app sent the browser here. Any other
+        query argument, a token pasted into the URL among them, is ignored."""
+        self.page(LOGIN_REASONS.get(self.get_query_argument("reason", ""), ""), HTTPStatus.OK)
 
     def post(self) -> None:
         """Check a token or user/password (same origin, throttled, audited); set the session cookie."""
         ip = self.client_ip
         if not self.same_origin():
-            raise tornado.web.HTTPError(403, "cross-origin login refused")
+            self.page("Refused: this form was sent from another site. Open the Studio's own address "
+                      "and sign in there.", HTTPStatus.FORBIDDEN)
+            return
         user_in = self.get_body_argument("user", "").strip()[:64]
         password = self.get_body_argument("password", "")
         token = self.get_body_argument("token", "").strip()
+        if not token and not (user_in and password):    # nothing was tested: not a failed attempt
+            self.page("Enter the token." if self.hub.local
+                      else "Enter a user and a password, or an access token.", HTTPStatus.BAD_REQUEST)
+            return
         # a valid 256-bit access token is accepted even when this address is throttled (on a
         # compute node every client is 127.0.0.1); passwords are throttled before hashing
         user = self.hub.auth.user_for_token(token) if token else None
         if user is None and self.hub.throttle.blocked(ip):
             if self.hub.first_throttled(ip):   # one line per address and window: a blocked address
                 self.hub.audit.write(event="login", ip=ip, result="throttled")  # cannot grow the log
-            self.set_status(429)
             self.set_header("Retry-After", "900")
-            self.set_header("Content-Type", "text/html; charset=utf-8")
-            self.write(LOGIN_PAGE.replace("%ERR%", '<div class="err">Too many failures; wait 15 min.</div>'))
+            self.page("Too many failed attempts from this address. Wait 15 minutes, then try again.", HTTPStatus.TOO_MANY_REQUESTS)
             return
-        if user is None and not token and user_in and password:
+        if user is None and not token:
             user = user_in if self.hub.auth.check_password(user_in, password) else None
         if user is None:
             self.hub.throttle.failure(ip)
             self.hub.audit.write(event="login", ip=ip, user=user_in or None, result="failed")
-            self.set_status(401)
-            self.set_header("Content-Type", "text/html; charset=utf-8")
-            self.write(LOGIN_PAGE.replace("%ERR%", '<div class="err">Wrong credentials.</div>'))
+            self.page("This token is not valid. Copy it again from the file the hub named when it "
+                      "started; a restart makes a new one." if self.hub.local
+                      else "Wrong user, password or token.", HTTPStatus.UNAUTHORIZED)
             return
         if not token:                                   # a token login does not wipe the
             self.hub.throttle.success(ip)               # password failures of a shared address
@@ -1528,7 +1567,7 @@ async def _serve(a: argparse.Namespace) -> None:
     if a.local:
         spool = Path(a.spool) if a.spool else default_spool()
         from .launch import Launcher
-        relay = Relay(f"ws://127.0.0.1:{a.port}", relay_tok, spool, poll_s=0.5, slurm_s=a.slurm,
+        relay = Relay(f"ws://127.0.0.1:{a.port}", relay_tok, spool, poll_s=0.5, max_rate=LOCAL_RELAY_RATE, slurm_s=a.slurm,
                       launcher=Launcher(Path(__file__).resolve().parents[3],
                                         allow_submit=a.allow_submit))
         asyncio.ensure_future(relay.run())

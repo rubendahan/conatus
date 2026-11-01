@@ -74,6 +74,9 @@ notebook = ["ipywidgets>=8"]
 # Studio server, outbound relay and hosted hub. Never needed by the library itself:
 # `import conatus` and `conatus.telemetry` work without it (tests/studio/test_relay_hub.py).
 studio = ["tornado>=6.6"]
+# MCP server over the agent channel (python -m conatus mcp; never imported by the library). Exact
+# pin: conatus.agent_mcp.SDK_VERSION, the version it is tested with.
+mcp = ["mcp==2.3.0"]
 # Dedalus, for the optional comparison scripts only (never imported by conatus). Its pip build needs MPI
 # and FFTW; prefer `micromamba install -c conda-forge dedalus`.
 dedalus-compare = ["dedalus>=3.0"]

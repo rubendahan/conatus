@@ -6,7 +6,7 @@ a 2D array of times was flattened through np.diff; rtol < 0 was accepted.
 import numpy as np
 from _acceptance import check, passed, refused, start
 
-from conatus.expert import snapshots_from_arrays, uniform_dt
+from conatus.datadriven.sources import snapshots_from_arrays, uniform_dt
 
 start(363, "snapshot times increase, one per snapshot")
 for t in (np.linspace(1, 0, 11), np.linspace(0, 1, 12).reshape(3, 4)):

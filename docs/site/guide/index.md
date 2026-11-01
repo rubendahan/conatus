@@ -49,6 +49,9 @@ particles
 io
 studio
 studio_agents
+recipes
+error_codes
+mcp
 studio_limits
 agents
 notebook
@@ -62,6 +65,9 @@ notebook
 - {doc}`io`: snapshots and checkpoints in HDF5, and a run split over several jobs.
 - {doc}`studio`: watch a run as a film from a browser or a phone, and control it.
 - {doc}`studio_agents`: follow and pilot a run from a script or an AI agent (JSON, tokens, audit).
+- {doc}`recipes`: the shortest code for a common task, each one run and checked by a test.
+- {doc}`mcp`: the MCP server over the agent channel, read-only by default.
+- {doc}`error_codes`: the stable code of each typed error.
 - {doc}`agents`: what an AI agent reads first (`AGENTS.md`), and `python -m conatus agent`: the
   library's facts and a dry run of a script, in JSON.
 - {doc}`notebook`: rich display in Jupyter.

@@ -190,13 +190,13 @@ def test_critical_undeclared_growth_is_refused():
     m = cn.Model(cn.Box(y=cn.walls(-1, 1)), name="OSw", Re=1e4, alpha=1.0)
     m.scalar("v")
     m.given(U=lambda y: 1 - y**2)
-    m.eigenvalue("w")
+    with pytest.raises(OptionError, match="without growth="):
+        m.eigenvalue("w")                        # refused where it is declared, since 0.3
+    m.eigenvalue("w", growth=lambda w: w.real)
     m.define("L2(f) = dy(dy(f)) - alpha**2*f")
     m.equations("L2(L2(v))/(1j*alpha*Re) - U*L2(v) + dy(dy(U))*v + w*L2(v) = 0")
     m.at("walls", "v = 0", "dy(v) = 0")
-    P = m.parametric(N=32, over=("Re",))
-    with pytest.raises(OptionError, match=r"(?s)growth of the eigenvalue 'w' is not declared"):
-        critical(P, "Re", bracket=(5000, 7000), xtol=1e-6)
+    assert critical is not None and m.parametric(N=32, over=("Re",)) is not None
 
 
 # --- C11: dealiasing follows the degree -----------------------------------------------------

@@ -256,7 +256,7 @@ class Linearization:
                     ncc: Mapping) -> None:
         """Y11: the steady residual of the base state, in the
         notes (explain()); above BASE_RESIDUAL_TOL and not declared (``base_residual='accept'``),
-        a BaseStateWarning once (0.1 and 0.2; refused from 0.3). Not a DeprecationWarning: Python hides
+        a refusal since 0.3 (an OptionError). Python hides
         those outside ``__main__``."""
         from ..tolerances import BASE_RESIDUAL_TOL
         # the residual depends on everything the problem is compiled from, not only (N, dealias):
@@ -279,14 +279,11 @@ class Linearization:
             self.notes.append(line + ": not a steady solution, declared (base_residual='accept')")
             return
         msg = (line + f": NOT a steady solution (above BASE_RESIDUAL_TOL = {BASE_RESIDUAL_TOL:g}),"
-               " so these are not the normal modes of a flow that exists; check the base (sign, "
-               "boundary values, forcing), or declare a frozen or forced base with "
-               "linearize(..., base_residual='accept'). Accepted in 0.1 and 0.2, refused from 0.3")
-        self.notes.append("WARNING: " + msg)
-        if not self._base_warned:
-            self._base_warned = True
-            from ..errors import BaseStateWarning, _warn_user
-            _warn_user(msg, BaseStateWarning)
+               " so these are not the normal modes of a flow that exists")
+        raise OptionError(msg, why="an eigenvalue about a state that does not solve the equations "
+                                   "says nothing about that flow",
+                          fix="check the base (sign, boundary values, forcing), or declare a frozen "
+                              "or forced base with linearize(..., base_residual='accept')")
 
     def _base_key(self, comp: Compiled, N: Any, dealias: Any, ncc: Mapping) -> tuple:
         """Cache key of the base residual: the resolution, the parameter values, the equation
@@ -392,6 +389,8 @@ class Linearization:
             linear.add_equation((J, 0 if fl is None else E.neg(fl)))
             texts.append(_without_taus(str(eq)))
 
+        amplitude = [0.0]                                       # largest base value on the grid
+
         def rhs_of(lb):
             used = set()
             for eq in lb.equations:
@@ -399,6 +398,7 @@ class Linearization:
             data = {f: d for f, d in ncc.items() if f in used}
             plan = discretize(lb, ncc=data or None)
             gdata = {f: plan._as_grid(f, d) for f, d in data.items()}
+            amplitude[0] = max([amplitude[0]] + [float(np.abs(d).max()) for d in gdata.values()])
             # evaluated on the full domain: the right-hand side of a boundary condition holds the
             # trace of a base field here (T0(z=-0.5)), which the evaluator of the boundary
             # domain alone cannot sample
@@ -415,6 +415,7 @@ class Linearization:
         given = {"d" + n for n in self.about}
         free_names = [v.name for v in plan.variables if v.name not in given]
         worst, where = 0.0, "-"
+        solved, largest = [], 0.0
         for g in plan.groups:
             gm = plan._assemble(g)
             if gm.L.shape[0] == 0:
@@ -429,21 +430,31 @@ class Linearization:
                 Af = A[:, np.concatenate(free)].toarray()
                 d = np.linalg.lstsq(Af, b, rcond=None)[0]
                 Jd = Af @ d
+            solved.append((g, b, bl, Jd))
+            largest = max(largest, float(np.abs(bl).max(initial=0.0)),
+                          float(np.abs(b - bl).max(initial=0.0)), float(np.abs(Jd).max(initial=0.0)))
+        # rounding floor: an equation whose terms all vanish at the base (div u with u = 0, the
+        # pressure gauge) holds the rounding of the least-squares fit, and so does a whole group
+        # the base has no content in (k != 0 about a profile). A residual below 1e3 eps x the
+        # largest term of ANY group is that rounding, not a defect. A boundary condition is also
+        # measured against the base's own size: u = 0 at a wall sums coefficients of size U to
+        # rounding of U, whatever the size of the terms of the equations (2/Re for a channel).
+        # Measured against the terms alone, an exact base was refused at about half of the
+        # resolutions.
+        floor = 1e3 * np.finfo(float).eps * largest
+        floor_bc = max(floor, 1e3 * np.finfo(float).eps * amplitude[0])
+        is_bc = [eq.domain != plan.domain for eq in total.equations]
+        for g, b, bl, Jd in solved:
             r = Jd - b                                          # F(U) + J_free d_free
-            # rounding floor: an equation whose terms all vanish at the base (div u with u = 0,
-            # the pressure gauge) holds the rounding of the least-squares fit; a residual below
-            # 1e3 eps x the largest term of the group is that rounding, not a defect
-            floor = 1e3 * np.finfo(float).eps * max(float(np.abs(bl).max(initial=0.0)),
-                                                    float(np.abs(b - bl).max(initial=0.0)),
-                                                    float(np.abs(Jd).max(initial=0.0)))
             for i, el in enumerate(plan.eq_layouts(g)):
                 if el.size == 0:
                     continue
                 rows = slice(el.offset, el.offset + el.size)
+                low = floor_bc if is_bc[i] else floor
                 scale = max(float(np.abs(bl[rows]).max()), float(np.abs((b - bl)[rows]).max()),
-                            float(np.abs(Jd[rows]).max()), floor)
+                            float(np.abs(Jd[rows]).max()), low)
                 res = float(np.abs(r[rows]).max())
-                rel = 0.0 if res <= floor else res / scale
+                rel = 0.0 if res <= low else res / scale
                 if rel > worst:
                     worst, where = rel, texts[i][:80]
         # the user's unknowns by name; the automatic boundary (tau) variables are not shown
@@ -594,12 +605,9 @@ class Linearization:
             # word (the shell docstring passed k=4 meaning four shift-invert modes)
             if isinstance(k, numbers.Integral) and not isinstance(k, bool) and \
                     "n_modes" not in kw and kw.get("method") == "shift-invert":
-                from ..errors import _warn_user
-                _warn_user(f"lin.eigenvalues(..., {', '.join(f'{a}={b!r}' for a, b in which.items())}"
-                           f", k={k}): the group is chosen by {', '.join(which)}; k={k} is read as "
-                           f"the number of shift-invert modes, write n_modes={k}",
-                           DeprecationWarning)
-                kw["n_modes"], k = int(k), None
+                raise OptionError(f"lin.eigenvalues(..., k={k}): the group is chosen by "
+                                  f"{', '.join(which)}, and k as a count was removed in 0.3",
+                                  fix=f"write n_modes={k}")
             else:
                 raise OptionError(f"lin.eigenvalues(..., k={k!r}) with "
                                   + ", ".join(f"{a}={b!r}" for a, b in which.items()),

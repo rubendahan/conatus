@@ -35,6 +35,8 @@ from .protocol import (COMMANDS, FILM_ENCODING, PROTOCOL_VERSION, RESERVED_RUN_I
 _STOP = object()
 _RESERVED = ("v", "kind", "run_id", "wall", "name")    # fields every record already has
 # scalars every ivp_callback record carries: a user scalar of that name would replace them silently
+ALL_SCALARS = "\0scalars"    # key of the scalars in the "last sent at" table: not a valid frame name
+PAUSE_HEARTBEAT_S = 10.0    # a paused run sends a status this often: under the Studio's LIVE_S (30 s)
 BUILTIN_SCALARS = ("t", "iteration", "dt", "wall_per_step", "gpu_mem_bytes")
 # frame / curve names: part of a spool file name (<run_id>.frame.<name>.json), so no path separator,
 # no NUL, no leading dot (a '/' made every later spool write fail, telemetry silent)
@@ -364,7 +366,7 @@ class Telemetry:
         for line in chunk.decode("utf-8", "replace").splitlines():
             try:
                 cmd = json.loads(line)
-            except ValueError:
+            except (ValueError, RecursionError):
                 self.log(f"unreadable control line ignored: {line[:80]!r}", level="warning")
                 continue
             if not isinstance(cmd, dict):           # a bare number or list crashed the run
@@ -453,6 +455,7 @@ class Telemetry:
         if shadow:
             raise ValueError(f"scalars {shadow} would replace the built-in {', '.join(BUILTIN_SCALARS)} "
                              "of every record; rename them (e.g. 'my_dt')")
+        sent_at: dict[str, int] = {}                # iteration of the last sample of each frame/curve
         seen: set[str] = set()
         for n in [*frames, *frames3d, *curves]:
             check_name(n)
@@ -460,7 +463,9 @@ class Telemetry:
                 raise ValueError(f"name {n!r} is given to two frames/curves: one namespace per run")
             seen.add(n)
 
-        def cb(solver: Any) -> None:
+        def cb(solver: Any, *, final: bool = False) -> None:
+            # final=True: the sample that closes the run. Everything declared is sent once more
+            # unless already sent for this iteration, whatever the throttles say; no command is read.
             now, it = time.perf_counter(), int(solver.iteration)
             per_step = None
             if self._last_step_wall is not None and it > (self._last_step_it or 0):
@@ -468,38 +473,53 @@ class Telemetry:
             self._last_step_wall, self._last_step_it = now, it
             vals = dict(t=float(solver.t), iteration=it, dt=float(solver.dt), wall_per_step=per_step,
                         gpu_mem_bytes=_gpu_mem(solver))
-            if scalars and time.monotonic() - self._scalar_last >= self.scalar_interval:
-                self._scalar_last = time.monotonic()   # declared scalars may cost a host copy
-                for k, f in scalars.items():
-                    vals[k] = _safe(f, solver)
-            self.scalars(**vals)
+            # the closing sample adds no record when this iteration was already sent in full
+            if not (final and sent_at.get(ALL_SCALARS) == it):
+                full = not scalars
+                if scalars and (final or time.monotonic() - self._scalar_last >= self.scalar_interval):
+                    self._scalar_last = time.monotonic()   # declared scalars may cost a host copy
+                    for k, f in scalars.items():
+                        vals[k] = _safe(f, solver)
+                    full = True
+                self.scalars(**vals)
+                if full:
+                    sent_at[ALL_SCALARS] = it
+
+            def due(name: str) -> bool:
+                if final and sent_at.get(name) == it:
+                    return False
+                if final or self.want_frame(name):
+                    sent_at[name] = it
+                    return True
+                return False
             for name, f in frames.items():
                 f, opts = f if isinstance(f, tuple) else (f, {})
-                if self.want_frame(name):
+                if due(name):
                     arr = _safe(f, solver)
                     if isinstance(arr, np.ndarray):
-                        self.frame(name, arr, t=float(solver.t), iteration=it, **dict(opts))
+                        self.frame(name, arr, t=float(solver.t), iteration=it, force=final, **dict(opts))
                     else:                           # an "error: ..." string: shown, never raised
                         self._frame_last[name] = time.monotonic()
                         self.log(f"frame {name!r} not sent: {arr}", level="warning")
             for name, (f, opts) in curves.items():
-                if self.want_frame(name):
+                if due(name):
                     try:                            # user callable: logged, never raised
                         x, y = f(solver)
-                        self.curve(name, x, y, t=float(solver.t), iteration=it, **dict(opts))
+                        self.curve(name, x, y, t=float(solver.t), iteration=it, force=final, **dict(opts))
                     except Exception as err:  # noqa: BLE001 -- user callable: logged, never raised
                         self._frame_last[name] = time.monotonic()
                         self.log(f"curve {name!r} failed: {type(err).__name__}: {err}",
                                  level="warning")
             for name, (f, opts) in frames3d.items():
-                if self.want_frame(name):
+                if due(name):
                     try:                            # user callable / options: logged, never raised
-                        self.frame3d(name, f(solver), t=float(solver.t), iteration=it, **dict(opts))
+                        self.frame3d(name, f(solver), t=float(solver.t), iteration=it, force=final, **dict(opts))
                     except Exception as err:  # noqa: BLE001 -- user callable: logged, never raised
                         self._frame_last[name] = time.monotonic()
                         self.log(f"frame3d {name!r} failed: {type(err).__name__}: {err}",
                                  level="warning")
-            self._handle_controls(solver, checkpoint_dir, on_checkpoint, setters)
+            if not final:
+                self._handle_controls(solver, checkpoint_dir, on_checkpoint, setters)
         return cb
 
     def newton_callback(self) -> Callable[[dict], None]:
@@ -532,10 +552,14 @@ class Telemetry:
                     continue
                 self.paused = True
                 self.status()
+                beat = time.monotonic()
                 while self.paused:                  # explicit user request: blocking is intended
                     if not pending:
                         time.sleep(self.control_interval)
                         pending.extend(self.controls())
+                        if time.monotonic() - beat >= PAUSE_HEARTBEAT_S:   # alive, still paused:
+                            beat = time.monotonic()                        # a run killed while
+                            self.status()                                  # paused turns stale
                         continue
                     nxt = pending.popleft()
                     n = nxt["cmd"]
@@ -572,7 +596,10 @@ class Telemetry:
         if c not in ("checkpoint", "fork"):
             return
         if checkpoint_dir is None:
-            self.log(f"{c} requested but no checkpoint_dir was declared; ignored", "warning")
+            why = f"{c} requested but no checkpoint_dir was declared; ignored"
+            self.log(why, "warning")
+            self.event(f"{c}_failed", reason="no checkpoint_dir was declared", seq=cmd.get("seq"),
+                       iteration=int(solver.iteration))
             return
         path = Path(checkpoint_dir) / f"{self.run_id}_it{solver.iteration}.npz"
         try:
@@ -580,13 +607,15 @@ class Telemetry:
             extra = {"params": cmd.get("params")} if c == "fork" else {}
         except Exception as err:  # noqa: BLE001 -- reported, the run goes on
             self.log(f"{c} failed: {err}", level="error")
+            self.event(f"{c}_failed", reason=f"{type(err).__name__}: {err}"[:2000],
+                       seq=cmd.get("seq"), iteration=int(solver.iteration))
             return
         if on_checkpoint is not None:       # user hook: never breaks the run
             try:
                 more = {str(k): v for k, v in dict(on_checkpoint(solver, path) or {}).items()}
                 # keys of the event itself (and the fork parameters) are not the hook's: a hook
                 # returning {"t": ...} used to raise a TypeError (duplicate keyword) into the run
-                clash = sorted(set(more) & ({"name", "path", "iteration", "t"} | set(extra)))
+                clash = sorted(set(more) & ({"name", "path", "iteration", "t", "seq"} | set(extra)))
                 if clash:
                     self.log(f"on_checkpoint keys {clash} clash with the {c}_written event fields; "
                              "left out (rename them)", "warning")
@@ -594,7 +623,7 @@ class Telemetry:
             except Exception as err:  # noqa: BLE001 -- user hook: logged
                 self.log(f"on_checkpoint failed: {type(err).__name__}: {err}", "warning")
         self.event(f"{c}_written", path=str(path), iteration=int(solver.iteration),
-                   t=float(solver.t), **extra)
+                   t=float(solver.t), seq=cmd.get("seq"), **extra)
 
     def _set(self, cmd: dict, solver: Any, setters: Mapping[str, Callable]) -> None:
         """A ``set`` command: checked against the declared controls, then the declared setter.
@@ -708,6 +737,7 @@ class _NewtonWithTelemetry:
 
 class StopRun(RuntimeError):
     """Raised inside the computation's callback when the Studio asks to stop the run."""
+    error_code = "CN303"
 
 
 def _jsonable(v: Any) -> Any:

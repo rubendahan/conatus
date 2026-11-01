@@ -33,7 +33,7 @@ def test_stuart_landau_return_map_and_times():
     for dt in (0.01, 0.005):
         s = _solver(dt)
         res = poincare_section(s, X0, lambda X: X[:, 1], direction=1, steps=int(round(20 / dt)),
-                               g_tol=1e-13, max_iter=30)
+                               g_tol=1e-13, max_iterations=30)
         assert all(len(p) >= 5 for p in res.points)
         r0, r1 = res.return_pairs(lambda p: p[0])
         exact = 1 / np.sqrt(1 + (1 / r0**2 - 1) * np.exp(-2 * T))
@@ -52,7 +52,7 @@ def test_poincare_refusals():
     s = _solver()
     with pytest.raises(OptionError, match="direction"):
         poincare_section(s, np.array([0.5, -0.1]), lambda X: X[:, 1], direction=2, steps=10,
-                         g_tol=1e-12, max_iter=5)
+                         g_tol=1e-12, max_iterations=5)
     with pytest.raises(ConvergenceError, match="not located"):
         poincare_section(s, np.array([0.5, -0.1]), lambda X: X[:, 1], direction=1, steps=400,
-                         g_tol=1e-30, max_iter=2)
+                         g_tol=1e-30, max_iterations=2)

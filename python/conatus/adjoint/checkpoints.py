@@ -49,6 +49,7 @@ _DOC = "docs/site/guide/dynamics/adjoint.md"
 class VJPSuspended(ConatusError, RuntimeError):
     """The reverse sweep reached its time budget and was written to its journal (not an error of
     the computation: re-run the same call to resume)."""
+    error_code = "CN240"
 
     def __init__(self, message: str, *, journal: str, position: dict) -> None:
         super().__init__(message, why="budget_s reached: the sweep stopped at a step boundary and "

@@ -1,13 +1,12 @@
-"""Declared deprecations of the v0.1 API.
+"""Former names of the v0.1 API, removed in 0.3.
 
-A renamed argument keeps its former name for one cycle: the old name gives the same value (never
-another behaviour), with a ``DeprecationWarning`` that names the new one; giving both is refused.
-Every alias is listed in :data:`DEPRECATED` (and in CHANGELOG.md);
-the development test suite checks each one. Removal: 0.3.
+A renamed argument kept its former name until 0.3 with a ``DeprecationWarning``. Since 0.3 the
+former name is refused with an :class:`~conatus.errors.OptionError` that names the new one. Every
+former name stays listed in :data:`RENAMES`, so that the refusal can say what to write
+(the development test suite checks each one).
 """
 from __future__ import annotations
 
-import warnings
 from typing import Any
 
 #: The release that narrowed the public surface (``conatus.expert`` lists documented names only,
@@ -15,9 +14,10 @@ from typing import Any
 #: about those names reads its versions here.
 SURFACE_NARROWED_IN = "0.1.1"
 SURFACE_REMOVED_IN = "0.3"
+ARGUMENTS_REMOVED_IN = "0.3"
 
 __all__ = ["DEPRECATED", "RENAMES", "RENAME_NOTES", "VOCABULARY", "renamed", "renames",
-           "positional_order", "aliases_of", "given"]
+           "aliases_of", "given"]
 
 #: Deprecations that are not argument renames (those are in :data:`RENAMES`): where -> (former
 #: name, new name, category); ``conatus.api`` predates v0.1 (FutureWarning, shown to end users by
@@ -26,14 +26,6 @@ DEPRECATED: dict[str, tuple[str, str, str]] = {
     "conatus.api": ("conatus.api", "conatus.expert", "FutureWarning"),
     "NCCResolutionWarning": ("NCCResolutionWarning", "DiscretizationError (refusal)",
                              "no longer emitted"),
-    # the settings became keyword-only when their algorithm controls got defaults;
-    # positional construction (in the v0.1 field order) still works for one cycle
-    "ContinuationSettings": ("positional arguments", "keyword arguments", "DeprecationWarning"),
-    "KrylovContinuationSettings": ("positional arguments", "keyword arguments",
-                                   "DeprecationWarning"),
-    # one name for the radius ratio (taylor_couette(eta=), rotating_shell_*(eta=))
-    "TaylorCouette.radius_ratio": ("TaylorCouette.radius_ratio", "TaylorCouette.eta",
-                                   "DeprecationWarning"),
 }
 
 
@@ -41,7 +33,7 @@ DEPRECATED: dict[str, tuple[str, str, str]] = {
 #: qualname) -> {former name: new name}. Applied by :func:`renames`; listed by the frozen
 #: surface (``[renamed: ...]``);
 #: the development test suite checks that every entry works, warns, refuses both names
-#: together and is documented in CHANGELOG.md. Removal of the old names: 0.3.
+#: together and is documented in CHANGELOG.md. The old names are refused since 0.3.
 RENAMES: dict[str, dict[str, str]] = {
     # v0.1 freeze: one budget name, the step, the continuation parameter
     "conatus.solvers.parametric:ParametricEVP.track": {"maxit": "max_iterations"},
@@ -147,7 +139,7 @@ VOCABULARY: dict[str, str] = {
 #: that nothing else may): the development test suite enforces both.
 VOCABULARY_KEPT: dict[str, str] = {
     "expert.ContinuationSettings(tolerance)": "a dataclass field that scripts read back "
-    "(cfg.tolerance); renamed with an attribute alias in 0.3",
+    "(cfg.tolerance); its rename is still open",
     "expert.KrylovContinuationSettings(tolerance)": "as ContinuationSettings",
     "expert.ContinuationSettings(max_newton)": "a dataclass field read back (cfg.max_newton); "
     "the property cfg.max_iterations reads it under the API-wide name",
@@ -181,10 +173,17 @@ def aliases_of(func: Any) -> dict[str, str]:
     return dict(getattr(f, "__conatus_renamed__", {}))
 
 
+def _refuse(where: str, old: str, new: str) -> None:
+    from .errors import OptionError
+    note = RENAME_NOTES.get(new)
+    raise OptionError(f"{where}: {old}= was removed in {ARGUMENTS_REMOVED_IN}, write {new}=",
+                      why=f"{new} is the name with the same meaning" + (f": {note}" if note else ""),
+                      fix=f"replace {old}= by {new}=")
+
+
 def renames(site: str):
-    """Decorator for the function or method ``site`` of :data:`RENAMES`: each former name still
-    works (DeprecationWarning naming the new one, the same value), giving both is refused; the
-    signature shows the new names only, the former ones are listed by :func:`aliases_of`."""
+    """Decorator for the function or method ``site`` of :data:`RENAMES`: each former name is refused
+    with the new one, and listed by :func:`aliases_of`; the signature shows the new names only."""
     import functools
     table = RENAMES[site]
 
@@ -194,74 +193,20 @@ def renames(site: str):
         @functools.wraps(func)
         def wrapper(*args: Any, **kw: Any):
             for old, new in table.items():
-                if old not in kw:
-                    continue
-                if new in kw:
-                    # refused whatever the values (renamed() treats None as "not
-                    # given", so f(k=None, n_modes=8) would pick one name silently)
-                    from .errors import OptionError
-                    raise OptionError(f"{where}: {old}= and {new}= given together",
-                                      why=f"{old} is the deprecated name of {new} (same meaning)",
-                                      fix=f"keep {new}= only")
-                value = renamed(where, old, new, kw.pop(old), None, required=False,
-                                note=RENAME_NOTES.get(new))
-                if value is not None:
-                    # an explicit old=None leaves the new argument's default in place (it
-                    # meant "not given" for the former names), never None over a default
-                    kw[new] = value
+                if old in kw:
+                    _refuse(where, old, new)
             return func(*args, **kw)
         wrapper.__conatus_renamed__ = dict(table)
         return wrapper
     return deco
 
 
-def positional_order(cls: type, order: tuple[str, ...]) -> type:
-    """Let the keyword-only dataclass ``cls`` still be built positionally in the v0.1 field
-    ``order`` (DeprecationWarning naming the keywords); the signature shown stays keyword-only."""
-    import functools
-    import inspect
-    init = cls.__init__
-
-    @functools.wraps(init)
-    def __init__(self, *args: Any, **kw: Any) -> None:
-        if args:
-            if len(args) > len(order):
-                raise TypeError(f"{cls.__name__}() takes at most {len(order)} positional "
-                                f"arguments ({len(args)} given)")
-            names = order[:len(args)]
-            both = [n for n in names if n in kw]
-            if both:
-                raise TypeError(f"{cls.__name__}() got multiple values for {both}")
-            warnings.warn(f"{cls.__name__}: positional arguments are deprecated since v0.1"
-                          f", write keywords: {', '.join(n + '=' for n in names)}",
-                          DeprecationWarning, stacklevel=2)
-            kw.update(zip(names, args, strict=True))
-        init(self, **kw)
-    __init__.__signature__ = inspect.signature(init)
-    cls.__init__ = __init__
-    return cls
-
-
 def renamed(where: str, old: str, new: str, old_value: Any, new_value: Any, *,
             required: bool = True, note: str | None = None) -> Any:
-    """The value of the argument ``new`` given under either name (``None`` = not given).
-
-    ``old_value`` given: DeprecationWarning, same value. Both given: refused. Neither and
-    ``required``: refused with what to write."""
-    from .errors import OptionError
+    """The value of the argument ``new``. ``old_value`` given: refused with the new name. Neither
+    given and ``required``: refused with what to write."""
     if old_value is not None:
-        if new_value is not None:
-            raise OptionError(f"{where}: {old}= and {new}= given together",
-                              why=f"{old} is the deprecated name of {new} (same meaning)",
-                              fix=f"keep {new}= only")
-        meaning = f"same meaning: {note}" if note else "same meaning"
-        # attributed to the user's line whatever the depth (a fixed
-        # stacklevel=3 pointed into the library when a conatus function forwards **kw to a
-        # renamed one, e.g. floquet_exponents(nsteps=...), where the default filter hides it)
-        from .errors import _warn_user
-        _warn_user(f"{where}: {old}= is deprecated since v0.1, write {new}= ({meaning}; the "
-                   "old name is removed in 0.3)", DeprecationWarning)
-        return old_value
+        _refuse(where, old, new)
     return given(where, new, new_value) if required else new_value
 
 

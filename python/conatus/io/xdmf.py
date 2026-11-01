@@ -41,6 +41,7 @@ __all__ = ["write_xdmf", "XDMFNotCovered"]
 
 class XDMFNotCovered(UnsupportedError):
     """This analysis file cannot be described by the XDMF sidecar (the message says why)."""
+    error_code = "CN222"
 
 
 def _comment(text: str) -> str:

@@ -34,13 +34,13 @@ def sh_rolls(N, basis=None, r=0.1, dealias=2):
 
 
 def _solver(pb, phase, **kw):
-    return PeriodicNewtonSolver(pb, tolerance=1e-13, damping=1.0, max_iterations=20, phase=phase, **kw)
+    return PeriodicNewtonSolver(pb, tol=1e-13, damping=1.0, max_iterations=20, phase=phase, **kw)
 
 
 def test_banded_newton_refuses_the_periodic_rolls():
     """The gap itself: the per-wavenumber Newton step cannot hold an x-dependent Jacobian."""
     pb, u, x = sh_rolls(16)
-    s = NewtonSolver(pb, tolerance=1e-12, damping=1.0, max_iterations=5)
+    s = NewtonSolver(pb, tol=1e-12, damping=1.0, max_iterations=5)
     with pytest.raises(DiscretizationError, match="varies along a Fourier direction"):
         s.solve({u: lambda X: 0.3 * np.cos(X)})
 
@@ -94,7 +94,7 @@ def test_x_dependent_forcing_needs_no_phase_and_scalar_unknown():
 
     def fs(X):
         return -0.5 * np.cos(X) - 0.8 * np.sin(2 * X) - us(X) - us(X) ** 3 + 0.3
-    s = PeriodicNewtonSolver(pb, tolerance=1e-13, damping=1.0, max_iterations=20, ncc={f: fs})
+    s = PeriodicNewtonSolver(pb, tol=1e-13, damping=1.0, max_iterations=20, ncc={f: fs})
     assert "translation-invariant directions: none" in s.explain()
     sol = s.solve({u: lambda X: 0 * X})
     X = T.grid(D.bases[0], dealias=False)

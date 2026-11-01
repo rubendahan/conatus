@@ -171,7 +171,7 @@ def _diffusion_modes(eps, N):
     m.eigenvalue("s", growth="real")
     m.equations("s*T - lap(T) = 0")
     m.at("walls", T=0)
-    r = m.eigenvalues(N, method="shift-invert", target=-9.5, k=4)
+    r = m.eigenvalues(N, method="shift-invert", target=-9.5, n_modes=4)
     ok = np.isfinite(r.values)
     order = np.argsort(np.abs(r.values[ok] + 9.5))
     return r.values[ok][order], r.residuals[ok][order]

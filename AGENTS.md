@@ -26,7 +26,7 @@ python -m conatus agent check run.py   # dry run (no solve): refusals + fix, mis
   `sim.solver`, `sim.plan`. A name present in both layers has one meaning.
 - One word per notion: `steps` (number of time steps), `k` (a wavenumber keyword; a problem
   parameter keeps its literature name, e.g. `alpha` of Orr–Sommerfeld), `eta` (radius
-  ratio), `n_modes`, `max_iterations`, `tol` (exceptions until 0.3: the fields `ContinuationSettings(tolerance=, max_newton=)`, also read as `cfg.tol`, `cfg.max_iterations`);
+  ratio), `n_modes`, `max_iterations`, `tol` (exceptions: the fields `ContinuationSettings(tolerance=, max_newton=)`, also read as `cfg.tol`, `cfg.max_iterations`);
   former names warn (`conatus._deprecation.RENAMES`).
 - Names below: `m` = `cn.Model`, `sim` = `cn.model.Simulation`, `lin` = `cn.model.Linearization`, `X` = `conatus.expert`.
 
@@ -94,7 +94,7 @@ T = md.at("T", z=np.linspace(-0.5, 0.5, 101))[0]     # walls included; row x = 0
 | Eigenvalues | `res = m.eigenvalues(N, drift=N2, drift_tol=1e-6)` → `.values`, `.residuals`, `.explain()`, `res.order()` (least stable first by the growth convention); `left=True` for adjoint modes; expert `X.eigenvalues(plan, drift_plan=plan2, drift_tol=1e-6)` |
 | Eigenmodes | `md = res.mode(i)` → `md["v"]` (complex grid values, taus left out, declared normalisation), `md.coordinate("y")`, `md.at("v", y=pts)` (walls included) |
 | Spurious and unresolved modes | `drift=` compares two resolutions and removes modes that move (`drift` > N, `drift_tol` in (0, 1e-2]; if every mode is removed, `ResolutionError`). A spectral-tail test, on by default, flags modes whose energy sits in the last coefficients (`res.flagged`, ranked last by `order()`; `spurious="none"` turns it off). Without `drift=`, a selected mode above `cn.tolerances.UNRESOLVED_TAIL_TOL` (1e-10) gives a `ResolutionWarning`: raise N or pass `drift=` |
-| Periodic axes, linearizations | `m.eigenvalues(N, k=wavenumber)` on a model with a periodic axis (without `k`, only k = 0 is solved and `cn.errors.GroupWarning` says so); `n_modes=` counts shift-invert modes; curvilinear: `m=`, `kz=`, `ell=`. `lin = m.linearize(about={u: 0, T: lambda z: -z})`, `lin.eigenvalues(N, k=kx)`; a base that is not steady gives `cn.errors.BaseStateWarning` unless `base_residual="accept"` |
+| Periodic axes, linearizations | `m.eigenvalues(N, k=wavenumber)` on a model with a periodic axis (without `k` it is refused: name the group); `n_modes=` counts shift-invert modes; curvilinear: `m=`, `kz=`, `ell=`. `lin = m.linearize(about={u: 0, T: lambda z: -z})`, `lin.eigenvalues(N, k=kx)`; a base that is not steady is refused unless `base_residual="accept"` |
 | Eigenvalues in a region | `res = m.eigenvalues(N, region=cn.box(re=(a, b), im=(c, d)))` → every eigenvalue in the box, `res.count` (counted by the argument principle from samples of the determinant on the boundary; refused when the sampling checks fail or an eigenvalue sits on the boundary), `res.count_method`, `res.multiplicity`; any operator: `cn.contour.count(T, box)` (`T` = `(L, M)`, a `HillBlocks` or `z -> T(z)` with `poles=`), `cn.contour.beyn(T, box, poles=0, derivative=dT)` (nonlinear `T(z) v = 0`, roots accepted at residual `<= 1e-13` by default) |
 | Parametric, thresholds | `P = m.parametric(N, over=("Re", "alpha"), drift=N2, drift_tol=1e-6)` (drift: modes that move between resolutions are removed); ready linearizations: `lin.parametric(N, over=("Ra", "k"), drift=N2, drift_tol=1e-6)` (`k` = the wavenumber, `lin.wavenumber_names()`), `X.critical(P, "Re", bracket=(a, b), xtol=1e-9)` (the growth must change sign between `a` and `b`: checked at both ends, else refused with the sub-brackets where it does; a neutral curve can have two branches, e.g. Orr–Sommerfeld at alpha = 1 between Re = 5000 and 40000: bracket each; growth from the eigenvalue's declaration `m.eigenvalue("c", growth="imag")`, `lin`: Re s; only modes passing the spectral-tail test are selected; without a drift pencil the tail of the critical mode is printed and an under-resolved one warns (`crit.unresolved_note`); missing parameters take the model's values), `P.least_stable(...)`, `P.track(...)`, `P.sensitivity(mode, "Re")` |
 | Transient growth | `lin.optimal_gain(N, k=k, t0=0, T=T, steps=n, scheme="RK443")` → `.G`; `X.max_growth(ss, (t1, t2), xtol=)` (`n_scan=64` declared default), `X.optimal_growth`, `conatus.growth.growth_at` |
@@ -121,20 +121,20 @@ T = md.at("T", z=np.linspace(-0.5, 0.5, 101))[0]     # walls included; row x = 0
 
 ## 5. Rules that prevent agent mistakes
 
-1. **Errors carry a fix.** A refusal is a `cn.errors.ConatusError` with `.message`, `.where`, `.why`,
-   `.fix`, `.doc`. Read `fix`, apply it yourself only if it is what you mean. Let numerical
+1. **Errors carry a fix.** A refusal is a `cn.errors.ConatusError` with a stable `.error_code`, `.message`,
+   `.where`, `.why`, `.fix`, `.doc` (and `.as_dict()`). Read `fix`, apply it yourself only if it is what you mean. Let numerical
    refusals propagate; if a script handles one, record the exception and the decision taken.
 2. **Supply these accuracy arguments explicitly** (`REQUIRED`): `drift_tol`, `xtol` of
    `X.critical`, `tol` of `method="hill"` / `X.shell_floquet` / `nl.linear_gain` / `NewtonKrylovHookstep`,
    `tolerance` of `ContinuationSettings`, `tol` of `X.NewtonSolver`, `arnoldi_tol` of
-   `X.equilibrium_eigenvalues` (omitted: v0.1 default 1e-12 with a DeprecationWarning), `safety` of `sim.cfl` and of adaptive `X.EmbeddedError`.
+   `X.equilibrium_eigenvalues` (required), `safety` of `sim.cfl` and of adaptive `X.EmbeddedError`.
    Write a value and say why; `agent explain <name>` lists them. Other accuracy defaults (for example the
    residual bound of `cn.contour.beyn`) are listed in the API reference of each call. Algorithm controls (trust radii,
    step growth, Krylov and iteration budgets, FD step) have declared defaults (`cn.tolerances.explain()`).
    Renamed arguments (`nmodes`/`k` → `n_modes`, `X0` → `x0`, `xatol` → `xtol`, `maxit` →
-   `max_iterations`, `nsteps` → `steps`, `radius_ratio` → `eta`, ...) still work with a `DeprecationWarning`; write the new names.
+   `max_iterations`, `nsteps` → `steps`, `radius_ratio` → `eta`, ...) are refused since 0.3, and the message names the new one.
    When the answer may not be the one you meant, Conatus emits a `cn.errors.CorrectnessWarning`
-   (`BaseStateWarning`, `GroupWarning`, `DefaultChoiceWarning`). Python shows these by default, unlike a
+   (`DefaultChoiceWarning`, for example). Python shows these by default, unlike a
    `DeprecationWarning`. Treat one as an error and declare the choice it names.
    Do not loosen a tolerance to make a refusal go away: find what is under-resolved.
 3. **Under-resolved coefficients are refused** (non-constant coefficient tail > `cn.tolerances.NCC_TAIL_TOL`):
@@ -170,7 +170,7 @@ T = md.at("T", z=np.linspace(-0.5, 0.5, 101))[0]     # walls included; row x = 0
     the local hub, shells larger than 64 × 48 × 48, 3-D channel and pipe
     orbits (`conatus.ecs.shooting.ShootingRPO`, `conatus.ecs.pipe.PipeTravellingWave`). First use warns `cn.errors.ExperimentalWarning`;
     say so in what you report. `X` exports documented names only: anything else is
-    `conatus.<module>.<name>` (`X.<name>` warns `DeprecationWarning`, gone in 0.3).
+    `conatus.<module>.<name>` (`X.<name>` is refused, and the refusal names the module).
 
 ## 6. Driving a run live (Studio channel, JSON, no server needed on a cluster)
 
@@ -190,6 +190,8 @@ Alerts: `non_finite`, `silent`, `set_refused`, `failed`, `log_errors`, … Act o
 check it was applied, then send the next command. Python: `from conatus.studio.client import connect`
 (`cl.status`, `cl.send`, `cl.wait`). Hub tokens are per agent with a scope (`read` | `command`) and
 run patterns (`python -m conatus.studio.hub --state DIR addagent NAME --scope command --runs 'host:kh_*' --token-out FILE`).
+MCP client: `python -m conatus mcp` (extra `conatus[mcp]`), read-only unless started with `--allow COMMAND`;
+run and record text arrives under `untrusted_data`. Guide: `guide/mcp`. Codes: `guide/error_codes`.
 On a cluster: run agents and servers inside compute-node jobs, under the cluster's policy. Leave no background
 process behind, and do not poll the scheduler in a loop.
 
@@ -208,7 +210,7 @@ process behind, and do not poll the scheduler in a loop.
   (`watch`, `output`, `checkpoints`, `save`) are skipped. Not a sandbox: the script's own code (file
   writes, subprocesses) runs with your privileges; never catch `BaseException` around Conatus calls. →
   `ok, calls[{call, line, action}], stopped_at, missing[{call, argument, kind, suggest}],
-  refusals[{type, message, where, why, fix, doc, line}], errors, warnings, explain{model, simulation,
+  refusals[{type, error_code, message, where, why, fix, doc, line}], errors, warnings, explain{model, simulation,
   plan, ...}, plan{type, groups}, memory{peak_bytes (allocators), peak_with_process_floor_bytes (+ the
   declared CUDA context/kernels floor, 512 MiB measured), report} | null, notes,
   validated[{call, values: "checked" | "not checked", checked}], elapsed_s`. `ok` covers what

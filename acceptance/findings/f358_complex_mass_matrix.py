@@ -8,7 +8,7 @@ import warnings
 import numpy as np
 from _acceptance import check, passed, refused, start
 
-from conatus.expert import generalized_eigenvalues
+from conatus.bifurcation.equilibria import generalized_eigenvalues
 
 start(358, "complex M kept, shapes checked")
 with warnings.catch_warnings():

@@ -44,6 +44,7 @@ TAIL_BYTES = 8 << 20                 # spool transport: bytes of a run file read
 class StudioError(Exception):
     """The hub could not be reached or answered something that is not the API (``code`` 0: no
     answer at all)."""
+    error_code = "CN301"
 
     def __init__(self, message: str, code: int = 0) -> None:
         super().__init__(message)
@@ -202,7 +203,7 @@ def read_run(spool: Path, run_id: str, *, tail_bytes: int = TAIL_BYTES, max_scal
     for line in lines:
         try:
             rec = json.loads(line)
-        except ValueError:
+        except (ValueError, RecursionError):
             st.malformed += 1
             continue
         if isinstance(rec, dict):
@@ -374,6 +375,10 @@ class SpoolClient:
                     409, f"{cmd} requires a confirmation: send the same command again with "
                          f"confirm {tok!r} within {agentapi.CONFIRM_TTL_S:.0f} s",
                     needs_confirmation=True, confirm_token=tok)
+            if self._commands_in_window() >= agentapi.COMMANDS_PER_MINUTE:
+                raise agentapi.CommandRefused(
+                    429, f"more than {agentapi.COMMANDS_PER_MINUTE} commands in "
+                         f"{agentapi.COMMAND_WINDOW_S:.0f} s on this spool", retry_after_s=60)
         except agentapi.CommandRefused as err:
             self._audit(**entry, result=f"refused: {str(err)[:160]}")
             return {"api": agentapi.API_VERSION, "key": rid, **err.body()}
@@ -392,6 +397,30 @@ class SpoolClient:
                         note="written to the run's control file; the run applies it at its next "
                              "check (see its events: command_received, param_set, ...)")
 
+    def _commands_in_window(self) -> int:
+        """Commands written on this spool in the last window, counted from the audit, so the limit
+        holds across processes. A process that writes the control file itself is not counted:
+        the permissions of the spool decide who can do that."""
+        now = time.time()
+        try:
+            with (self.spool / SPOOL_AUDIT).open("rb") as fh:
+                fh.seek(0, 2)
+                start = max(0, fh.tell() - (256 << 10))
+                fh.seek(start)
+                tail = fh.read().splitlines()[1 if start else 0:]    # the first line may be partial
+        except OSError:
+            return 0
+        count = 0
+        for line in tail:
+            try:
+                rec = json.loads(line)
+            except (ValueError, RecursionError):
+                continue
+            if isinstance(rec, dict) and rec.get("result") == "written to control file" \
+                    and now - float(rec.get("wall") or 0) < agentapi.COMMAND_WINDOW_S:
+                count += 1
+        return count
+
     def _audit(self, **entry: Any) -> None:
         from .auth import AuditLog
         AuditLog(self.spool / SPOOL_AUDIT, echo=False).write(**entry)
@@ -409,7 +438,7 @@ class SpoolClient:
             for line in tail[-50:]:
                 try:
                     recent.append(json.loads(line))
-                except ValueError:
+                except (ValueError, RecursionError):
                     continue
         except OSError:
             pass

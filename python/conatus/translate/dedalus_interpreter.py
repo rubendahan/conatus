@@ -36,6 +36,7 @@ LITERAL_MAX_ITEMS = 10**8            # a repeated sequence or a created array of
 
 class LiteralTooLargeError(UnsupportedError):
     """A literal computation of the script exceeds the declared bounds (never evaluated)."""
+    error_code = "CN221"
 
 
 def _too_large(what: str, size: str) -> LiteralTooLargeError:

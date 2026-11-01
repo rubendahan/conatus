@@ -35,4 +35,4 @@ closer to the exact eigenvalue.
 
 It prints the comparison and writes `result.json` in the working directory.
 `bash examples/published/run.sh pipe_flow_spectrum` records `output.txt` and `result.json` here.
-Recorded run: 177 s of wall time on 4 threads of an AMD EPYC 9654 96-Core Processor (Conatus 0.2.4, Python 3.12.14, 2026-10-31).
+Recorded run: 182 s of wall time on 4 threads of an AMD EPYC 9654 96-Core Processor (Conatus 0.3.0, Python 3.12.14, 2026-10-31).

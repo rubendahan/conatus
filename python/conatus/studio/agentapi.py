@@ -43,6 +43,8 @@ API_VERSION = 1
 SILENT_S = 60.0                      # a live run silent for longer gets the alert "silent"
 LIVE_S = 30.0                        # a record in the last LIVE_S seconds: "running"
 CONFIRM_TTL_S = 120.0                # a confirmation token is valid this long, once
+COMMAND_WINDOW_S = 60.0              # window of COMMANDS_PER_MINUTE
+COMMANDS_PER_MINUTE = 60             # per agent or user on the hub, per spool without one: above 429
 MAX_PARAMS_BYTES = 4096              # fork/set parameters: small JSON objects only
 ENDED = ("finished", "failed", "stopped")
 STATES = ("running", "paused", "stale", *ENDED)
@@ -52,14 +54,16 @@ class CommandRefused(Exception):
     """A command that is not sent. ``code``: 400 malformed, 403 not allowed (scope, not declared),
     404 unknown run, 409 needs confirmation (``confirm_token`` attached) or wrong state,
     503 relay offline."""
+    error_code = "CN300"
 
     def __init__(self, code: int, message: str, **extra: Any) -> None:
         super().__init__(message)
         self.code, self.extra = int(code), extra
 
     def body(self) -> dict:
-        """The JSON answer: ``{"ok": false, "error": message, "code": code, ...}``."""
-        return {"ok": False, "error": str(self), "code": self.code, **self.extra}
+        """The JSON answer: ``{"ok": false, "error": message, "code": code, "error_code": "CN300", ...}``."""
+        return {"ok": False, "error": str(self), "code": self.code, "error_code": self.error_code,
+                **self.extra}
 
 
 # ------------------------------------------------------------------------------ state, alerts
@@ -67,12 +71,18 @@ def _get(rec: Mapping | None, key: str, default: Any = None) -> Any:
     return rec.get(key, default) if isinstance(rec, Mapping) else default
 
 
+def _last_heard(st: Any) -> float:
+    """The last time a record of this run was written or, for a hub still reading a backlog, read: a
+    run writing faster than a hub reads is not silent while the old records are still arriving."""
+    return max(float(st.last_wall or 0), float(getattr(st, "last_received", 0) or 0))
+
+
 def run_state(st: Any, now: float | None = None) -> str:
     """``running | paused | stale | finished | failed | stopped`` from the records of a run
     (a :class:`conatus.telemetry.RunState`): final status (failed if it carries ``failed`` or
     ``error``, stopped if it carries ``stopped`` or a stop was received),
-    a failure event, the paused flag, else running if a record came in the last
-    :data:`LIVE_S` s, else stale."""
+    a failure event, stale if no record came in the last :data:`LIVE_S` s, else the paused flag,
+    else running."""
     now = time.time() if now is None else now
     status = st.status or {}
     events = list(st.events)
@@ -85,9 +95,9 @@ def run_state(st: Any, now: float | None = None) -> str:
         return "finished"
     if any(e.get("name") in ("failed", "error") for e in events):
         return "failed"
-    if status.get("paused"):
-        return "paused"
-    return "running" if now - float(st.last_wall or 0) < LIVE_S else "stale"
+    if now - _last_heard(st) >= LIVE_S:              # a paused run sends a heartbeat: silence means
+        return "stale"                               # the process is gone, paused or not
+    return "paused" if status.get("paused") else "running"
 
 
 def _count(v: Any) -> int:
@@ -125,7 +135,12 @@ def alerts(st: Any, now: float | None = None, relay_connected: bool | None = Non
         out.append(dict(code="failed", level="error",
                         message=f"the run failed: {why}" if isinstance(why, str) and why
                         else "the run reported a failure"))
-    age = now - float(st.last_wall or 0)
+    behind = float(getattr(st, "last_received", 0) or 0) - float(st.last_wall or 0)
+    if state not in ENDED and behind > LIVE_S:
+        out.append(dict(code="behind", level="warning",
+                        message=f"this view is {behind:.0f} s behind the run: the hub is still reading "
+                                "its file, so values and events are late"))
+    age = now - _last_heard(st)
     if state in ("running", "stale") and age > SILENT_S:
         out.append(dict(code="silent", level="warning",
                         message=f"no record for {age:.0f} s (stuck, ended without closing, or "

@@ -36,7 +36,7 @@ def test_same_as_builtin_bit_for_bit():
     assert np.array_equal(sims[0][2].solver.X, sims[1][2].solver.X)
     ev = []
     for m, u, _ in sims:
-        lin = m.linearize(about={u: lambda x, z: 0.3 * np.sin(np.pi * z)})
+        lin = m.linearize(about={u: lambda x, z: 0.3 * np.sin(np.pi * z)}, base_residual="accept")
         v = np.asarray(lin.eigenvalues(16, k=1.0).values)
         ev.append(np.sort_complex(v[np.isfinite(v)]))
     assert np.array_equal(ev[0], ev[1])

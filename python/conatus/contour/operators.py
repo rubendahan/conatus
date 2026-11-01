@@ -47,6 +47,7 @@ DERIVATIVE_STEP = 6e-6
 
 class SingularPoint(ArithmeticError):
     """T(z) is exactly singular at ``z`` (a zero pivot): ``z`` is an eigenvalue to working precision."""
+    error_code = "CN241"
 
     def __init__(self, z: complex) -> None:
         super().__init__(f"T(z) is exactly singular at z = {z!r}")

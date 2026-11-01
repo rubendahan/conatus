@@ -11,6 +11,8 @@ All errors derive from `ConatusError`, and each also derives from the built-in e
 raised before 0.1 (`ValueError`, `TypeError`, `KeyError`, `RuntimeError`,
 `NotImplementedError`, `ImportError`, `FileNotFoundError`), so `except ValueError:` keeps working.
 
+Each class has a stable code in `error_code`, listed in {doc}`error_codes`.
+
 ```python
 import conatus.errors
 print(conatus.errors.explain())   # the tree of exception classes
@@ -26,12 +28,12 @@ them: the base residual of a linearization, the group in a result's header, and 
 
 | Warning | When |
 |---|---|
-| `BaseStateWarning` | `m.linearize(about=...)` about a base whose steady residual exceeds `BASE_RESIDUAL_TOL` (not declared with `base_residual="accept"`); refused from 0.3 |
-| `GroupWarning` | `eigenvalues()` without `k=` on a periodic model (only k = 0 is solved), or without `m=` on a curvilinear one (only the first group); required from 0.3 |
+| `BaseStateWarning` | no longer emitted: since 0.3 `m.linearize(about=...)` about a base whose steady residual exceeds `BASE_RESIDUAL_TOL` raises `OptionError` unless `base_residual="accept"`. The class stays importable |
+| `GroupWarning` | no longer emitted: since 0.3 `eigenvalues()` without `k=` on a periodic model, or without `m=` on a curvilinear one, raises `OptionError`. The class stays importable |
 
 Resolution detections are `ResolutionWarning`, `UnderResolvedWarning`, `InitialDataWarning` and
-`IllPosedWarning`. A former spelling with the same meaning (a renamed argument) is a
-`DeprecationWarning`, which Python shows only for code run as `__main__`.
+`IllPosedWarning`. A former spelling with the same meaning (a renamed argument) raises `OptionError`
+naming the new one since 0.3.
 
 ## Catalogue
 

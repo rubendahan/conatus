@@ -164,6 +164,7 @@ _CONDITIONAL = (
 )
 
 DOCS = {"agents": "AGENTS.md", "guide": "docs/site/guide/agents.md",
+        "error_codes": "docs/site/guide/error_codes.md", "mcp": "docs/site/guide/mcp.md",
         "live_runs": "docs/site/guide/studio_agents.md", "errors": "docs/site/guide/errors.md"}
 
 COMMANDS = {
@@ -172,6 +173,7 @@ COMMANDS = {
     "python -m conatus agent check <script.py>": "dry run up to the first expensive call (JSON)",
     "python -m conatus doctor --json": "full installation check (slower), exit 1 if required is missing",
     "python -m conatus studio status|watch|send|frame|log <run>": "follow and pilot a watched run",
+    "python -m conatus mcp": "MCP server on stdio, read-only by default (extra conatus[mcp])",
 }
 
 
@@ -261,6 +263,21 @@ def info(*, probe: bool = True, runs: bool = True) -> dict:
 
 
 # ======================================================================================= describe
+def _foreign(module: Any, name: str, obj: Any) -> bool:
+    """``name`` in a Conatus module is something it only imported: another package's module, class or
+    function, or an object of a type from outside (``os.environ``), unless the module lists it."""
+    if name in getattr(module, "__all__", ()):
+        return False
+    def outside(mod: Any) -> bool:
+        return isinstance(mod, str) and mod.partition(".")[0] != "conatus"
+    if inspect.ismodule(obj):
+        return outside(obj.__name__)
+    if inspect.isclass(obj) or callable(obj):
+        return outside(getattr(obj, "__module__", None))
+    return type(obj).__module__ not in ("builtins", "numpy", "pathlib", "conatus") \
+        and outside(type(obj).__module__)
+
+
 def _resolve(name: str) -> tuple[str, Any]:
     """``cn.X.y`` / ``expert.X`` / ``conatus.mod.X`` -> object (raises LookupError)."""
     parts = name.split(".")
@@ -280,12 +297,15 @@ def _resolve(name: str) -> tuple[str, Any]:
     if obj is None:
         raise LookupError(name)
     for p in parts[i:]:
+        owner = obj
         try:
             obj = inspect.getattr_static(obj, p) if inspect.isclass(obj) else getattr(obj, p)
         except AttributeError:
             raise LookupError(name) from None
         if isinstance(obj, (staticmethod, classmethod)):
             obj = obj.__func__
+        if inspect.ismodule(owner) and _foreign(owner, p, obj):
+            raise LookupError(name)
     return ".".join(parts), obj
 
 
@@ -365,7 +385,7 @@ def describe(name: str) -> dict:
             dep = aliases_of(obj)
         except Exception:  # noqa: BLE001 -- an object without aliases
             dep = {}
-        if dep:            # former argument names still accepted (DeprecationWarning)
+        if dep:            # former argument names, refused with the new one
             out["deprecated"] = dep
         cond = [{"argument": a, "when": w, "suggest": s, "kind": "tolerance" if s else "required"}
                 for c, w, _, a, s in _CONDITIONAL if qual.endswith("." + c)]
@@ -416,7 +436,8 @@ def _error(err: BaseException, path: str) -> dict:
     d = {"type": type(err).__name__, "line": line,
          "conatus": isinstance(err, ConatusError)}
     if isinstance(err, ConatusError):
-        d.update(message=err.message, where=err.where, why=err.why, fix=err.fix, doc=err.doc)
+        d.update(message=err.message, where=err.where, why=err.why, fix=err.fix, doc=err.doc,
+                 error_code=err.error_code)
     else:
         d["message"] = str(err)
         d["at"] = f"{tb[-1].filename}:{tb[-1].lineno}" if tb else None

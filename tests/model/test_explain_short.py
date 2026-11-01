@@ -73,7 +73,7 @@ def test_evp_result_short_keeps_filters_and_modes():
     os_ = cn.Model(cn.Box(y=cn.walls(-1, 1)), name="Orr-Sommerfeld", Re=1e4, alpha=1.0)
     os_.scalar("v")
     os_.given(U=lambda y: 1 - y**2)
-    os_.eigenvalue("c")
+    os_.eigenvalue("c", growth="imag")
     os_.define("L2(f) = dy(dy(f)) - alpha**2*f")
     os_.equations("L2(L2(v))/(1j*alpha*Re) - U*L2(v) + dy(dy(U))*v + c*L2(v) = 0")
     os_.at("walls", "v = 0", "dy(v) = 0")

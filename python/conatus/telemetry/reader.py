@@ -30,13 +30,14 @@ class RunState:
         self.status: dict | None = None
         self.frames: dict[str, dict] = {}
         self.last_wall = 0.0
+        self.last_received = 0.0                    # wall time a hub last read a record (0: not a hub)
         self.malformed = 0
 
     def summary(self) -> dict:
         """Header, status, last scalars, counters and frame names of the run."""
         last = self.scalars[-1] if self.scalars else {}
         return dict(run_id=self.run_id, header=self.header, status=self.status,
-                    last=last, last_wall=self.last_wall, malformed=self.malformed,
+                    last=last, last_wall=self.last_wall, last_received=self.last_received, malformed=self.malformed,
                     frames=sorted(self.frames))
 
     def snapshot(self) -> dict:
@@ -113,7 +114,7 @@ class SpoolReader:
             for line in chunk.decode("utf-8", "replace").splitlines():
                 try:
                     rec = json.loads(line)
-                except ValueError:
+                except (ValueError, RecursionError):
                     st.malformed += 1
                     continue
                 if not isinstance(rec, dict):       # valid JSON, not a record: counted

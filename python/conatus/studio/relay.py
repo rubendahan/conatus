@@ -89,6 +89,7 @@ def squeue_snapshot() -> dict:
     err = "\n".join(x for x in out.stderr.splitlines() if not x.startswith("[slurm_gate] waiting"))
     return {"when": time.time(), "jobs": jobs, "error": err.strip() or None}
 MAX_PARAMS_BYTES = 4096              # fork parameters: small JSON objects only
+LINES_BYTES_PER_PUSH = 2 << 20       # run file lines sent per poll at most, per run
 FILM_BYTES_PER_PUSH = 2 << 20        # film history sent per poll at most (live data goes first)
 MAX_LINE_BYTES = 4 << 20             # a single telemetry line longer than this is skipped and logged
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
@@ -252,7 +253,7 @@ class Relay:
         self.stats["sent_bytes"] += len(text)
 
     async def _push(self, conn) -> None:
-        """Send every complete new line of every run file, then changed frames, then at most
+        """Send new complete lines of every run file (at most LINES_BYTES_PER_PUSH each, in turn), then changed frames, then at most
         FILM_BYTES_PER_PUSH of film history: a film backlog (a hub restart forgets the film
         cursors; a film may hold 256 MiB) is caught up over several polls and never holds back
         the live lines and frames of any run (review)."""
@@ -262,13 +263,15 @@ class Relay:
             run_id = run_file_id(path.name)          # not a control file, not the spool audit
             if run_id is None:
                 continue
-            while True:                                      # this file, until caught up
+            budget = LINES_BYTES_PER_PUSH
+            while budget > 0:                                # a run far ahead does not hold back the others
                 msg = self._read_lines(path, run_id)
                 if msg is None:
                     break
                 await self._send(conn, msg)
                 self.cursors[run_id] = msg["end"]
                 self.stats["sent_lines"] += msg["data"].count("\n")
+                budget -= msg["end"] - msg["start"]
         for path in sorted(self.spool.glob("*.frame.*.json")):
             try:
                 mtime = path.stat().st_mtime
@@ -444,7 +447,7 @@ def read_header(path: Path, max_bytes: int = 1 << 20) -> dict | None:
         with path.open("rb") as fh:
             line = fh.readline(max_bytes)
         rec = json.loads(line)
-    except (OSError, ValueError):
+    except (OSError, ValueError, RecursionError):
         return None
     return rec if isinstance(rec, dict) and rec.get("kind") == "header" else None
 

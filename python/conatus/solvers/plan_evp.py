@@ -125,11 +125,9 @@ def eigenvalues(plan: Plan, group=None, *, reduced: bool | None = None, method: 
     check_eig_method(method, target, region)          # before any assembly (review, inputs)
     method = _region_method(region, method, target, left)
     if n_modes is not None and method != "shift-invert":
-        # it used to be ignored without a word: said, refused from 0.3
-        from ..errors import _warn_user       # the user's line (a fixed level hid it)
-        _warn_user(f"eigenvalues(n_modes={n_modes!r}) has no effect with method={method!r} "
-                   "(every mode is returned); drop it (refused from 0.3)",
-                   DeprecationWarning)
+        from ..errors import OptionError
+        raise OptionError(f"eigenvalues(n_modes={n_modes!r}) has no effect with method={method!r}",
+                          why="every mode is returned", fix="drop n_modes=")
     if method == "shift-invert":
         from ..errors import check_count
         n_modes = DEFAULT_N_MODES if n_modes is None else check_count(

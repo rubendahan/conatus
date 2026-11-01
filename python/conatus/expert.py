@@ -18,8 +18,8 @@ What is exported is a reviewed list (``_PUBLIC``): a name of a
 module's ``__all__`` is flattened here only if the documentation shows it
 (the development test suite); every exception class of ``conatus.errors`` is (the
 error catalogue of the guide documents each). The other names stay importable from their module
-(``conatus.contour.box``); ``conatus.expert.<name>`` still resolves them for one release
-with a DeprecationWarning that names the module (removed in 0.3). The Studio wire protocol and the
+(``conatus.contour.box``); ``conatus.expert.<name>`` for such a name
+raises an AttributeError that names the module (the former names were removed in 0.3). The Studio wire protocol and the
 telemetry recorder (``conatus.telemetry``) and the BibTeX strings (``conatus.methods.BIBTEX``) are not
 part of the expert layer.
 
@@ -46,9 +46,8 @@ from __future__ import annotations
 import importlib
 import inspect
 import types
-import warnings
 
-from ._deprecation import SURFACE_NARROWED_IN, SURFACE_REMOVED_IN
+from ._deprecation import SURFACE_REMOVED_IN
 from .errors import AmbiguousNameError
 from .verify import Check, VerificationReport, verify
 
@@ -68,12 +67,12 @@ from .verify import Check, VerificationReport, verify
 # "contour" (eigenvalue counts by the argument principle, Beyn's method): its classes are
 # flattened, its verbs stay in the module (conatus.expert.contour.count, .beyn, .box).
 # "telemetry" left in 0.1.1 (Z7): the Studio wire protocol is not a solver toolkit; its former
-# names resolve through _FORMER_MODULES with a DeprecationWarning.
+# names are refused through _FORMER_MODULES, with the module to use.
 _MODULES = ("ir", "flows", "units", "discretize", "reference", "solvers", "linearize", "timestep",
             "adjoint", "ecs", "continuation", "floquet", "growth", "nonmodal", "presets", "methods",
             "provenance", "errors", "gpu", "bifurcation", "slices", "manifolds",
             "sensitivity", "datadriven", "chaos", "ensembles", "contour")
-# Flattened in 0.1.0, no longer in 0.1.1: their names still resolve, with a DeprecationWarning (0.3: gone).
+# Flattened in 0.1.0, no longer in 0.1.1: their names are refused since 0.3, and the refusal gives the module.
 _FORMER_MODULES = ("telemetry",)
 # Names 0.1 exported here from a module of _MODULES whose __all__ lists them no longer (L8).
 _FORMER_NAMES = {"errors": ("catalogue", "did_you_mean", "doc_reference", "require_cupy")}
@@ -229,8 +228,8 @@ for _name, _mod in _mods.items():
 
 
 def __getattr__(name: str):
-    """Refuse a withheld ambiguous name with the explicit aliases; resolve a name that 0.1 exported
-    here and 0.2 does not, with a DeprecationWarning naming its module (PEP 562 module hook)."""
+    """Refuse a withheld ambiguous name with the explicit aliases, and a name that 0.1 exported here
+    and 0.3 does not, with an AttributeError naming its module (PEP 562 module hook)."""
     if name in _WITHHELD:
         aliases = _WITHHELD[name]
         others = _WITHHELD_ELSEWHERE.get(name, ())
@@ -240,18 +239,13 @@ def __getattr__(name: str):
             fix=" or ".join([f"conatus.expert.{a} (= conatus.{m}.{name})" for m, a in aliases.items()]
                             + [f"conatus.{m}.{name}" for m in others]))
     if name in _FORMER_MODULES:                    # conatus.expert.telemetry: a 0.1 attribute
-        warnings.warn(f"conatus.expert.{name} is not part of the expert layer since "
-                      f"{SURFACE_NARROWED_IN}: use conatus.{name}, the same module; "
-                      f"conatus.expert.{name} stops working in {SURFACE_REMOVED_IN}",
-                      DeprecationWarning, stacklevel=2)
-        return importlib.import_module(f"conatus.{name}")
+        raise AttributeError(f"conatus.expert.{name} was removed in {SURFACE_REMOVED_IN}: use "
+                             f"conatus.{name}, the same module")
     if name in _UNLISTED:
         mod, attr = _UNLISTED[name]
-        warnings.warn(f"conatus.expert.{name} is not part of the expert layer since "
-                      f"{SURFACE_NARROWED_IN} (only documented names are): use conatus.{mod}.{attr}, "
-                      f"the same object; conatus.expert.{name} stops working in {SURFACE_REMOVED_IN}",
-                      DeprecationWarning, stacklevel=2)
-        return getattr(importlib.import_module(f"conatus.{mod}"), attr)
+        raise AttributeError(f"conatus.expert.{name} was removed in {SURFACE_REMOVED_IN} (only "
+                             f"documented names are listed here): use conatus.{mod}.{attr}, the "
+                             "same object")
     raise AttributeError(f"module 'conatus.expert' has no attribute '{name}'")
 
 

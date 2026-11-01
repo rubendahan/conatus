@@ -28,7 +28,6 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from .._deprecation import positional_order
 from ..ecs.newton import NewtonKrylovHookstep, NewtonNotConverged
 from ..errors import OptionError
 from .core import _count, real_state
@@ -94,10 +93,6 @@ class KrylovContinuationSettings:
                 f"/{self.fold_refine_factor:g}{d('fold_refine_factor')}, parabola vertex")
 
 
-# v0.1 positional order, accepted for one cycle with a DeprecationWarning (conatus._deprecation)
-positional_order(KrylovContinuationSettings, (
-    "ds", "ds_min", "ds_max", "adapt", "fast_iterations", "max_points", "p_weight",
-    "fold_refinements", "fold_refine_factor"))
 
 
 @dataclass

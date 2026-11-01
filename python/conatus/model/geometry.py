@@ -787,14 +787,6 @@ class TaylorCouette(Annulus):
         """The radius ratio eta = ri / ro (the name of ``taylor_couette(eta=...)``)."""
         return self._radii[0] / self._radii[1]
 
-    @property
-    def radius_ratio(self) -> float:
-        """Former name of :attr:`eta` (deprecated since v0.1, removed in 0.3)."""
-        import warnings
-        warnings.warn("TaylorCouette.radius_ratio is deprecated since v0.1, read .eta (same value; "
-                      "removed in 0.3)", DeprecationWarning, stacklevel=2)
-        return self.eta
-
     def __repr__(self) -> str:
         return (f"TaylorCouette(inner={_g(self._radii[0])}, outer={_g(self._radii[1])}, "
                 f"length={_g(self.length)})")

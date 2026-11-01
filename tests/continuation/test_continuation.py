@@ -76,7 +76,7 @@ def test_bratu_branch_through_the_fold():
     # N = 64: up the upper branch exp(u) needs it (tail 3e-8 at N = 32, 8e-8 at N = 40 along the
     # branch: refused; tutorial 4 runs this branch at 64 modes, tail < 1e-12)
     pb, o = bratu(64, 0.3)
-    s = NewtonSolver(pb, tolerance=1e-13, damping=1.0, max_iterations=20, params={"lam": 0.3})
+    s = NewtonSolver(pb, tol=1e-13, damping=1.0, max_iterations=20, params={"lam": 0.3})
     sol = s.solve({o["u"]: lambda x: 0 * x})
     cfg = _cfg(ds=0.2, ds_max=0.6, max_points=12, dp_fd=1e-6)
     c = NLBVPContinuation(s, "lam", cfg)

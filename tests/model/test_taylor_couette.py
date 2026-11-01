@@ -35,8 +35,8 @@ def _tc_model(Re):
 def test_geometry_declaration():
     geo = cn.TaylorCouette(1.0, 2.0, length=3.0)
     assert geo.eta == 0.5 and "TaylorCouette(inner=1, outer=2, length=3)" == repr(geo)
-    with pytest.warns(DeprecationWarning, match="read .eta"):
-        assert geo.radius_ratio == 0.5
+    with pytest.raises(AttributeError):
+        geo.radius_ratio  # noqa: B018 -- removed in 0.3
     assert set(geo.boundaries()) >= {"inner", "outer", "walls"}
     with pytest.raises(CoordinateError, match="0 < inner < outer"):
         cn.TaylorCouette(0.0, 1.0)

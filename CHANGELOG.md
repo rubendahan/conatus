@@ -2,6 +2,126 @@
 
 All notable changes to Conatus.
 
+## [0.3.0] - 2026-11-01
+
+A release for agents and the Studio. The new `python -m conatus mcp` serves documentation, runs and records to MCP clients, read-only by default; the Studio pass adds a run log, Compare tables and a sign-in page. The deprecations announced for 0.3 now raise. No numerical result changes.
+
+### Added
+
+- Studio: run names and parameters on gallery cards, with the reason when a run failed and any
+  non-finite value. The gallery uses more columns on a wide screen.
+- Studio: a **Log** sheet: status changes, commands, checkpoints, warnings and errors with their times.
+- Studio: Controls shows each command as sending, pending, done or failed, with the reason. New run
+  events `checkpoint_failed` and `fork_failed`; `checkpoint_written` and `fork_written` carry `seq`.
+- Studio: axis labels on plots, with units from `meta={"units": {...}}`; a legend in Compare.
+- Studio Compare: a table of the parameters that differ, and each run's last value, minimum, maximum
+  and record count.
+- `packaging/acceptance/studio_truth.sh`: browser checks of the installed Studio against each run's
+  stored data, including reload, stop and a lost connection on runs that are running.
+
+### Changed
+
+- The sign-in page of `hub serve --local` asks for the token only and says why a sign-in failed. It
+  follows the system's light or dark theme. An empty form no longer counts as a failed attempt.
+- Compare lists runs in name order, independent of the clicks, and refreshes while a selected run is
+  live. It selects up to six runs, as the page always did.
+- The agent API and the Studio report a paused run that has gone silent for 30 s as `stale`. A paused
+  run now sends a status every 10 s. A run of an earlier version paused for more than 30 s reads `stale`.
+
+### Fixed
+
+- An exact steady base could read as not steady, from rounding of the base at a wall: plane Poiseuille at about half of the resolutions from 16 to 128. It was a false `BaseStateWarning` in 0.2 and would have been a refusal in 0.3. A base that really is not steady is still refused.
+- A failure while writing the initial row of an analysis file ended a watched run as `finished`. It now ends as `failed`, with the reason.
+- A hub reading a run slower than the run writes called the run `stale`. It keeps saying `running` while records arrive, and the page and the agent API say how far behind the view is. The local hub reads up to 8 MB/s, and one fast run no longer holds back the others.
+- One run file with a line nested too deeply stopped the whole list of runs of the agent channel. That line is now counted as malformed.
+- Whole numbers with more digits than the display precision were rounded and looked exact: iteration
+  12345 showed as 12350. Counts now show every digit.
+- A run killed while paused stayed `paused` for ever.
+- The last statistic and frame of a run could be older than its final time. `sim.unwatch()` now
+  records the final state, except after a failure.
+- After the connection to the Studio dropped, the state and values on screen still looked current. A
+  banner now gives their time, states read `last known: ...`, and commands are disabled with the reason.
+- A statistic with only non-finite values said "No data yet", and one with a single point too.
+- A non-finite simulated time showed as `t = –`; it is now shown as it is (`t = nan`).
+- Compare did not update a curve while its run was live.
+- A malformed escape in a `/run/` address left a blank page.
+- Bidirectional control characters in a run name could reverse the text around it. They now show as `�`.
+- The access log of the hub included query strings, so a token pasted into a URL could reach a log.
+- A failed checkpoint or fork was visible only in the log; a request without `checkpoint_dir` gave no
+  answer in Controls.
+- Compare was not reachable from the header at phone width.
+- `python -m conatus mcp` (extra `conatus[mcp]`, experimental): an MCP server on stdin and stdout over the
+  agent channel and the run registry. Read-only by default. `--allow <command>` adds one write tool and states
+  what it permits. No tool runs a script, submits a job or calls `reproduce()`. Run and record text is
+  marked as data. Rate limited. Guide page `mcp`.
+- `llms.txt` and `docs-bundle.json` (every documentation page as JSON, includes expanded) at the root of
+  the site, generated from the pages at site build. `/AGENTS.md` is served there too.
+- Recipes (guide page `recipes`): common tasks mapped to the shortest correct code. A test runs each one
+  and checks its value against a closed form or a printed value.
+- Stable error codes: every typed error has `error_code` (`CN150`), and `ConatusError.as_dict()` returns the
+  refusal and its fix as data. `agent check` reports the code. Guide page `error_codes`.
+
+### Changed: new refusals (the deprecations announced for 0.3)
+Each former use below now raises, and the message says what to write. None of them changes a result that was
+computed: a script that ran without these warnings runs the same.
+- Renamed arguments: every former name listed under the releases 0.1 to 0.2 (`maxit=`, `nsteps=`, `k=` for a
+  count, `X0=`, `xatol=`, `tolerance=` of `NewtonSolver`, ...) raises `OptionError` naming the new one.
+- `conatus.expert.<name>`, for a name the expert layer no longer lists, raises `AttributeError` naming its module.
+- `ContinuationSettings` and `KrylovContinuationSettings` take keywords only. `TaylorCouette.radius_ratio` is gone: read `.eta`.
+- `m.eigenvalue(name)` needs `growth=`. It was a `DefaultChoiceWarning`.
+- `eigenvalues()` on a model with several groups needs the group (`k=`, or `m=` with `kz=` or `ell=`). It was a `GroupWarning`.
+- A linearization about a base state above `BASE_RESIDUAL_TOL` raises `OptionError` unless declared with
+  `base_residual="accept"`. It was a `BaseStateWarning`.
+- `equilibrium_eigenvalues` and `floquet_multipliers` need `arnoldi_tol=`.
+- `eigenvalues(k=<integer>)` as a count, and `n_modes=` with a dense method, raise `OptionError`.
+- The classes `BaseStateWarning` and `GroupWarning` stay importable and are no longer emitted.
+
+### Changed: new refusals and warnings
+- The spool transport refuses more than 60 commands a minute per spool (code 429). Answers of a refused
+  command also hold `error_code`.
+
+### Known limitations: open wrong results in the numerics
+Each item below was reproduced on this release with a small script and a known answer. None is new in 0.3.0 except where stated. Until they are fixed, check results in these situations by another route.
+
+Bifurcation events and continuation
+- **Two crossings in one step are lost.** A double eigenvalue, or two crossings closer than a continuation step, gives no event for branch points, Hopf, period doubling, branch points of cycles and Neimark-Sacker. The unstable count jumps (from 0 to 2 or 4) with no event and no warning.
+- **Regression in 0.2.4: an event can be placed at the wrong parameter when another mode is slow or neutral.** Take a branch point at p = 0 with a decoupled mode of rate -1e-12: the event is reported converged at p = 0.099 (it was right in 0.2.3). `crossing_tol` is applied to the smallest factor rather than to the factor that changed sign, unlike what `explain()` prints. The same happens when all rates are below about 1e-11 (p = 0.199 where the crossing is at 0). With two or more spectators the event can vanish, and an exactly neutral spectator can raise `LinAlgError`.
+- **Slow Hopf points.** With every rate scaled by 1e-12, a Hopf point at p = 0 is reported converged at p = 0.038. Scaled by 1e12, the event says it did not converge.
+- **"Relative" `tolerance` of the corrector and of `find_equilibrium` acts as an absolute one.** On x' = e(p - x²) with `tolerance=1e-10`, the branch is off by 9e-3 at e = 1e-8, and points still say converged. On a slow equilibrium problem (rate 1e-10) the seed is returned after 0 iterations as the solution.
+- **`NewtonKrylovHookstep(scale=...)` can report a zero residual at the wrong point.** With a residual scale of 1e-200 the seed is returned with residual 0, at distance 1 from the root.
+- **`branch_switch` calls a transcritical point a pitchfork** when the quadratic coefficient is small (1e-9); `normal_form` gives the right kind.
+- **`continue_orbits(remesh_every=...)`** can continue from a remeshed point that no longer solves the problem (field error 0.4, residual 5), and the point says converged.
+- **`ginzburg_landau`** with a finite-difference step `h` larger than the distance to a second mode's crossing gives a wrong `D` (0.405 for 4 at a gap of 4e-5, `h=0.1`). A smaller `h` gives the right value.
+- **`critical()` with a growth rate that changes sign three times in the bracket** returns one of the neutral points without saying it is not the first (3 where the first is 1).
+
+Stability and Floquet
+- **Hill `leading` is only the leading exponent near the targets.** With a target at 0 and a true exponent of 19, it returns 4; with a target of -9 and a true exponent of 0.5, it returns -2.5, which reads as stable. There is no warning. `n_modes` can return fewer modes than asked. Compare with the monodromy.
+- **Hill with slow rates.** With exponents of ±1e-9 and a tolerance of 1e-12, it returns one exponent where there are two, and the unstable one is missing in about half of the calls. The result varies between calls.
+- **The mean is dropped from three ECS stability paths without checking that it is conserved.** `equilibrium_eigenvalues`, `floquet_multipliers` and `ecs_system(odd=False)` on an equation with a reaction term report a top value of -0.5 (multiplier 0.61) where the truth is +0.5 (1.65). `explain()` calls the mean conserved.
+- **`symmetry_breaking_check`** can say there is no symmetry-breaking instability when there is one: on a problem with a true rate of 1 it reports 0 (and -2 where the rate is -1).
+
+Dedalus translation (`cn.from_dedalus`)
+- **`complete=True` with a wrong initial state.** Aliases and in-place changes are lost or misapplied: `d=u['g']; d+=1` gives 1 for 2, `u['g'].fill(3)` is dropped, and `v['g']=u['g']; u['g']+=1` changes `v` too.
+- **A branch on a name such as `rank_threshold` is taken as if true.** `if rank_threshold > 1:` runs its body with `rank_threshold = 0`, with `complete=True`.
+- **`ivp_solver()` on an incomplete translation gives no warning.** Only `complete` and `explain()` say so: initial data set in a loop or by `exec` come out as 0.
+- **Crashes on valid scripts.** `u['g']-np.mean(u['g'])` raises `RecursionError` with `complete=True`. Others raise `KeyError`, `ValueError`, or an error about a non-square system where an equation was dropped.
+
+Run records, cache and restart
+- **The cache ignores what a callback did.** `run(callback=..., record=...)` changes the state, and `run(cache=True)` without the callback returns the changed state (4 for 1).
+- **The cache loses masks.** A cached `MaskedArray` comes back plain with a different mean (50.5 for 1).
+- **Structured arrays with object fields are hashed by pointer,** so a changed value can return the old result.
+- **`subprocess` is not in the scan for hidden state,** so a cached call that reads one returns the old value.
+- **`restart` accepts a changed function.** If `m.function` closes over a changed value, the restart does not report the change.
+- **`save_field`** on datetime, string or object arrays records the run as completed and fails on load with `IndexError`. It removes masks.
+- **A cache hit differs from the computed return in type details:** a 0-d array becomes a scalar, read-only becomes writable, Fortran order becomes C, and dict order is sorted. Values are the same.
+
+Inputs and errors
+- **`sim.initial` reads a masked entry as data,** without a warning. Object, structured and datetime arrays raise bare NumPy errors.
+- **Bare errors:** `continue_equilibria(direction=<array>)`, a mode switch in `critical`, and NaN overlaps in `floquet_multipliers` at the zero state.
+
+Notebook display
+- **The HTML table of `cn.runs.find()` does not escape `state` and `status` of a stored record.** Display only registries you trust.
+
 ## [0.2.4] - 2026-10-31
 
 A correction release, from an external review of 0.2.3. Several results can differ from 0.2.3; they are listed here.

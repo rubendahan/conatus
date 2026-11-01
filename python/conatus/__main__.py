@@ -52,6 +52,9 @@ def main(argv: list[str] | None = None) -> int:
     if argv[:1] == ["agent"]:                      # JSON interface for AI agents (its own parser)
         from .agent import main as agent_main
         return agent_main(argv[1:])
+    if argv[:1] == ["mcp"]:                        # MCP server on stdio (its own parser, extra [mcp])
+        from .agent_mcp import main as mcp_main
+        return mcp_main(argv[1:])
     p = argparse.ArgumentParser(prog="python -m conatus", description="Conatus command line.")
     p.add_argument("--version", action=_Version)
     sub = p.add_subparsers(dest="command", required=True)
@@ -62,6 +65,8 @@ def main(argv: list[str] | None = None) -> int:
                                   "(python -m conatus studio --help)")
     sub.add_parser("agent", help="JSON interface for AI agents: info, explain <name>, "
                                  "check <script.py> (python -m conatus agent --help)")
+    sub.add_parser("mcp", help="MCP server over the agent channel, read-only by default "
+                               "(python -m conatus mcp --help; extra conatus[mcp])")
     g = sub.add_parser("docs", help="where to read a page of the user guide (the name printed "
                                     "on the 'docs:' line of an error, e.g. guide/errors)")
     g.add_argument("page", nargs="?", default="index", help="guide page, e.g. guide/errors")

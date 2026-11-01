@@ -28,6 +28,7 @@ __all__ = ["EdgeTracker", "ThresholdBisection", "UndecidedTrajectory"]
 
 class UndecidedTrajectory(RuntimeError):
     """A bisection trial neither relaminarized nor became turbulent within t_max."""
+    error_code = "CN244"
 
 
 class EdgeTracker:

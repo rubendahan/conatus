@@ -10,7 +10,6 @@ the reported residual is always the exact discrete one).
 """
 from __future__ import annotations
 
-import warnings
 import weakref
 from dataclasses import dataclass, field
 
@@ -225,23 +224,11 @@ DENSE_MAX = 2000
 
 
 def _arpack_tol(arnoldi_tol, where: str) -> float:
-    """The ARPACK accuracy (required whichever path runs, so that a script does not
-    change meaning when its size crosses dense_max). The v0.1 surface is frozen, so
-    omitting it keeps working through v0.1 with the former default 1e-12 and a DeprecationWarning
-    that names the value used; it becomes a hard requirement in 0.3."""
-    if arnoldi_tol is REQUIRED:
-        warnings.warn(
-            f"{where}(): arnoldi_tol not given; using the v0.1 default arnoldi_tol={V01_ARNOLDI_TOL:g} "
-            "(the relative accuracy of the Ritz values above dense_max). It will be required in "
-            "0.3: pass it explicitly, e.g. arnoldi_tol=1e-12.", DeprecationWarning, stacklevel=3)
-        return V01_ARNOLDI_TOL
+    """The ARPACK accuracy (required whichever path runs, so that a script does not change meaning
+    when its size crosses dense_max)."""
     return require(arnoldi_tol, "arnoldi_tol", where=f"{where}()", suggest="arnoldi_tol=1e-12",
                    why="above dense_max ARPACK stops at this relative accuracy of the Ritz values: "
                        "it decides which digits of the eigenvalues are right")
-
-
-#: Former default of arnoldi_tol, used with a DeprecationWarning when it is omitted.
-V01_ARNOLDI_TOL = 1e-12
 
 
 def _min_shift_distance(ops, U: np.ndarray, W: np.ndarray) -> float:

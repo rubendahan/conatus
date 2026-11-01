@@ -269,20 +269,18 @@ def _k_map(k: Any, fourier: list[str]) -> dict[str, float]:
     return dict(zip(fourier, (float(v) for v in ks), strict=True))
 
 
-def _k0_warning(want: Mapping[str, float]) -> None:
-    # a GroupWarning, not a DeprecationWarning: the modes of every other wavenumber are absent,
-    # which Python must show outside __main__ too
-    from ..errors import GroupWarning, _warn_user
+def _k0_refusal(want: Mapping[str, float]) -> None:
     ks = ", ".join(f"k_{c} = {v:g}" for c, v in want.items())
-    _warn_user(f"eigenvalues() without k=: only the group {ks} is solved (v0.1 behaviour); each "
-               "wavenumber of a periodic direction is its own set of modes, so give it: "
-               "eigenvalues(N, k=<wavenumber>) (k=0 for this group). Required from 0.3", GroupWarning)
+    raise OptionError(f"eigenvalues() without k=: this would solve only the group {ks}",
+                      why="each wavenumber of a periodic direction is its own set of modes, so the "
+                          "modes of every other wavenumber would be absent from the result",
+                      fix="eigenvalues(N, k=<wavenumber>) (k=0 for this group)", doc=_DOC)
 
 
 def _wavenumber_or_count(fourier: list[str], k: Any, n_modes: Any, method: str) -> tuple[Any, Any]:
     """(wavenumber, shift-invert count) of a ``Model.eigenvalues`` call (Y3): ``k`` is a
-    wavenumber; an integer ``k`` keeps its v0.1 meaning (number of shift-invert modes) with a
-    DeprecationWarning where it cannot be a wavenumber (no periodic direction); on a periodic
+    wavenumber; an integer ``k`` where it cannot be one (no periodic direction) is refused with
+    ``n_modes``, its former meaning; on a periodic
     model an integer ``k`` with shift-invert and no ``n_modes`` reads both ways and is refused
    ; a non-integer ``k`` on a model without a periodic direction is refused (it was
     ignored)."""
@@ -301,16 +299,10 @@ def _wavenumber_or_count(fourier: list[str], k: Any, n_modes: Any, method: str) 
                               f"n_modes=6) for the wavenumber {k}, or eigenvalues(N, k=0, "
                               f"method='shift-invert', target=..., n_modes={k}) for {k} modes "
                               "of the k = 0 group", doc=_DOC)
-    old_count = k is not None and integral and n_modes is None and not fourier
-    if old_count:
-        from ..errors import _warn_user
-        _warn_user(f"eigenvalues(k={k}): k as the number of shift-invert modes is deprecated "
-                      f"since v0.1, write n_modes={k} (same meaning; k is the "
-                      "wavenumber of a periodic direction, as in lin.eigenvalues)"
-                      + ("; with method='dense' it has no effect (every mode is returned)"
-                         if method != "shift-invert" else ""),
-                      DeprecationWarning)
-        return None, int(k)
+    if k is not None and integral and n_modes is None and not fourier:
+        raise OptionError(f"eigenvalues(k={k}): k as the number of shift-invert modes was removed in "
+                          "0.3", why="k is the wavenumber of a periodic direction, and this model "
+                                     "has none", fix=f"write n_modes={k}", doc=_DOC)
     if n_modes is not None:
         from ..errors import check_count
         check_count(n_modes, "n_modes", "eigenvalues()")
@@ -332,7 +324,7 @@ def _wavenumber_or_count(fourier: list[str], k: Any, n_modes: Any, method: str) 
 
 def _select_group(plan: Any, fourier: list[str], k: Any, which: Mapping[str, Any]) -> Any:
     """The group of wavenumber ``k`` (Cartesian periodic axes) or of ``m=``/``kz=``/``ell=``
-    (curvilinear); none given with several groups: the first one, with a GroupWarning."""
+    (curvilinear); none given with several groups: refused."""
     groups = plan.groups
     if which:
         return plan.group(**which)
@@ -354,13 +346,12 @@ def _select_group(plan: Any, fourier: list[str], k: Any, which: Mapping[str, Any
         g = groups[0]
         if fourier and isinstance(g, tuple) and all(hasattr(it, "k") for it in g):
             names = [d.coord.name for d in plan.layout.fdirs]
-            _k0_warning(dict(zip(names, (float(it.k) for it in g), strict=True)))
+            _k0_refusal(dict(zip(names, (float(it.k) for it in g), strict=True)))
         else:
-            from ..errors import GroupWarning, _warn_user
-            _warn_user(f"eigenvalues() without a group: only the first group "
-                       f"[{plan.matrices(g).label}] of {len(groups)} is solved (v0.1 behaviour); "
-                       "choose it with m= (and kz= or ell=). Required from 0.3",
-                       GroupWarning)
+            raise OptionError(f"eigenvalues() without a group: this would solve only the first "
+                              f"group [{plan.matrices(g).label}] of {len(groups)}",
+                              why="the modes of the other groups would be absent from the result",
+                              fix="choose the group with m= (and kz= or ell=)", doc=_DOC)
         return g
     return groups[0]
 
@@ -723,31 +714,21 @@ class Model:
         exp(i alpha (x - c t)) (or exp(-i omega t)), or a callable of the eigenvalue. Printed by
         ``explain()``; it ranks the modes (``res.order()``) and selects the least stable one.
 
-        Declare it: ``m.eigenvalue("c", growth="imag")``. Left out,
-        v0.1 keeps the former guess from the name (``s``, ``sigma``, ``lam`` -> real, ``c`` ->
-        imag; ``conatus.solvers.parametric.GROWTH_BY_NAME``; any other name: ``order()`` ranks
-        by the real part and ``critical`` refuses) with a ``DefaultChoiceWarning`` naming the rule
-        guessed: a ``c`` of a temporal problem (``c*T = ...``) was ranked by Im c. Required from
-        0.3."""
+        Declare it: ``m.eigenvalue("c", growth="imag")``. Required since 0.3: leaving it out is
+        refused, since the former guess from the name ranked the ``c`` of a temporal problem
+        (``c*T = ...``) by Im c."""
         if growth is not None and not callable(growth) and growth not in ("real", "imag"):
             raise OptionError(f"eigenvalue({name!r}, growth={growth!r})",
                               fix="growth='real' (exp(s t)) or 'imag' (exp(i alpha (x - c t))), "
                                   "or a callable of the eigenvalue", doc=_DOC)
         self._check_name(name, "eigenvalue")
         if growth is None:
-            # the user's line whatever the call depth (a problem helper calling it, a wrapper)
-            from ..errors import DefaultChoiceWarning, _warn_user
-            from ..solvers.parametric import GROWTH_BY_NAME
-            g = GROWTH_BY_NAME.get(name)
-            rule = ({"real": f"growth = Re {name} (a growth rate of exp({name} t))",
-                     "imag": f"growth rate = alpha Im {name} (a phase speed of exp(i alpha (x - {name} t))); "
-                             f"modes are ranked by Im {name}, which is the growth order for alpha > 0"}
-                    [g] + " guessed from the name") if g else (
-                f"modes ranked by Re {name} (v0.1 default; critical() refuses)")
-            _warn_user(f"m.eigenvalue({name!r}) without growth=: {rule}. Declare it: "
-                       f"m.eigenvalue({name!r}, growth='real') for exp({name} t), "
-                       f"growth='imag' for a phase speed; required from 0.3",
-                       DefaultChoiceWarning)
+            raise OptionError(f"m.eigenvalue({name!r}) without growth=",
+                              why="growth= decides how the modes are ranked and which one is the "
+                                  "least stable; it is not guessed from the name",
+                              fix=f"m.eigenvalue({name!r}, growth='real') for exp({name} t), "
+                                  "growth='imag' for a phase speed (growth rate = alpha Im "
+                                  f"{name})", doc=_DOC)
         self.eig = name
         self.eig_growth = growth
         return name
@@ -993,29 +974,28 @@ class Model:
         ``base_residual``: ``"check"`` (default) evaluates the steady equations and boundary
         conditions at a steady base when the problem is compiled and prints the residual in
         ``explain()``; above ``conatus.tolerances.BASE_RESIDUAL_TOL`` the base is not a steady
-        solution (BaseStateWarning in 0.1 and 0.2, refused from 0.3). ``"accept"``
+        solution (refused). ``"accept"``
         declares a base that knowingly is not one (a frozen or forced profile)."""
         from .run import Linearization
         return Linearization(self, about, eigenvalue, period, base_residual)
 
     def eigenvalues(self, N: Any, *, dealias: Any = None, drift: Any = None, k: Any = None,
                     n_modes: int | None = None, **kw: Any):
-        """Eigenvalues of an EVP model (``m.eigenvalue("c")``); ``drift=N2`` keeps only the modes
+        """Eigenvalues of an EVP model (``m.eigenvalue("c", growth="imag")``); ``drift=N2`` keeps only the modes
         found again at resolution N2 (conatus.eigenvalues(drift_plan=)); a mode that moves is not
         converged by this test (a tau mode, or a physical mode N does not resolve) and is set aside.
 
         ``k``: the wavenumber of the periodic direction(s) (one number, a tuple in coordinate
         order or a dict by name), as in ``lin.eigenvalues(N, k=)``: each wavenumber is its own
-        group of modes. Required on a model with a periodic direction (otherwise
-        the k = 0 group alone would be solved without a word); left out in v0.1, the
-        k = 0 group is solved with a GroupWarning that says so. ``n_modes``: the number of
+        group of modes. Required on a model with a periodic direction: otherwise
+        only the k = 0 group would be solved. ``n_modes``: the number of
         modes of ``method="shift-invert"`` (the former meaning of an integer ``k`` on a model
-        without a periodic direction, accepted with a DeprecationWarning until 0.3).
+        without a periodic direction, refused since 0.3).
         ``m=``, ``kz=``, ``ell=``: the group of a curvilinear geometry (disk, pipe, sphere)."""
         from ..solvers.plan_evp import eigenvalues
         if not self.eig:
             raise OptionError("eigenvalues(): no eigenvalue declared",
-                              fix="m.eigenvalue('s') before the equations, or m.linearize(about=...)"
+                              fix="m.eigenvalue('s', growth='real') before the equations, or m.linearize(about=...)"
                                   ".eigenvalues(...) for an evolution model", doc=_DOC)
         # a declared parameter keeps its name: k, n_modes, m, kz, ell and group
         # select a group or a count only when the model declares no parameter of that name (a
@@ -1050,7 +1030,7 @@ class Model:
             if k is None:
                 want = {c: it.k for c, it in zip(names, plan.groups[0], strict=True) if c != w}
                 if want:
-                    _k0_warning(want)
+                    _k0_refusal(want)
             else:
                 want = _k_map(k, fourier)
             if n_modes is not None and kw.get("method") == "shift-invert":

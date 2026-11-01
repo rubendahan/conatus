@@ -27,6 +27,7 @@ _LINEAR = (Differentiate, Gradient, Divergence, Laplacian, Curl, Interpolate, In
 
 class ParameterDerivativeError(NotImplementedError):
     """The derivative with respect to a parameter is not available exactly (reason in str)."""
+    error_code = "CN243"
 
 
 def diff_parameter(e: Expr, name: str) -> Expr:

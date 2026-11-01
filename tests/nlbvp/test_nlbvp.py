@@ -39,7 +39,7 @@ def test_lane_emden_n3_first_zero_converged_in_N():
 
 def test_cubic_exact_solution():
     pb, o = cubic(32)
-    s = NewtonSolver(pb, tolerance=1e-13, damping=1.0, max_iterations=20)
+    s = NewtonSolver(pb, tol=1e-13, damping=1.0, max_iterations=20)
     sol = s.solve({o["u"]: lambda x: 1 - x / 2})
     x = T.grid(o["basis"], dealias=False)
     assert np.max(abs(sol.grid("u") - 1 / (1 + x))) < 1e-12
@@ -48,7 +48,7 @@ def test_cubic_exact_solution():
 
 def test_damping_is_honoured_and_reported():
     pb, o = cubic(24)
-    sol = NewtonSolver(pb, tolerance=1e-10, damping=0.5, max_iterations=60).solve(
+    sol = NewtonSolver(pb, tol=1e-10, damping=0.5, max_iterations=60).solve(
         {o["u"]: lambda x: 1 - x / 2})
     r = [it.rel_residual for it in sol.iterations]
     ratios = [b / a for a, b in zip(r[3:-1], r[4:])]
@@ -61,7 +61,7 @@ def test_settings_are_required():
     with pytest.raises(OptionError, match="tol must be given"):
         NewtonSolver(pb)          # no silent accuracy (damping, max_iterations: declared defaults)
     with pytest.raises(ValueError):
-        NewtonSolver(pb, tolerance=1e-12, damping=1.5, max_iterations=5)
+        NewtonSolver(pb, tol=1e-12, damping=1.5, max_iterations=5)
 
 
 def test_missing_guess_refused():
@@ -78,7 +78,7 @@ def test_singular_jacobian_refused():
 
 def test_not_converged_is_an_error():
     pb, o = cubic(16)
-    s = NewtonSolver(pb, tolerance=1e-14, damping=1.0, max_iterations=1)
+    s = NewtonSolver(pb, tol=1e-14, damping=1.0, max_iterations=1)
     with pytest.raises(NewtonNotConverged):
         s.solve({o["u"]: lambda x: 1 - x / 2})
     sol = s.solve({o["u"]: lambda x: 1 - x / 2}, require_convergence=False)
@@ -89,7 +89,7 @@ def test_dt_refused_and_explain():
     pb, o = cubic(16)
     with pytest.raises(ProblemError):
         pb.add_equation((dt(o["u"]), 0))
-    text = NewtonSolver(pb, tolerance=1e-12, damping=1.0, max_iterations=5).explain()
+    text = NewtonSolver(pb, tol=1e-12, damping=1.0, max_iterations=5).explain()
     assert "Fréchet" in text and "damping = 1" in text and "NLBVP" in pb.explain()
 
 
@@ -98,7 +98,7 @@ def test_bratu_lower_branch_exact():
     from .nlbvp_cases import bratu, bratu_exact
     lam = 0.5
     pb, o = bratu(32, lam)
-    sol = NewtonSolver(pb, tolerance=1e-13, damping=1.0, max_iterations=20,
+    sol = NewtonSolver(pb, tol=1e-13, damping=1.0, max_iterations=20,
                        params={"lam": lam}).solve({o["u"]: lambda x: 0 * x})
     assert sol.converged and sol.residual < 1e-13
     x = T.grid(o["basis"], dealias=False)

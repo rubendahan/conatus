@@ -34,6 +34,18 @@ Conatus runs on your own account. Treat these inputs as you would treat code.
   `HubClient` sends a token to its own origin and refuses redirects to anywhere else.
 - The hosted mode is not part of the public release.
 
+## The MCP server
+
+`python -m conatus mcp` (extra `mcp`) talks to one client on stdin and stdout and listens on no port.
+
+- It is read-only unless started with `--allow <command>`. Each opt-in adds one named tool, states what
+  it permits and adds no authority: token scopes, declared bounds and rate limits still decide.
+- With `--allow stop` or `--allow fork` an agent can act without a person. The two-step confirmation
+  guards against a slip.
+- No tool runs a script, submits a job or calls `run.reproduce()`, and no argument is evaluated.
+- A run's log and a record reach the model marked as data. The marking does not make a model immune to what
+  a log says, so keep write tools off when a run can log text you did not write.
+
 ## Dependencies
 
 Run `pip-audit` on your own environment. The `studio` extra needs Tornado 6.6 or later. The package has

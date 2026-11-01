@@ -50,6 +50,7 @@ __all__ = ["PlanRefused", "PlannedSphereTranspose", "check_scope"]
 
 class PlanRefused(Exception):
     """An equation outside the planned scope (it keeps the explicit walk; the reason is kept)."""
+    error_code = "CN242"
 
 
 def _unbroadcast(a, shape: tuple):

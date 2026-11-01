@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-31T12:08:55.211Z",
+ "generated": "2026-11-01T07:45:45.134Z",
  "source": "",
  "extras": [
   {
@@ -23,6 +23,11 @@
    "for": "The Studio server: watch and control runs from a browser."
   },
   {
+   "name": "mcp",
+   "adds": "mcp==2.3.0",
+   "for": "The MCP server over the agent channel (python -m conatus mcp)."
+  },
+  {
    "name": "dedalus-compare",
    "adds": "dedalus ≥ 3.0",
    "for": "Dedalus 3, needed only by the optional check script of tutorial 14."
@@ -40,7 +45,7 @@
   {
    "name": "all",
    "adds": "tutorials, notebook, gpu, studio, docs, dev",
-   "for": "Every extra above except dedalus-compare."
+   "for": "Every extra above except dedalus-compare and mcp."
   }
  ],
  "features": [

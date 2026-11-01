@@ -57,7 +57,7 @@ def test_periodic_newton_refuses_stray_params():
     pb = NLBVP([u])
     pb.add_equation((r * u - u - 2 * diff(diff(u, x), x) - diff(diff(diff(diff(u, x), x), x), x)
                      - u * u * u, 0))
-    kw = dict(tolerance=1e-12, damping=1.0, max_iterations=5, phase=PhaseCondition(u, x, kind="sin1"))
+    kw = dict(tol=1e-12, damping=1.0, max_iterations=5, phase=PhaseCondition(u, x, kind="sin1"))
     PeriodicNewtonSolver(pb, params={"r": 0.2}, **kw)
     with pytest.raises(DiscretizationError, match=r"'rr'.*did you mean 'r'"):
         PeriodicNewtonSolver(pb, params={"rr": 0.2}, **kw)

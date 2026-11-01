@@ -20,8 +20,8 @@ will be removed. Two names keep their former meaning only there: `sensitivity` (
 `conatus.expert` re-exports, under their own names, the public objects of the user-facing modules
 that this documentation shows. Since 0.1.1 the list is reviewed name by name. A helper, a constant
 or a result type that no page shows stays in its module (`conatus.contour.box`,
-`conatus.timestep.rk_tableau`). Written as `conatus.expert.<name>`, such a name still works in 0.1.x
-with a `DeprecationWarning` that names the module, and stops working in 0.3. Every exception and
+`conatus.timestep.rk_tableau`). Written as `conatus.expert.<name>`, such a name
+raises an `AttributeError` that names the module (since 0.3). Every exception and
 warning class of `conatus.errors` is exported (each has its entry in {doc}`../guide/errors`).
 
 The Studio's telemetry recorder and wire protocol are not part of the expert layer. Import them as

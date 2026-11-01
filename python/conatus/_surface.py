@@ -48,7 +48,7 @@ def _sig(obj) -> str:
 
 def _renamed(obj) -> str:
     """`` [renamed: old -> new, ...]`` for a callable with declared aliases (conatus._deprecation
-    .RENAMES): the former names stay part of the frozen surface until 0.3."""
+    .RENAMES): each former name is refused with the new one; the list stays part of the frozen surface."""
     from ._deprecation import aliases_of
     try:
         al = aliases_of(obj)

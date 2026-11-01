@@ -10,8 +10,9 @@ import numpy as np
 from _acceptance import check, passed, start
 
 start(252, "critical(over=) minimum at the end of the interval")
+from conatus.ir import Zero  # noqa: E402
 from conatus.expert import (IVP, CartesianCoordinates, ComplexFourier, Domain, Field,  # noqa: E402
-                            Parameter, ParametricEVP, Zero, critical, diff, dt, linearize)
+                            Parameter, ParametricEVP, critical, diff, dt, linearize)
 
 cs = CartesianCoordinates("x")
 x = cs["x"]

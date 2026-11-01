@@ -230,7 +230,7 @@ def test_restriction_to_even_states_and_periodic_fold():
         restrict_system(ds, np.setdiff1d(np.arange(ds.n), idx), name="odd states")
     dr = restrict_system(ds, idx, name="even states")
     sol.set_state({u: lambda x: np.cos(x)})
-    y, res, _ = newton_equilibrium(dr, sol.X[idx], tol=1e-12, max_iter=40, par={"r": -0.2})
+    y, res, _ = newton_equilibrium(dr, sol.X[idx], tol=1e-12, max_iterations=40, par={"r": -0.2})
     st = ContinuationSettings(ds=0.02, ds_min=1e-6, ds_max=0.05, adapt=1.3, fast_iterations=3,
                               tolerance=1e-10, max_newton=10, max_points=40, dp_fd=None)
     cur = continue_equilibria(dr, y, "r", st, direction=-1.0, marginal_tol=1e-9, tests=("fold",),

@@ -156,7 +156,7 @@ HILL_TAIL_TOL = 1e-6
 #: the steady equations and boundary conditions at the base state (per equation, after a least
 #: squares fit of the unknowns without a base value: pressure, taus) above which the base is not a
 #: steady solution. Above it, a base not declared as such (``linearize(..., base_residual=
-#: "accept")``) gets a BaseStateWarning in 0.1 and 0.2 (refused from 0.3) and a line in explain().
+#: "accept")``) is refused.
 #: Measured: the RB conduction state and the forced Poiseuille flow at rounding (0);
 #: RB about T = +z: 2.0 (in T(z=-0.5) = 0.5); unforced Poiseuille: 1.0 (momentum equation).
 BASE_RESIDUAL_TOL = 1e-6
@@ -223,8 +223,8 @@ DECLARED: dict[str, Declared] = dict([
        "outermost harmonics is reported truncated in Nh (ResolutionWarning, explain())"),
     _d("conatus.tolerances.BASE_RESIDUAL_TOL", BASE_RESIDUAL_TOL, "detection",
        "a linearization base state whose steady residual (equations and boundary conditions, "
-       "per equation) exceeds it is not a steady solution: BaseStateWarning in 0.1 and 0.2 (refused "
-       "from 0.3) unless declared with base_residual='accept'; the residual is in explain()"),
+       "per equation) exceeds it is not a steady solution: refused unless "
+       "declared with base_residual='accept'; the residual is in explain()"),
     _d("conatus.tolerances.DRIFT_TOL_MAX", DRIFT_TOL_MAX, "refusal",
        "drift_tol above it no longer filters (most modes find a neighbour): refused"),
     # projections of the curvilinear step (m = 0 real part, shift-reflect subspace)
@@ -277,8 +277,7 @@ DECLARED: dict[str, Declared] = dict([
        "near zero for a relative test on an eigenvalue: below this fraction of the median modulus "
        "of the nonzero eigenvalues of the spectrum (Hopf / neutral-saddle split of equilibria, "
        "codim-2 and continuation, the continuation crossing test, the mode-switch check of "
-       "critical(), the sensitivity gap); replaces the unit-carrying max(|x|, 1) (critic review of the invariance audit, "
-       ")"),
+       "critical(), the sensitivity gap); replaces the unit-carrying max(|x|, 1)"),
     _d("conatus.solvers.evp.ARNOLDI_TOL", 0.0, "stop at the floor",
        "ARPACK tol = 0 is machine precision (the strictest), each mode's residual is returned",
        ("conatus.solvers.evp:solve_sparse(tol)",)),
@@ -311,9 +310,8 @@ DECLARED: dict[str, Declared] = dict([
     # Floquet
     _d("conatus.floquet.cascade.RESONANCE_TOL", 1e-12, "refusal", _CHECK),
     _d("conatus.floquet.roots.SECANT_STEP", 1e-4 * (1 + 1j), "start offset",
-       "second point seed + SECANT_STEP of the determinant secants (secant_root(step), "
-       "this caseHill.find_root(step).find_root(step)); the stop is the "
-       "caller's tol, stalls are reported"),
+       "second point seed + SECANT_STEP of the determinant secants (secant_root(step) and the "
+       "find_root(step) of the Hill solvers); the stop is the caller's tol, stalls are reported"),
     _d("conatus.growth.periodic:operator_floquet(residual_max)", 1e-8, "refusal",
        "an exponent whose Hill residual exceeds it is not returned (each one carries its residual)"),
     _d("conatus.growth.periodic.LEAK_MAX", 1e-8, "refusal", _CHECK,

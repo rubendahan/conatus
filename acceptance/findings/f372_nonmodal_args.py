@@ -23,7 +23,7 @@ m.velocity("u")
 m.pressure("p")
 m.equations("dt(u) - lap(u)/Re + grad(p) = -u@grad(u)", "div(u) = 0")
 m.at("walls", u=0)
-lin = m.linearize(about={"u": lambda y: np.stack(np.broadcast_arrays(1 - y**2, 0 * y, 0 * y))})
+lin = m.linearize(about={"u": lambda y: np.stack(np.broadcast_arrays(1 - y**2, 0 * y, 0 * y))}, base_residual="accept")   # no driving force: a frozen base
 RESOLVENT = importlib.util.find_spec("conatus.nonmodal.resolvent") is not None
 if RESOLVENT:
     conv = "exp(-i omega t)"

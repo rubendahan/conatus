@@ -536,7 +536,7 @@ class ParametricEVP:
 
         ``tol`` / ``max_iterations``: declared defaults :data:`TRACK_TOL` (stop at the attainable
         floor, residual returned) and :data:`TRACK_MAX_ITERATIONS` (cap: raises when reached).
-        ``maxit`` is the deprecated former name of ``max_iterations`` (DeprecationWarning)."""
+        ``maxit`` is the refused former name of ``max_iterations`` (refused since 0.3)."""
         L, M = self.matrices(**values)
         L, M = L.astype(complex), M.astype(complex)
         n = L.shape[0]

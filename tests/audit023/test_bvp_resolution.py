@@ -204,7 +204,7 @@ def test_nonzero_given_is_kept(K):
 def evp_nu(nu):
     m = cn.Model(cn.Box(z=cn.walls(0, 1)), name="evp", nu=nu)
     m.scalar("u")
-    m.eigenvalue("s")
+    m.eigenvalue("s", growth="real")
     m.equations("s*u - nu*dz(dz(u)) = 0")
     m.at("walls", u=0)
     return m

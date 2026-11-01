@@ -175,7 +175,7 @@ class FilmIndex:
                     raw = fh.read(e.length)
                 try:
                     out.append(json.loads(raw))
-                except ValueError:
+                except (ValueError, RecursionError):
                     self.malformed += 1
         except OSError:
             pass                                            # file gone: what was read is returned

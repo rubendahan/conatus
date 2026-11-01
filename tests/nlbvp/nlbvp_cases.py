@@ -30,7 +30,7 @@ def lane_emden(n, N):
 
 
 def newton(pb, rr, **kw):
-    kw = {"tolerance": 1e-13, "damping": 1.0, "max_iterations": 30, **kw}
+    kw = {"tol": 1e-13, "damping": 1.0, "max_iterations": 30, **kw}
     return NewtonSolver(pb, ncc={rr: lambda r: r}, **kw)
 
 

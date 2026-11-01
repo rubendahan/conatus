@@ -133,7 +133,7 @@ def test_newton_and_solver_explain_html():
     pb.add_equation((diff(diff(u, cs["y"]), cs["y"]) + lift(t1, b, -1) + lift(t2, b, -2), -u * u))
     pb.add_equation((interp(u, cs["y"], 0), 0))
     pb.add_equation((interp(u, cs["y"], 1), 0.1))
-    ns = NewtonSolver(pb, tolerance=1e-10, damping=1.0, max_iterations=20)
+    ns = NewtonSolver(pb, tol=1e-10, damping=1.0, max_iterations=20)
     well_formed(ns._repr_html_())
     sol = ns.solve({u: lambda y: 0.1 * y})
     h = sol._repr_html_()

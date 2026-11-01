@@ -20,7 +20,7 @@ with TemporaryDirectory(dir=Path.cwd()) as root:
         m = cn.Model(cn.Box(x=cn.periodic(2 * np.pi)))
         m.scalar("u")
         if growth is None:
-            m.eigenvalue("c")
+            m.eigenvalue("c", growth="imag")
         else:
             m.eigenvalue("c", growth=growth)
         m.equations("c*u=(2-3j)*u")

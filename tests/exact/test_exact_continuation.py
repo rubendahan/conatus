@@ -158,7 +158,7 @@ def fold_run():
     """Upper branch from r = 0.1, through the fold r = -1/4, up the lower branch to r = 0; the
     stability count uses the growth rates of the linearized IVP (mass c, bare u)."""
     st, ivp, o = _fold_problems()
-    newton = NewtonSolver(st, tolerance=1e-13, damping=1.0, max_iterations=30, params={"r": 0.1})
+    newton = NewtonSolver(st, tol=1e-13, damping=1.0, max_iterations=30, params={"r": 0.1})
     sol = newton.solve({o["u"]: lambda Z: 0.1 + 0 * Z, o["v"]: lambda Z: 1.0 + 0 * Z})
     rates = _growth_rates(ivp, o, ["u"])
     cont = NLBVPContinuation(newton, "r", _cfg(tolerance=1e-12, ds=0.15, ds_max=0.3), marginal_tol=1e-10,
@@ -198,7 +198,7 @@ def test_nlbvp_continuation_refuses_the_steady_jacobian_as_stability():
     sign to growth rates, no mass matrix, tau/BC rows mixed in; on the stable upper branch it
     counted every mode as unstable. A growth-rate callback must now be given."""
     st = _fold_problems()[0]
-    newton = NewtonSolver(st, tolerance=1e-13, damping=1.0, max_iterations=30, params={"r": 0.1})
+    newton = NewtonSolver(st, tol=1e-13, damping=1.0, max_iterations=30, params={"r": 0.1})
     with pytest.raises(TypeError, match="growth rates"):
         NLBVPContinuation(newton, "r", _cfg(), eigen=True, marginal_tol=1e-10)
 
@@ -211,7 +211,7 @@ def test_hopf_rates_and_frequency_on_the_trivial_branch():
     """sigma_n = (r - 1 - D (n pi/2)^2 +- i w) / c at every point; one Hopf (r <= 1.3 < 1 + D pi^2/4)
     located at r = 1 with Im lambda = w / c (the frequency carries the mass coefficient)."""
     st, ivp, o = _hopf_problems()
-    newton = NewtonSolver(st, tolerance=1e-13, damping=1.0, max_iterations=30, params={"r": 0.7})
+    newton = NewtonSolver(st, tol=1e-13, damping=1.0, max_iterations=30, params={"r": 0.7})
     sol = newton.solve({o["x"]: lambda Z: 0 * Z, o["y"]: lambda Z: 0 * Z})
     rates = _growth_rates(ivp, o, ["x", "y"])
     cont = NLBVPContinuation(newton, "r", _cfg(ds=0.25, ds_max=0.4), marginal_tol=1e-10,
@@ -247,7 +247,7 @@ def test_uniform_fold_relative_residual_scale_vanishes():
     max(|A x|, |b|) vanished there: the fold location stalled 1.8e-6 away (the old xfail note said 1e-9) and was flagged not converged. The scale now
     includes |p G_p| (the parameter's own terms, which do not cancel) and the fold converges."""
     st, _, o = _fold_problems(passive=False)
-    newton = NewtonSolver(st, tolerance=1e-13, damping=1.0, max_iterations=30, params={"r": -0.2})
+    newton = NewtonSolver(st, tol=1e-13, damping=1.0, max_iterations=30, params={"r": -0.2})
     sol = newton.solve({o["u"]: lambda Z: -0.2 + 0 * Z})
     br = NLBVPContinuation(newton, "r", _cfg(tolerance=1e-12, max_points=3, event_max_iterations=4)).run(
         sol.coeffs, -0.2, -1, p_bounds=(-0.3, 0.0))

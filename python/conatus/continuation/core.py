@@ -43,7 +43,6 @@ import scipy.linalg as sla
 import scipy.sparse as sp
 import scipy.sparse.linalg as spla
 
-from .._deprecation import positional_order
 from ..errors import DtypeError, InputTypeError, OptionError
 # round-off threshold of a complex starting state (declared; shared with FlowProperties),
 # re-exported here under its former name
@@ -188,10 +187,6 @@ class ContinuationSettings:
                 f"{d('hopf_imag_tol')} (|Im λ| / max(|λ|, 1e-3 median |λ|))")
 
 
-# v0.1 positional order, accepted for one cycle with a DeprecationWarning (conatus._deprecation)
-positional_order(ContinuationSettings, (
-    "ds", "ds_min", "ds_max", "adapt", "fast_iterations", "tolerance", "max_newton", "max_points",
-    "dp_fd", "event_max_iterations", "fold_tol", "crossing_tol", "hopf_imag_tol"))
 
 #: Declared defaults of ContinuationSettings (algorithm controls and event location).
 CONTINUATION_DEFAULTS = dict(adapt=1.3, fast_iterations=3, max_newton=12, dp_fd="auto",

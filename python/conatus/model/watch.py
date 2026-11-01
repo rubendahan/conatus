@@ -611,12 +611,21 @@ class Watch:
     # ------------------------------------------------------------------ running
     def callback(self, solver: Any) -> None:
         """The callback the simulation calls every ``poll`` steps (telemetry + Studio commands)."""
+        self._solver = solver
         self._cb(solver)
 
     def close(self) -> None:
-        """Send the final status and stop the telemetry writer (idempotent)."""
+        """Send the state at the end of the run, then the final status, and stop the telemetry
+        writer (idempotent). Without this last sample the throttles left the stored statistics
+        and frames older than the final time; after a failure nothing more is evaluated."""
         if not getattr(self, "closed", True):
             self.closed = True
+            solver = getattr(self, "_solver", None)
+            if solver is not None and not self.tel.failed:
+                try:
+                    self._cb(solver, final=True)
+                except Exception as err:  # noqa: BLE001 -- closing must not raise into the script
+                    self.tel.log(f"final sample not sent: {type(err).__name__}: {err}", "warning")
             self.tel.close()
 
 

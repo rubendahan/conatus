@@ -50,6 +50,7 @@ LOG_TAIL_BYTES = 16384
 
 class LaunchError(ValueError):
     """A refused job request; ``code`` is the HTTP status the servers answer with."""
+    error_code = "CN302"
 
     def __init__(self, message: str, code: int = 400) -> None:
         super().__init__(message)
@@ -436,7 +437,7 @@ class Launcher:
         for line in lines:
             try:
                 out.append(json.loads(line))
-            except ValueError:
+            except (ValueError, RecursionError):
                 continue
         return out
 

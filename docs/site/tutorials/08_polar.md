@@ -41,7 +41,7 @@ $u_\pm = u_r \pm i u_\varphi$ (regular as $\rho^{|m\pm1|}$), and each operator i
   rule of the disk (lifted in the derivative basis), and `explain()` says so.
 - The plan has one block per azimuthal number $m$. The expert function `eigenvalues(plan, group)`
   solves one block; the native `drum.eigenvalues(N, m=0)` solves the block $m = 0$ (`m=` names
-  the block; without it v0.1 solves the first block and says so in a `DeprecationWarning`).
+  the block, and it is required).
 - The exact answer is $s = -j_{m,n}^2$: separation of variables gives $J_m(\sqrt{-s}\,r)$, and the
   wall condition picks the zeros $j_{m,n}$ of $J_m$.
 

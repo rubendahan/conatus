@@ -1,4 +1,5 @@
-""""""
+"""Transient growth of time-periodic base flows, through a generic periodic operator (any linear
+IR problem, ``optimal_gain`` / ``floquet_exponents``)."""
 from .periodic import (FloquetExponents, OptimalGain, PeriodicOperator, floquet_exponents,
                        operator_floquet, operator_gain, optimal_gain, periodic_operator,
                        periodic_operator_from_plan)

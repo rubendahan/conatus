@@ -395,17 +395,17 @@ class Simulation:
         w = self.watching
         if w is not None and not w.closed:
             callback, every = _combine(w.callback, w.poll, callback, every)
-        for o in self.outputs:                     # particles: the velocity at the start
-            begin = getattr(o, "begin_run", None)
-            if begin is not None:
-                begin()
-        for o in self.outputs:                     # the row of the start (output(initial=True))
-            if getattr(o, "initial_pending", False):
-                o.write_initial()
-        if self.outputs:                           # cn.io files, each on its own cadence
-            from ..io.analysis import _combine as _combine_io
-            callback, every = _combine_io([(callback, every)] + [(o, o.every) for o in self.outputs])
         try:
+            for o in self.outputs:                 # particles: the velocity at the start
+                begin = getattr(o, "begin_run", None)
+                if begin is not None:
+                    begin()
+            for o in self.outputs:                 # the row of the start (output(initial=True))
+                if getattr(o, "initial_pending", False):
+                    o.write_initial()
+            if self.outputs:                       # cn.io files, each on its own cadence
+                from ..io.analysis import _combine as _combine_io
+                callback, every = _combine_io([(callback, every)] + [(o, o.every) for o in self.outputs])
             if w is not None and not w.closed and w.settable:
                 try:
                     self._run_settable(until, steps, callback, every, w.poll)

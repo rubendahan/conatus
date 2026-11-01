@@ -51,7 +51,7 @@ def _solve_nlbvp(N):
     pb, b, x, u, data = _nlbvp(N)
     man = manufacture(pb, {u: U_EXACT})
     ncc = {fld: man.callable(r, [x]) for fld, r in zip(data, man.rhs)}
-    newton = NewtonSolver(pb, tolerance=1e-13, damping=1.0, max_iterations=20, ncc=ncc, **STUDY)
+    newton = NewtonSolver(pb, tol=1e-13, damping=1.0, max_iterations=20, ncc=ncc, **STUDY)
     sol = newton.solve({u: lambda xg: 0 * xg})
     xg = T.grid(b, dealias=False)
     err = float(np.max(np.abs(sol.grid("u") - sy.lambdify(X, U_EXACT)(xg))))

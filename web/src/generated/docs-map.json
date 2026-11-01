@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-31T12:08:55.211Z",
+ "generated": "2026-11-01T07:45:45.134Z",
  "source": "",
  "guide": [
   {
@@ -84,6 +84,21 @@
      "title": "Pilot a run from a script or an agent",
      "text": "Everything the Studio shows about a run, a script can read as JSON, and the commands of the Controls sheet, a script can send (experimental, like the Studio: experimental).",
      "href": "guide/studio_agents.html"
+    },
+    {
+     "title": "Recipes",
+     "text": "Each recipe is the shortest code for one task, with the name of the value to read.",
+     "href": "guide/recipes.html"
+    },
+    {
+     "title": "Error codes",
+     "text": "Every typed error of Conatus carries a stable code in its attribute error_code.",
+     "href": "guide/error_codes.html"
+    },
+    {
+     "title": "MCP server",
+     "text": "python -m conatus mcp is a server for the Model Context Protocol.",
+     "href": "guide/mcp.html"
     },
     {
      "title": "Studio limits and timings",

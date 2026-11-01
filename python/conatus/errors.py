@@ -7,6 +7,8 @@ Every error Conatus raises on purpose derives from :class:`ConatusError`. A mess
 * **why** it is refused,
 * **fix**: a concrete suggestion. Conatus never applies it for you (no silent substitution);
   the user edits the problem and runs again,
+* **error_code**: a class attribute, stable across releases where messages may change
+  (``CN150``; guide page ``error_codes``, frozen by the development test suite),
 * **docs**: the page of the user guide and its section (``guide/errors#conatuserror``), with the
   command that locates it (``python -m conatus docs guide/errors``): a name valid in an installed
   copy, never a path of the source repository. ``err.doc`` keeps the source
@@ -95,6 +97,7 @@ class ConatusError(Exception):
     first line; the structured fields are appended below it and kept as attributes.
     """
 
+    error_code = "CN001"
     doc = _doc("conatuserror")
 
     def __init__(self, message: str = "", *, where: str | None = None, why: str | None = None,
@@ -112,17 +115,24 @@ class ConatusError(Exception):
         lines.append(f"  docs:  {doc_reference(self.doc)}")
         return "\n".join(lines)
 
+    def as_dict(self) -> dict:
+        """The refusal as data for a program: the stable ``error_code``, the class name and the
+        fields of the message, ``fix`` included (guide page ``error_codes``)."""
+        return {"error_code": self.error_code, "type": type(self).__name__, "message": self.message,
+                "where": self.where, "why": self.why, "fix": self.fix, "doc": self.doc}
+
     def explain(self) -> str:
         """Same text as ``str()``, with the class name and its place in the hierarchy."""
         chain = " < ".join(c.__name__ for c in type(self).__mro__
                            if c not in (object, BaseException, Exception))
-        return f"{type(self).__name__} ({chain})\n{self}"
+        return f"{type(self).__name__} [{self.error_code}] ({chain})\n{self}"
 
 
 # -- problem declaration ---------------------------------------------------------------------
 class EquationError(ConatusError, ValueError):
     """An equation (or the whole problem) is inconsistent with the problem type or variables."""
 
+    error_code = "CN100"
     doc = _doc("equationerror")
 
 
@@ -132,24 +142,28 @@ ProblemError = EquationError          # historical name (conatus.ir.problem), sa
 class NonlinearLHSError(EquationError):
     """The LHS contains a term that is not linear in the problem variables."""
 
+    error_code = "CN101"
     doc = _doc("nonlinearlhserror")
 
 
 class UndeclaredVariableError(EquationError, KeyError):
     """A field is used as an unknown (or needs data) but is neither a variable nor given data."""
 
+    error_code = "CN102"
     doc = _doc("undeclaredvariableerror")
 
 
 class ParameterError(EquationError, KeyError):
     """A parameter has no value, or a parameter name is unknown."""
 
+    error_code = "CN103"
     doc = _doc("parametererror")
 
 
 class BoundaryConditionError(EquationError):
     """Boundary conditions are missing, in excess, or placed where none is possible."""
 
+    error_code = "CN104"
     doc = _doc("boundaryconditionerror")
 
 
@@ -158,6 +172,7 @@ class EquationSyntaxError(EquationError):
     names something that is not in its declared namespace. ``text`` and ``position`` (0-based
     character offset) locate the problem; the message shows the text with a caret."""
 
+    error_code = "CN105"
     doc = _doc("equationsyntaxerror")
 
     def __init__(self, message: str = "", *, text: str | None = None, position: int | None = None,
@@ -174,24 +189,28 @@ class EquationSyntaxError(EquationError):
 class DiscretizationError(ConatusError, ValueError):
     """The expression cannot be discretized as requested (explicit reason given)."""
 
+    error_code = "CN110"
     doc = _doc("discretizationerror")
 
 
 class RankError(DiscretizationError, BoundaryConditionError):
     """The discrete system is under-/over-determined or singular (refused before factorization)."""
 
+    error_code = "CN111"
     doc = _doc("rankerror")
 
 
 class SpectralError(ConatusError, ValueError):
     """The expression cannot be evaluated by the pseudospectral RHS evaluator."""
 
+    error_code = "CN120"
     doc = _doc("spectralerror")
 
 
 class ResolutionError(ConatusError, ValueError):
     """The resolution is too small for what is asked (boundary conditions, derivatives...)."""
 
+    error_code = "CN130"
     doc = _doc("resolutionerror")
 
 
@@ -205,24 +224,28 @@ class ResolutionWarning(UserWarning):
 class CoordinateError(ConatusError, ValueError):
     """Inconsistent coordinates, bases or domain."""
 
+    error_code = "CN140"
     doc = _doc("coordinateerror")
 
 
 class OptionError(ConatusError, ValueError):
     """An option has an invalid value (scheme, backend, method...); close names are suggested."""
 
+    error_code = "CN150"
     doc = _doc("optionerror")
 
 
 class SymmetryError(ConatusError, ValueError):
     """Inconsistent symmetry declaration."""
 
+    error_code = "CN160"
     doc = _doc("symmetryerror")
 
 
 class SymmetryBreakingError(SymmetryError):
     """A term does not have the parity required by the declared subspace."""
 
+    error_code = "CN161"
     doc = _doc("symmetrybreakingerror")
 
 
@@ -230,6 +253,7 @@ class MissingFileError(ConatusError, FileNotFoundError):
     """A file to read (an output, a checkpoint) does not exist, or is a directory. Derives from
     ``FileNotFoundError``."""
 
+    error_code = "CN170"
     doc = _doc("missingfileerror")
 
 
@@ -237,18 +261,21 @@ class MissingFileError(ConatusError, FileNotFoundError):
 class InputTypeError(ConatusError, TypeError):
     """An argument has the wrong type (a Parameter, a Field, a number was expected...)."""
 
+    error_code = "CN180"
     doc = _doc("inputtypeerror")
 
 
 class DtypeError(InputTypeError):
     """Real/complex (dtype) mismatch; a conversion is written by the user."""
 
+    error_code = "CN181"
     doc = _doc("dtypeerror")
 
 
 class TensorError(InputTypeError):
     """Tensor signatures do not match (scalar vs vector, different coordinate systems)."""
 
+    error_code = "CN182"
     doc = _doc("tensorerror")
 
 
@@ -256,12 +283,14 @@ class TensorError(InputTypeError):
 class ConvergenceError(ConatusError, RuntimeError):
     """An iteration did not reach its declared tolerance within its declared budget."""
 
+    error_code = "CN190"
     doc = _doc("convergenceerror")
 
 
 class NewtonNotConverged(ConvergenceError):
     """Newton did not reach the declared tolerance within the declared number of iterations."""
 
+    error_code = "CN191"
     doc = _doc("newtonnotconverged")
 
 
@@ -269,6 +298,7 @@ class NumericalError(ConatusError, ArithmeticError):
     """A computed state is not finite (NaN or inf): a time integration blew up.
     Raised by the finite-state check of the time steppers (``check_finite=``)."""
 
+    error_code = "CN200"
     doc = _doc("numericalerror")
 
 
@@ -276,18 +306,21 @@ class NumericalError(ConatusError, ArithmeticError):
 class BackendError(ConatusError, RuntimeError):
     """The requested backend (GPU, compiled core) is not available here."""
 
+    error_code = "CN210"
     doc = _doc("backenderror")
 
 
 class MissingDependencyError(BackendError, ImportError):
     """An optional package or the compiled core is missing."""
 
+    error_code = "CN211"
     doc = _doc("missingdependencyerror")
 
 
 class UnsupportedError(ConatusError, NotImplementedError):
     """Declared in the IR but not implemented (yet) for this case."""
 
+    error_code = "CN220"
     doc = _doc("unsupportederror")
 
 
@@ -297,6 +330,7 @@ class AmbiguousNameError(ConatusError, AttributeError):
     Derives from ``AttributeError`` because it is raised by a module attribute lookup
     (``conatus.expert.record``), so ``hasattr`` and introspection keep their protocol."""
 
+    error_code = "CN230"
     doc = _doc("ambiguousnameerror")
 
 
@@ -334,25 +368,27 @@ class CorrectnessWarning(UserWarning):
     base residual in ``lin.explain()``, the selected group in the result's header, and the growth
     rule inferred from the eigenvalue's name.
 
-    Where the message says "refused from 0.3", the same call raises from 0.3."""
+    The former uses that became refusals in 0.3 raise :class:`OptionError`."""
 
 
 class BaseStateWarning(CorrectnessWarning):
     """A linearization about a base state that is not a steady solution: its steady residual
     exceeds ``BASE_RESIDUAL_TOL`` and ``base_residual='accept'`` was not given, so the modes are
-    not the normal modes of a flow that exists (accepted in 0.1 and 0.2, refused from 0.3)."""
+    not the normal modes of a flow that exists. Since 0.3 this is refused; the class stays importable."""
 
 
 class GroupWarning(CorrectnessWarning):
     """An eigenvalue call without a group (no ``k=`` on a periodic model, no ``m=``/``kz=``/
     ``ell=`` on a curvilinear one) solved one group only (k = 0, or the first group): the modes
-    of every other wavenumber are absent from the result (required from 0.3)."""
+    of every other wavenumber are absent from the result. Since 0.3 this is refused; the class stays
+    importable."""
 
 
 class DefaultChoiceWarning(CorrectnessWarning):
     """A choice that decides the answer was left out and the default or guess of 0.1 and 0.2 was
-    used: the growth rule of an eigenvalue guessed from its name (``m.eigenvalue("c")`` ranks by
-    Im c), the top condition of ``this case`` (no-slip). Declare it; required from 0.3."""
+    used: the growth rule of an eigenvalue guessed from its name (``m.eigenvalue("c", growth="imag")`` ranks by
+    Im c), and the meaning of a declared name ``t``. A growth rule and the top condition of
+    ``this case`` are refused since 0.3 when left out."""
 
 
 class ExperimentalWarning(UserWarning):
