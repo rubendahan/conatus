@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="For AI agents" href="agents.html"><link rel="prev" title="Pilot a run from a script or an agent" href="studio_agents.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="For AI agents" href="agents.html"><link rel="prev" title="MCP server" href="mcp.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -283,6 +283,9 @@
 <li class="toctree-l2"><a class="reference internal" href="io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcp.html">MCP server</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebook.html">Notebooks</a></li>
@@ -918,6 +921,18 @@ value is changed: some are command-line options, others are constants of the sou
 <td><p>window of COMMANDS_PER_MINUTE</p></td>
 <td><p>edit the constant (and this table)</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.agentapi.COMMANDS_PER_MINUTE</span></code></p></td>
+<td><p>60 commands</p></td>
+<td><p>security</p></td>
+<td><p>commands per window of one agent or user on the hub, of one spool without a hub</p></td>
+<td><p>edit the constant (and this table)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.agentapi.COMMAND_WINDOW_S</span></code></p></td>
+<td><p>60.0 s</p></td>
+<td><p>security</p></td>
+<td><p>window of COMMANDS_PER_MINUTE</p></td>
+<td><p>edit the constant (and this table)</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.THROTTLE_AUDIT_S</span></code></p></td>
 <td><p>900.0 s</p></td>
 <td><p>security</p></td>
@@ -1018,6 +1033,18 @@ value is changed: some are command-line options, others are constants of the sou
 <td><p>4096 bytes</p></td>
 <td><p>security</p></td>
 <td><p>fork parameters accepted by the relay</p></td>
+<td><p>edit the constant (and this table)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.relay.LINES_BYTES_PER_PUSH</span></code></p></td>
+<td><p>2097152 bytes</p></td>
+<td><p>limit</p></td>
+<td><p>run file lines sent per poll at most, per run</p></td>
+<td><p>edit the constant (and this table)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.LOCAL_RELAY_RATE</span></code></p></td>
+<td><p>8000000.0 bytes/s</p></td>
+<td><p>limit</p></td>
+<td><p>rate of the relay inside hub serve –local</p></td>
 <td><p>edit the constant (and this table)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.relay.FILM_BYTES_PER_PUSH</span></code></p></td>
@@ -1122,205 +1149,211 @@ value is changed: some are command-line options, others are constants of the sou
 <td><p>film file indexed per poll (a 256 MiB film: 16 polls)</p></td>
 <td><p>edit the constant (and this table)</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.FILM_GROWTH</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.PAUSE_HEARTBEAT_S</span></code></p></td>
+<td><p>10.0 s</p></td>
+<td><p>timing</p></td>
+<td><p>a paused run sends a status this often, under LIVE_S: a run killed while paused turns stale</p></td>
+<td><p>edit the constant (and this table)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.FILM_GROWTH</span></code></p></td>
 <td><p>4 factor</p></td>
 <td><p>limit</p></td>
 <td><p>film thinning: level j keeps every FILM_GROWTH**j-th frame</p></td>
 <td><p>edit the constant (and this table)</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.Telemetry(control_interval)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.Telemetry(control_interval)</span></code></p></td>
 <td><p>1.0 s</p></td>
 <td><p>timing</p></td>
 <td><p>minimum wall time between two reads of the control file</p></td>
 <td><p>argument of the constructor (and this table for the default)</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.Telemetry(max_px3d)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.Telemetry(max_px3d)</span></code></p></td>
 <td><p>48 points/axis</p></td>
 <td><p>limit</p></td>
 <td><p>3D frames strided to at most this many points per axis</p></td>
 <td><p>argument of the constructor (and this table for the default)</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.Telemetry(max_points)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.Telemetry(max_points)</span></code></p></td>
 <td><p>16384 points</p></td>
 <td><p>limit</p></td>
 <td><p>points of a particle frame</p></td>
 <td><p>argument of the constructor (and this table for the default)</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.Telemetry(film_max_bytes)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.Telemetry(film_max_bytes)</span></code></p></td>
 <td><p>0 bytes</p></td>
 <td><p>limit</p></td>
 <td><p>film budget of a bare Telemetry (0 = no film; sim.watch passes film_mb)</p></td>
 <td><p>argument of the constructor (and this table for the default)</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.protocol.encode_curve(max_points)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.protocol.encode_curve(max_points)</span></code></p></td>
 <td><p>4096 points</p></td>
 <td><p>limit</p></td>
 <td><p>points of a curve record</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.protocol.film_record(compress_level)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.protocol.film_record(compress_level)</span></code></p></td>
 <td><p>6 zlib level</p></td>
 <td><p>limit</p></td>
 <td><p>deflate level of film frames</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.HubClient.status(log)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.HubClient.status(log)</span></code></p></td>
 <td><p>20 lines</p></td>
 <td><p>display</p></td>
 <td><p>log lines of a run’s full view</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.HubClient.status(events)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.HubClient.status(events)</span></code></p></td>
 <td><p>20 events</p></td>
 <td><p>display</p></td>
 <td><p>events of a run’s full view</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.HubClient.scalars(max)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.HubClient.scalars(max)</span></code></p></td>
 <td><p>2000 rows</p></td>
 <td><p>display</p></td>
 <td><p>scalar rows returned at most (uniform stride)</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.HubClient.log(n)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.HubClient.log(n)</span></code></p></td>
 <td><p>100 records</p></td>
 <td><p>display</p></td>
 <td><p>log records and events returned</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.HubClient.wait(timeout)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.HubClient.wait(timeout)</span></code></p></td>
 <td><p>25.0 s</p></td>
 <td><p>timing</p></td>
 <td><p>long-poll period of a wait for a change</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.status(log)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.status(log)</span></code></p></td>
 <td><p>20 lines</p></td>
 <td><p>display</p></td>
 <td><p>= HubClient.status(log)</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.status(events)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.status(events)</span></code></p></td>
 <td><p>20 events</p></td>
 <td><p>display</p></td>
 <td><p>= HubClient.status(events)</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.scalars(max)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.scalars(max)</span></code></p></td>
 <td><p>2000 rows</p></td>
 <td><p>display</p></td>
 <td><p>= HubClient.scalars(max)</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.log(n)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.log(n)</span></code></p></td>
 <td><p>100 records</p></td>
 <td><p>display</p></td>
 <td><p>= HubClient.log(n)</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.wait(timeout)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.wait(timeout)</span></code></p></td>
 <td><p>25.0 s</p></td>
 <td><p>timing</p></td>
 <td><p>= HubClient.wait(timeout)</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.wait(poll_s)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.client.SpoolClient.wait(poll_s)</span></code></p></td>
 <td><p>0.5 s</p></td>
 <td><p>timing</p></td>
 <td><p>spool file poll period of a wait</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.Hub.pilots_of(n)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.Hub.pilots_of(n)</span></code></p></td>
 <td><p>3 users</p></td>
 <td><p>display</p></td>
 <td><p>last distinct senders of a command shown for a run</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.Hub.run_view(log)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.Hub.run_view(log)</span></code></p></td>
 <td><p>20 lines</p></td>
 <td><p>display</p></td>
 <td><p>= agentapi.run_view(log), on the hub</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.Hub.run_view(events)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub.Hub.run_view(events)</span></code></p></td>
 <td><p>20 events</p></td>
 <td><p>display</p></td>
 <td><p>= agentapi.run_view(events), on the hub</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.film.FilmIndex.frames(limit)</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.film.FilmIndex.frames(limit)</span></code></p></td>
 <td><p>64 frames</p></td>
 <td><p>limit</p></td>
 <td><p>= MAX_FRAMES_PER_REQUEST (frames per call)</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.Telemetry.close(timeout)</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">telemetry.sink.Telemetry.close(timeout)</span></code></p></td>
 <td><p>30.0 s</p></td>
 <td><p>timing</p></td>
 <td><p>wait for the writer thread to flush the last records at close</p></td>
 <td><p>argument</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">--timeout</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">--timeout</span></code></p></td>
 <td><p>30.0 s</p></td>
 <td><p>timing</p></td>
 <td><p>= HubClient(timeout), from the command line</p></td>
 <td><p>python -m conatus studio –timeout</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">--log</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">--log</span></code></p></td>
 <td><p>20 lines</p></td>
 <td><p>display</p></td>
 <td><p>= HubClient.status(log)</p></td>
 <td><p>studio status –log</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">--events</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">--events</span></code></p></td>
 <td><p>20 events</p></td>
 <td><p>display</p></td>
 <td><p>= HubClient.status(events)</p></td>
 <td><p>studio status –events</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">--timeout-&gt;wait_timeout</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">--timeout-&gt;wait_timeout</span></code></p></td>
 <td><p>25.0 s</p></td>
 <td><p>timing</p></td>
 <td><p>= HubClient.wait(timeout)</p></td>
 <td><p>studio watch –timeout</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">-n</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">-n</span></code></p></td>
 <td><p>100 records</p></td>
 <td><p>display</p></td>
 <td><p>= HubClient.log(n)</p></td>
 <td><p>studio log -n</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">--max</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.cli</span> <span class="pre">--max</span></code></p></td>
 <td><p>2000 rows</p></td>
 <td><p>display</p></td>
 <td><p>= HubClient.scalars(max)</p></td>
 <td><p>studio scalars –max</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub</span> <span class="pre">--film-mb</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub</span> <span class="pre">--film-mb</span></code></p></td>
 <td><p>512.0 MiB</p></td>
 <td><p>limit</p></td>
 <td><p>= Hub(film_mb)</p></td>
 <td><p>hub serve –film-mb</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub</span> <span class="pre">--slurm</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.hub</span> <span class="pre">--slurm</span></code></p></td>
 <td><p>0.0 s</p></td>
 <td><p>timing</p></td>
 <td><p>job-queue poll period of the local relay of <code class="docutils literal notranslate"><span class="pre">hub</span> <span class="pre">serve</span> <span class="pre">--local</span></code> (0 = off)</p></td>
 <td><p>hub serve –slurm</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.relay</span> <span class="pre">--poll</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.relay</span> <span class="pre">--poll</span></code></p></td>
 <td><p>1.0 s</p></td>
 <td><p>timing</p></td>
 <td><p>= Relay(poll_s)</p></td>
 <td><p>relay –poll</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.relay</span> <span class="pre">--max-rate</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.relay</span> <span class="pre">--max-rate</span></code></p></td>
 <td><p>256000.0 bytes/s</p></td>
 <td><p>limit</p></td>
 <td><p>= Relay(max_rate)</p></td>
 <td><p>relay –max-rate</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">studio.relay</span> <span class="pre">--max-backoff</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">studio.relay</span> <span class="pre">--max-backoff</span></code></p></td>
 <td><p>60.0 s</p></td>
 <td><p>timing</p></td>
 <td><p>= Relay(max_backoff_s)</p></td>
@@ -1345,14 +1378,14 @@ value is changed: some are command-line options, others are constants of the sou
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="studio_agents.html">
+          <a class="prev-page" href="mcp.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Pilot a run from a script or an agent</div>
+                <div class="title">MCP server</div>
                 
               </div>
             </a>
@@ -1380,7 +1413,7 @@ value is changed: some are command-line options, others are constants of the sou
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../_static/documentation_options.js?v=e259d695"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

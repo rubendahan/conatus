@@ -234,7 +234,7 @@
   <a href="./../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="./../install/" data-cn-route="/install">Install</a>
   <a href="./../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -281,6 +281,9 @@
 <li class="toctree-l2"><a class="reference internal" href="guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/notebook.html">Notebooks</a></li>
@@ -718,6 +721,8 @@
         <li><a href="api/_generated/user/conatus.Annulus.html#conatus.Annulus">Annulus (class in conatus)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.AnnulusBasis.html#conatus.expert.AnnulusBasis">AnnulusBasis (class in conatus.expert)</a>
+</li>
+        <li><a href="api/_generated/_stubs/conatus.expert.ConatusError.html#conatus.expert.ConatusError.as_dict">as_dict() (conatus.expert.ConatusError method)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.NLBVPSolution.html#conatus.expert.NLBVPSolution.as_guess">as_guess() (conatus.expert.NLBVPSolution method)</a>
 </li>
@@ -1319,7 +1324,11 @@
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.RankReport.html#conatus.expert.RankReport.equation_components">equation_components (conatus.expert.RankReport attribute)</a>
 </li>
+        <li><a href="api/_generated/_stubs/conatus.expert.Problem.html#conatus.expert.Problem.equation_parities">equation_parities (conatus.expert.Problem attribute)</a>
+</li>
         <li><a href="api/_generated/_stubs/conatus.expert.EquationError.html#conatus.expert.EquationError">EquationError</a>
+</li>
+        <li><a href="api/_generated/_stubs/conatus.expert.Problem.html#conatus.expert.Problem.equations">equations (conatus.expert.Problem attribute)</a>
 </li>
         <li><a href="api/_generated/user/conatus.Model.html#conatus.Model.equations">equations() (conatus.Model method)</a>
 </li>
@@ -1335,6 +1344,64 @@
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.equilibrium_eigenvalues.html#conatus.expert.equilibrium_eigenvalues">equilibrium_eigenvalues() (in module conatus.expert)</a>
 </li>
+        <li><a href="api/_generated/_stubs/conatus.expert.AmbiguousNameError.html#conatus.expert.AmbiguousNameError.error_code">error_code (conatus.expert.AmbiguousNameError attribute)</a>
+
+        <ul>
+          <li><a href="api/_generated/_stubs/conatus.expert.BackendError.html#conatus.expert.BackendError.error_code">(conatus.expert.BackendError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.BoundaryConditionError.html#conatus.expert.BoundaryConditionError.error_code">(conatus.expert.BoundaryConditionError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.ConatusError.html#conatus.expert.ConatusError.error_code">(conatus.expert.ConatusError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.ConvergenceError.html#conatus.expert.ConvergenceError.error_code">(conatus.expert.ConvergenceError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.CoordinateError.html#conatus.expert.CoordinateError.error_code">(conatus.expert.CoordinateError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.DiscretizationError.html#conatus.expert.DiscretizationError.error_code">(conatus.expert.DiscretizationError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.DtypeError.html#conatus.expert.DtypeError.error_code">(conatus.expert.DtypeError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.EquationError.html#conatus.expert.EquationError.error_code">(conatus.expert.EquationError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.EquationSyntaxError.html#conatus.expert.EquationSyntaxError.error_code">(conatus.expert.EquationSyntaxError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.InputTypeError.html#conatus.expert.InputTypeError.error_code">(conatus.expert.InputTypeError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.MissingDependencyError.html#conatus.expert.MissingDependencyError.error_code">(conatus.expert.MissingDependencyError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.MissingFileError.html#conatus.expert.MissingFileError.error_code">(conatus.expert.MissingFileError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.NewtonNotConverged.html#conatus.expert.NewtonNotConverged.error_code">(conatus.expert.NewtonNotConverged attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.NonlinearLHSError.html#conatus.expert.NonlinearLHSError.error_code">(conatus.expert.NonlinearLHSError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.NumericalError.html#conatus.expert.NumericalError.error_code">(conatus.expert.NumericalError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.OptionError.html#conatus.expert.OptionError.error_code">(conatus.expert.OptionError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.ParameterError.html#conatus.expert.ParameterError.error_code">(conatus.expert.ParameterError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.RankError.html#conatus.expert.RankError.error_code">(conatus.expert.RankError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.ResolutionError.html#conatus.expert.ResolutionError.error_code">(conatus.expert.ResolutionError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.SpectralError.html#conatus.expert.SpectralError.error_code">(conatus.expert.SpectralError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.SymmetryBreakingError.html#conatus.expert.SymmetryBreakingError.error_code">(conatus.expert.SymmetryBreakingError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.SymmetryError.html#conatus.expert.SymmetryError.error_code">(conatus.expert.SymmetryError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.TensorError.html#conatus.expert.TensorError.error_code">(conatus.expert.TensorError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.UndeclaredVariableError.html#conatus.expert.UndeclaredVariableError.error_code">(conatus.expert.UndeclaredVariableError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.UnsupportedError.html#conatus.expert.UnsupportedError.error_code">(conatus.expert.UnsupportedError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.VJPSuspended.html#conatus.expert.VJPSuspended.error_code">(conatus.expert.VJPSuspended attribute)</a>
+</li>
+          <li><a href="api/_generated/user/conatus.StopRun.html#conatus.StopRun.error_code">(conatus.StopRun attribute)</a>
+</li>
+        </ul></li>
         <li><a href="api/_generated/user/conatus.TaylorCouette.html#conatus.TaylorCouette.eta">eta (conatus.TaylorCouette property)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.DataInnerProduct.html#conatus.expert.DataInnerProduct.euclidean">euclidean() (conatus.expert.DataInnerProduct class method)</a>
@@ -1355,6 +1422,8 @@
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.EVPResult.html#conatus.expert.EVPResult">EVPResult (class in conatus.expert)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/_generated/_stubs/conatus.expert.exp.html#conatus.expert.exp">exp() (in module conatus.expert)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.ExperimentalWarning.html#conatus.expert.ExperimentalWarning">ExperimentalWarning</a>
@@ -1493,8 +1562,6 @@
           <li><a href="api/_generated/user/conatus.runs.explain.html#conatus.runs.explain">(in module conatus.runs)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/_generated/_stubs/conatus.expert.exponents_dense.html#conatus.expert.exponents_dense">exponents_dense() (in module conatus.expert)</a>
 </li>
         <li><a href="api/_generated/user/conatus.runs.export.html#conatus.runs.export">export() (in module conatus.runs)</a>
@@ -2493,8 +2560,6 @@
           <li><a href="api/_generated/_stubs/conatus.expert.DiskBasis.html#conatus.expert.DiskBasis.radius">(conatus.expert.DiskBasis property)</a>
 </li>
         </ul></li>
-        <li><a href="api/_generated/user/conatus.TaylorCouette.html#conatus.TaylorCouette.radius_ratio">radius_ratio (conatus.TaylorCouette property)</a>
-</li>
         <li><a href="api/_generated/user/conatus.contour.BeynResult.html#conatus.contour.BeynResult.rank">rank (conatus.contour.BeynResult attribute)</a>
 
         <ul>
@@ -2568,6 +2633,8 @@
         <li><a href="api/_generated/_stubs/conatus.expert.FirstFourierModeSlice.html#conatus.expert.FirstFourierModeSlice.reduce_trajectory">reduce_trajectory() (conatus.expert.FirstFourierModeSlice method)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.LBVPSolution.html#conatus.expert.LBVPSolution.reduced">reduced (conatus.expert.LBVPSolution attribute)</a>
+</li>
+        <li><a href="api/_generated/_stubs/conatus.expert.Problem.html#conatus.expert.Problem.redundant_bcs">redundant_bcs (conatus.expert.Problem attribute)</a>
 </li>
         <li><a href="api/_generated/user/conatus.contour.CountResult.html#conatus.contour.CountResult.reference">reference (conatus.contour.CountResult attribute)</a>
 
@@ -3121,14 +3188,16 @@
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.RankReport.html#conatus.expert.RankReport.variable_components">variable_components (conatus.expert.RankReport attribute)</a>
 </li>
+        <li><a href="api/_generated/_stubs/conatus.expert.Problem.html#conatus.expert.Problem.variables">variables (conatus.expert.Problem attribute)</a>
+</li>
         <li><a href="api/_generated/user/conatus.Model.html#conatus.Model.vector">vector() (conatus.Model method)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.NLBVPContinuation.html#conatus.expert.NLBVPContinuation.vector_of">vector_of() (conatus.expert.NLBVPContinuation method)</a>
 </li>
-        <li><a href="api/_generated/_stubs/conatus.expert.VectorField.html#conatus.expert.VectorField">VectorField() (in module conatus.expert)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/_generated/_stubs/conatus.expert.VectorField.html#conatus.expert.VectorField">VectorField() (in module conatus.expert)</a>
+</li>
         <li><a href="api/_generated/user/conatus.contour.BeynResult.html#conatus.contour.BeynResult.vectors">vectors (conatus.contour.BeynResult attribute)</a>
 
         <ul>
@@ -3245,7 +3314,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="_static/documentation_options.js?v=e259d695"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

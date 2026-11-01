@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -282,6 +282,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/notebook.html">Notebooks</a></li>
@@ -1530,14 +1533,6 @@
 <span class="w">        </span><span class="sd">"""The radius ratio eta = ri / ro (the name of ``taylor_couette(eta=...)``)."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radii</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radii</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">radius_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Former name of :attr:`eta` (deprecated since v0.1, removed in 0.3)."""</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"TaylorCouette.radius_ratio is deprecated since v0.1, read .eta (same value; "</span>
-                      <span class="s2">"removed in 0.3)"</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta</span>
-
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"TaylorCouette(inner=</span><span class="si">{</span><span class="n">_g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_radii</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">, outer=</span><span class="si">{</span><span class="n">_g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_radii</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s2">, "</span>
                 <span class="sa">f</span><span class="s2">"length=</span><span class="si">{</span><span class="n">_g</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span></div>
@@ -1695,7 +1690,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

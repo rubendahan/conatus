@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Studio limits and timings" href="studio_limits.html"><link rel="prev" title="The Studio" href="studio.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Recipes" href="recipes.html"><link rel="prev" title="The Studio" href="studio.html">
         <link rel="prefetch" href="../_static/logo.svg" as="image">
         <link rel="prefetch" href="../_static/logo-dark.svg" as="image">
 
@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -283,6 +283,9 @@
 <li class="toctree-l2"><a class="reference internal" href="io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="studio.html">The Studio</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebook.html">Notebooks</a></li>
@@ -823,7 +826,9 @@ its digest.</p>
 <p>The default scope of <code class="docutils literal notranslate"><span class="pre">--agent-scope</span></code> is <code class="docutils literal notranslate"><span class="pre">read</span></code>. Commands are limited to 60 a minute for each agent or
 user, and the hub answers 429 above that. An agent with the command scope can confirm its own stop or
 fork, since the confirmation guards against a slip and not against the agent. Text from a run’s log
-reaches the agent unmarked, so treat it as untrusted input.</p>
+reaches the agent unmarked through this channel, so treat it as untrusted input. The MCP server marks it.</p>
+<p>Without a hub the command line counts commands from the spool’s audit: 60 a minute per spool, then 429.</p>
+<p>For an MCP client, <a class="reference internal" href="mcp.html"><span class="doc">MCP server</span></a> serves this channel with the same scopes, read-only by default.</p>
 </section>
 <section id="from-python">
 <h2>From Python<a class="headerlink" href="#from-python" title="Link to this heading">¶</a></h2>
@@ -869,12 +874,12 @@ documentation (<code class="docutils literal notranslate"><span class="pre">cona
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="studio_limits.html">
+          <a class="next-page" href="recipes.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Studio limits and timings</div>
+                <div class="title">Recipes</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -937,7 +942,7 @@ documentation (<code class="docutils literal notranslate"><span class="pre">cona
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../_static/documentation_options.js?v=e259d695"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

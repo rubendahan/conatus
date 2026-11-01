@@ -1,0 +1,118 @@
+# Conatus
+
+> Spectral PDEs and dynamical systems on CPU and GPU, in Python. Equations are written as on paper
+> (`cn.Model`, conditions by boundary name); Conatus discretises them, integrates, solves
+> eigenproblems and finds invariant solutions, bifurcations, Floquet spectra and optimal
+> perturbations. It never changes a numerical choice silently: it refuses and says what to write.
+
+Agents: read [AGENTS.md](AGENTS.md) first (the whole usable surface, one call per line, and the
+rules that prevent mistakes). Dry-run a script up to its first expensive call: `python -m conatus agent
+check script.py` (JSON). Machine facts: `python -m conatus agent` (JSON). MCP clients: `python -m conatus
+mcp`, read-only by default. Every page in one JSON file: `docs-bundle.json`.
+
+## Essentials
+
+- [AGENTS.md](AGENTS.md): compact reference for AI agents
+- [For AI agents](docs/guide/agents.html): What an AI coding agent reads before using Conatus, and the JSON interface it uses while it works.
+- [Recipes](docs/guide/recipes.html): Each recipe is the shortest code for one task, with the name of the value to read.
+- [MCP server](docs/guide/mcp.html): `python -m conatus mcp` is a server for the Model Context Protocol. An MCP client, such as a coding agent or an editor, starts it as a child process and talks to it on stdin and stdout.
+- [Error codes](docs/guide/error_codes.html): Every typed error of Conatus carries a stable code in its attribute `error_code`. A program can branch on the code.
+- [Errors and what they mean](docs/guide/errors.html): A `ConatusError` states what is wrong, where (equation, term, variable, group), why the call is refused, and a suggested fix.
+- [Pilot a run from a script or an agent](docs/guide/studio_agents.html): Everything the Studio shows about a run, a script can read as JSON, and the commands of the Controls sheet, a script can send (experimental, like the Studio: experimental).
+- [explain() and the Methods paragraph](docs/guide/explain.html): Models, results and solvers describe, in plain text, what they are and which numerical choices they carry. A simulation can also draft the *Methods* paragraph of a paper from the settings it ran with.
+- [Experimental features](docs/guide/experimental.html): Most of the Conatus API changes only through a declared deprecation. The experimental APIs below may change in a minor release without a deprecation cycle.
+
+Experimental features (shipped, tested, not promised; first use warns `ExperimentalWarning`): Orbits of 3-D channel and pipe flow; Large spherical shells; The Studio; The Studio hub.
+
+## Start
+
+- [Citing Conatus](docs/citing.html): If Conatus contributes to your work, please cite the software. The repository carries a `CITATION.cff` file (GitHub shows it as "Cite this repository"); the same entry in BibTeX:
+- [Conatus](docs/index.html): Define a PDE model, then simulate it, compute its stability and search for its invariant solutions. Conatus is experimental research software for fluid instability and dynamical systems.
+- [Installation](docs/install.html): Install Conatus 0.3.0 from a binary wheel: no compiler is needed. The CPU wheel is on PyPI
+- [Principles](docs/principles.html): Conatus is written for people who publish the numbers it computes. This page lists the library's design goals. Each section says which checks the code implements for them.
+
+## User guide
+
+- [Bases and domains](docs/guide/bases.html): In the expert layer a domain is a coordinate system with one spectral basis per coordinate, each with its size and dealiasing factor.
+- [Boundary conditions](docs/guide/boundary_conditions.html): Conditions are declared by boundary name, as on paper; Conatus decides how each one enters the discrete system and prints that decision.
+- [Importing Dedalus scripts](docs/guide/dedalus.html): `cn.from_dedalus(script)` builds a Conatus problem from the supported subset of a Dedalus 3 script and reports translated, approximated and unsupported constructs.
+- [Diagnostics and visualization](docs/guide/diagnostics.html): Eulerian, Lagrangian and mixing diagnostics computed from the fields of a run, on the CPU or the GPU.
+- [Checking an installation](docs/guide/doctor.html): `python -m conatus doctor` says what your machine can run (compiled core, GPU) and, for anything missing, what to do.
+- [Adjoints and sensitivity](docs/guide/dynamics/adjoint.html): Tangent and adjoint of the discrete time stepper, adjoint eigenmodes in a declared inner product, the wavemaker and the sensitivity to the base flow.
+- [Chaos and ensembles](docs/guide/dynamics/chaos.html): Lyapunov exponents with error bars, covariant Lyapunov vectors, Poincaré maps, and the fate of many trajectories integrated as one batch.
+- [Continuation and bifurcations](docs/guide/dynamics/continuation.html): Branches of solutions followed through folds by pseudo-arclength, with branch points, Hopf points, cycles and codimension-two curves located on the way.
+- [Eigenvalues in a region](docs/guide/dynamics/contour.html): The eigenvalues inside a box of the complex plane: how many there are, and which they are.
+- [Data-driven analysis](docs/guide/dynamics/data.html): Dynamic mode decomposition and spectral proper orthogonal decomposition of snapshots, in a weighted inner product.
+- [Eigenvalues and stability](docs/guide/dynamics/eigenvalues.html): Normal modes of a linear problem, each with its backward residual, and the tests that flag or remove spurious modes.
+- [Floquet analysis](docs/guide/dynamics/floquet.html): Stability of time-periodic flows by the Hill method: the Floquet exponents are eigenvalues of one large, structured problem.
+- [Dynamics](docs/guide/dynamics/index.html): Everything Conatus does with a model once it is written: stability, growth, invariant solutions, their branches, their symmetries and their sensitivities.
+- [Invariant solutions](docs/guide/dynamics/invariant_solutions.html): Equilibria, travelling waves and periodic orbits found by Newton–Krylov–hookstep on the flow map of your own time stepper.
+- [Invariant manifolds and slices](docs/guide/dynamics/manifolds.html): The unstable manifold of an equilibrium as a polynomial parametrization, connections between solutions, and the reduction of a continuous symmetry by a slice.
+- [Non-modal analysis](docs/guide/dynamics/nonmodal.html): Transient growth of a linear operator, measured in the kinetic-energy norm.
+- [Onset of convection](docs/guide/dynamics/onset.html): The critical Rayleigh number of Rayleigh–Bénard convection between no-slip walls, and the shape of its mode, in a few calls: from the ready linearization, then from the equations of a normal mode ...
+- [Tangent, adjoint and optimal perturbations](docs/guide/dynamics/optimal_perturbations.html): `FlowMap` is the time-stepping map of a solver, X_0 ↦ X_N, with its discrete tangent (`jvp`) and adjoint (`vjp`).
+- [Symmetry subspaces](docs/guide/dynamics/symmetry.html): Computing in an invariant subspace of a symmetry group: fewer unknowns and isolated solutions, at the price of hiding what breaks the symmetry.
+- [Equations](docs/guide/equations.html): A model is written as on paper: unknowns, parameters, known fields and equations in text, with terms on whichever side you like.
+- [The expert layer](docs/guide/expert.html): Under every native model there is an explicit problem that you can read, modify or write yourself: bases with their sizes, tau terms, the left and right sides of each equation.
+- [Geometries](docs/guide/geometries.html): A geometry says where the problem lives: its coordinates, which directions are periodic, where the walls are and what they are called.
+- [GPU](docs/guide/gpu.html): The same model runs on an NVIDIA GPU by adding `backend="cuda"`. The GPU path uses double precision.
+- [User guide](docs/guide/index.html): This guide is organised by task. Use it to find the supported arguments, the returned fields and the failure conditions of each part of Conatus.
+- [Input and output](docs/guide/io.html): Conatus writes two kinds of HDF5 files. Analysis files hold what you asked to see (fields, derived quantities, numbers) at a fixed cadence.
+- [Channels between two surfaces](docs/guide/mapped.html): A channel whose walls are not flat: a wavy bottom, a bump, a corrugated lid.
+- [Notebooks](docs/guide/notebook.html): In Jupyter, Conatus objects display as tables and cards. In a terminal, `print(obj.explain())` gives the same content as text.
+- [IR and operators](docs/guide/operators.html): The expert layer writes problems with Python objects: fields, parameters and operators that build an exact symbolic expression.
+- [Particles and dye of a simulation](docs/guide/particles.html): Tracer particles and a numerical dye that live inside a native simulation: they advance with each step of `sim.run`, on the CPU or the GPU, and write files in the `cn.io` layout.
+- [Ready problems](docs/guide/problems.html): `cn.problems` gives canonical flows and model equations ready to solve. The linked examples compare selected outputs with published values or closed forms.
+- [Reproducibility and provenance](docs/guide/reproducibility.html): A published number should say which code, which numerics and which machine produced it. Enable recording to save the run's environment and declared settings while it executes.
+- [Resolution](docs/guide/resolution.html): The resolution report says, for each unknown and each direction, whether the spectral coefficients have decayed, and how many modes a target accuracy would need.
+- [The run registry](docs/guide/runs.html): `cn.runs` records the computations you may want to find, compare, cite or re-run later, with their numerics, code and machine.
+- [Spherical shells](docs/guide/shells.html): The space between two concentric spheres, where planets and stars convect: simulations on a CPU or a GPU, rotating convection, discrete adjoints and optimal perturbations, with the same model text as ...
+- [The Studio](docs/guide/studio.html): The Studio shows a running simulation as a film in a browser, and lets you pause, checkpoint, stop or fork it.
+- [Studio limits and timings](docs/guide/studio_limits.html): Every number the Studio, the hub, the relay and the telemetry use on their own is declared in one table, `conatus.studio.constants`.
+- [Tau terms by hand](docs/guide/taus.html): In the expert layer you place the boundary terms yourself; a rank check refuses an ill-posed system before any factorisation.
+- [Simulations and time steppers](docs/guide/timesteppers.html): A model with `dt(...)` is integrated by `m.simulate(...)`, with the resolution, the scheme and the time step written in the call.
+- [Numerical uncertainty](docs/guide/uncertainty.html): A number computed by a simulation (a growth rate, a mean, a value at a point) depends on the resolution and on the time step. `cn.uncertainty` reports it with an error estimate.
+- [Units and conventions](docs/guide/units.html): Unit systems let you convert between nondimensionalisations with `convert()`, which checks the supplied unit systems and the scales it needs.
+
+## Tutorials
+
+- [Convection between two plates: from onset to simulation](docs/tutorials/00_getting_started.html): One problem from beginning to end: a layer of fluid heated from below.
+- [A first eigenvalue problem: Orr–Sommerfeld](docs/tutorials/01_orr_sommerfeld.html): Goal. Compute the least stable mode of plane Poiseuille flow at $Re = 10^4$, $\alpha = 1$, and the critical Reynolds number, with a residual for every number. Expected.
+- [A first initial-value problem: Rayleigh–Bénard 2D, CPU then GPU](docs/tutorials/02_rayleigh_benard.html): Goal. Write the Boussinesq equations once, time-step them on the CPU, check that a small perturbation grows at the rate predicted by the eigenvalue problem of the *same* equations, then run the same ...
+- [Symmetries and symmetry subspaces](docs/tutorials/03_symmetries.html): Goal. Compute the Rayleigh–Bénard onset mode in the subspace of solutions symmetric about mid-depth, with half the unknowns, and see what the subspace hides. Expected.
+- [Nonlinear boundary-value problems and continuation: Bratu](docs/tutorials/04_bratu.html): Goal. Solve the Bratu problem $u'' + \lambda e^u = 0$ by Newton, see quadratic convergence reported, then follow the solution branch by pseudo-arclength continuation through its fold. Expected.
+- [Invariant solutions: Kuramoto–Sivashinsky, L = 22](docs/tutorials/05_ks_orbits.html): Goal. Find the equilibria, a travelling wave and the shortest pre-periodic orbit of the Kuramoto–Sivashinsky equation on the $L = 22$ domain by Newton–Krylov–hookstep on the time-stepper's flow map, ...
+- [Polar geometry: the modes of a drum](docs/tutorials/08_polar.html): The same workflow runs on the disk, the annulus and the cylinder, on bases that are regular at the axis.
+- [Bifurcations: the Lorenz equilibria](docs/tutorials/10_bifurcations.html): Goal. Follow the equilibria of the Lorenz system as $r$ grows, through the pitchfork at $r = 1$ (with a declared symmetry) and the Hopf point, and compute the first Lyapunov coefficient there.
+- [Record, query, reproduce: the run registry](docs/tutorials/11_runs.html): Record a parameter scan, query its results and rerun a selected calculation. Recording is opt-in.
+- [Chaos and ensembles: the Lyapunov spectrum of Lorenz](docs/tutorials/12_chaos_ensembles.html): Goal. Compute the Lyapunov spectrum and the Kaplan–Yorke dimension of the Lorenz attractor, with error estimates, from 32 trajectories advanced in one batch. Expected.
+- [Where a global mode is born, and what the data say about it](docs/tutorials/13_sensitivity_data.html): Compute the sensitivity of an eigenvalue to changes in μ(x), then recover the model's eigenvalues from snapshots.
+- [Importing a Dedalus script](docs/tutorials/14_from_dedalus.html): Write a convection cell as a Conatus model, import the same cell from a Dedalus 3 script, and check that the two agree.
+- [Covariant Lyapunov vectors of Kuramoto–Sivashinsky: tangencies and the physical modes](docs/tutorials/15_ks_covariant.html): The Lyapunov exponents say how fast perturbations grow. The covariant Lyapunov vectors say in which directions, and the angles between them say whether the tangent space splits cleanly.
+- [Lagrangian tracers and a numerical dye](docs/tutorials/16_particles_dye.html): Tracers show where the fluid goes; a dye shows how it mixes.
+- [First steps: the Burgers equation in ten minutes](docs/tutorials/first_steps.html): Simulate the viscous Burgers equation, plot its evolution and measure its kinetic energy. Then change one line at a time and see what changes.
+- [Tutorials](docs/tutorials/index.html): Each tutorial is a plain Python script, shown piece by piece on its page. It ends by comparing its result with a published value or a closed form (an `assert`, with the reference in a comment).
+
+## Mathematics
+
+- [Lyapunov exponents, covariant vectors and ensembles](docs/math/chaos.html): The Lyapunov spectrum is that of the discrete map $\Phi_{dt}$ of the time stepper (an implicit– explicit Runge–Kutta scheme at fixed step), not of a separately discretised variational equation.
+- [Continuation and bifurcations](docs/math/continuation.html): A branch of solutions of $G(x, p) = 0$ is followed in the combined unknown $z = (x, p)$ with no privileged parameter (Keller 1977).
+- [Curvilinear geometries: regular bases](docs/math/curvilinear.html): Disks, annuli, pipes, spheres, balls and spherical shells are discretised with bases that are regular at the axis and at the poles.
+- [Eigenproblems, residuals and the physical adjoint](docs/math/eigenproblems.html): A linear eigenproblem is stored as a generalised pencil, one per group,
+- [Floquet–Hill analysis of time-periodic flows](docs/math/floquet.html): The stability of a base flow that is periodic in time, with period $T = 2\pi/\omega$, is governed by a linear system $x' = A(t)\,x$ with $A(t + T) = A(t)$ continuous.
+- [Mathematics](docs/math/index.html): Short notes on the methods behind Conatus: what is computed, in which form, and why.
+- [Invariant solutions: Newton–Krylov–hookstep](docs/math/invariant_solutions.html): Equilibria, travelling waves, periodic orbits and relative periodic orbits are fixed points of a map built from the time stepper.
+- [Non-modal analysis: transient growth](docs/math/nonmodal.html): Shear flows are governed by non-normal operators: perturbations can grow by orders of magnitude before decaying, although every eigenmode decays. This growth is measured in a declared norm.
+- [Spectral discretisation and the tau method](docs/math/spectral.html): Each coordinate carries one basis, fixed by the geometry:
+- [Symmetry subspaces, slices and phase-space geometry](docs/math/symmetry.html): If the equations are equivariant under a reflection $S$ (for example $x \to -x$ with $u$ odd and $T$ even), the solutions with $S u = u$ form an invariant subspace $V_S$.
+- [Implicit–explicit time stepping](docs/math/timestepping.html): After spatial discretisation an initial-value problem becomes, in each group,
+
+## API reference
+
+- [Expert layer: `conatus.expert`](docs/api/expert.html): Use the expert layer to write a spectral problem term by term (bases, tau variables and lifts chosen by hand), to reach options the native layer does not expose, or to use a tool that the native API ...
+- [API reference](docs/api/index.html): Conatus has two layers. Most scripts only need the first.
+- [User layer: `import conatus as cn`](docs/api/user.html): `import conatus` loads the solvers, the compiled core and the GPU modules only when they are first used. The names below are reached as `cn.<name>`.
+
+## Gallery
+
+- [Scientific examples](docs/gallery/index.html): One script per canonical case, written as in the paper that introduced it: the equation, physical comments, `explain()`, and a result checked against a published value or a closed form.

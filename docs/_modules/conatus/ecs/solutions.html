@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -282,6 +282,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/notebook.html">Notebooks</a></li>
@@ -694,7 +697,6 @@
 <span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
@@ -909,23 +911,11 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_arpack_tol</span><span class="p">(</span><span class="n">arnoldi_tol</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""The ARPACK accuracy (required whichever path runs, so that a script does not</span>
-<span class="sd">    change meaning when its size crosses dense_max). The v0.1 surface is frozen, so</span>
-<span class="sd">    omitting it keeps working through v0.1 with the former default 1e-12 and a DeprecationWarning</span>
-<span class="sd">    that names the value used; it becomes a hard requirement in 0.3."""</span>
-    <span class="k">if</span> <span class="n">arnoldi_tol</span> <span class="ow">is</span> <span class="n">REQUIRED</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">(): arnoldi_tol not given; using the v0.1 default arnoldi_tol=</span><span class="si">{</span><span class="n">V01_ARNOLDI_TOL</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> "</span>
-            <span class="s2">"(the relative accuracy of the Ritz values above dense_max). It will be required in "</span>
-            <span class="s2">"0.3: pass it explicitly, e.g. arnoldi_tol=1e-12."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">V01_ARNOLDI_TOL</span>
+<span class="w">    </span><span class="sd">"""The ARPACK accuracy (required whichever path runs, so that a script does not change meaning</span>
+<span class="sd">    when its size crosses dense_max)."""</span>
     <span class="k">return</span> <span class="n">require</span><span class="p">(</span><span class="n">arnoldi_tol</span><span class="p">,</span> <span class="s2">"arnoldi_tol"</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">()"</span><span class="p">,</span> <span class="n">suggest</span><span class="o">=</span><span class="s2">"arnoldi_tol=1e-12"</span><span class="p">,</span>
                    <span class="n">why</span><span class="o">=</span><span class="s2">"above dense_max ARPACK stops at this relative accuracy of the Ritz values: "</span>
                        <span class="s2">"it decides which digits of the eigenvalues are right"</span><span class="p">)</span>
-
-
-<span class="c1">#: Former default of arnoldi_tol, used with a DeprecationWarning when it is omitted.</span>
-<span class="n">V01_ARNOLDI_TOL</span> <span class="o">=</span> <span class="mf">1e-12</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_min_shift_distance</span><span class="p">(</span><span class="n">ops</span><span class="p">,</span> <span class="n">U</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">W</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -1566,7 +1556,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -283,6 +283,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/notebook.html">Notebooks</a></li>
@@ -737,7 +740,7 @@ equation <span class="math notranslate nohighlight">\(sT = \nabla^2 T\)</span>; 
 rule of the disk (lifted in the derivative basis), and <code class="docutils literal notranslate"><span class="pre">explain()</span></code> says so.</p></li>
 <li><p>The plan has one block per azimuthal number <span class="math notranslate nohighlight">\(m\)</span>. The expert function <code class="docutils literal notranslate"><span class="pre">eigenvalues(plan,</span> <span class="pre">group)</span></code>
 solves one block; the native <code class="docutils literal notranslate"><span class="pre">drum.eigenvalues(N,</span> <span class="pre">m=0)</span></code> solves the block <span class="math notranslate nohighlight">\(m = 0\)</span> (<code class="docutils literal notranslate"><span class="pre">m=</span></code> names
-the block; without it v0.1 solves the first block and says so in a <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>).</p></li>
+the block, and it is required).</p></li>
 <li><p>The exact answer is <span class="math notranslate nohighlight">\(s = -j_{m,n}^2\)</span>: separation of variables gives <span class="math notranslate nohighlight">\(J_m(\sqrt{-s}\,r)\)</span>, and the
 wall condition picks the zeros <span class="math notranslate nohighlight">\(j_{m,n}\)</span> of <span class="math notranslate nohighlight">\(J_m\)</span>.</p></li>
 </ul>
@@ -830,7 +833,7 @@ Taylor–Couette neutral curve agrees with the published <span class="math notra
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t08_polar: PASS (exit 0) in 11.4 s | 2026-10-31 | script sha256 599eff30f5da35ed
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t08_polar: PASS (exit 0) in 30.0 s | 2026-10-31 | script sha256 599eff30f5da35ed
 Model 'vibrating drum': Disk(radius=1) (disk)
 Unknowns: T (scalar)
 Eigenvalue: s; growth = Re s, declared with the eigenvalue s
@@ -938,7 +941,7 @@ nonlinear versions of these flows.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../_static/documentation_options.js?v=e259d695"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

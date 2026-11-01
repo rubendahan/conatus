@@ -312,7 +312,7 @@ Floquet–Hill toolkit.
 
 ## `conatus.growth`
 
-
+Transient growth of time-periodic base flows, through a generic periodic operator (any linear IR problem, ``optimal_gain`` / ``floquet_exponents``).
 
 ```{eval-rst}
 .. currentmodule:: conatus.expert

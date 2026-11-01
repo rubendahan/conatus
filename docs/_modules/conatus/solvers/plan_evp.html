@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -282,6 +282,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/notebook.html">Notebooks</a></li>
@@ -811,11 +814,9 @@
     <span class="n">check_eig_method</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">region</span><span class="p">)</span>          <span class="c1"># before any assembly (review, inputs)</span>
     <span class="n">method</span> <span class="o">=</span> <span class="n">_region_method</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n_modes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"shift-invert"</span><span class="p">:</span>
-        <span class="c1"># it used to be ignored without a word: said, refused from 0.3</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">_warn_user</span>       <span class="c1"># the user's line (a fixed level hid it)</span>
-        <span class="n">_warn_user</span><span class="p">(</span><span class="sa">f</span><span class="s2">"eigenvalues(n_modes=</span><span class="si">{</span><span class="n">n_modes</span><span class="si">!r}</span><span class="s2">) has no effect with method=</span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2"> "</span>
-                   <span class="s2">"(every mode is returned); drop it (refused from 0.3)"</span><span class="p">,</span>
-                   <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptionError</span>
+        <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"eigenvalues(n_modes=</span><span class="si">{</span><span class="n">n_modes</span><span class="si">!r}</span><span class="s2">) has no effect with method=</span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">"</span><span class="p">,</span>
+                          <span class="n">why</span><span class="o">=</span><span class="s2">"every mode is returned"</span><span class="p">,</span> <span class="n">fix</span><span class="o">=</span><span class="s2">"drop n_modes="</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"shift-invert"</span><span class="p">:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_count</span>
         <span class="n">n_modes</span> <span class="o">=</span> <span class="n">DEFAULT_N_MODES</span> <span class="k">if</span> <span class="n">n_modes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">check_count</span><span class="p">(</span>
@@ -1038,7 +1039,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

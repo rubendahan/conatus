@@ -3,7 +3,8 @@
 What an AI coding agent reads before using Conatus, and the JSON interface it uses while it works.
 
 An agent that writes and runs Conatus code should be given one page,
-`AGENTS.md`, at the root of the repository. It lists the usable surface, one call per line, grouped by task. It
+`AGENTS.md`, at the root of the repository and of this website (`/AGENTS.md`, with `/llms.txt`
+for tools that look for it). It lists the usable surface, one call per line, grouped by task. It
 also gives rules against common agent mistakes: read a refusal and its suggested fix, write each
 tolerance that decides digits, check residuals, convergence and `explain()`, and check cost and
 memory before a large run. The test suite checks the page against the library: the names it cites

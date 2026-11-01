@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -282,6 +282,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/notebook.html">Notebooks</a></li>
@@ -953,20 +956,18 @@
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">fourier</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ks</span><span class="p">),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_k0_warning</span><span class="p">(</span><span class="n">want</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="c1"># a GroupWarning, not a DeprecationWarning: the modes of every other wavenumber are absent,</span>
-    <span class="c1"># which Python must show outside __main__ too</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupWarning</span><span class="p">,</span> <span class="n">_warn_user</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_k0_refusal</span><span class="p">(</span><span class="n">want</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">ks</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"k_</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">want</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-    <span class="n">_warn_user</span><span class="p">(</span><span class="sa">f</span><span class="s2">"eigenvalues() without k=: only the group </span><span class="si">{</span><span class="n">ks</span><span class="si">}</span><span class="s2"> is solved (v0.1 behaviour); each "</span>
-               <span class="s2">"wavenumber of a periodic direction is its own set of modes, so give it: "</span>
-               <span class="s2">"eigenvalues(N, k=&lt;wavenumber&gt;) (k=0 for this group). Required from 0.3"</span><span class="p">,</span> <span class="n">GroupWarning</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"eigenvalues() without k=: this would solve only the group </span><span class="si">{</span><span class="n">ks</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                      <span class="n">why</span><span class="o">=</span><span class="s2">"each wavenumber of a periodic direction is its own set of modes, so the "</span>
+                          <span class="s2">"modes of every other wavenumber would be absent from the result"</span><span class="p">,</span>
+                      <span class="n">fix</span><span class="o">=</span><span class="s2">"eigenvalues(N, k=&lt;wavenumber&gt;) (k=0 for this group)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_wavenumber_or_count</span><span class="p">(</span><span class="n">fourier</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">k</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">n_modes</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""(wavenumber, shift-invert count) of a ``Model.eigenvalues`` call (Y3): ``k`` is a</span>
-<span class="sd">    wavenumber; an integer ``k`` keeps its v0.1 meaning (number of shift-invert modes) with a</span>
-<span class="sd">    DeprecationWarning where it cannot be a wavenumber (no periodic direction); on a periodic</span>
+<span class="sd">    wavenumber; an integer ``k`` where it cannot be one (no periodic direction) is refused with</span>
+<span class="sd">    ``n_modes``, its former meaning; on a periodic</span>
 <span class="sd">    model an integer ``k`` with shift-invert and no ``n_modes`` reads both ways and is refused</span>
 <span class="sd">   ; a non-integer ``k`` on a model without a periodic direction is refused (it was</span>
 <span class="sd">    ignored)."""</span>
@@ -985,16 +986,10 @@
                               <span class="sa">f</span><span class="s2">"n_modes=6) for the wavenumber </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">, or eigenvalues(N, k=0, "</span>
                               <span class="sa">f</span><span class="s2">"method='shift-invert', target=..., n_modes=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">) for </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> modes "</span>
                               <span class="s2">"of the k = 0 group"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
-    <span class="n">old_count</span> <span class="o">=</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">integral</span> <span class="ow">and</span> <span class="n">n_modes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">fourier</span>
-    <span class="k">if</span> <span class="n">old_count</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">_warn_user</span>
-        <span class="n">_warn_user</span><span class="p">(</span><span class="sa">f</span><span class="s2">"eigenvalues(k=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">): k as the number of shift-invert modes is deprecated "</span>
-                      <span class="sa">f</span><span class="s2">"since v0.1, write n_modes=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> (same meaning; k is the "</span>
-                      <span class="s2">"wavenumber of a periodic direction, as in lin.eigenvalues)"</span>
-                      <span class="o">+</span> <span class="p">(</span><span class="s2">"; with method='dense' it has no effect (every mode is returned)"</span>
-                         <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"shift-invert"</span> <span class="k">else</span> <span class="s2">""</span><span class="p">),</span>
-                      <span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">integral</span> <span class="ow">and</span> <span class="n">n_modes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">fourier</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"eigenvalues(k=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">): k as the number of shift-invert modes was removed in "</span>
+                          <span class="s2">"0.3"</span><span class="p">,</span> <span class="n">why</span><span class="o">=</span><span class="s2">"k is the wavenumber of a periodic direction, and this model "</span>
+                                     <span class="s2">"has none"</span><span class="p">,</span> <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"write n_modes=</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n_modes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_count</span>
         <span class="n">check_count</span><span class="p">(</span><span class="n">n_modes</span><span class="p">,</span> <span class="s2">"n_modes"</span><span class="p">,</span> <span class="s2">"eigenvalues()"</span><span class="p">)</span>
@@ -1016,7 +1011,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_select_group</span><span class="p">(</span><span class="n">plan</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">fourier</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">k</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">which</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""The group of wavenumber ``k`` (Cartesian periodic axes) or of ``m=``/``kz=``/``ell=``</span>
-<span class="sd">    (curvilinear); none given with several groups: the first one, with a GroupWarning."""</span>
+<span class="sd">    (curvilinear); none given with several groups: refused."""</span>
     <span class="n">groups</span> <span class="o">=</span> <span class="n">plan</span><span class="o">.</span><span class="n">groups</span>
     <span class="k">if</span> <span class="n">which</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">plan</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="o">**</span><span class="n">which</span><span class="p">)</span>
@@ -1038,13 +1033,12 @@
         <span class="n">g</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">fourier</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="s2">"k"</span><span class="p">)</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">g</span><span class="p">):</span>
             <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">coord</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">plan</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">fdirs</span><span class="p">]</span>
-            <span class="n">_k0_warning</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">g</span><span class="p">),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+            <span class="n">_k0_refusal</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">g</span><span class="p">),</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroupWarning</span><span class="p">,</span> <span class="n">_warn_user</span>
-            <span class="n">_warn_user</span><span class="p">(</span><span class="sa">f</span><span class="s2">"eigenvalues() without a group: only the first group "</span>
-                       <span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">plan</span><span class="o">.</span><span class="n">matrices</span><span class="p">(</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">] of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span><span class="si">}</span><span class="s2"> is solved (v0.1 behaviour); "</span>
-                       <span class="s2">"choose it with m= (and kz= or ell=). Required from 0.3"</span><span class="p">,</span>
-                       <span class="n">GroupWarning</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"eigenvalues() without a group: this would solve only the first "</span>
+                              <span class="sa">f</span><span class="s2">"group [</span><span class="si">{</span><span class="n">plan</span><span class="o">.</span><span class="n">matrices</span><span class="p">(</span><span class="n">g</span><span class="p">)</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">] of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                              <span class="n">why</span><span class="o">=</span><span class="s2">"the modes of the other groups would be absent from the result"</span><span class="p">,</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="s2">"choose the group with m= (and kz= or ell=)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">g</span>
     <span class="k">return</span> <span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -1435,31 +1429,21 @@
 <span class="sd">        exp(i alpha (x - c t)) (or exp(-i omega t)), or a callable of the eigenvalue. Printed by</span>
 <span class="sd">        ``explain()``; it ranks the modes (``res.order()``) and selects the least stable one.</span>
 
-<span class="sd">        Declare it: ``m.eigenvalue("c", growth="imag")``. Left out,</span>
-<span class="sd">        v0.1 keeps the former guess from the name (``s``, ``sigma``, ``lam`` -&gt; real, ``c`` -&gt;</span>
-<span class="sd">        imag; ``conatus.solvers.parametric.GROWTH_BY_NAME``; any other name: ``order()`` ranks</span>
-<span class="sd">        by the real part and ``critical`` refuses) with a ``DefaultChoiceWarning`` naming the rule</span>
-<span class="sd">        guessed: a ``c`` of a temporal problem (``c*T = ...``) was ranked by Im c. Required from</span>
-<span class="sd">        0.3."""</span>
+<span class="sd">        Declare it: ``m.eigenvalue("c", growth="imag")``. Required since 0.3: leaving it out is</span>
+<span class="sd">        refused, since the former guess from the name ranked the ``c`` of a temporal problem</span>
+<span class="sd">        (``c*T = ...``) by Im c."""</span>
         <span class="k">if</span> <span class="n">growth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">growth</span><span class="p">)</span> <span class="ow">and</span> <span class="n">growth</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"imag"</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"eigenvalue(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">, growth=</span><span class="si">{</span><span class="n">growth</span><span class="si">!r}</span><span class="s2">)"</span><span class="p">,</span>
                               <span class="n">fix</span><span class="o">=</span><span class="s2">"growth='real' (exp(s t)) or 'imag' (exp(i alpha (x - c t))), "</span>
                                   <span class="s2">"or a callable of the eigenvalue"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">"eigenvalue"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">growth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># the user's line whatever the call depth (a problem helper calling it, a wrapper)</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultChoiceWarning</span><span class="p">,</span> <span class="n">_warn_user</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">..solvers.parametric</span><span class="w"> </span><span class="kn">import</span> <span class="n">GROWTH_BY_NAME</span>
-            <span class="n">g</span> <span class="o">=</span> <span class="n">GROWTH_BY_NAME</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">rule</span> <span class="o">=</span> <span class="p">({</span><span class="s2">"real"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"growth = Re </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (a growth rate of exp(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> t))"</span><span class="p">,</span>
-                     <span class="s2">"imag"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"growth rate = alpha Im </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (a phase speed of exp(i alpha (x - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> t))); "</span>
-                             <span class="sa">f</span><span class="s2">"modes are ranked by Im </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, which is the growth order for alpha &gt; 0"</span><span class="p">}</span>
-                    <span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" guessed from the name"</span><span class="p">)</span> <span class="k">if</span> <span class="n">g</span> <span class="k">else</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"modes ranked by Re </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (v0.1 default; critical() refuses)"</span><span class="p">)</span>
-            <span class="n">_warn_user</span><span class="p">(</span><span class="sa">f</span><span class="s2">"m.eigenvalue(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">) without growth=: </span><span class="si">{</span><span class="n">rule</span><span class="si">}</span><span class="s2">. Declare it: "</span>
-                       <span class="sa">f</span><span class="s2">"m.eigenvalue(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">, growth='real') for exp(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> t), "</span>
-                       <span class="sa">f</span><span class="s2">"growth='imag' for a phase speed; required from 0.3"</span><span class="p">,</span>
-                       <span class="n">DefaultChoiceWarning</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"m.eigenvalue(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">) without growth="</span><span class="p">,</span>
+                              <span class="n">why</span><span class="o">=</span><span class="s2">"growth= decides how the modes are ranked and which one is the "</span>
+                                  <span class="s2">"least stable; it is not guessed from the name"</span><span class="p">,</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"m.eigenvalue(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">, growth='real') for exp(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> t), "</span>
+                                  <span class="s2">"growth='imag' for a phase speed (growth rate = alpha Im "</span>
+                                  <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eig</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eig_growth</span> <span class="o">=</span> <span class="n">growth</span>
         <span class="k">return</span> <span class="n">name</span></div>
@@ -1729,7 +1713,7 @@
 <span class="sd">        ``base_residual``: ``"check"`` (default) evaluates the steady equations and boundary</span>
 <span class="sd">        conditions at a steady base when the problem is compiled and prints the residual in</span>
 <span class="sd">        ``explain()``; above ``conatus.tolerances.BASE_RESIDUAL_TOL`` the base is not a steady</span>
-<span class="sd">        solution (BaseStateWarning in 0.1 and 0.2, refused from 0.3). ``"accept"``</span>
+<span class="sd">        solution (refused). ``"accept"``</span>
 <span class="sd">        declares a base that knowingly is not one (a frozen or forced profile)."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.run</span><span class="w"> </span><span class="kn">import</span> <span class="n">Linearization</span>
         <span class="k">return</span> <span class="n">Linearization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">about</span><span class="p">,</span> <span class="n">eigenvalue</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">base_residual</span><span class="p">)</span></div>
@@ -1739,22 +1723,21 @@
 <a class="viewcode-back" href="../../../api/_generated/user/conatus.Model.html#conatus.Model.eigenvalues">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">eigenvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dealias</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">drift</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">n_modes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Eigenvalues of an EVP model (``m.eigenvalue("c")``); ``drift=N2`` keeps only the modes</span>
+<span class="w">        </span><span class="sd">"""Eigenvalues of an EVP model (``m.eigenvalue("c", growth="imag")``); ``drift=N2`` keeps only the modes</span>
 <span class="sd">        found again at resolution N2 (conatus.eigenvalues(drift_plan=)); a mode that moves is not</span>
 <span class="sd">        converged by this test (a tau mode, or a physical mode N does not resolve) and is set aside.</span>
 
 <span class="sd">        ``k``: the wavenumber of the periodic direction(s) (one number, a tuple in coordinate</span>
 <span class="sd">        order or a dict by name), as in ``lin.eigenvalues(N, k=)``: each wavenumber is its own</span>
-<span class="sd">        group of modes. Required on a model with a periodic direction (otherwise</span>
-<span class="sd">        the k = 0 group alone would be solved without a word); left out in v0.1, the</span>
-<span class="sd">        k = 0 group is solved with a GroupWarning that says so. ``n_modes``: the number of</span>
+<span class="sd">        group of modes. Required on a model with a periodic direction: otherwise</span>
+<span class="sd">        only the k = 0 group would be solved. ``n_modes``: the number of</span>
 <span class="sd">        modes of ``method="shift-invert"`` (the former meaning of an integer ``k`` on a model</span>
-<span class="sd">        without a periodic direction, accepted with a DeprecationWarning until 0.3).</span>
+<span class="sd">        without a periodic direction, refused since 0.3).</span>
 <span class="sd">        ``m=``, ``kz=``, ``ell=``: the group of a curvilinear geometry (disk, pipe, sphere)."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..solvers.plan_evp</span><span class="w"> </span><span class="kn">import</span> <span class="n">eigenvalues</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">eig</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="s2">"eigenvalues(): no eigenvalue declared"</span><span class="p">,</span>
-                              <span class="n">fix</span><span class="o">=</span><span class="s2">"m.eigenvalue('s') before the equations, or m.linearize(about=...)"</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="s2">"m.eigenvalue('s', growth='real') before the equations, or m.linearize(about=...)"</span>
                                   <span class="s2">".eigenvalues(...) for an evolution model"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="c1"># a declared parameter keeps its name: k, n_modes, m, kz, ell and group</span>
         <span class="c1"># select a group or a count only when the model declares no parameter of that name (a</span>
@@ -1789,7 +1772,7 @@
             <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">want</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">it</span><span class="o">.</span><span class="n">k</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">plan</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="n">w</span><span class="p">}</span>
                 <span class="k">if</span> <span class="n">want</span><span class="p">:</span>
-                    <span class="n">_k0_warning</span><span class="p">(</span><span class="n">want</span><span class="p">)</span>
+                    <span class="n">_k0_refusal</span><span class="p">(</span><span class="n">want</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">want</span> <span class="o">=</span> <span class="n">_k_map</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">fourier</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n_modes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"method"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"shift-invert"</span><span class="p">:</span>
@@ -1893,7 +1876,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

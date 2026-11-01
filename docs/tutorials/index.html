@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -283,6 +283,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/notebook.html">Notebooks</a></li>
@@ -845,22 +848,22 @@ Rayleigh–Bénard tutorial needs a CUDA device; the optional check of the Dedal
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t00_first_steps.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>4.0 s</p></td>
+<td><p>22.7 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t00_getting_started.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>108.0 s</p></td>
+<td><p>140.6 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t01_orr_sommerfeld.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>6.8 s</p></td>
+<td><p>47.5 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t02a_rayleigh_benard_cpu.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>24.3 s</p></td>
+<td><p>42.4 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t02b_rayleigh_benard_gpu.py</span></code></p></td>
@@ -870,62 +873,62 @@ Rayleigh–Bénard tutorial needs a CUDA device; the optional check of the Dedal
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t03_symmetries.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>2.3 s</p></td>
+<td><p>35.8 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t04_bratu.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>8.0 s</p></td>
+<td><p>32.2 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t05_ks_orbits.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>69.5 s</p></td>
+<td><p>82.8 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t08_polar.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>11.4 s</p></td>
+<td><p>30.0 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t10_bifurcations.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>4.8 s</p></td>
+<td><p>15.8 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t11_runs.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>2.4 s</p></td>
+<td><p>8.8 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t12_chaos_ensembles.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>232.5 s</p></td>
+<td><p>149.4 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t13_sensitivity_data.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>7.9 s</p></td>
+<td><p>23.9 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t14_from_dedalus.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>7.9 s</p></td>
+<td><p>13.1 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t14b_dedalus_check.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>9.4 s</p></td>
+<td><p>15.9 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">t15_ks_covariant.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>85.9 s</p></td>
+<td><p>49.9 s</p></td>
 <td><p>—</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">t16_particles_dye.py</span></code></p></td>
 <td><p>{.cn-pass}<code class="docutils literal notranslate"><span class="pre">PASS</span></code></p></td>
-<td><p>24.9 s</p></td>
+<td><p>466.9 s</p></td>
 <td><p>—</p></td>
 </tr>
 </tbody>
@@ -1011,7 +1014,7 @@ only passing outputs are copied into the pages.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../_static/documentation_options.js?v=e259d695"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

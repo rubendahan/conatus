@@ -235,7 +235,7 @@
   <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -282,6 +282,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/notebook.html">Notebooks</a></li>
@@ -691,6 +694,8 @@
 <span class="sd">* **why** it is refused,</span>
 <span class="sd">* **fix**: a concrete suggestion. Conatus never applies it for you (no silent substitution);</span>
 <span class="sd">  the user edits the problem and runs again,</span>
+<span class="sd">* **error_code**: a class attribute, stable across releases where messages may change</span>
+<span class="sd">  (``CN150``; guide page ``error_codes``, frozen by the development test suite),</span>
 <span class="sd">* **docs**: the page of the user guide and its section (``guide/errors#conatuserror``), with the</span>
 <span class="sd">  command that locates it (``python -m conatus docs guide/errors``): a name valid in an installed</span>
 <span class="sd">  copy, never a path of the source repository. ``err.doc`` keeps the source</span>
@@ -781,6 +786,7 @@
 <span class="sd">    first line; the structured fields are appended below it and kept as attributes.</span>
 <span class="sd">    """</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN001"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"conatuserror"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">why</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -798,13 +804,22 @@
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  docs:  </span><span class="si">{</span><span class="n">doc_reference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
 
+<div class="viewcode-block" id="ConatusError.as_dict">
+<a class="viewcode-back" href="../../api/_generated/_stubs/conatus.expert.ConatusError.html#conatus.expert.ConatusError.as_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The refusal as data for a program: the stable ``error_code``, the class name and the</span>
+<span class="sd">        fields of the message, ``fix`` included (guide page ``error_codes``)."""</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"error_code"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_code</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">"message"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+                <span class="s2">"where"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">where</span><span class="p">,</span> <span class="s2">"why"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">why</span><span class="p">,</span> <span class="s2">"fix"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix</span><span class="p">,</span> <span class="s2">"doc"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">}</span></div>
+
+
 <div class="viewcode-block" id="ConatusError.explain">
 <a class="viewcode-back" href="../../api/_generated/_stubs/conatus.expert.ConatusError.html#conatus.expert.ConatusError.explain">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Same text as ``str()``, with the class name and its place in the hierarchy."""</span>
         <span class="n">chain</span> <span class="o">=</span> <span class="s2">" &lt; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__mro__</span>
                            <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="ne">BaseException</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">))</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">"</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">error_code</span><span class="si">}</span><span class="s2">] (</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">"</span></div>
 </div>
 
 
@@ -815,6 +830,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">EquationError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""An equation (or the whole problem) is inconsistent with the problem type or variables."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN100"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"equationerror"</span><span class="p">)</span></div>
 
 
@@ -827,6 +843,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">NonlinearLHSError</span><span class="p">(</span><span class="n">EquationError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""The LHS contains a term that is not linear in the problem variables."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN101"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"nonlinearlhserror"</span><span class="p">)</span></div>
 
 
@@ -836,6 +853,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UndeclaredVariableError</span><span class="p">(</span><span class="n">EquationError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""A field is used as an unknown (or needs data) but is neither a variable nor given data."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN102"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"undeclaredvariableerror"</span><span class="p">)</span></div>
 
 
@@ -845,6 +863,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ParameterError</span><span class="p">(</span><span class="n">EquationError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""A parameter has no value, or a parameter name is unknown."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN103"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"parametererror"</span><span class="p">)</span></div>
 
 
@@ -854,6 +873,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">BoundaryConditionError</span><span class="p">(</span><span class="n">EquationError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Boundary conditions are missing, in excess, or placed where none is possible."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN104"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"boundaryconditionerror"</span><span class="p">)</span></div>
 
 
@@ -865,6 +885,7 @@
 <span class="sd">    names something that is not in its declared namespace. ``text`` and ``position`` (0-based</span>
 <span class="sd">    character offset) locate the problem; the message shows the text with a caret."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN105"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"equationsyntaxerror"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -884,6 +905,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscretizationError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""The expression cannot be discretized as requested (explicit reason given)."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN110"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"discretizationerror"</span><span class="p">)</span></div>
 
 
@@ -893,6 +915,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">RankError</span><span class="p">(</span><span class="n">DiscretizationError</span><span class="p">,</span> <span class="n">BoundaryConditionError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""The discrete system is under-/over-determined or singular (refused before factorization)."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN111"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"rankerror"</span><span class="p">)</span></div>
 
 
@@ -902,6 +925,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SpectralError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""The expression cannot be evaluated by the pseudospectral RHS evaluator."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN120"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"spectralerror"</span><span class="p">)</span></div>
 
 
@@ -911,6 +935,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ResolutionError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""The resolution is too small for what is asked (boundary conditions, derivatives...)."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN130"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"resolutionerror"</span><span class="p">)</span></div>
 
 
@@ -930,6 +955,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">CoordinateError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Inconsistent coordinates, bases or domain."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN140"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"coordinateerror"</span><span class="p">)</span></div>
 
 
@@ -939,6 +965,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">OptionError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""An option has an invalid value (scheme, backend, method...); close names are suggested."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN150"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"optionerror"</span><span class="p">)</span></div>
 
 
@@ -948,6 +975,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SymmetryError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Inconsistent symmetry declaration."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN160"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"symmetryerror"</span><span class="p">)</span></div>
 
 
@@ -957,6 +985,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SymmetryBreakingError</span><span class="p">(</span><span class="n">SymmetryError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""A term does not have the parity required by the declared subspace."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN161"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"symmetrybreakingerror"</span><span class="p">)</span></div>
 
 
@@ -967,6 +996,7 @@
 <span class="w">    </span><span class="sd">"""A file to read (an output, a checkpoint) does not exist, or is a directory. Derives from</span>
 <span class="sd">    ``FileNotFoundError``."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN170"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"missingfileerror"</span><span class="p">)</span></div>
 
 
@@ -977,6 +1007,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">InputTypeError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""An argument has the wrong type (a Parameter, a Field, a number was expected...)."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN180"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"inputtypeerror"</span><span class="p">)</span></div>
 
 
@@ -986,6 +1017,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">DtypeError</span><span class="p">(</span><span class="n">InputTypeError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Real/complex (dtype) mismatch; a conversion is written by the user."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN181"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"dtypeerror"</span><span class="p">)</span></div>
 
 
@@ -995,6 +1027,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TensorError</span><span class="p">(</span><span class="n">InputTypeError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Tensor signatures do not match (scalar vs vector, different coordinate systems)."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN182"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"tensorerror"</span><span class="p">)</span></div>
 
 
@@ -1005,6 +1038,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ConvergenceError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""An iteration did not reach its declared tolerance within its declared budget."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN190"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"convergenceerror"</span><span class="p">)</span></div>
 
 
@@ -1014,6 +1048,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">NewtonNotConverged</span><span class="p">(</span><span class="n">ConvergenceError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Newton did not reach the declared tolerance within the declared number of iterations."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN191"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"newtonnotconverged"</span><span class="p">)</span></div>
 
 
@@ -1024,6 +1059,7 @@
 <span class="w">    </span><span class="sd">"""A computed state is not finite (NaN or inf): a time integration blew up.</span>
 <span class="sd">    Raised by the finite-state check of the time steppers (``check_finite=``)."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN200"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"numericalerror"</span><span class="p">)</span></div>
 
 
@@ -1034,6 +1070,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">BackendError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""The requested backend (GPU, compiled core) is not available here."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN210"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"backenderror"</span><span class="p">)</span></div>
 
 
@@ -1043,6 +1080,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">MissingDependencyError</span><span class="p">(</span><span class="n">BackendError</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""An optional package or the compiled core is missing."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN211"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"missingdependencyerror"</span><span class="p">)</span></div>
 
 
@@ -1052,6 +1090,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">NotImplementedError</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Declared in the IR but not implemented (yet) for this case."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN220"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"unsupportederror"</span><span class="p">)</span></div>
 
 
@@ -1064,6 +1103,7 @@
 <span class="sd">    Derives from ``AttributeError`` because it is raised by a module attribute lookup</span>
 <span class="sd">    (``conatus.expert.record``), so ``hasattr`` and introspection keep their protocol."""</span>
 
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN230"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"ambiguousnameerror"</span><span class="p">)</span></div>
 
 
@@ -1113,7 +1153,7 @@
 <span class="sd">    base residual in ``lin.explain()``, the selected group in the result's header, and the growth</span>
 <span class="sd">    rule inferred from the eigenvalue's name.</span>
 
-<span class="sd">    Where the message says "refused from 0.3", the same call raises from 0.3."""</span></div>
+<span class="sd">    The former uses that became refusals in 0.3 raise :class:`OptionError`."""</span></div>
 
 
 
@@ -1122,7 +1162,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseStateWarning</span><span class="p">(</span><span class="n">CorrectnessWarning</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""A linearization about a base state that is not a steady solution: its steady residual</span>
 <span class="sd">    exceeds ``BASE_RESIDUAL_TOL`` and ``base_residual='accept'`` was not given, so the modes are</span>
-<span class="sd">    not the normal modes of a flow that exists (accepted in 0.1 and 0.2, refused from 0.3)."""</span></div>
+<span class="sd">    not the normal modes of a flow that exists. Since 0.3 this is refused; the class stays importable."""</span></div>
 
 
 
@@ -1131,7 +1171,8 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">GroupWarning</span><span class="p">(</span><span class="n">CorrectnessWarning</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""An eigenvalue call without a group (no ``k=`` on a periodic model, no ``m=``/``kz=``/</span>
 <span class="sd">    ``ell=`` on a curvilinear one) solved one group only (k = 0, or the first group): the modes</span>
-<span class="sd">    of every other wavenumber are absent from the result (required from 0.3)."""</span></div>
+<span class="sd">    of every other wavenumber are absent from the result. Since 0.3 this is refused; the class stays</span>
+<span class="sd">    importable."""</span></div>
 
 
 
@@ -1139,8 +1180,9 @@
 <a class="viewcode-back" href="../../api/_generated/_stubs/conatus.expert.DefaultChoiceWarning.html#conatus.expert.DefaultChoiceWarning">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DefaultChoiceWarning</span><span class="p">(</span><span class="n">CorrectnessWarning</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""A choice that decides the answer was left out and the default or guess of 0.1 and 0.2 was</span>
-<span class="sd">    used: the growth rule of an eigenvalue guessed from its name (``m.eigenvalue("c")`` ranks by</span>
-<span class="sd">    Im c), the top condition of ``this case`` (no-slip). Declare it; required from 0.3."""</span></div>
+<span class="sd">    used: the growth rule of an eigenvalue guessed from its name (``m.eigenvalue("c", growth="imag")`` ranks by</span>
+<span class="sd">    Im c), and the meaning of a declared name ``t``. A growth rule and the top condition of</span>
+<span class="sd">    ``this case`` are refused since 0.3 when left out."""</span></div>
 
 
 
@@ -1350,7 +1392,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

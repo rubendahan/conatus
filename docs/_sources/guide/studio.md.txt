@@ -57,26 +57,54 @@ sent and what is lost on the way: frames are stored on 8 bits and decimated.
 
 ## What you see
 
-1. **The gallery**: one card per run, live runs first.
+1. **The gallery**: one card per run, live runs first, in as many columns as the screen holds. A
+   card shows the name, the state, the time and step, the first declared parameters, and the reason
+   when the run failed. Parameters come from `meta` (`meta={"params": {"Ra": 1e6}}` or any other
+   entry). Names and values are shown as plain text; the whole text is in the tooltip and in Details.
 2. **The film**: the flow in large, on a dark background. Pinch or scroll to zoom, drag to move,
    double-tap to return to the initial view; the view chips switch between the declared views.
 3. **The timeline**: play, 1× to 8×, *Live* (the end of the film is the present of the run), drag
    to rewind. The film is kept for the whole run, losslessly re-encoded, within a declared size
    budget. When the budget is exceeded, older frames are removed and the interface reports the
    thinning.
-4. Three sheets, closed by default: **Stats** (the declared curves, synchronised with the
-   playhead), **Controls** (pause, resume, checkpoint; stop and fork ask for a second tap),
-   **Details** (provenance, settings, `explain()`, logs and what was lost). A time step declared
-   settable (`sim.watch(..., settable={"dt": (lo, hi)})`) can be changed from Controls, within
-   its bounds.
+4. Four sheets, closed by default: **Stats** (the declared curves with labelled axes, synchronised
+   with the playhead), **Controls** (pause, resume, checkpoint; stop and fork ask for a second tap),
+   **Log** (what happened and when: status changes, commands, warnings, errors, the first non-finite
+   value of each quantity), **Details** (provenance, settings, `explain()` and what was lost). A time
+   step declared settable (`sim.watch(..., settable={"dt": (lo, hi)})`) can be changed from Controls,
+   within its bounds.
+
+   Controls lists each command as *sending*, *pending* (written to the run's control file; the run
+   reads it at its next check), *done* with the checkpoint's path, or *failed* with the reason. A
+   checkpoint with no `checkpoint_dir` fails this way, and the run goes on.
+
+   Axes carry a unit when the run declares one: `meta={"units": {"t": "s", "max T": "K"}}`. A
+   non-finite value is marked on the top edge of its plot at its time, and the note under the plot
+   counts each kind (`nan × 2`).
 5. **The board**: every run with what needs attention (a non-finite value, a silent run, a relay
    down...), who is piloting it, and the recent commands; read only.
 
-A second screen compares one quantity across up to eight runs. On a phone the Studio can be added
-to the home screen. The link is always shown: *live* with its round-trip time, *reconnecting*
-with the next attempt (tap to retry now), or *offline*; the Studio reconnects by itself when the
-page comes back or the network returns, and a light stream (no 3D data, fewer points) can be
+A second screen compares one quantity across up to six runs. Runs are in name order, whatever the
+order of the clicks, and the first is the reference. It lists the parameters that differ, and for
+each run the last value with its time, the minimum, the maximum and the number of records. On a phone
+the Studio can be added to the home screen. The link is always shown: *live* with its round-trip time,
+*reconnecting* with the next attempt (tap to retry now), or *offline*; the Studio reconnects by itself
+when the page comes back or the network returns, and a light stream (no 3D data, fewer points) can be
 chosen on the board for a slow connection.
+
+When the link drops, a banner gives the time of the last data, states read *last known: running*, and
+commands are disabled. The run carries on, since it only writes to its spool. A run that stops writing
+for 30 s is *stale*, paused or not: a paused run sends a status every 10 s. A run killed from outside
+writes no final status, so it stays *stale* and is never shown as finished.
+
+The last statistic and the last frame of a run are taken when the watch closes (`sim.unwatch()`), so
+the final values belong to the final time. A value older than the run's time, during a run, is shown
+with its own time.
+
+The sign-in page of `hub serve --local` asks for the one-session token and says why a sign-in failed:
+an invalid token, too many failed attempts, a form sent from another site, or a session that ended
+because the hub restarted. A token in a URL is ignored, and the query string is left out of the
+hub's log.
 
 Scripts and agents read the same state and send the same commands: {doc}`studio_agents`.
 

@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -283,6 +283,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/notebook.html">Notebooks</a></li>
@@ -827,10 +830,10 @@ end state bit for bit, and the identical call without <code class="docutils lite
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t11_runs: PASS (exit 0) in 2.4 s | 2026-10-31 | script sha256 8a4e7db6a6b083fd
-Run (heat_k0.1): state completed, status provisional, 0.0752 s
-Run (heat_k0.2): state completed, status provisional, 0.0394 s
-Run (heat_k0.4): state completed, status provisional, 0.0387 s
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t11_runs: PASS (exit 0) in 8.8 s | 2026-10-31 | script sha256 8a4e7db6a6b083fd
+Run (heat_k0.1): state completed, status provisional, 0.77 s
+Run (heat_k0.2): state completed, status provisional, 0.0393 s
+Run (heat_k0.4): state completed, status provisional, 0.0407 s
   completed certified   rate=1.8000000002184402, rel_error=1.2135564158515738e-10
   completed certified   rate=3.600000003494189, rel_error=9.706080383864446e-10
 compare (a) vs (b)
@@ -839,13 +842,13 @@ compare (a) vs (b)
   numerics problem.parameters.kappa: 0.2 -&gt; 0.4
   result rate: a=1.8000000002184402 b=3.600000003494189 (rel. diff 5.000e-01)
   result rel_error: a=1.2135564158515738e-10 b=9.706080383864446e-10 (rel. diff 8.750e-01)
-  code: identical executed tree; git 8efff78142 -&gt; 8efff78142
+  code: identical executed tree; git 703aaad2e6 -&gt; 703aaad2e6
 reproduce -&gt; bit-for-bit identical
   code: identical to the recorded code
   steps: 200
   compared: end state: X, multistep history (), t, iteration
   differ: nothing
-conatus.runs cache hit: nothing computed; state after 200 steps read from run (took 0.038628 s); key 0c9ee9d3e0c6, report in run.cache_report
+conatus.runs cache hit: nothing computed; state after 200 steps read from run (took 0.038541 s); key 816a6893f4d4, report in run.cache_report
 {'hit': True, 'reused_from': '', 'computed': 'nothing: 0 steps taken'}
  (this run)
   └─ (cache reuse)
@@ -939,7 +942,7 @@ return value as results) and reuses identical calls on request.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../_static/documentation_options.js?v=e259d695"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

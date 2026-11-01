@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -283,6 +283,9 @@
 <li class="toctree-l2"><a class="reference internal" href="io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="notebook.html">Notebooks</a></li>
@@ -695,6 +698,7 @@ example) is a bug: please report it.</p>
 <p>All errors derive from <code class="docutils literal notranslate"><span class="pre">ConatusError</span></code>, and each also derives from the built-in exception its code
 raised before 0.1 (<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>, <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>, <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>, <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>,
 <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>, <code class="docutils literal notranslate"><span class="pre">ImportError</span></code>, <code class="docutils literal notranslate"><span class="pre">FileNotFoundError</span></code>), so <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">ValueError:</span></code> keeps working.</p>
+<p>Each class has a stable code in <code class="docutils literal notranslate"><span class="pre">error_code</span></code>, listed in <a class="reference internal" href="error_codes.html"><span class="doc">Error codes</span></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">conatus.errors</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">conatus</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">explain</span><span class="p">())</span>   <span class="c1"># the tree of exception classes</span>
 </pre></div>
@@ -715,17 +719,17 @@ them: the base residual of a linearization, the group in a result’s header, an
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BaseStateWarning</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">m.linearize(about=...)</span></code> about a base whose steady residual exceeds <code class="docutils literal notranslate"><span class="pre">BASE_RESIDUAL_TOL</span></code> (not declared with <code class="docutils literal notranslate"><span class="pre">base_residual=&quot;accept&quot;</span></code>); refused from 0.3</p></td>
+<td><p>no longer emitted: since 0.3 <code class="docutils literal notranslate"><span class="pre">m.linearize(about=...)</span></code> about a base whose steady residual exceeds <code class="docutils literal notranslate"><span class="pre">BASE_RESIDUAL_TOL</span></code> raises <code class="docutils literal notranslate"><span class="pre">OptionError</span></code> unless <code class="docutils literal notranslate"><span class="pre">base_residual=&quot;accept&quot;</span></code>. The class stays importable</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GroupWarning</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">eigenvalues()</span></code> without <code class="docutils literal notranslate"><span class="pre">k=</span></code> on a periodic model (only k = 0 is solved), or without <code class="docutils literal notranslate"><span class="pre">m=</span></code> on a curvilinear one (only the first group); required from 0.3</p></td>
+<td><p>no longer emitted: since 0.3 <code class="docutils literal notranslate"><span class="pre">eigenvalues()</span></code> without <code class="docutils literal notranslate"><span class="pre">k=</span></code> on a periodic model, or without <code class="docutils literal notranslate"><span class="pre">m=</span></code> on a curvilinear one, raises <code class="docutils literal notranslate"><span class="pre">OptionError</span></code>. The class stays importable</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <p>Resolution detections are <code class="docutils literal notranslate"><span class="pre">ResolutionWarning</span></code>, <code class="docutils literal notranslate"><span class="pre">UnderResolvedWarning</span></code>, <code class="docutils literal notranslate"><span class="pre">InitialDataWarning</span></code> and
-<code class="docutils literal notranslate"><span class="pre">IllPosedWarning</span></code>. A former spelling with the same meaning (a renamed argument) is a
-<code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>, which Python shows only for code run as <code class="docutils literal notranslate"><span class="pre">__main__</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">IllPosedWarning</span></code>. A former spelling with the same meaning (a renamed argument) raises <code class="docutils literal notranslate"><span class="pre">OptionError</span></code>
+naming the new one since 0.3.</p>
 </section>
 <section id="catalogue">
 <h2>Catalogue<a class="headerlink" href="#catalogue" title="Link to this heading">¶</a></h2>
@@ -970,7 +974,7 @@ filters wherever it is raised (never a ``DeprecationWarning``, which Python hide
 base residual in ``lin.explain()``, the selected group in the result's header, and the growth
 rule inferred from the eigenvalue's name.
 
-Where the message says "refused from 0.3", the same call raises from 0.3.
+The former uses that became refusals in 0.3 raise :class:`OptionError`.
 </pre></div>
 </div>
 </section>
@@ -979,7 +983,7 @@ Where the message says "refused from 0.3", the same call raises from 0.3.
 <p><em>Derives from</em> <code class="docutils literal notranslate"><span class="pre">CorrectnessWarning</span></code></p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>A linearization about a base state that is not a steady solution: its steady residual
 exceeds ``BASE_RESIDUAL_TOL`` and ``base_residual='accept'`` was not given, so the modes are
-not the normal modes of a flow that exists (accepted in 0.1 and 0.2, refused from 0.3).
+not the normal modes of a flow that exists. Since 0.3 this is refused; the class stays importable.
 </pre></div>
 </div>
 </section>
@@ -988,7 +992,8 @@ not the normal modes of a flow that exists (accepted in 0.1 and 0.2, refused fro
 <p><em>Derives from</em> <code class="docutils literal notranslate"><span class="pre">CorrectnessWarning</span></code></p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>An eigenvalue call without a group (no ``k=`` on a periodic model, no ``m=``/``kz=``/
 ``ell=`` on a curvilinear one) solved one group only (k = 0, or the first group): the modes
-of every other wavenumber are absent from the result (required from 0.3).
+of every other wavenumber are absent from the result. Since 0.3 this is refused; the class stays
+importable.
 </pre></div>
 </div>
 </section>
@@ -996,8 +1001,9 @@ of every other wavenumber are absent from the result (required from 0.3).
 <h3>DefaultChoiceWarning<a class="headerlink" href="#defaultchoicewarning" title="Link to this heading">¶</a></h3>
 <p><em>Derives from</em> <code class="docutils literal notranslate"><span class="pre">CorrectnessWarning</span></code></p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>A choice that decides the answer was left out and the default or guess of 0.1 and 0.2 was
-used: the growth rule of an eigenvalue guessed from its name (``m.eigenvalue("c")`` ranks by
-Im c), the top condition of ``this case`` (no-slip). Declare it; required from 0.3.
+used: the growth rule of an eigenvalue guessed from its name (``m.eigenvalue("c", growth="imag")`` ranks by
+Im c), and the meaning of a declared name ``t``. A growth rule and the top condition of
+``this case`` are refused since 0.3 when left out.
 </pre></div>
 </div>
 </section>
@@ -1121,7 +1127,7 @@ with ``warnings.filterwarnings("ignore", category=cn.errors.ExperimentalWarning)
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../_static/documentation_options.js?v=e259d695"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

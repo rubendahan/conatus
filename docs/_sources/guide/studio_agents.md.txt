@@ -121,7 +121,11 @@ its digest.
 The default scope of `--agent-scope` is `read`. Commands are limited to 60 a minute for each agent or
 user, and the hub answers 429 above that. An agent with the command scope can confirm its own stop or
 fork, since the confirmation guards against a slip and not against the agent. Text from a run's log
-reaches the agent unmarked, so treat it as untrusted input.
+reaches the agent unmarked through this channel, so treat it as untrusted input. The MCP server marks it.
+
+Without a hub the command line counts commands from the spool's audit: 60 a minute per spool, then 429.
+
+For an MCP client, {doc}`mcp` serves this channel with the same scopes, read-only by default.
 
 ## From Python
 

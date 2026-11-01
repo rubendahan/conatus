@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.2.4 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -282,6 +282,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/io.html">Input and output</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio.html">The Studio</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_agents.html">Pilot a run from a script or an agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/recipes.html">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/error_codes.html">Error codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/mcp.html">MCP server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/studio_limits.html">Studio limits and timings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/agents.html">For AI agents</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/notebook.html">Notebooks</a></li>
@@ -727,7 +730,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.sparse.linalg</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spla</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.._deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">positional_order</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">DtypeError</span><span class="p">,</span> <span class="n">InputTypeError</span><span class="p">,</span> <span class="n">OptionError</span>
 <span class="c1"># round-off threshold of a complex starting state (declared; shared with FlowProperties),</span>
 <span class="c1"># re-exported here under its former name</span>
@@ -878,10 +880,6 @@
 
 
 
-<span class="c1"># v0.1 positional order, accepted for one cycle with a DeprecationWarning (conatus._deprecation)</span>
-<span class="n">positional_order</span><span class="p">(</span><span class="n">ContinuationSettings</span><span class="p">,</span> <span class="p">(</span>
-    <span class="s2">"ds"</span><span class="p">,</span> <span class="s2">"ds_min"</span><span class="p">,</span> <span class="s2">"ds_max"</span><span class="p">,</span> <span class="s2">"adapt"</span><span class="p">,</span> <span class="s2">"fast_iterations"</span><span class="p">,</span> <span class="s2">"tolerance"</span><span class="p">,</span> <span class="s2">"max_newton"</span><span class="p">,</span> <span class="s2">"max_points"</span><span class="p">,</span>
-    <span class="s2">"dp_fd"</span><span class="p">,</span> <span class="s2">"event_max_iterations"</span><span class="p">,</span> <span class="s2">"fold_tol"</span><span class="p">,</span> <span class="s2">"crossing_tol"</span><span class="p">,</span> <span class="s2">"hopf_imag_tol"</span><span class="p">))</span>
 
 <span class="c1">#: Declared defaults of ContinuationSettings (algorithm controls and event location).</span>
 <span class="n">CONTINUATION_DEFAULTS</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">adapt</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span> <span class="n">fast_iterations</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">max_newton</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">dp_fd</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>
@@ -1323,7 +1321,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=6ffd866b"></script>
+</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
