@@ -1193,6 +1193,26 @@ class TerrainPlan:
         return g
 
     # ------------------------------------------------------------------ explain
+    # The call forms documented for a plan exist on every plan type (hunt 5E, R2: the method
+    # resolution_report existed on the Cartesian Plan only, so a mapped plan raised AttributeError).
+    def resolution_report(self, state, **kw):
+        """Refused with UnsupportedError (``conatus.resolution.resolution_report`` says why)."""
+        from ..resolution import resolution_report
+        return resolution_report(self, state, **kw)
+
+    def rank_report(self, *args, **kw):
+        """Not implemented for a mapped plan: refused with UnsupportedError."""
+        from ..errors import UnsupportedError
+        raise UnsupportedError(f"plan.rank_report(): not implemented for a {type(self).__name__}",
+                               why="the mapped plan has one coupled system; plan.check() reports its rank",
+                               fix="plan.explain() states the blocks of this plan")
+
+    def methods(self, solver=None, **kw):
+        """Numerical-methods summary (conatus.methods) of this plan."""
+        from ..methods import methods
+        return methods(self, solver, **kw)
+
+
     def explain(self) -> str:
         """Map, sizes, metric and NCC expansions, operators and system size of the mapped plan."""
         gm = self._assemble()

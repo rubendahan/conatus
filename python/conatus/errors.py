@@ -36,8 +36,11 @@ Tree (``explain()`` prints it)::
     ├── ResolutionError                           ValueError
     ├── CoordinateError                           ValueError
     ├── OptionError                               ValueError
+    │   └── ArgumentError                          + TypeError
     ├── SymmetryError                             ValueError
     │   └── SymmetryBreakingError
+    ├── MissingFileError                          FileNotFoundError
+    ├── UnsafeFileError                           ValueError
     ├── InputTypeError                            TypeError
     │   ├── DtypeError
     │   └── TensorError
@@ -47,7 +50,8 @@ Tree (``explain()`` prints it)::
     ├── BackendError                              RuntimeError
     │   └── MissingDependencyError                 + ImportError
     ├── UnsupportedError                          NotImplementedError
-    └── AmbiguousNameError                        AttributeError
+    ├── AmbiguousNameError                        AttributeError
+    └── NameNotExportedError                      AttributeError
 """
 from __future__ import annotations
 
@@ -60,11 +64,12 @@ from typing import Any
 __all__ = ["ConatusError", "EquationError", "ProblemError", "NonlinearLHSError",
            "UndeclaredVariableError", "ParameterError", "BoundaryConditionError",
            "EquationSyntaxError", "DiscretizationError", "RankError", "SpectralError",
-           "ResolutionError", "CoordinateError", "OptionError", "SymmetryError",
+           "ResolutionError", "CoordinateError", "OptionError", "ArgumentError", "SymmetryError",
            "SymmetryBreakingError", "InputTypeError", "DtypeError", "TensorError",
            "ConvergenceError", "NewtonNotConverged", "NumericalError", "UnderResolvedWarning",
            "IllPosedWarning", "InitialDataWarning", "BackendError", "MissingDependencyError",
-           "MissingFileError", "UnsupportedError", "AmbiguousNameError", "ResolutionWarning",
+           "MissingFileError", "UnsafeFileError", "UnsupportedError", "AmbiguousNameError",
+           "NameNotExportedError", "ResolutionWarning",
            "CorrectnessWarning", "BaseStateWarning", "GroupWarning", "DefaultChoiceWarning",
            "ExperimentalWarning", "explain"]
 
@@ -235,6 +240,16 @@ class OptionError(ConatusError, ValueError):
     doc = _doc("optionerror")
 
 
+class ArgumentError(OptionError, TypeError):
+    """The arguments of a call do not match its signature: an unknown keyword (a former name
+    included), a missing required argument, too many positional arguments. The message lists the
+    accepted names and the closest ones. Derives from ``TypeError``, the error Python raises for the
+    same mistake, and from :class:`OptionError` (``conatus._keywords``)."""
+
+    error_code = "CN151"
+    doc = _doc("argumenterror")
+
+
 class SymmetryError(ConatusError, ValueError):
     """Inconsistent symmetry declaration."""
 
@@ -255,6 +270,15 @@ class MissingFileError(ConatusError, FileNotFoundError):
 
     error_code = "CN170"
     doc = _doc("missingfileerror")
+
+
+class UnsafeFileError(ConatusError, ValueError):
+    """A file to read holds something the loaders refuse: an HDF5 external, soft or virtual link,
+    a dataset in external storage, or pickled objects in a ``.npz`` (SECURITY.md). Derives from
+    ``ValueError``, which these refusals raised before 0.3.2."""
+
+    error_code = "CN171"
+    doc = _doc("unsafefileerror")
 
 
 # -- types ------------------------------------------------------------------------------------
@@ -332,6 +356,15 @@ class AmbiguousNameError(ConatusError, AttributeError):
 
     error_code = "CN230"
     doc = _doc("ambiguousnameerror")
+
+
+class NameNotExportedError(ConatusError, AttributeError):
+    """``conatus.expert`` does not export this name. The message names the module that defines it
+    when one does, or the closest exported names. Derives from ``AttributeError`` so that
+    ``hasattr`` keeps working."""
+
+    error_code = "CN231"
+    doc = _doc("namenotexportederror")
 
 
 # -- warnings (detections: nothing is changed, the run goes on) -------------------------------

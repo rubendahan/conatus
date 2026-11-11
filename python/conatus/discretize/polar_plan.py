@@ -940,6 +940,16 @@ class PolarPlan:
         from ..notebook import explain_html
         return explain_html(self)
 
+    # The call forms documented for a plan exist on every plan type (hunt 5E, R2: the method
+    # resolution_report existed on the Cartesian Plan only, so a polar plan raised AttributeError).
+    def resolution_report(self, state, **kw):
+        """Refused with UnsupportedError (``conatus.resolution.resolution_report`` says why)."""
+        from ..resolution import resolution_report
+        return resolution_report(self, state, **kw)
+
+
+
+
     def explain(self, group: PolarGroup | None = None) -> str:
         """Bases, groups, equation spaces and rank report of ``group`` (default the first one)."""
         S = self.space

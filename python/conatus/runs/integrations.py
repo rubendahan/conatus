@@ -714,19 +714,56 @@ def _holds_list(v: Any) -> bool:
 
 
 def _untrusted_record(run: Run) -> str | None:
-    """Why the record of ``run`` may not choose code to import and call, or None: ``run.json``,
-    its run directory and the registry's ``runs/`` directory must belong to this user and be
-    writable by nobody else (the rule of the Studio control files)."""
+    """Why the record of ``run`` may not choose code to import and call, or None.
+
+    The registry root, its ``runs/`` directory, the run directory and ``run.json`` must belong to
+    this user and be writable by nobody else (the rule of the Studio control files). Each one is
+    opened relative to the descriptor of the one above (no symbolic link followed), so the checks
+    apply to the files actually read, and ``run.json`` is read again through its checked
+    descriptor: the record must equal the one loaded in ``run`` (hunt 5F, SF3: the checks looked
+    at the files on disk while the call used the copy loaded earlier)."""
+    import json
     uid = getattr(os, "getuid", lambda: None)()
-    for p in (run.path / "run.json", run.path, run.path.parent):
-        try:
-            st = os.stat(p)
-        except OSError as err:
-            return f"{p} cannot be checked ({err})"
+    nofollow = getattr(os, "O_NOFOLLOW", 0)
+    path = run.path
+    root = path.parent.parent
+    chain = [(root, None), (path.parent, path.parent.name), (path, path.name),
+             (path / "run.json", "run.json")]
+
+    def bad(p: Any, st: os.stat_result) -> str | None:
         if uid is not None and st.st_uid != uid:
             return f"{p} is owned by uid {st.st_uid}, not by you (uid {uid})"
         if st.st_mode & 0o022:
             return f"{p} is writable by group or others (mode {st.st_mode & 0o777:o})"
+        return None
+
+    fds: list[int] = []
+    try:
+        for i, (p, name) in enumerate(chain):
+            last = i == len(chain) - 1
+            flags = os.O_RDONLY | nofollow | (0 if last else getattr(os, "O_DIRECTORY", 0))
+            try:
+                fd = os.open(p if name is None else name, flags,
+                             **({} if name is None else {"dir_fd": fds[-1]}))
+            except OSError as err:
+                return f"{p} cannot be checked ({err})"
+            fds.append(fd)
+            problem = bad(p, os.fstat(fd))
+            if problem:
+                return problem
+        with os.fdopen(os.dup(fds[-1]), "rb") as fh:
+            data = fh.read()
+    finally:
+        for fd in fds:
+            os.close(fd)
+    try:
+        on_disk = json.loads(data)
+    except ValueError as err:
+        return f"{path / 'run.json'} cannot be read ({err})"
+    for key in ("inputs", "id"):
+        if on_disk.get(key) != run.rec.get(key):
+            return (f"{path / 'run.json'} no longer holds the record loaded in this session "
+                    f"({key} differs): load the run again")
     return None
 
 
@@ -861,9 +898,9 @@ def _reproduce_ivp(run: Run, solver: Any, record: bool, rec_opts: dict, code_sam
         else solver.run(inputs["nsteps"])
     # the whole end state (X only was compared): X, every multistep history
     # array and the clock, bit for bit
-    with np.load(end) as z:
-        ref = {k: z[k] for k in z.files if k != "meta"}
-        ref_meta = json.loads(str(z["meta"]))
+    from ..io._h5 import npz_arrays
+    ref = npz_arrays(end, "a recorded end state")          # pickled objects refused
+    ref_meta = json.loads(str(ref.pop("meta")))
     meta, arrays = solver._checkpoint_payload()
     arrays = {k: _to_host(v) for k, v in arrays.items()}
     differ, maxd = [], 0.0

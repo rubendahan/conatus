@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-11T03:40:12.073Z",
+ "generated": "2026-11-11T07:04:45.805Z",
  "source": "",
  "guide": [
   {
@@ -54,6 +54,11 @@
      "title": "Resolution",
      "text": "The resolution report says, for each unknown and each direction, whether the spectral coefficients have decayed, and how many modes a target accuracy would need.",
      "href": "guide/resolution.html"
+    },
+    {
+     "title": "Benchmarks",
+     "text": "The benchmark suite is a fixed set of problems that covers the main code paths.",
+     "href": "guide/benchmarks.html"
     },
     {
      "title": "GPU",

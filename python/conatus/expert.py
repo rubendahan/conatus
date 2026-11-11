@@ -48,7 +48,7 @@ import inspect
 import types
 
 from ._deprecation import SURFACE_REMOVED_IN
-from .errors import AmbiguousNameError
+from .errors import AmbiguousNameError, NameNotExportedError, did_you_mean
 from .verify import Check, VerificationReport, verify
 
 # Order matters only for clashes (earlier wins); see SHADOWED.
@@ -239,14 +239,51 @@ def __getattr__(name: str):
             fix=" or ".join([f"conatus.expert.{a} (= conatus.{m}.{name})" for m, a in aliases.items()]
                             + [f"conatus.{m}.{name}" for m in others]))
     if name in _FORMER_MODULES:                    # conatus.expert.telemetry: a 0.1 attribute
-        raise AttributeError(f"conatus.expert.{name} was removed in {SURFACE_REMOVED_IN}: use "
-                             f"conatus.{name}, the same module")
+        raise NameNotExportedError(f"conatus.expert.{name} was removed in {SURFACE_REMOVED_IN}: "
+                                   f"use conatus.{name}, the same module",
+                                   fix=f"import conatus.{name}")
     if name in _UNLISTED:
         mod, attr = _UNLISTED[name]
-        raise AttributeError(f"conatus.expert.{name} was removed in {SURFACE_REMOVED_IN} (only "
-                             f"documented names are listed here): use conatus.{mod}.{attr}, the "
-                             "same object")
-    raise AttributeError(f"module 'conatus.expert' has no attribute '{name}'")
+        raise NameNotExportedError(f"conatus.expert.{name} was removed in {SURFACE_REMOVED_IN} "
+                                   f"(only documented names are listed here): use "
+                                   f"conatus.{mod}.{attr}, the same object",
+                                   fix=f"from conatus.{mod} import {attr}")
+    if name.startswith("_"):                       # dunder probes (copy, pickle, IPython): plain
+        raise AttributeError(f"module 'conatus.expert' has no attribute '{name}'")
+    defined_in = _defining_modules(name)
+    if defined_in:
+        # hunt 5E, R1: X.ShootingRPO named no module (only the names 0.1 exported here did)
+        raise NameNotExportedError(
+            f"conatus.expert does not export {name}: it is conatus.{defined_in[0]}.{name}",
+            why="conatus.expert exports the documented names of the expert layer only; "
+                "the others stay in their module",
+            fix=" or ".join(f"from conatus.{m} import {name}" for m in defined_in[:3]))
+    raise NameNotExportedError(f"module 'conatus.expert' has no attribute '{name}'."
+                               + did_you_mean(name, __all__),
+                               fix="conatus.expert.explain() lists what it exports")
+
+
+def _defining_modules(name: str) -> list[str]:
+    """The conatus modules (dotted, without the ``conatus.`` prefix) whose source defines ``name``
+    at top level (``class name``, ``def name`` or ``name =``), read from the package's source
+    files without importing them; private modules last."""
+    import re
+    from pathlib import Path
+    root = Path(__file__).parent
+    pat = re.compile(rf"^(?:class|def|async def)\s+{re.escape(name)}\b|^{re.escape(name)}\s*[:=]",
+                     re.M)
+    found = []
+    for f in sorted(root.rglob("*.py")):
+        try:
+            text = f.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if name in text and pat.search(text):
+            rel = f.relative_to(root).with_suffix("")
+            parts = [p for p in rel.parts if p != "__init__"]
+            if parts:
+                found.append(".".join(parts))
+    return sorted(found, key=lambda m: (any(p.startswith("_") for p in m.split(".")), m))
 
 
 def explain() -> str:

@@ -340,6 +340,11 @@ public:
         }
     }
 
+    // Build the transposed border data now (otherwise on the first solve_transpose). Not safe to
+    // call concurrently on one object; the batched solve calls it for every system with the GIL
+    // held, before the threads start, so that threads and concurrent Python callers only read.
+    void prepare_transpose() const { ensure_transpose(); }
+
     // Solve A^T X = B in place (plain transpose, no conjugation): the discrete adjoint path.
     // A = P^T (Bt + U V^T)  =>  A^T x = b  <=>  (Bt^T + V U^T) y = b, x = P^T y.
     void solve_transpose(T* b, int nrhs) const {

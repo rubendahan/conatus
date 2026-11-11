@@ -14,7 +14,49 @@ import scipy.sparse as sp
 from . import _core
 from ..errors import DtypeError, InputTypeError, NumericalError, OptionError
 
-__all__ = ["BorderedBanded", "BorderedBandedBatch", "csr_args", "solve_operand"]
+__all__ = ["BorderedBanded", "BorderedBandedBatch", "csr_args", "solve_operand", "solve_threads", "threads_for"]
+
+#: Unknowns per batched solve call per thread squared (measured on genoa, run
+#: benchmarks/suite/tune_threads.py): a call costs about 30 ns per
+#: unknown (systems x n) whatever the band (kl = ku = 3 to 12), and each thread a call starts costs
+#: about 27 us. t threads then take about T1 / t + 27 us x t with T1 = 30 ns x B n: best near
+#: t = sqrt(B n / 900), and a gain only from t = 2 on (B n >= 3600 unknowns). The 200 000 band
+#: entries of were a fixed guess; in band entries this rule starts 3 to 15 times lower.
+SOLVE_THREAD_UNKNOWNS = 900
+
+
+def threads_for(batch: int, n: int, threads: int) -> int:
+    """Threads for one batched solve of ``batch`` systems of size ``n`` when ``threads`` are
+    allowed: min(threads, batch, isqrt(batch n / SOLVE_THREAD_UNKNOWNS)), or 1 below 2."""
+    import math
+    t = min(threads, batch, math.isqrt(batch * n // SOLVE_THREAD_UNKNOWNS))
+    return t if t >= 2 else 1
+
+
+def solve_threads() -> int:
+    """Threads of the batched CPU banded solves: ``$CONATUS_SOLVE_THREADS`` if set, else
+    ``$OMP_NUM_THREADS`` if set, else 1; capped by the CPUs this process may use. Each system of a
+    batch is solved by one thread with the serial arithmetic, so the solution does not depend on
+    this number (bit for bit)."""
+    import os
+    for name in ("CONATUS_SOLVE_THREADS", "OMP_NUM_THREADS"):
+        raw = os.environ.get(name, "").strip()
+        if raw:
+            try:
+                t = int(raw)
+            except ValueError:
+                raise OptionError(f"{name} = {raw!r}: expected a whole number of threads",
+                                  fix=f"export {name}=4 (a whole number), or unset it") from None
+            if t < 1:
+                raise OptionError(f"{name} = {t}: at least one thread", fix=f"export {name}=1")
+            break
+    else:
+        return 1
+    try:
+        cpus = len(os.sched_getaffinity(0))
+    except AttributeError:                       # not on Linux
+        cpus = os.cpu_count() or 1
+    return max(1, min(t, cpus))
 
 
 def _kind(dtype) -> str:
@@ -138,12 +180,15 @@ class BorderedBandedBatch:
         self._s = cls([csr_args(A, self.dtype, f"BorderedBandedBatch (matrix {k})")
                        for k, A in enumerate(mats)], [int(i) for i in border_rows], self.col_border)
         self.n = mats[0].shape[0]
+        self.threads = solve_threads()            # read once per batch (declared by explain)
+        self._B = len(self._s)
+        self._call_threads = threads_for(self._B, self.n, self.threads)   # threads of one call
 
     kl = property(lambda self: self._s.kl)        # common band (max over the systems)
     ku = property(lambda self: self._s.ku)
 
     def __len__(self) -> int:
-        return len(self._s)
+        return self._B
 
     def explain(self) -> str:
         """Batch size, dtype and algorithm of the bordered banded systems, one line."""
@@ -152,11 +197,17 @@ class BorderedBandedBatch:
                 "each factorized once: boundary rows first, LAPACK gbtrf on the band "
                 f"(kl={self.kl}, ku={self.ku}), Woodbury/Schur on the border"
                 + (" (rows and columns: column border, exact)" if self.col_border else "")
-                + "; solves looped in C++")
+                + "; solves looped in C++"
+                + (f" on {self._call_threads} of {self.threads} allowed threads (GIL released; "
+                   "same bits as one thread)" if self._call_threads > 1 else
+                   f" on one thread ({self.threads} allowed; {len(self)} x {self.n} unknowns is "
+                   "below the threading threshold)" if self.threads > 1 else ""))
 
     def solve(self, b: np.ndarray, transpose: bool = False) -> np.ndarray:
         """b: (batch, n) -> x: (batch, n); ``transpose=True`` solves A_k^T x = b_k (plain
         transpose, no conjugation, same factors: the discrete adjoint path)."""
         b = solve_operand(b, self.dtype, "BorderedBandedBatch.solve")
         _check_rhs_shape(b, (len(self), self.n), "BorderedBandedBatch.solve", f"({len(self)}, {self.n})")
+        if self._call_threads > 1:
+            return self._s.solve(b, bool(transpose), self._call_threads)
         return self._s.solve(b, bool(transpose))

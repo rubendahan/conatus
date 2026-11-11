@@ -127,3 +127,56 @@ def test_status_without_a_source_says_none_is_configured(tmp_path, monkeypatch):
     assert "holds no run" in ans["error"] and "configured" not in ans["error"]
     from conatus.studio import cli
     assert cli.main(["status", "kh_demo"]) == cli.EXIT["missing"]
+
+
+_SCRIPT = """
+import sys
+import numpy as np
+import conatus as cn
+mode, spool = sys.argv[1], sys.argv[2]
+m = cn.Model(cn.Box(x=cn.periodic(2 * np.pi)), name="heat", nu=0.1)
+m.scalar("u")
+m.equations("dt(u) - nu*dx(dx(u)) = 0")
+sim = m.simulate(N=16, scheme="RK443", dt=1e-3)
+sim.initial(u=lambda x: np.sin(x))
+sim.watch(mode, poll=5, spool=spool)
+sim.run(steps=20)
+if mode == "between":
+    raise RuntimeError("analysis failed between two runs")
+if mode == "interrupt":
+    raise KeyboardInterrupt
+sim.run(steps=20)
+if mode == "after":
+    raise RuntimeError("post-processing failed")
+if mode == "exit3":
+    sys.exit(3)
+if mode == "exit0":
+    sys.exit(0)
+"""
+
+
+@pytest.mark.parametrize("mode, code, state, error", [
+    ("between", 1, "failed", "RuntimeError"), ("after", 1, "failed", "RuntimeError"),
+    ("exit3", 3, "failed", "SystemExit"), ("interrupt", None, "failed", "KeyboardInterrupt"),
+    ("ok", 0, "finished", None), ("exit0", 0, "finished", None)])
+def test_the_final_state_follows_how_the_script_ends(tmp_path, mode, code, state, error):
+    """Hunt 5F, SF1: a script that raised or exited non-zero outside sim.run was "finished".
+    Oracle: the exit status of the process."""
+    import os
+    import subprocess
+    import sys
+    script = tmp_path / "s.py"
+    script.write_text(_SCRIPT)
+    env = dict(os.environ)
+    p = subprocess.run([sys.executable, str(script), mode, str(tmp_path / "spool")],
+                       capture_output=True, text=True, timeout=300, env=env)
+    if code is not None:
+        assert p.returncode == code, p.stderr[-2000:]
+    else:
+        assert p.returncode != 0
+    got, st = _state(tmp_path / "spool", mode)
+    assert got == state, (got, st.status)
+    if error:
+        assert st.status["failed"].startswith(error)
+        ev = [e for e in st.events if e.get("name") == "failed"]
+        assert ev and ev[-1]["error_type"] == error

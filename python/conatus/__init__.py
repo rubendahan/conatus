@@ -1,10 +1,10 @@
 """Conatus: a high-performance mathematical laboratory for PDEs and dynamical systems."""
-__version__ = "0.3.1"  # single source of the version (pyproject reads it)
+__version__ = "0.4.0"  # single source of the version (pyproject reads it)
 # The content of every conatus module this process imports is recorded (sha256 of its source):
 # a module edited on disk afterwards is not the code that runs (conatus.provenance.code_state,
 # changed_since_import, audit state).
 from . import _import_record  # noqa: E402
-_import_record.install(__file__, _import_record.__file__)
+_import_record.install(__file__, _import_record.__file__, _import_record._keywords.__file__)
 
 
 # Two layers: ``import conatus as cn`` is the user layer (native models

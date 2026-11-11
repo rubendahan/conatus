@@ -20,6 +20,8 @@ import os
 import sys
 import threading
 
+from . import _keywords      # imported before the finder exists (see _RecordingLoader)
+
 #: absolute source path -> (size, mtime in ns, sha256 hex) of the text the module was loaded from
 #: (size and mtime kept for diagnosis only: the comparison is by content)
 IMPORTED: dict[str, tuple[int, int, str]] = {}
@@ -65,7 +67,13 @@ class _RecordingLoader(_machinery.SourceFileLoader):
 
     def exec_module(self, module) -> None:
         record(self.path)
-        super().exec_module(module)
+        _keywords.begin_module()
+        try:
+            super().exec_module(module)
+        finally:
+            # the public callables refuse arguments that do not bind with a typed error
+            # (conatus._keywords; hunt 5E, R1)
+            _keywords.guard_module(module)
 
 
 class _Finder:

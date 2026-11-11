@@ -97,3 +97,42 @@ def test_fn_given_by_the_caller_is_not_checked(recorded):
     import audit_goodmod
     assert R.get(run.id).reproduce(fn=audit_goodmod.area, record=False).identical
     assert not marker.exists()
+
+
+def test_record_loaded_while_swapped_is_refused_after_the_files_are_restored(recorded):
+    """Hunt 5F, SF3: the checks read the files on disk, the call used the record loaded earlier.
+    A record loaded while a forged one was on disk, then the honest file put back: refused (the
+    record is read again through the checked descriptor), and nothing is imported."""
+    run, marker = recorded
+    rec_path = run.path / "run.json"
+    honest = rec_path.read_text()
+    _forge(run, marker)
+    loaded = R.get(run.id)                         # the forged record, held in memory
+    assert loaded.rec["inputs"]["target"] == "audit_evilmod:payload"
+    rec_path.write_text(honest)                    # the files on disk pass every check again
+    with pytest.raises(OptionError, match="no longer holds the record"):
+        loaded.reproduce(record=False, trust_record=True)
+    assert not marker.exists() and "audit_evilmod" not in sys.modules
+    assert R.get(run.id).reproduce(record=False, trust_record=True).identical    # control
+
+
+def test_registry_root_writable_by_others_is_refused(recorded):
+    run, marker = recorded
+    root = run.path.parent.parent
+    mode = os.stat(root).st_mode & 0o777
+    os.chmod(root, 0o777)
+    try:
+        with pytest.raises(OptionError, match="writable by group or others"):
+            R.get(run.id).reproduce(record=False, trust_record=True)
+    finally:
+        os.chmod(root, mode)
+    assert not marker.exists()
+
+
+def test_a_symlinked_run_directory_is_refused(recorded, tmp_path):
+    run, marker = recorded
+    real = tmp_path / "elsewhere"
+    run.path.rename(real)
+    run.path.symlink_to(real, target_is_directory=True)
+    with pytest.raises(OptionError, match="cannot be checked"):
+        R.get(run.id).reproduce(record=False, trust_record=True)

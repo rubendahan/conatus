@@ -71,6 +71,15 @@ class Linearization:
                                               if u.role != "pressure") + "} (each value a "
                         "number or a function of the coordinates)",
                     doc=_LIN_DOC)
+            if isinstance(v, (str, bytes)):
+                # SECURITY.md: an expression given as text would be evaluated (hunt 5E, R3: it was
+                # a bare TypeError from deep inside the compilation)
+                raise InputTypeError(
+                    f"about: {n}={v!r} is a string",
+                    why="a base state is a number, a function of the coordinates or a SymPy "
+                        "expression; a string would have to be evaluated as code, which Conatus "
+                        "never does (SECURITY.md)",
+                    fix=f"about={{{n!r}: lambda ...: ...}} or a SymPy expression", doc=_LIN_DOC)
             self.about[n] = v
         if period is not None and (isinstance(period, bool) or not (    # True: period 1
                 isinstance(period, numbers.Real) and period > 0 and math.isfinite(period))):
@@ -597,7 +606,8 @@ class Linearization:
                               fix=f"m.params[{given[0]!r}] = ... before the call, or "
                                   f"lin.parametric(N, over=({given[0]!r},)) to sweep it",
                               doc=_LIN_DOC)
-        check_call_options(None, kw, _EIG_OPTIONS + ("n_modes",), "lin.eigenvalues")
+        check_call_options(None, kw, _EIG_OPTIONS + ("n_modes",), "lin.eigenvalues",
+                           Linearization.eigenvalues)
         from ..solvers.plan_evp import check_eig_method   # before the base state
         check_eig_method(kw.get("method"), kw.get("target"), kw.get("region"), "lin.eigenvalues")
         if which and k is not None:

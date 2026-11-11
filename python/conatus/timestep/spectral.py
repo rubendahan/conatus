@@ -16,6 +16,7 @@ checked against it. The evaluator is vectorized over all modes (no loop over gro
 """
 from __future__ import annotations
 
+import functools
 from collections.abc import Mapping
 from typing import Any
 
@@ -49,6 +50,43 @@ def integration_weights(b: Basis) -> np.ndarray:
     return w
 
 
+def _cheb_diff_recurrence(c: np.ndarray) -> np.ndarray:
+    """Chebyshev derivative coefficients (unit interval, axis 0) by the backward recurrence
+    out[N-2] = 2 (N-1) c[N-1], out[n] = out[n+2] + 2 (n+1) c[n+1] (out[N-1] = 0), out[0] /= 2.
+
+    Each parity chain of the recurrence is one ``np.add.accumulate`` (sequential, not pairwise),
+    so every entry is the same sum, in the same order, of the same products as the Python loop it
+    replaced: the result is identical bit for bit, signed zeros included
+    (tests/timestep/test_rhs_fast_paths.py). The loop was a tenth of a CPU time step at 64 x 32."""
+    N = c.shape[0]
+    out = np.zeros_like(c)
+    if N < 2:
+        return out
+    if c.dtype.kind not in "fc":                    # integer data: the loop and its casts, as before
+        out[N - 2] = 2 * (N - 1) * c[N - 1]
+        for n in range(N - 3, -1, -1):
+            out[n] = out[n + 2] + 2 * (n + 1) * c[n + 1]
+        out[0] = out[0] / 2
+        return out
+    # the integer factor 2 (n+1) in the dtype of c, as the loop's Python int was (exact)
+    w = _cheb_diff_weights(N).astype(c.dtype, copy=False).reshape((N - 1,) + (1,) * (c.ndim - 1))
+    t = w * c[1:]                                   # t[n] = 2 (n+1) c[n+1], n = 0 .. N-2
+    out[N - 2::-2] = np.add.accumulate(t[N - 2::-2], axis=0)      # starts by out[N-2] = t[N-2]
+    if N >= 3:
+        tb = t[N - 3::-2].copy()                    # starts by out[N-3] = out[N-1] + t[N-3], 0 + t
+        tb[0] = np.zeros_like(tb[0]) + tb[0]
+        out[N - 3::-2] = np.add.accumulate(tb, axis=0)
+    out[0] = out[0] / 2
+    return out
+
+
+@functools.lru_cache(maxsize=64)
+def _cheb_diff_weights(N: int) -> np.ndarray:
+    w = np.array([float(2 * (n + 1)) for n in range(N - 1)])
+    w.setflags(write=False)
+    return w
+
+
 def _ncomp_shape(e: E.Expr) -> tuple[int, ...]:
     return tuple(cs.dim for cs in e.tensorsig)
 
@@ -77,6 +115,10 @@ class SpectralEvaluator:
                     "solvers refuse mapped intervals; TerrainSimulation has its own evaluator)")
         self.n_products = 0          # counters (explain/profiling)
         self.n_transforms = 0
+        # grids computed during one evaluate/evaluate_many call (CPU only): key = the coefficient
+        # array's memory (address, shape, strides, dtype) and rank; the array itself is kept in the
+        # entry, so its memory cannot be freed and reused by another array during the call
+        self._grid_memo: dict | None = None
 
     def explain(self) -> str:
         """Backend, bases with their dealiased grids, and the counters (every key object has one: this one, which evaluates F, had none)."""
@@ -132,14 +174,33 @@ class SpectralEvaluator:
         return tuple(comps) + tuple(grid)
 
     def to_grid(self, c: np.ndarray, rank: int) -> np.ndarray:
-        """Coefficients -> dealiased grid (size-1 axes stay constant)."""
+        """Coefficients -> dealiased grid (size-1 axes stay constant).
+
+        Inside one ``evaluate``/``evaluate_many`` call on the CPU, the grid of a coefficient array
+        is computed once: ``u`` in ``u·grad(u)`` and ``u·grad(T)`` is transformed once per right-
+        hand side instead of once per term. The same transform of the same memory gives
+        the same bits. The stored grid is made read-only, so a consumer that wrote into it would
+        fail loudly instead of changing another term."""
         g = self.xp.asarray(c)
+        memo = self._grid_memo
+        if memo is not None:
+            ai = g.__array_interface__
+            key = (ai["data"][0], g.shape, g.strides, g.dtype.str, rank)
+            hit = memo.get(key)
+            if hit is not None:
+                return hit[1]
+            src = g
         for i, b in enumerate(self.bases):
             ax = rank + i
             if b is not None and g.ndim > ax and g.shape[ax] == b.size:
                 g = (XT.backward(self.xp, g, b, axis=ax) if self._gpu
                      else T.backward(g, b, axis=ax, dealias=True))
                 self.n_transforms += 1
+        if memo is not None:
+            if g is src:                  # no transform (constant along every axis): a view, so
+                g = g.view()              # that the read-only flag does not reach the caller's array
+            g.setflags(write=False)
+            memo[key] = (src, g)
         return g
 
     def to_coeffs(self, g: np.ndarray, rank: int) -> np.ndarray:
@@ -168,7 +229,7 @@ class SpectralEvaluator:
             A = self._host(("diff", coord), b, coord, lambda r, e: r._diff(e, coord, 0))
             return self._apply_1d(("diff", coord), A, c, ax)
         N = b.size
-        c = np.moveaxis(c, ax, 0)
+        c = T._to_front(c, ax)
         fam = family_of(b)
         if fam is not None:            # Hermite / Laguerre / compound (discretize/families.py)
             out = fam.diff_coeffs(c)
@@ -184,14 +245,9 @@ class SpectralEvaluator:
             out[0::2] = -kk * ms
             out[1::2] = kk * cs
         else:  # Chebyshev: c'_{n} from the backward recurrence
-            out = np.zeros_like(c)
-            if N > 1:
-                out[N - 2] = 2 * (N - 1) * c[N - 1]
-                for n in range(N - 3, -1, -1):
-                    out[n] = out[n + 2] + 2 * (n + 1) * c[n + 1]
-                out[0] = out[0] / 2
+            out = _cheb_diff_recurrence(c)
             out = out * (2.0 / b.length)
-        return np.moveaxis(out, 0, ax)
+        return T._to_axis(out, ax)
 
     def _integrate(self, c: np.ndarray, coord, rank: int) -> np.ndarray:
         ax = self._axis(rank, coord)
@@ -238,6 +294,14 @@ class SpectralEvaluator:
     def evaluate(self, e: E.Expr, coeffs: Mapping[E.Field, np.ndarray],
                  params: Mapping[str, Any] | None = None) -> np.ndarray:
         """Coefficients of ``e`` (shape: components + one axis per coordinate)."""
+        return self.evaluate_many([e], coeffs, params)[0]
+
+    def evaluate_many(self, exprs, coeffs: Mapping[E.Field, np.ndarray],
+                      params: Mapping[str, Any] | None = None) -> list:
+        """Coefficients of each expression of ``exprs`` (``None`` entries give ``None``), with one
+        cache of sub-expressions and grids shared by all of them: a node or a grid common to two
+        right-hand sides is computed once. Each result is the one ``evaluate`` gives, bit for bit
+        (the same operations on the same data; tests/timestep/test_rhs_fast_paths.py)."""
         params = dict(params or {})
         cache: dict[E.Expr, np.ndarray] = {}
 
@@ -248,7 +312,14 @@ class SpectralEvaluator:
                 cache[x] = r
             return r
 
-        return ev(e)
+        outer = self._grid_memo is None and not self._gpu
+        if outer:
+            self._grid_memo = {}
+        try:
+            return [None if e is None else ev(e) for e in exprs]
+        finally:
+            if outer:
+                self._grid_memo = None
 
     def _is_scalar_const(self, x: E.Expr) -> bool:
         return (isinstance(x, (E.Parameter, E.Constant)) and x.rank == 0) or (
@@ -315,7 +386,9 @@ class SpectralEvaluator:
             dim = a.tensorsig[-1].dim
             out = 0
             for i in range(dim):
-                Ai = self.xp.take(ga, i, axis=a.rank - 1)
+                # component i along axis rank-1; on the CPU a view (take copies; same values)
+                Ai = (self.xp.take(ga, i, axis=a.rank - 1) if self._gpu
+                      else ga[(slice(None),) * (a.rank - 1) + (i,)])
                 out = out + self._outer_grid(Ai, a.rank - 1, gb[i], b.rank - 1)
             self.n_products += 1
             return self.to_coeffs(out, r)
@@ -385,7 +458,8 @@ class SpectralEvaluator:
             g = self.to_grid(self._full(ev(x.args[0]), x.args[0]), r)
             self.n_products += 1
             if E.is_user_function(x.func):
-                out = self.xp.asarray(x.numpy_func(g))   # the user's function (pointwise())
+                # the user's function (pointwise()), on a copy: the grid may be shared (to_grid)
+                out = self.xp.asarray(x.numpy_func(g.copy() if self._grid_memo is not None else g))
             else:
                 out = getattr(self.xp, x.numpy_func.__name__)(g)
             if not bool(self.xp.all(self.xp.isfinite(out))):

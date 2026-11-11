@@ -17,6 +17,7 @@
 #include "conatus/banded.hpp"
 #include "conatus/imex.hpp"
 #include "conatus/memory.hpp"
+#include "conatus/parallel.hpp"
 #ifdef CONATUS_WITH_CUDA
 #include "conatus/cuda.hpp"
 #endif
@@ -177,20 +178,32 @@ void bind_linalg(nb::module_& m, const char* suffix) {
             for (const auto& s : b.sys) k = std::max(k, s->ku());
             return k;
         })
-        .def("solve", [](const Batch& bt, Arr2<T> b, bool transpose) {
+        .def("solve", [](const Batch& bt, Arr2<T> b, bool transpose, int threads) {
             // b: (batch, n); every system must have the same n. transpose: A_k^T x = b_k
-            // (plain transpose, no conjugation; same factors, D8/).
+            // (plain transpose, no conjugation; same factors, D8/). threads > 1: the systems
+            // are split over that many threads with the GIL released; each system is solved by
+            // one thread with the serial arithmetic, so x does not depend on threads (bit for bit).
             size_t B = b.shape(0), n = b.shape(1);
             if (B != bt.sys.size()) throw std::invalid_argument("batch size mismatch");
+            for (size_t k = 0; k < B; ++k)
+                if (size_t(bt.sys[k]->n()) != n) throw std::invalid_argument("rhs length != n");
             auto x = new_array<T>({B, n});
             std::memcpy(x.data(), b.data(), sizeof(T) * B * n);
-            for (size_t k = 0; k < B; ++k) {
-                if (size_t(bt.sys[k]->n()) != n) throw std::invalid_argument("rhs length != n");
-                if (transpose) bt.sys[k]->solve_transpose(x.data() + k * n, 1);
-                else bt.sys[k]->solve(x.data() + k * n, 1);
+            T* xd = x.data();
+            // the lazily built transposed data is the only state a solve writes: built here, with
+            // the GIL held, so that the released section below only reads shared objects (two
+            // Python threads solving one batch at once would otherwise race on it)
+            if (transpose)
+                for (size_t k = 0; k < B; ++k) bt.sys[k]->prepare_transpose();
+            {
+                nb::gil_scoped_release unlocked;
+                conatus::parallel_for(B, threads, [&](size_t k) {
+                    if (transpose) bt.sys[k]->solve_transpose(xd + k * n, 1);
+                    else bt.sys[k]->solve(xd + k * n, 1);
+                });
             }
             return x;
-        }, nb::arg("b"), nb::arg("transpose") = false);
+        }, nb::arg("b"), nb::arg("transpose") = false, nb::arg("threads") = 1);
 
     // The Python callback F is owned by the bound object (ImexPy::py_rhs), not by the C++
     // std::function (which only borrows it): the type then exposes it to the garbage collector

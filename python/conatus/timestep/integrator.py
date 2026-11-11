@@ -340,12 +340,11 @@ class IVPSolver:
                     c = ev.evaluate(e, data, params)
                 out.append(None if c is None else ev._embed(c, eq.lhs.rank, shape))
             return self.system.gather_rhs(out)
-        for e, shape, eq in zip(self._rhs_exprs, self.system.eq_shapes, self.plan.problem.equations, strict=True):
-            if e is None:
-                out.append(None)
-                continue
-            c = ev.evaluate(e, data, params)
-            out.append(ev._embed(c, eq.lhs.rank, shape))
+        # one shared cache of sub-expressions and grids for all the equations (bit for bit the
+        # per-equation results)
+        for c, shape, eq in zip(ev.evaluate_many(self._rhs_exprs, data, params), self.system.eq_shapes,
+                                self.plan.problem.equations, strict=True):
+            out.append(None if c is None else ev._embed(c, eq.lhs.rank, shape))
         return self.system.gather_rhs(out)
 
     # ------------------------------------------------------------------ steps
@@ -1057,9 +1056,9 @@ class IVPSolver:
             from ..io.checkpoint import read_checkpoint
             meta, arrays = read_checkpoint(path)
         else:
-            with np.load(path) as d:
-                meta = json.loads(str(d["meta"]))
-                arrays = {k: d[k] for k in d.files if k != "meta"}
+            from ..io._h5 import npz_arrays
+            arrays = npz_arrays(path, "a checkpoint")       # pickled objects refused (R3)
+            meta = json.loads(str(arrays.pop("meta")))
         changed = compare_identity(meta, self, allow, "load_checkpoint", path)
         _check_version(meta, path)
         self._check_options(meta)

@@ -43,6 +43,7 @@ units
 
 timesteppers
 resolution
+benchmarks
 gpu
 diagnostics
 particles
@@ -59,6 +60,7 @@ notebook
 
 - {doc}`timesteppers`: `simulate`, the schemes, start-up, choosing `dt`.
 - {doc}`resolution`: spectral tails per unknown and direction, and how many modes you need.
+- {doc}`benchmarks`: the benchmark suite, threads, and the cost estimate before a run.
 - {doc}`gpu`: the same model on a GPU, and what runs there.
 - {doc}`diagnostics`: vorticity, vortex criteria, particles, dye and mixing.
 - {doc}`particles`: tracers and a dye inside a simulation (`sim.particles`, `m.dye`, `sim.dye`).

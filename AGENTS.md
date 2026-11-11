@@ -4,7 +4,7 @@ Conatus: spectral PDEs and dynamical systems on CPU and GPU (0.2; the API is you
 You write equations as on paper; Conatus discretises (Fourier/Chebyshev/curvilinear bases, taus
 placed for you), integrates, solves eigenproblems and finds structure (orbits, bifurcations, Floquet, optimal perturbations).
 Declare numerical choices explicitly. When a call lacks one, Conatus raises an error that says what to write.
-A few older inferences remain (the growth convention of an eigenvalue) and emit a `DefaultChoiceWarning`.
+A few older inferences remain (the meaning of a declared name `t`) and emit a `DefaultChoiceWarning`.
 
 ## 1. Install, verify, orient (machine-readable)
 
@@ -27,7 +27,7 @@ python -m conatus agent check run.py   # dry run (no solve): refusals + fix, mis
 - One word per notion: `steps` (number of time steps), `k` (a wavenumber keyword; a problem
   parameter keeps its literature name, e.g. `alpha` of Orr–Sommerfeld), `eta` (radius
   ratio), `n_modes`, `max_iterations`, `tol` (exceptions: the fields `ContinuationSettings(tolerance=, max_newton=)`, also read as `cfg.tol`, `cfg.max_iterations`);
-  former names warn (`conatus._deprecation.RENAMES`).
+  a former name is refused with an error that names the new one (`conatus._deprecation.VOCABULARY`).
 - Names below: `m` = `cn.Model`, `sim` = `cn.model.Simulation`, `lin` = `cn.model.Linearization`, `X` = `conatus.expert`.
 
 ## 3. Minimal working example (executed by the test suite)
@@ -80,7 +80,7 @@ T = md.at("T", z=np.linspace(-0.5, 0.5, 101))[0]     # walls included; row x = 0
 |---|---|
 | Geometries | `cn.Box(x=cn.periodic(L), z=cn.walls(a, b))`, `cn.Channel(Lx, Lz)`, `cn.Disk(R)`, `cn.Annulus(ri, ro)`, `cn.Pipe(R, L)` (= `cn.Cylinder`), `cn.TaylorCouette(ri, ro, L)`, `cn.Sphere(R)`, `cn.Ball(R)`, `cn.Shell(ri, ro)`, `cn.MappedBox(x=cn.periodic(L), z=cn.between(b, t))` (wavy walls, `b`/`t` numbers or `lambda x: ...`) |
 | Axes | `cn.periodic(L, complex=False)`, `cn.walls(a, b)`, `cn.walls(a, c, b)` (compound: its entry of `N` is a tuple `(N1, N2)`), `cn.walls(a, b, basis="sincos")`, `cn.half_line(0, scale=s)`, `cn.line(0, scale=s)` (`scale` required) |
-| Unknowns, data | `m.velocity("u")`, `m.pressure("p")` (also the pressure of a normal-mode model on one wall axis: `1j*k*p`, `dz(p)`), `m.scalar("T")`, `m.vector("B")`, `m.given(U=lambda y: ...)`, `m.eigenvalue("c", growth="imag")` (declare how a mode grows: `"real"` for exp(s t), `"imag"` for a phase speed; left out: v0.1 guesses from the name with a `DefaultChoiceWarning`), `m.define("L2(f) = ...")`, `m.function("g", f, derivative=df)` |
+| Unknowns, data | `m.velocity("u")`, `m.pressure("p")` (also the pressure of a normal-mode model on one wall axis: `1j*k*p`, `dz(p)`), `m.scalar("T")`, `m.vector("B")`, `m.given(U=lambda y: ...)`, `m.eigenvalue("c", growth="imag")` (declare how a mode grows: `"real"` for exp(s t), `"imag"` for a phase speed; left out: refused with `OptionError`), `m.define("L2(f) = ...")`, `m.function("g", f, derivative=df)` |
 | Equations | `m.equations("dt(u) + grad(p) - lap(u)/Re = -u·grad(u)", "div(u) = 0")`; ops `dt dx..dz grad div lap curl integ interp`, `·`/`@` dot; override split with `explicit(...)`/`implicit(...)`; `cross(ez, u)` (Cartesian frame e_x x e_y = e_z; with a constant vector on the left-hand side it is implicit, e.g. Coriolis `2*Om*cross(ez, u)`: stable at any dt but its waves are damped when |W| dt > 1 — `explain()` gives |W| dt, `UnderResolvedWarning` above 1); parse only: `cn.parse_equation`, `cn.parse_expr` |
 | Boundary conditions | `m.at("bottom", u=0, T=1)`, `m.at("walls", "v = 0", "dy(v) = 0")`, `m.at("top", u=cn.free_slip)`, `cn.no_slip`, `cn.navier_slip(l)`, time-dependent `m.at("top", u="cos(t)")`; force a tau target: `into=` |
 | Inspect before running | `m.explain(N)`, `m.compile(N)` (`.problem`, `.fields`, `.decisions()`), `m.discretize(N)` → `X.Plan` (`.explain()`, `.rank_report()`, `.check()`); same with `lin.compile(N)`, `lin.discretize(N, k=k)`, `lin.explain(N)`, `lin.group(plan, k)` |
@@ -133,6 +133,8 @@ T = md.at("T", z=np.linspace(-0.5, 0.5, 101))[0]     # walls included; row x = 0
    step growth, Krylov and iteration budgets, FD step) have declared defaults (`cn.tolerances.explain()`).
    Renamed arguments (`nmodes`/`k` → `n_modes`, `X0` → `x0`, `xatol` → `xtol`, `maxit` →
    `max_iterations`, `nsteps` → `steps`, `radius_ratio` → `eta`, ...) are refused since 0.3, and the message names the new one.
+   Any keyword a public call does not accept raises `cn.errors.ArgumentError` (`CN151`, also a `TypeError`),
+   whose message lists the accepted names and the closest ones.
    When the answer may not be the one you meant, Conatus emits a `cn.errors.CorrectnessWarning`
    (`DefaultChoiceWarning`, for example). Python shows these by default, unlike a
    `DeprecationWarning`. Treat one as an error and declare the choice it names.
@@ -170,7 +172,7 @@ T = md.at("T", z=np.linspace(-0.5, 0.5, 101))[0]     # walls included; row x = 0
     the local hub, shells larger than 64 × 48 × 48, 3-D channel and pipe
     orbits (`conatus.ecs.shooting.ShootingRPO`, `conatus.ecs.pipe.PipeTravellingWave`). First use warns `cn.errors.ExperimentalWarning`;
     say so in what you report. `X` exports documented names only: anything else is
-    `conatus.<module>.<name>` (`X.<name>` is refused, and the refusal names the module).
+    `conatus.<module>.<name>` (`X.<name>` raises `cn.errors.NameNotExportedError`, also an `AttributeError`, naming the module).
 
 ## 6. Driving a run live (Studio channel, JSON, no server needed on a cluster)
 

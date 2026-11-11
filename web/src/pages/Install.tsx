@@ -146,7 +146,8 @@ export default function Install() {
           <dd>NumPy ≥ 1.26, SciPy ≥ 1.11, SymPy ≥ 1.12, h5py ≥ 3.8, installed by pip; matplotlib ≥ 3.7 with the{" "}
             <code>tutorials</code> extra.</dd>
           <dt>Wheels</dt>
-          <dd>Linux x86-64 with glibc 2.28 or newer (RHEL 8, Ubuntu 20.04 and later). The CUDA wheel needs an NVIDIA driver
+          <dd>Linux x86-64 with glibc 2.17 or newer (tags manylinux_2_17 and manylinux_2_28); built and tested on glibc
+            2.28 (RHEL 8, Ubuntu 20.04 and later), older systems untested. The CUDA wheel needs an NVIDIA driver
             for CUDA 12.9 (≥ 575, or an older 12.x driver through minor-version compatibility); it pulls the CUDA runtime,
             cuFFT and cuBLAS as pip wheels (about 700 MB). Built for A100 (sm_80) and L40S (sm_89); beta.</dd>
           <dt>Build tools (from source)</dt>

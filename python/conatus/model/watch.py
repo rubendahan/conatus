@@ -210,7 +210,7 @@ class Watch:
                  checkpoint_dir: str | Path | None = None,
                  meta: Mapping[str, Any] | None = None, controls_every_s: float = 1.0,
                  settable: Mapping[str, Any] | None = None) -> None:
-        from ..telemetry import Telemetry, default_spool
+        from ..telemetry import Telemetry, default_spool, process_exit
         from ..telemetry.protocol import RUN_ID_RE
         # counts and wall times, never truncated or parsed (review of the inputs audit,
         # int(poll), int(max_px) truncated 10.5 to 10, float(film_mb) parsed text,
@@ -253,6 +253,9 @@ class Watch:
                     parameters={k: _plain(v) for k, v in comp.model.params.items()},
                     checkpoint_dir=str(self.checkpoint_dir))     # where checkpoint/fork write (the app says so)
         self.controls_every = float(controls_every_s)
+        # how the script ends decides the final state (hunt 5F, SF1); before the writer thread
+        # starts, so that nothing delays what the caller sees right after watch() returns
+        process_exit.install()
         self.tel = Telemetry(run_id, spool=spool, capacity=4096, scalar_interval=self.scalars_every,
                              control_interval=self.controls_every,
                              frame_interval=self.every, max_px=self.max_px,
@@ -273,7 +276,7 @@ class Watch:
             setters={"dt": self._set_dt} if "dt" in self.settable else None)
         self.closed = False
         ref = weakref.ref(self)
-        atexit.register(lambda: (lambda w: w.close() if w is not None else None)(ref()))
+        atexit.register(lambda: (lambda w: w._close_at_exit() if w is not None else None)(ref()))
 
     # ------------------------------------------------------------------ parsing
     def _parse_settable(self, settable: Mapping[str, Any] | None) -> dict[str, tuple[float, float]]:
@@ -613,6 +616,18 @@ class Watch:
         """The callback the simulation calls every ``poll`` steps (telemetry + Studio commands)."""
         self._solver = solver
         self._cb(solver)
+
+    def _close_at_exit(self) -> None:
+        """The ``atexit`` closer: the interpreter is ending, so how it ends is known. An uncaught
+        exception or a non-zero ``sys.exit`` outside ``sim.run`` (between two runs, in
+        post-processing) makes the run failed, not finished (hunt 5F, SF1). Only here: a
+        ``sys.exit`` caught inside a running process says nothing about a later close."""
+        from ..telemetry import process_exit
+        err = process_exit.outcome()
+        if err is not None and not getattr(self, "closed", True) and not self.tel.failed:
+            self.tel.log(f"the script ended with {type(err).__name__} outside run()", "error")
+            self.tel.fail(err)
+        self.close()
 
     def close(self) -> None:
         """Send the state at the end of the run, then the final status, and stop the telemetry

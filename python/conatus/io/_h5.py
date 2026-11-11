@@ -105,7 +105,40 @@ def refuse_indirect_storage(f: Any, p: Path | str, what: str = "this file") -> N
                     obj.is_virtual or obj.id.get_create_plist().get_external_count() > 0):
                 stored.append(prefix + name)
     walk(f, "")
+    from ..errors import UnsafeFileError
+    why = ("a file read by Conatus is data: it must not make the reader open other files "
+           "(SECURITY.md)")
     if links:
-        raise ValueError(f"{p}: links to other data refused in {what}: {links[:4]}")
+        raise UnsafeFileError(f"{p}: links to other data refused in {what}: {links[:4]}",
+                              why=why + "; external, soft and virtual links are refused",
+                              fix="copy the linked datasets into the file (h5py: f.copy, or "
+                                  "h5repack) and read that copy", doc=DOC)
     if stored:
-        raise ValueError(f"{p}: datasets stored in other files refused in {what}: {stored[:4]}")
+        raise UnsafeFileError(f"{p}: datasets stored in other files refused in {what}: "
+                              f"{stored[:4]}",
+                              why=why + "; external raw storage and virtual datasets are refused",
+                              fix="rewrite the datasets with ordinary storage (h5repack) and read "
+                                  "that copy", doc=DOC)
+
+
+def npz_arrays(path: Path | str, what: str) -> dict:
+    """{name: array} of a ``.npz`` file; an object array (pickled Python objects) is refused with
+    UnsafeFileError (NumPy's own refusal was a bare ValueError; hunt 5E, R3)."""
+    import numpy as np
+    out = {}
+    with np.load(path, allow_pickle=False) as d:
+        for k in d.files:
+            try:
+                out[k] = d[k]
+            except ValueError as err:
+                if "pickle" not in str(err):
+                    raise
+                from ..errors import UnsafeFileError
+                raise UnsafeFileError(f"{path}: array {k!r} holds pickled objects, refused in "
+                                      f"{what}",
+                                      why="unpickling runs code chosen by whoever wrote the file "
+                                          "(SECURITY.md)",
+                                      fix="save numeric arrays only (np.savez with numeric "
+                                          "dtypes), or write the checkpoint with sim.save",
+                                      doc=DOC) from None
+    return out

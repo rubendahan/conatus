@@ -2,6 +2,101 @@
 
 All notable changes to Conatus.
 
+## [0.4.0] - 2026-11-11
+
+Performance on one CPU node: a benchmark suite with oracle checks, threaded banded solves, a faster
+right-hand side, cost estimates before a run, and measured MPI scaling. The threaded solves and the
+right-hand side changes leave the result of a time step unchanged, bit for bit, at any number of
+threads (checked against 0.3.0 on the IVP cases of the suite). This release also carries the
+fixes planned for 0.3.2 (typed refusals of unknown keywords and unsafe files, run status at exit,
+record trust, Studio connection state).
+
+### Behaviour changes
+
+- `OMP_NUM_THREADS` (or `CONATUS_SOLVE_THREADS`, which takes precedence) now also sets the threads
+  of the CPU banded solves. Results do not change; time per step does.
+- An unknown or missing keyword in a public call raises `cn.errors.ArgumentError` (`CN151`), still a
+  `TypeError`. Code that matched the text of Python's `TypeError` sees a different message.
+- `conatus.expert.<name>` for a name it does not export raises `NameNotExportedError` (`CN231`), an
+  `AttributeError`.
+- The file readers refuse HDF5 links, external storage, virtual datasets and pickled `.npz` arrays
+  (`UnsafeFileError`, `CN171`, a `ValueError`).
+- A watched script that fails outside `sim.run`, or exits with `sys.exit(n)` and n != 0, is shown
+  `failed` instead of `finished`.
+- `run.reproduce(trust_record=True)` refuses a record that changed on disk since it was loaded.
+- A function given to `pointwise()` receives a copy of its grid values on the CPU.
+- `import conatus` takes about 38 ms instead of 15 ms on the benchmark node (the keyword guard is
+  installed at import).
+
+### Known limitations
+
+- A watched script ended by `SIGTERM`, or by `raise SystemExit(n)` written directly, is still shown
+  as it was last reported (`running` or `finished`).
+- Callable initial data given to the expert interface (`plan`, `IVPSolver.set_state`) are not checked
+  for periodicity; `sim.initial` is.
+- The solve thread rule and the cost-estimate coefficients were measured on one AMD EPYC 9654 node.
+
+### Added
+
+- A benchmark suite of nine fixed problems (IVPs in 1D, 2D and 3D with Fourier and Chebyshev
+  bases, an LBVP, dense and shift-invert eigenvalue problems, a continuation, Floquet exponents).
+  Each case checks its answer against an oracle in the same run and records wall time, time per
+  step, peak memory, threads, hardware and versions. See the Benchmarks guide page.
+- `conatus.cost.estimate`: predicted time per step, run time and memory of a CPU run before it
+  starts, from the discretised system, with the error measured on held-out resolutions.
+
+### Changed
+
+- The batched banded solves of a CPU time step can run on several threads
+  (`CONATUS_SOLVE_THREADS`, else `OMP_NUM_THREADS`, else one thread). The result is the same bit
+  for bit for any number of threads. The number of threads a solve uses follows a measured rule:
+  min(allowed, systems, √(unknowns / 900)), one thread below about 3600 unknowns.
+  `explain()` of a solver bucket states the threads a solve uses. The rule was measured on one
+  node type (AMD EPYC 9654).
+- A function given to `pointwise()` now receives a copy of its grid values on the CPU (the grid
+  of a field is now shared by the terms of one right-hand side). Writing into the argument has
+  no effect outside the function, as in 0.3.0.
+- A keyword that a public call does not accept raises `cn.errors.ArgumentError` (code `CN151`),
+  instead of Python's bare `TypeError`. It is an `OptionError` and a `TypeError`, so existing
+  `except` clauses still catch it. The message names the new name of a former keyword
+  (`sim.run(nsteps=)` says `steps`) and lists every accepted keyword. A missing required argument
+  raises the same error.
+- `m.eigenvalues(nmodes=)` suggests `n_modes`, and its list of options includes the method's own
+  keywords (`n_modes`, `drift`, `k`, `dealias`).
+- `conatus.expert.<name>` for a name it does not export raises `NameNotExportedError` (`CN231`, an
+  `AttributeError`) naming the module that defines it, for example `conatus.ecs.shooting.ShootingRPO`.
+- The loaders refuse HDF5 links, external storage, virtual datasets and pickled `.npz` arrays with
+  `UnsafeFileError` (`CN171`, a `ValueError`), in `restart`, `cn.io.read` and the other readers.
+  `m.linearize(about={"T": "-z"})` raises `InputTypeError` instead of an internal `TypeError`.
+
+### Fixed
+
+- `plan.resolution_report(...)` on a polar, spherical or mapped plan raised `AttributeError`. It
+  raises `UnsupportedError`, as the function form did. A mapped plan has `plan.rank_report()`
+  (refused, `plan.check()` reports its rank) and `plan.methods()`.
+- A watched script that raised between two `sim.run` calls or after the last one, or ended with
+  `sys.exit` and a non-zero code, was shown `finished` in the Studio, the agent API and the MCP
+  server. It is shown `failed`, with the exception type in the event log.
+- `run.reproduce(trust_record=True)` checks the registry root too, and runs only the record it has
+  just checked on disk: a record that changed since the run was loaded is refused.
+- When the link to the hub hangs without closing, the Studio page says within about 20 s that the
+  connection is lost and that the values shown are the last known ones. It used to keep showing
+  `running` and the last latency until the reconnection.
+- The event log no longer lists `kind`, `run_id` and `relay` as warnings on every run.
+- Every Studio screen shows bidirectional and control characters of server text as U+FFFD, the Board
+  included.
+- The install page says the wheels need glibc 2.17 or newer, which their tags and symbols show; it
+  said 2.28, the version they are built and tested on.
+
+### Performance
+
+- The CPU right-hand side evaluates all equations with one cache of sub-expressions and grids, and
+  avoids per-call overhead in the reference transforms and the Chebyshev derivative. The results
+  are the same bit for bit (tested on the bytes of F and on the state of the benchmark runs).
+- Against 0.3.0, three interleaved rounds on one node: 1.02 to
+  1.11 times faster per step on one thread and 1.04 to 1.72 times on 8 threads for the IVP cases of
+  the suite (largest: 3D Rayleigh-Benard 16 x 16 x 24 and 2D at 256 x 64), with identical states.
+
 ## [0.3.1] - 2026-11-11
 
 A correction release. The wrong results listed as known limitations of 0.3.0 are fixed or refused,

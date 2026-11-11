@@ -1,4 +1,4 @@
-# t01_orr_sommerfeld: PASS (exit 0) in 4.0 s | 2026-11-11 | script sha256 2f9874f5c6622a51
+# t01_orr_sommerfeld: PASS (exit 0) in 7.1 s | 2026-11-11 | script sha256 2f9874f5c6622a51
 Model 'Orr-Sommerfeld'
 Geometry: Box(y=walls(-1, 1)) (Cartesian box)
   bases (fixed per geometry, sizes given at discretization):

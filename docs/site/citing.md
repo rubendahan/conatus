@@ -8,7 +8,7 @@ If Conatus contributes to your work, please cite the software. The repository ca
   author  = {Dahan, Ruben},
   title   = {{Conatus: spectral PDEs and dynamical systems}},
   year    = {2026},
-  version = {0.3.1},
+  version = {0.4.0},
   license = {BSD-3-Clause},
   url     = {https://github.com/rubendahan/conatus},
 }

@@ -20,6 +20,8 @@ truncation *is* the dealiasing projection, and it is exact for coefficient data
 """
 from __future__ import annotations
 
+import functools
+
 import numpy as np
 import scipy.fft as sfft
 
@@ -47,6 +49,33 @@ def _check_even(b: Basis) -> None:
                                   "Nyquist mode N/2, which needs N even",
                               fix=f"an even size for {b.coord.name}, e.g. N = {b.size + 1} or "
                                   f"{b.size - 1}", doc="docs/site/guide/bases.md")
+
+
+@functools.lru_cache(maxsize=64)
+def _alt_sign(n: int) -> np.ndarray:
+    """(-1)^j, j < n, as floats (read-only, cached: built once per length instead of per call)."""
+    s = (-1.0) ** np.arange(n)
+    s.setflags(write=False)
+    return s
+
+
+def _to_front(a: np.ndarray, axis: int) -> np.ndarray:
+    """``np.moveaxis(a, axis, 0)`` for one valid axis: the same view, without the axis
+    normalisation of moveaxis, which was a tenth of a CPU time step at 64 x 32."""
+    if axis == 0:
+        return a
+    if axis < 0:
+        axis += a.ndim
+    return a.transpose((axis,) + tuple(i for i in range(a.ndim) if i != axis))
+
+
+def _to_axis(a: np.ndarray, axis: int) -> np.ndarray:
+    """``np.moveaxis(a, 0, axis)``: inverse of ``_to_front``."""
+    if axis == 0:
+        return a
+    if axis < 0:
+        axis += a.ndim
+    return a.transpose(tuple(range(1, axis + 1)) + (0,) + tuple(range(axis + 1, a.ndim)))
 
 
 def _family(b: Basis):
@@ -84,11 +113,11 @@ def forward(f: np.ndarray, b: Basis, axis: int = 0, dealias: bool = True) -> np.
         raise CoordinateError(f"expected {M} grid points along axis {axis}, got {f.shape[axis]}",
                               fix="grid values of the shape of the grid (a function of the "
                                   "coordinate grids returns arrays of their broadcast shape)")
-    f = np.moveaxis(f, axis, 0)
+    f = _to_front(f, axis)
     if isinstance(b, Chebyshev):
         y = sfft.dct(f, type=2, axis=0) / M
         y[0] /= 2
-        sign = (-1.0) ** np.arange(M)
+        sign = _alt_sign(M)
         c = (y * sign.reshape((M,) + (1,) * (f.ndim - 1)))[:N]
     elif isinstance(b, RealFourier):
         if np.iscomplexobj(f):
@@ -111,7 +140,7 @@ def forward(f: np.ndarray, b: Basis, axis: int = 0, dealias: bool = True) -> np.
         c[K + 1:] = F[M - K + 1:]
     else:
         raise NotImplementedError(f"reference transforms: {type(b).__name__} not supported yet")
-    return np.moveaxis(c, 0, axis)
+    return _to_axis(c, axis)
 
 
 def backward(c: np.ndarray, b: Basis, axis: int = 0, dealias: bool = True) -> np.ndarray:
@@ -124,14 +153,15 @@ def backward(c: np.ndarray, b: Basis, axis: int = 0, dealias: bool = True) -> np
     M, N = grid_size(b, dealias), b.size
     if c.shape[axis] != N:
         raise ValueError(f"expected {N} coefficients along axis {axis}, got {c.shape[axis]}")
-    c = np.moveaxis(c, axis, 0)
+    c = _to_front(c, axis)
     shape = (M,) + c.shape[1:]
     if isinstance(b, Chebyshev):
         y = np.zeros(shape, dtype=c.dtype)
-        sign = (-1.0) ** np.arange(N)
+        sign = _alt_sign(N)
         y[:N] = c * sign.reshape((N,) + (1,) * (c.ndim - 1))
         y[0] *= 2
-        f = sfft.idct(y * M, type=2, axis=0)
+        y *= M                    # in place: the values of y * M without a second array
+        f = sfft.idct(y, type=2, axis=0)
     elif isinstance(b, RealFourier):
         if np.iscomplexobj(c):
             # Complex coefficients on a real basis (complex LBVP / EVP solutions): transform Re and
@@ -143,13 +173,15 @@ def backward(c: np.ndarray, b: Basis, axis: int = 0, dealias: bool = True) -> np
         F = np.zeros((M // 2 + 1,) + c.shape[1:], dtype=complex)
         F[0] = c[0]
         F[1:K] = (c[2:N:2] + 1j * c[3:N:2]) / 2
-        f = np.fft.irfft(F * M, n=M, axis=0)
+        F *= M                    # in place: the values of F * M without a second array
+        f = np.fft.irfft(F, n=M, axis=0)
     elif isinstance(b, ComplexFourier):
         K = N // 2
         F = np.zeros(shape, dtype=complex)
         F[:K] = c[:K]
         F[M - K + 1:] = c[K + 1:]
-        f = np.fft.ifft(F * M, axis=0)
+        F *= M
+        f = np.fft.ifft(F, axis=0)
     else:
         raise NotImplementedError(f"reference transforms: {type(b).__name__} not supported yet")
-    return np.moveaxis(f, 0, axis)
+    return _to_axis(f, axis)

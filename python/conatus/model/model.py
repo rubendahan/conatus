@@ -224,18 +224,25 @@ _EIG_OPTIONS = ("method", "target", "left", "reduced", "spurious", "drift_tol", 
                 "ncc_tail_tol", "region")
 
 
-def check_call_options(model: Any, kw: dict, accepted: tuple, where: str) -> None:
+def check_call_options(model: Any, kw: dict, accepted: tuple, where: str,
+                       named: Any = None) -> None:
     """Refuse a keyword that is neither an option of ``where`` nor a declared parameter of the
-    model, with the close names (the same name in another case first: ``re`` -> ``Re``)."""
+    model, with the close names (the same name in another case first: ``re`` -> ``Re``; a former
+    name: its new one). ``named`` is the method whose own keyword arguments (``n_modes``,
+    ``drift``...) are accepted too and listed (hunt 5E, R1: ``eigenvalues(nmodes=)`` suggested
+    ``method`` and the list omitted ``n_modes``)."""
+    from .._keywords import keyword_hint, keyword_names
     params = list(getattr(model, "params", {}) or {})
+    own = [n for n in keyword_names(named) if n not in accepted] if named is not None else []
     bad = [n for n in kw if n not in accepted and n not in params]
     if bad:
-        choices = list(accepted) + params
-        raise OptionError(f"{where}(..., {bad[0]}=...): unknown keyword." + did_you_mean(bad[0], choices),
+        options = own + list(accepted)
+        choices = options + params
+        raise OptionError(f"{where}(..., {bad[0]}=...): unknown keyword." + keyword_hint(bad[0], choices),
                           why="a keyword is an option of the call or a declared parameter of the "
                               "model (names are case-sensitive)",
                           fix="declared parameters: " + (", ".join(params) or "none")
-                              + "; options: " + ", ".join(accepted), doc=_DOC)
+                              + "; options: " + ", ".join(options), doc=_DOC)
 
 
 def _fourier_coords(geo: Any) -> list[str]:
@@ -826,7 +833,7 @@ class Model:
         """``conatus.discretize`` of the compiled problem (expert: the Plan, its matrices); a
         keyword naming a declared parameter (``Re=3000``) is its value for this call only."""
         over = split_overrides(self, kw)
-        check_call_options(self, kw, _DISCRETIZE_OPTIONS, "discretize")   # audit inputs: bare TypeError
+        check_call_options(self, kw, _DISCRETIZE_OPTIONS, "discretize", Model.discretize)   # audit inputs: bare TypeError
         return self.compile(N, dealias, params=over).discretize(**kw)
 
     def explain(self, N: Any = None, dealias: Any = None, *, full: bool = False) -> str:
@@ -954,7 +961,7 @@ class Model:
         resolution ``N``: the ``LBVPSolution`` of ``discretize(N).solve()``, given fields as data
         (``sol.grid("u")``, ``sol.explain()`` with the residual of each group)."""
         over = split_overrides(self, kw)              # a declared parameter: this call only
-        check_call_options(self, kw, _DISCRETIZE_OPTIONS, "solve")   # audit inputs: bare TypeError
+        check_call_options(self, kw, _DISCRETIZE_OPTIONS, "solve", Model.solve)   # audit inputs: bare TypeError
         comp = self.compile(N, dealias, params=over)
         if comp.kind != "LBVP":
             raise OptionError(f"solve(): the model is an {comp.kind}, not a linear boundary-value "
@@ -1009,7 +1016,7 @@ class Model:
         if n_modes is not None and "n_modes" in params:
             kw["n_modes"], n_modes = n_modes, None
         check_call_options(self, kw, _EIG_OPTIONS + (("n",) if self.geometry.sincos_coord
-                                                     else ()), "eigenvalues")
+                                                     else ()), "eigenvalues", Model.eigenvalues)
         from ..solvers.plan_evp import check_eig_method   # before compiling (review, inputs)
         check_eig_method(kw.get("method"), kw.get("target"), kw.get("region"))
         dkw = ncc_options(kw)

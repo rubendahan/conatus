@@ -23,6 +23,10 @@ User lines = lines of code excluding docstrings, comments and blank lines (funct
 | 3D Rayleigh–Bénard (onset) | `convection/rayleigh_benard_3d.py` | Ra = 1707.76178 at \|k\| = 3.1163, isotropic to 1e-10 | Reid & Harris 1958 | 43 + 9 |
 | Phase-space geometry: slice, Poincaré section, connection | `manifolds/phase_space_geometry.py` | two-mode model: RPO "1" in the slice, T = 3.6415119771, θ = 0.0809697054; Lorenz homoclinic orbit as a connection, r = 13.9265574075 | Budanur, Borrero-Echeverry & Cvitanović (arXiv:1411.3303), Table I: 3.64151221; Sparrow 1982: 13.926 | 56 + 3 |
 
+The benchmark suite lives in `benchmarks/`: `cases.py` defines nine fixed problems, each checked
+against a closed form or a published value in the same run, and `suite.py` runs them at chosen
+thread counts and records time, memory, hardware and versions (guide page "Benchmarks").
+
 Writing the gallery found gaps in the library (`discretize` in `conatus.expert`, (U − c)·L,
 conj() on the left-hand side, the wavenumber as a parameter, √Ta declared, `critical()`
 start/xtol, double eigenvalues, the aliasing alert, periodic NLBVP, mapped domains). They are

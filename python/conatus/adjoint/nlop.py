@@ -361,11 +361,12 @@ class NLOPState:
         path = Path(path)
         if path.is_dir():
             path = path / "nlop_state.npz"
-        with np.load(path) as d:
-            meta = json.loads(str(d["meta"]))
-            return cls(u0=xp.asarray(d["u0"]), alpha=meta["alpha"], J=meta["J"], it=meta["it"],
-                       history=meta["history"], pending=meta.get("pending"),
-                       gt=xp.asarray(d["gt"]) if "gt" in d else None)
+        from ..io._h5 import npz_arrays
+        d = npz_arrays(path, "an NLOP state")             # pickled objects refused
+        meta = json.loads(str(d["meta"]))
+        return cls(u0=xp.asarray(d["u0"]), alpha=meta["alpha"], J=meta["J"], it=meta["it"],
+                   history=meta["history"], pending=meta.get("pending"),
+                   gt=xp.asarray(d["gt"]) if "gt" in d else None)
 
 
 class NLOP:
