@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.5.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -1196,6 +1196,201 @@ Legendre, Hermite, Laguerre and compound bases, curvilinear domains), any other 
 (for example the temperature advection of a Boussinesq problem), and symmetry subspaces. The
 grouped transforms take the poloidal-toroidal form on slab grids only.</p>
 </section>
+<section id="gpu">
+<h2>GPU<a class="headerlink" href="#gpu" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">benchmarks/suite/run_suite_gpu.py</span></code> runs the four initial-value cases above on the CPU and on one
+GPU. The problem, resolution, scheme, time step, oracle and tolerance are the case’s own; only the
+backend changes (<code class="docutils literal notranslate"><span class="pre">backend=&quot;cuda&quot;</span></code>, optionally <code class="docutils literal notranslate"><span class="pre">f_backend=&quot;fused&quot;</span></code>, or each timed block replayed with
+<code class="docutils literal notranslate"><span class="pre">sim.solver.run_graph(n)</span></code>). A GPU time is compared with a CPU time only when both runs pass the
+case’s oracle check and their errors agree to 5 % of the error. Time per step is the median 10-step
+block, the GPU synchronised before each block ends; each configuration ran in two interleaved rounds
+and the table gives the median of the rounds.</p>
+<p>Run <code class="docutils literal notranslate"><span class="pre">:</span> <span class="pre">one</span> <span class="pre">NVIDIA</span> <span class="pre">L40S</span> <span class="pre">(driver</span> <span class="pre">580.178.04)</span> <span class="pre">and</span> <span class="pre">4</span> <span class="pre">cores</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">same</span> <span class="pre">node</span> <span class="pre">(AMD</span> <span class="pre">EPYC</span> <span class="pre">9254),</span> <span class="pre">both</span> <span class="pre">CPU</span> <span class="pre">right-hand-side</span> <span class="pre">paths</span> <span class="pre">at</span> <span class="pre">4</span> <span class="pre">threads,</span> <span class="pre">the</span> <span class="pre">fastest</span> <span class="pre">kept.</span> <span class="pre">The</span> <span class="pre">genoa</span> <span class="pre">column</span> <span class="pre">is</span> <span class="pre">the</span> <span class="pre">fastest</span> <span class="pre">figure</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">same</span> <span class="pre">code</span> <span class="pre">on</span> <span class="pre">an</span> <span class="pre">AMD</span> <span class="pre">EPYC</span> <span class="pre">9654</span> <span class="pre">node</span> <span class="pre">at</span> <span class="pre">8</span> <span class="pre">threads,</span> <span class="pre">run</span> </code> (quiet node, two rounds); blank where that run did not have the case.
+ms per step:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Case</p></th>
+<th class="head"><p>Error (CPU; GPU)</p></th>
+<th class="head"><p>CPU, 4 cores of the GPU node</p></th>
+<th class="head"><p>CPU, EPYC 9654, 8 threads</p></th>
+<th class="head"><p>GPU, fastest path</p></th>
+<th class="head"><p>GPU speed-up (GPU node CPU; EPYC 9654)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ivp1d_burgers</span></code> N = 64</p></td>
+<td><p>1.375e-13; 1.390e-13</p></td>
+<td><p>0.396 (fused)</p></td>
+<td><p>0.48</p></td>
+<td><p>0.280 (graph)</p></td>
+<td><p>1.4; 1.7</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ivp1d_burgers</span></code> N = 1024</p></td>
+<td><p>1.385e-13; 1.400e-13</p></td>
+<td><p>0.699 (fused)</p></td>
+<td><p></p></td>
+<td><p>0.355 (graph)</p></td>
+<td><p>2.0;</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ivp2d_taylor_green</span></code> 64²</p></td>
+<td><p>3.401e-12; 3.408e-12</p></td>
+<td><p>4.33 (fused)</p></td>
+<td><p>5.33</p></td>
+<td><p>0.594 (graph)</p></td>
+<td><p>7.3; 9.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ivp2d_taylor_green</span></code> 256²</p></td>
+<td><p>3.401e-12; 3.408e-12</p></td>
+<td><p>77.4</p></td>
+<td><p>81.8</p></td>
+<td><p>1.49 (graph)</p></td>
+<td><p>52; 55</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ivp2d_rb</span></code> 64 × 32</p></td>
+<td><p>1.777e-6 (both)</p></td>
+<td><p>5.01 (fused)</p></td>
+<td><p>5.88</p></td>
+<td><p>0.438 (fused F)</p></td>
+<td><p>11; 13</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ivp2d_rb</span></code> 256 × 64</p></td>
+<td><p>1.282e-6 (both)</p></td>
+<td><p>32.7</p></td>
+<td><p>32.3</p></td>
+<td><p>0.697 (fused F)</p></td>
+<td><p>47; 46</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ivp3d_rb</span></code> 16 × 16 × 24</p></td>
+<td><p>2.107e-6 (both)</p></td>
+<td><p>36.5</p></td>
+<td><p>31.8</p></td>
+<td><p>2.25 (graph)</p></td>
+<td><p>16; 14</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ivp3d_rb</span></code> 32³</p></td>
+<td><p>1.777e-6 (both)</p></td>
+<td><p>193</p></td>
+<td><p></p></td>
+<td><p>5.28 (graph)</p></td>
+<td><p>37;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The errors of the two backends differ by at most 1.1 % of the error (Burgers, at round-off level)
+and by less than 2e-5 of it elsewhere. Without a fused right-hand side or a CUDA graph, a GPU step
+costs about 2 ms in 1D and 4 to 11 ms in 2D and 3D whatever the size: on the small cases the GPU is
+then slower than the CPU (Burgers 2.0 ms against 0.40 ms). A whole EPYC 9654 node scanned from 1 to
+96 threads is queued; a scan on a node shared with other jobs
+ran 1.5 to 1.9 times slower than the quiet-node figures above and
+is not used. In that scan no case gained more than 3 % beyond 8 threads.</p>
+<p><strong>Several GPUs.</strong> Plane channel, RK443, dt = 1e-3, <code class="docutils literal notranslate"><span class="pre">DistributedIVPSolver</span></code> on one node with three
+L40S. Before timing, the job compares the
+distributed results at 1, 2 and 3 ranks with the single-GPU <code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code> (largest difference
+7.4e-14) and with each other (bitwise equal). Efficiency is given against the plain single-GPU
+solver, then against the distributed solver on one GPU. ms per step:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Form, size</p></th>
+<th class="head"><p>one GPU, <code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code></p></th>
+<th class="head"><p>1 rank</p></th>
+<th class="head"><p>2 GPUs</p></th>
+<th class="head"><p>3 GPUs</p></th>
+<th class="head"><p>efficiency at 3 GPUs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>poloidal-toroidal, 64 × 65 × 64 per GPU</p></td>
+<td><p>6.93</p></td>
+<td><p>7.00</p></td>
+<td><p>9.24</p></td>
+<td><p>11.32</p></td>
+<td><p>61 %; 62 %</p></td>
+</tr>
+<tr class="row-odd"><td><p>poloidal-toroidal, 128 × 65 × 128</p></td>
+<td><p>27.75</p></td>
+<td><p>32.82</p></td>
+<td><p>17.69</p></td>
+<td><p>14.91</p></td>
+<td><p>62 %; 73 %</p></td>
+</tr>
+<tr class="row-even"><td><p>primitive, 64 × 65 × 64 per GPU</p></td>
+<td><p>25.10</p></td>
+<td><p>22.33</p></td>
+<td><p>25.41</p></td>
+<td><p>28.10</p></td>
+<td><p>89 %; 79 %</p></td>
+</tr>
+<tr class="row-odd"><td><p>primitive, 128 × 65 × 128</p></td>
+<td><p></p></td>
+<td><p>116.4</p></td>
+<td><p>57.5</p></td>
+<td><p>38.8</p></td>
+<td><p>; 100 %</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>With the fused products of 0.5 (same node type, same checks): poloidal-toroidal 128 × 65 × 128 at 3 GPUs 14.47 ms, 64 % of <code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code> (27.73 ms); primitive 128 × 65 × 128 at 3 GPUs 38.8 ms against 120.8 ms for <code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code>, 104 %.</p>
+<p>Across two nodes, two GPUs reach 67 % (64 × 65 × 64 per GPU) and 69 % (128 × 65 × 128) of the
+single-GPU solver for the poloidal-toroidal form. The
+exchange between nodes is limited by the node’s network path, about 18.7 GB/s.</p>
+<p>Eight L40S over four nodes (ranks 1, 3, 2, 2 per node; agreement checks in run
+<code class="docutils literal notranslate"><span class="pre">:</span> <span class="pre">378</span> <span class="pre">records</span> <span class="pre">at</span> <span class="pre">1</span> <span class="pre">to</span> <span class="pre">8</span> <span class="pre">ranks,</span> <span class="pre">largest</span> <span class="pre">difference</span> <span class="pre">from</span> <span class="pre">`IVPSolver`</span> <span class="pre">7.4e-14,</span> <span class="pre">bitwise</span> <span class="pre">equal</span> <span class="pre">across</span> <span class="pre">rank</span> <span class="pre">counts;</span> <span class="pre">timings</span> <span class="pre">in</span> <span class="pre">run</span> </code>). ms
+per step, efficiency at 8 GPUs against <code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code>, then against the distributed solver on one GPU:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Form, size</p></th>
+<th class="head"><p>one GPU, <code class="docutils literal notranslate"><span class="pre">IVPSolver</span></code></p></th>
+<th class="head"><p>1 rank</p></th>
+<th class="head"><p>2 GPUs</p></th>
+<th class="head"><p>4 GPUs</p></th>
+<th class="head"><p>8 GPUs</p></th>
+<th class="head"><p>efficiency at 8 GPUs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>poloidal-toroidal, 64 × 65 × 64 per GPU</p></td>
+<td><p>6.93</p></td>
+<td><p>6.74</p></td>
+<td><p>10.33</p></td>
+<td><p>12.16</p></td>
+<td><p>21.37</p></td>
+<td><p>32 %; 32 %</p></td>
+</tr>
+<tr class="row-odd"><td><p>poloidal-toroidal, 128 × 65 × 128</p></td>
+<td><p>27.76</p></td>
+<td><p>29.84</p></td>
+<td><p>19.11</p></td>
+<td><p>12.13</p></td>
+<td><p>11.73</p></td>
+<td><p>30 %; 32 %</p></td>
+</tr>
+<tr class="row-even"><td><p>primitive, 64 × 65 × 64 per GPU</p></td>
+<td><p>25.17</p></td>
+<td><p>22.33</p></td>
+<td><p>26.16</p></td>
+<td><p>28.27</p></td>
+<td><p>35.66</p></td>
+<td><p>71 %; 63 %</p></td>
+</tr>
+<tr class="row-odd"><td><p>primitive, 128 × 65 × 128</p></td>
+<td><p>120.75</p></td>
+<td><p>116.7</p></td>
+<td><p>58.7</p></td>
+<td><p>28.1</p></td>
+<td><p>17.3</p></td>
+<td><p>87 %; 85 %</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Here 2 and 4 GPUs are on 2 and 4 nodes. The poloidal-toroidal step spends most of its time in the
+exchange between nodes; the primitive form does more work per exchanged byte.</p>
+</section>
 </section>
 
         </article>
@@ -1260,6 +1455,7 @@ grouped transforms take the poloidal-toroidal form on slab grids only.</p>
 <li><a class="reference internal" href="#threads">Threads</a></li>
 <li><a class="reference internal" href="#cost-estimate-before-a-run">Cost estimate before a run</a></li>
 <li><a class="reference internal" href="#results">Results</a></li>
+<li><a class="reference internal" href="#gpu">GPU</a></li>
 </ul>
 </li>
 </ul>
@@ -1271,7 +1467,7 @@ grouped transforms take the poloidal-toroidal form on slab grids only.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6c02275b"></script>
+</div><script src="../_static/documentation_options.js?v=1dd76d02"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
