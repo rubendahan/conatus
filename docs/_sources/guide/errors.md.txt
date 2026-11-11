@@ -33,7 +33,9 @@ them: the base residual of a linearization, the group in a result's header, and 
 
 Resolution detections are `ResolutionWarning`, `UnderResolvedWarning`, `InitialDataWarning` and
 `IllPosedWarning`. A former spelling with the same meaning (a renamed argument) raises `OptionError`
-naming the new one since 0.3.
+naming the new one since 0.3. Any keyword that a public call does not accept raises
+`ArgumentError`, an `OptionError` that is also a `TypeError`: the message names the closest
+accepted keywords, the new name of a former one, and lists every accepted keyword.
 
 ## Catalogue
 

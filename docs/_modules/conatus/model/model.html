@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -276,6 +276,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/particles.html">Particles and dye of a simulation</a></li>
@@ -319,6 +320,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -565,6 +568,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -576,8 +580,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -911,18 +917,25 @@
                 <span class="s2">"ncc_tail_tol"</span><span class="p">,</span> <span class="s2">"region"</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">check_call_options</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">kw</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">accepted</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_call_options</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">kw</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">accepted</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">where</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">named</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Refuse a keyword that is neither an option of ``where`` nor a declared parameter of the</span>
-<span class="sd">    model, with the close names (the same name in another case first: ``re`` -&gt; ``Re``)."""</span>
+<span class="sd">    model, with the close names (the same name in another case first: ``re`` -&gt; ``Re``; a former</span>
+<span class="sd">    name: its new one). ``named`` is the method whose own keyword arguments (``n_modes``,</span>
+<span class="sd">    ``drift``...) are accepted too and listed (hunt 5E, R1: ``eigenvalues(nmodes=)`` suggested</span>
+<span class="sd">    ``method`` and the list omitted ``n_modes``)."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.._keywords</span><span class="w"> </span><span class="kn">import</span> <span class="n">keyword_hint</span><span class="p">,</span> <span class="n">keyword_names</span>
     <span class="n">params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"params"</span><span class="p">,</span> <span class="p">{})</span> <span class="ow">or</span> <span class="p">{})</span>
+    <span class="n">own</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">keyword_names</span><span class="p">(</span><span class="n">named</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accepted</span><span class="p">]</span> <span class="k">if</span> <span class="n">named</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
     <span class="n">bad</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">kw</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accepted</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">bad</span><span class="p">:</span>
-        <span class="n">choices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">accepted</span><span class="p">)</span> <span class="o">+</span> <span class="n">params</span>
-        <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">(..., </span><span class="si">{</span><span class="n">bad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">=...): unknown keyword."</span> <span class="o">+</span> <span class="n">did_you_mean</span><span class="p">(</span><span class="n">bad</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">choices</span><span class="p">),</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">own</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">accepted</span><span class="p">)</span>
+        <span class="n">choices</span> <span class="o">=</span> <span class="n">options</span> <span class="o">+</span> <span class="n">params</span>
+        <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">(..., </span><span class="si">{</span><span class="n">bad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">=...): unknown keyword."</span> <span class="o">+</span> <span class="n">keyword_hint</span><span class="p">(</span><span class="n">bad</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">choices</span><span class="p">),</span>
                           <span class="n">why</span><span class="o">=</span><span class="s2">"a keyword is an option of the call or a declared parameter of the "</span>
                               <span class="s2">"model (names are case-sensitive)"</span><span class="p">,</span>
                           <span class="n">fix</span><span class="o">=</span><span class="s2">"declared parameters: "</span> <span class="o">+</span> <span class="p">(</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"none"</span><span class="p">)</span>
-                              <span class="o">+</span> <span class="s2">"; options: "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">accepted</span><span class="p">),</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+                              <span class="o">+</span> <span class="s2">"; options: "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options</span><span class="p">),</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_fourier_coords</span><span class="p">(</span><span class="n">geo</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -1553,7 +1566,7 @@
 <span class="w">        </span><span class="sd">"""``conatus.discretize`` of the compiled problem (expert: the Plan, its matrices); a</span>
 <span class="sd">        keyword naming a declared parameter (``Re=3000``) is its value for this call only."""</span>
         <span class="n">over</span> <span class="o">=</span> <span class="n">split_overrides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kw</span><span class="p">)</span>
-        <span class="n">check_call_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">_DISCRETIZE_OPTIONS</span><span class="p">,</span> <span class="s2">"discretize"</span><span class="p">)</span>   <span class="c1"># audit inputs: bare TypeError</span>
+        <span class="n">check_call_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">_DISCRETIZE_OPTIONS</span><span class="p">,</span> <span class="s2">"discretize"</span><span class="p">,</span> <span class="n">Model</span><span class="o">.</span><span class="n">discretize</span><span class="p">)</span>   <span class="c1"># audit inputs: bare TypeError</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dealias</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">over</span><span class="p">)</span><span class="o">.</span><span class="n">discretize</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span></div>
 
 
@@ -1690,7 +1703,7 @@
 <span class="sd">        resolution ``N``: the ``LBVPSolution`` of ``discretize(N).solve()``, given fields as data</span>
 <span class="sd">        (``sol.grid("u")``, ``sol.explain()`` with the residual of each group)."""</span>
         <span class="n">over</span> <span class="o">=</span> <span class="n">split_overrides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kw</span><span class="p">)</span>              <span class="c1"># a declared parameter: this call only</span>
-        <span class="n">check_call_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">_DISCRETIZE_OPTIONS</span><span class="p">,</span> <span class="s2">"solve"</span><span class="p">)</span>   <span class="c1"># audit inputs: bare TypeError</span>
+        <span class="n">check_call_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">_DISCRETIZE_OPTIONS</span><span class="p">,</span> <span class="s2">"solve"</span><span class="p">,</span> <span class="n">Model</span><span class="o">.</span><span class="n">solve</span><span class="p">)</span>   <span class="c1"># audit inputs: bare TypeError</span>
         <span class="n">comp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dealias</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">over</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">comp</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s2">"LBVP"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"solve(): the model is an </span><span class="si">{</span><span class="n">comp</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2">, not a linear boundary-value "</span>
@@ -1751,7 +1764,7 @@
         <span class="k">if</span> <span class="n">n_modes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">"n_modes"</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
             <span class="n">kw</span><span class="p">[</span><span class="s2">"n_modes"</span><span class="p">],</span> <span class="n">n_modes</span> <span class="o">=</span> <span class="n">n_modes</span><span class="p">,</span> <span class="kc">None</span>
         <span class="n">check_call_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">_EIG_OPTIONS</span> <span class="o">+</span> <span class="p">((</span><span class="s2">"n"</span><span class="p">,)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">sincos_coord</span>
-                                                     <span class="k">else</span> <span class="p">()),</span> <span class="s2">"eigenvalues"</span><span class="p">)</span>
+                                                     <span class="k">else</span> <span class="p">()),</span> <span class="s2">"eigenvalues"</span><span class="p">,</span> <span class="n">Model</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">)</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..solvers.plan_evp</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_eig_method</span>   <span class="c1"># before compiling (review, inputs)</span>
         <span class="n">check_eig_method</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"method"</span><span class="p">),</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"target"</span><span class="p">),</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"region"</span><span class="p">))</span>
         <span class="n">dkw</span> <span class="o">=</span> <span class="n">ncc_options</span><span class="p">(</span><span class="n">kw</span><span class="p">)</span>
@@ -1876,7 +1889,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

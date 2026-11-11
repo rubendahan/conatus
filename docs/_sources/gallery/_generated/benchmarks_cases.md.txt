@@ -1,0 +1,26 @@
+# Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)
+
+*Family:* `benchmarks` · *Script:* `examples/benchmarks/cases.py`
+
+```text
+Every case is a function ``case(size) -> dict`` that builds the problem with the public API, times
+its phases with ``time.perf_counter`` and returns:
+
+* ``timings``: ``setup_s`` (model, discretisation, factorisations, first step), ``run_s`` (the
+  measured part) and, for an initial-value problem, ``steps`` and ``s_per_step`` (median over
+  blocks of ``BLOCK`` steps, each block one ``sim.run(steps=BLOCK)`` call, so the per-call cost of
+  ``run`` is included as a user pays it) with ``s_per_step_min`` and ``s_per_step_mean``;
+* ``accuracy``: ``quantity``, ``value``, ``oracle``, ``error``, ``tolerance`` and ``passed``
+  (``error <= tolerance``); the tolerance is written here, before any run, from the expected
+  discretisation error, never fitted to a measured error;
+* ``problem``: resolution, scheme, time step and what is computed.
+
+``SIZES[name]`` lists the sizes a case accepts; ``"default"`` is what the suite runs.
+```
+
+Run it: `python examples/benchmarks/cases.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/benchmarks/cases.py
+:language: python
+:linenos:
+```

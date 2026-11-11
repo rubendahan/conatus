@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -277,6 +277,7 @@
 <li class="toctree-l2"><a class="reference internal" href="units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="particles.html">Particles and dye of a simulation</a></li>
@@ -320,6 +321,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -566,6 +569,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -577,8 +581,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -729,7 +735,9 @@ them: the base residual of a linearization, the group in a result’s header, an
 </div>
 <p>Resolution detections are <code class="docutils literal notranslate"><span class="pre">ResolutionWarning</span></code>, <code class="docutils literal notranslate"><span class="pre">UnderResolvedWarning</span></code>, <code class="docutils literal notranslate"><span class="pre">InitialDataWarning</span></code> and
 <code class="docutils literal notranslate"><span class="pre">IllPosedWarning</span></code>. A former spelling with the same meaning (a renamed argument) raises <code class="docutils literal notranslate"><span class="pre">OptionError</span></code>
-naming the new one since 0.3.</p>
+naming the new one since 0.3. Any keyword that a public call does not accept raises
+<code class="docutils literal notranslate"><span class="pre">ArgumentError</span></code>, an <code class="docutils literal notranslate"><span class="pre">OptionError</span></code> that is also a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>: the message names the closest
+accepted keywords, the new name of a former one, and lists every accepted keyword.</p>
 </section>
 <section id="catalogue">
 <h2>Catalogue<a class="headerlink" href="#catalogue" title="Link to this heading">¶</a></h2>
@@ -827,6 +835,16 @@ character offset) locate the problem; the message shows the text with a caret.
 <h3>OptionError<a class="headerlink" href="#optionerror" title="Link to this heading">¶</a></h3>
 <p><em>Derives from</em> <code class="docutils literal notranslate"><span class="pre">ConatusError</span></code>, <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>An option has an invalid value (scheme, backend, method...); close names are suggested.
+</pre></div>
+</div>
+</section>
+<section id="argumenterror">
+<h3>ArgumentError<a class="headerlink" href="#argumenterror" title="Link to this heading">¶</a></h3>
+<p><em>Derives from</em> <code class="docutils literal notranslate"><span class="pre">OptionError</span></code>, <code class="docutils literal notranslate"><span class="pre">TypeError</span></code></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>The arguments of a call do not match its signature: an unknown keyword (a former name
+included), a missing required argument, too many positional arguments. The message lists the
+accepted names and the closest ones. Derives from ``TypeError``, the error Python raises for the
+same mistake, and from :class:`OptionError` (``conatus._keywords``).
 </pre></div>
 </div>
 </section>
@@ -937,6 +955,15 @@ resolution (sampled on twice the grid) lies between ``INITIAL_TAIL_TOL`` and the
 </pre></div>
 </div>
 </section>
+<section id="unsafefileerror">
+<h3>UnsafeFileError<a class="headerlink" href="#unsafefileerror" title="Link to this heading">¶</a></h3>
+<p><em>Derives from</em> <code class="docutils literal notranslate"><span class="pre">ConatusError</span></code>, <code class="docutils literal notranslate"><span class="pre">ValueError</span></code></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>A file to read holds something the loaders refuse: an HDF5 external, soft or virtual link,
+a dataset in external storage, or pickled objects in a ``.npz`` (SECURITY.md). Derives from
+``ValueError``, which these refusals raised before 0.3.2.
+</pre></div>
+</div>
+</section>
 <section id="unsupportederror">
 <h3>UnsupportedError<a class="headerlink" href="#unsupportederror" title="Link to this heading">¶</a></h3>
 <p><em>Derives from</em> <code class="docutils literal notranslate"><span class="pre">ConatusError</span></code>, <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code></p>
@@ -951,6 +978,15 @@ resolution (sampled on twice the grid) lies between ``INITIAL_TAIL_TOL`` and the
 
 Derives from ``AttributeError`` because it is raised by a module attribute lookup
 (``conatus.expert.record``), so ``hasattr`` and introspection keep their protocol.
+</pre></div>
+</div>
+</section>
+<section id="namenotexportederror">
+<h3>NameNotExportedError<a class="headerlink" href="#namenotexportederror" title="Link to this heading">¶</a></h3>
+<p><em>Derives from</em> <code class="docutils literal notranslate"><span class="pre">ConatusError</span></code>, <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>``conatus.expert`` does not export this name. The message names the module that defines it
+when one does, or the closest exported names. Derives from ``AttributeError`` so that
+``hasattr`` keeps working.
 </pre></div>
 </div>
 </section>
@@ -1092,6 +1128,7 @@ with ``warnings.filterwarnings("ignore", category=cn.errors.ExperimentalWarning)
 <li><a class="reference internal" href="#resolutionerror">ResolutionError</a></li>
 <li><a class="reference internal" href="#coordinateerror">CoordinateError</a></li>
 <li><a class="reference internal" href="#optionerror">OptionError</a></li>
+<li><a class="reference internal" href="#argumenterror">ArgumentError</a></li>
 <li><a class="reference internal" href="#symmetryerror">SymmetryError</a></li>
 <li><a class="reference internal" href="#symmetrybreakingerror">SymmetryBreakingError</a></li>
 <li><a class="reference internal" href="#inputtypeerror">InputTypeError</a></li>
@@ -1106,8 +1143,10 @@ with ``warnings.filterwarnings("ignore", category=cn.errors.ExperimentalWarning)
 <li><a class="reference internal" href="#backenderror">BackendError</a></li>
 <li><a class="reference internal" href="#missingdependencyerror">MissingDependencyError</a></li>
 <li><a class="reference internal" href="#missingfileerror">MissingFileError</a></li>
+<li><a class="reference internal" href="#unsafefileerror">UnsafeFileError</a></li>
 <li><a class="reference internal" href="#unsupportederror">UnsupportedError</a></li>
 <li><a class="reference internal" href="#ambiguousnameerror">AmbiguousNameError</a></li>
+<li><a class="reference internal" href="#namenotexportederror">NameNotExportedError</a></li>
 <li><a class="reference internal" href="#resolutionwarning">ResolutionWarning</a></li>
 <li><a class="reference internal" href="#correctnesswarning">CorrectnessWarning</a></li>
 <li><a class="reference internal" href="#basestatewarning">BaseStateWarning</a></li>
@@ -1127,7 +1166,7 @@ with ``warnings.filterwarnings("ignore", category=cn.errors.ExperimentalWarning)
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

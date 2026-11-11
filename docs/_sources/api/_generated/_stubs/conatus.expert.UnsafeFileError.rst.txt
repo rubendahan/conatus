@@ -1,0 +1,6 @@
+﻿conatus.expert.UnsafeFileError
+==============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: UnsafeFileError

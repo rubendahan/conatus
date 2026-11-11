@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -276,6 +276,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/particles.html">Particles and dye of a simulation</a></li>
@@ -319,6 +320,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -565,6 +568,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -576,8 +580,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -909,7 +915,7 @@
                  <span class="n">checkpoint_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">meta</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">controls_every_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
                  <span class="n">settable</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">..telemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Telemetry</span><span class="p">,</span> <span class="n">default_spool</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..telemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Telemetry</span><span class="p">,</span> <span class="n">default_spool</span><span class="p">,</span> <span class="n">process_exit</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..telemetry.protocol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RUN_ID_RE</span>
         <span class="c1"># counts and wall times, never truncated or parsed (review of the inputs audit,</span>
         <span class="c1"># int(poll), int(max_px) truncated 10.5 to 10, float(film_mb) parsed text,</span>
@@ -952,6 +958,9 @@
                     <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_plain</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">comp</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
                     <span class="n">checkpoint_dir</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">checkpoint_dir</span><span class="p">))</span>     <span class="c1"># where checkpoint/fork write (the app says so)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controls_every</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">controls_every_s</span><span class="p">)</span>
+        <span class="c1"># how the script ends decides the final state (hunt 5F, SF1); before the writer thread</span>
+        <span class="c1"># starts, so that nothing delays what the caller sees right after watch() returns</span>
+        <span class="n">process_exit</span><span class="o">.</span><span class="n">install</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tel</span> <span class="o">=</span> <span class="n">Telemetry</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">spool</span><span class="o">=</span><span class="n">spool</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span> <span class="n">scalar_interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scalars_every</span><span class="p">,</span>
                              <span class="n">control_interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controls_every</span><span class="p">,</span>
                              <span class="n">frame_interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">every</span><span class="p">,</span> <span class="n">max_px</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_px</span><span class="p">,</span>
@@ -972,7 +981,7 @@
             <span class="n">setters</span><span class="o">=</span><span class="p">{</span><span class="s2">"dt"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_dt</span><span class="p">}</span> <span class="k">if</span> <span class="s2">"dt"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settable</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">ref</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">w</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)(</span><span class="n">ref</span><span class="p">()))</span>
+        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">w</span><span class="o">.</span><span class="n">_close_at_exit</span><span class="p">()</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)(</span><span class="n">ref</span><span class="p">()))</span>
 
     <span class="c1"># ------------------------------------------------------------------ parsing</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_settable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settable</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
@@ -1313,6 +1322,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_solver</span> <span class="o">=</span> <span class="n">solver</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cb</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_close_at_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The ``atexit`` closer: the interpreter is ending, so how it ends is known. An uncaught</span>
+<span class="sd">        exception or a non-zero ``sys.exit`` outside ``sim.run`` (between two runs, in</span>
+<span class="sd">        post-processing) makes the run failed, not finished (hunt 5F, SF1). Only here: a</span>
+<span class="sd">        ``sys.exit`` caught inside a running process says nothing about a later close."""</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..telemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">process_exit</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">process_exit</span><span class="o">.</span><span class="n">outcome</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"closed"</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tel</span><span class="o">.</span><span class="n">failed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tel</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">"the script ended with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> outside run()"</span><span class="p">,</span> <span class="s2">"error"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tel</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Send the state at the end of the run, then the final status, and stop the telemetry</span>
 <span class="sd">        writer (idempotent). Without this last sample the throttles left the stored statistics</span>
@@ -1412,7 +1433,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

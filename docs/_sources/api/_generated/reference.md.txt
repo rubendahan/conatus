@@ -396,6 +396,7 @@ Public exception hierarchy of Conatus.
    ResolutionError
    CoordinateError
    OptionError
+   ArgumentError
    InputTypeError
    DtypeError
    TensorError
@@ -407,8 +408,10 @@ Public exception hierarchy of Conatus.
    BackendError
    MissingDependencyError
    MissingFileError
+   UnsafeFileError
    UnsupportedError
    AmbiguousNameError
+   NameNotExportedError
    ResolutionWarning
    CorrectnessWarning
    BaseStateWarning

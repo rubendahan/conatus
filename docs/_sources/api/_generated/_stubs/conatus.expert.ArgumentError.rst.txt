@@ -1,0 +1,6 @@
+﻿conatus.expert.ArgumentError
+============================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: ArgumentError

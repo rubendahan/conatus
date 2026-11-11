@@ -234,7 +234,7 @@
   <a href="./../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="./../install/" data-cn-route="/install">Install</a>
   <a href="./../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -275,6 +275,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide/units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/particles.html">Particles and dye of a simulation</a></li>
@@ -318,6 +319,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -564,6 +567,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -575,8 +579,10 @@
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -712,15 +718,17 @@
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.DMD.html#conatus.expert.DMD.amplitude_policy">amplitude_policy (conatus.expert.DMD attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/_generated/_stubs/conatus.expert.DMD.html#conatus.expert.DMD.amplitudes">amplitudes (conatus.expert.DMD attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/_generated/_stubs/conatus.expert.FirstFourierModeSlice.html#conatus.expert.FirstFourierModeSlice.angle">angle() (conatus.expert.FirstFourierModeSlice method)</a>
 </li>
         <li><a href="api/_generated/user/conatus.Annulus.html#conatus.Annulus">Annulus (class in conatus)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.AnnulusBasis.html#conatus.expert.AnnulusBasis">AnnulusBasis (class in conatus.expert)</a>
+</li>
+        <li><a href="api/_generated/_stubs/conatus.expert.ArgumentError.html#conatus.expert.ArgumentError">ArgumentError</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.ConatusError.html#conatus.expert.ConatusError.as_dict">as_dict() (conatus.expert.ConatusError method)</a>
 </li>
@@ -1165,6 +1173,8 @@
         <li><a href="api/_generated/_stubs/conatus.expert.AmbiguousNameError.html#conatus.expert.AmbiguousNameError.doc">doc (conatus.expert.AmbiguousNameError attribute)</a>
 
         <ul>
+          <li><a href="api/_generated/_stubs/conatus.expert.ArgumentError.html#conatus.expert.ArgumentError.doc">(conatus.expert.ArgumentError attribute)</a>
+</li>
           <li><a href="api/_generated/_stubs/conatus.expert.BackendError.html#conatus.expert.BackendError.doc">(conatus.expert.BackendError attribute)</a>
 </li>
           <li><a href="api/_generated/_stubs/conatus.expert.BoundaryConditionError.html#conatus.expert.BoundaryConditionError.doc">(conatus.expert.BoundaryConditionError attribute)</a>
@@ -1189,6 +1199,8 @@
 </li>
           <li><a href="api/_generated/_stubs/conatus.expert.MissingFileError.html#conatus.expert.MissingFileError.doc">(conatus.expert.MissingFileError attribute)</a>
 </li>
+          <li><a href="api/_generated/_stubs/conatus.expert.NameNotExportedError.html#conatus.expert.NameNotExportedError.doc">(conatus.expert.NameNotExportedError attribute)</a>
+</li>
           <li><a href="api/_generated/_stubs/conatus.expert.NewtonNotConverged.html#conatus.expert.NewtonNotConverged.doc">(conatus.expert.NewtonNotConverged attribute)</a>
 </li>
           <li><a href="api/_generated/_stubs/conatus.expert.NonlinearLHSError.html#conatus.expert.NonlinearLHSError.doc">(conatus.expert.NonlinearLHSError attribute)</a>
@@ -1212,6 +1224,8 @@
           <li><a href="api/_generated/_stubs/conatus.expert.TensorError.html#conatus.expert.TensorError.doc">(conatus.expert.TensorError attribute)</a>
 </li>
           <li><a href="api/_generated/_stubs/conatus.expert.UndeclaredVariableError.html#conatus.expert.UndeclaredVariableError.doc">(conatus.expert.UndeclaredVariableError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.UnsafeFileError.html#conatus.expert.UnsafeFileError.doc">(conatus.expert.UnsafeFileError attribute)</a>
 </li>
           <li><a href="api/_generated/_stubs/conatus.expert.UnsupportedError.html#conatus.expert.UnsupportedError.doc">(conatus.expert.UnsupportedError attribute)</a>
 </li>
@@ -1328,11 +1342,7 @@
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.RankReport.html#conatus.expert.RankReport.equation_components">equation_components (conatus.expert.RankReport attribute)</a>
 </li>
-        <li><a href="api/_generated/_stubs/conatus.expert.Problem.html#conatus.expert.Problem.equation_parities">equation_parities (conatus.expert.Problem attribute)</a>
-</li>
         <li><a href="api/_generated/_stubs/conatus.expert.EquationError.html#conatus.expert.EquationError">EquationError</a>
-</li>
-        <li><a href="api/_generated/_stubs/conatus.expert.Problem.html#conatus.expert.Problem.equations">equations (conatus.expert.Problem attribute)</a>
 </li>
         <li><a href="api/_generated/user/conatus.Model.html#conatus.Model.equations">equations() (conatus.Model method)</a>
 </li>
@@ -1351,6 +1361,8 @@
         <li><a href="api/_generated/_stubs/conatus.expert.AmbiguousNameError.html#conatus.expert.AmbiguousNameError.error_code">error_code (conatus.expert.AmbiguousNameError attribute)</a>
 
         <ul>
+          <li><a href="api/_generated/_stubs/conatus.expert.ArgumentError.html#conatus.expert.ArgumentError.error_code">(conatus.expert.ArgumentError attribute)</a>
+</li>
           <li><a href="api/_generated/_stubs/conatus.expert.BackendError.html#conatus.expert.BackendError.error_code">(conatus.expert.BackendError attribute)</a>
 </li>
           <li><a href="api/_generated/_stubs/conatus.expert.BoundaryConditionError.html#conatus.expert.BoundaryConditionError.error_code">(conatus.expert.BoundaryConditionError attribute)</a>
@@ -1375,6 +1387,8 @@
 </li>
           <li><a href="api/_generated/_stubs/conatus.expert.MissingFileError.html#conatus.expert.MissingFileError.error_code">(conatus.expert.MissingFileError attribute)</a>
 </li>
+          <li><a href="api/_generated/_stubs/conatus.expert.NameNotExportedError.html#conatus.expert.NameNotExportedError.error_code">(conatus.expert.NameNotExportedError attribute)</a>
+</li>
           <li><a href="api/_generated/_stubs/conatus.expert.NewtonNotConverged.html#conatus.expert.NewtonNotConverged.error_code">(conatus.expert.NewtonNotConverged attribute)</a>
 </li>
           <li><a href="api/_generated/_stubs/conatus.expert.NonlinearLHSError.html#conatus.expert.NonlinearLHSError.error_code">(conatus.expert.NonlinearLHSError attribute)</a>
@@ -1398,6 +1412,8 @@
           <li><a href="api/_generated/_stubs/conatus.expert.TensorError.html#conatus.expert.TensorError.error_code">(conatus.expert.TensorError attribute)</a>
 </li>
           <li><a href="api/_generated/_stubs/conatus.expert.UndeclaredVariableError.html#conatus.expert.UndeclaredVariableError.error_code">(conatus.expert.UndeclaredVariableError attribute)</a>
+</li>
+          <li><a href="api/_generated/_stubs/conatus.expert.UnsafeFileError.html#conatus.expert.UnsafeFileError.error_code">(conatus.expert.UnsafeFileError attribute)</a>
 </li>
           <li><a href="api/_generated/_stubs/conatus.expert.UnsupportedError.html#conatus.expert.UnsupportedError.error_code">(conatus.expert.UnsupportedError attribute)</a>
 </li>
@@ -1424,10 +1440,10 @@
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.EVP.html#conatus.expert.EVP">EVP (class in conatus.expert)</a>
 </li>
-        <li><a href="api/_generated/_stubs/conatus.expert.EVPResult.html#conatus.expert.EVPResult">EVPResult (class in conatus.expert)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/_generated/_stubs/conatus.expert.EVPResult.html#conatus.expert.EVPResult">EVPResult (class in conatus.expert)</a>
+</li>
         <li><a href="api/_generated/_stubs/conatus.expert.exp.html#conatus.expert.exp">exp() (in module conatus.expert)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.ExperimentalWarning.html#conatus.expert.ExperimentalWarning">ExperimentalWarning</a>
@@ -2262,6 +2278,8 @@
           <li><a href="api/_generated/user/conatus.runs.Run.html#conatus.runs.Run.name">(conatus.runs.Run property)</a>, <a href="guide/runs.html#conatus.runs.Run.name">[1]</a>
 </li>
         </ul></li>
+        <li><a href="api/_generated/_stubs/conatus.expert.NameNotExportedError.html#conatus.expert.NameNotExportedError">NameNotExportedError</a>
+</li>
         <li><a href="api/_generated/user/conatus.navier_slip.html#conatus.navier_slip">navier_slip() (in module conatus)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.SPOD.html#conatus.expert.SPOD.nblocks">nblocks (conatus.expert.SPOD attribute)</a>
@@ -2639,8 +2657,6 @@
         <li><a href="api/_generated/_stubs/conatus.expert.FirstFourierModeSlice.html#conatus.expert.FirstFourierModeSlice.reduce_trajectory">reduce_trajectory() (conatus.expert.FirstFourierModeSlice method)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.LBVPSolution.html#conatus.expert.LBVPSolution.reduced">reduced (conatus.expert.LBVPSolution attribute)</a>
-</li>
-        <li><a href="api/_generated/_stubs/conatus.expert.Problem.html#conatus.expert.Problem.redundant_bcs">redundant_bcs (conatus.expert.Problem attribute)</a>
 </li>
         <li><a href="api/_generated/user/conatus.contour.CountResult.html#conatus.contour.CountResult.reference">reference (conatus.contour.CountResult attribute)</a>
 
@@ -3140,10 +3156,10 @@
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.Domain.html#conatus.expert.Domain.union">union() (conatus.expert.Domain static method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/_generated/_stubs/conatus.expert.unit_vector.html#conatus.expert.unit_vector">unit_vector() (in module conatus.expert)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/_generated/_stubs/conatus.expert.UnitSystem.html#conatus.expert.UnitSystem">UnitSystem (class in conatus.expert)</a>
 </li>
         <li><a href="api/_generated/user/conatus.model.Compiled.html#conatus.model.Compiled.unknown_degree">unknown_degree (conatus.model.Compiled attribute)</a>
@@ -3158,6 +3174,8 @@
           <li><a href="api/_generated/_stubs/conatus.expert.EVPResult.html#conatus.expert.EVPResult.unresolved_note">(conatus.expert.EVPResult attribute)</a>
 </li>
         </ul></li>
+        <li><a href="api/_generated/_stubs/conatus.expert.UnsafeFileError.html#conatus.expert.UnsafeFileError">UnsafeFileError</a>
+</li>
         <li><a href="api/_generated/_stubs/conatus.expert.unstable_manifold.html#conatus.expert.unstable_manifold">unstable_manifold() (in module conatus.expert)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.UnsupportedError.html#conatus.expert.UnsupportedError">UnsupportedError</a>
@@ -3194,16 +3212,14 @@
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.RankReport.html#conatus.expert.RankReport.variable_components">variable_components (conatus.expert.RankReport attribute)</a>
 </li>
-        <li><a href="api/_generated/_stubs/conatus.expert.Problem.html#conatus.expert.Problem.variables">variables (conatus.expert.Problem attribute)</a>
-</li>
         <li><a href="api/_generated/user/conatus.Model.html#conatus.Model.vector">vector() (conatus.Model method)</a>
 </li>
         <li><a href="api/_generated/_stubs/conatus.expert.NLBVPContinuation.html#conatus.expert.NLBVPContinuation.vector_of">vector_of() (conatus.expert.NLBVPContinuation method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/_generated/_stubs/conatus.expert.VectorField.html#conatus.expert.VectorField">VectorField() (in module conatus.expert)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/_generated/user/conatus.contour.BeynResult.html#conatus.contour.BeynResult.vectors">vectors (conatus.contour.BeynResult attribute)</a>
 
         <ul>
@@ -3320,7 +3336,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=4621528c"></script>
+</div><script src="_static/documentation_options.js?v=6c02275b"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

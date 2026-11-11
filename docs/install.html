@@ -236,7 +236,7 @@
   <a href="./../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="./../install/" data-cn-route="/install">Install</a>
   <a href="./../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -277,6 +277,7 @@
 <li class="toctree-l2"><a class="reference internal" href="guide/units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guide/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="guide/particles.html">Particles and dye of a simulation</a></li>
@@ -320,6 +321,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -566,6 +569,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -577,8 +581,10 @@
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -689,9 +695,8 @@
         <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
-<p>Install Conatus 0.3.1 from a binary wheel: no compiler is needed. The CPU wheel is on PyPI
-(<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">conatus</span></code>); the CUDA 12 wheel (beta) is attached to the
-<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.3.1">GitHub release</a>. Building from
+<p>Install Conatus from a binary wheel: no compiler is needed. The CPU wheel is on PyPI (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">conatus</span></code>); the CUDA 12 wheel (beta) is attached to the
+<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.4.0">GitHub release</a>. Building from
 source is described at the end of this page, for developers.</p>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
@@ -716,8 +721,11 @@ and the exact commands.</p></li>
 </section>
 <section id="from-a-binary-wheel-recommended">
 <h2>From a binary wheel (recommended)<a class="headerlink" href="#from-a-binary-wheel-recommended" title="Link to this heading">¶</a></h2>
-<p>Two flavours, for Linux x86-64 with glibc 2.28 or newer (RHEL, Rocky or Alma 8, Ubuntu 20.04 and
-later) and CPython 3.11, 3.12 or 3.13:</p>
+<p>Two flavours, for Linux x86-64 and CPython 3.11, 3.12 or 3.13. The wheels are tagged
+manylinux_2_17 (manylinux2014) and manylinux_2_28: pip installs them on glibc 2.17 or newer, since
+the compiled core and the libraries bundled with it use no glibc symbol newer than 2.17. They are
+built and tested on glibc 2.28 (AlmaLinux 8); glibc 2.17 to 2.27 (CentOS 7, Ubuntu 18.04) is not
+tested.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -740,7 +748,7 @@ later) and CPython 3.11, 3.12 or 3.13:</p>
 </div>
 <p>In a fresh virtual environment (no conda, no compiler):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>.<span class="w"> </span>venv/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[tutorials]==0.3.1"</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[tutorials]==0.4.0"</span>
 python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>--version<span class="w">     </span><span class="c1"># conatus, compiled core and Python versions</span>
 python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> </span>doctor<span class="w">        </span><span class="c1"># what this machine can run, and what is missing</span>
 </pre></div>
@@ -749,7 +757,7 @@ python<span class="w"> </span>-m<span class="w"> </span>conatus<span class="w"> 
 PyPI) the install took under 30 s.</p>
 <p>The CUDA wheel pulls the NVIDIA runtime wheels (CUDA runtime, cuFFT, cuBLAS: about 700 MB) and,
 with the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> extra, CuPy: see <a class="reference internal" href="#gpu-cuda-install">GPU (CUDA) install</a>. <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">show</span> <span class="pre">conatus</span></code> says
-which flavour is installed (<code class="docutils literal notranslate"><span class="pre">0.3.1</span></code> from PyPI, <code class="docutils literal notranslate"><span class="pre">0.3.1+cu12</span></code> for the CUDA wheel).</p>
+which flavour is installed (<code class="docutils literal notranslate"><span class="pre">0.4.0</span></code> from PyPI, <code class="docutils literal notranslate"><span class="pre">0.4.0+cu12</span></code> for the CUDA wheel).</p>
 <p><strong>Threads.</strong> NumPy, SciPy and the core each load their own OpenBLAS, and each starts by default
 one thread per CPU, so the three compete for the same CPUs. On a node where the process could use
 8 CPUs, a Floquet computation of the test set took about 20 minutes with the defaults, 26 s with
@@ -768,10 +776,10 @@ capability 8.0) and L40S (8.9), the two architectures the core is built for by d
 <p>Recipe 1, the CUDA binary wheel (beta; no compiler, no CUDA toolkit; the driver must support
 CUDA 12.9, i.e. driver ≥ 575 or an older 12.x driver through CUDA minor-version compatibility).
 The wheels are attached to the
-<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.3.1">GitHub release</a>, one per Python
+<a class="reference external" href="https://github.com/rubendahan/conatus/releases/tag/v0.4.0">GitHub release</a>, one per Python
 (<code class="docutils literal notranslate"><span class="pre">cp311</span></code>, <code class="docutils literal notranslate"><span class="pre">cp312</span></code>, <code class="docutils literal notranslate"><span class="pre">cp313</span></code>); for Python 3.12:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>.<span class="w"> </span>venv/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.3.1/conatus-0.3.1+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">"conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.4.0/conatus-0.4.0+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"</span>
 </pre></div>
 </div>
 <p>On a GPU node (in a batch job on a cluster), check that the device can be used:</p>
@@ -904,7 +912,7 @@ source, which the website’s Install page uses too.</p>
 <p>The same recipe as the README: a conda environment for the compilers and libraries, then
 <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">&quot;.[tutorials]&quot;</span></code>, which compiles the core, installs it inside the package and adds
 what the tutorials need (matplotlib). About two minutes on a cluster node with a warm package cache.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>v0.3.1<span class="w"> </span>https://github.com/rubendahan/conatus<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>conatus
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>v0.4.0<span class="w"> </span>https://github.com/rubendahan/conatus<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>conatus
 micromamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>conatus<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12<span class="w"> </span>gxx_linux-64<span class="o">=</span><span class="m">13</span><span class="w"> </span>liblapack<span class="w"> </span>libblas
 micromamba<span class="w"> </span>activate<span class="w"> </span>conatus
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">".[tutorials]"</span><span class="w">      </span><span class="c1"># CPU core + matplotlib, xarray (the GPU build: next section)</span>
@@ -1057,7 +1065,7 @@ included verbatim in the pages.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=4621528c"></script>
+</div><script src="_static/documentation_options.js?v=6c02275b"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -276,6 +276,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/particles.html">Particles and dye of a simulation</a></li>
@@ -319,6 +320,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -565,6 +568,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -576,8 +580,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -760,6 +766,15 @@
                                               <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="s2">"pressure"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"} (each value a "</span>
                         <span class="s2">"number or a function of the coordinates)"</span><span class="p">,</span>
                     <span class="n">doc</span><span class="o">=</span><span class="n">_LIN_DOC</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
+                <span class="c1"># SECURITY.md: an expression given as text would be evaluated (hunt 5E, R3: it was</span>
+                <span class="c1"># a bare TypeError from deep inside the compilation)</span>
+                <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"about: </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2"> is a string"</span><span class="p">,</span>
+                    <span class="n">why</span><span class="o">=</span><span class="s2">"a base state is a number, a function of the coordinates or a SymPy "</span>
+                        <span class="s2">"expression; a string would have to be evaluated as code, which Conatus "</span>
+                        <span class="s2">"never does (SECURITY.md)"</span><span class="p">,</span>
+                    <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"about=</span><span class="se">{{</span><span class="si">{</span><span class="n">n</span><span class="si">!r}</span><span class="s2">: lambda ...: ...</span><span class="se">}}</span><span class="s2"> or a SymPy expression"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_LIN_DOC</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">about</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">if</span> <span class="n">period</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span>    <span class="c1"># True: period 1</span>
                 <span class="nb">isinstance</span><span class="p">(</span><span class="n">period</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Real</span><span class="p">)</span> <span class="ow">and</span> <span class="n">period</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">period</span><span class="p">))):</span>
@@ -1297,7 +1312,8 @@
                               <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"m.params[</span><span class="si">{</span><span class="n">given</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">!r}</span><span class="s2">] = ... before the call, or "</span>
                                   <span class="sa">f</span><span class="s2">"lin.parametric(N, over=(</span><span class="si">{</span><span class="n">given</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">!r}</span><span class="s2">,)) to sweep it"</span><span class="p">,</span>
                               <span class="n">doc</span><span class="o">=</span><span class="n">_LIN_DOC</span><span class="p">)</span>
-        <span class="n">check_call_options</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">_EIG_OPTIONS</span> <span class="o">+</span> <span class="p">(</span><span class="s2">"n_modes"</span><span class="p">,),</span> <span class="s2">"lin.eigenvalues"</span><span class="p">)</span>
+        <span class="n">check_call_options</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">_EIG_OPTIONS</span> <span class="o">+</span> <span class="p">(</span><span class="s2">"n_modes"</span><span class="p">,),</span> <span class="s2">"lin.eigenvalues"</span><span class="p">,</span>
+                           <span class="n">Linearization</span><span class="o">.</span><span class="n">eigenvalues</span><span class="p">)</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">..solvers.plan_evp</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_eig_method</span>   <span class="c1"># before the base state</span>
         <span class="n">check_eig_method</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"method"</span><span class="p">),</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"target"</span><span class="p">),</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"region"</span><span class="p">),</span> <span class="s2">"lin.eigenvalues"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">which</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1692,7 +1708,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

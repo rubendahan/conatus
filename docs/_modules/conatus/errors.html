@@ -235,7 +235,7 @@
   <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -276,6 +276,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../guide/units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/particles.html">Particles and dye of a simulation</a></li>
@@ -319,6 +320,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -565,6 +568,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -576,8 +580,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -723,8 +729,11 @@
 <span class="sd">    ├── ResolutionError                           ValueError</span>
 <span class="sd">    ├── CoordinateError                           ValueError</span>
 <span class="sd">    ├── OptionError                               ValueError</span>
+<span class="sd">    │   └── ArgumentError                          + TypeError</span>
 <span class="sd">    ├── SymmetryError                             ValueError</span>
 <span class="sd">    │   └── SymmetryBreakingError</span>
+<span class="sd">    ├── MissingFileError                          FileNotFoundError</span>
+<span class="sd">    ├── UnsafeFileError                           ValueError</span>
 <span class="sd">    ├── InputTypeError                            TypeError</span>
 <span class="sd">    │   ├── DtypeError</span>
 <span class="sd">    │   └── TensorError</span>
@@ -734,7 +743,8 @@
 <span class="sd">    ├── BackendError                              RuntimeError</span>
 <span class="sd">    │   └── MissingDependencyError                 + ImportError</span>
 <span class="sd">    ├── UnsupportedError                          NotImplementedError</span>
-<span class="sd">    └── AmbiguousNameError                        AttributeError</span>
+<span class="sd">    ├── AmbiguousNameError                        AttributeError</span>
+<span class="sd">    └── NameNotExportedError                      AttributeError</span>
 <span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -747,11 +757,12 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"ConatusError"</span><span class="p">,</span> <span class="s2">"EquationError"</span><span class="p">,</span> <span class="s2">"ProblemError"</span><span class="p">,</span> <span class="s2">"NonlinearLHSError"</span><span class="p">,</span>
            <span class="s2">"UndeclaredVariableError"</span><span class="p">,</span> <span class="s2">"ParameterError"</span><span class="p">,</span> <span class="s2">"BoundaryConditionError"</span><span class="p">,</span>
            <span class="s2">"EquationSyntaxError"</span><span class="p">,</span> <span class="s2">"DiscretizationError"</span><span class="p">,</span> <span class="s2">"RankError"</span><span class="p">,</span> <span class="s2">"SpectralError"</span><span class="p">,</span>
-           <span class="s2">"ResolutionError"</span><span class="p">,</span> <span class="s2">"CoordinateError"</span><span class="p">,</span> <span class="s2">"OptionError"</span><span class="p">,</span> <span class="s2">"SymmetryError"</span><span class="p">,</span>
+           <span class="s2">"ResolutionError"</span><span class="p">,</span> <span class="s2">"CoordinateError"</span><span class="p">,</span> <span class="s2">"OptionError"</span><span class="p">,</span> <span class="s2">"ArgumentError"</span><span class="p">,</span> <span class="s2">"SymmetryError"</span><span class="p">,</span>
            <span class="s2">"SymmetryBreakingError"</span><span class="p">,</span> <span class="s2">"InputTypeError"</span><span class="p">,</span> <span class="s2">"DtypeError"</span><span class="p">,</span> <span class="s2">"TensorError"</span><span class="p">,</span>
            <span class="s2">"ConvergenceError"</span><span class="p">,</span> <span class="s2">"NewtonNotConverged"</span><span class="p">,</span> <span class="s2">"NumericalError"</span><span class="p">,</span> <span class="s2">"UnderResolvedWarning"</span><span class="p">,</span>
            <span class="s2">"IllPosedWarning"</span><span class="p">,</span> <span class="s2">"InitialDataWarning"</span><span class="p">,</span> <span class="s2">"BackendError"</span><span class="p">,</span> <span class="s2">"MissingDependencyError"</span><span class="p">,</span>
-           <span class="s2">"MissingFileError"</span><span class="p">,</span> <span class="s2">"UnsupportedError"</span><span class="p">,</span> <span class="s2">"AmbiguousNameError"</span><span class="p">,</span> <span class="s2">"ResolutionWarning"</span><span class="p">,</span>
+           <span class="s2">"MissingFileError"</span><span class="p">,</span> <span class="s2">"UnsafeFileError"</span><span class="p">,</span> <span class="s2">"UnsupportedError"</span><span class="p">,</span> <span class="s2">"AmbiguousNameError"</span><span class="p">,</span>
+           <span class="s2">"NameNotExportedError"</span><span class="p">,</span> <span class="s2">"ResolutionWarning"</span><span class="p">,</span>
            <span class="s2">"CorrectnessWarning"</span><span class="p">,</span> <span class="s2">"BaseStateWarning"</span><span class="p">,</span> <span class="s2">"GroupWarning"</span><span class="p">,</span> <span class="s2">"DefaultChoiceWarning"</span><span class="p">,</span>
            <span class="s2">"ExperimentalWarning"</span><span class="p">,</span> <span class="s2">"explain"</span><span class="p">]</span>
 
@@ -970,6 +981,19 @@
 
 
 
+<div class="viewcode-block" id="ArgumentError">
+<a class="viewcode-back" href="../../api/_generated/_stubs/conatus.expert.ArgumentError.html#conatus.expert.ArgumentError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArgumentError</span><span class="p">(</span><span class="n">OptionError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""The arguments of a call do not match its signature: an unknown keyword (a former name</span>
+<span class="sd">    included), a missing required argument, too many positional arguments. The message lists the</span>
+<span class="sd">    accepted names and the closest ones. Derives from ``TypeError``, the error Python raises for the</span>
+<span class="sd">    same mistake, and from :class:`OptionError` (``conatus._keywords``)."""</span>
+
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN151"</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"argumenterror"</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="SymmetryError">
 <a class="viewcode-back" href="../../api/_generated/_stubs/conatus.expert.SymmetryError.html#conatus.expert.SymmetryError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SymmetryError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
@@ -998,6 +1022,18 @@
 
     <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN170"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"missingfileerror"</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="UnsafeFileError">
+<a class="viewcode-back" href="../../api/_generated/_stubs/conatus.expert.UnsafeFileError.html#conatus.expert.UnsafeFileError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsafeFileError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A file to read holds something the loaders refuse: an HDF5 external, soft or virtual link,</span>
+<span class="sd">    a dataset in external storage, or pickled objects in a ``.npz`` (SECURITY.md). Derives from</span>
+<span class="sd">    ``ValueError``, which these refusals raised before 0.3.2."""</span>
+
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN171"</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"unsafefileerror"</span><span class="p">)</span></div>
 
 
 
@@ -1105,6 +1141,18 @@
 
     <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN230"</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"ambiguousnameerror"</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="NameNotExportedError">
+<a class="viewcode-back" href="../../api/_generated/_stubs/conatus.expert.NameNotExportedError.html#conatus.expert.NameNotExportedError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NameNotExportedError</span><span class="p">(</span><span class="n">ConatusError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""``conatus.expert`` does not export this name. The message names the module that defines it</span>
+<span class="sd">    when one does, or the closest exported names. Derives from ``AttributeError`` so that</span>
+<span class="sd">    ``hasattr`` keeps working."""</span>
+
+    <span class="n">error_code</span> <span class="o">=</span> <span class="s2">"CN231"</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">_doc</span><span class="p">(</span><span class="s2">"namenotexportederror"</span><span class="p">)</span></div>
 
 
 
@@ -1392,7 +1440,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

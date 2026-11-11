@@ -43,9 +43,11 @@ A catch by class keeps working: a code names a class, and the classes keep their
 | `CN130` | `ResolutionError` | the resolution cannot represent what was asked |
 | `CN140` | `CoordinateError` | a coordinate or a domain is invalid |
 | `CN150` | `OptionError` | a required choice is missing or an option is invalid |
+| `CN151` | `ArgumentError` | the arguments of a call do not match its signature (an unknown or former keyword, a missing argument) |
 | `CN160` | `SymmetryError` | a symmetry assumption does not hold |
 | `CN161` | `SymmetryBreakingError` | a computation left a declared symmetry subspace |
 | `CN170` | `MissingFileError` | a file that was named does not exist |
+| `CN171` | `UnsafeFileError` | a file holds links, external storage or pickled objects, which the loaders refuse |
 | `CN180` | `InputTypeError` | an argument has the wrong type |
 | `CN181` | `DtypeError` | an array has the wrong data type |
 | `CN182` | `TensorError` | a tensor has the wrong rank or shape |
@@ -58,6 +60,7 @@ A catch by class keeps working: a code names a class, and the classes keep their
 | `CN221` | `LiteralTooLargeError` | a translated script declares a literal above the limit |
 | `CN222` | `XDMFNotCovered` | an output cannot be described in XDMF |
 | `CN230` | `AmbiguousNameError` | a name of `conatus.expert` refers to several objects |
+| `CN231` | `NameNotExportedError` | `conatus.expert` does not export a name (the message names its module) |
 | `CN240` | `VJPSuspended` | an adjoint sweep was suspended and needs resuming |
 | `CN241` | `SingularPoint` | a contour operator met a singular point |
 | `CN242` | `PlanRefused` | a planned sphere adjoint cannot be built |

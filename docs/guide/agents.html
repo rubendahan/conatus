@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -277,6 +277,7 @@
 <li class="toctree-l2"><a class="reference internal" href="units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="particles.html">Particles and dye of a simulation</a></li>
@@ -320,6 +321,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -566,6 +569,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -577,8 +581,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -835,7 +841,7 @@ the surface by task and the rules. The rest of
 You write equations as on paper; Conatus discretises (Fourier/Chebyshev/curvilinear bases, taus
 placed for you), integrates, solves eigenproblems and finds structure (orbits, bifurcations, Floquet, optimal perturbations).
 Declare numerical choices explicitly. When a call lacks one, Conatus raises an error that says what to write.
-A few older inferences remain (the growth convention of an eigenvalue) and emit a <code class="docutils literal notranslate"><span class="pre">DefaultChoiceWarning</span></code>.</p>
+A few older inferences remain (the meaning of a declared name <code class="docutils literal notranslate"><span class="pre">t</span></code>) and emit a <code class="docutils literal notranslate"><span class="pre">DefaultChoiceWarning</span></code>.</p>
 </section>
 <section id="install-verify-orient-machine-readable">
 <h2>1. Install, verify, orient (machine-readable)<a class="headerlink" href="#install-verify-orient-machine-readable" title="Link to this heading">¶</a></h2>
@@ -859,7 +865,7 @@ as text, conditions by boundary name) → numerics given at the call (<code clas
 <li><p>One word per notion: <code class="docutils literal notranslate"><span class="pre">steps</span></code> (number of time steps), <code class="docutils literal notranslate"><span class="pre">k</span></code> (a wavenumber keyword; a problem
 parameter keeps its literature name, e.g. <code class="docutils literal notranslate"><span class="pre">alpha</span></code> of Orr–Sommerfeld), <code class="docutils literal notranslate"><span class="pre">eta</span></code> (radius
 ratio), <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>, <code class="docutils literal notranslate"><span class="pre">max_iterations</span></code>, <code class="docutils literal notranslate"><span class="pre">tol</span></code> (exceptions: the fields <code class="docutils literal notranslate"><span class="pre">ContinuationSettings(tolerance=,</span> <span class="pre">max_newton=)</span></code>, also read as <code class="docutils literal notranslate"><span class="pre">cfg.tol</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg.max_iterations</span></code>);
-former names warn (<code class="docutils literal notranslate"><span class="pre">conatus._deprecation.RENAMES</span></code>).</p></li>
+a former name is refused with an error that names the new one (<code class="docutils literal notranslate"><span class="pre">conatus._deprecation.VOCABULARY</span></code>).</p></li>
 <li><p>Names below: <code class="docutils literal notranslate"><span class="pre">m</span></code> = <code class="docutils literal notranslate"><span class="pre">cn.Model</span></code>, <code class="docutils literal notranslate"><span class="pre">sim</span></code> = <code class="docutils literal notranslate"><span class="pre">cn.model.Simulation</span></code>, <code class="docutils literal notranslate"><span class="pre">lin</span></code> = <code class="docutils literal notranslate"><span class="pre">cn.model.Linearization</span></code>, <code class="docutils literal notranslate"><span class="pre">X</span></code> = <code class="docutils literal notranslate"><span class="pre">conatus.expert</span></code>.</p></li>
 </ul>
 </section>
@@ -922,7 +928,7 @@ former names warn (<code class="docutils literal notranslate"><span class="pre">
 <td><p><code class="docutils literal notranslate"><span class="pre">cn.periodic(L,</span> <span class="pre">complex=False)</span></code>, <code class="docutils literal notranslate"><span class="pre">cn.walls(a,</span> <span class="pre">b)</span></code>, <code class="docutils literal notranslate"><span class="pre">cn.walls(a,</span> <span class="pre">c,</span> <span class="pre">b)</span></code> (compound: its entry of <code class="docutils literal notranslate"><span class="pre">N</span></code> is a tuple <code class="docutils literal notranslate"><span class="pre">(N1,</span> <span class="pre">N2)</span></code>), <code class="docutils literal notranslate"><span class="pre">cn.walls(a,</span> <span class="pre">b,</span> <span class="pre">basis=&quot;sincos&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">cn.half_line(0,</span> <span class="pre">scale=s)</span></code>, <code class="docutils literal notranslate"><span class="pre">cn.line(0,</span> <span class="pre">scale=s)</span></code> (<code class="docutils literal notranslate"><span class="pre">scale</span></code> required)</p></td>
 </tr>
 <tr class="row-even"><td><p>Unknowns, data</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">m.velocity(&quot;u&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.pressure(&quot;p&quot;)</span></code> (also the pressure of a normal-mode model on one wall axis: <code class="docutils literal notranslate"><span class="pre">1j*k*p</span></code>, <code class="docutils literal notranslate"><span class="pre">dz(p)</span></code>), <code class="docutils literal notranslate"><span class="pre">m.scalar(&quot;T&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.vector(&quot;B&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.given(U=lambda</span> <span class="pre">y:</span> <span class="pre">...)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code> (declare how a mode grows: <code class="docutils literal notranslate"><span class="pre">&quot;real&quot;</span></code> for exp(s t), <code class="docutils literal notranslate"><span class="pre">&quot;imag&quot;</span></code> for a phase speed; left out: v0.1 guesses from the name with a <code class="docutils literal notranslate"><span class="pre">DefaultChoiceWarning</span></code>), <code class="docutils literal notranslate"><span class="pre">m.define(&quot;L2(f)</span> <span class="pre">=</span> <span class="pre">...&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.function(&quot;g&quot;,</span> <span class="pre">f,</span> <span class="pre">derivative=df)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">m.velocity(&quot;u&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.pressure(&quot;p&quot;)</span></code> (also the pressure of a normal-mode model on one wall axis: <code class="docutils literal notranslate"><span class="pre">1j*k*p</span></code>, <code class="docutils literal notranslate"><span class="pre">dz(p)</span></code>), <code class="docutils literal notranslate"><span class="pre">m.scalar(&quot;T&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.vector(&quot;B&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.given(U=lambda</span> <span class="pre">y:</span> <span class="pre">...)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code> (declare how a mode grows: <code class="docutils literal notranslate"><span class="pre">&quot;real&quot;</span></code> for exp(s t), <code class="docutils literal notranslate"><span class="pre">&quot;imag&quot;</span></code> for a phase speed; left out: refused with <code class="docutils literal notranslate"><span class="pre">OptionError</span></code>), <code class="docutils literal notranslate"><span class="pre">m.define(&quot;L2(f)</span> <span class="pre">=</span> <span class="pre">...&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">m.function(&quot;g&quot;,</span> <span class="pre">f,</span> <span class="pre">derivative=df)</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Equations</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">m.equations(&quot;dt(u)</span> <span class="pre">+</span> <span class="pre">grad(p)</span> <span class="pre">-</span> <span class="pre">lap(u)/Re</span> <span class="pre">=</span> <span class="pre">-u·grad(u)&quot;,</span> <span class="pre">&quot;div(u)</span> <span class="pre">=</span> <span class="pre">0&quot;)</span></code>; ops <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">dx..dz</span> <span class="pre">grad</span> <span class="pre">div</span> <span class="pre">lap</span> <span class="pre">curl</span> <span class="pre">integ</span> <span class="pre">interp</span></code>, <code class="docutils literal notranslate"><span class="pre">·</span></code>/<code class="docutils literal notranslate"><span class="pre">&#64;</span></code> dot; override split with <code class="docutils literal notranslate"><span class="pre">explicit(...)</span></code>/<code class="docutils literal notranslate"><span class="pre">implicit(...)</span></code>; <code class="docutils literal notranslate"><span class="pre">cross(ez,</span> <span class="pre">u)</span></code> (Cartesian frame e_x x e_y = e_z; with a constant vector on the left-hand side it is implicit, e.g. Coriolis <code class="docutils literal notranslate"><span class="pre">2*Om*cross(ez,</span> <span class="pre">u)</span></code>: stable at any dt but its waves are damped when</p></td>
@@ -1054,6 +1060,8 @@ residual bound of <code class="docutils literal notranslate"><span class="pre">c
 step growth, Krylov and iteration budgets, FD step) have declared defaults (<code class="docutils literal notranslate"><span class="pre">cn.tolerances.explain()</span></code>).
 Renamed arguments (<code class="docutils literal notranslate"><span class="pre">nmodes</span></code>/<code class="docutils literal notranslate"><span class="pre">k</span></code> → <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>, <code class="docutils literal notranslate"><span class="pre">X0</span></code> → <code class="docutils literal notranslate"><span class="pre">x0</span></code>, <code class="docutils literal notranslate"><span class="pre">xatol</span></code> → <code class="docutils literal notranslate"><span class="pre">xtol</span></code>, <code class="docutils literal notranslate"><span class="pre">maxit</span></code> →
 <code class="docutils literal notranslate"><span class="pre">max_iterations</span></code>, <code class="docutils literal notranslate"><span class="pre">nsteps</span></code> → <code class="docutils literal notranslate"><span class="pre">steps</span></code>, <code class="docutils literal notranslate"><span class="pre">radius_ratio</span></code> → <code class="docutils literal notranslate"><span class="pre">eta</span></code>, …) are refused since 0.3, and the message names the new one.
+Any keyword a public call does not accept raises <code class="docutils literal notranslate"><span class="pre">cn.errors.ArgumentError</span></code> (<code class="docutils literal notranslate"><span class="pre">CN151</span></code>, also a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>),
+whose message lists the accepted names and the closest ones.
 When the answer may not be the one you meant, Conatus emits a <code class="docutils literal notranslate"><span class="pre">cn.errors.CorrectnessWarning</span></code>
 (<code class="docutils literal notranslate"><span class="pre">DefaultChoiceWarning</span></code>, for example). Python shows these by default, unlike a
 <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>. Treat one as an error and declare the choice it names.
@@ -1091,7 +1099,7 @@ any change of parameters, <code class="docutils literal notranslate"><span class
 the local hub, shells larger than 64 × 48 × 48, 3-D channel and pipe
 orbits (<code class="docutils literal notranslate"><span class="pre">conatus.ecs.shooting.ShootingRPO</span></code>, <code class="docutils literal notranslate"><span class="pre">conatus.ecs.pipe.PipeTravellingWave</span></code>). First use warns <code class="docutils literal notranslate"><span class="pre">cn.errors.ExperimentalWarning</span></code>;
 say so in what you report. <code class="docutils literal notranslate"><span class="pre">X</span></code> exports documented names only: anything else is
-<code class="docutils literal notranslate"><span class="pre">conatus.&lt;module&gt;.&lt;name&gt;</span></code> (<code class="docutils literal notranslate"><span class="pre">X.&lt;name&gt;</span></code> is refused, and the refusal names the module).</p></li>
+<code class="docutils literal notranslate"><span class="pre">conatus.&lt;module&gt;.&lt;name&gt;</span></code> (<code class="docutils literal notranslate"><span class="pre">X.&lt;name&gt;</span></code> raises <code class="docutils literal notranslate"><span class="pre">cn.errors.NameNotExportedError</span></code>, also an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code>, naming the module).</p></li>
 </ol>
 </section>
 </section>
@@ -1171,7 +1179,7 @@ say so in what you report. <code class="docutils literal notranslate"><span clas
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

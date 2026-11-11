@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -277,6 +277,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../guide/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../guide/particles.html">Particles and dye of a simulation</a></li>
@@ -320,6 +321,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -566,6 +569,7 @@
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -577,8 +581,10 @@
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -697,7 +703,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>variables</strong> (<em>tuple</em><em>[</em><a class="reference internal" href="conatus.expert.Field.html#conatus.expert.Field" title="conatus.ir.expr_base.Field"><em>Field</em></a><em>, </em><em>...</em><em>]</em>)</p></li>
+<li><p><strong>variables</strong> (<em>Iterable</em><em>[</em><a class="reference internal" href="conatus.expert.Field.html#conatus.expert.Field" title="conatus.expert.Field"><em>Field</em></a><em>]</em>)</p></li>
 <li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>symmetry</strong> (<a class="reference internal" href="conatus.expert.SymmetrySubspace.html#conatus.expert.SymmetrySubspace" title="conatus.expert.SymmetrySubspace"><em>SymmetrySubspace</em></a><em> | </em><em>None</em>)</p></li>
 <li><p><strong>namespace</strong> (<em>Any</em>)</p></li>
@@ -707,26 +713,6 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="conatus.expert.Problem.kind">
 <span class="sig-name descname"><span class="pre">kind</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'abstract'</span></span><a class="headerlink" href="#conatus.expert.Problem.kind" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="conatus.expert.Problem.variables">
-<span class="sig-name descname"><span class="pre">variables</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="conatus.expert.Field.html#conatus.expert.Field" title="conatus.ir.expr_base.Field"><span class="pre">Field</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#conatus.expert.Problem.variables" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="conatus.expert.Problem.equations">
-<span class="sig-name descname"><span class="pre">equations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Equation</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#conatus.expert.Problem.equations" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="conatus.expert.Problem.equation_parities">
-<span class="sig-name descname"><span class="pre">equation_parities</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="conatus.expert.Reflection.html#conatus.expert.Reflection" title="conatus.ir.symmetry.Reflection"><span class="pre">Reflection</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Parity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#conatus.expert.Problem.equation_parities" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="conatus.expert.Problem.redundant_bcs">
-<span class="sig-name descname"><span class="pre">redundant_bcs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="conatus.expert.Reflection.html#conatus.expert.Reflection" title="conatus.ir.symmetry.Reflection"><span class="pre">Reflection</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#conatus.expert.Problem.redundant_bcs" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -889,10 +875,6 @@ subspace the taus and their parities must be declared by hand (refused here).</p
 <li><a class="reference internal" href="#">conatus.expert.Problem</a><ul>
 <li><a class="reference internal" href="#conatus.expert.Problem"><code class="docutils literal notranslate"><span class="pre">Problem</span></code></a><ul>
 <li><a class="reference internal" href="#conatus.expert.Problem.kind"><code class="docutils literal notranslate"><span class="pre">Problem.kind</span></code></a></li>
-<li><a class="reference internal" href="#conatus.expert.Problem.variables"><code class="docutils literal notranslate"><span class="pre">Problem.variables</span></code></a></li>
-<li><a class="reference internal" href="#conatus.expert.Problem.equations"><code class="docutils literal notranslate"><span class="pre">Problem.equations</span></code></a></li>
-<li><a class="reference internal" href="#conatus.expert.Problem.equation_parities"><code class="docutils literal notranslate"><span class="pre">Problem.equation_parities</span></code></a></li>
-<li><a class="reference internal" href="#conatus.expert.Problem.redundant_bcs"><code class="docutils literal notranslate"><span class="pre">Problem.redundant_bcs</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.Problem.add_equation"><code class="docutils literal notranslate"><span class="pre">Problem.add_equation()</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.Problem.add_bc"><code class="docutils literal notranslate"><span class="pre">Problem.add_bc()</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.Problem.symmetry_report"><code class="docutils literal notranslate"><span class="pre">Problem.symmetry_report()</span></code></a></li>
@@ -913,7 +895,7 @@ subspace the taus and their parities must be declared by hand (refused here).</p
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

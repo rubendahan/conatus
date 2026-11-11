@@ -1,0 +1,27 @@
+# Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)
+
+*Family:* `benchmarks` · *Script:* `examples/benchmarks/suite.py`
+
+```text
+python examples/benchmarks/suite.py [--cases all|name,name] [--size default|large]
+                                         [--threads 1 8] [--out DIR] [--repeat 1]
+
+Each (case, thread count) runs in a fresh Python process, so that the thread settings are read
+before NumPy loads its BLAS, and the peak resident memory (``ru_maxrss``) is that case's alone.
+The child sets nothing itself: the parent exports, for a thread count T,
+OMP_NUM_THREADS = OPENBLAS_NUM_THREADS = MKL_NUM_THREADS = T; CN_FFT_WORKERS and
+CONATUS_BUILD_WORKERS are left as they are in the caller's environment and recorded.
+
+Output in DIR (default $CN_OUT, else the current directory):
+  suite_<case>_t<T>[_r<i>].json   one record per run (kind = "conatus_suite"), with the case's
+                                  problem, timings, accuracy, memory, threads, hardware, versions;
+  suite_summary.json / .md        all records and a table.
+The exit code is 1 if any accuracy check failed or a case raised.
+```
+
+Run it: `python examples/benchmarks/suite.py` (in the `conatus` environment).
+
+```{literalinclude} ../../../../examples/benchmarks/suite.py
+:language: python
+:linenos:
+```

@@ -28,12 +28,13 @@ Experimental features (shipped, tested, not promised; first use warns `Experimen
 
 - [Citing Conatus](docs/citing.html): If Conatus contributes to your work, please cite the software. The repository carries a `CITATION.cff` file (GitHub shows it as "Cite this repository"); the same entry in BibTeX:
 - [Conatus](docs/index.html): Define a PDE model, then simulate it, compute its stability and search for its invariant solutions. Conatus is experimental research software for fluid instability and dynamical systems.
-- [Installation](docs/install.html): Install Conatus 0.3.1 from a binary wheel: no compiler is needed. The CPU wheel is on PyPI
+- [Installation](docs/install.html): Install Conatus from a binary wheel: no compiler is needed. The CPU wheel is on PyPI (`pip install conatus`); the CUDA 12 wheel (beta) is attached to the GitHub release.
 - [Principles](docs/principles.html): Conatus is written for people who publish the numbers it computes. This page lists the library's design goals. Each section says which checks the code implements for them.
 
 ## User guide
 
 - [Bases and domains](docs/guide/bases.html): In the expert layer a domain is a coordinate system with one spectral basis per coordinate, each with its size and dealiasing factor.
+- [Benchmarks](docs/guide/benchmarks.html): The benchmark suite is a fixed set of problems that covers the main code paths. Each case checks its answer against an oracle that does not come from Conatus.
 - [Boundary conditions](docs/guide/boundary_conditions.html): Conditions are declared by boundary name, as on paper; Conatus decides how each one enters the discrete system and prints that decision.
 - [Importing Dedalus scripts](docs/guide/dedalus.html): `cn.from_dedalus(script)` builds a Conatus problem from the supported subset of a Dedalus 3 script and reports translated, approximated and unsupported constructs.
 - [Diagnostics and visualization](docs/guide/diagnostics.html): Eulerian, Lagrangian and mixing diagnostics computed from the fields of a run, on the CPU or the GPU.

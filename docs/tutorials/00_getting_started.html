@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -277,6 +277,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../guide/units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../guide/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../guide/particles.html">Particles and dye of a simulation</a></li>
@@ -320,6 +321,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -566,6 +569,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -577,8 +581,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -867,7 +873,7 @@ the cold one: the three values of <span class="math notranslate nohighlight">\(N
 </section>
 <section id="output">
 <h2>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t00_getting_started: PASS (exit 0) in 52.5 s | 2026-11-11 | script sha256 aa3c621c10b74264
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t00_getting_started: PASS (exit 0) in 79.3 s | 2026-11-11 | script sha256 aa3c621c10b74264
 Model 'Rayleigh-Benard': Box(x=periodic((0, 2)), z=walls(-0.5, 0.5)) (Cartesian box)
 Unknowns: u (velocity), p (pressure), T (scalar); parameters: Ra = 2500, Pr = 1
 Equations as written:
@@ -886,7 +892,7 @@ Ra = 2500: largest growth rate +5.542506
 Ra_c = 1707.7618   k_c = 3.11632
 measured growth rate 5.542508   eigenvalue 5.542506
 t = 6.0: Nu = 1.474455 (layer)  1.474455 (bottom plate)  1.474455 (top plate)
-Run (rb_Ra2500): state completed, status provisional, 41.7 s
+Run (rb_Ra2500): state completed, status provisional, 62.3 s
 Methods paragraph generated from the plan (edit before publishing):
 
 The IVP 'Rayleigh-Benard' for (u, p, T) was solved with Conatus. The domain is discretized as follows: x ∈ [0, 2) is periodic and expanded in a real (cosine/sine) Fourier series of 32 modes; z ∈ [-0.5, 0.5] is expanded in 24 Chebyshev polynomials of the first kind. Derivatives, basis conversions and multiplications by non-constant coefficients use the sparse, banded ultraspherical operators of Olver &amp; Townsend, and boundary conditions are imposed with the generalized tau method (4 tau variable(s), each entering through a lift polynomial), following Burns et al. The Fourier directions decouple, giving 16 independent systems, one per wavenumber. Nonlinear terms are evaluated pseudospectrally with dealiasing factors 3/2 in x, 3/2 in z. The structural rank of every system was checked before factorization. Time integration uses the third-order, four-stage IMEX Runge–Kutta scheme (4,4,3) of Ascher, Ruuth &amp; Spiteri, whose implicit diagonal is constant so that a single factorization serves all stages, with a constant step Δt = 0.0005. The implicit systems are solved by banded LU factorization with a low-rank (Woodbury) correction for the tau rows, batched over wavenumbers on CPU, in float64 arithmetic. The equations were declared in the native layer of Conatus as written on paper; the implicit-explicit split, the 4 tau term(s) (each in the equation where its unknown has its highest wall-normal order) and the pressure gauge and its integral constraint were placed by fixed, declared rules (listed by explain()). The dealiasing factor 3/2 is the declared default of the native layer ((p+1)/2 for the highest polynomial degree p = 2 of the equations in the unknowns and given fields, at least 3/2).
@@ -974,7 +980,7 @@ OK: onset at Reid &amp; Harris' Ra_c and k_c; the simulation grows at the eigenv
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

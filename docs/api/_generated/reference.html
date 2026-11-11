@@ -236,7 +236,7 @@
   <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -277,6 +277,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../guide/units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/particles.html">Particles and dye of a simulation</a></li>
@@ -320,6 +321,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -566,6 +569,7 @@
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -577,8 +581,10 @@
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -1344,38 +1350,44 @@ it and documented from its docstring.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.OptionError.html#conatus.expert.OptionError" title="conatus.expert.OptionError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptionError</span></code></a>([message, where, why, fix, doc])</p></td>
 <td><p>An option has an invalid value (scheme, backend, method...); close names are suggested.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.InputTypeError.html#conatus.expert.InputTypeError" title="conatus.expert.InputTypeError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InputTypeError</span></code></a>([message, where, why, fix, doc])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.ArgumentError.html#conatus.expert.ArgumentError" title="conatus.expert.ArgumentError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ArgumentError</span></code></a>([message, where, why, fix, doc])</p></td>
+<td><p>The arguments of a call do not match its signature: an unknown keyword (a former name included), a missing required argument, too many positional arguments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.InputTypeError.html#conatus.expert.InputTypeError" title="conatus.expert.InputTypeError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InputTypeError</span></code></a>([message, where, why, fix, doc])</p></td>
 <td><p>An argument has the wrong type (a Parameter, a Field, a number was expected...).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.DtypeError.html#conatus.expert.DtypeError" title="conatus.expert.DtypeError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DtypeError</span></code></a>([message, where, why, fix, doc])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.DtypeError.html#conatus.expert.DtypeError" title="conatus.expert.DtypeError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DtypeError</span></code></a>([message, where, why, fix, doc])</p></td>
 <td><p>Real/complex (dtype) mismatch; a conversion is written by the user.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.TensorError.html#conatus.expert.TensorError" title="conatus.expert.TensorError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TensorError</span></code></a>([message, where, why, fix, doc])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.TensorError.html#conatus.expert.TensorError" title="conatus.expert.TensorError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TensorError</span></code></a>([message, where, why, fix, doc])</p></td>
 <td><p>Tensor signatures do not match (scalar vs vector, different coordinate systems).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.ConvergenceError.html#conatus.expert.ConvergenceError" title="conatus.expert.ConvergenceError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a>([message, where, why, fix, doc])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.ConvergenceError.html#conatus.expert.ConvergenceError" title="conatus.expert.ConvergenceError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConvergenceError</span></code></a>([message, where, why, fix, doc])</p></td>
 <td><p>An iteration did not reach its declared tolerance within its declared budget.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.NumericalError.html#conatus.expert.NumericalError" title="conatus.expert.NumericalError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NumericalError</span></code></a>([message, where, why, fix, doc])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.NumericalError.html#conatus.expert.NumericalError" title="conatus.expert.NumericalError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NumericalError</span></code></a>([message, where, why, fix, doc])</p></td>
 <td><p>A computed state is not finite (NaN or inf): a time integration blew up.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.UnderResolvedWarning.html#conatus.expert.UnderResolvedWarning" title="conatus.expert.UnderResolvedWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnderResolvedWarning</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.UnderResolvedWarning.html#conatus.expert.UnderResolvedWarning" title="conatus.expert.UnderResolvedWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnderResolvedWarning</span></code></a></p></td>
 <td><p>A running simulation is under-resolved: the relative spectral tail of an unknown along a direction exceeds the declared <code class="docutils literal notranslate"><span class="pre">RUN_TAIL_TOL</span></code> (measured at the finite-state check; warned once per run and recorded by <code class="docutils literal notranslate"><span class="pre">explain()</span></code>).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.IllPosedWarning.html#conatus.expert.IllPosedWarning" title="conatus.expert.IllPosedWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IllPosedWarning</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.IllPosedWarning.html#conatus.expert.IllPosedWarning" title="conatus.expert.IllPosedWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IllPosedWarning</span></code></a></p></td>
 <td><p>An implicit term makes the initial-value problem ill-posed: its leading-order growth rate increases without bound with the wavenumber (backward diffusion, a negative viscosity), detected when the model is compiled and named with the term.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.InitialDataWarning.html#conatus.expert.InitialDataWarning" title="conatus.expert.InitialDataWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InitialDataWarning</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.InitialDataWarning.html#conatus.expert.InitialDataWarning" title="conatus.expert.InitialDataWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InitialDataWarning</span></code></a></p></td>
 <td><p>Callable initial data are not fully resolved: their relative spectral tail beyond the resolution (sampled on twice the grid) lies between <code class="docutils literal notranslate"><span class="pre">INITIAL_TAIL_TOL</span></code> and the refusal level <code class="docutils literal notranslate"><span class="pre">INITIAL_TAIL_REFUSE</span></code> (a coarse <code class="docutils literal notranslate"><span class="pre">N</span></code> of a resolution study); warned once per <code class="docutils literal notranslate"><span class="pre">initial(...)</span></code> call and recorded by <code class="docutils literal notranslate"><span class="pre">explain()</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.BackendError.html#conatus.expert.BackendError" title="conatus.expert.BackendError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BackendError</span></code></a>([message, where, why, fix, doc])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.BackendError.html#conatus.expert.BackendError" title="conatus.expert.BackendError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BackendError</span></code></a>([message, where, why, fix, doc])</p></td>
 <td><p>The requested backend (GPU, compiled core) is not available here.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.MissingDependencyError.html#conatus.expert.MissingDependencyError" title="conatus.expert.MissingDependencyError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MissingDependencyError</span></code></a>([message, where, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.MissingDependencyError.html#conatus.expert.MissingDependencyError" title="conatus.expert.MissingDependencyError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MissingDependencyError</span></code></a>([message, where, ...])</p></td>
 <td><p>An optional package or the compiled core is missing.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.MissingFileError.html#conatus.expert.MissingFileError" title="conatus.expert.MissingFileError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MissingFileError</span></code></a>([message, where, why, fix, doc])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.MissingFileError.html#conatus.expert.MissingFileError" title="conatus.expert.MissingFileError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MissingFileError</span></code></a>([message, where, why, fix, doc])</p></td>
 <td><p>A file to read (an output, a checkpoint) does not exist, or is a directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.UnsafeFileError.html#conatus.expert.UnsafeFileError" title="conatus.expert.UnsafeFileError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnsafeFileError</span></code></a>([message, where, why, fix, doc])</p></td>
+<td><p>A file to read holds something the loaders refuse: an HDF5 external, soft or virtual link, a dataset in external storage, or pickled objects in a <code class="docutils literal notranslate"><span class="pre">.npz</span></code> (SECURITY.md).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.UnsupportedError.html#conatus.expert.UnsupportedError" title="conatus.expert.UnsupportedError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnsupportedError</span></code></a>([message, where, why, fix, doc])</p></td>
 <td><p>Declared in the IR but not implemented (yet) for this case.</p></td>
@@ -1383,22 +1395,25 @@ it and documented from its docstring.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.AmbiguousNameError.html#conatus.expert.AmbiguousNameError" title="conatus.expert.AmbiguousNameError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AmbiguousNameError</span></code></a>([message, where, why, ...])</p></td>
 <td><p>A name means two different things (two modules export it); use one of the explicit names.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.ResolutionWarning.html#conatus.expert.ResolutionWarning" title="conatus.expert.ResolutionWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResolutionWarning</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.NameNotExportedError.html#conatus.expert.NameNotExportedError" title="conatus.expert.NameNotExportedError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NameNotExportedError</span></code></a>([message, where, why, ...])</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">conatus.expert</span></code> does not export this name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.ResolutionWarning.html#conatus.expert.ResolutionWarning" title="conatus.expert.ResolutionWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResolutionWarning</span></code></a></p></td>
 <td><p>A returned result is under-resolved by a declared measure: the mode an eigenvalue result selects has its energy in the last coefficients, a Floquet-Hill mode in its outermost harmonics.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.CorrectnessWarning.html#conatus.expert.CorrectnessWarning" title="conatus.expert.CorrectnessWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CorrectnessWarning</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.CorrectnessWarning.html#conatus.expert.CorrectnessWarning" title="conatus.expert.CorrectnessWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CorrectnessWarning</span></code></a></p></td>
 <td><p>The returned answer may not be the one the call meant: it is about another base state, another group of modes, or a choice the call did not declare.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.BaseStateWarning.html#conatus.expert.BaseStateWarning" title="conatus.expert.BaseStateWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseStateWarning</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.BaseStateWarning.html#conatus.expert.BaseStateWarning" title="conatus.expert.BaseStateWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseStateWarning</span></code></a></p></td>
 <td><p>A linearization about a base state that is not a steady solution: its steady residual exceeds <code class="docutils literal notranslate"><span class="pre">BASE_RESIDUAL_TOL</span></code> and <code class="docutils literal notranslate"><span class="pre">base_residual='accept'</span></code> was not given, so the modes are not the normal modes of a flow that exists.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.GroupWarning.html#conatus.expert.GroupWarning" title="conatus.expert.GroupWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupWarning</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.GroupWarning.html#conatus.expert.GroupWarning" title="conatus.expert.GroupWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GroupWarning</span></code></a></p></td>
 <td><p>An eigenvalue call without a group (no <code class="docutils literal notranslate"><span class="pre">k=</span></code> on a periodic model, no <code class="docutils literal notranslate"><span class="pre">m=</span></code>/<code class="docutils literal notranslate"><span class="pre">kz=</span></code>/ <code class="docutils literal notranslate"><span class="pre">ell=</span></code> on a curvilinear one) solved one group only (k = 0, or the first group): the modes of every other wavenumber are absent from the result.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.DefaultChoiceWarning.html#conatus.expert.DefaultChoiceWarning" title="conatus.expert.DefaultChoiceWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DefaultChoiceWarning</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.DefaultChoiceWarning.html#conatus.expert.DefaultChoiceWarning" title="conatus.expert.DefaultChoiceWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DefaultChoiceWarning</span></code></a></p></td>
 <td><p>A choice that decides the answer was left out and the default or guess of 0.1 and 0.2 was used: the growth rule of an eigenvalue guessed from its name (<code class="docutils literal notranslate"><span class="pre">m.eigenvalue(&quot;c&quot;,</span> <span class="pre">growth=&quot;imag&quot;)</span></code> ranks by Im c), and the meaning of a declared name <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.ExperimentalWarning.html#conatus.expert.ExperimentalWarning" title="conatus.expert.ExperimentalWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExperimentalWarning</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.ExperimentalWarning.html#conatus.expert.ExperimentalWarning" title="conatus.expert.ExperimentalWarning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExperimentalWarning</span></code></a></p></td>
 <td><p>A feature of the experimental list was used (once per feature and process): it is shipped and tested, but not promised: its API and defaults may change in a minor release without a deprecation cycle, and some of its claims rest on fewer measurements.</p></td>
 </tr>
 </tbody>
@@ -1731,7 +1746,7 @@ it and documented from its docstring.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

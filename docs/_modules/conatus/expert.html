@@ -235,7 +235,7 @@
   <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.4.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -276,6 +276,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../guide/units.html">Units and conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/timesteppers.html">Simulations and time steppers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/resolution.html">Resolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/gpu.html">GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/diagnostics.html">Diagnostics and visualization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/particles.html">Particles and dye of a simulation</a></li>
@@ -319,6 +320,8 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../gallery/index.html">Scientific examples</a><input aria-label="Toggle navigation of Scientific examples" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/benchmarks_cases.html">Benchmark cases of the public suite: fixed problems, each with an accuracy check against an oracle that does not come from Conatus (a closed form, a published value, or a quantity the equations fix exactly)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/benchmarks_suite.html">Runner of the public benchmark suite (docs page docs/site/guide/benchmarks.md)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/bifurcation_weakly_nonlinear.html">Weakly nonlinear theory derived from the equations of the model: Landau and Ginzburg–Landau coefficients</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/convection_rayleigh_benard_3d.html">Rayleigh–Bénard onset in 3D: the nonlinear Boussinesq equations, linearized by the IR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../gallery/_generated/convection_rotating_rayleigh_benard.html">Onset of rotating Rayleigh–Bénard convection on the f-plane (Chandrasekhar 1961, Ch. III)</a></li>
@@ -565,6 +568,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.ResolutionError.html">conatus.expert.ResolutionError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.CoordinateError.html">conatus.expert.CoordinateError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.OptionError.html">conatus.expert.OptionError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.ArgumentError.html">conatus.expert.ArgumentError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.InputTypeError.html">conatus.expert.InputTypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.DtypeError.html">conatus.expert.DtypeError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.TensorError.html">conatus.expert.TensorError</a></li>
@@ -576,8 +580,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.BackendError.html">conatus.expert.BackendError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.MissingDependencyError.html">conatus.expert.MissingDependencyError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.MissingFileError.html">conatus.expert.MissingFileError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.UnsafeFileError.html">conatus.expert.UnsafeFileError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.UnsupportedError.html">conatus.expert.UnsupportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.AmbiguousNameError.html">conatus.expert.AmbiguousNameError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.NameNotExportedError.html">conatus.expert.NameNotExportedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.ResolutionWarning.html">conatus.expert.ResolutionWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.CorrectnessWarning.html">conatus.expert.CorrectnessWarning</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/_generated/_stubs/conatus.expert.BaseStateWarning.html">conatus.expert.BaseStateWarning</a></li>
@@ -735,7 +741,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SURFACE_REMOVED_IN</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmbiguousNameError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmbiguousNameError</span><span class="p">,</span> <span class="n">NameNotExportedError</span><span class="p">,</span> <span class="n">did_you_mean</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.verify</span><span class="w"> </span><span class="kn">import</span> <span class="n">Check</span><span class="p">,</span> <span class="n">VerificationReport</span><span class="p">,</span> <span class="n">verify</span>
 
 <span class="c1"># Order matters only for clashes (earlier wins); see SHADOWED.</span>
@@ -926,14 +932,51 @@
             <span class="n">fix</span><span class="o">=</span><span class="s2">" or "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">"conatus.expert.</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2"> (= conatus.</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">)"</span> <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">aliases</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
                             <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"conatus.</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">others</span><span class="p">]))</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_FORMER_MODULES</span><span class="p">:</span>                    <span class="c1"># conatus.expert.telemetry: a 0.1 attribute</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"conatus.expert.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> was removed in </span><span class="si">{</span><span class="n">SURFACE_REMOVED_IN</span><span class="si">}</span><span class="s2">: use "</span>
-                             <span class="sa">f</span><span class="s2">"conatus.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, the same module"</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">NameNotExportedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"conatus.expert.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> was removed in </span><span class="si">{</span><span class="n">SURFACE_REMOVED_IN</span><span class="si">}</span><span class="s2">: "</span>
+                                   <span class="sa">f</span><span class="s2">"use conatus.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, the same module"</span><span class="p">,</span>
+                                   <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"import conatus.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_UNLISTED</span><span class="p">:</span>
         <span class="n">mod</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="n">_UNLISTED</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"conatus.expert.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> was removed in </span><span class="si">{</span><span class="n">SURFACE_REMOVED_IN</span><span class="si">}</span><span class="s2"> (only "</span>
-                             <span class="sa">f</span><span class="s2">"documented names are listed here): use conatus.</span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">, the "</span>
-                             <span class="s2">"same object"</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"module 'conatus.expert' has no attribute '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">NameNotExportedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"conatus.expert.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> was removed in </span><span class="si">{</span><span class="n">SURFACE_REMOVED_IN</span><span class="si">}</span><span class="s2"> "</span>
+                                   <span class="sa">f</span><span class="s2">"(only documented names are listed here): use "</span>
+                                   <span class="sa">f</span><span class="s2">"conatus.</span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">, the same object"</span><span class="p">,</span>
+                                   <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"from conatus.</span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2"> import </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_"</span><span class="p">):</span>                       <span class="c1"># dunder probes (copy, pickle, IPython): plain</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"module 'conatus.expert' has no attribute '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
+    <span class="n">defined_in</span> <span class="o">=</span> <span class="n">_defining_modules</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">defined_in</span><span class="p">:</span>
+        <span class="c1"># hunt 5E, R1: X.ShootingRPO named no module (only the names 0.1 exported here did)</span>
+        <span class="k">raise</span> <span class="n">NameNotExportedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"conatus.expert does not export </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: it is conatus.</span><span class="si">{</span><span class="n">defined_in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">why</span><span class="o">=</span><span class="s2">"conatus.expert exports the documented names of the expert layer only; "</span>
+                <span class="s2">"the others stay in their module"</span><span class="p">,</span>
+            <span class="n">fix</span><span class="o">=</span><span class="s2">" or "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"from conatus.</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2"> import </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">defined_in</span><span class="p">[:</span><span class="mi">3</span><span class="p">]))</span>
+    <span class="k">raise</span> <span class="n">NameNotExportedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"module 'conatus.expert' has no attribute '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">'."</span>
+                               <span class="o">+</span> <span class="n">did_you_mean</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">__all__</span><span class="p">),</span>
+                               <span class="n">fix</span><span class="o">=</span><span class="s2">"conatus.expert.explain() lists what it exports"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_defining_modules</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The conatus modules (dotted, without the ``conatus.`` prefix) whose source defines ``name``</span>
+<span class="sd">    at top level (``class name``, ``def name`` or ``name =``), read from the package's source</span>
+<span class="sd">    files without importing them; private modules last."""</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">pat</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">rf</span><span class="s2">"^(?:class|def|async def)\s+</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">\b|^</span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">\s*[:=]"</span><span class="p">,</span>
+                     <span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">"*.py"</span><span class="p">)):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">text</span> <span class="ow">and</span> <span class="n">pat</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="n">rel</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">rel</span><span class="o">.</span><span class="n">parts</span> <span class="k">if</span> <span class="n">p</span> <span class="o">!=</span> <span class="s2">"__init__"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">parts</span><span class="p">:</span>
+                <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"."</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">found</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"_"</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)),</span> <span class="n">m</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="explain">
@@ -996,7 +1039,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=4621528c"></script>
+</div><script src="../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

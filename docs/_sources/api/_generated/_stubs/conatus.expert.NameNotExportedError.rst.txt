@@ -1,0 +1,6 @@
+﻿conatus.expert.NameNotExportedError
+===================================
+
+.. currentmodule:: conatus.expert
+
+.. autoexception:: NameNotExportedError
