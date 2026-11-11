@@ -236,7 +236,7 @@
   <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -779,7 +779,14 @@ supercritical; the cycles born there are continued by orthogonal collocation on 
 A branch of cycles can also start from any orbit given as a collocation state <code class="docutils literal notranslate"><span class="pre">z0</span></code> (the mesh
 values, the period and the parameter):
 <code class="docutils literal notranslate"><span class="pre">continue_orbits(PeriodicOrbitProblem(system,</span> <span class="pre">&quot;r&quot;,</span> <span class="pre">mesh),</span> <span class="pre">z0,</span> <span class="pre">settings)</span></code>, with the same tests
-(<code class="docutils literal notranslate"><span class="pre">&quot;lpc&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;pd&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ns&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;bpc&quot;</span></code>) and <code class="docutils literal notranslate"><span class="pre">explain()</span></code>.</p>
+(<code class="docutils literal notranslate"><span class="pre">&quot;lpc&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;pd&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ns&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;bpc&quot;</span></code>) and <code class="docutils literal notranslate"><span class="pre">explain()</span></code>. With <code class="docutils literal notranslate"><span class="pre">remesh_every=</span></code>, each point keeps the
+mesh it was computed on in <code class="docutils literal notranslate"><span class="pre">point.data[&quot;mesh&quot;]</span></code>; read an earlier point on its own mesh with
+<code class="docutils literal notranslate"><span class="pre">problem.on_mesh(point.data[&quot;mesh&quot;]).residual(point.z)</span></code>.</p>
+<p>Events other than folds are located on the sign change of their test function, to a bracket
+narrower than <code class="docutils literal notranslate"><span class="pre">crossing_tol</span></code> times the step; <code class="docutils literal notranslate"><span class="pre">event.explain()</span></code> prints the bracket and the factor
+that changed sign. When the number of eigenvalues across the stability boundary changes by more
+than the located events explain (two crossings in one step), the step is bisected; a double
+crossing at one point is reported as an <code class="docutils literal notranslate"><span class="pre">&quot;unresolved</span> <span class="pre">crossing&quot;</span></code> event with <code class="docutils literal notranslate"><span class="pre">converged=False</span></code>.</p>
 </section>
 <section id="codimension-two">
 <h2>Codimension two<a class="headerlink" href="#codimension-two" title="Link to this heading">¶</a></h2>
@@ -883,7 +890,7 @@ Swift–Hohenberg.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

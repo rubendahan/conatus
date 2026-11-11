@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -866,8 +866,8 @@ with half the unknowns, and the other class decays.</p>
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t03_symmetries: PASS (exit 0) in 35.8 s | 2026-10-31 | script sha256 06b9053531b4dd1f
- full space: leading sigma = +1.6955e-06   n = 268   QZ 151.5 ms   residual 5.3e-17
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t03_symmetries: PASS (exit 0) in 1.2 s | 2026-11-11 | script sha256 06b9053531b4dd1f
+ full space: leading sigma = +1.6955e-06   n = 268   QZ  79.6 ms   residual 5.3e-17
 unknowns of the perturbation problem: du, dp, dT, dtau_u1, dtau_u2, dtau_T1, dtau_T2, dtau_p
 Symmetry subspace: Z2 (order 2)
   generator: Reflection(z -&gt; -z): reflection of z about z = 0; vector components along it change sign, others do not
@@ -882,7 +882,7 @@ Symmetry subspace: Z2 (order 2)
   du         odd under Reflection(z -&gt; -z)
   expected reduction: up to x2 per reflection, x m0 per m0-fold rotation (adapted bases: parity blocks, kept azimuthal classes, docs/site/tutorials/03_symmetries.md)
   WARNING: computing in the invariant subspace hides symmetry-breaking instabilities; a symmetric solution is not declared stable before symmetry_breaking_check().
-onset class: leading sigma = +1.6955e-06   n = 134   QZ  68.2 ms   residual 9.8e-18
+onset class: leading sigma = +1.6955e-06   n = 134   QZ  38.1 ms   residual 9.8e-18
 Symmetry subspace: Z2 (order 2)
   generator: Reflection(z -&gt; -z): reflection of z about z = 0; vector components along it change sign, others do not
   T0         odd under Reflection(z -&gt; -z)
@@ -916,7 +916,7 @@ Under Reflection(z -&gt; -z):
   dtau_p     odd -&gt; constant along the mirror direction and odd: vanishes identically
   BC [3] and [5] are mirror images under Reflection(z -&gt; -z): redundant in the subspace, one of them (and its tau) is dropped at discretization
   BC [4] and [6] are mirror images under Reflection(z -&gt; -z): redundant in the subspace, one of them (and its tau) is dropped at discretization
-other class: leading sigma = -4.2627e+01   n = 134   QZ  67.5 ms   residual 1.5e-16
+other class: leading sigma = -4.2627e+01   n = 134   QZ  38.1 ms   residual 1.5e-16
 refused: equation 's*du - Pr*lap(du) + lift(dtau_u1, z, -1) + grad(dp) + lift(dtau_u2, z, -2) - Ra*dT*Pr*ez = 0' is not equivariant under Reflection(z -&gt; -z): term '-Ra*dT*Pr*ez' is odd but 's*du' is even. The term breaks the declared symmetry (fix the parities or drop the symmetry).
   docs:  guide/errors#symmetrybreakingerror  (python -m conatus docs guide/errors)
 OK: neutral mode at Reid &amp; Harris' (Ra_c, k_c) in the onset class, n = 134 vs 268
@@ -1012,7 +1012,7 @@ initial data outside the subspace is refused.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../_static/documentation_options.js?v=4621528c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -686,24 +686,50 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for conatus.verify.statistics</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Statistical error of a time average: mean of a correlated series with its</span>
-<span class="sd">standard error, from the integrated autocorrelation time.</span>
+<span class="sd">standard error and a 95 % interval, from four estimates of the variance of the mean.</span>
 
 <span class="sd">::</span>
 
 <span class="sd">    rep = cn.time_average(nusselt_series, dt=0.01, discard=200)</span>
-<span class="sd">    rep.mean, rep.stderr, rep.tau_int, rep.explain()</span>
+<span class="sd">    rep.mean, rep.stderr, rep.interval, rep.tau_int, rep.explain()</span>
 
 <span class="sd">Method (declared, no hidden choice): after discarding the first ``discard`` samples (a transient</span>
-<span class="sd">is the user's call), the normalized autocorrelation rho(k) is computed by FFT; the integrated</span>
-<span class="sd">autocorrelation time tau = 1/2 + sum_{k=1}^{W} rho(k) uses Sokal's automatic window, the</span>
-<span class="sd">smallest W with W &gt;= C tau(W), C = ``SOKAL_C`` = 5 (Sokal 1997, "Monte Carlo methods in</span>
-<span class="sd">statistical mechanics", in Functional Integration, NATO ASI Series 361, sect. 3). The standard</span>
-<span class="sd">error of the mean is sqrt(2 tau var / n) (n samples, var the sample variance), i.e. n / (2 tau)</span>
-<span class="sd">effectively independent samples. A batch-means estimate (``BATCHES`` = 20 batches) is reported</span>
-<span class="sd">beside it as a check, and the report is flagged when it exceeds ``BATCH_RATIO_MAX`` = 2 times</span>
-<span class="sd">the autocorrelation estimate (a correlation longer than the Sokal window saw: a slow oscillation</span>
-<span class="sd">or drift under fast noise); a series shorter than ``MIN_TAU_MULTIPLE`` = 50 tau is flagged (the</span>
-<span class="sd">error estimate itself is then unreliable), as is a window that never closes.</span>
+<span class="sd">is the user's call), the normalized autocorrelation rho(k) is computed by FFT. The integrated</span>
+<span class="sd">autocorrelation time tau = 1/2 + sum_k rho(k) is the larger of two truncations of that sum:</span>
+<span class="sd">Sokal's automatic window, the smallest W with W &gt;= C tau(W), C = ``SOKAL_C`` = 5 (Sokal 1997,</span>
+<span class="sd">"Monte Carlo methods in statistical mechanics", in Functional Integration, NATO ASI Series 361,</span>
+<span class="sd">sect. 3), and the initial positive sequence, summing pairs rho(2j) + rho(2j + 1) while they are</span>
+<span class="sd">positive (Geyer 1992, "Practical Markov chain Monte Carlo", Statistical Science 7, 473-483).</span>
+<span class="sd">Sokal's window alone closed at a few lags on a slow component carrying 10-20 % of the variance</span>
+<span class="sd">under fast noise and underestimated tau 5-fold (release 0.3.0).</span>
+
+<span class="sd">The standard error is the largest of four estimates of the standard deviation of the mean, each</span>
+<span class="sd">biased low in its own way: sqrt(2 tau var / n); ``BATCHES`` = 20 batch means; the batch means</span>
+<span class="sd">extrapolated in the batch length, sqrt(max(2 v_10 - v_20, 0)) with v_B the batch-means variance</span>
+<span class="sd">of B batches (their bias falls like 1 / batch length); and the mean of the 10 lowest nonzero</span>
+<span class="sd">periodogram ordinates over n (the spectral density at zero frequency). The interval is mean +- 2</span>
+<span class="sd">standard errors.</span>
+
+<span class="sd">Flags (``trusted`` is False): a series shorter than ``MIN_TAU_MULTIPLE`` = 50 tau; a Sokal window</span>
+<span class="sd">that never closes; 20 batch means giving a standard error above ``BATCH_RATIO_MAX`` = 2 times the</span>
+<span class="sd">autocorrelation one. No other filter is applied: in the coverage experiment every filter computed</span>
+<span class="sd">from the series itself (the length of the positive autocorrelation against the batch length, the</span>
+<span class="sd">flatness of the low-frequency periodogram) lowered the coverage among the series it trusted,</span>
+<span class="sd">because a slow component that stayed on one side of its mean also looks less correlated.</span>
+
+<span class="sd">Coverage measured (2000 series per setting, true mean 0): AR(1) mixtures</span>
+<span class="sd">sqrt(a) s + sqrt(1 - a) e (s AR(1) of parameter phi, e white) and other processes; the interval</span>
+<span class="sd">contained 0 in 93.5-97.7 % of the trusted series in each of 11 settings, and every series of</span>
+<span class="sd">those settings was trusted, including the 0.3.0 case phi = 0.98, a = 0.15, n = 4000 (64 % before).</span>
+<span class="sd">Lowest: phi = 0.99, a = 0.1, n = 5000 (93.5 %), where the slow component is correlated over 100</span>
+<span class="sd">samples and the run is 50 of those. The standard error is conservative where the estimates agree</span>
+<span class="sd">(about 20 % above the spread of the means for a plain AR(1)); above nominal (100 % in a prototype</span>
+<span class="sd">run): an oscillating AR(2) whose tau is below 1/2 (no credit is given below white noise).</span>
+
+<span class="sd">What ``trusted`` does not establish: stationarity (a drift or a transient left in the series is</span>
+<span class="sd">the user's to remove: ``discard``); that the run holds a correlation longer than itself (the</span>
+<span class="sd">series cannot show it); coverage when the run is only a few tens of correlation lengths of a slow</span>
+<span class="sd">component (93.5-94 % measured there). The interval is approximate, not a bound.</span>
 <span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -726,6 +752,8 @@
 <span class="c1"># noise plus a slow sine gave a 3.1x larger batch error and a "trusted" mean 2.7 errors off).</span>
 <span class="c1"># For a correctly estimated tau the ratio scatters by about 1/sqrt(2 (BATCHES - 1)) = 16 %.</span>
 <span class="n">BATCH_RATIO_MAX</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="c1"># lowest nonzero periodogram ordinates averaged for the spectral density at zero frequency</span>
+<span class="n">_SPECTRAL_BINS</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">_DOC</span> <span class="o">=</span> <span class="s2">"docs/site/guide/uncertainty.md"</span>
 
 
@@ -742,6 +770,9 @@
     <span class="n">batch_stderr</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">flags</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"q"</span>
+    <span class="n">acf_stderr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>         <span class="c1"># sqrt(2 tau var / n)</span>
+    <span class="n">extrapolated_stderr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>  <span class="c1"># batch means extrapolated in the batch length</span>
+    <span class="n">spectral_stderr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>    <span class="c1"># low-frequency periodogram</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">interval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
@@ -754,6 +785,10 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">trusted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""No flag: run longer than 50 tau, Sokal window closed, batch means within 2x the</span>
+<span class="sd">        autocorrelation error. Measured coverage of the</span>
+<span class="sd">        interval among trusted series: 93.5-97.7 % (module docstring). It does not establish</span>
+<span class="sd">        stationarity, nor anything about correlations longer than the run."""</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -763,8 +798,12 @@
                  <span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="si">}</span><span class="s2"> samples after discarding </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">discarded</span><span class="si">}</span><span class="s2">; integrated autocorrelation "</span>
                  <span class="sa">f</span><span class="s2">"time tau = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tau_int</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2"> samples</span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2"> (Sokal window W = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="si">}</span><span class="s2">, "</span>
                  <span class="sa">f</span><span class="s2">"C = </span><span class="si">{</span><span class="n">SOKAL_C</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">); </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_eff</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> effectively independent samples"</span><span class="p">,</span>
-                 <span class="sa">f</span><span class="s2">"  check: </span><span class="si">{</span><span class="n">BATCHES</span><span class="si">}</span><span class="s2"> batch means give a standard error </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_stderr</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
-                 <span class="s2">"  error = sqrt(2 tau var / n); the transient to discard is the user's choice"</span><span class="p">]</span>
+                 <span class="sa">f</span><span class="s2">"  standard error = the largest of: autocorrelation </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">acf_stderr</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, "</span>
+                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">BATCHES</span><span class="si">}</span><span class="s2"> batch means </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_stderr</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, batch means extrapolated in the "</span>
+                 <span class="sa">f</span><span class="s2">"batch length </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">extrapolated_stderr</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, low-frequency periodogram "</span>
+                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spectral_stderr</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">; interval mean +- 2 standard errors"</span><span class="p">,</span>
+                 <span class="s2">"  not established: stationarity (the transient to discard is the user's choice), "</span>
+                 <span class="s2">"correlations longer than the run"</span><span class="p">]</span>
         <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"  ** </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> **"</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">]</span>
         <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
 
@@ -817,29 +856,45 @@
         <span class="k">return</span> <span class="n">TimeAverageReport</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">discard</span><span class="p">),</span> <span class="n">dt</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>
                                  <span class="p">[</span><span class="s2">"constant series: no fluctuation, error 0"</span><span class="p">],</span> <span class="n">name</span><span class="p">)</span>
     <span class="n">rho</span> <span class="o">=</span> <span class="n">_autocorrelation</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">tau</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">tau_s</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="n">tau</span> <span class="o">+=</span> <span class="n">rho</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;=</span> <span class="n">SOKAL_C</span> <span class="o">*</span> <span class="n">tau</span><span class="p">:</span>
+        <span class="n">tau_s</span> <span class="o">+=</span> <span class="n">rho</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;=</span> <span class="n">SOKAL_C</span> <span class="o">*</span> <span class="n">tau_s</span><span class="p">:</span>
             <span class="n">W</span> <span class="o">=</span> <span class="n">w</span>
             <span class="k">break</span>
     <span class="k">if</span> <span class="n">W</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">W</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Sokal window never closed: the series is too short for its correlation time"</span><span class="p">)</span>
-    <span class="n">tau</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>                       <span class="c1"># anti-correlated series: no credit below white noise</span>
+    <span class="c1"># initial positive sequence (Geyer 1992): pairs of the autocorrelation summed while positive;</span>
+    <span class="c1"># it does not stop at a fast decay while a slow component remains (hunt 5D, Q6)</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">rho</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">rho</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">g</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">G</span> <span class="o">+=</span> <span class="n">g</span>
+        <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">tau_s</span><span class="p">,</span> <span class="n">G</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>          <span class="c1"># anti-correlated series: no credit below white noise</span>
     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">MIN_TAU_MULTIPLE</span> <span class="o">*</span> <span class="n">tau</span><span class="p">:</span>
         <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"series of </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> samples &lt; </span><span class="si">{</span><span class="n">MIN_TAU_MULTIPLE</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> tau = </span><span class="si">{</span><span class="n">MIN_TAU_MULTIPLE</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tau</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">: "</span>
                      <span class="s2">"the error estimate is unreliable (run longer)"</span><span class="p">)</span>
-    <span class="n">se</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">*</span> <span class="n">var</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="n">BATCHES</span>
-    <span class="n">bm</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span> <span class="n">m</span> <span class="o">*</span> <span class="n">BATCHES</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">BATCHES</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">bse</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">BATCHES</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">bse</span> <span class="o">&gt;</span> <span class="n">BATCH_RATIO_MAX</span> <span class="o">*</span> <span class="n">se</span><span class="p">:</span>
-        <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"the batch-means check gives a standard error </span><span class="si">{</span><span class="n">bse</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">se</span><span class="si">:</span><span class="s2">.2g</span><span class="si">}</span><span class="s2"> times larger "</span>
-                     <span class="sa">f</span><span class="s2">"(&gt; BATCH_RATIO_MAX = </span><span class="si">{</span><span class="n">BATCH_RATIO_MAX</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">): a correlation longer than the "</span>
-                     <span class="s2">"Sokal window (slow oscillation or drift); the error estimate is too small "</span>
-                     <span class="s2">"(run longer, or discard the transient)"</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">TimeAverageReport</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="n">se</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">tau</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">W</span><span class="p">),</span> <span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">discard</span><span class="p">),</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bse</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+    <span class="n">se_acf</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">tau</span> <span class="o">*</span> <span class="n">var</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">bse</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span> <span class="n">m</span> <span class="o">*</span> <span class="n">BATCHES</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">BATCHES</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">BATCHES</span><span class="p">))</span>
+    <span class="n">m2</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="p">(</span><span class="n">BATCHES</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">bse2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span> <span class="n">m2</span> <span class="o">*</span> <span class="p">(</span><span class="n">BATCHES</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">BATCHES</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">m2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                 <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">BATCHES</span> <span class="o">//</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">bse2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">bse</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+    <span class="n">per</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">())[</span><span class="mi">1</span><span class="p">:</span><span class="n">_SPECTRAL_BINS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">n</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">per</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">se</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">se_acf</span><span class="p">,</span> <span class="n">bse</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bse</span> <span class="o">&gt;</span> <span class="n">BATCH_RATIO_MAX</span> <span class="o">*</span> <span class="n">se_acf</span><span class="p">:</span>
+        <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"the batch-means check gives a standard error </span><span class="si">{</span><span class="n">bse</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">se_acf</span><span class="si">:</span><span class="s2">.2g</span><span class="si">}</span><span class="s2"> times the "</span>
+                     <span class="sa">f</span><span class="s2">"autocorrelation one (&gt; BATCH_RATIO_MAX = </span><span class="si">{</span><span class="n">BATCH_RATIO_MAX</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">): a correlation "</span>
+                     <span class="s2">"longer than the autocorrelation sum saw (slow oscillation or drift); run "</span>
+                     <span class="s2">"longer, or discard the transient"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">TimeAverageReport</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span> <span class="n">se</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">tau</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">W</span><span class="p">),</span> <span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">discard</span><span class="p">),</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bse</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
+                             <span class="n">acf_stderr</span><span class="o">=</span><span class="n">se_acf</span><span class="p">,</span> <span class="n">extrapolated_stderr</span><span class="o">=</span><span class="n">ext</span><span class="p">,</span> <span class="n">spectral_stderr</span><span class="o">=</span><span class="n">spec</span><span class="p">)</span></div>
 
 </pre></div>
         </article>
@@ -873,7 +928,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

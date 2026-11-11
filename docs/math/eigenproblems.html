@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -704,6 +704,13 @@ anywhere in the equations as long as they are affine in it.</p>
 <section id="solvers">
 <h2>Solvers<a class="headerlink" href="#solvers" title="Link to this heading">¶</a></h2>
 <ul class="simple">
+<li><p><strong>Balancing.</strong> QZ and shift-invert run on the pencil written in its own units. The eigenvalue
+is divided by the smallest ratio of <span class="math notranslate nohighlight">\(L\)</span> to <span class="math notranslate nohighlight">\(M\)</span> over the rows that carry <span class="math notranslate nohighlight">\(M\)</span>. Each tau or lift
+unknown (a column without <span class="math notranslate nohighlight">\(M\)</span> that enters only those rows) is scaled to the size of its rows,
+and every row is divided by its largest entry. A unit between <span class="math notranslate nohighlight">\(10^{-2}\)</span> and <span class="math notranslate nohighlight">\(10^{2}\)</span>, or a
+tau-column factor between <span class="math notranslate nohighlight">\(10^{-4}\)</span> and <span class="math notranslate nohighlight">\(10^{4}\)</span>, is not applied. The eigenvalues are then the same, to rounding, after a change of time or length unit
+or after multiplying an equation by a constant: <span class="math notranslate nohighlight">\(sT = \kappa T''\)</span> in SI units
+(<span class="math notranslate nohighlight">\(\kappa = 1.4\times 10^{-7}\)</span>, <span class="math notranslate nohighlight">\(H = 4\)</span> km) gives <span class="math notranslate nohighlight">\(-\kappa(\pi/H)^2\)</span> to <span class="math notranslate nohighlight">\(10^{-12}\)</span>.</p></li>
 <li><p><strong>Dense QZ</strong> on the full pencil. Because the boundary and tau rows have no <span class="math notranslate nohighlight">\(M\)</span> part, the pencil
 has infinite eigenvalues. A pair <span class="math notranslate nohighlight">\((\alpha, \beta)\)</span> is classified infinite when <span class="math notranslate nohighlight">\(\beta = 0\)</span>, or
 when <span class="math notranslate nohighlight">\(|\beta| \le 10^3\,\varepsilon\,|\alpha|\)</span> (rows equilibrated, scaled by
@@ -712,7 +719,9 @@ when <span class="math notranslate nohighlight">\(|\beta| \le 10^3\,\varepsilon\
 returned. The infinite ones are counted in <code class="docutils literal notranslate"><span class="pre">n_infinite</span></code>; the log states the rank of <span class="math notranslate nohighlight">\(M\)</span> and
 names any pair the rule cannot classify. Left eigenvectors are available.</p></li>
 <li><p><strong>Shift-invert Arnoldi</strong> for a few eigenvalues near a target, valid for singular,
-non-symmetric <span class="math notranslate nohighlight">\(M\)</span>.</p></li>
+non-symmetric <span class="math notranslate nohighlight">\(M\)</span>. A target within <span class="math notranslate nohighlight">\(10^{-5}\)</span> (relative) of an eigenvalue moves the Arnoldi
+shift by that distance off the real axis; the log says so. When fewer modes than <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>
+come back, a <code class="docutils literal notranslate"><span class="pre">CorrectnessWarning</span></code> says how many and why.</p></li>
 </ul>
 <p>Before solving, the pencil is checked for regularity at a generic <span class="math notranslate nohighlight">\(\sigma\)</span>; a singular pencil
 (a missing condition) is refused.</p>
@@ -850,7 +859,7 @@ spurious eigenvalues</em>, J. Comput. Phys. 80 (1989) 137–167.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../_static/documentation_options.js?v=4621528c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

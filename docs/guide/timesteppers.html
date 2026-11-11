@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -992,7 +992,9 @@ stability. It does not estimate the temporal error.</p></li>
 <li><p><strong>Temporal error</strong>: <code class="docutils literal notranslate"><span class="pre">EmbeddedError(sim.solver)</span></code> compares one step with a lower-order companion
 on the same data (SBDF<span class="math notranslate nohighlight">\(q\)</span> against SBDF<span class="math notranslate nohighlight">\(q{-}1\)</span>, RK443 against RK222, RKSMR or RKGFY against
 RK111; refused for the CN family, which has no companion) and reports the
-difference. It adapts <code class="docutils literal notranslate"><span class="pre">dt</span></code> only if you ask, with <code class="docutils literal notranslate"><span class="pre">adapt=True</span></code> and an explicit <code class="docutils literal notranslate"><span class="pre">tol=</span></code> and
+difference: max |X - X_low| / max |X| over the unknowns. The tau variables are left out: they
+hold the constraint rows, whose round-off grows as <code class="docutils literal notranslate"><span class="pre">dt</span></code> shrinks. The ratio does not change
+when time or the state is rescaled. It adapts <code class="docutils literal notranslate"><span class="pre">dt</span></code> only if you ask, with <code class="docutils literal notranslate"><span class="pre">adapt=True</span></code> and an explicit <code class="docutils literal notranslate"><span class="pre">tol=</span></code> and
 <code class="docutils literal notranslate"><span class="pre">safety=</span></code> (Runge–Kutta schemes): a step whose estimate exceeds <code class="docutils literal notranslate"><span class="pre">tol</span></code> is rejected, the state
 restored and the step retried with a smaller <code class="docutils literal notranslate"><span class="pre">dt</span></code>; an accepted step proposes the next <code class="docutils literal notranslate"><span class="pre">dt</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">tol</span></code> cannot be met at <code class="docutils literal notranslate"><span class="pre">dt_min</span></code> (or after 20 rejections in a row) a <code class="docutils literal notranslate"><span class="pre">ConvergenceError</span></code> is
@@ -1212,7 +1214,7 @@ out (<code class="docutils literal notranslate"><span class="pre">&quot;auto&quo
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../_static/documentation_options.js?v=4621528c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

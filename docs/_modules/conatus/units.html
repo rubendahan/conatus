@@ -235,7 +235,7 @@
   <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -730,8 +730,10 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">"reference scale </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2"> (family basis)"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"scale </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="si">}</span><span class="s2"> must be &gt; 0 (got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+        <span class="c1"># a finite positive real (hunt 5C, M4: inf and True were accepted, "2" raised a bare</span>
+        <span class="c1"># TypeError)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_real</span>
+        <span class="n">check_real</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"scale </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -741,6 +743,11 @@
     <span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">definition</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">prefactor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># a finite positive real (hunt 5C, M4: -1 was accepted, 0 divided by zero in convert)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_real</span>
+        <span class="n">check_real</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefactor</span><span class="p">,</span> <span class="s2">"prefactor"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"group </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">symbol</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The group in one line."""</span>
@@ -763,7 +770,9 @@
 <a class="viewcode-back" href="../../api/_generated/_stubs/conatus.expert.UnitSystem.html#conatus.expert.UnitSystem.scale">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Scale</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: no </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2"> scale (has </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: no </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2"> scale (has </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span>
+                              <span class="n">fix</span><span class="o">=</span><span class="s2">"declare it in scales=, or convert a quantity whose dimensions "</span>
+                                  <span class="s2">"use only "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">)))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span></div>
 
 
@@ -832,6 +841,8 @@
     <span class="n">convention</span><span class="p">:</span> <span class="nb">str</span>           <span class="c1"># key of ENERGY_CONVENTIONS</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_real</span>
+        <span class="n">check_real</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">,</span> <span class="s2">"Energy"</span><span class="p">,</span> <span class="n">nonnegative</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>   <span class="c1"># hunt 5C, M4: nan accepted</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">convention</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ENERGY_CONVENTIONS</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unknown energy convention '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">convention</span><span class="si">}</span><span class="s2">' "</span>
                              <span class="sa">f</span><span class="s2">"(known: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ENERGY_CONVENTIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
@@ -844,6 +855,9 @@
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">if</span> <span class="n">Lx</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">Lz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">OptionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"converting a '</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">' energy needs the box size Lx, Lz"</span><span class="p">)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_real</span>
+        <span class="n">Lx</span> <span class="o">=</span> <span class="n">check_real</span><span class="p">(</span><span class="n">Lx</span><span class="p">,</span> <span class="s2">"Lx"</span><span class="p">,</span> <span class="s2">"Energy.to_total"</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>   <span class="c1"># a negative box gave a</span>
+        <span class="n">Lz</span> <span class="o">=</span> <span class="n">check_real</span><span class="p">(</span><span class="n">Lz</span><span class="p">,</span> <span class="s2">"Lz"</span><span class="p">,</span> <span class="s2">"Energy.to_total"</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>   <span class="c1"># negative energy (M4)</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">Lx</span> <span class="o">*</span> <span class="n">Lz</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s2">"modal"</span> <span class="k">else</span> <span class="n">Lx</span> <span class="o">*</span> <span class="n">Lz</span>
         <span class="k">return</span> <span class="n">Energy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">f</span><span class="p">,</span> <span class="s2">"total"</span><span class="p">)</span></div>
 
@@ -906,7 +920,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

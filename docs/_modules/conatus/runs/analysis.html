@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -727,9 +727,11 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">html</span>
-        <span class="n">rows</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&lt;tr&gt;&lt;td&gt;&lt;code&gt;</span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/code&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">state</span><span class="si">}</span><span class="s2">&lt;/td&gt;"</span>
-                       <span class="sa">f</span><span class="s2">"&lt;td&gt;</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">params</span><span class="p">))[:</span><span class="mi">120</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/td&gt;"</span>
-                       <span class="sa">f</span><span class="s2">"&lt;td&gt;</span><span class="si">{</span><span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">results</span><span class="p">))[:</span><span class="mi">120</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;"</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">e</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>            <span class="c1"># every field escaped, after truncation (review G15)</span>
+            <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)[:</span><span class="mi">120</span><span class="p">],</span> <span class="n">quote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"&lt;tr&gt;&lt;td&gt;&lt;code&gt;</span><span class="si">{</span><span class="n">e</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/code&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">e</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">state</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;"</span>
+                       <span class="sa">f</span><span class="s2">"&lt;td&gt;</span><span class="si">{</span><span class="n">e</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">e</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;"</span>
+                       <span class="sa">f</span><span class="s2">"&lt;td&gt;</span><span class="si">{</span><span class="n">e</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;"</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="s2">"&lt;table&gt;&lt;tr&gt;&lt;th&gt;id&lt;/th&gt;&lt;th&gt;state&lt;/th&gt;&lt;th&gt;status&lt;/th&gt;&lt;th&gt;params&lt;/th&gt;&lt;th&gt;results&lt;/th&gt;"</span>
                 <span class="sa">f</span><span class="s2">"&lt;/tr&gt;</span><span class="si">{</span><span class="n">rows</span><span class="si">}</span><span class="s2">&lt;/table&gt;"</span><span class="p">)</span></div>
 
@@ -945,7 +947,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

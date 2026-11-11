@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -702,7 +702,10 @@
 <span class="sd">only the principal value of the phase increment is known, so the walk is adaptive: a step is</span>
 <span class="sd">accepted when</span>
 
-<span class="sd">* its principal increment and those of its two halves are at most ``phase_step``, and</span>
+<span class="sd">* its principal increment is at most ``phase_step``, and the complex increments of</span>
+<span class="sd">  ``log det T`` over its two halves (log modulus and principal phase) are at most ``phase_step``</span>
+<span class="sd">  in modulus: the log modulus has no 2 pi ambiguity, and a cluster of zeros near the step that</span>
+<span class="sd">  turns the phase by a multiple of 2 pi changes it, and</span>
 <span class="sd">* ``log det T`` is resolved by the step: the second difference of ``log|det T| + i arg det T``</span>
 <span class="sd">  over the two halves is at most ``phase_step`` as well (a zero close to the step makes the</span>
 <span class="sd">  modulus dip between the points),</span>
@@ -846,7 +849,8 @@
                  <span class="sa">f</span><span class="s2">"P = </span><span class="si">{</span><span class="n">P</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                  <span class="sa">f</span><span class="s2">"  operator: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                  <span class="sa">f</span><span class="s2">"  walk: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluations</span><span class="si">}</span><span class="s2"> evaluations of det T, every step with a principal "</span>
-                 <span class="sa">f</span><span class="s2">"phase increment &lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phase_step</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2"> rad (and its two halves), log det T "</span>
+                 <span class="sa">f</span><span class="s2">"phase increment &lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phase_step</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2"> rad, and on its two halves a complex "</span>
+                 <span class="sa">f</span><span class="s2">"increment of log det T (log modulus and phase) &lt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">phase_step</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">, log det T "</span>
                  <span class="s2">"resolved by every step"</span><span class="p">,</span>
                  <span class="sa">f</span><span class="s2">"  winding before rounding: off an integer by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">winding_error</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> (a "</span>
                  <span class="s2">"non-integer winding is refused)"</span><span class="p">,</span>
@@ -919,8 +923,15 @@
                 <span class="n">fm</span> <span class="o">=</span> <span class="n">ev</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
                 <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="o">=</span> <span class="n">dlog</span><span class="p">(</span><span class="n">fa</span><span class="p">,</span> <span class="n">fm</span><span class="p">),</span> <span class="n">dlog</span><span class="p">(</span><span class="n">fm</span><span class="p">,</span> <span class="n">fb</span><span class="p">)</span>
                 <span class="n">whole</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">fb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">fa</span><span class="p">[</span><span class="mi">0</span><span class="p">]))))</span>
-                <span class="n">resolved</span> <span class="o">=</span> <span class="p">(</span><span class="n">whole</span> <span class="o">&lt;=</span> <span class="n">phase_step</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d1</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">phase_step</span>
-                            <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">phase_step</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span> <span class="o">-</span> <span class="n">d1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">phase_step</span><span class="p">)</span>
+                <span class="c1"># |d1|, |d2| bound the whole complex increment of log det T, not only its</span>
+                <span class="c1"># principal phase (hunt 5C): a double zero 1e-3 off an edge, about 15 %</span>
+                <span class="c1"># into a step, turns the phase by 2 pi there, which aliases to 0, while the log</span>
+                <span class="c1"># modulus of the two halves stays nearly collinear; 48 of 197 positions along an</span>
+                <span class="c1"># edge counted 2 eigenvalues for 3. The log modulus is known without aliasing and</span>
+                <span class="c1"># changes by about 2 log(distance ratio) across such a step, so bounding it</span>
+                <span class="c1"># refines the step down to the distance of the zero.</span>
+                <span class="n">resolved</span> <span class="o">=</span> <span class="p">(</span><span class="n">whole</span> <span class="o">&lt;=</span> <span class="n">phase_step</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">phase_step</span>
+                            <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">phase_step</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span> <span class="o">-</span> <span class="n">d1</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">phase_step</span><span class="p">)</span>
                 <span class="n">bend</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d2</span> <span class="o">-</span> <span class="n">d1</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">resolved</span><span class="p">:</span>
                     <span class="c1"># the phase test passed on this step: its length is the one the phase needed</span>
@@ -1091,7 +1102,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

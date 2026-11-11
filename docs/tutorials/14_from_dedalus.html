@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -892,7 +892,7 @@ change.</p>
 </section>
 <section id="output-as-executed">
 <h2>Output (as executed)<a class="headerlink" href="#output-as-executed" title="Link to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14_from_dedalus: PASS (exit 0) in 13.1 s | 2026-10-31 | script sha256 5a740420eb488748
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14_from_dedalus: PASS (exit 0) in 2.0 s | 2026-11-11 | script sha256 5a740420eb488748
 native model: t = 0.020, max|u| = 4.225e-02
 Dedalus -&gt; Conatus: rb_cell_dedalus.py
   39 translated, 0 approximated, 0 unsupported, 0 skipped (output only)
@@ -987,10 +987,10 @@ translation:</p>
 <p>The translation keeps the script’s bases, tau terms, lifts, scheme, start-up and dealiasing, so
 the difference is rounding.</p>
 <p>Its output:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14b_dedalus_check: PASS (exit 0) in 15.9 s | 2026-10-31 | script sha256 763cece2d005a63e
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># t14b_dedalus_check: PASS (exit 0) in 4.0 s | 2026-11-11 | script sha256 763cece2d005a63e
 Conatus: t = 0.020 after 40 steps
-2026-10-31 17:24:07,646 dedalus 0/1 WARNING :: Threading has not been disabled. This may massively degrade Dedalus performance.
-2026-10-31 17:24:07,646 dedalus 0/1 WARNING :: We strongly suggest setting the "OMP_NUM_THREADS" environment variable to "1".
+2026-11-11 02:47:23,931 dedalus 0/1 WARNING :: Threading has not been disabled. This may massively degrade Dedalus performance.
+2026-11-11 02:47:23,931 dedalus 0/1 WARNING :: We strongly suggest setting the "OMP_NUM_THREADS" environment variable to "1".
 Dedalus: t = 0.020; relative difference th 3.0e-14, u 3.8e-15
 PASS
 </pre></div>
@@ -1085,7 +1085,7 @@ eigenvalue problem and 5e-14 for the pipe-flow eigenvalues on the disk.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../_static/documentation_options.js?v=4621528c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

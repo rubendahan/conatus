@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -932,10 +932,18 @@
 <div class="viewcode-block" id="LBVPSolution.coordinate">
 <a class="viewcode-back" href="../../../api/_generated/_stubs/conatus.expert.LBVPSolution.html#conatus.expert.LBVPSolution.coordinate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">coordinate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Points of coordinate ``name`` of the grid of ``grid()`` (same as Simulation.coordinate)."""</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">coordsys</span><span class="o">.</span><span class="n">coords</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Points of coordinate ``name`` of the grid of ``grid()`` (same as Simulation.coordinate;</span>
+<span class="sd">        disk, annulus, cylinder, sphere, ball, shell: the plan's own grids)."""</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">coordsys</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coords</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">basis</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"no basis along </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">domain</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">space</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="p">,</span> <span class="s2">"space"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">space</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="s2">"grids"</span><span class="p">):</span>
+            <span class="c1"># curvilinear plans (hunt): the reference transforms have no polar or</span>
+            <span class="c1"># spherical basis, so this raised NotImplementedError where Simulation.coordinate works;</span>
+            <span class="c1"># a copy, as there (the sphere's theta is a cached grid of the plan)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">space</span><span class="o">.</span><span class="n">grids</span><span class="p">(</span><span class="kc">False</span><span class="p">)[</span><span class="n">coords</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">c</span><span class="p">)],</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">T</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">basis</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="n">dealias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
@@ -1902,7 +1910,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

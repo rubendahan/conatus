@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -767,27 +767,85 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_tail</span><span class="p">(</span><span class="n">pevp</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""max over the components of every unknown of |last k coefficients| / max |coefficients|</span>
-<span class="sd">    (a-posteriori resolution); NaN when no component has more than ``k`` coefficients.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_lines</span><span class="p">(</span><span class="n">pevp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The coefficient lines of the pencil's vectors along the non-periodic axis, one per</span>
+<span class="sd">    (unknown, component, Fourier index) and per piece of a compound basis, as (index array into</span>
+<span class="sd">    the vector, symmetry-removed entries dropped; True for a piece of a compound basis); (None,</span>
+<span class="sd">    why) when the plan has no such layout."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..solvers.spurious</span><span class="w"> </span><span class="kn">import</span> <span class="n">tail_layout</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">plan</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">reduced</span> <span class="o">=</span> <span class="n">pevp</span><span class="o">.</span><span class="n">_layout_of</span>
+        <span class="n">layout</span><span class="p">,</span> <span class="n">why</span> <span class="o">=</span> <span class="n">tail_layout</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">reduced</span><span class="p">,</span> <span class="n">require_tau</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 -- the fallback below is said in the check's text</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">if</span> <span class="n">layout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">why</span> <span class="ow">or</span> <span class="s2">"no non-periodic axis"</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_name</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">pieces</span> <span class="ow">in</span> <span class="n">layout</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">pieces</span><span class="p">:</span>
+                <span class="n">seg</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">a</span><span class="p">:</span><span class="n">b</span><span class="p">]</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">seg</span><span class="p">[</span><span class="n">seg</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">pieces</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">lines</span><span class="p">,</span> <span class="s2">""</span>
 
-<span class="sd">    Per (variable, component) (audit "assurances"): the columns of a vector unknown</span>
-<span class="sd">    hold its components one after the other, so the last k entries of the whole variable were the</span>
-<span class="sd">    top coefficients of its LAST component only, and an unresolved first component passed; a</span>
-<span class="sd">    pencil with no measurable component returned 0, a PASS on nothing measured."""</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_compound</span><span class="p">(</span><span class="n">pevp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""True when a basis of the pencil's domain is stored piece after piece (``sizes``); False for</span>
+<span class="sd">    a pencil without a plan (its columns are measured per (unknown, component))."""</span>
+    <span class="n">lay</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pevp</span><span class="p">,</span> <span class="s2">"_layout_of"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lay</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">bases</span> <span class="o">=</span> <span class="n">lay</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">bases</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 -- a plan whose bases cannot be read: pieces may exist</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">"sizes"</span><span class="p">,</span> <span class="p">())</span> <span class="ow">or</span> <span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bases</span> <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_tail</span><span class="p">(</span><span class="n">pevp</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Largest coefficient tail of the mode (a-posteriori resolution along the non-periodic axis):</span>
+<span class="sd">    for every coefficient line of every unknown (one per component, per Fourier index of the</span>
+<span class="sd">    group and per piece of a compound basis), max |last k coefficients of the line| over the</span>
+<span class="sd">    largest coefficient of that (unknown, component). NaN when nothing is measured, when a</span>
+<span class="sd">    component is zero or non-finite, or when a piece holds k coefficients or fewer.</span>
+
+<span class="sd">    Per (variable, component) (audit "assurances"): the last k entries of a vector unknown were</span>
+<span class="sd">    the top coefficients of its last component only. Per piece and per Fourier index (0.3.1):</span>
+<span class="sd">    a CompoundChebyshev unknown stores its pieces one after the other and a group holds its</span>
+<span class="sd">    Fourier lines one after the other, so the last k entries were the top of the last piece of</span>
+<span class="sd">    the last line only, and an unresolved first piece passed (eigenvalue 2-5 % off)."""</span>
     <span class="n">cols</span> <span class="o">=</span> <span class="n">pevp</span><span class="o">.</span><span class="n">gm0</span><span class="o">.</span><span class="n">cols</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"tau"</span><span class="p">]</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">}</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">scale</span><span class="p">[</span><span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">scale</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
+    <span class="n">lines</span><span class="p">,</span> <span class="n">_why</span> <span class="o">=</span> <span class="n">_lines</span><span class="p">(</span><span class="n">pevp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lines</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_compound</span><span class="p">(</span><span class="n">pevp</span><span class="p">):</span>
+            <span class="c1"># one block per component holds several pieces whose boundaries this plan does not</span>
+            <span class="c1"># expose: a tail of the last k entries would measure the last piece only</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keep</span> <span class="k">if</span> <span class="n">key</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">kk</span><span class="p">]),</span> <span class="kc">False</span><span class="p">)</span>
+                 <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">values</span><span class="p">())]</span>
     <span class="n">tails</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">((</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cols</span> <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"tau"</span><span class="p">):</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"tau"</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">seg</span><span class="p">,</span> <span class="n">piece</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">seg</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">k</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">piece</span> <span class="ow">and</span> <span class="n">seg</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                <span class="n">tails</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">))</span>    <span class="c1"># a piece too short to show a tail: not measured</span>
+            <span class="k">continue</span>                          <span class="c1"># a line without length (a constant): no tail</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">scale</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">seg</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
             <span class="c1"># a zero or non-finite component has no tail to measure (review 0.1.1, sweep of F4:</span>
             <span class="c1"># 0 / 1e-300 = 0 was a PASS on a zero vector)</span>
             <span class="n">tails</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">))</span>
             <span class="k">continue</span>
-        <span class="n">tails</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coefficient_tail</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">seg</span><span class="p">])</span>
+        <span class="c1"># the one coefficient-tail definition, rescaled from the line's largest coefficient to</span>
+        <span class="c1"># the component's</span>
+        <span class="n">ok</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="n">tails</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coefficient_tail</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">/</span> <span class="n">s</span> <span class="k">if</span> <span class="n">ok</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">))</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">tails</span><span class="p">))</span> <span class="k">if</span> <span class="n">tails</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>     <span class="c1"># np.max keeps a NaN</span>
 
 
@@ -844,8 +902,10 @@
                               <span class="n">RESIDUAL_TOL</span><span class="p">,</span> <span class="s2">"||y^H (L + sigma M)|| backward error, measured on "</span>
                               <span class="s2">"the current vector"</span><span class="p">))</span>
     <span class="n">r</span><span class="o">.</span><span class="n">checks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Check</span><span class="p">(</span><span class="s2">"spectral tail"</span><span class="p">,</span> <span class="n">_tail</span><span class="p">(</span><span class="n">pevp</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">TAIL_TOL</span><span class="p">,</span>
-                          <span class="s2">"last 4 Chebyshev coefficients / max, per component of each unknown "</span>
-                          <span class="s2">"(mode resolved in N; NaN: no component long enough, not measured)"</span><span class="p">))</span>
+                          <span class="s2">"last 4 coefficients / max along the non-periodic axis, per component, "</span>
+                          <span class="s2">"Fourier line and piece of each unknown (NaN: not measured). A small "</span>
+                          <span class="s2">"tail is necessary for a resolved mode, not sufficient: it does not "</span>
+                          <span class="s2">"measure the eigenvalue error, the Fourier directions or aliasing"</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pevp</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">break</span>
@@ -917,7 +977,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

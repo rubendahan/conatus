@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -727,7 +727,9 @@ separator, not “.” or “..”, no NUL; anything else is refused.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="conatus.runs.Registry.load">
 <span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/runs/store.html#Registry.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.runs.Registry.load" title="Link to this definition">¶</a></dt>
-<dd><p>The record of one run (<code class="docutils literal notranslate"><span class="pre">run.json</span></code>).</p>
+<dd><p>The record of one run (<code class="docutils literal notranslate"><span class="pre">run.json</span></code>). A record whose <code class="docutils literal notranslate"><span class="pre">state</span></code> or <code class="docutils literal notranslate"><span class="pre">status</span></code> is not
+one of <code class="xref py py-data docutils literal notranslate"><span class="pre">STATES</span></code> / <code class="xref py py-data docutils literal notranslate"><span class="pre">STATUSES</span></code> is refused (review G15: an edited record put
+markup into the HTML view of <code class="docutils literal notranslate"><span class="pre">find</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>run_id</strong> (<em>str</em>)</p>
@@ -948,7 +950,7 @@ record (it is reported in <code class="docutils literal notranslate"><span class
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

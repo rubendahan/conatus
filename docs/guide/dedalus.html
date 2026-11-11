@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -765,7 +765,7 @@ interpreter walks it statement by statement. It understands:</p>
 <td><p>not translated, with the reason and what to write instead; everything that depends on it is reported as well</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>skipped</strong></p></td>
-<td><p>output only: logging, plots, reading results after the solve</p></td>
+<td><p>output only: logging, plots, file handlers and their tasks, <code class="docutils literal notranslate"><span class="pre">GlobalFlowProperty</span></code>, reading results after the solve (nothing is written; the note says what to use)</p></td>
 </tr>
 </tbody>
 </table>
@@ -773,7 +773,27 @@ interpreter walks it statement by statement. It understands:</p>
 <p><code class="docutils literal notranslate"><span class="pre">tr.complete</span></code> is true only when a problem was translated with no line unsupported and none
 approximated. A time loop whose body changes the simulation (writes field data, calls a mutating
 method, stops on a condition) is unsupported, because <code class="docutils literal notranslate"><span class="pre">solver.run(n)</span></code> cannot reproduce it.
-<code class="docutils literal notranslate"><span class="pre">**options</span></code> in a call are expanded. A problem’s own <code class="docutils literal notranslate"><span class="pre">namespace={...}</span></code> alone resolves the names of
+<code class="docutils literal notranslate"><span class="pre">tr.ivp_solver()</span></code>, <code class="docutils literal notranslate"><span class="pre">tr.discretize()</span></code>, <code class="docutils literal notranslate"><span class="pre">tr.initial_state()</span></code> and <code class="docutils literal notranslate"><span class="pre">tr.ncc()</span></code> raise
+<code class="docutils literal notranslate"><span class="pre">UnsupportedError</span></code> when a line is unsupported, and name the lines. With <code class="docutils literal notranslate"><span class="pre">allow_incomplete=True</span></code>
+they go on and give a <code class="docutils literal notranslate"><span class="pre">CorrectnessWarning</span></code> that names them. The equations are counted against the
+variables: a difference left by an equation that was not translated is refused before the build;
+otherwise, as in Dedalus, squareness is checked per group at discretization (a constant tau field
+in no equation has no modes outside the zero group). After the solve or the time loop, statements
+that only read results (plots, <code class="docutils literal notranslate"><span class="pre">set_state</span></code>, loops over the eigenvalues) are skipped.</p>
+<p>Field data statements (<code class="docutils literal notranslate"><span class="pre">u['g']</span> <span class="pre">=</span> <span class="pre">...</span></code>, <code class="docutils literal notranslate"><span class="pre">u['g']</span> <span class="pre">+=</span> <span class="pre">...</span></code>) are replayed in the script’s order, with
+Dedalus’s value semantics. <code class="docutils literal notranslate"><span class="pre">v['g']</span> <span class="pre">=</span> <span class="pre">u['g']</span></code> takes the value <code class="docutils literal notranslate"><span class="pre">u</span></code> has at that line. A field that
+reads its own data sees its previous value, and a new field is zero. Arrays and lists follow
+Python: <code class="docutils literal notranslate"><span class="pre">b</span> <span class="pre">=</span> <span class="pre">a;</span> <span class="pre">b</span> <span class="pre">+=</span> <span class="pre">1</span></code> changes <code class="docutils literal notranslate"><span class="pre">a</span></code>. A change of data through a view or a method is unsupported,
+and the data of that field is then not translated. Examples are <code class="docutils literal notranslate"><span class="pre">d</span> <span class="pre">=</span> <span class="pre">u['g'];</span> <span class="pre">d</span> <span class="pre">+=</span> <span class="pre">1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">u['g'].fill(3)</span></code>, <code class="docutils literal notranslate"><span class="pre">out=u['g']</span></code>, and a loop or a function of the script that writes data. Data
+written after the time loop or the solve is unsupported. An <code class="docutils literal notranslate"><span class="pre">if</span></code> is read only when it is
+<code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code> or an MPI guard: the rank of <code class="docutils literal notranslate"><span class="pre">MPI.COMM_WORLD</span></code> or <code class="docutils literal notranslate"><span class="pre">dist.comm</span></code>
+compared with 0, with branches that change no data or problem. The translation is serial, so
+the body runs. Any other condition is unsupported.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tr.steps()</span></code> is the first limit reached, <code class="docutils literal notranslate"><span class="pre">stop_iteration</span></code> or <code class="docutils literal notranslate"><span class="pre">stop_sim_time</span> <span class="pre">/</span> <span class="pre">dt</span></code>, because Dedalus
+checks every limit. The time loop must be <code class="docutils literal notranslate"><span class="pre">while</span> <span class="pre">solver.proceed:</span></code>. Any other loop condition is
+unsupported.</p>
+<p><code class="docutils literal notranslate"><span class="pre">**options</span></code> in a call are expanded. A problem’s own <code class="docutils literal notranslate"><span class="pre">namespace={...}</span></code> alone resolves the names of
 its equations. <code class="docutils literal notranslate"><span class="pre">tr.to_script()</span></code> returns a runnable program. It translates the embedded script
 again and refuses to run if a line is unsupported. It then runs the IVP or solves the LBVP. For an
 EVP or NLBVP it stops at the discretized plan, because the group or the initial guess is your
@@ -856,7 +876,7 @@ choice.</p>
 </tr>
 <tr class="row-even"><td><p>file handlers, <code class="docutils literal notranslate"><span class="pre">GlobalFlowProperty</span></code></p></td>
 <td><p>—</p></td>
-<td><p><strong>unsupported</strong>: use <code class="docutils literal notranslate"><span class="pre">conatus.runs</span></code> and the Studio</p></td>
+<td><p><strong>skipped</strong> (output only, the solution is unchanged): use <code class="docutils literal notranslate"><span class="pre">conatus.runs</span></code> and the Studio</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">solve_dense</span></code> / <code class="docutils literal notranslate"><span class="pre">solve_sparse(subproblems[i])</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">eigenvalues(plan,</span> <span class="pre">group)</span></code></p></td>
@@ -953,7 +973,7 @@ check script of <a class="reference internal" href="../tutorials/14_from_dedalus
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../_static/documentation_options.js?v=4621528c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

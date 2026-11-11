@@ -236,7 +236,7 @@
   <a href="../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -1034,7 +1034,7 @@ it and documented from its docstring.</p>
 <td><p>Eigenvalues sigma of (L + sigma M) x = 0 for one group, with residuals and a filter log.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.solve_dense.html#conatus.expert.solve_dense" title="conatus.expert.solve_dense"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve_dense</span></code></a>(L, M, *[, left, label])</p></td>
-<td><p>All eigenvalues by the QZ algorithm (scipy.linalg.eig), infinite ones counted and removed.</p></td>
+<td><p>All eigenvalues by the QZ algorithm (scipy.linalg.eig) on the balanced pencil (<code class="xref py py-func docutils literal notranslate"><span class="pre">balance_pencil()</span></code>), infinite ones counted and removed.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.solve_sparse.html#conatus.expert.solve_sparse" title="conatus.expert.solve_sparse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve_sparse</span></code></a>(L, M, target[, n_modes, label, tol])</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">n_modes</span></code> eigenvalues nearest <code class="docutils literal notranslate"><span class="pre">target</span></code> by shift-invert Arnoldi on (L + target M)^{-1} M (<code class="docutils literal notranslate"><span class="pre">k=</span></code> is the deprecated former name of <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>: k is a wavenumber everywhere else).</p></td>
@@ -1146,7 +1146,7 @@ it and documented from its docstring.</p>
 <td><p>v(u) = 0.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.equilibrium_eigenvalues.html#conatus.expert.equilibrium_eigenvalues" title="conatus.expert.equilibrium_eigenvalues"><code class="xref py py-obj docutils literal notranslate"><span class="pre">equilibrium_eigenvalues</span></code></a>(solver, sol, n_modes, *)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">n_modes</span></code> leading eigenvalues (largest real part) of the Jacobian of v (+ c ∂x for a TW), full space without the mean: dense QZ if the active size ≤ <code class="docutils literal notranslate"><span class="pre">dense_max</span></code> (declared default DENSE_MAX), ARPACK otherwise at the accuracy <code class="docutils literal notranslate"><span class="pre">arnoldi_tol</span></code> (required: the budget is declared, the tolerance required; <code class="docutils literal notranslate"><span class="pre">k=</span></code> is the former name of <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>, k being a wavenumber everywhere else).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">n_modes</span></code> leading eigenvalues (largest real part) of the Jacobian of v (+ c ∂x for a TW), full space (the mean dropped only if measured conserved, <code class="xref py py-func docutils literal notranslate"><span class="pre">_mean_space()</span></code>; the decision is in <code class="docutils literal notranslate"><span class="pre">sol.stability</span></code>): dense QZ if the active size ≤ <code class="docutils literal notranslate"><span class="pre">dense_max</span></code> (declared default DENSE_MAX), ARPACK otherwise at the accuracy <code class="docutils literal notranslate"><span class="pre">arnoldi_tol</span></code> (required: the budget is declared, the tolerance required; <code class="docutils literal notranslate"><span class="pre">k=</span></code> is the former name of <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>, k being a wavenumber everywhere else).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.find_equilibrium.html#conatus.expert.find_equilibrium" title="conatus.expert.find_equilibrium"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_equilibrium</span></code></a>(solver, x0, newton, *[, ...])</p></td>
 <td><p>v(u) = 0.</p></td>
@@ -1158,7 +1158,7 @@ it and documented from its docstring.</p>
 <td><p>S τ_ℓ Φ_T(u) = u with unknowns (u, T, ℓ) and phase conditions ⟨v(u*), δu⟩ = 0 (time), ⟨∂x u*, δu⟩ = 0 (translation).</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_stubs/conatus.expert.floquet_multipliers.html#conatus.expert.floquet_multipliers" title="conatus.expert.floquet_multipliers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">floquet_multipliers</span></code></a>(solver, sol, n_modes, *)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">n_modes</span></code> leading Floquet multipliers of S τ_ℓ J_T (monodromy of the discrete map, full space without the mean): dense if the active size ≤ <code class="docutils literal notranslate"><span class="pre">dense_max</span></code> (declared default), ARPACK otherwise with its required accuracy <code class="docutils literal notranslate"><span class="pre">arnoldi_tol</span></code> (<code class="docutils literal notranslate"><span class="pre">k=</span></code>: former name of <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">n_modes</span></code> leading Floquet multipliers of S τ_ℓ J_T (monodromy of the discrete map, full space; the mean dropped only if measured conserved, returned in <code class="docutils literal notranslate"><span class="pre">'space'</span></code>): dense if the active size ≤ <code class="docutils literal notranslate"><span class="pre">dense_max</span></code> (declared default), ARPACK otherwise with its required accuracy <code class="docutils literal notranslate"><span class="pre">arnoldi_tol</span></code> (<code class="docutils literal notranslate"><span class="pre">k=</span></code>: former name of <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_stubs/conatus.expert.symmetry_breaking_check.html#conatus.expert.symmetry_breaking_check" title="conatus.expert.symmetry_breaking_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">symmetry_breaking_check</span></code></a>(solver, sol, *[, ...])</p></td>
 <td><p>Stability of a reflection-symmetric equilibrium (R u = u) in <strong>each isotypic component</strong> of the reflection R: the Jacobian commutes with R, so its spectrum splits into the symmetric block (R v = v, what a subspace computation sees) and the antisymmetric block (R v = −v, invisible there).</p></td>
@@ -1731,7 +1731,7 @@ it and documented from its docstring.</p>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

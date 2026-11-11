@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -1200,7 +1200,12 @@
     <span class="n">A</span> <span class="o">=</span> <span class="n">hill</span><span class="o">.</span><span class="n">dense</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
     <span class="n">K</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hill</span><span class="o">.</span><span class="n">harmonics</span><span class="p">)</span>
     <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">K</span><span class="p">),</span> <span class="n">hill</span><span class="o">.</span><span class="n">mass</span><span class="p">)</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">sla</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="o">-</span><span class="n">B</span><span class="p">)</span>
+    <span class="c1"># balanced pencil (hunt): the exponents in their own unit beside O(1) tau rows</span>
+    <span class="c1"># lost digits in SI units; same balancing as solvers.evp.solve_dense</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..solvers.evp</span><span class="w"> </span><span class="kn">import</span> <span class="n">balance_pencil</span>
+    <span class="n">Ae</span><span class="p">,</span> <span class="n">Be</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">_dc</span><span class="p">,</span> <span class="n">_r</span> <span class="o">=</span> <span class="n">balance_pencil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">A</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">B</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">):</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">sla</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">Ae</span><span class="p">,</span> <span class="o">-</span><span class="n">Be</span><span class="p">)</span>
     <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">finite_cap</span><span class="p">)</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">keep</span><span class="p">])</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">_Exponents</span><span class="p">)</span>
@@ -1245,7 +1250,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

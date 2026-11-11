@@ -190,7 +190,9 @@ choose it, and they answer different questions:
 - **Temporal error**: `EmbeddedError(sim.solver)` compares one step with a lower-order companion
   on the same data (SBDF$q$ against SBDF$q{-}1$, RK443 against RK222, RKSMR or RKGFY against
   RK111; refused for the CN family, which has no companion) and reports the
-  difference. It adapts `dt` only if you ask, with `adapt=True` and an explicit `tol=` and
+  difference: max |X - X_low| / max |X| over the unknowns. The tau variables are left out: they
+  hold the constraint rows, whose round-off grows as `dt` shrinks. The ratio does not change
+  when time or the state is rescaled. It adapts `dt` only if you ask, with `adapt=True` and an explicit `tol=` and
   `safety=` (Runge–Kutta schemes): a step whose estimate exceeds `tol` is rejected, the state
   restored and the step retried with a smaller `dt`; an accepted step proposes the next `dt`.
   If `tol` cannot be met at `dt_min` (or after 20 rejections in a row) a `ConvergenceError` is

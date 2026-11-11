@@ -28,7 +28,7 @@ Experimental features (shipped, tested, not promised; first use warns `Experimen
 
 - [Citing Conatus](docs/citing.html): If Conatus contributes to your work, please cite the software. The repository carries a `CITATION.cff` file (GitHub shows it as "Cite this repository"); the same entry in BibTeX:
 - [Conatus](docs/index.html): Define a PDE model, then simulate it, compute its stability and search for its invariant solutions. Conatus is experimental research software for fluid instability and dynamical systems.
-- [Installation](docs/install.html): Install Conatus 0.3.0 from a binary wheel: no compiler is needed. The CPU wheel is on PyPI
+- [Installation](docs/install.html): Install Conatus 0.3.1 from a binary wheel: no compiler is needed. The CPU wheel is on PyPI
 - [Principles](docs/principles.html): Conatus is written for people who publish the numbers it computes. This page lists the library's design goals. Each section says which checks the code implements for them.
 
 ## User guide

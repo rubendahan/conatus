@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -693,7 +693,7 @@
 <dt class="sig sig-object py" id="conatus.expert.floquet_multipliers">
 <span class="sig-prename descclassname"><span class="pre">conatus.expert.</span></span><span class="sig-name descname"><span class="pre">floquet_multipliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solver</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_modes</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marginal_overlap_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arnoldi_tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">REQUIRED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/ecs/solutions.html#floquet_multipliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.floquet_multipliers" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">n_modes</span></code> leading Floquet multipliers of S τ_ℓ J_T (monodromy of the discrete map, full
-space without the mean): dense if the active size ≤ <code class="docutils literal notranslate"><span class="pre">dense_max</span></code> (declared default), ARPACK
+space; the mean dropped only if measured conserved, returned in <code class="docutils literal notranslate"><span class="pre">'space'</span></code>): dense if the active size ≤ <code class="docutils literal notranslate"><span class="pre">dense_max</span></code> (declared default), ARPACK
 otherwise with its required accuracy <code class="docutils literal notranslate"><span class="pre">arnoldi_tol</span></code> (<code class="docutils literal notranslate"><span class="pre">k=</span></code>: former name of <code class="docutils literal notranslate"><span class="pre">n_modes</span></code>). The
 marginal time and translation directions are identified by the overlap of the eigenvectors
 with v(u) and ∂x u (overlap &gt; <code class="docutils literal notranslate"><span class="pre">marginal_overlap_min</span></code>, declared and returned), and counted.</p>
@@ -783,7 +783,7 @@ with v(u) and ∂x u (overlap &gt; <code class="docutils literal notranslate"><s
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

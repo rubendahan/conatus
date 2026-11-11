@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -986,6 +986,11 @@ whose script was edited between two jobs therefore cannot mix two problems in on
 </ul>
 <p>A change of resolution cannot be allowed. The allowed change is printed by <code class="docutils literal notranslate"><span class="pre">explain()</span></code> and recorded in
 every later checkpoint.</p>
+<p>A user function or a given field that reads a value without a content hash (a closure over an
+object, such as <code class="docutils literal notranslate"><span class="pre">cfg.rate</span></code> of a <code class="docutils literal notranslate"><span class="pre">SimpleNamespace</span></code>) cannot be compared: the restart cannot tell
+whether that value changed. It is refused like a difference, and the message says the entry
+cannot be compared. Name it in <code class="docutils literal notranslate"><span class="pre">allow=</span></code> to continue anyway; the allow is recorded like a change,
+and an output file appended after that restart accepts the same entry.</p>
 </section>
 <section id="a-checkpoint-directory-used-by-two-runs">
 <h3>A checkpoint directory used by two runs<a class="headerlink" href="#a-checkpoint-directory-used-by-two-runs" title="Link to this heading">¶</a></h3>
@@ -1111,7 +1116,7 @@ simulation instead.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../_static/documentation_options.js?v=4621528c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

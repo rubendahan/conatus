@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -1008,7 +1008,20 @@
                     <span class="s2">"curved geometry or a sine/cosine axis the solver grid is not the grid of "</span>
                     <span class="s2">"sim.grid()"</span><span class="p">,</span> <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"initial(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=lambda ...: ...) (a callable of the "</span>
                     <span class="s2">"coordinates)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">is_masked</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="c1"># review H13: the masked entries were read as data without a word</span>
+            <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"initial(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=&lt;masked array&gt;): </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">count_masked</span><span class="p">(</span><span class="n">v</span><span class="p">))</span><span class="si">}</span><span class="s2"> masked value(s)"</span><span class="p">,</span>
+                <span class="n">why</span><span class="o">=</span><span class="s2">"initial data are grid values at every point; a masked entry has no value, "</span>
+                    <span class="s2">"and its stored number would be read as data"</span><span class="p">,</span>
+                <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"fill them explicitly: initial(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=a.filled(value))"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">"get"</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">"biufc"</span><span class="p">:</span>
+            <span class="c1"># review H13: object, structured and datetime arrays raised bare NumPy errors</span>
+            <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"initial(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=&lt;array of dtype </span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&gt;): not numbers"</span><span class="p">,</span>
+                <span class="n">why</span><span class="o">=</span><span class="s2">"initial data are real (or, on a complex field, complex) grid values"</span><span class="p">,</span>
+                <span class="n">fix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"an array of floats of the shape of sim.grid(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
         <span class="n">want</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">want</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span>
@@ -1147,6 +1160,13 @@
             <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_real</span>
             <span class="n">until</span> <span class="o">=</span> <span class="n">check_real</span><span class="p">(</span><span class="n">until</span><span class="p">,</span> <span class="s2">"until"</span><span class="p">,</span> <span class="s2">"run()"</span><span class="p">)</span>
             <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="n">until</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">53</span><span class="p">):</span>
+                <span class="c1"># 0.3.1 review: until=1e300 started 1e302 steps (the hunt's script hung); past</span>
+                <span class="c1"># 2**53 the step count is not a whole number a float can hold</span>
+                <span class="k">raise</span> <span class="n">ResolutionError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"run(until=</span><span class="si">{</span><span class="n">until</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2"> steps of dt = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="n">why</span><span class="o">=</span><span class="s2">"past 2**53 steps the count of steps to the stop time is not exact"</span><span class="p">,</span>
+                    <span class="n">fix</span><span class="o">=</span><span class="s2">"a stop time within 2**53 steps of the current time"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
             <span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">steps</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>                          <span class="c1"># before the clock: no step count fixes it</span>
                 <span class="c1"># (earlier versions: the fix line suggested run(steps=-2))</span>
@@ -1840,7 +1860,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

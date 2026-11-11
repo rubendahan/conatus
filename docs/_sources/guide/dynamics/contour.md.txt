@@ -125,7 +125,7 @@ non-normal Orr–Sommerfeld branch below).
 
 | Check | On failure |
 |---|---|
-| the phase of $\det T$ is followed with increments of at most $\pi/4$ per step (and per half step); $\log\det T$ is resolved by each step | the step is halved, down to $10^{-12}$ of the perimeter |
+| the phase of $\det T$ is followed with increments of at most $\pi/4$ per step; on each half step the complex increment of $\log\det T$ (log modulus and phase) is at most $\pi/4$; $\log\det T$ is resolved by each step | the step is halved, down to $10^{-12}$ of the perimeter |
 | the walk closes on its starting point, evaluated again: the winding is an integer | refused (a determinant that does not return the same value at the same point) |
 | no eigenvalue on the boundary | refused, with where: move the box |
 | a control box, when given, holds its known count | refused |

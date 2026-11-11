@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -824,6 +824,27 @@
             <span class="n">fix</span><span class="o">=</span><span class="s2">"pass a Dedalus 3 script (a path ending in .py, or its text); the supported "</span>
                 <span class="s2">"subset is listed in the guide"</span><span class="p">,</span>
             <span class="n">doc</span><span class="o">=</span><span class="s2">"docs/site/guide/dedalus.md"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">decl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">decl</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">equations</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">decl</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">variables</span><span class="p">):</span>
+        <span class="c1"># counted here, before any build (review H14: a dropped equation reached the solver as</span>
+        <span class="c1"># a ValueError or a RankError, with complete=True when the drop was "skipped"). Dedalus</span>
+        <span class="c1"># itself checks squareness per subproblem on the valid modes (core/subsystems.py,</span>
+        <span class="c1"># build_matrices: valid_eqn.nnz != valid_var.nnz), not equations against variables: a</span>
+        <span class="c1"># constant tau field (no valid mode outside m = 0) in no equation is accepted, as in the</span>
+        <span class="c1"># official pipe-flow example. So the count is unsupported only when an equation line was</span>
+        <span class="c1"># not translated; otherwise it is a note and the discretization checks each group.</span>
+        <span class="n">ne</span><span class="p">,</span> <span class="n">nv</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">decl</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">equations</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">decl</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span>
+        <span class="n">dropped</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">tr</span><span class="o">.</span><span class="n">report</span> <span class="k">if</span> <span class="s2">"add_equation"</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">source</span>
+                   <span class="ow">and</span> <span class="n">r</span><span class="o">.</span><span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"translated"</span><span class="p">,</span> <span class="s2">"approximated"</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">dropped</span><span class="p">:</span>
+            <span class="n">tr</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReportLine</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">"unsupported"</span><span class="p">,</span>
+                                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ne</span><span class="si">}</span><span class="s2"> equation(s) for </span><span class="si">{</span><span class="n">nv</span><span class="si">}</span><span class="s2"> variable(s): an equation "</span>
+                                        <span class="sa">f</span><span class="s2">"was not translated (line </span><span class="si">{</span><span class="n">dropped</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lineno</span><span class="si">}</span><span class="s2">)"</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tr</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReportLine</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">"translated"</span><span class="p">,</span>
+                                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ne</span><span class="si">}</span><span class="s2"> equation(s) for </span><span class="si">{</span><span class="n">nv</span><span class="si">}</span><span class="s2"> variable(s), every equation "</span>
+                                        <span class="s2">"translated: as in Dedalus, squareness is checked per "</span>
+                                        <span class="s2">"group on the modes each variable has there (a constant "</span>
+                                        <span class="s2">"field has none outside m = 0), at discretization"</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">problems</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">tr</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReportLine</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">"approximated"</span><span class="p">,</span>
                                     <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">problems</span><span class="p">)</span><span class="si">}</span><span class="s2"> problems in the script: the last one is "</span>
@@ -872,7 +893,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

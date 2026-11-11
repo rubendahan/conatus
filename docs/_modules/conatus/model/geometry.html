@@ -235,7 +235,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -716,6 +716,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">..errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">BoundaryConditionError</span><span class="p">,</span> <span class="n">InputTypeError</span><span class="p">,</span> <span class="n">ResolutionError</span><span class="p">,</span> <span class="n">UnsupportedError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..ir</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">AnnulusBasis</span><span class="p">,</span> <span class="n">BallBasis</span><span class="p">,</span> <span class="n">CartesianCoordinates</span><span class="p">,</span> <span class="n">Chebyshev</span><span class="p">,</span> <span class="n">ComplexFourier</span><span class="p">,</span>
                   <span class="n">CompoundChebyshev</span><span class="p">,</span> <span class="n">CylindricalCoordinates</span><span class="p">,</span> <span class="n">DiskBasis</span><span class="p">,</span> <span class="n">Domain</span><span class="p">,</span> <span class="n">Hermite</span><span class="p">,</span> <span class="n">Laguerre</span><span class="p">,</span>
@@ -816,6 +818,8 @@
                   <span class="sa">f</span><span class="s2">"periodic((</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">!r}</span><span class="s2">, </span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">!r}</span><span class="s2">)) for the interval "</span>
                   <span class="s2">"[a, b)"</span><span class="p">),</span>
             <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">length</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">length</span><span class="p">[()]</span>                  <span class="c1"># a 0-d array is its number (hunt 5C, M4: bare TypeError)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">InputTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"periodic(</span><span class="si">{</span><span class="n">length</span><span class="si">!r}</span><span class="s2">): the length is a number, not a bool"</span><span class="p">,</span>
                              <span class="n">fix</span><span class="o">=</span><span class="s2">"periodic(2.0) for [0, 2)"</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="n">_DOC</span><span class="p">)</span>
@@ -1690,7 +1694,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

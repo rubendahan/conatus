@@ -236,7 +236,7 @@
   <a href="../../../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../../../install/" data-cn-route="/install">Install</a>
   <a href="../../../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -730,6 +730,21 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="conatus.expert.PeriodicOrbitProblem.on_mesh">
+<span class="sig-name descname"><span class="pre">on_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/bifurcation/orbits.html#PeriodicOrbitProblem.on_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.PeriodicOrbitProblem.on_mesh" title="Link to this definition">¶</a></dt>
+<dd><p>A copy of this problem on <code class="docutils literal notranslate"><span class="pre">mesh</span></code> (this one is unchanged). A point of a remeshed curve
+is read on its own mesh: <code class="docutils literal notranslate"><span class="pre">problem.on_mesh(point.data[&quot;mesh&quot;]).residual(point.z)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mesh</strong> (<a class="reference internal" href="conatus.expert.CollocationMesh.html#conatus.expert.CollocationMesh" title="conatus.bifurcation.orbits.CollocationMesh"><em>CollocationMesh</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#conatus.expert.PeriodicOrbitProblem" title="conatus.bifurcation.orbits.PeriodicOrbitProblem"><em>PeriodicOrbitProblem</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="conatus.expert.PeriodicOrbitProblem.split">
 <span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/conatus/bifurcation/orbits.html#PeriodicOrbitProblem.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#conatus.expert.PeriodicOrbitProblem.split" title="Link to this definition">¶</a></dt>
 <dd><p>(node values (npts, n), period T, parameter p) from z.</p>
@@ -968,6 +983,7 @@ every node (rows = nodes), real part if the multiplier is real.</p>
 <li><a class="reference internal" href="#conatus.expert.PeriodicOrbitProblem"><code class="docutils literal notranslate"><span class="pre">PeriodicOrbitProblem</span></code></a><ul>
 <li><a class="reference internal" href="#conatus.expert.PeriodicOrbitProblem.explain"><code class="docutils literal notranslate"><span class="pre">PeriodicOrbitProblem.explain()</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.PeriodicOrbitProblem.set_mesh"><code class="docutils literal notranslate"><span class="pre">PeriodicOrbitProblem.set_mesh()</span></code></a></li>
+<li><a class="reference internal" href="#conatus.expert.PeriodicOrbitProblem.on_mesh"><code class="docutils literal notranslate"><span class="pre">PeriodicOrbitProblem.on_mesh()</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.PeriodicOrbitProblem.split"><code class="docutils literal notranslate"><span class="pre">PeriodicOrbitProblem.split()</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.PeriodicOrbitProblem.pars"><code class="docutils literal notranslate"><span class="pre">PeriodicOrbitProblem.pars()</span></code></a></li>
 <li><a class="reference internal" href="#conatus.expert.PeriodicOrbitProblem.colloc_values"><code class="docutils literal notranslate"><span class="pre">PeriodicOrbitProblem.colloc_values()</span></code></a></li>
@@ -993,7 +1009,7 @@ every node (rows = nodes), real part if the multiplier is real.</p>
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=4621528c"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

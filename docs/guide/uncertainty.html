@@ -236,7 +236,7 @@
   <a href="../../gallery/" data-cn-route="/gallery">Gallery</a>
   <a href="../../install/" data-cn-route="/install">Install</a>
   <a href="../../about/" data-cn-route="/about">About</a>
-  <p class="cn-status">Conatus 0.3.0 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
+  <p class="cn-status">Conatus 0.3.1 &middot; experimental research software &middot; CPU wheels for Linux x86-64, CUDA experimental</p>
 </nav><form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
@@ -708,7 +708,7 @@ resolutions and three time steps to estimate the spatial and temporal errors.</p
     <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="s2">"u"</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>                   <span class="c1"># x = 0 is the first grid point</span>
 
-<span class="n">rep</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">(</span><span class="n">u_at_origin</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="p">[</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="n">scheme_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="n">rep</span> <span class="o">=</span> <span class="n">cn</span><span class="o">.</span><span class="n">uncertainty</span><span class="p">(</span><span class="n">u_at_origin</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="p">[</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="n">scheme_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                      <span class="n">name</span><span class="o">=</span><span class="s2">"u(0, T)"</span><span class="p">)</span>
 <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">rep</span><span class="o">.</span><span class="n">interval</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"u(0, T) = </span><span class="si">{</span><span class="n">rep</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2"> +- </span><span class="si">{</span><span class="n">rep</span><span class="o">.</span><span class="n">error</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2">   trusted: </span><span class="si">{</span><span class="n">rep</span><span class="o">.</span><span class="n">trusted</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -731,25 +731,50 @@ three resolutions at the finest time step (the finest run is shared).</p>
 shown beside the result, and the error estimate is <span class="math notranslate nohighlight">\(1.25\,|q_R - q_3|\)</span>, with the safety factor of
 Roache’s grid-convergence index (Roache 1994). With <code class="docutils literal notranslate"><span class="pre">scheme_order</span></code>, an observed order more than
 0.3 away from it is flagged: the time steps are not yet in the asymptotic range.</p></li>
-<li><p><strong>Space</strong>: spectral convergence is geometric, <span class="math notranslate nohighlight">\(q(N) = q_\infty + C e^{-aN}\)</span> at the resolutions
-actually given; the ratio <span class="math notranslate nohighlight">\(\rho\)</span> of successive differences fixes <span class="math notranslate nohighlight">\(a\)</span>, and the estimate is
-<span class="math notranslate nohighlight">\(1.25\,|d_2|/(e^{a h_2}-1)\)</span> with <span class="math notranslate nohighlight">\(h_2\)</span> the last increment of <span class="math notranslate nohighlight">\(N\)</span> (equal increments:
-<span class="math notranslate nohighlight">\(1.25\,|d_2|\,\rho/(1-\rho)\)</span>). Differences that change sign, differences that do not decrease
-geometrically, and tuple resolutions refined in different proportions are flagged.</p></li>
+<li><p><strong>Space</strong>: two laws are fitted to each three consecutive resolutions, at the resolutions
+actually given: geometric (spectral), <span class="math notranslate nohighlight">\(q(N) = q_\infty + C e^{-aN}\)</span>, and algebraic,
+<span class="math notranslate nohighlight">\(q(N) = q_\infty + C N^{-p}\)</span> (a corner, a discontinuity, a kink in a coefficient). The geometric
+estimate is <span class="math notranslate nohighlight">\(1.25\,|d|/(e^{a h}-1)\)</span> with <span class="math notranslate nohighlight">\(d\)</span> and <span class="math notranslate nohighlight">\(h\)</span> the last difference and increment of <span class="math notranslate nohighlight">\(N\)</span>; the
+algebraic one is <span class="math notranslate nohighlight">\(1.25\,|d|/((N_m/N_{m-1})^p-1)\)</span>. Three resolutions fit either law, so the larger
+estimate is given and the study is flagged. With four or more, a law whose rate (<span class="math notranslate nohighlight">\(a\)</span> or <span class="math notranslate nohighlight">\(p\)</span>)
+falls by more than 10 % from one triple to the next is rejected; the geometric estimate is used
+when that law alone holds, the larger one otherwise, and the study is flagged when neither
+holds. Also flagged: differences that change sign or do not decrease, tuple resolutions refined
+in different proportions, and a refinement that leaves the value unchanged next to one that
+changes it. For an even solution an odd <span class="math notranslate nohighlight">\(N\)</span> adds a zero coefficient, so <code class="docutils literal notranslate"><span class="pre">N=[23,</span> <span class="pre">24,</span> <span class="pre">25]</span></code> gives
+a last difference of exactly zero; take resolutions of one parity.</p></li>
 <li><p><strong>Result</strong>: the value at the finest resolution and time step (not the Richardson value), the
 sum of both estimates, and the interval. <code class="docutils literal notranslate"><span class="pre">rep.trusted</span></code> is false when a study is flagged, and also
-without <code class="docutils literal notranslate"><span class="pre">scheme_order</span></code>, because the asymptotic range is then unchecked. <code class="docutils literal notranslate"><span class="pre">rep.explain()</span></code> prints
-the numbers and assumptions behind the estimate.</p></li>
+without <code class="docutils literal notranslate"><span class="pre">scheme_order</span></code>, because the asymptotic range is then unchecked, and with three
+resolutions, because the law in <span class="math notranslate nohighlight">\(N\)</span> is then untested. <code class="docutils literal notranslate"><span class="pre">rep.explain()</span></code> prints the numbers and
+assumptions behind the estimate.</p></li>
 </ul>
+<p><code class="docutils literal notranslate"><span class="pre">trusted</span></code> does not establish that the behaviour seen continues past the finest <span class="math notranslate nohighlight">\(N\)</span> and <span class="math notranslate nohighlight">\(dt\)</span> (two
+terms of different decay can trade places later), that the spatial and temporal errors add
+without a cross term, or anything about errors the studies do not vary (solver tolerances, a
+statistical error). The interval is an estimate with a safety factor, not a bound. In a sweep of
+4000 random two-term closed forms with four or five resolutions, 98.3 % of the trusted intervals
+contained the limit; the misses were decays whose slower term takes over past the finest <span class="math notranslate nohighlight">\(N\)</span>.</p>
 <p>The time steps must have a constant ratio and the resolutions must increase, the finest last;
 anything else is refused.</p>
 </section>
 <section id="the-mean-of-a-statistically-steady-run">
 <h2>The mean of a statistically steady run<a class="headerlink" href="#the-mean-of-a-statistically-steady-run" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">cn.time_average(series,</span> <span class="pre">dt=...,</span> <span class="pre">discard=k)</span></code> gives the mean of a correlated time series after its
-first <code class="docutils literal notranslate"><span class="pre">k</span></code> samples (the transient is yours to judge: <code class="docutils literal notranslate"><span class="pre">discard</span></code> has no default), with its standard
-error from the integrated autocorrelation time. A batch-means estimate is printed beside it as a
-check, and a series shorter than about 50 correlation times is flagged.</p>
+first <code class="docutils literal notranslate"><span class="pre">k</span></code> samples (the transient is yours to judge: <code class="docutils literal notranslate"><span class="pre">discard</span></code> has no default), with a standard
+error and the interval mean ± 2 standard errors. The integrated autocorrelation time is the
+larger of Sokal’s window sum and Geyer’s initial positive sequence (Geyer 1992), which does not stop
+at a fast decay while a slow component remains. The standard error is the largest of four
+estimates, each biased low in its own way: the autocorrelation one, 20 batch means, the batch
+means extrapolated in the batch length, and the low-frequency periodogram. A series shorter than
+about 50 correlation times, or whose autocorrelation stays positive over more than one batch
+(n/20 samples), is flagged.</p>
+<p>What <code class="docutils literal notranslate"><span class="pre">trusted</span></code> means, measured: over 2000 series per setting of 11 test processes (white noise,
+AR(1), a slow AR(1) component carrying 5 to 15 % of the variance under white noise, heavy-tailed
+noise), every series was trusted and the interval contained the true mean in 93.5 to 97.7 % of
+them (95 % nominal). The lowest values come from runs only about 50 correlation lengths of the slow
+component long. It does not establish stationarity: a drift or a transient left in the series is
+yours to remove.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">conatus</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cn</span>
 
@@ -835,7 +860,7 @@ check, and a series shorter than about 50 correlation times is flagged.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../_static/documentation_options.js?v=4621528c"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

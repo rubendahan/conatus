@@ -1,45 +1,45 @@
-var e=`# kuramoto_sivashinsky_l22/run.py | script sha256 47ecb76fac701eba5641ed73cce7bec4aae485aed7327f45370256c9b7983c87 | conatus 0.3.0 | python 3.12.14 | 2026-10-31 | 11 s | AMD EPYC 9654 96-Core Processor | 4 threads
+var e=`# kuramoto_sivashinsky_l22/run.py | script sha256 47ecb76fac701eba5641ed73cce7bec4aae485aed7327f45370256c9b7983c87 | conatus 0.3.1 | python 3.12.14 | 2026-11-11 | 6 s | AMD EPYC 9654 96-Core Processor | 4 threads
 E1: residual 6.7e-14, energy 0.260873 (published 0.2609)
    +0.1308 +0.3341i   Conatus +0.130810 +0.334076i   gap 2.6e-05   yes
    +0.0824 +0.3402i   Conatus +0.082353 +0.340213i   gap 4.8e-05   yes
-   +0.0000 +0.0000i   Conatus +0.000000 +0.000000i   gap 5.3e-14   yes
+   +0.0000 +0.0000i   Conatus -0.000000 +0.000000i   gap 3.5e-13   yes
    -0.2287 +0.1963i   Conatus -0.228656 +0.196259i   gap 6.0e-05   yes
    -0.2455 +0.0000i   Conatus -0.245531 +0.000000i   gap 3.1e-05   yes
    -2.0554 +0.0000i   Conatus -2.055436 +0.000000i   gap 3.6e-05   yes
    -2.0619 +0.0000i   Conatus -2.061946 +0.000000i   gap 4.6e-05   yes
 E2: residual 8.0e-13, energy 0.438157 (published 0.4382)
    +0.1390 +0.2384i   Conatus +0.139040 +0.238420i   gap 4.5e-05   yes
-   +0.0000 +0.0000i   Conatus -0.000000 +0.000000i   gap 6.1e-13   yes
+   +0.0000 +0.0000i   Conatus -0.000000 +0.000000i   gap 1.3e-12   yes
    -0.0840 +0.1602i   Conatus -0.084027 +0.160194i   gap 2.7e-05   yes
    -0.1194 +0.0000i   Conatus -0.119414 +0.000000i   gap 1.4e-05   yes
    -0.2711 +0.3563i   Conatus -0.271123 +0.356307i   gap 2.4e-05   yes
    -2.0130 +0.0000i   Conatus -2.013030 +0.000000i   gap 3.0e-05   yes
    -2.0378 +0.0000i   Conatus -2.037753 +0.000000i   gap 4.7e-05   yes
-E3: residual 9.1e-13, energy 1.587597 (published 1.5876)
+E3: residual 8.9e-13, energy 1.587597 (published 1.5876)
    +0.0933 +0.0000i   Conatus +0.093345 +0.000000i   gap 4.5e-05   yes
    +0.0933 +0.0000i   Conatus +0.093345 +0.000000i   gap 4.5e-05   yes
-   +0.0000 +0.0000i   Conatus -0.000000 +0.000000i   gap 5.1e-13   yes
+   +0.0000 +0.0000i   Conatus -0.000000 +0.000000i   gap 6.3e-13   yes
    -0.4128 +0.0000i   Conatus -0.412775 +0.000000i   gap 2.5e-05   yes
    -0.6108 +0.3759i   Conatus -0.610753 +0.375876i   gap 5.3e-05   yes
    -0.6108 +0.3759i   Conatus -0.610753 +0.375876i   gap 5.3e-05   yes
-   -1.6641 +0.0000i   Conatus -1.664131 +0.000000i   gap 3.1e-05   yes
+   -1.6641 +0.0000i   Conatus -1.664131 -0.000000i   gap 3.1e-05   yes
    -1.6641 +0.0000i   Conatus -1.664131 +0.000000i   gap 3.1e-05   yes
 TW1: residual 2.9e-16, energy 0.464920 (published 0.4649), speed 0.7369890 (published 0.73699)
    +0.1156 +0.8173i   Conatus +0.115622 +0.817289i   gap 2.5e-05   yes
    +0.0337 +0.4189i   Conatus +0.033663 +0.418910i   gap 3.8e-05   yes
-   +0.0000 +0.0000i   Conatus +0.000000 +0.000000i   gap 5.8e-14   yes
+   +0.0000 +0.0000i   Conatus -0.000000 +0.000000i   gap 2.3e-13   yes
    -0.2457 +0.0000i   Conatus -0.245730 +0.000000i   gap 3.0e-05   yes
    -0.3213 +0.9813i   Conatus -0.321321 +0.981262i   gap 4.4e-05   yes
-TW2: residual 2.4e-16, energy 0.604820 (published 0.6048), speed 0.3495413 (published 0.34954)
+TW2: residual 3.3e-16, energy 0.604820 (published 0.6048), speed 0.3495413 (published 0.34954)
    +0.3370 +0.0000i   Conatus +0.336999 +0.000000i   gap 1.4e-06   yes
-   +0.0000 +0.0000i   Conatus +0.000000 +0.000000i   gap 1.5e-13   yes
+   +0.0000 +0.0000i   Conatus +0.000000 +0.000000i   gap 2.4e-13   yes
    -0.0096 +0.6288i   Conatus -0.009601 +0.628841i   gap 4.1e-05   yes
    -0.2619 +0.5591i   Conatus -0.261927 +0.559142i   gap 5.0e-05   yes
    -0.3067 +0.0725i   Conatus -0.306725 +0.072478i   gap 3.3e-05   yes
 published values (eigenvalues, energies, speeds): 39; within rounding: 39 of 39
 largest gap 6.0e-05
-`,t=`# orr_sommerfeld_spectrum/run.py | script sha256 0a56c7a57345d1f4d04d6115ac134c0af0fc527d14dcd117e436b1f0501822bf | conatus 0.3.0 | python 3.12.14 | 2026-10-31 | 16 s | AMD EPYC 9654 96-Core Processor | 4 threads
-N = 128 (drift test at N = 160, 1e-6): 61 modes kept, max backward residual 7.4e-16
+`,t=`# orr_sommerfeld_spectrum/run.py | script sha256 0a56c7a57345d1f4d04d6115ac134c0af0fc527d14dcd117e436b1f0501822bf | conatus 0.3.1 | python 3.12.14 | 2026-11-11 | 16 s | AMD EPYC 9654 96-Core Processor | 4 threads
+N = 128 (drift test at N = 160, 1e-6): 61 modes kept, max backward residual 6.7e-16
  n   Orszag (1971)               Conatus                  gap      within rounding
  1    0.23752649   0.00373967i   0.23752649 +0.00373967i   1.3e-09  yes
  2     0.1900592   -0.1828219i   0.19005925 -0.18282193i   5.6e-08  yes
@@ -54,7 +54,7 @@ N = 128 (drift test at N = 160, 1e-6): 61 modes kept, max backward residual 7.4e
 13       0.58721     -0.26716i   0.58721293 -0.26716171i   3.4e-06  yes
 14       0.63672     -0.25988i   0.63671937 -0.25988571i   5.7e-06  last digit
 20       0.70887     -0.28765i   0.70887465 -0.28765539i   7.1e-06  last digit
-21       0.71232     -0.28551i   0.71231586 -0.28551474i   6.3e-06  yes
+21       0.71232     -0.28551i   0.71231586 -0.28551473i   6.3e-06  yes
 24       0.73741     -0.25872i   0.73741576 -0.25871708i   6.5e-06  last digit
 25       0.73812     -0.25969i   0.73811501 -0.25969188i   5.3e-06  yes
 27       0.76588     -0.23119i   0.76587681 -0.23118599i   5.1e-06  yes
@@ -77,32 +77,32 @@ published eigenvalues: 32; within rounding of the printed digits: 27 of 32; with
 largest gap |c_Conatus - c_Orszag| = 7.1e-06 (n = 20); median 5.3e-08
 Re_c = 5772.2218 (Orszag 5772.22), alpha_c = 1.020547 (Orszag 1.02056)
 gap: Re_c 1.8e-03, alpha_c 1.3e-05
-`,n=`# pipe_flow_spectrum/run.py | script sha256 273e900e47be070659296be0b31066430c0d6d017dea5edba43fd7bfd65562c5 | conatus 0.3.0 | python 3.12.14 | 2026-10-31 | 182 s | AMD EPYC 9654 96-Core Processor | 4 threads
+`,n=`# pipe_flow_spectrum/run.py | script sha256 273e900e47be070659296be0b31066430c0d6d017dea5edba43fd7bfd65562c5 | conatus 0.3.1 | python 3.12.14 | 2026-11-11 | 176 s | AMD EPYC 9654 96-Core Processor | 4 threads
 R      mode     Meseguer & Trefethen (conj.)       Conatus (N2)                         gap      N1-N2   rounding
   1e+02 (1,0)   -0.1468197064 -0.0000000000i   -0.146819706421 +0.000000000000i   2.1e-11  5e-15  yes
   1e+02 wall    -0.1471366653 -0.5725629712i   -0.147136665324 -0.572562971230i   3.9e-11  4e-15  yes
   1e+03 (1,0)   -0.0146819706 -0.0000000000i   -0.014681970642 +0.000000000000i   4.2e-11  6e-15  yes
   1e+03 centre  -0.0708640053 -0.8467498288i   -0.070864005347 -0.846749828757i   6.3e-11  2e-14  yes
   1e+03 wall    -0.0911426036 -0.4691428789i   -0.091142603641 -0.469142878929i   5.0e-11  2e-14  yes
-  1e+04 (1,0)   -0.0014681971 -0.0000000000i   -0.001468197064 +0.000000000000i   3.6e-11  8e-14  yes
+  1e+04 (1,0)   -0.0014681971 -0.0000000000i   -0.001468197064 +0.000000000000i   3.6e-11  2e-13  yes
   1e+04 centre  -0.0227049146 -0.9514811947i   -0.022704914553 -0.951481194735i   5.8e-11  6e-14  yes
   1e+04 wall    -0.0472321996 -0.2737887093i   -0.047232199595 -0.273788709331i   3.1e-11  3e-13  yes
-  1e+05 (1,0)   -0.0001468197 -0.0000000000i   -0.000146819707 +0.000000000000i   6.7e-12  5e-13  yes
+  1e+05 (1,0)   -0.0001468197 -0.0000000000i   -0.000146819706 -0.000000000000i   5.9e-12  6e-13  yes
   1e+05 centre  -0.0072023080 -0.9846498286i   -0.007202308049 -0.984649828637i   6.1e-11  2e-13  yes
   1e+05 wall    -0.0292364601 -0.1372143077i   -0.029236460064 -0.137214307721i   4.1e-11  1e-12  yes
-  1e+06 (1,0)   -0.0000146820 -0.0000000000i   -0.000014681969 -0.000000000000i   3.1e-11  2e-12  yes
+  1e+06 (1,0)   -0.0000146820 -0.0000000000i   -0.000014681969 +0.000000000000i   3.1e-11  1e-12  yes
   1e+06 centre  -0.0022796480 -0.9951451356i   -0.002279647996 -0.995145135424i   1.8e-10  2e-13  no
   1e+06 wall    -0.0153380019 -0.0649631475i   -0.015338001864 -0.064963147524i   4.4e-11  4e-12  yes
-  1e+07 (1,0)   -0.0000014682 -0.0000000000i   -0.000001468193 +0.000000000000i   6.6e-12  3e-12  yes
+  1e+07 (1,0)   -0.0000014682 -0.0000000000i   -0.000001468197 +0.000000000000i   2.6e-12  5e-14  yes
   1e+07 centre  -0.0007210913 -0.9984646856i   -0.000721091207 -0.998464685978i   3.9e-10  8e-13  no
   1e+07 wall    -0.0074895687 -0.0303389812i   -0.007489568737 -0.030338981221i   4.2e-11  3e-12  yes
 tabulated eigenvalues: 17; within rounding: 15 of 17; within one unit of the last digit: 15 of 17
 largest gap for R = 10^2 to 10^4: 6.3e-11; for R = 10^2 to 10^7: 3.9e-10
-`,r=`# rayleigh_benard_onset/run.py | script sha256 d63b3841da3857132943dc24a70da13e9a580031d67dc82848fe1b8703f29d77 | conatus 0.3.0 | python 3.12.14 | 2026-10-31 | 79 s | AMD EPYC 9654 96-Core Processor | 4 threads
+`,r=`# rayleigh_benard_onset/run.py | script sha256 d63b3841da3857132943dc24a70da13e9a580031d67dc82848fe1b8703f29d77 | conatus 0.3.1 | python 3.12.14 | 2026-11-11 | 84 s | AMD EPYC 9654 96-Core Processor | 4 threads
 rigid-rigid: Ra_c = 1707.761777, k_c = 3.116324   (reference 1707.762, 3.117; relative gaps 1.3e-07, 2.2e-04)
 rigid-free: Ra_c = 1100.649607, k_c = 2.682322   (reference 1100.65, 2.682; relative gaps 3.6e-07, 1.2e-04)
-free-free: Ra_c = 657.511364, k_c = 2.221441   (reference 657.511364, 2.221441; relative gaps 7.3e-10, 2.1e-07)
-free-free curve: max relative gap |Ra - (k^2 + pi^2)^3 / k^2| / Ra over 25 wavenumbers in [1, 7]: 9.1e-16
+free-free: Ra_c = 657.511364, k_c = 2.221441   (reference 657.511364, 2.221441; relative gaps 7.3e-10, 2.2e-07)
+free-free curve: max relative gap |Ra - (k^2 + pi^2)^3 / k^2| / Ra over 25 wavenumbers in [1, 7]: 6.4e-16
  k      Ra rigid-rigid   Ra rigid-free    Ra free-free   closed form (free-free)
  1.00       5854.4848       2937.8510       1284.2253       1284.2253
  1.25       4053.4905       2083.7656        956.2215        956.2215

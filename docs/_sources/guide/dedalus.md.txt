@@ -67,11 +67,34 @@ Each statement gets one of four statuses:
 | **translated** | same mathematics and same method; the note lists any declared rewrite (`trace(grad(u)) -> div(u)`) or default of the source script made explicit (`dealias=1`) |
 | **approximated** | translated, but the method differs in a way that can change digits; the note says how |
 | **unsupported** | not translated, with the reason and what to write instead; everything that depends on it is reported as well |
-| **skipped** | output only: logging, plots, reading results after the solve |
+| **skipped** | output only: logging, plots, file handlers and their tasks, `GlobalFlowProperty`, reading results after the solve (nothing is written; the note says what to use) |
 
 `tr.complete` is true only when a problem was translated with no line unsupported and none
 approximated. A time loop whose body changes the simulation (writes field data, calls a mutating
 method, stops on a condition) is unsupported, because `solver.run(n)` cannot reproduce it.
+`tr.ivp_solver()`, `tr.discretize()`, `tr.initial_state()` and `tr.ncc()` raise
+`UnsupportedError` when a line is unsupported, and name the lines. With `allow_incomplete=True`
+they go on and give a `CorrectnessWarning` that names them. The equations are counted against the
+variables: a difference left by an equation that was not translated is refused before the build;
+otherwise, as in Dedalus, squareness is checked per group at discretization (a constant tau field
+in no equation has no modes outside the zero group). After the solve or the time loop, statements
+that only read results (plots, `set_state`, loops over the eigenvalues) are skipped.
+
+Field data statements (`u['g'] = ...`, `u['g'] += ...`) are replayed in the script's order, with
+Dedalus's value semantics. `v['g'] = u['g']` takes the value `u` has at that line. A field that
+reads its own data sees its previous value, and a new field is zero. Arrays and lists follow
+Python: `b = a; b += 1` changes `a`. A change of data through a view or a method is unsupported,
+and the data of that field is then not translated. Examples are `d = u['g']; d += 1`,
+`u['g'].fill(3)`, `out=u['g']`, and a loop or a function of the script that writes data. Data
+written after the time loop or the solve is unsupported. An `if` is read only when it is
+`if __name__ == "__main__":` or an MPI guard: the rank of `MPI.COMM_WORLD` or `dist.comm`
+compared with 0, with branches that change no data or problem. The translation is serial, so
+the body runs. Any other condition is unsupported.
+
+`tr.steps()` is the first limit reached, `stop_iteration` or `stop_sim_time / dt`, because Dedalus
+checks every limit. The time loop must be `while solver.proceed:`. Any other loop condition is
+unsupported.
+
 `**options` in a call are expanded. A problem's own `namespace={...}` alone resolves the names of
 its equations. `tr.to_script()` returns a runnable program. It translates the embedded script
 again and refuses to run if a line is unsupported. It then runs the IVP or solves the LBVP. For an
@@ -98,7 +121,7 @@ choice.
 | `CFL(...)`, `compute_timestep()` | — | **unsupported**: Conatus runs with a fixed `dt`; give `dt`, and `conatus.expert.CFL` reports the CFL step |
 | `f['g'] = ...`, `f['g'][i] += ...` with grids from `local_grids` | grid functions `tr.data`, used by `set_state` / `ncc` | NumPy/SciPy whitelist |
 | `fill_random`, `low_pass_filter`, `f['c'] = ...` | — | **unsupported**: the random layout of the source cannot be reproduced; write an explicit initial condition |
-| file handlers, `GlobalFlowProperty` | — | **unsupported**: use `conatus.runs` and the Studio |
+| file handlers, `GlobalFlowProperty` | — | **skipped** (output only, the solution is unchanged): use `conatus.runs` and the Studio |
 | `solve_dense` / `solve_sparse(subproblems[i])` | `eigenvalues(plan, group)` | **approximated**: a subproblem index of the source is not a Conatus group; select the group by wavenumber |
 
 Scripts that build their problem inside a function (for example `rayleigh_benard_evp.py`) are
