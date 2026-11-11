@@ -1,19 +1,19 @@
 {
- "generated": "2026-11-11T07:04:45.805Z",
+ "generated": "2026-11-11T12:15:58.111Z",
  "commit": null,
  "sources": [],
  "counts": {
-  "tests": 2572,
+  "tests": 2904,
   "runs": 0,
   "decisions": 0,
   "errors": 0,
   "scorecardPass": 28,
   "scorecardFail": 0,
   "scorecardNotMeasured": 13,
-  "date": "2026-10-24"
+  "date": "2026-11-11"
  },
  "scorecard": "",
- "version": "0.4.0",
+ "version": "0.5.0",
  "domains": [
   {
    "id": "stability",

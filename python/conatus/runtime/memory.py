@@ -75,7 +75,7 @@ class StepProgram:
     """Ordered device allocations and frees (bytes as requested, before pool rounding).
 
     ``events``: (kind, buffer, phase, step) with kind 'a' (alloc) or 'f' (free); buffers carry a
-    name, a category and a pool ('cupy' or 'core')."""
+    name, a category and a pool ('cupy', 'core', or 'driver': the CUDA driver's stream-ordered pool)."""
 
     def __init__(self) -> None:
         self.size: list[int] = []
@@ -543,6 +543,9 @@ class _Model(_XTModel):
         self.stream_dt = getattr(host, "_plan_dt", None)
         self.streams_estimated = False
         self.core_bufs: dict = {}                # (a, b) key -> list of core buffers
+        # (a, b) key -> [(bytes, name)]: band-kernel work vectors allocated per solve on the
+        # stream from the CUDA driver's pool (banded.cu StreamScratch)
+        self.solve_scratch: dict = {}
         self._shared_flags: dict = {}            # key -> per complex-mode bucket: shares factors
         self.conv: dict = {}
         self.twiddles: set = set()
@@ -867,6 +870,7 @@ class _Model(_XTModel):
             return
         P, host = self.P, self.host
         bufs = []
+        scratch = self.solve_scratch.setdefault(key, [])
 
         def buf(nbytes, name, keep=True):
             b = P.alloc(nbytes, "banded factors (core pool)", name, pool="core")
@@ -914,11 +918,16 @@ class _Model(_XTModel):
             info = buf(B * 4, "info", keep=False)
             cond = buf(B * 8, "cond", keep=False)
             P.free(info, cond)
-            scr = None
-            if n * T > 40 * 1024:
-                scr = buf(B * n * T, f"{label}: scratch", keep=not cpt)
+            # the band kernel's work vector for n * T > 40 KiB is no longer a core-pool buffer of
+            # the batch: each solve allocates it on its stream from the CUDA driver's pool and
+            # frees it after the kernel (banded.cu StreamScratch), modelled in solve()
+            # in the pool 'driver' (counted in the peak bound, not in the held bytes, since the
+            # driver pool returns it at the next synchronisation by default); a level-scheduled
+            # solve takes none, counted anyway when the schedule is not known
             st = streams[bi] if streams is not None else None
             est = st is not None and st.get("applies")
+            if n * T > 40 * 1024 and not est:
+                scratch.append((B * n * T, f"{label}: band-kernel work vector (per solve, driver pool)"))
             # level-scheduled solve (banded.cu build_level_schedule): the factor stream (L' and U
             # without their zeros, merged levels) with its gather permutation, offsets and sparse
             # V^T, estimated from sampled modes (runtime/level_stream.py); without the estimate,
@@ -940,7 +949,7 @@ class _Model(_XTModel):
                 else:
                     buf(B * n * 4, f"{label}: transposed level positions")
                     buf((B + 1) * 8, f"{label}: transposed stream offsets")
-                P.free(band, ipiv, vt, scr)
+                P.free(band, ipiv, vt)
         self.core_bufs[key] = bufs
 
     def _actual_coefficients(self, key):
@@ -960,6 +969,8 @@ class _Model(_XTModel):
         ph, P.phase = P.phase, "solve"
         self._factor(key)
         x = P.alloc(self.n * it, "solve workspace", "x (solution)")
+        for nbytes, name in self.solve_scratch.get(key, ()):    # one bucket solve at a time
+            P.free(P.alloc(nbytes, "solve workspace", name, pool="driver"))
         # device.py _solve_here: the real buckets gather rhs[rows] and scatter x[cols] inside the
         # solve kernel, and the complexified buckets of a real right-hand side split z = rhs[rc] +
         # i rhs[rs] in the kernel too: no staging copies (the model kept the copies of the
@@ -1182,6 +1193,8 @@ class MemoryReport:
         lines.append(f"  TOTAL device memory of the process: {p['total_with_floor_bytes'] / MiB:.2f} MiB")
         if "peak_bound_bytes" in p:
             lines.append(f"  peak bound (CuPy pool held + core pool high-water, factorization included, "
+                         f"+ band-kernel work vectors of the solves "
+                         f"{p.get('driver_transient_peak_bytes', 0) / MiB:.2f} MiB (driver pool) "
                          f"+ process floor): {p['peak_with_floor_bytes'] / MiB:.2f} MiB "
                          f"(allocators alone {p['peak_bound_bytes'] / MiB:.2f} MiB)")
         r = self.reuse
@@ -1257,6 +1270,7 @@ def _report(model: _Model, steps: int) -> MemoryReport:
     last = steps - 1
     peak, _at, cats_c = P.live_peak("cupy")
     core_peak, _t, cats_k = P.live_peak("core")
+    driver_peak, _t, _cats_d = P.live_peak("driver")
     sizes = P.size
     cupy_events = [e for e in P.events if P.pool[e[1]] == "cupy"]
     held = simulate_cupy_pool(cupy_events, sizes)
@@ -1289,13 +1303,16 @@ def _report(model: _Model, steps: int) -> MemoryReport:
         # the factorization is transient: the core pool's high-water mark (band LU and level
         # streams of a batch alive together) on top of everything the CuPy pool holds is an
         # upper bound of the device peak ("held" alone missed it)
-        core_pool_peak_bytes=int(core.peak), peak_bound_bytes=int(held + core.peak),
+        core_pool_peak_bytes=int(core.peak), peak_bound_bytes=int(held + core.peak + driver_peak),
+        # band-kernel work vectors of the solves (CUDA driver pool, stream-ordered):
+        # transient, in the peak bound only
+        driver_transient_peak_bytes=int(driver_peak),
         # declared process floor (CUDA context, kernels, library handles), its own line
         cuda_process_floor_bytes=int(CUDA_PROCESS_FLOOR_BYTES),
         # which F program was modelled: the 2D RealFourier x Chebyshev pipeline or the generic fused F
         f_path="2D pipeline" if model.fc2d else "fused",
         total_with_floor_bytes=int(held + core_bytes + CUDA_PROCESS_FLOOR_BYTES),
-        peak_with_floor_bytes=int(held + core.peak + CUDA_PROCESS_FLOOR_BYTES))
+        peak_with_floor_bytes=int(held + core.peak + driver_peak + CUDA_PROCESS_FLOOR_BYTES))
     if model.cufft.source != "cufft":
         rep.estimated.append("cuFFT work areas (no cuFFT query: estimate)")
     if getattr(model.fu, "_ffc", None) is not None:

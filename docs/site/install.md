@@ -2,7 +2,7 @@
 
 Install Conatus from a binary wheel: no compiler is needed. The CPU wheel is on PyPI (`pip
 install conatus`); the CUDA 12 wheel (beta) is attached to the
-[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.4.0). Building from
+[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.5.0). Building from
 source is described at the end of this page, for developers.
 
 ## Requirements
@@ -41,7 +41,7 @@ In a fresh virtual environment (no conda, no compiler):
 
 ```bash
 python3.12 -m venv venv && . venv/bin/activate
-pip install "conatus[tutorials]==0.4.0"
+pip install "conatus[tutorials]==0.5.0"
 python -m conatus --version     # conatus, compiled core and Python versions
 python -m conatus doctor        # what this machine can run, and what is missing
 ```
@@ -51,7 +51,7 @@ PyPI) the install took under 30 s.
 
 The CUDA wheel pulls the NVIDIA runtime wheels (CUDA runtime, cuFFT, cuBLAS: about 700 MB) and,
 with the `gpu` extra, CuPy: see [GPU (CUDA) install](#gpu-cuda-install). `pip show conatus` says
-which flavour is installed (`0.4.0` from PyPI, `0.4.0+cu12` for the CUDA wheel).
+which flavour is installed (`0.5.0` from PyPI, `0.5.0+cu12` for the CUDA wheel).
 
 **Threads.** NumPy, SciPy and the core each load their own OpenBLAS, and each starts by default
 one thread per CPU, so the three compete for the same CPUs. On a node where the process could use
@@ -74,12 +74,12 @@ capability 8.0) and L40S (8.9), the two architectures the core is built for by d
 Recipe 1, the CUDA binary wheel (beta; no compiler, no CUDA toolkit; the driver must support
 CUDA 12.9, i.e. driver ≥ 575 or an older 12.x driver through CUDA minor-version compatibility).
 The wheels are attached to the
-[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.4.0), one per Python
+[GitHub release](https://github.com/rubendahan/conatus/releases/tag/v0.5.0), one per Python
 (`cp311`, `cp312`, `cp313`); for Python 3.12:
 
 ```bash
 python3.12 -m venv venv && . venv/bin/activate
-pip install "conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.4.0/conatus-0.4.0+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+pip install "conatus[gpu,tutorials] @ https://github.com/rubendahan/conatus/releases/download/v0.5.0/conatus-0.5.0+cu12-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
 ```
 
 On a GPU node (in a batch job on a cluster), check that the device can be used:
@@ -137,7 +137,7 @@ The same recipe as the README: a conda environment for the compilers and librari
 what the tutorials need (matplotlib). About two minutes on a cluster node with a warm package cache.
 
 ```bash
-git clone --branch v0.4.0 https://github.com/rubendahan/conatus && cd conatus
+git clone --branch v0.5.0 https://github.com/rubendahan/conatus && cd conatus
 micromamba create -n conatus -c conda-forge python=3.12 gxx_linux-64=13 liblapack libblas
 micromamba activate conatus
 pip install ".[tutorials]"      # CPU core + matplotlib, xarray (the GPU build: next section)

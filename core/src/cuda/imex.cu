@@ -4,6 +4,8 @@
 // RK443, trap P1; L X_0 skipped when H[:,0] = 0, trap P2). The state stays on the device; only the
 // scheme coefficients live on the host. F is zero or the pointwise model F = g .* X + h.
 #include <algorithm>
+#include <cstring>
+#include <vector>
 
 #include "common.cuh"
 #include "conatus/cuda.hpp"
@@ -140,11 +142,42 @@ void Imex<T>::eval_F(const T* d_x, T* d_out) const {
 }
 
 template <class T>
+bool Imex<T>::continues(const T* d_x, double t) const {
+    if (t != last_t_ || !last_x_.data()) return false;
+    const std::size_t N = std::size_t(n_) * batch_;
+    std::vector<T> a(N), b(N);
+    CN_CUDA(cudaMemcpy(a.data(), d_x, sizeof(T) * N, cudaMemcpyDeviceToHost));
+    copy_to_host(b.data(), last_x_, N);
+    return std::memcmp(a.data(), b.data(), sizeof(T) * N) == 0;
+}
+
+template <class T>
+void Imex<T>::reset() {
+    MXh_.clear();
+    Fh_.clear();
+    last_x_ = Buffer<T>();
+    last_t_ = 0.0;
+    iteration_ = 0;
+}
+
+template <class T>
 double Imex<T>::run(T* d_x, double t, long nsteps) {
+    if (nsteps < 0) throw std::invalid_argument("Imex.run: nsteps must be >= 0");
+    if (!MXh_.empty() && !continues(d_x, t))
+        throw std::invalid_argument(
+            "Imex.run: " + scheme_ + " holds the history of a previous run, and (x0, t0) is not the "
+            "state and time that run returned; call reset() to start a new trajectory (lower-order "
+            "startup again), or pass the returned (x, t) to continue");
     for (long s = 0; s < nsteps; ++s) {
         if (order_) step_sbdf(d_x); else step_rk(d_x);
         t += dt_;
         ++iteration_;
+    }
+    if (order_) {
+        const std::size_t N = std::size_t(n_) * batch_;
+        if (!last_x_.data()) last_x_ = Buffer<T>(N, MemorySpace::CUDA_DEVICE);
+        CN_CUDA(cudaMemcpy(last_x_.data(), d_x, sizeof(T) * N, cudaMemcpyDeviceToDevice));
+        last_t_ = t;
     }
     return t;
 }

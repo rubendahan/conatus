@@ -14,12 +14,11 @@ from ens_cases import lorenz_solver, run_single  # noqa: E402
 from ivp_cases import ks_1d, rayleigh_benard_2d  # noqa: E402
 
 needs_gpu = pytest.mark.skipif(not cuda.available(), reason="no CUDA device")
-rng = np.random.default_rng(3)
 
 
 @needs_gpu
 @pytest.mark.parametrize("case", ["ks", "rb2d"])
-def test_gpu_ensemble_members(case):
+def test_gpu_ensemble_members(case, rng):
     import cupy as cp
     plan = ks_1d(N=32, L=22.0)[0] if case == "ks" else rayleigh_benard_2d(16, 16, 2e3)[0]
     dt, amp, nsteps = (0.02, 0.3, 20) if case == "ks" else (1e-3, 0.05, 5)

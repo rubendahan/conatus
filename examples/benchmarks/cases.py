@@ -52,7 +52,9 @@ def _sha(sim) -> str:
     """SHA-256 of the final state's bytes: two versions that claim the same arithmetic must give
     the same hash (an equal error is a weaker check)."""
     import hashlib
-    return hashlib.sha256(np.ascontiguousarray(sim.solver.X).tobytes()).hexdigest()
+    X = sim.solver.X
+    X = X.get() if hasattr(X, "get") else X          # device state (backend="cuda"): explicit copy
+    return hashlib.sha256(np.ascontiguousarray(X).tobytes()).hexdigest()
 
 
 def _cx(z) -> Any:

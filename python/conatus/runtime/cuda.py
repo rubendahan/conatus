@@ -204,6 +204,30 @@ class BandedBatch:
             elif a.dtype != np.int64 or a.shape != (self.batch, self.n) or not a.flags.c_contiguous:
                 raise ValueError(f"BandedBatch.solve_mapped: {name} must be a contiguous int64 "
                                  f"({self.batch}, {self.n}) array (got {a.dtype} {a.shape})")
+            elif a.size:
+                # an index outside the array read or wrote other device memory, and a repeated
+                # column made two threads write one entry (review of v0.1.1, tested on a GPU by
+                #): refused here, one device reduction per call of this entry point
+                lo, hi = int(a.min()), int(a.max())
+                if lo < 0 or hi >= full.size:
+                    raise ValueError(f"BandedBatch.solve_mapped: {name} holds indices out of range "
+                                     f"[{lo}, {hi}] for an array of {full.size} entries")
+                if name == "cols" and int(cp.unique(a).size) != a.size:
+                    raise ValueError("BandedBatch.solve_mapped: cols has repeated indices (two "
+                                     "systems would write one entry of x)")
+        # rhs and x in overlapping memory: each system reads its right-hand side while the others
+        # write their solutions, so a block that starts late read entries an early block had
+        # already overwritten (wrong values on an L40S, 8192 systems). Safe only in
+        # place with one map for both (each system reads and writes its own entries).
+        r0, x0 = int(rhs.data.ptr), int(x.data.ptr)
+        if r0 < x0 + x.nbytes and x0 < r0 + rhs.nbytes:
+            same = r0 == x0 and rhs.nbytes == x.nbytes and (
+                (rows is None and cols is None)
+                or (rows is not None and cols is not None and bool(cp.array_equal(rows, cols))))
+            if not same:
+                raise ValueError("BandedBatch.solve_mapped: rhs and x overlap in memory with different "
+                                 "maps (systems would read entries others already wrote); pass a "
+                                 "separate x, or the same map for rows and cols")
         p = lambda a: 0 if a is None else int(a.data.ptr)          # noqa: E731
         self._s.solve_mapped_ptr(p(rhs), p(rows), p(x), p(cols), int(cp.cuda.get_current_stream().ptr))
 
@@ -268,6 +292,14 @@ class Imex:
         number of steps is refused, never truncated)."""
         from ..timestep.integrator import check_steps
         return self._s.run(d, float(t0), check_steps(nsteps, "cuda.Imex.run"))
+
+    def reset(self) -> None:
+        """Forget the SBDF history (the factorizations are kept). A run on a state other than
+        the one the previous run returned is refused until reset() (as for the host
+        ``ImexIntegrator``)."""
+        self._s.reset()
+
+    history_length = property(lambda self: self._s.history_length)
 
     def explain(self) -> str:
         """Scheme, dt, explicit term and factorizations of the device integrator, one line."""

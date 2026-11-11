@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-11T07:04:45.805Z",
+ "generated": "2026-11-11T12:15:58.111Z",
  "source": "",
  "statusSource": "docs/site/tutorials/outputs/STATUS.json",
  "tutorials": [
@@ -15,7 +15,7 @@
     {
      "script": "t00_first_steps.py",
      "status": "pass",
-     "time": "5.3 s",
+     "time": "3.3 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -35,7 +35,7 @@
     {
      "script": "t01_orr_sommerfeld.py",
      "status": "pass",
-     "time": "7.1 s",
+     "time": "6.4 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -55,7 +55,7 @@
     {
      "script": "t00_getting_started.py",
      "status": "pass",
-     "time": "79.3 s",
+     "time": "75.8 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -75,7 +75,7 @@
     {
      "script": "t02a_rayleigh_benard_cpu.py",
      "status": "pass",
-     "time": "19.9 s",
+     "time": "17 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -104,7 +104,7 @@
     {
      "script": "t08_polar.py",
      "status": "pass",
-     "time": "10.3 s",
+     "time": "10.2 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -124,7 +124,7 @@
     {
      "script": "t16_particles_dye.py",
      "status": "pass",
-     "time": "29.8 s",
+     "time": "9.2 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -144,7 +144,7 @@
     {
      "script": "t03_symmetries.py",
      "status": "pass",
-     "time": "2.9 s",
+     "time": "2.2 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -164,7 +164,7 @@
     {
      "script": "t13_sensitivity_data.py",
      "status": "pass",
-     "time": "59.2 s",
+     "time": "3.7 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -184,7 +184,7 @@
     {
      "script": "t04_bratu.py",
      "status": "pass",
-     "time": "6.6 s",
+     "time": "6.3 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -204,7 +204,7 @@
     {
      "script": "t05_ks_orbits.py",
      "status": "pass",
-     "time": "55.7 s",
+     "time": "50.3 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -224,7 +224,7 @@
     {
      "script": "t10_bifurcations.py",
      "status": "pass",
-     "time": "4.1 s",
+     "time": "4 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -244,7 +244,7 @@
     {
      "script": "t12_chaos_ensembles.py",
      "status": "pass",
-     "time": "103 s",
+     "time": "103.5 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -264,7 +264,7 @@
     {
      "script": "t15_ks_covariant.py",
      "status": "pass",
-     "time": "39.5 s",
+     "time": "33.4 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -304,7 +304,7 @@
     {
      "script": "t14_from_dedalus.py",
      "status": "pass",
-     "time": "3.8 s",
+     "time": "3.2 s",
      "run": "",
      "commit": null,
      "date": null,
@@ -313,7 +313,7 @@
     {
      "script": "t14b_dedalus_check.py",
      "status": "pass",
-     "time": "8.3 s",
+     "time": "5.8 s",
      "run": "",
      "commit": null,
      "date": null,

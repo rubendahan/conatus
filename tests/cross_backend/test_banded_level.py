@@ -10,14 +10,13 @@ import scipy.sparse as sp
 from conatus.runtime import BorderedBanded
 from conatus.runtime import cuda
 
-rng = np.random.default_rng(11)
 
 
 def rel(a, b):
     return np.max(abs(a - b)) / max(np.max(abs(b)), 1e-300)
 
 
-def sparse_banded(n, kl, ku, r, dtype, density=0.4):
+def sparse_banded(rng, n, kl, ku, r, dtype, density=0.4):
     """Almost-banded matrix with a sparse band (structural zeros inside it, like the spectral
     operators) and r dense border rows; diagonal kept non-zero, pivoting still exercised."""
     A = np.zeros((n, n), dtype=dtype)
@@ -30,11 +29,11 @@ def sparse_banded(n, kl, ku, r, dtype, density=0.4):
     return A
 
 
-def conditioned(n, kl, ku, r, shift=8.0, dtype=float):
+def conditioned(rng, n, kl, ku, r, shift=8.0, dtype=float):
     """sparse_banded with its banded rows made diagonally dominant: condition number ~1e3-1e4.
     The plain random matrices reach cond 1e11-1e17 at n = 900 (host LAPACK solve residuals up
     to 0.7, measured): a residual bound on them tests the matrix, not the solver (512)."""
-    A = sparse_banded(n, kl, ku, r, dtype)
+    A = sparse_banded(rng, n, kl, ku, r, dtype)
     A[np.arange(r, n), np.arange(r, n)] += shift
     return sp.csr_matrix(A)
 
@@ -43,10 +42,10 @@ def conditioned(n, kl, ku, r, shift=8.0, dtype=float):
 @pytest.mark.parametrize("dtype", [float, complex])
 @pytest.mark.parametrize("r", [0, 2, 6])
 @pytest.mark.parametrize("n", [40, 300])
-def test_level_matches_band_kernel_and_host(dtype, r, n, merge):
+def test_level_matches_band_kernel_and_host(dtype, r, n, merge, rng):
     batch = 7
     kl, ku = 9, 14
-    mats = [sp.csr_matrix(sparse_banded(n, kl, ku, r, dtype)) for _ in range(batch)]
+    mats = [sp.csr_matrix(sparse_banded(rng, n, kl, ku, r, dtype)) for _ in range(batch)]
     border = list(range(r))
     lvl = cuda.BandedBatch(mats, border, level_schedule=True, level_merge=merge)
     band = cuda.BandedBatch(mats, border, level_schedule=False)
@@ -80,13 +79,13 @@ def test_level_matches_band_kernel_and_host(dtype, r, n, merge):
 
 
 @pytest.mark.parametrize("dtype", [float, complex])
-def test_merged_levels_equal_unmerged_to_rounding(dtype):
+def test_merged_levels_equal_unmerged_to_rounding(dtype, rng):
     """Merged and unmerged level solves of the same factors: rounding-level agreement, measured
     against the band kernel's own distance to the host solve (both well-conditioned here)."""
     n, batch, kl, ku, r = 400, 5, 6, 10, 3
     mats = []
     for _ in range(batch):
-        A = sparse_banded(n, kl, ku, r, dtype, density=0.3)
+        A = sparse_banded(rng, n, kl, ku, r, dtype, density=0.3)
         A[np.arange(r, n), np.arange(r, n)] += 4.0        # well conditioned: rounding is visible
         mats.append(sp.csr_matrix(A))
     border = list(range(r))
@@ -101,13 +100,13 @@ def test_merged_levels_equal_unmerged_to_rounding(dtype):
 
 
 @pytest.mark.parametrize("dtype", [np.float64, np.complex128])
-def test_solve_mapped_gather_scatter(dtype):
+def test_solve_mapped_gather_scatter(dtype, rng):
     import cupy as cp
     n, batch, r = 120, 5, 2
     cplx = dtype == np.complex128
     # well-conditioned systems: the absolute residual bound below is about the maps, not about
     # the conditioning of a random matrix (a plain sparse_banded draw failed it at 1.6e-10)
-    mats = [conditioned(n, 4, 6, r, dtype=complex if cplx else float) for _ in range(batch)]
+    mats = [conditioned(rng, n, 4, 6, r, dtype=complex if cplx else float) for _ in range(batch)]
     for level in (True, False):
         bb = cuda.BandedBatch(mats, list(range(r)), level_schedule=level)
         N = batch * n + 17
@@ -125,7 +124,7 @@ def test_solve_mapped_gather_scatter(dtype):
 
 
 @pytest.mark.parametrize("complexify", [False, True])
-def test_rb2d_system_level_vs_band(complexify):
+def test_rb2d_system_level_vs_band(complexify, rng):
     import sys
     from pathlib import Path
     import cupy as cp
@@ -165,13 +164,13 @@ def _solve_rel_residual(bb, mats, b):
 
 
 
-def test_level_two_sizes_in_one_process():
+def test_level_two_sizes_in_one_process(rng):
     """Regression: the dynamic shared-memory limit of the level kernel is a
     per-kernel attribute; a second BandedBatch with a smaller n used to lower it below the first
     one's need, whose next solve then failed to launch. Well-conditioned matrices (see
     conditioned): the first version used plain random ones and failed on their conditioning."""
-    big = [conditioned(900, 6, 8, 2) for _ in range(3)]
-    small = [conditioned(24, 3, 4, 2) for _ in range(3)]
+    big = [conditioned(rng, 900, 6, 8, 2) for _ in range(3)]
+    small = [conditioned(rng, 24, 3, 4, 2) for _ in range(3)]
     A = cuda.BandedBatch(big, [0, 1])
     B = cuda.BandedBatch(small, [0, 1])
     assert A.level_scheduled and B.level_scheduled, (A.level_note, B.level_note)
@@ -186,7 +185,7 @@ def test_level_two_sizes_in_one_process():
     assert rel(d1.to_host(), d2.to_host()) < 1e-13
 
 
-def test_level_falls_back_when_static_shared_memory_is_counted():
+def test_level_falls_back_when_static_shared_memory_is_counted(rng):
     """Regression: n just under the old check (dynamic + MAXR words only) but over
     the real limit (the kernel's static shared arrays count too) must fall back to the band
     kernel with a reason, not raise from the constructor."""
@@ -202,12 +201,12 @@ def test_level_falls_back_when_static_shared_memory_is_counted():
     assert _solve_rel_residual(bb, [A], b) < 1e-12
 
 
-def test_solve_mapped_refuses_maps_it_would_misread():
+def test_solve_mapped_refuses_maps_it_would_misread(rng):
     """The kernel reads int64 maps through raw pointers: int32 maps, a wrong shape or a strided
     right-hand side used to be read as other memory without an error."""
     import cupy as cp
     n, batch = 30, 3
-    mats = [sp.csr_matrix(sparse_banded(n, 3, 4, 1, float)) for _ in range(batch)]
+    mats = [sp.csr_matrix(sparse_banded(rng, n, 3, 4, 1, float)) for _ in range(batch)]
     bb = cuda.BandedBatch(mats, [0])
     rhs, x = cp.zeros(batch * n), cp.zeros(batch * n)
     ok = cp.arange(batch * n, dtype=cp.int64).reshape(batch, n)
@@ -223,32 +222,31 @@ def test_solve_mapped_refuses_maps_it_would_misread():
 
 # --- edge structures of the merged levels (512 review) --------------------------------------
 # Own generator: the tests above keep their draws (a shared generator moved their matrices).
-_rng_edge = np.random.default_rng(5)
 
 
-def _rnd(shape, dtype):
-    r = _rng_edge.standard_normal(shape)
-    return r + 1j * _rng_edge.standard_normal(shape) if dtype == complex else r
+def _rnd(rng, shape, dtype):
+    r = rng.standard_normal(shape)
+    return r + 1j * rng.standard_normal(shape) if dtype == complex else r
 
 
-def _band(n, kl, ku, r, dtype, density=1.0, shift=0.0):
+def _band(rng, n, kl, ku, r, dtype, density=1.0, shift=0.0):
     """Banded rows (dense or sparse band) with a diagonal shift, r dense border rows."""
     A = np.zeros((n, n), dtype=dtype)
     for i in range(n):
         for j in range(max(0, i - kl), min(n, i + ku + 1)):
-            if j == i or _rng_edge.random() < density:
-                A[i, j] = _rnd((), dtype)
+            if j == i or rng.random() < density:
+                A[i, j] = _rnd(rng, (), dtype)
     A[np.arange(n), np.arange(n)] += shift
     for i in range(r):
-        A[i] = _rnd(n, dtype)
+        A[i] = _rnd(rng, n, dtype)
     return A
 
 
-def _three_kernels_agree(mats, r, dtype, tol_rel=1e-12):
+def _three_kernels_agree(rng, mats, r, dtype, tol_rel=1e-12):
     """Band kernel, one level per step and merged levels against the host solve; merged replays
     bitwise identical (a missing read-before-write barrier would show up as varying results)."""
     border, batch, n = list(range(r)), len(mats), mats[0].shape[0]
-    b = _rnd((batch, n), dtype)
+    b = _rnd(rng, (batch, n), dtype)
     out, merged = {}, None
     for name, kw in (("band", dict(level_schedule=False)), ("level", dict(level_merge=False)),
                      ("merged", dict(level_merge=True))):
@@ -271,13 +269,13 @@ def _three_kernels_agree(mats, r, dtype, tol_rel=1e-12):
 
 
 @pytest.mark.parametrize("dtype", [float, complex])
-def test_merged_heterogeneous_batch(dtype):
+def test_merged_heterogeneous_batch(dtype, rng):
     """One batch, four very different level structures: no L and one wide U level (diagonal
     band), chains of one row per level (tridiagonal), sparse and dense bands."""
     n, r = 200, 3
-    mats = [_band(n, 0, 0, r, dtype, shift=3.0), _band(n, 1, 1, r, dtype, shift=4.0),
-            _band(n, 6, 9, r, dtype, density=0.3, shift=5.0), _band(n, 6, 9, r, dtype, shift=8.0)]
-    bb = _three_kernels_agree(mats, r, dtype)
+    mats = [_band(rng, n, 0, 0, r, dtype, shift=3.0), _band(rng, n, 1, 1, r, dtype, shift=4.0),
+            _band(rng, n, 6, 9, r, dtype, density=0.3, shift=5.0), _band(rng, n, 6, 9, r, dtype, shift=8.0)]
+    bb = _three_kernels_agree(rng, mats, r, dtype)
     assert sum(bb.level_steps) < sum(bb.level_depth)
     # the diagonal mode's backward level has 200 rows: a step of its own, declared as such
     assert "a wider level stays a step of its own" in bb.explain()
@@ -285,36 +283,36 @@ def test_merged_heterogeneous_batch(dtype):
 
 @pytest.mark.parametrize("dtype", [float, complex])
 @pytest.mark.parametrize("n, r", [(1, 0), (2, 0), (2, 1), (3, 1), (5, 0), (5, 1)])
-def test_merged_tiny_systems(n, r, dtype):
-    _three_kernels_agree([_band(n, 1, 1, r, dtype, shift=3.0) for _ in range(3)], r, dtype)
+def test_merged_tiny_systems(n, r, dtype, rng):
+    _three_kernels_agree(rng, [_band(rng, n, 1, 1, r, dtype, shift=3.0) for _ in range(3)], r, dtype)
 
 
 @pytest.mark.parametrize("dtype", [float, complex])
 @pytest.mark.parametrize("r", [15, 16, 17, 24])
-def test_level_border_rank_around_shared_capacitance(r, dtype):
+def test_level_border_rank_around_shared_capacitance(r, dtype, rng):
     """r <= 16: capacitance LU in shared memory, solved one lane per entry, W loaded r entries at
     a time; r > 16: serial path from global memory. Both sides of the switch."""
-    mats = [_band(160, 4, 6, r, dtype, density=0.5, shift=6.0) for _ in range(3)]
-    _three_kernels_agree(mats, r, dtype, tol_rel=1e-10)
+    mats = [_band(rng, 160, 4, 6, r, dtype, density=0.5, shift=6.0) for _ in range(3)]
+    _three_kernels_agree(rng, mats, r, dtype, tol_rel=1e-10)
 
 
 @pytest.mark.parametrize("dtype", [float, complex])
-def test_merged_wide_level_then_chain(dtype):
+def test_merged_wide_level_then_chain(dtype, rng):
     """100 independent rows (a level of > 32 rows, never merged), then chains that merge."""
     n, mats = 180, []
     for _ in range(3):
-        A = np.diag(3.0 + np.abs(_rnd(n, float))).astype(dtype)
+        A = np.diag(3.0 + np.abs(_rnd(rng, n, float))).astype(dtype)
         for i in range(100, n):
-            A[i, i - 1] = _rnd((), dtype)
-            A[i, i - 50] = 0.5 * _rnd((), dtype)
+            A[i, i - 1] = _rnd(rng, (), dtype)
+            A[i, i - 50] = 0.5 * _rnd(rng, (), dtype)
             if i + 2 < n:
-                A[i, i + 2] = 0.5 * _rnd((), dtype)
+                A[i, i + 2] = 0.5 * _rnd(rng, (), dtype)
         mats.append(A)
-    _three_kernels_agree(mats, 0, dtype)
+    _three_kernels_agree(rng, mats, 0, dtype)
 
 
 @pytest.mark.parametrize("dtype", [float, complex])
-def test_merged_wide_band_near_ring_capacity(dtype):
+def test_merged_wide_band_near_ring_capacity(dtype, rng):
     """Dense band kl = 30, ku = 40: merged rows grow until a step would not fit the ring chunk."""
-    _three_kernels_agree([_band(300, 30, 40, 2, dtype, shift=20.0) for _ in range(2)], 2, dtype,
+    _three_kernels_agree(rng, [_band(rng, 300, 30, 40, 2, dtype, shift=20.0) for _ in range(2)], 2, dtype,
                          tol_rel=1e-10)

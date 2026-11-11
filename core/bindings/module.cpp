@@ -435,6 +435,8 @@ void bind_cuda_linalg(nb::module_& m, const char* suffix) {
                 throw std::invalid_argument("Imex.run: expected a (batch, n) DeviceArray");
             return s.run(x.buf.data(), t0, nsteps);
         }, nb::arg("x"), nb::arg("t0"), nb::arg("nsteps"))
+        .def("reset", &IM::reset)
+        .def_prop_ro("history_length", &IM::history_length)
         .def_prop_ro("n_factorizations", &IM::n_factorizations)
         .def_prop_ro("iteration", &IM::iteration)
         .def_prop_ro("scheme", &IM::scheme);

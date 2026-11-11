@@ -10,7 +10,6 @@ from conatus.reference import transforms as CPU
 from conatus.runtime import BorderedBanded, ImexIntegrator
 from conatus.runtime import cuda
 
-rng = np.random.default_rng(7)
 _c = CartesianCoordinates("x")
 
 
@@ -21,7 +20,7 @@ def rel(a, b):
 # ---------------------------------------------------------------------------------- transforms
 @pytest.mark.parametrize("dealias", [1, 1.5])
 @pytest.mark.parametrize("kind", ["cheb_real", "cheb_complex", "realfourier", "complexfourier"])
-def test_transforms_match_cpu(kind, dealias):
+def test_transforms_match_cpu(kind, dealias, rng):
     N, batch = 64, 37
     if kind.startswith("cheb"):
         b = Chebyshev(_c["x"], N, (-1, 1), dealias=dealias)
@@ -40,7 +39,7 @@ def test_transforms_match_cpu(kind, dealias):
     assert rel(g_gpu, g_cpu) < 1e-13
 
 
-def test_raw_ffts_match_numpy():
+def test_raw_ffts_match_numpy(rng):
     x = rng.standard_normal((9, 48)) + 1j * rng.standard_normal((9, 48))
     cu = cuda._need()
     assert rel(cu.fft_c2c(cuda.to_device(x), True).to_host(), np.fft.fft(x, axis=1)) < 1e-13
@@ -51,7 +50,7 @@ def test_raw_ffts_match_numpy():
     assert rel(cu.irfft(cuda.to_device(X), 48).to_host(), xr) < 1e-13
 
 
-def test_transform_determinism_and_pool_reuse():
+def test_transform_determinism_and_pool_reuse(rng):
     b = Chebyshev(_c["x"], 128, (-1, 1), dealias=1.5)
     f = rng.standard_normal((64, CPU.grid_size(b, True)))
     d = cuda.to_device(f)
@@ -62,7 +61,7 @@ def test_transform_determinism_and_pool_reuse():
 
 
 # ------------------------------------------------------------------------------ banded solves
-def almost_banded(n, kl, ku, r, dtype, dominant=False):
+def almost_banded(rng, n, kl, ku, r, dtype, dominant=False):
     A = np.zeros((n, n), dtype=dtype)
     for i in range(n):
         for j in range(max(0, i - kl), min(n, i + ku + 1)):
@@ -77,13 +76,13 @@ def almost_banded(n, kl, ku, r, dtype, dominant=False):
 @pytest.mark.parametrize("dominant", [True, False])
 @pytest.mark.parametrize("dtype", [float, complex])
 @pytest.mark.parametrize("r", [1, 2, 4])
-def test_batched_bordered_solve_matches_cpu(dtype, r, dominant):
+def test_batched_bordered_solve_matches_cpu(dtype, r, dominant, rng):
     """Same algorithm as the host solver (banded LU + Woodbury). Well-conditioned bands: residual at
     rounding. Non-dominant random bands: the bordering itself loses accuracy with cond(B) (measured on
     the host too), so the GPU must match the host residual level, not a fixed tolerance."""
     n, batch = 96, 11
     border = list(range(r))
-    mats = [almost_banded(n, int(rng.integers(1, 5)), int(rng.integers(1, 5)), r, dtype, dominant)
+    mats = [almost_banded(rng, n, int(rng.integers(1, 5)), int(rng.integers(1, 5)), r, dtype, dominant)
             for _ in range(batch)]
     gpu = cuda.BandedBatch([sp.csr_matrix(A) for A in mats], border)
     assert gpu.rank == r and gpu.batch == batch
@@ -103,9 +102,9 @@ def test_batched_bordered_solve_matches_cpu(dtype, r, dominant):
     assert "one warp per mode" in gpu.explain()
 
 
-def test_no_pivot_on_declared_dominant_band_and_singular_refused():
+def test_no_pivot_on_declared_dominant_band_and_singular_refused(rng):
     n, batch = 64, 5
-    mats = [almost_banded(n, 3, 2, 2, complex, dominant=True) for _ in range(batch)]
+    mats = [almost_banded(rng, n, 3, 2, 2, complex, dominant=True) for _ in range(batch)]
     gpu = cuda.BandedBatch([sp.csr_matrix(A) for A in mats], [0, 1], pivot=False)
     b = rng.standard_normal((batch, n)) + 0j
     d = cuda.to_device(b)
@@ -119,9 +118,9 @@ def test_no_pivot_on_declared_dominant_band_and_singular_refused():
         cuda.BandedBatch([sp.csr_matrix(S)], [])
 
 
-def test_solve_determinism():
+def test_solve_determinism(rng):
     n, batch = 80, 9
-    mats = [sp.csr_matrix(almost_banded(n, 2, 3, 2, complex)) for _ in range(batch)]
+    mats = [sp.csr_matrix(almost_banded(rng, n, 2, 3, 2, complex)) for _ in range(batch)]
     gpu = cuda.BandedBatch(mats, [0, 1])
     b = rng.standard_normal((batch, n)) + 1j * rng.standard_normal((batch, n))
     d1, d2 = cuda.to_device(b), cuda.to_device(b)
@@ -149,7 +148,7 @@ def heat_like(N, kappa):
 
 
 @pytest.mark.parametrize("scheme", ["SBDF1", "SBDF2", "SBDF3", "SBDF4", "RK111", "RK222", "RK443"])
-def test_batched_imex_matches_cpu(scheme):
+def test_batched_imex_matches_cpu(scheme, rng):
     N, batch, dt, steps = 32, 6, 2e-3, 100
     kappas = np.linspace(0.0, 5.0, batch)
     systems = [heat_like(N, k) for k in kappas]

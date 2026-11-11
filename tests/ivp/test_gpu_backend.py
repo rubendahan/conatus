@@ -128,7 +128,23 @@ def test_cuda_graph_sbdf_matches_plain_steps(scheme, startup, sym):
 
 
 def test_cuda_graph_refuses_time_dependent_f():
-    plan, f = rayleigh_benard_2d(16, 8, Ra=1e5, Lx=2.0)
+    # the solver now refuses a time_parameter the equations do not use (invariance audit), so the
+    # problem must really depend on t: heat equation with a forcing cos(t) sin(pi x)
+    from conatus.discretize import discretize
+    from conatus.ir import (IVP, CartesianCoordinates, Chebyshev, Domain, Field, Parameter, cos,
+                            dt, interp, lap, lift, sin)
+    cs = CartesianCoordinates("x")
+    x = cs["x"]
+    b = Chebyshev(x, 16, (-1, 1), dealias=1.5)
+    D = Domain(cs, [b])
+    u, t1, t2, X = Field("u", D), Field("t1", D.without(x)), Field("t2", D.without(x)), Field("X", D)
+    t = Parameter("t", 0.0)
+    pb = IVP([u, t1, t2], name="forced heat")
+    pb.add_equation((dt(u) - lap(u) + lift(t1, b, -1) + lift(t2, b, -2), cos(t) * sin(np.pi * X)))
+    pb.add_equation((interp(u, x, "left"), 0))
+    pb.add_equation((interp(u, x, "right"), 0))
+    plan = discretize(pb, ncc={X: lambda x: x})
     s = IVPSolver(plan, "SBDF2", 1e-3, backend="cuda", time_parameter="t")
     with pytest.raises(ValueError, match="depends on t"):
         s.run_graph(1)
+

@@ -32,6 +32,22 @@ constexpr int WARP = 32;
 constexpr int MAXR = 64;                  // largest border rank handled on the device (3D channel: 24)
 constexpr std::size_t SHARED_Y_MAX = 40 * 1024;
 
+// Work vector of one band-kernel solve whose vector does not fit shared memory, allocated on the
+// solve's own stream and freed there after the kernel (stream-ordered, capturable in a CUDA graph).
+// It replaced one work vector per BandedBatch: two solves of one batch on two streams wrote the same
+// memory at once and returned wrong values (tested on an L40S // tests/core/test_cuda_risks_gpu.py::test_solves_on_two_streams_equal_the_serial_solves).
+template <class T>
+struct StreamScratch {
+    T* p = nullptr;
+    cudaStream_t st;
+    StreamScratch(std::size_t n, cudaStream_t s) : st(s) {
+        if (n) CN_CUDA(cudaMallocAsync(reinterpret_cast<void**>(&p), sizeof(T) * n, st));
+    }
+    ~StreamScratch() { if (p) cudaFreeAsync(p, st); }
+    StreamScratch(const StreamScratch&) = delete;
+    StreamScratch& operator=(const StreamScratch&) = delete;
+};
+
 template <class T>
 struct Band {
     T* a;
@@ -1214,7 +1230,8 @@ BandedBatch<T>::BandedBatch(const std::vector<Csr<T>>& mats, const std::vector<i
                 " is singular: the boundary rows are not independent of the banded operator");
         cond_max_ = std::max(cond_max_, hcond[m]);
     }
-    if (std::size_t(n_) * sizeof(T) > SHARED_Y_MAX) scratch_ = Buffer<T>(std::size_t(batch_) * n_, D);
+    // no persistent work vector: solves too long for shared memory take one per call, allocated
+    // on their stream (see StreamScratch below)
     if (level_schedule) build_level_schedule();
     else lvl_note_ = "level schedule not requested";
 }
@@ -1378,9 +1395,10 @@ void BandedBatch<T>::launch_solve(const IO& io, void* stream) const {
     if (band_released_) throw std::runtime_error("BandedBatch: band factors released");
     bool shared = std::size_t(n_) * sizeof(T) <= SHARED_Y_MAX;
     std::size_t smem = shared ? std::size_t(n_) * sizeof(T) : 0;
+    StreamScratch<T> scratch(shared ? 0 : std::size_t(batch_) * n_, st);
     k_solve<dev_t<T>><<<batch_, WARP, smem, st>>>(dptr(ab_.data()), ipiv_.data(), dptr(Vt_.data()),
                                               dptr(W_.data()), dptr(S_.data()), spiv_.data(),
-                                              perm_.data(), io, dptr(scratch_.data()), n_, kl_, ku_,
+                                              perm_.data(), io, dptr(scratch.p), n_, kl_, ku_,
                                               ldab_, r_, shared, col_border_);
     CN_LAUNCH_CHECK("k_solve");
 }
@@ -1474,7 +1492,6 @@ void BandedBatch<T>::release_band() {
     ab_ = Buffer<T>();
     ipiv_ = Buffer<int>();
     Vt_ = Buffer<T>();
-    scratch_ = Buffer<T>();
     band_released_ = true;
 }
 
@@ -1491,9 +1508,10 @@ void BandedBatch<T>::solve_transpose(T* d_b, void* stream) const {
     prepare_transpose();
     bool shared = std::size_t(n_) * sizeof(T) <= SHARED_Y_MAX;
     std::size_t smem = shared ? std::size_t(n_) * sizeof(T) : 0;
+    StreamScratch<T> scratch(shared ? 0 : std::size_t(batch_) * n_, static_cast<cudaStream_t>(stream));
     k_solve_T<dev_t<T>><<<batch_, WARP, smem, static_cast<cudaStream_t>(stream)>>>(
         dptr(ab_.data()), ipiv_.data(), dptr(Wt_.data()), dptr(St_.data()), stpiv_.data(),
-        perm_.data(), dptr(d_b), dptr(scratch_.data()), n_, kl_, ku_, ldab_, r_, shared, xptr_ptr(),
+        perm_.data(), dptr(d_b), dptr(scratch.p), n_, kl_, ku_, ldab_, r_, shared, xptr_ptr(),
         xrow_.data(), dptr(xval_.data()));
     CN_LAUNCH_CHECK("k_solve_T");
 }

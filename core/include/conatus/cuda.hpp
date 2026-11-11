@@ -135,7 +135,6 @@ private:
     Buffer<int> xrow_;
     Buffer<T> xval_, A00_;
     const long long* xptr_ptr() const { return col_border_ ? xptr_.data() : nullptr; }
-    mutable Buffer<T> scratch_;
     mutable Buffer<T> Wt_, St_;          // transposed Woodbury data (lazy)
     // level-scheduled sparse factors: one contiguous word stream per mode (offsets lvl_off_),
     // gather permutation (y[t] = b[lvl_gperm_[m*n + t]]), shared memory per block
@@ -186,7 +185,14 @@ public:
     Imex(const Imex&) = delete;
     Imex& operator=(const Imex&) = delete;
     void set_pointwise_rhs(const T* host_g, const T* host_h);   // (batch, n) each; nullptr = zero
-    double run(T* d_x, double t, long nsteps);                    // d_x: (batch, n) device
+    // d_x: (batch, n) device. SBDF keeps the M X and F history between calls: a second run()
+    // continues that trajectory and must start from the state and time the previous run()
+    // returned (checked bit for bit on the device); a new trajectory needs reset() first, as for
+    // the host ImexIntegrator (the device class mixed the old history into a
+    // new run silently until).
+    double run(T* d_x, double t, long nsteps);
+    void reset();                                                 // forget the SBDF history
+    int history_length() const { return static_cast<int>(MXh_.size()); }
     int n() const { return n_; }
     int batch() const { return batch_; }
     int n_factorizations() const { return static_cast<int>(factors_.size()); }
@@ -211,6 +217,9 @@ private:
     Buffer<T> g_, h_;
     bool has_g_ = false, has_h_ = false;
     std::vector<Buffer<T>> MXh_, Fh_;   // SBDF history ring (most recent first)
+    Buffer<T> last_x_;                  // state returned by the last SBDF run() (continuation)
+    double last_t_ = 0.0;
+    bool continues(const T* d_x, double t) const;
     std::map<std::pair<double, double>, std::unique_ptr<BandedBatch<T>>> factors_;
 };
 

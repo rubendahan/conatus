@@ -257,3 +257,72 @@ typed error, every other domain (one or two axes, all-Fourier boxes, two bounded
 Legendre, Hermite, Laguerre and compound bases, curvilinear domains), any other right-hand side
 (for example the temperature advection of a Boussinesq problem), and symmetry subspaces. The
 grouped transforms take the poloidal-toroidal form on slab grids only.
+
+## GPU
+
+`benchmarks/suite/run_suite_gpu.py` runs the four initial-value cases above on the CPU and on one
+GPU. The problem, resolution, scheme, time step, oracle and tolerance are the case's own; only the
+backend changes (`backend="cuda"`, optionally `f_backend="fused"`, or each timed block replayed with
+`sim.solver.run_graph(n)`). A GPU time is compared with a CPU time only when both runs pass the
+case's oracle check and their errors agree to 5 % of the error. Time per step is the median 10-step
+block, the GPU synchronised before each block ends; each configuration ran in two interleaved rounds
+and the table gives the median of the rounds.
+
+Run ``: one NVIDIA L40S (driver 580.178.04) and 4 cores of the
+same node (AMD EPYC 9254), both CPU right-hand-side paths at 4 threads, the fastest kept. The
+genoa column is the fastest figure of the same code on an AMD EPYC 9654 node at 8 threads, run
+`` (quiet node, two rounds); blank where that run did not have the case.
+ms per step:
+
+| Case | Error (CPU; GPU) | CPU, 4 cores of the GPU node | CPU, EPYC 9654, 8 threads | GPU, fastest path | GPU speed-up (GPU node CPU; EPYC 9654) |
+|---|---|---|---|---|---|
+| `ivp1d_burgers` N = 64 | 1.375e-13; 1.390e-13 | 0.396 (fused) | 0.48 | 0.280 (graph) | 1.4; 1.7 |
+| `ivp1d_burgers` N = 1024 | 1.385e-13; 1.400e-13 | 0.699 (fused) | | 0.355 (graph) | 2.0; |
+| `ivp2d_taylor_green` 64² | 3.401e-12; 3.408e-12 | 4.33 (fused) | 5.33 | 0.594 (graph) | 7.3; 9.0 |
+| `ivp2d_taylor_green` 256² | 3.401e-12; 3.408e-12 | 77.4 | 81.8 | 1.49 (graph) | 52; 55 |
+| `ivp2d_rb` 64 × 32 | 1.777e-6 (both) | 5.01 (fused) | 5.88 | 0.438 (fused F) | 11; 13 |
+| `ivp2d_rb` 256 × 64 | 1.282e-6 (both) | 32.7 | 32.3 | 0.697 (fused F) | 47; 46 |
+| `ivp3d_rb` 16 × 16 × 24 | 2.107e-6 (both) | 36.5 | 31.8 | 2.25 (graph) | 16; 14 |
+| `ivp3d_rb` 32³ | 1.777e-6 (both) | 193 | | 5.28 (graph) | 37; |
+
+The errors of the two backends differ by at most 1.1 % of the error (Burgers, at round-off level)
+and by less than 2e-5 of it elsewhere. Without a fused right-hand side or a CUDA graph, a GPU step
+costs about 2 ms in 1D and 4 to 11 ms in 2D and 3D whatever the size: on the small cases the GPU is
+then slower than the CPU (Burgers 2.0 ms against 0.40 ms). A whole EPYC 9654 node scanned from 1 to
+96 threads is queued; a scan on a node shared with other jobs
+ ran 1.5 to 1.9 times slower than the quiet-node figures above and
+is not used. In that scan no case gained more than 3 % beyond 8 threads.
+
+**Several GPUs.** Plane channel, RK443, dt = 1e-3, `DistributedIVPSolver` on one node with three
+L40S. Before timing, the job compares the
+distributed results at 1, 2 and 3 ranks with the single-GPU `IVPSolver` (largest difference
+7.4e-14) and with each other (bitwise equal). Efficiency is given against the plain single-GPU
+solver, then against the distributed solver on one GPU. ms per step:
+
+| Form, size | one GPU, `IVPSolver` | 1 rank | 2 GPUs | 3 GPUs | efficiency at 3 GPUs |
+|---|---|---|---|---|---|
+| poloidal-toroidal, 64 × 65 × 64 per GPU | 6.93 | 7.00 | 9.24 | 11.32 | 61 %; 62 % |
+| poloidal-toroidal, 128 × 65 × 128 | 27.75 | 32.82 | 17.69 | 14.91 | 62 %; 73 % |
+| primitive, 64 × 65 × 64 per GPU | 25.10 | 22.33 | 25.41 | 28.10 | 89 %; 79 % |
+| primitive, 128 × 65 × 128 | | 116.4 | 57.5 | 38.8 | ; 100 % |
+
+With the fused products of 0.5 (same node type, same checks): poloidal-toroidal 128 × 65 × 128 at 3 GPUs 14.47 ms, 64 % of `IVPSolver` (27.73 ms); primitive 128 × 65 × 128 at 3 GPUs 38.8 ms against 120.8 ms for `IVPSolver`, 104 %.
+
+Across two nodes, two GPUs reach 67 % (64 × 65 × 64 per GPU) and 69 % (128 × 65 × 128) of the
+single-GPU solver for the poloidal-toroidal form. The
+exchange between nodes is limited by the node's network path, about 18.7 GB/s.
+
+Eight L40S over four nodes (ranks 1, 3, 2, 2 per node; agreement checks in run
+``: 378 records at 1 to 8 ranks, largest difference from `IVPSolver`
+7.4e-14, bitwise equal across rank counts; timings in run ``). ms
+per step, efficiency at 8 GPUs against `IVPSolver`, then against the distributed solver on one GPU:
+
+| Form, size | one GPU, `IVPSolver` | 1 rank | 2 GPUs | 4 GPUs | 8 GPUs | efficiency at 8 GPUs |
+|---|---|---|---|---|---|---|
+| poloidal-toroidal, 64 × 65 × 64 per GPU | 6.93 | 6.74 | 10.33 | 12.16 | 21.37 | 32 %; 32 % |
+| poloidal-toroidal, 128 × 65 × 128 | 27.76 | 29.84 | 19.11 | 12.13 | 11.73 | 30 %; 32 % |
+| primitive, 64 × 65 × 64 per GPU | 25.17 | 22.33 | 26.16 | 28.27 | 35.66 | 71 %; 63 % |
+| primitive, 128 × 65 × 128 | 120.75 | 116.7 | 58.7 | 28.1 | 17.3 | 87 %; 85 % |
+
+Here 2 and 4 GPUs are on 2 and 4 nodes. The poloidal-toroidal step spends most of its time in the
+exchange between nodes; the primitive form does more work per exchanged byte.

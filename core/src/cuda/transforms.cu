@@ -2,7 +2,7 @@
 // Conventions are exactly those of the host backend (core/src/transforms/transforms.cpp) and of
 // python/conatus/reference/transforms.py; results agree to rounding (not bitwise: different FFTs).
 // Chebyshev DCT-II / DCT-III go through a real FFT of length 2M on the even extension (valid for any
-// M), with the pre/post twiddles in one kernel each. cuFFT plans are cached by (kind, n, batch);
+// M), with the pre/post twiddles in one kernel each. cuFFT plans are cached by (kind, n, batch), LRU, at most 64;
 // cuFFT is run-to-run deterministic for a fixed plan and device.
 #include <cufft.h>
 
@@ -23,21 +23,41 @@ enum class Kind { Z2Z, D2Z, Z2D };
 using Key = std::tuple<Kind, std::size_t, std::size_t>;
 
 std::mutex g_mutex;
-std::map<Key, cufftHandle>& cache() {
-    static auto* c = new std::map<Key, cufftHandle>();   // leaked: no teardown after the driver
+// LRU cache of cuFFT plans, at most PLAN_CACHE_MAX (each plan holds a device work area; the cache
+// was unbounded until so a run over many sizes kept every work area until exit).
+constexpr std::size_t PLAN_CACHE_MAX = 64;
+struct PlanCache {
+    std::map<Key, std::pair<cufftHandle, unsigned long long>> plans;   // plan, last use
+    unsigned long long clock = 0;
+};
+PlanCache& cache() {
+    static auto* c = new PlanCache();   // leaked: no teardown after the driver
     return *c;
 }
 
 cufftHandle get_plan(Kind kind, std::size_t n, std::size_t batch) {
     std::lock_guard<std::mutex> lock(g_mutex);
+    auto& C = cache();
     Key key{kind, n, batch};
-    auto it = cache().find(key);
-    if (it != cache().end()) return it->second;
+    auto it = C.plans.find(key);
+    if (it != C.plans.end()) {
+        it->second.second = ++C.clock;
+        return it->second.first;
+    }
+    if (C.plans.size() >= PLAN_CACHE_MAX) {
+        auto old = C.plans.begin();
+        for (auto j = C.plans.begin(); j != C.plans.end(); ++j)
+            if (j->second.second < old->second.second) old = j;
+        // the evicted plan may still be executing (default stream): wait before destroying it
+        CN_CUDA(cudaDeviceSynchronize());
+        CN_CUFFT(cufftDestroy(old->second.first));
+        C.plans.erase(old);
+    }
     cufftHandle p;
     int ni = static_cast<int>(n);
     cufftType t = kind == Kind::Z2Z ? CUFFT_Z2Z : (kind == Kind::D2Z ? CUFFT_D2Z : CUFFT_Z2D);
     CN_CUFFT(cufftPlanMany(&p, 1, &ni, nullptr, 1, 0, nullptr, 1, 0, t, static_cast<int>(batch)));
-    cache()[key] = p;
+    C.plans[key] = {p, ++C.clock};
     return p;
 }
 
@@ -191,7 +211,7 @@ constexpr unsigned TPB = 256;
 
 std::size_t plan_cache_size() {
     std::lock_guard<std::mutex> lock(g_mutex);
-    return cache().size();
+    return cache().plans.size();
 }
 
 void fft_c2c(const cplx* d_in, cplx* d_out, std::size_t batch, std::size_t n, bool forward) {

@@ -2,6 +2,52 @@
 
 All notable changes to Conatus.
 
+## [0.5.0] - 2026-11-11
+
+GPU and multi-GPU, measured on NVIDIA L40S cards: the GPU test suite and the GPU benchmarks run on
+the current code, three wrong results of the low-level CUDA classes are fixed, and the distributed
+solver is timed on up to eight GPUs. The results of the solvers on the CPU are unchanged.
+
+### Behaviour changes
+
+- `conatus.runtime.cuda.Imex` with an SBDF scheme refuses a `run` that does not continue the
+  previous one (the state and time that run returned). Call `reset()` to start a new trajectory.
+  Before, it reused the history of the previous run on the new state and gave wrong values.
+- `conatus.runtime.cuda.BandedBatch.solve_mapped` refuses index maps outside the arrays, repeated
+  output indices, and `rhs` and `x` in overlapping memory unless they are one array with one map
+  for both. Each of these gave wrong values or wrote outside the arrays.
+
+### Fixed
+
+- Two solves of one `cuda.BandedBatch` on two CUDA streams could return wrong values for systems
+  longer than 5120 entries solved without the level schedule. Each such solve now allocates its own
+  work memory on its stream; this also works inside a captured CUDA graph.
+- The core cuFFT plan cache keeps at most 64 plans.
+- The memory report counts the work vector of those long solves as a transient of each solve in
+  the CUDA driver's pool (`driver_transient_peak_bytes`, included in the peak bound), no longer as
+  persistent factor memory.
+
+### Performance
+
+- The distributed poloidal-toroidal right-hand side forms its six grid products in one GPU kernel,
+  with the same results bit for bit: one-rank steps at 128 x 65 x 128 go from 32.8 to 29.8 ms on
+  an L40S.
+- GPU benchmarks: the initial-value cases of the benchmark suite run on the CPU and on the GPU, and
+  a GPU time is compared with a CPU time only when both runs pass the case's oracle check with
+  errors within 5 % of each other. Each speed-up on the Benchmarks guide page names its two CPU
+  baselines: 4 cores of the GPU node (AMD EPYC 9254) and 8 threads of an AMD EPYC 9654 node.
+- Multi-GPU timings of the plane channel on 2 to 8 L40S, with efficiencies against the
+  single-GPU solver and against the distributed solver on one GPU (Benchmarks guide page).
+
+### Known limitations
+
+- On small problems the GPU path without a fused right-hand side or a CUDA graph is slower than
+  one CPU core (about 2 ms per step in 1D).
+- The poloidal-toroidal form keeps about 30 % efficiency at 8 GPUs over four nodes: the exchange
+  between nodes dominates its step.
+- `cuda.Imex.run` checks the continuation by copying the state to the host: about 0.2 ms per call
+  at 512 systems of 256 unknowns. A long `run` is not affected.
+
 ## [0.4.0] - 2026-11-11
 
 Performance on one CPU node: a benchmark suite with oracle checks, threaded banded solves, a faster

@@ -458,6 +458,13 @@ class FusedRHS:
                 self.post_plan.setdefault((k, comp), []).append((1.0, i, post))
         for key in self.const_terms:
             self.post_plan.setdefault(key, [])
+        # integration weights of every integrated axis, on the device once, here: a host-to-device
+        # copy per evaluation is refused while a CUDA graph is being captured (run_graph of the
+        # channel with an integral term died at its first capture)
+        int_axes = {ax for terms in self.post_plan.values() for _, _, (_, ig) in terms
+                    for ax, f in enumerate(ig) if f}
+        self._int_weights = {ax: self.xp.asarray(integration_weights(self.bases[ax]))
+                             for ax in sorted(int_axes)}
         # two RealFourier axes + one Chebyshev axis (the channel): batched 3D transforms with
         # contiguous FFTs (xp_transforms.FourierFourierChebyshev); otherwise axis by axis
         self._fft3 = None
@@ -948,8 +955,7 @@ class FusedRHS:
             if (g, z, ig) not in memo:
                 r = O[g]
                 for ax in [i for i, f in enumerate(ig) if f]:
-                    w = xp.asarray(integration_weights(self.bases[ax]))
-                    w = w.reshape((1,) * ax + (-1,) + (1,) * (nd - ax - 1))
+                    w = self._int_weights[ax].reshape((1,) * ax + (-1,) + (1,) * (nd - ax - 1))
                     r = xp.sum(r * w, axis=ax, keepdims=True)
                 memo[(g, z, ig)] = r
             for prev, cur, ax in _peel(dc):

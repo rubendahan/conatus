@@ -1,4 +1,4 @@
-# t02a_rayleigh_benard_cpu: PASS (exit 0) in 19.9 s | 2026-11-11 | script sha256 90eb240188d497ff
+# t02a_rayleigh_benard_cpu: PASS (exit 0) in 17.0 s | 2026-11-11 | script sha256 90eb240188d497ff
 Model 'Rayleigh-Benard 2D': Box(x=periodic((0, 2)), z=walls(-0.5, 0.5)) (Cartesian box)
 Unknowns: u (velocity), p (pressure), T (scalar); parameters: Ra = 2500, Pr = 1
 Equations as written:
@@ -40,7 +40,7 @@ The IVP 'Rayleigh-Benard 2D' for (u, p, T) was solved with Conatus. The domain i
 
 Citations: olver2013, burns2020, ascher1997
 Facts used: kind=IVP, groups=8, N_x=16, N_z=24, zbasis=Chebyshev, taus=4, dealias={'x': 1.5, 'z': 1.5}, scheme=RK443, dt=0.0005, backend=cpu, native=True, dealias_default=True
-resume_or_start('<path>/rb_chain_bfehk2cj/chk'): continued from checkpoint_000000600.h5 (iteration 600, t = 0.3); outputs without mode= continue their file (mode='resume')
-AnalysisFile <path>/rb_chain_bfehk2cj/rb.h5 (HDF5, conatus.analysis/1): every 100 steps (= 0.05 time units), 17 write(s) so far [mode 'resume' chosen by resume_or_start (restart)]
+resume_or_start('<path>/rb_chain_icjwlgct/chk'): continued from checkpoint_000000600.h5 (iteration 600, t = 0.3); outputs without mode= continue their file (mode='resume')
+AnalysisFile <path>/rb_chain_icjwlgct/rb.h5 (HDF5, conatus.analysis/1): every 100 steps (= 0.05 time units), 17 write(s) so far [mode 'resume' chosen by resume_or_start (restart)]
 17 rows, t = 0.00 ... 0.80, kinetic energy at the end 1.028e-06
 OK: the IVP grows at the EVP rate; the EVP matches the psi-theta formulation; the two-job chain is the uninterrupted run bit for bit
