@@ -349,7 +349,10 @@ class CheckpointSeries:
                 if meta.get("problem") not in (None, ref.get("problem")):
                     out.append(f"{p.name}: problem {meta.get('problem')!r}")
                 continue
-            diffs = [t for k, c, t in _differences(ident, ref_id, there=f"in {p.name}")
+            # incomparable entries (a function reading a value without a content hash) are left
+            # out: the restart from ``src`` already refused them or recorded their allow=
+            diffs = [t for k, c, t in _differences(ident, ref_id, there=f"in {p.name}",
+                                                   incomparable=False)
                      if keys is None or c in keys]
             if diffs:
                 out.append(f"{p.name}: " + ", ".join(diffs))

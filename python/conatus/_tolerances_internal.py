@@ -57,6 +57,7 @@ _ENTRIES = (
         "conatus.ecs.edge:EdgeTracker.fate",
         "conatus.ecs.fourier_ops:AxisOps.__init__",
         "conatus.ecs.pipe:_neutral_mode",
+        "conatus.ecs.solutions:_mean_space",
         "conatus.ir.domain:_check_curvilinear",
         "conatus.ir.domain:_check_spherical",
         "conatus.ir.symmetry:AzimuthalMFold.centre",
@@ -211,7 +212,7 @@ _ENTRIES = (
              "multiple eigenvalue); the measured value is in the message or the note", (
                  "conatus.discretize.polar:Disk.bessel_modes",
                  "conatus.discretize.terrain_plan:TerrainPlan.to_grid",
-                 "conatus.growth.periodic:operator_floquet",
+                 "conatus.growth.periodic:_hill_dense_above",
                  "conatus.manifolds.parametrization:unstable_manifold",
                  "conatus.nonmodal.energy:galerkin_numerical_abscissa",
                  "conatus.sensitivity.modes:mode_pair",
@@ -240,11 +241,11 @@ _ENTRIES = (
     Internal("DISTINCT_EXPONENT", 1e-3, "detection",
              "two folded Floquet exponents closer than this (relative) are candidates for the "
              "same mode found from two targets; their eigenvector overlap decides (OVERLAP)",
-             ("conatus.growth.periodic:operator_floquet.shifted_copy",)),
+             ("conatus.growth.periodic:_hill_modes",)),
     Internal("OVERLAP", 0.99, "detection",
              "eigenvector overlap above which two candidates are the same mode (as "
              "NEUTRAL_OVERLAP_MIN and translation_overlap_min)",
-             ("conatus.growth.periodic:operator_floquet.shifted_copy",)),
+             ("conatus.growth.periodic:_hill_modes",)),
     Internal("METRIC_KEEP", 0.9, "refusal",
              "a coordinate map whose metric needs more than 90 % of the Chebyshev coefficients "
              "sampled is not resolved by them and is refused",
@@ -253,8 +254,15 @@ _ENTRIES = (
              "an iteration that does not halve its residual (Newton-Krylov hookstep) or its step "
              "(determinant secants) is stalling; reported (the hookstep shrinks its trust "
              "region), never accepted as converged",
-             ("conatus.ecs.newton:NewtonKrylovHookstep.solve",
+             ("conatus.bifurcation.driver:ArclengthDriver.locate",
+              "conatus.bifurcation.driver:ArclengthDriver._track_band",
+              "conatus.ecs.newton:NewtonKrylovHookstep.solve",
               "conatus.floquet.roots:determinant_secant")),
+    Internal("REAL_FACTOR", 1e-8, "classification",
+             "a factor of a characteristic product with |Im f| <= 1e-8 |f| is real (a conjugate "
+             "pair that close to the axis counts twice with the same real part, so the sign of "
+             "the product is unchanged)",
+             ("conatus.bifurcation.driver:Factors.real",)),
     Internal("WINDING_INTEGER", 1e-6, "refusal",
              "the argument-principle winding (the sum of the phase increments of det T along the "
              "boundary, closed on the first point evaluated again) is an integer up to rounding by "

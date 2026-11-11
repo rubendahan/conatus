@@ -32,7 +32,11 @@ def test_ar1_error_and_coverage():
     se = np.array([r.stderr for r in reps])
     taus = np.array([r.tau_int for r in reps])
     assert abs(np.mean(taus) / TAU - 1) < 0.1
-    assert abs(np.mean(se) / np.std(means) - 1) < 0.15
+    # the autocorrelation estimate is accurate; the reported standard error is the largest of four
+    # estimates (0.3.1, hunt 5D Q6) and so conservative, by about 20 % on this plain AR(1)
+    acf = np.array([r.acf_stderr for r in reps])
+    assert abs(np.mean(acf) / np.std(means) - 1) < 0.15
+    assert 1.0 <= np.mean(se) / np.std(means) < 1.3
     cover = np.mean([lo <= 0 <= hi for lo, hi in (r.interval for r in reps)])
     assert cover > 0.9
     r = reps[0]

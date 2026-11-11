@@ -1,6 +1,6 @@
 """A :class:`~conatus.bifurcation.DynamicalSystem` view of a 1D RealFourier IVP for the manifold
 tools: the vector field v = M⁻¹(F − L X) of ``conatus.ecs.Flow`` in active coordinates
-(conserved mean frozen, optionally the antisymmetric subspace R u = u of ``conatus.ecs``), with
+(the mean frozen when measured conserved, kept as an unknown otherwise; optionally the antisymmetric subspace R u = u of ``conatus.ecs``), with
 
 * J(x): dense, one exact JVP (IR linearization) per column — for reduced systems only
   (size ≤ ``dense_max``, declared);
@@ -21,10 +21,14 @@ __all__ = ["ecs_system", "ecs_integrator"]
 
 
 def _space(solver, odd: bool):
+    # H4 (r031f): the mean was frozen and described as "(conserved)" without a check; for
+    # u_t = 0.5 u + u_xx - u u_x the k = 0 rate 0.5 was missing (top eigenvalue -0.5). The mean
+    # row of the vector field is measured on random states and the mean kept if not conserved.
     from ..ecs.fourier_ops import FourierOps
-    from ..ecs.solutions import _Space
+    from ..ecs.solutions import Flow, _mean_space
     ops = FourierOps(solver)
-    return ops, _Space(ops, solver.system.n, odd=odd)
+    v = Flow(solver)
+    return ops, _mean_space(ops, solver.system.n, lambda d: v(0.5 * d), odd=odd)
 
 
 def ecs_system(solver, *, odd: bool, degree: int, dense_max: int, degree_tol: float = 1e-8):

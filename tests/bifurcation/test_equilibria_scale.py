@@ -22,3 +22,16 @@ def test_reviewer_case():
     np.testing.assert_allclose(generalized_eigenvalues(I, 1e-12 * I), [1e12, 1e12])
     np.testing.assert_allclose(generalized_eigenvalues(1e12 * I, I), [1e12, 1e12])
     np.testing.assert_allclose(generalized_eigenvalues(0 * I, I), [0, 0])
+
+
+@pytest.mark.parametrize("c", [1e-6, 1.0, 1e6])
+def test_pencil_spectrum_ambiguous_moduli_in_the_caller_unit(c):
+    """J = c diag(-1, -1), M = diag(1, 1e-14): eigenvalues -c and -c 1e14. The second is finite
+    but within the infinite threshold's ambiguity band; its modulus is reported in the caller's
+    unit, c 1e14 (0.3.1 review: it was 1e14 whatever c, the unit of the normalised pencil)."""
+    from conatus.bifurcation.equilibria import pencil_spectrum
+    ps = pencil_spectrum(c * np.diag([-1.0, -1.0]), np.diag([1.0, 1e-14]))
+    big = np.concatenate([ps.ambiguous_kept, ps.ambiguous_removed,
+                          np.abs(ps.values[np.abs(ps.values) > 10 * c])])
+    assert big.size >= 1
+    assert np.allclose(big, c * 1e14, rtol=1e-6)

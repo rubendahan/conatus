@@ -205,12 +205,21 @@ decorators under `@track` are part of what is called and of the key). The identi
 the code, so a read whose target is chosen at run time cannot be followed: a function (or a user
 function it calls) whose code uses `getattr`, `hasattr`, `vars`, `globals`, `eval`, `exec`,
 `os.environ`, `os.getenv`, `open`, `np.load` or another name of
-`conatus.io._identity.DYNAMIC_READS` is uncachable, and the warning names the read. The cache is off by default; it needs `record=`; it is refused
-with a callback, since a hit would not call it; retracted runs are not reused; an argument, or a
+`conatus.io._identity.DYNAMIC_READS` is uncachable, and the warning names the read. So is a function that
+reads hidden library state: the global random generators, the clock, the entropy of the system, or an
+external process (`subprocess`, `os.system`; `conatus.io._identity.HIDDEN_STATE_READS` and the lists next
+to it). These are lists of names, not a proof of purity: a read they do not name (a C extension, a
+socket, a value cached by a library) is not seen. The cache is off by default; it needs `record=`; it is refused
+with a callback, since a hit would not call it, and a run that had a callback is never a cache source
+(the callback can change the state, and the key does not represent it); retracted runs are not reused; an argument, or a
 value read by the function or by a user pointwise function, without a content hash makes the
 call uncachable (said with a `CacheReuseWarning` naming it, then computed). A hit returns values of
-the recorded type (a NumPy scalar keeps its dtype, the string `"nan"` stays a string), and its
-series and fields are read from the source run through the new run (`run.series(...)`).
+the recorded type (a NumPy scalar keeps its dtype, a 0-d array stays a 0-d array, a dict keeps its
+key order, a Fortran-ordered array stays Fortran-ordered, the string `"nan"` stays a string). A hit
+does not keep the read-only flag (arrays come back writable) or other strides. A return that
+holds a masked array, a matrix, a recarray or an array HDF5 cannot store (dates, unicode strings,
+Python objects) is not stored, so that call is never a cache source. The
+series and fields of a hit are read from the source run through the new run (`run.series(...)`).
 
 ## Studio and export
 

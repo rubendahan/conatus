@@ -125,9 +125,13 @@ class ContinuationSettings:
     dp_fd: float | str | None = "auto"
     # event location (were literals). Defaults = the former values, all shown by
     # explain(); an event whose secant stops outside its tolerance is flagged converged=False.
-    event_max_iterations: int = 30   # secant budget per event (each iterate = one corrected point)
+    # secant/bisection budget per event (each iterate = one corrected point); 60 since 0.3.1: a
+    # sign bracket narrowed by bisection to crossing_tol x step takes about 37 halvings
+    event_max_iterations: int = 60
     fold_tol: float = 1e-12          # fold located when |t_p| <= fold_tol (t is a unit vector)
-    crossing_tol: float = 1e-11      # crossing located when |Re λ| <= crossing_tol · max(|λ|, 1e-3 median |λ|)
+    # crossing located when its sign bracket is narrower than crossing_tol x the step (bifurcation
+    # driver), or |Re λ| <= crossing_tol · max(|λ|, 1e-3 median |λ|) (PseudoArclength)
+    crossing_tol: float = 1e-11
     hopf_imag_tol: float = 1e-8      # Hopf if both near-threshold |Im λ| > hopf_imag_tol · max(|λ|, 1e-3 median |λ|)
 
     def __post_init__(self) -> None:
@@ -183,14 +187,15 @@ class ContinuationSettings:
                 f"  events: secant budget event_max_iterations = {self.event_max_iterations}"
                 f"{d('event_max_iterations')}, fold_tol = {self.fold_tol:g}{d('fold_tol')} "
                 f"(|t_p|), crossing_tol = {self.crossing_tol:g}{d('crossing_tol')} "
-                f"(|Re λ| / max(|λ|, 1e-3 median |λ|)), hopf_imag_tol = {self.hopf_imag_tol:g}"
+                f"(sign bracket / step; PseudoArclength: |Re λ| / max(|λ|, 1e-3 median |λ|)), "
+                f"hopf_imag_tol = {self.hopf_imag_tol:g}"
                 f"{d('hopf_imag_tol')} (|Im λ| / max(|λ|, 1e-3 median |λ|))")
 
 
 
 #: Declared defaults of ContinuationSettings (algorithm controls and event location).
 CONTINUATION_DEFAULTS = dict(adapt=1.3, fast_iterations=3, max_newton=12, dp_fd="auto",
-                             event_max_iterations=30, fold_tol=1e-12, crossing_tol=1e-11,
+                             event_max_iterations=60, fold_tol=1e-12, crossing_tol=1e-11,
                              hopf_imag_tol=1e-8)
 
 

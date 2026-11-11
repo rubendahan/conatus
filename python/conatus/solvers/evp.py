@@ -28,12 +28,19 @@ from .._deprecation import renames
 from ..tolerances import REQUIRED, require
 
 __all__ = ["EVPResult", "solve_dense", "solve_sparse", "drift_filter", "sensitivity",
-           "matrix_derivative", "biorthogonality", "check_drift_tol"]
+           "matrix_derivative", "biorthogonality", "check_drift_tol", "cluster_sensitivity",
+           "eigen_scale", "balance_pencil"]
 
 INF_TOL = 1e3 * np.finfo(float).eps     # |beta| <= INF_TOL |alpha| (scaled) -> infinite eigenvalue
 # ARPACK stopping tolerance of shift-invert (declared default): 0 = machine precision, the
 # strictest; every returned mode carries its residual (conatus.tolerances.DECLARED).
 ARNOLDI_TOL = 0.0
+#: Shift-invert with a target on an eigenvalue (to SHIFT_GUARD of max(|target|, eigen_scale)): the
+#: Arnoldi shift is moved by that distance in the direction SHIFT_GUARD_DIRECTION (off the real
+#: axis, so a real spectrum is not hit again). sqrt(eps): far enough for max|nu| to stay below
+#: 1/(sqrt(eps) unit), near enough that the requested modes are still the nearest.
+SHIFT_GUARD = 1e-5
+SHIFT_GUARD_DIRECTION = complex(0.6, 0.8)
 DRIFT_WHY = ("the drift tolerance decides which modes are kept: a mode is returned only if it "
              "reappears at the finer resolution within it (relative to |sigma|, floored at "
              "DRIFT_FLOOR times the median |sigma| of the finer spectrum); 1e-6 "
@@ -370,20 +377,131 @@ def refuse_singular_pencil(L: np.ndarray, M: np.ndarray, a: np.ndarray, b: np.nd
                             "missing condition or gauge")
 
 
+def _row_max(A, mask=None) -> np.ndarray:
+    """Largest |entry| of each row of A (dense or sparse), over the columns of ``mask`` if given."""
+    if sp.issparse(A):
+        A = abs(sp.csr_matrix(A))
+        if mask is not None:
+            A = A[:, np.flatnonzero(mask)]
+        return np.asarray(A.max(axis=1).toarray()).ravel() if A.shape[1] else np.zeros(A.shape[0])
+    A = np.abs(np.asarray(A))
+    if mask is not None:
+        A = A[:, mask]
+    return A.max(axis=1, initial=0.0)
+
+
+def _col_nonzero(A) -> np.ndarray:
+    return (np.asarray(abs(sp.csc_matrix(A)).max(axis=0).toarray()).ravel() > 0 if sp.issparse(A)
+            else np.asarray(A).any(axis=0))
+
+
+def eigen_scale(L, M) -> float:
+    """Unit of the eigenvalue of L + s M: the smallest, over the rows where M has an entry, of
+    (largest |L| entry over the columns where M has an entry) / (largest |M| entry).
+
+    The tau and boundary rows (no M) and the tau columns (no M) are left out, so the number scales
+    as the eigenvalue does: exactly by c when the physical rows of L are multiplied by c (a change of
+    time unit), by 1/H^2 for a diffusion operator whose coordinate is stretched by H, and not at all
+    when an equation is multiplied by a constant (the ratio is taken row by row). 1.0 when no row
+    gives a ratio (L = 0 on those rows)."""
+    Q = _col_nonzero(M)
+    mq = _row_max(M)
+    P = mq > 0
+    lq = _row_max(L, Q)
+    rho = lq[P] / mq[P]
+    rho = rho[(rho > 0) & np.isfinite(rho)]
+    # the smallest ratio: the slowest physical row sets the unit, so the rule (a row of M
+    # below n eps of its L row, after balancing, is numerically zero) now reads "an eigenvalue more
+    # than 1/(n eps) times the slowest scale cannot be told from infinity". A row of M at rounding
+    # level (1e-17 where the exact M has a zero row, a huge ratio) never sets the unit, even
+    # beside a genuine 1e13 row (test_f7: a median there made the noise row count as mass)
+    return float(rho.min()) if rho.size else 1.0
+
+
+#: Scale factors of :func:`balance_pencil` within [1/BALANCE_FREE, BALANCE_FREE] are not applied,
+#: and larger ones only beyond it: a pencil already in units near its own is solved as in 0.3.0,
+#: bit for bit. Measured (r031e): applying every factor moved a marginal index-2 Jordan pair at
+#: infinity of pipe flow (m = 0) across the n eps rank line, where it came back as a finite pair
+#: +-8e12; with 1e4 a residual imbalance cost up to 3e-9 relative on s u = c u'' (Neumann, SI
+#: lengths) and 5e-10 on a random pencil; with 1e2 (1e4 on the lift columns, which move such
+#: Jordan pairs most) the worst of 42 scalings is 1.6e-11.
+BALANCE_FREE = 1e2
+
+
+def _beyond(f: float, free: float = BALANCE_FREE) -> float:
+    """The part of a scale factor beyond [1/free, free] (1.0 inside it)."""
+    return float(f / min(max(f, 1.0 / free), free))
+
+
+def balance_factors(L, M, free: float = BALANCE_FREE) -> tuple[float, np.ndarray, np.ndarray]:
+    """(mu, dc, r) of :func:`balance_pencil`, for a dense or sparse pencil; ``free``: an eigenvalue
+    unit within [1/free, free] is not applied, nor a lift-column factor within [1/free^2, free^2]
+    (1.0: every factor). The lift columns get the wider band: a factor of 127 on them was enough
+    to move a marginal Jordan pair at infinity of the pipe-flow tutorial (m = k = 1) from removed
+    to kept as an ambiguous finite 2.6e13."""
+    n = L.shape[0]
+    def beyond(f: float) -> float:
+        return _beyond(f, free)
+    mu = beyond(eigen_scale(L, M))
+    aL = abs(sp.csc_matrix(L)) if sp.issparse(L) else sp.csc_matrix(np.abs(np.asarray(L)))
+    aM = abs(sp.csc_matrix(M)) if sp.issparse(M) else sp.csc_matrix(np.abs(np.asarray(M)))
+    aL.eliminate_zeros()
+    aM.eliminate_zeros()
+    P = np.diff(aM.tocsr().indptr) > 0              # rows with an M entry
+    Q = np.diff(aM.indptr) > 0                      # columns with an M entry
+    dc = np.ones(n)
+    if P.any() and (~Q).any():
+        # typical size of each row: its largest entry over the columns with M (and mu M on the
+        # rows with M); rows without any such entry (a gauge on a Lagrange unknown) do not count
+        t = _row_max(aL, Q)
+        t[P] = np.maximum(t[P], mu * _row_max(aM)[P])
+        # only the columns that enter the rows with M alone (tau and lift unknowns); a column that
+        # also enters a row without M (pressure, in the continuity row) is left as given
+        outside = np.diff(sp.csc_matrix(aL[np.flatnonzero(~P)]).indptr) > 0 if (~P).any() \
+            else np.zeros(n, bool)
+        lift = np.flatnonzero(~Q & ~outside)
+        if lift.size:
+            tt = np.where(t > 0, t, np.inf)
+            sub = sp.diags(1.0 / tt) @ aL[:, lift]
+            v = np.asarray(sub.max(axis=0).toarray()).ravel()
+            dc[lift] = [_beyond(x, free * free) if x > 0 else 1.0 for x in v]
+    rL = _row_max(aL @ sp.diags(1.0 / dc))
+    rM = mu * _row_max(aM @ sp.diags(1.0 / dc))
+    r = np.maximum(rL, rM)
+    return mu, dc, np.where(r > 0, r, 1.0)
+
+
+def balance_pencil(Ld: np.ndarray, Md: np.ndarray, free: float = BALANCE_FREE):
+    """(Le, Me, mu, dc, r): the dense pencil L + s M written as R^-1 (L + (mu sigma) M) C^-1, with
+    s = mu sigma, Le = R^-1 L C^-1 and Me = mu R^-1 M C^-1, every row of [Le, Me] of largest entry 1.
+
+    QZ is backward stable in the norm of the whole pencil. Rows are equilibrated (audit invariance: an equation written times 1e-8 lost 8 digits), but with the eigenvalue in its own
+    unit a physical row of size kappa/H^2 sat beside O(1) tau and boundary rows: s T = kappa T'' in
+    SI units lost 3 digits (kappa = 1.4e-7, H = 4 km), and with s = c u'' at c = 1e16 the M rows fell
+    below n eps of the L rows and every finite mode was removed as infinite (hunt).
+    Three steps, so that the balanced pencil is the same, to rounding, after multiplying an
+    equation by a constant, rescaling the eigenvalue, or stretching a coordinate: mu =
+    eigen_scale(L, M) puts the eigenvalue in the unit of the slowest physical row; each column
+    without M that enters only the rows with M (a tau or lift unknown, whose size is free) is
+    divided by its largest entry relative to the typical size of those rows (their largest entry
+    on the columns with M, and mu M), so it follows the eigenvalue unit; each row is then divided by
+    its largest entry. A column without M that also enters a row without M (pressure, in the
+    continuity row) is left as given. Each factor is applied only beyond BALANCE_FREE
+    (:func:`_beyond`), so a pencil in units near its own is solved as in 0.3.0. The columns that
+    carry M are left as given (their equilibration compounds the range of M on Chebyshev
+    operators). Right vectors of L + s M are C^-1 y = y / dc; left vectors are R^-1 z = z / r."""
+    mu, dc, r = balance_factors(Ld, Md, free)
+    r = r[:, None]
+    return Ld / dc / r, (mu * Md) / dc / r, mu, dc, r
+
+
 def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
-    """All eigenvalues by the QZ algorithm (scipy.linalg.eig), infinite ones counted and removed."""
+    """All eigenvalues by the QZ algorithm (scipy.linalg.eig) on the balanced pencil
+    (:func:`balance_pencil`), infinite ones counted and removed."""
     Ld = L.toarray() if sp.issparse(L) else np.asarray(L)
     Md = M.toarray() if sp.issparse(M) else np.asarray(M)
     _require_mass(Md, Ld)
-    # Row equilibration (audit invariance): D (L + s M) has the eigenvalues and right
-    # vectors of L + s M for any diagonal D, but QZ is backward stable in the norm of the whole
-    # pencil, so a row 1e-8 times smaller than the others (an equation multiplied by a constant,
-    # the 1/Re in front of D^4 next to O(1) boundary rows) lost 8 digits: the Orr-Sommerfeld
-    # equation written times 1e-8 had no mode left after the drift test. Each row is divided by
-    # its largest entry in L or M; the infinite/finite split below is then invariant too.
-    r = np.maximum(np.abs(Ld).max(axis=1, initial=0.0), np.abs(Md).max(axis=1, initial=0.0))
-    r = np.where(r > 0, r, 1.0)[:, None]
-    Le, Me = Ld / r, Md / r
+    Le, Me, mu, dc, r = balance_pencil(Ld, Md)
     out = sl.eig(-Le, Me, left=left, right=True, homogeneous_eigvals=True)
     (a, b), *vecs = out
     if left:
@@ -391,8 +509,16 @@ def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
         VL = VL / r            # y^H (L + s M) = 0  <=>  (D^-1 y)^H D (L + s M) = 0, D = 1/r
     else:
         VL, VR = None, vecs[0]
+    VR = VR / dc[:, None]      # (L + s M) C^-1 y = 0  <=>  x = C^-1 y
     refuse_singular_pencil(Le, Me, a, b, label)
-    finite, note, amb, _kept = _finite_eigenvalues(a, b, Le, Me, Md)
+    # the finite/infinite split on the pencil balanced with every factor (free = 1): QZ ran with
+    # the factors beyond BALANCE_FREE only, but the split must not depend on the units at all
+    # (a mass row at rounding level beside its L row is judged in the unit of the slowest row)
+    Lf, Mf, muf, _dcf, _rf = balance_pencil(Ld, Md, free=1.0)
+    finite, note, amb, _kept = _finite_eigenvalues(a * (mu / muf), b, Lf, Mf, Md, unit=muf)
+    a = a * mu                 # sigma = alpha / beta in the unit mu; s = mu sigma
+    if mu != 1.0:
+        note += f"; QZ ran on s / {mu:.3e} (balance_pencil)"
     w = a[finite] / b[finite]
     V = VR[:, finite]
     res = _residuals(Ld, Md, w, V)
@@ -404,7 +530,7 @@ def solve_dense(L, M, *, left: bool = False, label: str = "") -> EVPResult:
 
 
 def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.ndarray,
-                        Md: np.ndarray):
+                        Md: np.ndarray, unit: float = 1.0):
     """(mask of the finite eigenvalues alpha/beta of the QZ pairs, the sentence for the log, the
     moduli of the pairs removed as infinite on numerical rank alone, the moduli of the pairs kept
     as finite although they are ambiguous).
@@ -435,7 +561,9 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
     |beta| / |alpha| is below n eps (the rank tolerance). The other pairs under the threshold
     (|beta| / |alpha| between n eps and INF_TOL) are kept as finite and named as ambiguous with
     their modulus. When fewer pairs are under the threshold than n - rank(M), the pairs of
-    smallest |beta| / |alpha| that the rank says should be infinite are kept and named too."""
+    smallest |beta| / |alpha| that the rank says should be infinite are kept and named too.
+    ``unit``: the eigenvalue unit of the balanced pencil (alpha / beta times ``unit`` is the
+    eigenvalue); the moduli in the sentence and in the returned arrays are in the caller's unit."""
     n = a.size
     eps = np.finfo(float).eps
     scale = max(_norm1(Le), 1e-300) / max(_norm1(Me), 1e-300)
@@ -457,7 +585,7 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
         note = (f"{int(infinite.sum())} infinite eigenvalue(s) removed (beta = 0); M is "
                 f"nonsingular ({rule}), so no other pair is infinite"
                 + (f": {int(kept.sum())} pair(s) under the threshold kept as finite eigenvalues "
-                   f"(|sigma| >= {np.abs(a[kept] / b[kept]).min():.3e})" if kept.any() else ""))
+                   f"(|sigma| >= {unit * np.abs(a[kept] / b[kept]).min():.3e})" if kept.any() else ""))
         return ~infinite, note, none, none
     order = np.argsort(np.where(under, ratio, np.inf), kind="stable")
     by_rank = np.zeros(n, bool)
@@ -473,7 +601,7 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
         # an exact zero row gives beta at rounding level (the largest moduli): the smallest moduli
         # are the ones only the numerical rank removed
         idx = idx[np.argsort(np.abs(a[idx] / b[idx]))][:n_soft]
-        amb_inf = np.sort(np.abs(a[idx] / b[idx]))
+        amb_inf = unit * np.sort(np.abs(a[idx] / b[idx]))
         note += (f"; {n_soft} of them removed on numerical rank alone (M has {deficiency} "
                  f"direction(s) below n eps, {structural} exact zero row(s)/column(s)): ambiguous, "
                  "a finite eigenvalue of modulus "
@@ -482,7 +610,7 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
     amb = np.nonzero(under & ~infinite)[0]
     kept = none
     if amb.size:
-        sizes = np.abs(a[amb] / b[amb])
+        sizes = unit * np.abs(a[amb] / b[amb])
         kept = np.sort(sizes)
         note += (f"; {amb.size} pair(s) under the threshold beyond n - rank(M) = {deficiency}, with "
                  f"|beta|/|alpha| above n eps = {rank_tol:.1e}, are ambiguous (finite eigenvalues, "
@@ -493,7 +621,7 @@ def _finite_eigenvalues(a: np.ndarray, b: np.ndarray, Le: np.ndarray, Me: np.nda
         rest = np.argsort(np.where(infinite, np.inf, ratio), kind="stable")[:short]
         rest = rest[~infinite[rest]]
         if rest.size:
-            sizes = np.abs(a[rest] / b[rest])
+            sizes = unit * np.abs(a[rest] / b[rest])
             kept = np.sort(np.concatenate([kept, sizes]))
             note += (f"; M has {deficiency} null direction(s) but only {int(under.sum())} pair(s) "
                      f"are under the threshold: the {rest.size} pair(s) of smallest |beta|/|alpha| "
@@ -540,21 +668,66 @@ def solve_sparse(L, M, target: complex, n_modes: int = 6, *, label: str = "",
         raise OptionError(f"shift-invert: n_modes={n_modes} > {n - 2} (= size - 2, the most the "
                           f"Arnoldi method returns for a pencil of size {n})",
                           fix=f"n_modes <= {n - 2}, or method='dense' for every mode")
-    lu = spla.splu(L + target * M)
-    op = spla.LinearOperator((n, n), matvec=lambda x: -lu.solve(M @ x), dtype=complex)
-    nu, V = spla.eigs(op, k=n_modes, which="LM", tol=tol)
+    # target on an eigenvalue (hunt): L + target M is singular (SuperLU raised a bare
+    # RuntimeError at target = 0 beside a neutral mode), or so nearly singular that nu of that mode
+    # is ~1e15 and every other mode fell under the INF_TOL max|nu| test and was dropped as
+    # infinite. The shift is then moved by GUARD (relative to max(|target|, eigen_scale)), off the
+    # real axis; the eigenvalues returned are those of L + s M, nearest the target as asked.
+    unit = max(abs(complex(target)), eigen_scale(L, M))
+    step = SHIFT_GUARD * unit * SHIFT_GUARD_DIRECTION
+    shift, moved = complex(target), ""
+    # the balanced pencil of solve_dense (hunt): R^-1 (L + s M) C^-1 with the rows
+    # and the lift columns scaled and the eigenvalue in the unit mu; nu = 1/(sigma - shift/mu)
+    mu, dc, rr = balance_factors(L, M)
+    Ls = (sp.diags(1.0 / rr) @ L @ sp.diags(1.0 / dc)).tocsc()
+    Ms = (sp.diags(mu / rr) @ M @ sp.diags(1.0 / dc)).tocsc()
+    for attempt in range(2):
+        try:
+            lu = spla.splu((Ls + (shift / mu) * Ms).tocsc())
+            op = spla.LinearOperator((n, n), matvec=lambda x, lu=lu: -lu.solve(Ms @ x),
+                                     dtype=complex)
+            nu, V = spla.eigs(op, k=n_modes, which="LM", tol=tol)
+            nu = nu / mu                      # 1/(s - shift) in the caller's unit
+            V = V / dc[:, None]
+        except RuntimeError as exc:          # "Factor is exactly singular"
+            if attempt:
+                from ..errors import RankError
+                raise RankError(f"shift-invert: L + s M is singular at s = {target} and at "
+                                f"s = {shift}", why="the pencil is singular for every s (an "
+                                "unknown is undetermined)", fix="method='dense' names the "
+                                "singular pencil; add the missing condition or gauge") from exc
+            shift, moved = complex(target) + step, "factorisation exactly singular"
+            continue
+        if attempt or np.abs(nu).max(initial=0.0) * abs(step) <= 1.0:
+            break
+        shift, moved = complex(target) + step, "an eigenvalue within the guard distance"
     # nu = 0 <=> sigma = infinity (M singular): counted, never returned as a finite mode.
     scale = max(np.abs(nu).max(initial=0.0), 1e-300)
     keep = np.abs(nu) > INF_TOL * scale
-    w = target + 1.0 / nu[keep]
+    w = shift + 1.0 / nu[keep]
     V = V[:, keep]
     res = _residuals(L, M, w, V)
     n_inf = int((~keep).sum())
     r = EVPResult(w, V, res, f"shift-invert Arnoldi (scipy eigs), target {target}", label, n_inf)
     r.log.append(f"ARPACK tol = {tol:g}" + (" (machine precision, declared default ARNOLDI_TOL)"
                                              if tol == 0 else " (given)"))
+    if moved:
+        r.log.append(f"target {target}: {moved}; Arnoldi ran at the shift {shift:.6g} "
+                     f"(target + SHIFT_GUARD {SHIFT_GUARD:.1e} x {unit:.3e}); the eigenvalues "
+                     "are those of L + s M")
     r.log.append(f"{n_modes} modes requested nearest {target}; {n_inf} infinite eigenvalues "
                  f"(|nu| <= {INF_TOL:.1e} max|nu|) removed")
+    if w.size < n_modes:
+        import warnings
+
+        from ..errors import CorrectnessWarning
+        msg = (f"shift-invert: {w.size} of the {n_modes} modes requested nearest {target} are "
+               f"returned; {n_inf} Ritz value(s) nu = 1/(s - shift) were at or below "
+               f"INF_TOL max|nu| = {INF_TOL * scale:.1e}: infinite eigenvalues (M singular on the "
+               "tau and boundary rows), or finite ones too far from the shift to tell apart; "
+               "method='dense' returns the whole finite spectrum")
+        r.log.append(msg)
+        warnings.warn(msg, CorrectnessWarning, stacklevel=3)
     return r
 
 
@@ -597,11 +770,76 @@ def sensitivity(res: EVPResult, i: int, M, dL, dM=None) -> complex:
     """
     if res.left is None:
         raise ValueError("left eigenvectors not computed (solve_dense(..., left=True))")
+    # a multiple eigenvalue (hunt 5D): inside the eigenspace QZ returns unrelated
+    # left and right bases, and -y_i^H dL x_i / y_i^H M x_i matched no branch (the crossing
+    # L = -(I + p B), B = [[1, 2], [2, -1]] gave 1, -1 for the Rellich slopes +-sqrt(5)). A
+    # multiple eigenvalue has no single derivative: refused, with the slopes of its branches
+    cluster = multiple_eigenvalue(res, i)
+    if cluster.size > 1:
+        from ..errors import SpectralError
+        try:
+            slopes = cluster_sensitivity(res, cluster, M, dL, dM)
+            known = (f"the branches through it have the slopes {np.array2string(slopes, precision=8)} "
+                     "(eigenvalues of the derivative projected on the eigenspace, "
+                     "cluster_sensitivity)")
+        except SpectralError as exc:
+            known = str(exc).split("\n")[0]
+        raise SpectralError(f"sensitivity: eigenvalue {complex(res.values[i]):.10g} (mode {i}) is "
+                            f"multiple (modes {cluster.tolist()} within MULTIPLE_TOL = "
+                            f"{MULTIPLE_TOL:g} of it): it has no single derivative; {known}",
+                            fix="solvers.evp.cluster_sensitivity(res, idx, M, dL, dM) for the "
+                                "slopes of the branches")
     x, y, s = res.vectors[:, i], res.left[:, i], res.values[i]
     num = y.conj() @ (dL @ x)
     if dM is not None:
         num = num + s * (y.conj() @ (dM @ x))
     return complex(-num / (y.conj() @ (M @ x)))
+
+
+#: Two eigenvalues closer than MULTIPLE_TOL times max(|sigma|, spectral scale of the result) are
+#: one multiple eigenvalue for :func:`sensitivity` (QZ separates a double eigenvalue by about
+#: sqrt(eps) when it is defective, by rounding when it is semisimple).
+MULTIPLE_TOL = 1e-6
+#: Y^H M X of a multiple eigenvalue with sigma_min below DEFECTIVE_TOL times ||Y|| ||M X|| is
+#: singular: the eigenvalue is defective and :func:`cluster_sensitivity` refuses it.
+DEFECTIVE_TOL = 1e-8
+
+
+def multiple_eigenvalue(res: EVPResult, i: int) -> np.ndarray:
+    """Indices of the modes of ``res`` within MULTIPLE_TOL of mode ``i`` (``i`` included)."""
+    from .._scales import spectral_scale
+    w = np.asarray(res.values)
+    unit = max(abs(w[i]), spectral_scale(w), np.finfo(float).tiny)
+    return np.flatnonzero(np.abs(w - w[i]) <= MULTIPLE_TOL * unit)
+
+
+def cluster_sensitivity(res: EVPResult, idx: Sequence[int], M, dL, dM=None) -> np.ndarray:
+    """Slopes d sigma / dp of the branches through a multiple eigenvalue (modes ``idx``).
+
+    For a semisimple eigenvalue sigma with right basis X and left basis Y (Y^H M X invertible),
+    the branches of L(p) + s M(p) through it have the slopes eig(-(Y^H M X)^-1 Y^H (dL + sigma dM) X)
+    (first-order perturbation of a semisimple eigenvalue; for a simple one this is
+    :func:`sensitivity`). A defective eigenvalue (Y^H M X singular) has no slopes: its branches go
+    as a fractional power of dp, refused."""
+    from ..errors import SpectralError
+    if res.left is None:
+        raise ValueError("left eigenvectors not computed (solve_dense(..., left=True))")
+    idx = np.asarray(idx, dtype=int)
+    X, Y = res.vectors[:, idx], res.left[:, idx]
+    s = complex(np.mean(np.asarray(res.values)[idx]))
+    G = Y.conj().T @ (M @ X)
+    sv = np.linalg.svd(G, compute_uv=False)
+    scale = np.linalg.norm(Y, axis=0).max() * np.linalg.norm(M @ X, axis=0).max()
+    if not sv.size or sv[-1] <= DEFECTIVE_TOL * scale:
+        raise SpectralError(f"eigenvalue {s:.10g} of multiplicity {idx.size} is defective "
+                            f"(Y^H M X has sigma_min/scale {sv[-1] / scale if sv.size else 0:.1e})"
+                            ": its branches are not differentiable in p (Puiseux series)",
+                            fix="perturb the problem off the degeneracy, or follow the branches "
+                                "with ParametricEVP.track")
+    D = Y.conj().T @ (dL @ X)
+    if dM is not None:
+        D = D + s * (Y.conj().T @ (dM @ X))
+    return np.linalg.eigvals(-np.linalg.solve(G, D))
 
 
 def matrix_derivative(build: Callable[[float], tuple], p: float, rel_h: float = 1e-3):

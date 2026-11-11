@@ -2,6 +2,323 @@
 
 All notable changes to Conatus.
 
+## [0.3.1] - 2026-11-11
+
+A correction release. The wrong results listed as known limitations of 0.3.0 are fixed or refused,
+with those of four later bug hunts on eigenvalue problems, time stepping, run records, orbits and
+statistics. Several calls that returned a number with an assurance now refuse, flag or warn; they
+are listed first.
+
+### Changed: new refusals, flags and warnings
+
+- `cn.uncertainty` needs four or more resolutions for `trusted`: three fit any convergence law, so
+  the study is flagged and the larger of the geometric and algebraic estimates is the error.
+- A restart, an output append and a checkpoint chain refuse a user function or given field whose
+  value has no content hash ("cannot be compared"), unless `allow=` names it.
+- `continue_equilibria(direction=...)` refuses 0, NaN, a boolean and an array (`InputTypeError`); a
+  vector goes in `tangent=`.
+- `cn.from_dedalus`: `ivp_solver()`, `discretize()`, `initial_state()` and `ncc()` refuse a
+  translation with an unsupported line unless `allow_incomplete=True` (then a `CorrectnessWarning`).
+  File handlers, their tasks and `GlobalFlowProperty` are output only: skipped with a note, they do
+  not make a translation incomplete. `CFL` stays unsupported.
+- `branch_switch` answers `"undetermined"` when its two classifications disagree.
+- A double crossing that bisection cannot separate is an event `"unresolved crossing"` with
+  `converged=False`.
+- `critical()` warns when the growth changes sign more than once in the bracket. Its scan of the
+  bracket runs once per call (8 more dense solves); with `over=` the inner calls do not repeat it.
+- `ginzburg_landau(kind="oscillatory")` returns `v_g = NaN`, with the reason in the notes, when the
+  observable cannot tell the direction of the wave.
+- The sensitivity of a multiple eigenvalue raises `SpectralError` with the slopes of its branches.
+- `amplitude_equation` refuses a degenerate pitchfork and an observable blind to the critical mode.
+- `ShootingRPO` returns status `"retracted"` for a travelling wave, an equilibrium or the trivial
+  state; the orbit finders return status `"repeated"` (or `repetitions` in the point data) for k
+  laps of a shorter orbit.
+- Shift-invert with fewer converged modes than `n_modes`, a Hill solve with a larger resolved
+  exponent outside the targets, and an unconfirmed crossing pair in `poincare_section` give a
+  `CorrectnessWarning`.
+- Loading a checkpoint written by another version, or by a version before 0.3.1, gives a
+  `CheckpointWarning` that names both versions.
+- Typed refusals where values were accepted or bare NumPy errors were raised: `save_field` of masked,
+  object, datetime, timedelta or unicode arrays; `sim.initial` with masked entries or object,
+  structured or datetime arrays; a `DynamicalSystem` state of the wrong length or complex, an
+  unknown name in `par=`; `EmbeddedError` with a non-boolean `adapt`, or `tol` and `safety` without
+  `adapt=True`; `cn.units` scales that are infinite, boolean, text or not positive; reversed or
+  non-finite continuation `bounds`; a run record whose `state` or `status` is not a known value.
+- The cache no longer stores a run with a callback, a masked, matrix or recarray return, or a key
+  holding a structured array with object fields: such calls are computed every time.
+- `run(until=...)` refuses a stop time more than 2**53 steps away (`until=1e300` ran for ever).
+- `cn.time_average` reports the largest of four standard errors: intervals on a plain AR(1)
+  series are about 20 % wider than the true error, and a correlation longer than a batch is flagged.
+
+
+### Fixed: run records, cache, restart, inputs, display
+
+- A run with a callback is never a cache source: the callback can change the state, and the
+  cache key does not represent it. A later run without the callback computed 4 for 1 from it.
+- A cached return keeps what it can: a masked array, matrix or recarray return is not stored, so
+  the call is not cached (a masked mean came back as 50.5 for 1). A 0-d array stays 0-d, a dict
+  keeps its key order and a Fortran-ordered array stays Fortran-ordered. Not kept, and stated: the
+  read-only flag and other strides.
+- Structured arrays with an object field are not cache keys (they were hashed by pointer).
+- The scan for hidden state counts external processes (`subprocess`, `os.system`, `os.popen`).
+  The guide says the scan is a list of names.
+- A restart, an output append and a checkpoint chain compare a user function or a given field
+  that reads a value without a content hash as "cannot be compared", never as equal. A restart
+  refuses it unless `allow=` names it; the allow is recorded by `explain()`.
+- `run.save_field` refuses masked arrays, Python objects, datetimes, timedeltas and unicode
+  strings with `InputTypeError` at the call. They were accepted, then lost in the writer thread.
+  `load_field` of a field with no stored snapshot raises `OptionError` with the writer's error.
+- `sim.initial` refuses a masked array with masked entries, and object, structured or datetime
+  arrays, with `InputTypeError`.
+- Typed errors: `continue_equilibria(direction=<array>)` (`InputTypeError`), a mode switch in
+  `critical` (`ConvergenceError`, still a `RuntimeError`), reversed or non-finite continuation
+  `bounds` (`OptionError`), and a `DynamicalSystem` state of the wrong length or complex, an
+  unknown parameter in `par=`, a non-integer `n` or `max_iterations` (they were accepted or raised
+  bare NumPy errors). `floquet_multipliers` at the zero state names the absent marginal directions
+  in `marginal_absent` instead of NaN overlaps.
+- The HTML table of `cn.runs.find()` escapes every field, and a record whose `state` or `status`
+  is not a known value is refused on load.
+- `EmbeddedError` measures the unknowns and leaves out the tau variables, whose round-off grows
+  as dt shrinks. At c dt = 1e-6 for u_t = c u_zz it reported 9e-2 for a true error of 1e-12, and an
+  adaptive run with tol = 1e-7 failed at c >= 1e4 with a message that blamed tol. The estimate
+  is now the same for t -> c t. A run of rejections says whether the estimate fell with dt.
+- `EmbeddedError` refuses a non-boolean `adapt` (`"no"` adapted), a boolean or text `tol` or
+  `safety`, and `tol` or `safety` without `adapt=True` (they were ignored). `cn.units` refuses an
+  infinite, boolean or text scale, a prefactor <= 0, a NaN or negative energy and a box size
+  <= 0 with `OptionError`; a missing scale is an `OptionError` instead of a bare `KeyError`.
+  `cn.periodic` accepts a 0-d array.
+- An analysis file records the time step of each row (`scales/dt`, `cn.io.read(...).dt`), and
+  its `dt` attribute is the step of the last row. A dt change during a run left the first dt there,
+  and the chain could not resume with either dt; it now appends after a restart.
+- Checkpoints record `conatus_version`; a load of one written by another version, or by one
+  before 0.3.1, warns (`CheckpointWarning`) and names both.
+
+### Changed: bifurcation events and continuation
+
+- Branch points, Hopf points, period doublings, Neimark-Sacker points, branch points of cycles and
+  the codimension-2 points other than folds are located on the sign change of their test function,
+  until the bracket is narrower than `crossing_tol` times the step. The event reports the bracket
+  and the values, at its two ends, of the factor that changed sign; `explain()` prints both.
+  Folds and LPC still stop at `|t_p| <= fold_tol`. `event_max_iterations` defaults to 60 (was 30).
+- The corrector of `continue_equilibria` divides each |G_i| by max_j |[G_x G_p]_ij| x max(1, max|z|): the
+  tolerance is relative to the size of the equations, so a change of time unit changes nothing.
+  `find_equilibrium`, `find_travelling_wave` and the Krylov continuation multiply their residual
+  scale by min(1, ‖J u‖) over two unit probes u: the test only gets stricter, for slow problems.
+- Factors at rounding level (an exactly neutral decoupled mode) are left out of the sign of the
+  test functions. A bordered Jacobian that is exactly singular at the start (for example y' = 0)
+  is solved in the least-squares sense, which keeps that direction fixed; the curve notes say so.
+- `branch_switch` returns the classification `"undetermined"` when the ABE coefficients and the
+  normal form disagree between transcritical and pitchfork.
+- Each point of `continue_orbits` keeps its mesh in `data["mesh"]`; `PeriodicOrbitProblem.on_mesh(mesh)`
+  reads a point on its own mesh.
+- `CriticalPoint` has `crossings` (every sign change found by the scan of the bracket) and
+  `direction`.
+
+### Fixed: bifurcation events and continuation
+
+- Two crossings in one continuation step were lost (branch points or Hopf points 0.01 apart, two
+  period doublings, two Neimark-Sacker points). The number of eigenvalues across the boundary is now
+  compared with the located events, and the step is bisected until they agree. A double crossing
+  at one point is reported as an event `"unresolved crossing"` with `converged=False`.
+- An event could be placed at the wrong parameter, with `converged=True`, when a decoupled mode was
+  slow or exactly neutral (p = 0.099 for a branch point at 0 with a mode of rate -1e-12), or when
+  every rate was below about 1e-11. An exactly neutral mode raised `LinAlgError`.
+- Hopf points at rates of 1e-12 were placed at p = 0.038 for 0; at rates of 1e12 they did not
+  converge.
+- The corrector tolerance of `continue_equilibria` acted as an absolute one: x' = e(p - x²) with
+  e = 1e-10 gave a branch off by 0.33 and a fold at p = -0.125. `find_equilibrium` returned the seed
+  of a slow problem after 0 iterations.
+- `NewtonKrylovHookstep` computed a zero residual norm at a residual of 1e-200 (underflow) and
+  returned the seed. Its norms and its trust-region step are now scaled.
+- `branch_switch` called x' = p x - 1e-9 x² a pitchfork.
+- `ginzburg_landau` could follow another mode in its finite differences of the growth rate (D =
+  0.405 for 4). It now follows the critical eigenvector, and refuses when the mode cannot be told.
+- `critical()` returned one of three neutral points without a word. It now lists every sign change
+  found by its scan, gives the direction of the returned one, and warns when there are several.
+- After `continue_orbits(remesh_every=...)`, earlier points were read on the last mesh (field error
+  0.4). Branch switching at a period doubling uses the point's own mesh.
+- `poincare_section` lost both crossings when two fell within one step (2 of 4 crossings of
+  y = 0.99 on a limit cycle at dt = 0.2, return time read as twice the period). A parabola through
+  g at the last three steps now flags such steps; g is evaluated at its predicted extremum with one
+  step of the scheme and both crossings are located. A predicted pair that is not confirmed is
+  stated in the notes and with a `CorrectnessWarning`.
+- A Neimark-Sacker point of cycles with two slow decoupled modes was rejected as a neutral saddle.
+  Cycle events and Hopf points are now classified by the factor that changed sign across the
+  bracket, not by the factor closest to zero.
+- `continue_orbits` raised a bare `ValueError` at the fold of a planar cycle with the default
+  tests: a test whose set of resolved multipliers changes between two points no longer counts as
+  a sign change.
+- `ginzburg_landau(kind="oscillatory")` gave the group velocity of a rightward wave with the wrong
+  sign (v_g = -|V| for advection speed V). It now takes the eigenvalue of the e^{+ik_c x} mode,
+  told from its conjugate by `cos_mode_observable`; with an observable that cannot tell the
+  direction, `v_g` is NaN and the notes say why.
+- `amplitude_equation` built a Landau equation with g3 = 0 for a degenerate pitchfork
+  (u' = p u - u^5), and divided by zero for an observable that does not see the critical mode. Both
+  are now refused with a typed error; `LandauEquation.amplitude` and `GinzburgLandau.tau0` refuse a
+  zero coefficient.
+
+### Fixed: stability, Floquet and orbits
+
+- Floquet by the Hill method: `fl.leading` is the leading exponent. Shift-invert finds the exponents
+  nearest the targets; a Hill matrix of at most `dense_check` rows (default 1500) is now also solved
+  densely, and any resolved exponent with a larger real part is added with a `CorrectnessWarning`
+  (with `targets=[0.0]` and a true exponent of 19 it returned 4). Above that size
+  `details["exponents returned"]` and `explain()` say that larger exponents are not excluded.
+  `n_modes` counts distinct modes nearest each target: copies `mu + i n omega` count once.
+- Floquet by the Hill method: two independent modes with close exponents (+-1e-9) are both
+  returned, and the result no longer varies between calls (fixed Arnoldi start vector). Copies of
+  one exponent are recognised by their eigenvectors, not by the distance between exponents.
+- `equilibrium_eigenvalues`, `floquet_multipliers`, `symmetry_breaking_check` and
+  `ecs_system(odd=False)` measure whether the equations conserve the mean. A mean that is not
+  conserved (a reaction term) is kept as an unknown; its rate was missing (top -0.5 for +0.5,
+  "no symmetry-breaking instability" at rate 1). The decision is in `sol.stability`,
+  `result["space"]`, `result["mean"]` and `explain()`.
+- `ShootingRPO` (experimental) no longer returns a travelling wave, an equilibrium or the trivial
+  state as a relative periodic orbit: the result has `kind` and `status` (`"retracted"`), as the
+  1-D finder's.
+- Orbit finders (`find_relative_periodic_orbit`, `ShootingRPO`, collocation orbits) say when a
+  solution is k laps of a shorter orbit: status `"repeated"` with the primitive period, or
+  `repetitions` in the point data. A seed at 3T of a known orbit used to be reported with period 3T
+  and no note.
+- Collocation orbits: `|mu_triv - 1|` is described as the error of the trivial multiplier only.
+  A Liouville defect (the product of all multipliers against `exp(T int tr J)`) is stored on every
+  point and returned by `floquet_from_collocation`.
+
+### Fixed: eigenvalue problems, contour counts and sensitivity
+
+- Eigenvalues of the tested problems no longer depend on their units (diffusion in SI units and
+  scale factors from 1e-16 to 1e16, shift-invert near an eigenvalue). Dense QZ and shift-invert run on a
+  balanced pencil: the eigenvalue in the unit of the slowest physical row, tau columns scaled to
+  their rows, rows equilibrated. `s*T = kappa*dz(dz(T))` in SI units lost 3 digits
+  (kappa = 1.4e-7, H = 4 km), was off by a factor 6.6 for kappa = 1e-6, H = 2900 km, and
+  `s*u = c*u''` with c = 1e16 returned no finite mode. The finite/infinite split no longer
+  depends on units. Pencils near their own units (scale factors within 1e-2 .. 1e2) are solved as
+  before. The published Orr-Sommerfeld, pipe-flow and Rayleigh-Benard cases change at rounding
+  level only: residual columns and the 11th to 12th digit of a few eigenvalues. Tutorial 13
+  prints the position of the wavemaker maximum as |x| < 1e-6 instead of 4e-11: the maximum is
+  flat and its position, set by rounding, differs between machines. Tutorial 10 prints the branch point at r = 1 (0.3.0:
+  0.999999999999) and the Hopf point of the Lorenz system at 24.736842105263 = 470/19 (0.3.0:
+  24.736842105252).
+- Shift-invert with the target on an eigenvalue (target 0 beside a neutral mode) no longer raises
+  a bare `RuntimeError`, and no longer drops the other requested modes as infinite: the shift
+  moves by 1e-5 (relative) and the log says so. Fewer modes than `n_modes` raise a
+  `CorrectnessWarning`.
+- `contour.count` and the Floquet winding (`HillBlocks.winding`) miscounted a double eigenvalue
+  close to the boundary (2 for 3 at a quarter of the positions along an edge). Each half step now
+  bounds the whole complex increment of log det T.
+- `sensitivity` / `eigenvalue_sensitivity(EVPResult, ...)` at a multiple eigenvalue returned an
+  arbitrary number; it now raises `SpectralError` with the slopes of the branches.
+  `solvers.evp.cluster_sensitivity` returns those slopes.
+- `LBVPSolution.coordinate` works on disk, annulus and other curvilinear plans.
+
+### Changed: Dedalus translation
+
+- `cn.from_dedalus`: `tr.ivp_solver()`, `tr.discretize()`, `tr.initial_state()` and `tr.ncc()`
+  refuse a translation with an unsupported statement. The `UnsupportedError` names the statements.
+  `allow_incomplete=True` proceeds and gives a `CorrectnessWarning` that names them.
+- `cn.from_dedalus` counts the equations against the variables. When an equation line was not
+  translated, the difference is an unsupported line and the solver refuses it before the build.
+  When every equation translated, the count is a note: Dedalus checks squareness per group on the
+  modes each variable has there (a constant tau field in no equation is accepted, as in the
+  official pipe-flow example), and so does the discretization.
+- `cn.from_dedalus`: after the solve or the time loop, a statement that writes no field data and
+  does not solve again (plots, `set_state`, loops over the eigenvalues) is skipped with its reason.
+  Selecting a Dedalus subproblem is skipped too. A loop around the solve (a parameter sweep, as in
+  the official Mathieu example) is unsupported: the translation computes one solve.
+- `cn.from_dedalus`: an `if` is read as an MPI guard only when it compares the rank of
+  `MPI.COMM_WORLD` or `dist.comm` with 0, and only when its branches change no field data or
+  problem. Any other condition is unsupported.
+- `cn.from_dedalus`: a grid at another scale (`local_grid(..., scale=2)`, `change_scales(2)` before
+  the data) is approximated: the data are sampled on the grid of the basis size.
+
+### Fixed: Dedalus translation
+
+- `cn.from_dedalus` replays field data in program order. `v['g'] = u['g']; u['g'] += 1` leaves `v`
+  at its value at the assignment. A field that reads itself (`u['g'] - np.max(u['g'])`) no
+  longer recurses. `b = a; b += 1` changes the array `a`, as in Python.
+- `cn.from_dedalus` reports as unsupported a change of field data through a view or a method:
+  `d = u['g']; d += 1`, `u['g'].fill(3)`, `out=u['g']`, and a helper or loop that writes data. The
+  data of that field is then not translated. These used to be dropped with `complete=True`.
+- `cn.from_dedalus`: `if rank_threshold > 1:` was taken as an MPI guard because of its text, and its
+  body was run.
+- `cn.from_dedalus` raised `KeyError`, `TypeError`, `ValueError`, `RecursionError` or a private
+  exception on valid scripts (`3 // 2` in data, `u['g'][0] = 16`, a dropped equation, a helper in
+  data). Each is now an unsupported line, or an `UnsupportedError` that names the line. An f-string
+  equation is translated with the script's numbers.
+- `cn.from_dedalus`: `tr.steps()` is the first stop limit reached, as in Dedalus. With
+  `stop_sim_time = 1`, `dt = 1/8` and `stop_iteration = 16`, the translation ran 16 steps to t = 2
+  with `complete=True`. A time loop is read only as `while solver.proceed:`. Another condition
+  (`solver.proceed and solver.iteration < 8`) is unsupported, because `solver.run(n)` would ignore
+  it. `stop_wall_time` is approximated: the run is assumed to end on another limit first.
+- `cn.from_dedalus`: field data written after the time loop or the solve is unsupported. It used to
+  be replayed into the initial state.
+
+### Changed: verification and statistics
+
+- `cn.uncertainty` accepts three or more resolutions and tests the convergence law in N. Each
+  three consecutive values give a geometric rate (q_inf + C e^-aN) and an algebraic order
+  (q_inf + C N^-p). Three resolutions fit either law: the larger estimate is given and the study
+  is flagged, so `trusted` now needs four. With four or more, a law whose rate drops by more than
+  `LAW_TOL` = 10 % between triples is rejected; the report names the law it kept
+  (`rep.spatial.law`) and prints both estimates. A refinement that leaves the value unchanged next
+  to one that changes it (a parity step: odd and even N give the same result for an even
+  solution) is flagged. On 0.3.0 such studies were trusted with errors 1.3 to 1400 times too small.
+- `cn.time_average`: tau is the larger of Sokal's window sum and Geyer's initial positive sequence;
+  the standard error is the largest of the autocorrelation, 20-batch-means, batch-means
+  extrapolated and low-frequency periodogram estimates (new fields `acf_stderr`,
+  `extrapolated_stderr`, `spectral_stderr`). A positive autocorrelation longer than one batch is
+  flagged. A slow component carrying 15 % of the variance gave trusted intervals that covered the
+  mean 64 % of the time on 0.3.0; the measured coverage is now 93.5-97.7 % in 11 settings.
+- `verify()`'s "spectral tail" measures every piece of a CompoundChebyshev unknown and every Fourier
+  line of the group. It measured the last piece of the last line only, so a mode whose first piece
+  was unresolved (eigenvalue 2-5 % off) passed. Its text says the tail is necessary, not sufficient.
+
+### Fixed: found in the review of this release
+
+- `pencil_spectrum` reported the moduli of its ambiguous roots in the unit of the normalised
+  pencil, off by max|J| / max|M|.
+- The primitive-period check of collocation orbits divided by the largest state value: one lap of
+  a limit cycle far from the origin of the state read as eight laps.
+- The tolerances table listed a constant of a module that the published package does not contain.
+- With a stiff decoupled mode (rate 1e8), events were placed where their factor entered the
+  rounding band of the eigenvalues, not at its zero: a branch point at p = 0 at p = -6.7e-7 and a
+  Hopf point at -3.3e-7, with a bracket of 1e-11 of the step; at rate 1e10, 100 times further. The
+  zero of the factor is now located by following that factor; `explain()` says so.
+- The corrector of `continue_equilibria` used one scale for all equations, so a stiff decoupled
+  equation loosened the others by its rate: a fold was placed at p = -6.3e-6 for 0 beside a mode
+  of rate 1e8. The residual is now relative equation by equation.
+
+### Known limitations
+
+- Two crossings of one test factor within one continuation step (a factor that changes sign and
+  changes back) are not seen; the crossing count compares the ends of the step.
+- `critical()` scans 8 interior points of the bracket: two neutral points closer than the scan
+  spacing are not listed.
+- The correctors of `continue_codim2` and `continue_orbits` and the stop test of
+  `ParametricEVP.track` are absolute.
+- `poincare_section` detects a pair of crossings within one step from a parabola through the last
+  three steps: a pair in the first step is not seen, and a pair is a prediction until confirmed.
+- `EmbeddedError` measures the whole state, tau variables included, on polar, sphere and
+  distributed solvers, as in 0.3.0.
+- The primitive-period check of the ECS orbit finders divides by the norm of the state: a large
+  mean state can hide a difference.
+- `continue_orbits` continued into the end of a cycle family at a Hopf point can turn back there
+  and report a fold of cycles at that point.
+- Collocation multipliers are checked together (the Liouville defect), not one by one.
+- Every checkpoint written before 0.3.1 warns on load.
+- An eigenvalue problem whose decoupled parts differ in time scale by 1e12 (two diffusion
+  equations at rates 1 and 1e12 in one pencil) loses modes of the fast part to the infinite
+  ones without a warning; at 1e9 every mode is found.
+- Orr-Sommerfeld written in primitive variables with a dimensional velocity scale U0 <= 1e-3
+  returns a spurious unstable mode (c = 0.60 + 4.44i at N = 64, residual 7e-16) as the least
+  stable one; 0.3.0 did the same. `drift=` (a second resolution) removes it: use it when the
+  equations carry dimensional coefficients.
+- `cn.uncertainty`: a clean study whose spatial errors change sign while they shrink (the heat
+  equation of the guide at N = 8 to 20) is flagged and not trusted; its error is then the larger
+  of the last two differences, which can be well above the true error.
+- Contour counts are sampled tests, not proofs; a cluster of four eigenvalues at 1e-7 from an edge
+  is refused.
+
 ## [0.3.0] - 2026-11-01
 
 A release for agents and the Studio. The new `python -m conatus mcp` serves documentation, runs and records to MCP clients, read-only by default; the Studio pass adds a run log, Compare tables and a sign-in page. The deprecations announced for 0.3 now raise. No numerical result changes.

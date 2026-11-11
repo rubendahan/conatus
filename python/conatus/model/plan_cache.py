@@ -77,7 +77,7 @@ def _digest(v: Any, what: str) -> Any:
     data = getattr(v, "data", None) if not isinstance(v, np.ndarray) else v
     if isinstance(data, np.ndarray) or isinstance(v, np.ndarray):
         a = np.ascontiguousarray(data if data is not None else v)
-        if a.dtype == object:
+        if a.dtype.hasobject:
             raise _Uncacheable(f"{what} holds Python objects")
         h = hashlib.sha256(a.view(np.uint8).reshape(-1).tobytes() if a.size else b"").hexdigest()
         return ("a", a.shape, a.dtype.str, getattr(v, "layout", None), h)

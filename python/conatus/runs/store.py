@@ -197,8 +197,19 @@ class Registry:
             return []
 
     def load(self, run_id: str) -> dict:
-        """The record of one run (``run.json``)."""
-        return json.loads((self.run_dir(run_id) / "run.json").read_text())
+        """The record of one run (``run.json``). A record whose ``state`` or ``status`` is not
+        one of :data:`STATES` / :data:`STATUSES` is refused (review G15: an edited record put
+        markup into the HTML view of ``find``)."""
+        path = self.run_dir(run_id) / "run.json"
+        rec = json.loads(path.read_text())
+        for field, allowed in (("state", STATES), ("status", STATUSES)):
+            if rec.get(field) not in allowed:
+                raise OptionError(f"conatus.runs: {path}: {field} {str(rec.get(field))[:60]!r} is "
+                                  f"not one of {allowed}",
+                                  why="the record was edited or written by another program",
+                                  fix=f"repair the {field} field of this run.json, or move the run "
+                                      "directory out of the registry")
+        return rec
 
     # ------------------------------------------------------------------ indexing
     @staticmethod

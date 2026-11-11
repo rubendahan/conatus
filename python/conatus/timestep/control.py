@@ -14,6 +14,7 @@ only; SBDF coefficients are constant-step).
 from __future__ import annotations
 
 import numbers
+from typing import Any
 
 import numpy as np
 
@@ -131,6 +132,24 @@ class EmbeddedError:
 
     def __init__(self, solver: IVPSolver, adapt: bool = False, tol: float | None = None,
                  safety: float | None = None, dt_min: float = 0.0, dt_max: float = np.inf) -> None:
+        # flags and numbers checked first (hunt 5C, M4: adapt="no" adapted, tol=True was 1.0,
+        # tol="1e-6" raised a bare TypeError, tol and safety without adapt were ignored)
+        from ..errors import check_flag, check_real
+        adapt = check_flag(adapt, "adapt", "EmbeddedError")
+        if tol is not None:
+            tol = check_real(tol, "tol", "EmbeddedError", positive=True)
+        if safety is not None:
+            safety = check_real(safety, "safety", "EmbeddedError", positive=True)
+        dt_min = check_real(dt_min, "dt_min", "EmbeddedError", nonnegative=True)
+        if not (isinstance(dt_max, numbers.Real) and not isinstance(dt_max, bool)
+                and float(dt_max) == np.inf):
+            dt_max = check_real(dt_max, "dt_max", "EmbeddedError", positive=True)
+        if not adapt and (tol is not None or safety is not None):
+            raise OptionError("EmbeddedError: tol= and safety= apply only with adapt=True",
+                              why="without adapt the estimate is reported and dt never changes; "
+                                  "the values given would be ignored",
+                              fix="EmbeddedError(solver, adapt=True, tol=..., safety=...), or drop "
+                                  "tol and safety", doc=_DOC)
         self.solver = solver
         s = solver.scheme
         require_family(solver, ("sbdf", "rk"), "EmbeddedError",
@@ -197,8 +216,11 @@ class EmbeddedError:
         if bounded != sv.dt:
             sv.set_dt(bounded)
         X0, t0, it0 = sv.X.copy(), sv.t, sv.iteration
+        first = None
         for _ in range(MAX_REJECTIONS + 1):
             err = self._attempt()
+            if first is None:
+                first = (err, sv.dt)
             # a non-finite estimate (the step blew up) is a rejection with the smallest factor
             fac = (self.safety * (self.tol / max(err, 1e-300)) ** (1.0 / (self.p_low + 1))
                    if np.isfinite(err) else 0.0)
@@ -221,11 +243,15 @@ class EmbeddedError:
                     fix="lower dt_min, raise tol, or check the state (a blow-up?)", doc=_DOC)
             new = max(sv.dt * max(DT_FACTOR_MIN, min(fac, 1.0)), self.dt_min)
             sv.set_dt(new)
+        e0, dt0 = first
         raise ConvergenceError(
-            f"EmbeddedError: {MAX_REJECTIONS} rejections in a row at t = {t0:g} (last estimate "
-            f"{err:.3e} > tol = {self.tol:g}, dt = {sv.dt:g})",
-            why="the estimate does not decrease with dt (tol below round-off, or a non-smooth "
-                "right-hand side)", fix="raise tol or check the state", doc=_DOC)
+            f"EmbeddedError: {MAX_REJECTIONS} rejections in a row at t = {t0:g} (estimate "
+            f"{e0:.3e} at dt = {dt0:g}, {err:.3e} at dt = {sv.dt:g}; tol = {self.tol:g})",
+            why=("the estimate of the unknowns did not decrease when dt did: it is at the "
+                 "round-off of the state, so this tol cannot be met at any dt, or the right-hand "
+                 "side is not smooth in time" if not err < e0 / 10 else
+                 "the estimate decreased with dt but not below tol within the retries"),
+            fix="raise tol, or check the state and the forcing", doc=_DOC)
 
     def _attempt(self) -> float:
         """One step with the main scheme and its estimate (no adaptation)."""
@@ -249,8 +275,7 @@ class EmbeddedError:
             X0, t0, dt = sv.X.copy(), sv.t, sv.dt
             sv.step()
             X_low = sv._rk_step(X0, t0, dt, rk_tableau(self.companion))
-        scale = max(np.max(np.abs(sv.X)), 1e-300)
-        self.last = float(np.max(np.abs(sv.X - X_low)) / scale)
+        self.last = self._relative(sv.X, X_low)
         fe = getattr(sv, "_finite_every", 0)
         # a NaN estimate is local to a rank: it may trigger the check only of a solver whose
         # check is not collective (one rank alone would wait in the allreduce)
@@ -263,6 +288,36 @@ class EmbeddedError:
             solver_finite_check(sv, "EmbeddedError.step")
         return self.last
 
+    def _physical(self) -> list[int] | None:
+        """Indices (in ``system.variables``) of the unknowns the estimate measures: every
+        variable that is not a tau variable. None when the solver has no per-variable view (the
+        whole state is measured then)."""
+        if not hasattr(self, "_phys"):
+            sv = self.solver
+            taus = getattr(getattr(sv, "plan", None), "taus", None)
+            vars_ = getattr(getattr(sv, "system", None), "variables", None)
+            if taus is None or vars_ is None or not hasattr(sv.system, "scatter"):
+                self._phys = None
+            else:
+                idx = [k for k, v in enumerate(vars_) if v not in taus]
+                self._phys = idx if idx and len(idx) < len(vars_) else None
+        return self._phys
+
+    def _relative(self, X: Any, X_low: Any) -> float:
+        """max |X - X_low| / max |X| over the physical unknowns. The tau variables are left out
+        (hunt 5C, M2): they absorb the constraint rows, and their round-off grows like 1/dt, so
+        at dt c = 1e-6 (c a diffusivity) they gave 9e-2 for a true error of 1e-12 and drove the
+        adaptive step to 1e-22. The ratio is unchanged by a rescaling of time or of the state."""
+        idx = self._physical()
+        if idx is None:
+            num, den = float(np.max(np.abs(X - X_low))), float(np.max(np.abs(X)))
+        else:
+            sc = self.solver.system.scatter
+            d, x = sc(X - X_low), sc(X)
+            num = max(float(np.max(np.abs(d[k]))) if d[k].size else 0.0 for k in idx)
+            den = max(float(np.max(np.abs(x[k]))) if x[k].size else 0.0 for k in idx)
+        return num / max(den, 1e-300)
+
     def _repr_html_(self) -> str:       # Jupyter display (conatus.notebook)
         from ..notebook import explain_html
         return explain_html(self)
@@ -274,8 +329,11 @@ class EmbeddedError:
                 f"[{DT_FACTOR_MIN:g}, {DT_FACTOR_MAX:g}]; a step above tol is rejected and "
                 f"retried with a smaller dt, {self.rejected} rejected so far)"
                 if self.adapt else "report only, dt unchanged")
+        over = ("the unknowns, tau variables excluded" if self._physical() is not None
+                else "the whole state")
         return (f"EmbeddedError({self.solver.scheme} vs {self.companion}): relative max-norm "
-                f"difference of one step, {mode}; a temporal error estimate, unrelated to CFL")
+                f"difference of one step over {over}, {mode}; a temporal error estimate, "
+                "unrelated to CFL")
 
 
 class TauWatch:

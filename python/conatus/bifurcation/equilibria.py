@@ -4,17 +4,25 @@ Test functions (evaluated at every accepted point, located by secant):
 
 * ``fold``: the parameter component t_p of the unit tangent (limit point);
 * ``branch point``: det [G_x G_p ; t^T] (the bordered Jacobian stays regular at a fold and is
-  singular at a branch point, where it changes sign); scaled by its value at the start point;
-* ``hopf``: ψ_H = Π_{i<j} s(λ_i + λ_j), s(z) = z / (1 + |z|), over the finite generalized
-  eigenvalues of (J, M) (the bialternate-product test written with eigenvalues; declared
-  ``n_eigs``: the pairs are formed from the ``n_eigs`` eigenvalues of largest real part). A zero is
+  singular at a branch point, where it changes sign), as the factors of its eigenvalues with the
+  Jacobian rows divided by max|[G_x G_p]| at the start point (same sign, independent of the time
+  unit);
+* ``hopf``: Π_{i<j} (λ_i + λ_j) over the finite generalized eigenvalues of (J, M), as factors
+  (the bialternate-product test written with eigenvalues; declared ``n_eigs``: the pairs are
+  formed from the ``n_eigs`` eigenvalues of largest real part). A zero is
   a Hopf point if the pair summing to ~0 is complex, otherwise a *neutral saddle* (λ, −λ real),
   rejected with that reason (kept in ``Curve.rejected``).
 
-Every point stores its eigenvalues (sorted by decreasing real part) and the number of unstable ones.
+Both are located on their sign bracket (:mod:`.driver`); factors at rounding level (exactly
+neutral modes) are left out of the sign. Every point stores its eigenvalues (sorted by decreasing
+real part), the number of unstable ones and ``crossing_count`` (Re λ above rounding level), which
+the driver compares with the located events. The corrector residual is max|G| divided by
+max_j|[G_x G_p]_ij| x max(1, max|z|), equation by equation: relative, so a time unit (G -> e G)
+or a stiff decoupled equation changes nothing.
 """
 from __future__ import annotations
 
+import numbers
 from collections.abc import Mapping
 
 from dataclasses import dataclass
@@ -23,8 +31,8 @@ import numpy as np
 import scipy.linalg as sla
 
 from ..continuation.core import ContinuationSettings
-from ..errors import ConvergenceError, OptionError
-from .driver import ArclengthDriver, Curve, CurvePoint, factor_test
+from ..errors import ConvergenceError, InputTypeError, OptionError
+from .driver import ArclengthDriver, Curve, CurvePoint, Factors, flipped
 from .system import DynamicalSystem
 from .._deprecation import renames
 
@@ -109,7 +117,9 @@ def pencil_spectrum(J: np.ndarray, M, *, vectors: bool = False) -> PencilSpectru
         ab = sla.eigvals(Je, Me, homogeneous_eigvals=True)
         vl = vr = None
     alpha, beta = ab[0], ab[1]
-    finite, note, removed, kept = _finite_eigenvalues(alpha, beta, Je, Me, Md)
+    # the moduli it reports are in the unit of the caller (0.3.1 review: they were in the unit of
+    # the normalised pencil, off by nJ / nM)
+    finite, note, removed, kept = _finite_eigenvalues(alpha, beta, Je, Me, Md, unit=nJ / nM)
     n = alpha.size
     level = n * np.finfo(float).eps
     both = (np.abs(alpha) <= level * max(np.abs(Je).max(initial=0.0), np.finfo(float).tiny)) & \
@@ -144,7 +154,9 @@ def newton_equilibrium(system: DynamicalSystem, x0: np.ndarray, *, tol: float,
     """Plain Newton on G(x; p) = 0 at fixed p; returns (x, max|G|, iterations) or raises.
     ``tol`` (max|G|) is required; ``max_iterations`` is a budget with a declared default:
     reaching it raises ConvergenceError, never returns an unconverged point."""
-    x = np.asarray(x0, float).copy()
+    from ..errors import check_count
+    check_count(max_iterations, "max_iterations", "newton_equilibrium", minimum=0)
+    x = system._state(x0, "newton_equilibrium(x0)").copy()
     for k in range(max_iterations + 1):
         g = system.G(x, par)
         r = float(np.max(np.abs(g)))
@@ -156,15 +168,19 @@ def newton_equilibrium(system: DynamicalSystem, x0: np.ndarray, *, tol: float,
     raise ConvergenceError(f"newton_equilibrium: max|G| = {r:.2e} > tol = {tol:g} after {max_iterations} its")
 
 
-def _hopf_test(ev: np.ndarray, n_eigs: int) -> float:
-    """Test function with the sign of the bialternate product Π_{i<j} (λ_i + λ_j) and the size of
-    its smallest factor (:func:`factor_test`). The product itself shrinks with every stable
-    eigenvalue added: below crossing_tol at an ordinary point from dimension 8, zero by underflow
-    at 24."""
+def _rounding(ev: np.ndarray) -> float:
+    """Rounding level of eigenvalues (and their sums): 10 n eps max|λ|."""
+    return 10 * max(ev.size, 1) * np.finfo(float).eps * float(np.abs(ev).max(initial=0.0))
+
+
+def _hopf_test(ev: np.ndarray, n_eigs: int) -> Factors | float:
+    """The factors λ_i + λ_j (i < j) of the bialternate product. Its sign is that of the product of
+    the factors above rounding level; the product itself shrinks with every stable eigenvalue
+    added (below crossing_tol at an ordinary point from dimension 8, zero by underflow at 24)."""
     ev = ev[:n_eigs]
     if ev.size < 2:
         return 1.0
-    return factor_test((ev[:, None] + ev[None, :])[np.triu_indices(ev.size, 1)])
+    return Factors((ev[:, None] + ev[None, :])[np.triu_indices(ev.size, 1)], _rounding(ev))
 
 
 def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
@@ -181,6 +197,14 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
     large systems give it explicitly). ``tests``: which test functions are active. ``tangent``:
     initial direction in z = (x, p) (default: ``direction`` along p), used by ``branch_switch``.
     """
+    if isinstance(direction, bool) or not isinstance(direction, numbers.Real) \
+            or not np.isfinite(float(direction)) or float(direction) == 0:
+        # review H15: an array gave a bare ValueError deep in the start-up
+        raise InputTypeError(
+            f"continue_equilibria(direction={direction!r}): a nonzero real number",
+            why="direction is the sign of the first step along the parameter",
+            fix="direction=1.0 or -1.0; a vector in z = (x, p) goes in tangent= "
+                "(continue_orbits takes it as direction=)")
     if not marginal_tol > 0:
         raise OptionError("continue_equilibria: marginal_tol > 0 is required (declared)")
     unknown = set(tests) - {"fold", "branch point", "hopf"}
@@ -211,6 +235,7 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
         spec = pencil_spectrum(J, M)
         ev = spec.values
         out = {"eigenvalues": ev, "unstable": int(np.sum(ev.real > marginal_tol)),
+               "crossing_count": int(np.sum(ev.real > _rounding(ev))),
                "ambiguous": spec.ambiguous, "parameters": q}
         if spec.ambiguous and not ref.get("warned"):
             ref["warned"] = True
@@ -226,13 +251,18 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
     def t_fold(pt: CurvePoint) -> float:
         return float(pt.tangent[-1])
 
-    def t_bp(pt: CurvePoint) -> float:
-        # the sign of det A, the size of its smallest singular value: the determinant carries
-        # every other direction of the system, so its size says nothing about this event
-        A = np.vstack([Hz(pt.z), pt.tangent[None, :]])
-        sg = float(np.real(np.linalg.slogdet(A)[0]))
-        smin = float(np.linalg.svd(A, compute_uv=False).min())
-        return sg * smin / (1.0 + smin)
+    def t_bp(pt: CurvePoint) -> Factors:
+        # det A as the product of the eigenvalues of A, with the Jacobian rows divided by their
+        # common size (a positive factor: same sign of det A, the time unit drops out). An exactly
+        # neutral decoupled mode gives a zero row, hence an eigenvalue at rounding level, left out
+        # (it made det A = 0 everywhere and the SVD of a NaN tangent raised)
+        B = Hz(pt.z)
+        if "bp_scale" not in ref:     # one scale per curve (the start point): continuous factors
+            nb = float(np.abs(B).max(initial=0.0))
+            ref["bp_scale"] = nb if nb > 0 else 1.0
+        A = np.vstack([B / ref["bp_scale"], pt.tangent[None, :]])
+        lam = np.linalg.eigvals(A)
+        return Factors(lam, 10 * A.shape[0] * np.finfo(float).eps * max(1.0, float(np.abs(lam).max())))
 
     def t_hopf(pt: CurvePoint) -> float:
         return _hopf_test(pt.data["eigenvalues"], ne)
@@ -243,14 +273,25 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
         if name != "hopf":
             return name, None
         lam = ev.point.data["eigenvalues"]
-        # the pair whose sum is closest to 0
+        # the pair whose sum is closest to 0, leaving out pairs of two eigenvalues at rounding
+        # level (exactly neutral modes: their sum 0 is no crossing, and it called a Hopf point
+        # with two neutral spectators a neutral saddle)
         s = np.abs(lam[:, None] + lam[None, :]) + np.diag(np.full(lam.size, np.inf))
+        neutral = np.abs(lam) <= _rounding(lam)
+        s[np.ix_(neutral, neutral)] = np.inf
+        if not np.isfinite(s).any():
+            return None, "every eigenvalue is at rounding level"
+        # among the sums that changed sign across the bracket (hunt 5A, K2 sibling)
+        f = flipped(ev, lam, "eigenvalues", lambda v: v[:, None] + v[None, :])
+        if f is not None and (f & np.isfinite(s)).any():
+            s = np.where(f, s, np.inf)
         i, j = np.unravel_index(np.argmin(s), s.shape)
         pair = lam[[i, j]]
         # the declared threshold of the split, in the result
         ev.data["classification"] = (f"Hopf if |Im λ| > hopf_imag_tol = {settings.hopf_imag_tol:g}"
                                      " x max(|λ|, 1e-3 x the median |λ| of the spectrum) for the "
-                                     "pair of sum closest to 0, else neutral saddle")
+                                     "pair whose sum changed sign across the bracket (closest to 0 "
+                                     "among them), else neutral saddle")
         from .._scales import spectral_floor
         ev.data["critical_distance"] = float(np.abs(pair.real).max())
         size = float(np.abs(pair).max())
@@ -267,9 +308,23 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
         return None, f"neutral saddle (real pair {pair[0].real:.4g}, {pair[1].real:.4g})"
 
     # a fold is reported by the fold test; the bordered determinant does not change sign there
+    def scale(z):
+        # relative residual, equation by equation: |G_i| / (max_j |[G_x G_p]_ij| max(1, max|z|)),
+        # the size of the terms of each equation (H5: a scale of 1 made the tolerance absolute, so
+        # G -> 1e-10 G accepted the seed; 0.3.1 review: one scale for all rows let a stiff
+        # decoupled row, rate 1e8, loosen the others 1e8-fold and moved a fold by 6e-6). A row
+        # with no derivative at z takes the largest row's scale.
+        B = np.abs(np.asarray(Hz(z)))
+        rows = B.max(axis=1, initial=0.0) if B.ndim == 2 else np.atleast_1d(B.max(initial=0.0))
+        top = float(rows.max(initial=0.0))
+        rows = np.where(rows > 0, rows, top if top > 0 else 1.0)
+        return rows * max(1.0, float(np.abs(z).max()))
+
     drv = ArclengthDriver(H, Hz, settings, tests={k: all_tests[k] for k in tests}, data=data,
                           classify=classify, weights=None if weights is None else
-                          np.concatenate([weights, [1.0]]))
+                          np.concatenate([weights, [1.0]]), scale=scale,
+                          scale_text="(max_j|[G_x G_p]_ij| max(1, max|z|), row by row)",
+                          count_check={"fold", "branch point", "hopf"} <= set(tests))
     z0 = np.concatenate([np.asarray(x0, float), [base[parameter]]])
     if tangent is None:
         t0 = np.zeros(n + 1)
@@ -284,5 +339,6 @@ def continue_equilibria(system: DynamicalSystem, x0: np.ndarray, parameter: str,
                  f"stability: #Re λ > {marginal_tol:g} (generalized eigenvalues of (J, M); roots "
                  "are infinite only when M is numerically singular, and data['ambiguous'] counts "
                  "the roots that test cannot settle)",
-                 f"tests: {', '.join(tests)}; Hopf test over {ne} eigenvalue(s)"]
+                 f"tests: {', '.join(tests)}; Hopf test over {ne} eigenvalue(s)",
+                 "corrector residual max_i |G_i| / (max_j |[G_x G_p]_ij| max(1, max|z|)) <= tolerance"]
     return cv

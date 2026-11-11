@@ -201,7 +201,7 @@
   "tutorial": "t13",
   "kind": "figure",
   "alt": "Top: two bell-shaped curves, the direct global mode peaking downstream (right) and the adjoint mode upstream (left), overlapping little. Bottom: their product, the wavemaker, a single bump centred at x = 0 with its maximum marked in red.",
-  "caption": "The direct and adjoint global modes of the Ginzburg-Landau model of the page (top) and the wavemaker S(x) = |q†(x)| |q(x)| (bottom). Advection pushes the direct mode downstream and the adjoint upstream; S is largest where they overlap, the region where a local change of the model moves the eigenvalue most. Its maximum, at |x| < 3×10⁻¹⁰, equals Chomaz's closed form |χ|/√π to a relative 7×10⁻¹².",
+  "caption": "The direct and adjoint global modes of the Ginzburg-Landau model of the page (top) and the wavemaker S(x) = |q†(x)| |q(x)| (bottom). Advection pushes the direct mode downstream and the adjoint upstream; S is largest where they overlap, the region where a local change of the model moves the eigenvalue most. Its maximum, at |x| < 10⁻⁶ (a flat maximum: its position is set by rounding), equals Chomaz's closed form |χ|/√π to a relative 7×10⁻¹².",
   "width": "100%"
  },
  {

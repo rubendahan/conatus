@@ -478,7 +478,12 @@ def exponents_dense(hill: HillBlocks, *, finite_cap: float) -> np.ndarray:
     A = hill.dense(0.0)
     K = len(hill.harmonics)
     B = np.kron(np.eye(K), hill.mass)
-    w = sla.eigvals(A, -B)
+    # balanced pencil (hunt): the exponents in their own unit beside O(1) tau rows
+    # lost digits in SI units; same balancing as solvers.evp.solve_dense
+    from ..solvers.evp import balance_pencil
+    Ae, Be, mu, _dc, _r = balance_pencil(np.asarray(A), np.asarray(B))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        w = mu * sla.eigvals(Ae, -Be)
     keep = np.isfinite(w) & (np.abs(w) <= finite_cap)
     out = np.asarray(w[keep])
     out = out.view(_Exponents)

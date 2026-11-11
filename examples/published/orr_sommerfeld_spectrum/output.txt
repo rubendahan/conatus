@@ -1,5 +1,5 @@
-# orr_sommerfeld_spectrum/run.py | script sha256 0a56c7a57345d1f4d04d6115ac134c0af0fc527d14dcd117e436b1f0501822bf | conatus 0.3.0 | python 3.12.14 | 2026-10-31 | 16 s | AMD EPYC 9654 96-Core Processor | 4 threads
-N = 128 (drift test at N = 160, 1e-6): 61 modes kept, max backward residual 7.4e-16
+# orr_sommerfeld_spectrum/run.py | script sha256 0a56c7a57345d1f4d04d6115ac134c0af0fc527d14dcd117e436b1f0501822bf | conatus 0.3.1 | python 3.12.14 | 2026-11-11 | 16 s | AMD EPYC 9654 96-Core Processor | 4 threads
+N = 128 (drift test at N = 160, 1e-6): 61 modes kept, max backward residual 6.7e-16
  n   Orszag (1971)               Conatus                  gap      within rounding
  1    0.23752649   0.00373967i   0.23752649 +0.00373967i   1.3e-09  yes
  2     0.1900592   -0.1828219i   0.19005925 -0.18282193i   5.6e-08  yes
@@ -14,7 +14,7 @@ N = 128 (drift test at N = 160, 1e-6): 61 modes kept, max backward residual 7.4e
 13       0.58721     -0.26716i   0.58721293 -0.26716171i   3.4e-06  yes
 14       0.63672     -0.25988i   0.63671937 -0.25988571i   5.7e-06  last digit
 20       0.70887     -0.28765i   0.70887465 -0.28765539i   7.1e-06  last digit
-21       0.71232     -0.28551i   0.71231586 -0.28551474i   6.3e-06  yes
+21       0.71232     -0.28551i   0.71231586 -0.28551473i   6.3e-06  yes
 24       0.73741     -0.25872i   0.73741576 -0.25871708i   6.5e-06  last digit
 25       0.73812     -0.25969i   0.73811501 -0.25969188i   5.3e-06  yes
 27       0.76588     -0.23119i   0.76587681 -0.23118599i   5.1e-06  yes

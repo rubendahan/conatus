@@ -19,7 +19,7 @@ import scipy.sparse.linalg as spla
 from ..adjoint import FlowMap
 from ..errors import InputTypeError, NewtonNotConverged, OptionError, SymmetryError, UnsupportedError
 from .fourier_ops import FourierOps
-from .newton import NewtonKrylovHookstep, NewtonKrylovResult
+from .newton import NewtonKrylovHookstep, NewtonKrylovResult, _rate_scale
 from .._deprecation import renames
 from ..tolerances import REQUIRED, require
 
@@ -292,6 +292,59 @@ def _guard_steady(sol: ECSSolution, orb: _Orbit) -> ECSSolution:
     return sol
 
 
+#: Largest number of repetitions k tested by the primitive-period check of the orbit finders
+#: (hunt 5A K4, r031f): k = 2..MULTIPLE_MAX dividing the number of steps.
+MULTIPLE_MAX = 8
+
+
+def _guard_multiple(sol: ECSSolution, orb: _Orbit) -> ECSSolution:
+    """Primitive period of a converged orbit (hunt 5A K4, r031f).
+
+    A seed at 2T or 3T of a known orbit converged to the repeated orbit, reported with the
+    multiple as its period and no note (PPO 10.25 of KS L = 22 at 3T: T = 30.76, multipliers the
+    cubes of the true ones; at 2T without reflection: a "relative periodic orbit" with ℓ = 0). For
+    every k = 2..MULTIPLE_MAX dividing the number of steps, the state X_{n/k} (exactly
+    Φ_{T/k}(u) on the same discrete map) is compared with u up to a shift, with and without the
+    reflection R: d_k = min_s min(‖τ_s X_{n/k} − u‖, ‖R τ_s X_{n/k} − u‖) / ‖u‖. When d_k is below
+    STEADY_TOL x the accuracy of the solve, the orbit is the k-fold repetition of an orbit of
+    period T/k: ``params['primitive_period']``, ``params['repetitions']`` and
+    ``params['primitive_reflect']`` are set (largest such k), ``status`` becomes
+    ``"repeated"`` and a note says so. Every measured d_k is in the notes."""
+    if sol.status == "retracted":
+        return sol
+    X = np.asarray(sol.X)
+    n0 = float(np.linalg.norm(X))
+    T, n = sol.params.get("T"), int(sol.params.get("nsteps", orb.nsteps))
+    ks = [k for k in range(2, MULTIPLE_MAX + 1) if n % k == 0]
+    if not n0 > 0 or T is None or not ks:
+        sol.notes.append(f"primitive-period check: not done (no k in 2..{MULTIPLE_MAX} divides the "
+                         f"{n} steps)" if not ks else "primitive-period check: not done")
+        return sol
+    states = orb.flow(float(T)).trajectory(X)
+    newton_rel = getattr(sol.newton, "relative_residual", 0.0) or 0.0
+    floor = max(float(sol.residual), float(newton_rel), 1e-15)
+    found, meas = None, []
+    for k in ks:
+        U = np.asarray(states[n // k])
+        plain = _min_shift_distance(orb.ops, U, X) / n0
+        refl = _min_shift_distance(orb.ops, orb.ops.reflect(U), X) / n0
+        dk = min(plain, refl)
+        meas.append(f"k = {k}: {dk:.1e}")
+        if dk < STEADY_TOL * floor:
+            found = (k, refl < plain)
+    sol.notes.append("primitive-period check: min_s ‖(R) τ_s Φ_{T/k}(u) − u‖/‖u‖ "
+                     + ", ".join(meas) + f" vs STEADY_TOL x accuracy = {STEADY_TOL * floor:.1e}")
+    if found:
+        k, r = found
+        sol.params.update(primitive_period=float(T) / k, repetitions=k, primitive_reflect=bool(r))
+        sol.status = "repeated"
+        sol.notes.append(f"REPEATED ORBIT: the state returns at T/{k} = {float(T) / k:.10g}"
+                         + (" up to the reflection (a preperiodic orbit)" if r else "")
+                         + f"; this solution is {k} laps of it, and its multipliers are the "
+                         f"{k}-th powers of the primitive orbit's")
+    return sol
+
+
 @dataclass
 class ECSSolution:
     """A converged invariant solution with its evidence."""
@@ -380,9 +433,13 @@ class _Space:
     zero, so 1 + cos x came back as cos x). ``base=None`` freezes them at zero (perturbations in
     the stability problems)."""
 
-    def __init__(self, ops: FourierOps, n: int, odd: bool, base: np.ndarray | None = None) -> None:
+    def __init__(self, ops: FourierOps, n: int, odd: bool, base: np.ndarray | None = None,
+                 keep_mean: bool = False, mean_note: str = "") -> None:
         mask = np.ones(n, bool)
-        mask[ops.mean_index] = False
+        # H4/G3 (r031f): the stability paths keep the mean as an unknown when it is not conserved
+        # (keep_mean, from _mean_space); in the odd subspace it is 0 by symmetry
+        mask[ops.mean_index] = bool(keep_mean) and not odd
+        self.keep_mean, self.mean_note = bool(keep_mean) and not odd, mean_note
         if odd:
             mask &= ops.odd_mask(np.zeros(n))
         self.mask, self.odd, self.n = mask, odd, n
@@ -403,8 +460,38 @@ class _Space:
     def describe(self) -> str:
         if self.odd:
             return "antisymmetric subspace R u = u (cos components frozen at 0), mean frozen"
+        if self.keep_mean:
+            return f"full space, mean kept as an unknown ({self.mean_note})"
+        if self.mean_note:
+            return f"full space without the mean ({self.mean_note})"
         return (f"full space, mean frozen at the seed's value {self.base[self.mean_index]:.6g} "
                 "(conserved)")
+
+
+def _mean_space(ops: FourierOps, n: int, apply, *, odd: bool = False,
+                shift: float = 0.0) -> _Space:
+    """The space of a stability computation, with the mean dropped only if it is conserved.
+
+    H4/G3 (r031f): equilibrium_eigenvalues, floquet_multipliers, symmetry_breaking_check and
+    ecs_system dropped the mean (cos_0) without checking that the equations conserve it: with a
+    reaction term (u_t = 0.5 u + u_xx) the mode k = 0, rate 0.5, was missing and the top
+    eigenvalue read -0.5. The mean row of the map ``apply`` (minus ``shift`` x identity: 1 for a
+    monodromy) is measured on two random full-space probes d: |(apply d - shift d)[mean]| /
+    ||apply d - shift d||. Up to 1e-12 (rounding) the mean is conserved, the matrix is block
+    triangular with the mean's eigenvalue equal to ``shift`` (-1: a preperiodic orbit, whose
+    reflection maps the mean to minus itself), and dropping the mean loses only that
+    value; above it the mean is kept as an unknown. The measured ratio is in ``describe()``."""
+    rng = np.random.default_rng(0)
+    rel = 0.0
+    for _ in range(2):
+        d = rng.standard_normal(n)
+        y = np.asarray(apply(d), dtype=float) - shift * d
+        rel = max(rel, abs(float(y[ops.mean_index])) / max(float(np.linalg.norm(y)), 1e-300))
+    keep = rel > 1e-12 and not odd
+    note = (f"mean row measured {rel:.1e} relative: "
+            + ("not conserved, kept" if keep else "conserved to rounding, its eigenvalue "
+               f"{f'{shift:g} (multiplier)' if shift else '0'} dropped"))
+    return _Space(ops, n, odd=odd, keep_mean=keep, mean_note=note)
 
 
 #: The full equations must hold at a returned solution: ‖full residual‖/scale <= FULL_RESIDUAL_FACTOR
@@ -463,10 +550,11 @@ def find_equilibrium(solver, x0: np.ndarray, newton: NewtonKrylovHookstep, *, od
         raise OptionError("find_equilibrium: the initial guess is not in the antisymmetric "
                           "subspace R u = u", fix="project it: x0 = (x0 + R x0) / 2 with "
                           "R = FourierOps(solver).reflect", doc=_DOC)
-    scale = max(1.0, float(np.linalg.norm(x0)))
-    res = newton.solve(lambda z: sp.active(v(sp.full(z))),
-                       lambda z, d: sp.active(v.jvp(sp.full(z), sp.full(d))),
-                       sp.active(x0), scale=scale, log=log)
+    size = max(1.0, float(np.linalg.norm(x0)))
+    jvp = lambda z, d: sp.active(v.jvp(sp.full(z), sp.full(d)))  # noqa: E731
+    rate, rate_note = _rate_scale(jvp, sp.active(x0))
+    scale = size * rate
+    res = newton.solve(lambda z: sp.active(v(sp.full(z))), jvp, sp.active(x0), scale=scale, log=log)
     X = sp.full(res.z)
     vX = v(X)
     gate = _gate_full_residual("find_equilibrium", vX, sp, newton, scale)
@@ -474,8 +562,9 @@ def find_equilibrium(solver, x0: np.ndarray, newton: NewtonKrylovHookstep, *, od
     sol = Equilibrium("equilibrium", X, {"space": sp.describe()}, rel, res, _energy(ops, X))
     sol.notes.append("residual = ‖v(u)‖/‖u‖ with v = M⁻¹(F − L u), evaluated in the full space")
     sol.notes.append(gate)
+    sol.notes.append(rate_note)
     sol.notes += [t for t in (note, seed) if t]
-    return _guard_trivial(sol, scale)
+    return _guard_trivial(sol, size)
 
 
 @renames("conatus.ecs.solutions:find_travelling_wave")
@@ -504,7 +593,9 @@ def find_travelling_wave(solver, x0: np.ndarray, c0: float, newton: NewtonKrylov
         body = v.jvp(X, dX) + c * ops.ddx(dX) + dc * ops.ddx(X)
         return np.concatenate([sp.active(body), [ref["t"] @ dX]])
 
-    scale = max(1.0, float(np.linalg.norm(x0)))
+    size = max(1.0, float(np.linalg.norm(x0)))
+    rate, rate_note = _rate_scale(J, np.concatenate([sp.active(x0), [c0]]))
+    scale = size * rate
     try:
         res = newton.solve(R, J, np.concatenate([sp.active(x0), [c0]]), scale=scale, log=log)
     except NewtonNotConverged as err:
@@ -527,7 +618,8 @@ def find_travelling_wave(solver, x0: np.ndarray, c0: float, newton: NewtonKrylov
                          "(relabelled from travelling_wave), not a travelling wave; start from a "
                          "c0 away from 0 or a seed of a wave to find one")
     sol.notes += [t for t in (note, seed) if t]
-    return _guard_trivial(sol, scale)
+    sol.notes.append(rate_note)
+    return _guard_trivial(sol, size)
 
 
 #: Stalled travelling-wave searches of each solver in this session: (‖R‖/scale, final c, c0),
@@ -673,15 +765,23 @@ def find_relative_periodic_orbit(solver, x0: np.ndarray, T0: float, ell0: float,
     sol.notes.append(gate)
     if seed:
         sol.notes.append(seed)
-    return _guard_steady(_guard_trivial(sol, scale), orb)
+    return _guard_multiple(_guard_steady(_guard_trivial(sol, scale), orb), orb)
 
 
 # --------------------------------------------------------------------------- stability
+def _note_mean(sol, where: str, sp: _Space) -> None:
+    """Record the mean decision of a stability computation in ``sol.stability`` (when present)."""
+    st = getattr(sol, "stability", None)
+    if isinstance(st, dict):
+        st[f"{where}: space"] = sp.describe()
+
+
 @renames("conatus.ecs.solutions:equilibrium_eigenvalues")
 def equilibrium_eigenvalues(solver, sol: ECSSolution, n_modes: int, *, dense_max: int = DENSE_MAX,
                             arnoldi_tol: float = REQUIRED) -> np.ndarray:
     """``n_modes`` leading eigenvalues (largest real part) of the Jacobian of v (+ c ∂x for a TW),
-    full space without the mean: dense QZ if the active size ≤ ``dense_max`` (declared default
+    full space (the mean dropped only if measured conserved, :func:`_mean_space`; the decision
+    is in ``sol.stability``): dense QZ if the active size ≤ ``dense_max`` (declared default
     DENSE_MAX), ARPACK otherwise at the accuracy ``arnoldi_tol`` (required: the
     budget is declared, the tolerance required; ``k=`` is the former name of
     ``n_modes``, k being a wavenumber everywhere else).
@@ -701,7 +801,8 @@ def equilibrium_eigenvalues(solver, sol: ECSSolution, n_modes: int, *, dense_max
     # a Simulation (or a cn.Model refused with its fix) like the finders
     solver, _ = _solver_of(solver, "equilibrium_eigenvalues")
     ops, v = FourierOps(solver), Flow(solver)
-    sp = _Space(ops, solver.system.n, odd=False)
+    sp = _mean_space(ops, solver.system.n, lambda d: v.jvp(sol.X, d) + c * ops.ddx(d))
+    _note_mean(sol, "equilibrium_eigenvalues", sp)
     m = int(sp.mask.sum())
 
     def matvec(d):
@@ -719,7 +820,7 @@ def equilibrium_eigenvalues(solver, sol: ECSSolution, n_modes: int, *, dense_max
 def floquet_multipliers(solver, sol: ECSSolution, n_modes: int, *, dense_max: int = DENSE_MAX,
                         marginal_overlap_min: float = 0.99, arnoldi_tol: float = REQUIRED) -> dict:
     """``n_modes`` leading Floquet multipliers of S τ_ℓ J_T (monodromy of the discrete map, full
-    space without the mean): dense if the active size ≤ ``dense_max`` (declared default), ARPACK
+    space; the mean dropped only if measured conserved, returned in ``'space'``): dense if the active size ≤ ``dense_max`` (declared default), ARPACK
     otherwise with its required accuracy ``arnoldi_tol`` (``k=``: former name of ``n_modes``). The
     marginal time and translation directions are identified by the overlap of the eigenvectors
     with v(u) and ∂x u (overlap > ``marginal_overlap_min``, declared and returned), and counted."""
@@ -727,8 +828,11 @@ def floquet_multipliers(solver, sol: ECSSolution, n_modes: int, *, dense_max: in
     solver, _ = _solver_of(solver, "floquet_multipliers", need_scheme=True)   # as the finders
     T, ell = sol.params["T"], sol.params["ell"]
     orb = _Orbit(solver, sol.params["nsteps"], sol.kind == "preperiodic_orbit")
-    sp = _Space(orb.ops, solver.system.n, odd=False)
     fm = orb.flow(T)
+    sp = _mean_space(orb.ops, solver.system.n,
+                     lambda d: orb.S(orb.ops.translate(fm.jvp(sol.X, d), ell)),
+                     shift=-1.0 if sol.kind == "preperiodic_orbit" else 1.0)   # R maps the mean to -mean
+    _note_mean(sol, "floquet_multipliers", sp)
     m = int(sp.mask.sum())
     def matvec(d):
         return sp.active(orb.S(orb.ops.translate(fm.jvp(sol.X, sp.full(d)), ell)))
@@ -742,14 +846,20 @@ def floquet_multipliers(solver, sol: ECSSolution, n_modes: int, *, dense_max: in
     vt = sp.active(orb.v(sol.X))
     vx = sp.active(orb.ops.ddx(sol.X))
     marg = []
+    # a direction that is exactly zero (v(u) = 0 at an equilibrium, du/dx = 0 for a state
+    # independent of x) is not a marginal direction: its overlap was 0/0, NaN with a
+    # RuntimeWarning (review H15); it is skipped and named in "marginal_absent"
+    nt, nx = float(np.linalg.norm(vt)), float(np.linalg.norm(vx))
+    absent = ([] if nt > 0 else ["time (v(u) = 0)"]) + ([] if nx > 0 else ["translation (du/dx = 0)"])
     for i in range(len(lam)):
         w = vec[:, i] / np.linalg.norm(vec[:, i])
-        ot = abs(np.vdot(w, vt)) / np.linalg.norm(vt)
-        ox = abs(np.vdot(w, vx)) / np.linalg.norm(vx)
+        ot = abs(np.vdot(w, vt)) / nt if nt > 0 else 0.0
+        ox = abs(np.vdot(w, vx)) / nx if nx > 0 else 0.0
         if max(ot, ox) > marginal_overlap_min:
             marg.append((i, "time" if ot >= ox else "translation", complex(lam[i])))
     return {"multipliers": lam, "exponents": np.log(lam.astype(complex)) / T, "marginal": marg,
-            "marginal_overlap_min": float(marginal_overlap_min)}
+            "marginal_absent": absent, "marginal_overlap_min": float(marginal_overlap_min),
+            "space": sp.describe()}
 
 
 def symmetry_breaking_check(solver, sol: ECSSolution, *, dense_max: int = DENSE_MAX,
@@ -776,8 +886,11 @@ def symmetry_breaking_check(solver, sol: ECSSolution, *, dense_max: int = DENSE_
                             "(find_equilibrium(odd=True), the default), or a looser symmetry_tol if the "
                             "asymmetry is rounding", doc=_DOC)
     n = solver.system.n
-    base = np.ones(n, bool)
-    base[ops.mean_index] = False
+    msp = _mean_space(ops, n, lambda d: v.jvp(sol.X, d))
+    _note_mean(sol, "symmetry_breaking_check", msp)
+    # the mean (a cos component, R maps it to minus itself) joins the antisymmetric block when
+    # it is not conserved (G3, r031f: u_t = u + u_xx + f, mean rate +1, read "no instability")
+    base = msp.mask.copy()
     sym = base & ops.odd_mask(np.zeros(n))          # R v = v : sin components
     anti = base & ~sym                               # R v = −v: cos components
     m = int(base.sum())
@@ -813,6 +926,7 @@ def symmetry_breaking_check(solver, sol: ECSSolution, *, dense_max: int = DENSE_
                "up to the marginal translation mode)")
     out = {"blocks": blocks, "leading": lead, "unstable_antisymmetric": anti_unstable,
            "verdict": verdict, "coupling": float(coupling), "unstable_tol": float(unstable_tol),
-           "coupling_tol": float(coupling_tol), "symmetry_tol": float(symmetry_tol)}
+           "coupling_tol": float(coupling_tol), "symmetry_tol": float(symmetry_tol),
+           "mean": msp.describe()}
     sol.stability["symmetry_breaking_check"] = f"{verdict}; cross-block coupling {coupling:.1e}"
     return out

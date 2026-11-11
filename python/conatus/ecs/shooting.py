@@ -111,6 +111,11 @@ class ShootingRPOResult:
     newton: NewtonKrylovResult | None
     nsteps: int
     notes: list = field(default_factory=list)
+    # hunt 5A (r031f): a steady state solves the shooting equations for a continuum of (T, a);
+    # the solve classifies its result as the 1-D finder does (ecs.solutions._guard_steady)
+    kind: str = "relative_periodic_orbit"     # or "equilibrium", "travelling_wave", "trivial"
+    status: str = "converged"                 # "retracted": not an orbit; "repeated" (see notes)
+    repetitions: int = 1                      # k > 1: k laps of an orbit of period T / k (K4)
 
     @property
     def dt(self) -> float:
@@ -120,7 +125,11 @@ class ShootingRPOResult:
     def explain(self) -> str:
         """Period, shifts, discrete map and reported residuals, then the Newton history."""
         sh = ", ".join(f"a_{c} = {v:.10g}" for c, v in self.shifts.items()) or "no shift"
-        lines = [f"Relative periodic orbit: T = {self.T:.10g}, {sh}; discrete map of {self.nsteps} "
+        head = {"relative_periodic_orbit": "Relative periodic orbit",
+                "equilibrium": "RETRACTED, an equilibrium, not an orbit",
+                "travelling_wave": "RETRACTED, a travelling wave (relative equilibrium), not an orbit",
+                "trivial": "RETRACTED, the trivial state, not an orbit"}.get(self.kind, self.kind)
+        lines = [f"{head}: T = {self.T:.10g}, {sh}; discrete map of {self.nsteps} "
                  f"steps (dt = {self.dt:.6g}); residual ‖τ(−a)Φ_T(X) − X‖/‖X‖ = {self.residual:.3e}"
                  + (f", /‖X − base‖ = {self.residual_vs_base:.3e}"
                     if self.residual_vs_base is not None else "")]
@@ -339,6 +348,92 @@ class ShootingRPO:
         X, T, a = unpack(res.z)
         sol = self.result(X, T, a, res)
         sol.notes.append(f"initial symmetry defect of X0 (removed by projection): {defect:.2e}")
+        return self.classify(sol, scale)
+
+    def classify(self, sol: ShootingRPOResult, scale: float) -> ShootingRPOResult:
+        """Retract a solve that converged onto the trivial state or a steady state.
+
+        Hunt 5A (r031f): a travelling wave and an equilibrium (KS E2) solve τ(−a) Φ_T(X) = X for
+        a continuum of (T, a) and were returned as relative periodic orbits with residual 1e-13,
+        while the 1-D finder retracts them. Same criteria as ``conatus.ecs.solutions``: trivial
+        when ‖X_S‖ < TRIVIAL_TOL x scale; steady when the state keeps its shape along the period,
+        A = max_j ‖τ(−j δ) X_j − X‖_S / ‖X‖_S < STEADY_TOL x the accuracy of the solve, with δ the
+        shift of one step (Gauss–Newton on τ(−δ) Φ_dt(X) = X; on the discrete map a steady state
+        moves by the same shift every step). Kind ``equilibrium`` when |δ| ‖∂X‖ is below that
+        accuracy too, ``travelling_wave`` otherwise; ``status = "retracted"`` in both cases."""
+        from .solutions import STEADY_SAMPLES, STEADY_TOL, TRIVIAL_TOL
+        X = np.asarray(sol.X)
+        nX = float(np.linalg.norm(self.active(X)))
+        sol.notes.append(f"trivial-state threshold: ‖X_S‖ < {TRIVIAL_TOL:g} x {scale:.3g} ⇒ retracted")
+        if nX < TRIVIAL_TOL * scale:
+            sol.kind, sol.status = "trivial", "retracted"
+            sol.notes.append("converged to the trivial state (not a new solution)")
+            return sol
+        host = lambda u: np.asarray(u.get() if hasattr(u, "get") else u)   # noqa: E731
+        states = [host(u) for u in self.flow(sol.T).trajectory(X)[1:]]
+        names = list(self.shift_ops)
+        d = {c: 0.0 for c in names}
+        for _ in range(4):                  # Gauss–Newton for the shift of one step
+            Y = self.unshift(states[0], d)
+            F = self.active(Y - X)
+            if not names:
+                break
+            Jc = np.column_stack([-self.active(self.shift_ops[c].apply(Y)) for c in names])
+            step = np.linalg.lstsq(Jc, -F, rcond=None)[0]
+            d = {c: d[c] + float(step[i]) for i, c in enumerate(names)}
+        idx = range(len(states))
+        if len(states) > STEADY_SAMPLES:
+            idx = np.linspace(0, len(states) - 1, STEADY_SAMPLES).astype(int)
+        amp = max(float(np.linalg.norm(self.active(
+            self.unshift(states[j], {c: (j + 1) * d[c] for c in names}) - X))) for j in idx) / nX
+        newton_rel = getattr(sol.newton, "relative_residual", 0.0) or 0.0
+        floor = max(float(sol.residual), float(newton_rel), 1e-15)
+        move = max([abs(d[c]) * float(np.linalg.norm(self.active(self.shift_ops[c].apply(X)))) / nX
+                    for c in names], default=0.0)
+        sol.notes.append(f"steady-state check: shape change over the period max_j ‖τ(−j δ) X_j − "
+                         f"X‖/‖X‖ = {amp:.3e} with the one-step shift δ = {d} vs STEADY_TOL x "
+                         f"accuracy of the solve = {STEADY_TOL * floor:.1e} (below ⇒ retracted)")
+        if amp < STEADY_TOL * floor:
+            sol.kind = "equilibrium" if move < STEADY_TOL * floor else "travelling_wave"
+            sol.status = "retracted"
+            sol.notes.append(f"converged to a steady state ({sol.kind.replace('_', ' ')}), not an "
+                             "orbit: it solves the shooting equations for any period")
+            return sol
+        return self._primitive(sol, states, X, nX, STEADY_TOL * floor)
+
+    def _primitive(self, sol, states, X, nX: float, tol: float) -> ShootingRPOResult:
+        """Primitive-period check (hunt 5A K4, r031f): for k = 2..8 dividing nsteps, is
+        τ(−s) X_{n/k} = X for some shift s (s from a/k + m L/k, m = 0..k-1, refined by
+        Gauss–Newton)? Below ``tol`` the orbit is k laps of an orbit of period T/k: status
+        "repeated", ``repetitions = k`` and a note. Only the declared shifts are tried (not the
+        other elements of the group)."""
+        import itertools
+        names = list(self.shift_ops)
+        meas, found = [], 1
+        for k in [k for k in range(2, 9) if self.nsteps % k == 0]:
+            U = states[self.nsteps // k - 1]
+            best = np.inf
+            for ms in itertools.product(range(k), repeat=len(names)) if len(names) <= 2 else [(0,) * len(names)]:
+                d = {c: sol.shifts[c] / k + m * self.shift_ops[c].length / k for c, m in zip(names, ms, strict=True)}
+                for _ in range(3):
+                    Y = self.unshift(U, d)
+                    F = self.active(Y - X)
+                    if not names:
+                        break
+                    Jc = np.column_stack([-self.active(self.shift_ops[c].apply(Y)) for c in names])
+                    step = np.linalg.lstsq(Jc, -F, rcond=None)[0]
+                    d = {c: d[c] + float(step[i]) for i, c in enumerate(names)}
+                best = min(best, float(np.linalg.norm(self.active(self.unshift(U, d) - X))) / nX)
+            meas.append(f"k = {k}: {best:.1e}")
+            if best < tol:
+                found = k
+        sol.notes.append("primitive-period check: min_s ‖τ(−s) Φ_{T/k}(X) − X‖/‖X‖ "
+                         + (", ".join(meas) if meas else "(no k in 2..8 divides nsteps)")
+                         + f" vs {tol:.1e}")
+        if found > 1:
+            sol.repetitions, sol.status = found, "repeated"
+            sol.notes.append(f"REPEATED ORBIT: the state returns at T/{found} = {sol.T / found:.10g}; "
+                             f"this solution is {found} laps of it")
         return sol
 
     def result(self, X, T: float, a: dict, newton=None) -> ShootingRPOResult:

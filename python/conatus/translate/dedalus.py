@@ -135,6 +135,27 @@ def from_dedalus(script: str | os.PathLike, *, entry: tuple[str, dict] | None = 
             fix="pass a Dedalus 3 script (a path ending in .py, or its text); the supported "
                 "subset is listed in the guide",
             doc="docs/site/guide/dedalus.md")
+    if decl is not None and len(decl.problem.equations) != len(decl.problem.variables):
+        # counted here, before any build (review H14: a dropped equation reached the solver as
+        # a ValueError or a RankError, with complete=True when the drop was "skipped"). Dedalus
+        # itself checks squareness per subproblem on the valid modes (core/subsystems.py,
+        # build_matrices: valid_eqn.nnz != valid_var.nnz), not equations against variables: a
+        # constant tau field (no valid mode outside m = 0) in no equation is accepted, as in the
+        # official pipe-flow example. So the count is unsupported only when an equation line was
+        # not translated; otherwise it is a note and the discretization checks each group.
+        ne, nv = len(decl.problem.equations), len(decl.problem.variables)
+        dropped = [r for r in tr.report if "add_equation" in r.source
+                   and r.status not in ("translated", "approximated")]
+        if dropped:
+            tr.report.append(ReportLine(0, "", "unsupported",
+                                        f"{ne} equation(s) for {nv} variable(s): an equation "
+                                        f"was not translated (line {dropped[0].lineno})"))
+        else:
+            tr.report.append(ReportLine(0, "", "translated",
+                                        f"{ne} equation(s) for {nv} variable(s), every equation "
+                                        "translated: as in Dedalus, squareness is checked per "
+                                        "group on the modes each variable has there (a constant "
+                                        "field has none outside m = 0), at discretization"))
     if len(tr.problems) > 1:
         tr.report.append(ReportLine(0, "", "approximated",
                                     f"{len(tr.problems)} problems in the script: the last one is "

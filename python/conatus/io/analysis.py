@@ -3,7 +3,7 @@
 Layout (``format = "conatus.analysis/1"``), close to Dedalus' file handlers so post-processing
 scripts carry over::
 
-    /                  attrs: format, problem, scheme, dt, every, tasks (JSON: name -> source),
+    /                  attrs: format, problem, scheme, dt (of the last row), every, tasks (JSON: name -> source),
                               provenance (JSON: code, environment, numerics), conatus_version,
                               parameters (JSON), coordinates (JSON, grid order), geometry, model,
                               cartesian, identity (JSON: the canonical identity of
@@ -12,6 +12,7 @@ scripts carry over::
     /scales/sim_time   (W,)   simulation time of each write (dimension scale "t")
     /scales/iteration  (W,)   step number of each write
     /scales/write_number (W,) 1, 2, ... (continued by mode="a")
+    /scales/dt         (W,)   time step at each write (files written before 0.3.1 have none)
     /scales/<coord>    grid points of each coordinate (native simulations; dimension scale)
     /scales/component  coordinate names, the component axis of vectors (dimension scale)
     /tasks/<name>      (W, ...) one row per write: grid values of an unknown or component
@@ -208,7 +209,8 @@ class AnalysisFile:
             f.attrs["task_identity"] = json_attr(self._task_identity())
             f.attrs["writes"] = 0
             sc = f.create_group("scales")
-            for k, dtype in (("sim_time", float), ("iteration", np.int64), ("write_number", np.int64)):
+            for k, dtype in (("sim_time", float), ("iteration", np.int64), ("write_number", np.int64),
+                             ("dt", float)):
                 sc.create_dataset(k, shape=(0,), maxshape=(None,), dtype=dtype)
             dsc.root_attrs(f, self.solver, self.source)
             dsc.make_scale(sc["sim_time"], "t")
@@ -232,9 +234,18 @@ class AnalysisFile:
             if set(old) != set(new):
                 raise OptionError(f"output(mode='a'): tasks {sorted(new)} differ from the file's "
                                   f"{sorted(old)}", fix="the same task names, or mode='w'", doc=DOC)
-            if float(f.attrs["dt"]) != float(self.solver.dt) or int(f.attrs["every"]) != self.every:
-                raise OptionError("output(mode='a'): dt or every differs from the file's",
-                                  why="one file holds one cadence", fix="a new file", doc=DOC)
+            per_row_dt = "dt" in f["scales"]
+            # a file that records the dt of each row (hunt 5C, M3: a dt change during the run left
+            # the attribute at the first dt, and the chain could resume with neither) accepts
+            # another dt; one written before keeps a single dt
+            if int(f.attrs["every"]) != self.every or (
+                    not per_row_dt and float(f.attrs["dt"]) != float(self.solver.dt)):
+                raise OptionError("output(mode='a'): " + ("every differs from the file's"
+                                                          if per_row_dt else "dt or every differs from the file's"),
+                                  why="one file holds one cadence in iterations"
+                                      + ("" if per_row_dt else "; this file, written before "
+                                         "rows recorded their dt, holds one dt"),
+                                  fix="a new file", doc=DOC)
             self._check_same_computation(f, old, new)
             self.writes = int(f.attrs["writes"])
             its = f["scales/iteration"][:self.writes]
@@ -253,8 +264,11 @@ class AnalysisFile:
             with open_h5(self.path, "a") as f:          # counter first: a crash keeps a valid file
                 f.attrs["writes"] = keep
                 for d in list(f["tasks"].values()) + [f["scales"][k] for k in
-                                                       ("sim_time", "iteration", "write_number")]:
+                                                       ("sim_time", "iteration", "write_number", "dt")
+                                                       if k in f["scales"]]:
                     d.resize(keep, axis=0)
+                if "dt" in f["scales"] and keep:
+                    f.attrs["dt"] = float(f["scales/dt"][keep - 1])
             self.dropped, self.writes = self.writes - keep, keep
             self._resumed_at = int(self.solver.iteration)
 
@@ -282,7 +296,7 @@ class AnalysisFile:
         """Refuse an append by another computation, naming every difference;
         a file written before the identity record is compared on what it holds (problem name,
         parameters, scheme, task sources) with an :class:`IdentityWarning`."""
-        from ._identity import IdentityWarning, _differences, unrecorded
+        from ._identity import INCOMPARABLE, IdentityWarning, _differences, unrecorded
         here = f"in {self.path.name}"
         diffs = []
         mine = checkpoint_identity(self.solver)
@@ -292,7 +306,11 @@ class AnalysisFile:
             params = read_json_attr(f, "parameters")
             if params is not None:
                 old["parameters"] = params
-        diffs += [t for _k, _c, t in _differences(old, mine, there=here)]
+        # an incomparable entry (INCOMPARABLE: a function or given field reading a value without
+        # a content hash) is refused unless this solver's restart allowed it (allow=, recorded)
+        allowed = getattr(self.solver, "_restart_changes", None) or []
+        diffs += [t for _k, _c, t in _differences(old, mine, there=here)
+                  if INCOMPARABLE not in t or not any(t in c for c in allowed)]
         if "time_parameter" in f.attrs:
             role = read_json_attr(f, "time_parameter")
             if role != self.solver.time_parameter:
@@ -363,9 +381,12 @@ class AnalysisFile:
                 d[w] = a
             sc = f["scales"]
             for k, v in (("sim_time", self.solver.t), ("iteration", self.solver.iteration),
-                         ("write_number", w + 1)):
-                sc[k].resize(w + 1, axis=0)
-                sc[k][w] = v
+                         ("write_number", w + 1), ("dt", float(self.solver.dt))):
+                if k in sc:                            # "dt": absent from files before 0.3.1
+                    sc[k].resize(w + 1, axis=0)
+                    sc[k][w] = v
+            if "dt" in sc and float(f.attrs["dt"]) != float(self.solver.dt):
+                f.attrs["dt"] = float(self.solver.dt)  # the dt of the last row (scales/dt: each row)
             f.attrs["writes"] = w + 1                   # last: a partial row is never counted
         self.writes = w + 1
 

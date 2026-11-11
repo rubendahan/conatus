@@ -43,8 +43,10 @@ class Scale:
         return f"reference scale {self.symbol} = {self.definition} = {self.value:g} (family basis)"
 
     def __post_init__(self):
-        if not self.value > 0:
-            raise OptionError(f"scale {self.symbol} = {self.definition} must be > 0 (got {self.value})")
+        # a finite positive real (hunt 5C, M4: inf and True were accepted, "2" raised a bare
+        # TypeError)
+        from .errors import check_real
+        check_real(self.value, "value", f"scale {self.symbol} = {self.definition}", positive=True)
 
 
 @dataclass(frozen=True)
@@ -54,6 +56,11 @@ class Group:
     symbol: str
     definition: str
     prefactor: float = 1.0
+
+    def __post_init__(self):
+        # a finite positive real (hunt 5C, M4: -1 was accepted, 0 divided by zero in convert)
+        from .errors import check_real
+        check_real(self.prefactor, "prefactor", f"group {self.symbol}", positive=True)
 
     def explain(self) -> str:
         """The group in one line."""
@@ -72,7 +79,9 @@ class UnitSystem:
 
     def scale(self, kind: str) -> Scale:
         if kind not in self.scales:
-            raise KeyError(f"{self.name}: no {kind} scale (has {sorted(self.scales)})")
+            raise OptionError(f"{self.name}: no {kind} scale (has {sorted(self.scales)})",
+                              fix="declare it in scales=, or convert a quantity whose dimensions "
+                                  "use only " + ", ".join(sorted(self.scales)))
         return self.scales[kind]
 
     def explain(self) -> str:
@@ -131,6 +140,8 @@ class Energy:
     convention: str           # key of ENERGY_CONVENTIONS
 
     def __post_init__(self):
+        from .errors import check_real
+        check_real(self.value, "value", "Energy", nonnegative=True)   # hunt 5C, M4: nan accepted
         if self.convention not in ENERGY_CONVENTIONS:
             raise OptionError(f"unknown energy convention '{self.convention}' "
                              f"(known: {sorted(ENERGY_CONVENTIONS)})")
@@ -141,6 +152,9 @@ class Energy:
             return self
         if Lx is None or Lz is None:
             raise OptionError(f"converting a '{c}' energy needs the box size Lx, Lz")
+        from .errors import check_real
+        Lx = check_real(Lx, "Lx", "Energy.to_total", positive=True)   # a negative box gave a
+        Lz = check_real(Lz, "Lz", "Energy.to_total", positive=True)   # negative energy (M4)
         f = Lx * Lz / 2.0 if c == "modal" else Lx * Lz
         return Energy(self.value * f, "total")
 

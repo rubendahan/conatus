@@ -70,7 +70,15 @@ supercritical; the cycles born there are continued by orthogonal collocation on 
 A branch of cycles can also start from any orbit given as a collocation state `z0` (the mesh
 values, the period and the parameter):
 `continue_orbits(PeriodicOrbitProblem(system, "r", mesh), z0, settings)`, with the same tests
-(`"lpc"`, `"pd"`, `"ns"`, `"bpc"`) and `explain()`.
+(`"lpc"`, `"pd"`, `"ns"`, `"bpc"`) and `explain()`. With `remesh_every=`, each point keeps the
+mesh it was computed on in `point.data["mesh"]`; read an earlier point on its own mesh with
+`problem.on_mesh(point.data["mesh"]).residual(point.z)`.
+
+Events other than folds are located on the sign change of their test function, to a bracket
+narrower than `crossing_tol` times the step; `event.explain()` prints the bracket and the factor
+that changed sign. When the number of eigenvalues across the stability boundary changes by more
+than the located events explain (two crossings in one step), the step is bisected; a double
+crossing at one point is reported as an `"unresolved crossing"` event with `converged=False`.
 
 ## Codimension two
 

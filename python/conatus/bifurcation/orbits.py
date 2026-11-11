@@ -17,7 +17,10 @@ accepted points (the solution and tangent are re-interpolated and re-corrected).
 collocation equations give the map from the first node to the last, Φ_j; the monodromy matrix is
 Φ_{N−1} ⋯ Φ_0 (condensation of parameters, as in AUTO). Products are renormalized to avoid
 overflow; the trivial multiplier, exactly 1 for the continuous orbit, is reported: |μ_triv − 1| is
-the accuracy of the multipliers (declared on every point).
+the error of that one multiplier (the direction along the orbit), stored on every point. It does
+not measure the transverse multipliers. The Liouville defect |Σ ln|μ_i| − T ∫ tr J dτ| / max(1,
+T ∫ |tr J| dτ) is stored too: the collocation volume change against the continuous one, a check
+on all the multipliers together (their product), not on each (C9, r031f).
 
 Test functions along an orbit branch: ``lpc`` (fold of cycles,
 t_p), ``bpc`` (Π s(μ_i − 1) over non-trivial multipliers: a second multiplier at +1 without a
@@ -36,7 +39,7 @@ import scipy.sparse.linalg as spla
 
 from ..continuation.core import ContinuationSettings
 from ..errors import ConvergenceError, OptionError, UnsupportedError, did_you_mean
-from .driver import ArclengthDriver, Curve, CurvePoint, factor_test
+from .driver import ArclengthDriver, Curve, CurvePoint, Factors, flipped
 from .system import DynamicalSystem
 from .._repr import compact_repr
 
@@ -140,6 +143,16 @@ class PeriodicOrbitProblem:
         self.Lc, self.Dc = _lagrange(self.nodes, self.gauss)       # (m, m+1)
         self.nu = mesh.npts * self.n                              # node unknowns
 
+    def on_mesh(self, mesh: CollocationMesh) -> PeriodicOrbitProblem:
+        """A copy of this problem on ``mesh`` (this one is unchanged). A point of a remeshed curve
+        is read on its own mesh: ``problem.on_mesh(point.data["mesh"]).residual(point.z)``."""
+        import copy
+        out = copy.copy(self)
+        if mesh is not self.mesh:
+            out.set_mesh(mesh)
+            out.uref_dot = None
+        return out
+
     def _node_index(self, j: int, k: int) -> int:
         return j * self.mesh.ncol + k
 
@@ -240,6 +253,10 @@ class PeriodicOrbitProblem:
         P = np.eye(n)
         logscale = 0.0
         eye = np.eye(n)
+        logdet = 0.0                 # Σ_j ln|det Φ_j| (each interval map is well conditioned)
+        tr = np.trace(Jc, axis1=2, axis2=3)                       # (nt, m)
+        trace_int = T * float(np.sum(self.mesh.h[:, None] * self.gw[None, :] * tr))
+        trace_abs = T * float(np.sum(self.mesh.h[:, None] * self.gw[None, :] * np.abs(tr)))
         for j in range(nt):
             A = np.zeros((m * n, (m + 1) * n))
             for c in range(m):
@@ -248,11 +265,14 @@ class PeriodicOrbitProblem:
                                                               - T * self.Lc[c, k] * Jc[j, c])
             Phi_all = -np.linalg.solve(A[:, n:], A[:, :n])           # nodes 1..m from node 0
             Phi = Phi_all[(m - 1) * n:]
+            logdet += float(np.linalg.slogdet(Phi)[1])
             P = Phi @ P
             s = np.abs(P).max()
             if s > 1e100 or s < 1e-100:
                 P /= s
                 logscale += np.log(s)
+        # Liouville: det M = exp(T ∫ tr J dτ) for the continuous orbit (C9, r031f)
+        self.liouville_defect = abs(logdet - trace_int) / max(1.0, trace_abs)
         return P, logscale
 
     def multipliers(self, z: np.ndarray) -> tuple[np.ndarray, float, int]:
@@ -291,6 +311,20 @@ class PeriodicOrbitProblem:
             if s > 1e50:
                 out[:(j + 1) * m + 1] /= s
         return out
+
+    def _repetitions(self, z: np.ndarray, accuracy: float) -> tuple[int, list[float]]:
+        """Primitive-period check (hunt 5A K4, r031f): the largest k in 2..8 with
+        ‖u(1/k) − u(0)‖ / max_τ‖u − ū‖ below 1e3 x ``accuracy`` (the orbit is then k laps of an
+        orbit of period T/k), 1 otherwise; and the measured distances for k = 2..8. The scale is the
+        excursion about the mean ū, so that a shift of the state's origin changes nothing (0.3.1
+        review: max_τ‖u‖ flagged one lap of an orbit far from the origin as eight)."""
+        U, _, _ = self.split(z)
+        scale = max(float(np.abs(U - U.mean(axis=0)).max()), 1e-300)
+        tol = 1e3 * max(float(accuracy), 1e-12)
+        d = [float(np.abs(self.interpolate(U, np.array([1.0 / k]))[0] - U[0]).max()) / scale
+             for k in range(2, 9)]
+        reps = [k for k, dk in zip(range(2, 9), d, strict=True) if dk < tol]
+        return (max(reps) if reps else 1), d
 
     # --- mesh adaptation -------------------------------------------------------------------------
     def interpolate(self, U: np.ndarray, t: np.ndarray) -> np.ndarray:
@@ -337,9 +371,12 @@ class PeriodicOrbitProblem:
 
 
 def floquet_from_collocation(problem: PeriodicOrbitProblem, z: np.ndarray) -> dict:
-    """Floquet multipliers of the orbit z, the accuracy |μ_triv − 1| and the trivial index."""
+    """Floquet multipliers of the orbit z, the error |μ_triv − 1| of the trivial one, its index and
+    the Liouville defect of their product (module docstring)."""
     mu, err, it = problem.multipliers(z)
-    return {"multipliers": mu, "trivial_error": err, "trivial_index": it}
+    k, _ = problem._repetitions(z, err)
+    return {"multipliers": mu, "trivial_error": err, "trivial_index": it,
+            "liouville_defect": float(problem.liouville_defect), "repetitions": k}
 
 
 #: Multipliers with |μ| < RESOLVED_REL x max(1, |μ|max) are not resolved by the collocation product
@@ -351,9 +388,18 @@ _CONJUGATE_TOL = 1e-6
 #: multiplier counts as unstable when |μ| > 1 + MARGINAL_MULTIPLIER_TOL; those with
 #: ||μ| − 1| <= MARGINAL_MULTIPLIER_TOL are near-marginal (stored per point, listed by explain()).
 #: A plain |μ| > 1 counted a multiplier 1 + 1e-12 (round-off at a PD/NS/LPC point) as unstable,
-#: while equilibria have ``marginal_tol``. Above the collocation accuracy of the multipliers (the
-#: stored |μ_triv − 1| is its measure, typically <= 1e-8 on the meshes of the tests).
+#: while equilibria have ``marginal_tol``. Above the collocation error of the multipliers (the stored
+#: |μ_triv − 1| measures it for the trivial one, typically <= 1e-8 on the meshes of the tests; the
+#: Liouville defect checks their product; no per-multiplier transverse error is measured).
 MARGINAL_MULTIPLIER_TOL = 1e-6
+
+
+def _multiplier_rounding(trivial_error: float, mu: np.ndarray) -> float:
+    """Accuracy of the multipliers: 10 x max(|μ_triv − 1|, n eps max(1, |μ|max)). A factor μ ± 1
+    or μ_i μ_j − 1 below it is at that accuracy (an exactly neutral mode gives μ = 1): left out of
+    the sign of the test functions and of the crossing count."""
+    return 10 * max(float(trivial_error),
+                    max(mu.size, 1) * np.finfo(float).eps * max(1.0, float(np.abs(mu).max(initial=0))))
 
 
 def continue_orbits(problem: PeriodicOrbitProblem, z0: np.ndarray, settings: ContinuationSettings, *,
@@ -393,10 +439,13 @@ def continue_orbits(problem: PeriodicOrbitProblem, z0: np.ndarray, settings: Con
              "mesh: " + ("uniform, fixed" if remesh_every is None else
                          f"re-equidistributed every {remesh_every} points on |u^(ncol)|^(1/(ncol+1)) "
                          "(density floor 1e-3 of its maximum), then re-corrected on the arclength "
-                         "hyperplane"),
+                         "hyperplane; each point keeps the mesh it was computed on in "
+                         "data['mesh'] (read it with problem.on_mesh(point.data['mesh'])), and the "
+                         "problem ends on the mesh of the last point"),
              "arclength norm: nodes weighted 1/npts (discrete L2 in τ), T and p weight 1",
              "Floquet multipliers from the collocation monodromy (condensation); "
-             "|μ_triv − 1| stored on every point; multipliers below "
+             "|μ_triv − 1| (error of the trivial multiplier only) and the Liouville defect "
+             "(product of all multipliers against exp(T ∫ tr J)) stored on every point; multipliers below "
              f"{RESOLVED_REL:g} x max(1, |μ|max) are unresolved (count stored) and left out of the tests",
              f"stability: 'unstable' counts nontrivial |μ| > 1 + {MARGINAL_MULTIPLIER_TOL:g}; "
              f"||μ| − 1| <= {MARGINAL_MULTIPLIER_TOL:g} is near-marginal (stored as 'marginal', listed "
@@ -490,25 +539,34 @@ def _run_segment(pb, z0, cfg, t_dir, tests, bounds, period_max) -> Curve:
         # interval maps (round-off ~ eps |μ|max): excluded from the test functions (declared)
         keep = np.abs(nontriv) >= RESOLVED_REL * max(1.0, float(np.abs(mu).max()))
         dist = np.abs(nontriv) - 1.0
+        zero = _multiplier_rounding(err, mu)
         return {"multipliers": mu, "trivial_error": err, "nontrivial": nontriv[keep],
+                "liouville_defect": float(pb.liouville_defect),
+                # k > 1: the point is k laps of an orbit of period T/k (hunt 5A K4, r031f)
+                "repetitions": pb._repetitions(z, err)[0],
                 "unresolved": int(np.sum(~keep)),
                 "unstable": int(np.sum(dist > MARGINAL_MULTIPLIER_TOL)),
-                "marginal": nontriv[np.abs(dist) <= MARGINAL_MULTIPLIER_TOL]}
+                # every nontrivial multiplier, the unresolved ones included: a crossing that the
+                # tests cannot see is then reported as an unresolved crossing (H1, o01)
+                "crossing_count": int(np.sum(dist > zero)), "factor_zero": zero,
+                "marginal": nontriv[np.abs(dist) <= MARGINAL_MULTIPLIER_TOL],
+                "mesh": pb.mesh}
 
     def t_lpc(pt: CurvePoint) -> float:
         return float(pt.tangent[-1])
 
-    def t_pd(pt: CurvePoint) -> float:
-        return factor_test(pt.data["nontrivial"] + 1.0)
+    def t_pd(pt: CurvePoint) -> Factors:
+        return Factors(pt.data["nontrivial"] + 1.0, pt.data["factor_zero"])
 
-    def t_ns(pt: CurvePoint) -> float:
+    def t_ns(pt: CurvePoint) -> Factors | float:
         mu = pt.data["nontrivial"]
         if mu.size < 2:
             return 1.0
-        return factor_test((mu[:, None] * mu[None, :] - 1.0)[np.triu_indices(mu.size, 1)])
+        return Factors((mu[:, None] * mu[None, :] - 1.0)[np.triu_indices(mu.size, 1)],
+                       pt.data["factor_zero"])
 
-    def t_bpc(pt: CurvePoint) -> float:
-        return factor_test(pt.data["nontrivial"] - 1.0)
+    def t_bpc(pt: CurvePoint) -> Factors:
+        return Factors(pt.data["nontrivial"] - 1.0, pt.data["factor_zero"])
 
     all_t = {"lpc": t_lpc, "pd": t_pd, "ns": t_ns, "bpc": t_bpc}
 
@@ -516,27 +574,46 @@ def _run_segment(pb, z0, cfg, t_dir, tests, bounds, period_max) -> Curve:
         mu = ev.point.data["nontrivial"]
         if name == "lpc":
             return "lpc", None
+        if mu.size == 0:
+            # K5: was a bare "argmin of an empty sequence"
+            return None, "no resolved nontrivial multiplier at the located point"
+
+        def pick(dist, fac):
+            # the factor that changed sign across the bracket, the closest to 0 among them (the
+            # closest overall can be a slow spectator: hunt 5A, K2)
+            f = flipped(ev, mu, "nontrivial", fac)
+            if f is not None and f.any():
+                dist = np.where(f, dist, np.inf)
+            return dist
+
         if name == "bpc":
             # a fold of cycles also puts a multiplier at +1: reported once, as lpc
             if "tp_sign_change" in ev.data:
                 return None, "coincides with a fold of cycles"
-            k = int(np.argmin(np.abs(mu - 1.0)))
+            k = int(np.argmin(pick(np.abs(mu - 1.0), lambda m: m - 1.0)))
             ev.data["critical_distance"] = float(abs(mu[k] - 1.0))
             ev.detail = f"second multiplier μ = {mu[k].real:+.10f} at +1 (branch point of cycles)"
             return "bpc", None
         if name == "pd":
-            k = int(np.argmin(np.abs(mu + 1.0)))
+            k = int(np.argmin(pick(np.abs(mu + 1.0), lambda m: m + 1.0)))
             ev.data["multiplier"] = mu[k]
             ev.data["critical_distance"] = float(abs(mu[k] + 1.0))
             ev.detail = f"μ = {mu[k].real:+.10f}{mu[k].imag:+.1e}i, |μ_triv − 1| = {ev.point.data['trivial_error']:.1e}"
             return "pd", None
         prod = np.abs(mu[:, None] * mu[None, :] - 1.0) + np.diag(np.full(mu.size, np.inf))
+        # pairs of two multipliers at 1 within accuracy (exactly neutral modes) are no crossing
+        neutral = np.abs(mu - 1.0) <= ev.point.data["factor_zero"]
+        prod[np.ix_(neutral, neutral)] = np.inf
+        if not np.isfinite(prod).any():
+            return None, "every multiplier is at 1 within accuracy"
+        prod = pick(prod, lambda m: m[:, None] * m[None, :] - 1.0)
         i, j = np.unravel_index(np.argmin(prod), prod.shape)
         pair = mu[[i, j]]
         ev.data["critical_distance"] = float(np.abs(np.abs(pair) - 1.0).max())
         ev.data["classification"] = (f"Neimark-Sacker if |Im μ| > hopf_imag_tol = "
-                                     f"{cfg.hopf_imag_tol:g} x max(1, |μ|) for the pair of product "
-                                     "closest to 1, else neutral saddle cycle")
+                                     f"{cfg.hopf_imag_tol:g} x max(1, |μ|) for the pair whose product "
+                                     "minus 1 changed sign across the bracket (closest to 1 among "
+                                     "them), else neutral saddle cycle")
         # same relative threshold as the Hopf/neutral-saddle split of equilibria (was an absolute
         # 1e-8, identical for |μ| <= 1)
         if abs(pair[0] - np.conj(pair[1])) > _CONJUGATE_TOL * max(1.0, float(np.abs(pair).max())):
@@ -563,7 +640,8 @@ def _run_segment(pb, z0, cfg, t_dir, tests, bounds, period_max) -> Curve:
     # norm: discrete L2 in τ on the nodes (weight 1/npts), 1 on T and p (declared in the notes)
     w = np.concatenate([np.full(nu, 1.0 / pb.mesh.npts), [1.0, 1.0]])
     drv = ArclengthDriver(H, Hz, cfg, tests={k: all_t[k] for k in tests}, data=data,
-                          classify=classify, on_accept=on_accept, weights=w)
+                          classify=classify, on_accept=on_accept, weights=w,
+                          count_check={"pd", "ns"} <= set(tests) and bool({"lpc", "bpc"} & set(tests)))
     if t_dir is None:
         t_dir = np.zeros(z0.size)
         t_dir[-1] = 1.0

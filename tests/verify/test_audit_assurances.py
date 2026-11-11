@@ -100,8 +100,11 @@ def test_time_average_batch_means_check_is_applied():
     rng = np.random.default_rng(0)
     k = np.arange(4000)
     r = cn.time_average(rng.standard_normal(4000) + 0.5 * np.sin(2 * np.pi * k / 3000), discard=0)
-    assert r.batch_stderr > 2 * r.stderr and not r.trusted
-    assert any("batch-means check" in f for f in r.flags) and "flagged" in r.explain()
+    # since 0.3.1 (hunt 5D, Q6) the batch means and the extrapolated batch means are part of the
+    # standard error and tau includes Geyer's sequence, which sees the sine: the false assurance
+    # (trusted, 2.7 errors off) is gone either way, by a flag or by an interval that holds 0
+    assert r.stderr >= r.batch_stderr
+    assert (not r.trusted and "flagged" in r.explain()) or abs(r.mean) <= 2 * r.stderr
     white = cn.time_average(np.random.default_rng(1).standard_normal(4000), discard=0)
     assert white.trusted
 

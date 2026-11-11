@@ -29,6 +29,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
+import numpy as np
+
 from ..errors import BoundaryConditionError, InputTypeError, ResolutionError, UnsupportedError
 from ..ir import (AnnulusBasis, BallBasis, CartesianCoordinates, Chebyshev, ComplexFourier,
                   CompoundChebyshev, CylindricalCoordinates, DiskBasis, Domain, Hermite, Laguerre,
@@ -127,6 +129,8 @@ def periodic(length: float | tuple[float, float], *more: Any, complex: bool = Fa
                   f"periodic(({float(bounds[0])!r}, {float(bounds[1])!r})) for the interval "
                   "[a, b)"),
             doc=_DOC)
+    if isinstance(length, np.ndarray) and length.ndim == 0:
+        length = length[()]                  # a 0-d array is its number (hunt 5C, M4: bare TypeError)
     if isinstance(length, bool):
         raise InputTypeError(f"periodic({length!r}): the length is a number, not a bool",
                              fix="periodic(2.0) for [0, 2)", doc=_DOC)

@@ -308,12 +308,16 @@ DECLARED: dict[str, Declared] = dict([
        "mode switch at the critical point: refused, never returned"),
     _d("conatus.solvers.parametric.CRITICAL_MAX_ITERATIONS", 50, "iteration cap", _CAP),
     # Floquet
-    _d("conatus.floquet.cascade.RESONANCE_TOL", 1e-12, "refusal", _CHECK),
     _d("conatus.floquet.roots.SECANT_STEP", 1e-4 * (1 + 1j), "start offset",
        "second point seed + SECANT_STEP of the determinant secants (secant_root(step) and the "
        "find_root(step) of the Hill solvers); the stop is the caller's tol, stalls are reported"),
     _d("conatus.growth.periodic:operator_floquet(residual_max)", 1e-8, "refusal",
        "an exponent whose Hill residual exceeds it is not returned (each one carries its residual)"),
+    _d("conatus.growth.periodic.HILL_DENSE_CHECK_MAX", 1500, "detection",
+       "Floquet-Hill matrices with at most this many rows are also solved densely, so that an "
+       "exponent with a larger real part far from every target is found and added (above it, "
+       "explain() states that such exponents are not excluded); the default of "
+       "operator_floquet(dense_check)"),
     _d("conatus.growth.periodic.LEAK_MAX", 1e-8, "refusal", _CHECK,
        ("conatus.growth.periodic:operator_floquet(leak_max)",)),
     _d("conatus.growth.periodic.FOLD_ROUNDING", 1e3 * 2.220446049250313e-16, "detection",
@@ -333,7 +337,7 @@ DECLARED: dict[str, Declared] = dict([
     _d("conatus.adjoint.sphere_energy:SphereAdmissibleProjector.__init__(rank_tol)", 1e-10, "rank",
        _RANK),
     # continuation (the corrector tolerance and budgets are required fields)
-    _d("conatus.continuation.core:ContinuationSettings.__init__(event_max_iterations)", 30,
+    _d("conatus.continuation.core:ContinuationSettings.__init__(event_max_iterations)", 60,
        "iteration cap", "event secant budget: an event not located is flagged converged=False"),
     _d("conatus.continuation.core:ContinuationSettings.__init__(fold_tol)", 1e-12, "detection",
        "event location only (the branch points are unchanged); flagged converged=False outside it"),

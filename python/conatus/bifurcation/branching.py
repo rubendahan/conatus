@@ -30,7 +30,7 @@ import scipy.sparse as sp
 import scipy.sparse.linalg as spla
 
 from ..continuation.core import ContinuationSettings
-from ..errors import ConvergenceError, OptionError, SymmetryError
+from ..errors import ConatusError, ConvergenceError, OptionError, SymmetryError
 from .driver import Curve, CurveEvent
 from .equilibria import continue_equilibria
 from .normal_form import normal_form, parity_under
@@ -203,6 +203,20 @@ def _switch_bp(curve, event, cfg, step, direction, symmetry, bounds, marginal_to
     d = info["new"] * (1 if direction >= 0 else -1)
     kind = ("transcritical" if abs(info["c"][2]) > TRANSCRITICAL_TOL * max(map(abs, info["c"]))
             else "pitchfork")
+    # G9: the ratio |c22| / max|c| depends on the units of x (x' = p x - 1e-9 x^2 gave
+    # "pitchfork"). The centre-manifold normal form compares a2 with a3 (same units): when the two
+    # classifications disagree the kind is "undetermined", with both in the note
+    nf_note = ""
+    try:
+        nf = normal_form(system, x, kind="zero", parameter=pname, par=par)
+        nf_kind = nf.kind
+    except (ConatusError, np.linalg.LinAlgError, ValueError) as err:
+        nf_kind, nf_note = None, f"normal form not available ({str(err).splitlines()[0]})"
+    if nf_kind in ("transcritical", "pitchfork") and nf_kind != kind:
+        nf_note = (f"ABE ratio |c22| / max|c| = {abs(info['c'][2]) / max(map(abs, info['c'])):.1e} "
+                   f"says {kind}, the normal form says {nf_kind}: undetermined (the ABE ratio "
+                   "depends on the units of the state)")
+        kind = "undetermined"
     sym_note = ""
     if symmetry is not None:
         S = symmetry if callable(symmetry) else (lambda v, S=np.asarray(symmetry): S @ v)  # noqa: B008
@@ -226,13 +240,15 @@ def _switch_bp(curve, event, cfg, step, direction, symmetry, bounds, marginal_to
                               tangent=d, bounds=bounds)
     new.switch = {"from": event.kind, "classification": kind, "abe": info["c"],
                   "discriminant": info["discriminant"], "old_alignment": info["old_alignment"],
-                  "kernel_singular_values": info["sigma"], "symmetry": sym_note}
+                  "kernel_singular_values": info["sigma"], "symmetry": sym_note,
+                  "normal_form": nf_note}
     new.notes.insert(0, f"branch switch at {pname} = {z[-1]:.12g}: {kind}; ABE c = "
                         f"({info['c'][0]:.3e}, {info['c'][1]:.3e}, {info['c'][2]:.3e}), "
                         f"known-branch alignment {info['old_alignment']:.12f}, step {step:g} "
                         f"(direction {'+1' if direction >= 0 else '-1'}); first corrected point "
                         f"residual {rel:.1e}"
-                        + (f"; {sym_note}" if sym_note else ""))
+                        + (f"; {sym_note}" if sym_note else "")
+                        + (f"; {nf_note}" if nf_note else ""))
     return new
 
 
@@ -260,7 +276,11 @@ def _switch_hopf(curve, event, cfg, amplitude, mesh, bounds, **kw):
 def _switch_pd(curve, event, cfg, eps, direction, bounds, **kw):
     pb: PeriodicOrbitProblem = curve.context
     z = event.point.z
-    # the problem's mesh may have been changed by remeshing after this point: rebuild from z size
+    # the problem's mesh may have been changed by remeshing after this point: the point's own
+    # mesh (G11: the current mesh read the point's nodes at the wrong times)
+    if event.point.data.get("mesh") is not None:
+        pb = pb.on_mesh(event.point.data["mesh"])
+        pb.set_reference(pb.split(z)[0])
     if z.size != pb.nu + 2:
         raise OptionError("branch_switch (PD): the orbit problem was remeshed after this event")
     U, T, p = pb.split(z)

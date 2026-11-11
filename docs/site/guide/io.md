@@ -219,6 +219,12 @@ whose script was edited between two jobs therefore cannot mix two problems in on
 A change of resolution cannot be allowed. The allowed change is printed by `explain()` and recorded in
 every later checkpoint.
 
+A user function or a given field that reads a value without a content hash (a closure over an
+object, such as `cfg.rate` of a `SimpleNamespace`) cannot be compared: the restart cannot tell
+whether that value changed. It is refused like a difference, and the message says the entry
+cannot be compared. Name it in `allow=` to continue anyway; the allow is recorded like a change,
+and an output file appended after that restart accepts the same entry.
+
 ### A checkpoint directory used by two runs
 
 Before anything is written or deleted, every checkpoint already in the directory is checked against

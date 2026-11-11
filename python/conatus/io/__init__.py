@@ -117,6 +117,9 @@ class AnalysisData:
     component_names: dict = field(default_factory=dict)
     parameters: dict = field(default_factory=dict)
     conatus_version: str = ""
+    # the time step of each row (None for files written before 0.3.1, which hold one dt in
+    # attrs["dt"]); attrs["dt"] is the step of the last row (hunt 5C, M3)
+    dt: np.ndarray | None = None
 
     def to_xarray(self):
         """An ``xarray.Dataset``: one variable per task with its dimensions (``t``, ``component``,
@@ -128,6 +131,8 @@ class AnalysisData:
         coords: dict[str, Any] = {"t": ("t", np.asarray(self.sim_time)),
                                   "iteration": ("t", np.asarray(self.iteration)),
                                   "write_number": ("t", np.asarray(self.write_number))}
+        if self.dt is not None:
+            coords["dt"] = ("t", np.asarray(self.dt))
         coords.update({c: (c, np.asarray(x)) for c, x in self.scales.items()})
         data = {}
         renamed = _free_names(coords, self.tasks)
@@ -184,6 +189,9 @@ class CheckpointData:
     scales: dict = field(default_factory=dict)          # coordinate -> grid points (grids=True)
     parameters: dict = field(default_factory=dict)
     conatus_version: str = ""
+    # the time step of each row (None for files written before 0.3.1, which hold one dt in
+    # attrs["dt"]); attrs["dt"] is the step of the last row (hunt 5C, M3)
+    dt: np.ndarray | None = None
 
     def to_xarray(self):
         """An ``xarray.Dataset`` of the stored unknowns: grid values ``<name>`` (with
@@ -262,7 +270,8 @@ def read(path: str | Path) -> AnalysisData | CheckpointData:
             sc = f["scales"]
             tasks = {k: f["tasks"][k][:n] for k in f["tasks"]}
             sources = {k: str(f["tasks"][k].attrs.get("source", "")) for k in f["tasks"]}
-            scales = {k: sc[k][()] for k in sc if k not in ("sim_time", "iteration", "write_number")}
+            scales = {k: sc[k][()] for k in sc
+                      if k not in ("sim_time", "iteration", "write_number", "dt")}
             attrs = {k: f.attrs[k] for k in ("problem", "scheme", "dt", "every")}
             attrs = {k: (v.decode() if isinstance(v, bytes) else v) for k, v in attrs.items()}
             # the model's parameters, name and geometry with the rest (they
@@ -279,7 +288,8 @@ def read(path: str | Path) -> AnalysisData | CheckpointData:
             return AnalysisData(path, tasks, sc["sim_time"][:n], sc["iteration"][:n],
                                 sc["write_number"][:n], scales, attrs, sources, prov, dims, comps,
                                 read_json_attr(f, "parameters") or {},
-                                _str_attr(f, "conatus_version"))
+                                _str_attr(f, "conatus_version"),
+                                sc["dt"][:n] if "dt" in sc else None)
         if fmt == CHECKPOINT_FORMAT:
             fields = {k: f["fields"][k][()] for k in f.get("fields", {})}
             grids = {k: f["grids"][k][()] for k in f.get("grids", {})}

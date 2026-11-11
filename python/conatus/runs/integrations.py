@@ -22,13 +22,14 @@ from typing import Any
 
 import numpy as np
 
-from ..errors import MissingDependencyError, OptionError, UnsupportedError, check_count, did_you_mean
+from ..errors import (InputTypeError, MissingDependencyError, OptionError, UnsupportedError, check_count,
+                      did_you_mean)
 from .._explain import full_explain
 from ._util import (atomic_write_json, diff_dicts, from_jsonable, from_typed, is_typed_exact, jsonable, sha256_of,
                     typed_jsonable)
 from .keys import (_clockless, code_fingerprint, describe_parts, exact_hash, finish_key, function_parts,
                    ivp_parts)
-from .run import QUEUE_CAPACITY, Run, _to_host, problem_info
+from .run import QUEUE_CAPACITY, Run, _storable, _to_host, problem_info
 from .store import Registry
 
 
@@ -114,6 +115,13 @@ def ivp_run(solver: Any, nsteps: int, callback: Callable | None, every: int | No
     undeclared = (parts or {}).get("undeclared")
     if undeclared:
         parts = None             # no key: never a cache source, never a hit
+    no_source = None
+    if callback is not None and parts is not None:
+        # a callback can change the state or dt, and the key does not represent it: such a run
+        # is never a cache source (review G2: a run with a callback adding 1 to u fed the hit of
+        # the same computation without it, which returned 4 instead of 1)
+        parts = None
+        no_source = "a callback ran during the steps; the cache key does not represent it"
     kw = dict(tags=o.get("tags", ()), params=o.get("params"), parent=o.get("parent"),
               relation=o.get("relation"), status=o.get("status", "provisional"),
               telemetry=o.get("telemetry"), capacity=o.get("capacity", QUEUE_CAPACITY),
@@ -157,9 +165,12 @@ def ivp_run(solver: Any, nsteps: int, callback: Callable | None, every: int | No
                 return run
             report["miss_reason"] = f"run {src_id} has no stored end state"
     run = Run(reg, name, obj=solver, key_parts=parts, **kw)
-    if report is not None:
+    if report is not None or no_source:
         with run._lock:
-            run.rec["cache"] = report
+            if report is not None:
+                run.rec["cache"] = report
+            if no_source:
+                run.rec["not_cache_source"] = no_source
     with run:
         _ivp_segment(run, solver, nsteps, callback, every, series, series_every, store_state)
     return run
@@ -404,9 +415,21 @@ def _store_return(run: Run, out: Any, compression: str | None) -> None:
         if _scalar(v):
             run.result(**{key: v})
             return {"result": key}
-        if isinstance(v, np.ndarray) and v.dtype != object:
+        if type(v) is np.ndarray:
+            # exact type only (review G12): a MaskedArray, matrix or recarray came back from the
+            # cache as a plain ndarray (a masked mean 1.0 became 50.5). Such a return, and a dtype
+            # HDF5 cannot store, is not stored: the call is never a cache source
+            try:
+                _storable(v, key)
+            except InputTypeError:
+                return None
             run.save_field(key, v, compression=compression)
-            return {"field": key}
+            item = {"field": key}
+            if v.ndim == 0:
+                item["zero_d"] = True              # a 0-d array, not a NumPy scalar (review H12)
+            elif v.flags.f_contiguous and not v.flags.c_contiguous:
+                item["order"] = "F"
+            return item
         return None
     if out is None:
         layout = {"kind": "none"}
@@ -415,7 +438,8 @@ def _store_return(run: Run, out: Any, compression: str | None) -> None:
         layout = {"kind": "value", "item": item} if item else {"kind": "unstored", "repr": repr(out)[:200]}
     elif isinstance(out, Mapping) and all(isinstance(k, str) for k in out):
         items = {k: one(k, v) for k, v in out.items()}
-        layout = ({"kind": "dict", "items": items} if all(items.values())
+        # the key order is kept (review H12: run.json is written with sorted keys)
+        layout = ({"kind": "dict", "items": items, "order": list(out)} if all(items.values())
                   else {"kind": "unstored", "repr": repr(out)[:200],
                         "why": f"values of type {sorted({type(v).__name__ for k, v in out.items() if not items[k]})}"})
     elif isinstance(out, (tuple, list)):
@@ -432,7 +456,11 @@ def _store_return(run: Run, out: Any, compression: str | None) -> None:
 
 
 def load_return(run: Run) -> Any:
-    """The stored return value of a decorated call (exact: same numbers, same container)."""
+    """The stored return value of a decorated call: same numbers, dtypes and shapes, same
+    container and key order, 0-d arrays as 0-d arrays, C or Fortran order. Not kept: the
+    read-only flag (a hit returns writable copies) and other strides (views come back
+    contiguous). Array subclasses (masked arrays, matrices, recarrays) and arrays HDF5 cannot
+    store are not stored, so such a call is never a cache source."""
     layout = run.rec.get("returns") or {}
     kind = layout.get("kind")
 
@@ -440,13 +468,18 @@ def load_return(run: Run) -> Any:
         if "result" in item:
             return from_jsonable(run.results[item["result"]])
         a = run.load_field(item["field"])
-        return a[()] if item.get("scalar") else a
+        if item.get("scalar"):
+            return a[()]
+        if item.get("zero_d"):
+            return np.asarray(a)
+        return np.asfortranarray(a) if item.get("order") == "F" else a
     if kind == "none":
         return None
     if kind == "value":
         return one(layout["item"])
     if kind == "dict":
-        return {k: one(v) for k, v in layout["items"].items()}
+        items = layout["items"]
+        return {k: one(items[k]) for k in layout.get("order", items)}
     if kind in ("tuple", "list"):
         vals = [one(v) for v in layout["items"]]
         return tuple(vals) if kind == "tuple" else vals
@@ -769,7 +802,7 @@ def _same(a: Any, b: Any) -> tuple[bool, float]:
             return a == b and type(a) is type(b), 0.0 if a == b else math.inf
         if x.shape != y.shape:
             return False, math.inf
-        if x.dtype == object or y.dtype == object:
+        if x.dtype.hasobject or y.dtype.hasobject:
             eq = type(a) is type(b) and bool(a == b)
             return eq, 0.0 if eq else math.inf
         eq = (x.dtype == y.dtype and type(a) is type(b)

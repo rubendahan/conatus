@@ -28,7 +28,8 @@ from typing import Any
 import numpy as np
 import scipy.sparse as sp
 
-from ..errors import OptionError, ParameterError, UnsupportedError, did_you_mean
+from ..errors import (InputTypeError, OptionError, ParameterError, UnsupportedError, check_count,
+                      did_you_mean)
 from ..ir import expr as E
 
 __all__ = ["DynamicalSystem", "ir_system", "ode_problem", "RECON_TOL"]
@@ -107,7 +108,7 @@ class DynamicalSystem:
                  B: Callable, C: Callable, M: Any = None, G_many: Callable | None = None,
                  J_many: Callable | None = None, Jp: Callable | None = None,
                  notes: Sequence[str] = ()) -> None:
-        self.n = int(n)
+        self.n = check_count(n, "n", "DynamicalSystem")
         self.params = dict(params)
         self.origin = origin
         self._G, self._J, self._Gp, self._B, self._C = G, J, Gp, B, C
@@ -138,17 +139,34 @@ class DynamicalSystem:
                                      + did_you_mean(str(name), self.params))
 
     def _full(self, par: Mapping[str, float] | None) -> dict:
-        return dict(self.params) if par is None else {**self.params, **par}
+        """Parameter values with ``par`` overriding them; an unknown name is refused (it used to
+        be added and ignored by the system, r031r)."""
+        return dict(self.params) if par is None else self.par(**par)
+
+    def _state(self, x: Any, where: str) -> np.ndarray:
+        """A real state vector of length n (r031r: a wrong length broadcast or was accepted, and
+        a complex state lost its imaginary part with only a NumPy warning)."""
+        a = np.asarray(x)
+        if a.ndim == 0 and self.n == 1:        # a scalar state of a one-unknown system
+            a = a.reshape(1)
+        if a.shape != (self.n,):
+            raise InputTypeError(f"{where}: state of shape {a.shape}, the system has n = {self.n}",
+                                 fix=f"a real vector of length {self.n}")
+        if np.iscomplexobj(a) or a.dtype.kind not in "biuf":
+            raise InputTypeError(f"{where}: state of dtype {a.dtype}; the state is real",
+                                 why="G(x; p) is the real right-hand side; the imaginary part "
+                                     "would be dropped", fix="pass x.real if that is meant")
+        return a.astype(float, copy=False)
 
     # ------------------------------------------------------------------ evaluations
     def G(self, x: np.ndarray, par: Mapping[str, float] | None = None) -> np.ndarray:
-        """Right-hand side G(x; p) of M dx/dt = G (real state)."""
+        """Right-hand side G(x; p) of M dx/dt = G (real state of length n)."""
         self.n_G += 1
-        return np.asarray(self._G(np.asarray(x, float), self._full(par)))
+        return np.asarray(self._G(self._state(x, "DynamicalSystem.G"), self._full(par)))
 
     def J(self, x: np.ndarray, par: Mapping[str, float] | None = None) -> np.ndarray:
         """Dense Jacobian dG/dx (the systems handled here are small or moderate)."""
-        return np.asarray(self._J(np.asarray(x, float), self._full(par)))
+        return np.asarray(self._J(self._state(x, "DynamicalSystem.J"), self._full(par)))
 
     def Gp(self, x: np.ndarray, name: str, par: Mapping[str, float] | None = None,
            order: int = 1) -> np.ndarray:

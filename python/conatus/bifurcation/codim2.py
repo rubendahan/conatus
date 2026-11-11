@@ -37,8 +37,8 @@ import numpy as np
 
 from ..continuation.core import ContinuationSettings
 from ..errors import ConvergenceError, OptionError, UnsupportedError
-from .driver import ArclengthDriver, Curve, factor_test
-from .equilibria import generalized_eigenvalues
+from .driver import ArclengthDriver, Curve, Factors
+from .equilibria import _rounding, generalized_eigenvalues
 from .normal_form import normal_form
 from .system import DynamicalSystem
 
@@ -140,6 +140,7 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
             ev = generalized_eigenvalues(J, Md)
             vn, wn = v / np.linalg.norm(v), w / np.linalg.norm(w)
             return {"eigenvalues": ev, "v": vn, "w": wn,
+                    "crossing_count": int(np.sum(ev.real > _rounding(ev))),
                     "cusp": float(wn @ np.real(system.B(x, vn, vn, q))),
                     "bt": float(wn @ Md @ vn), "parameters": q}
 
@@ -149,7 +150,7 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
             if ev.size < 2:
                 return 1.0
             s = ev[:, None] + ev[None, :]
-            return factor_test(s[np.triu_indices(ev.size, 1)])
+            return Factors(s[np.triu_indices(ev.size, 1)], _rounding(ev))
 
         all_tests = {"cusp": lambda pt: pt.data["cusp"], "bt": lambda pt: pt.data["bt"], "zh": t_zh}
         z0 = np.concatenate([x0, [base[p1], base[p2]]])
@@ -244,7 +245,8 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
             x, kap, q = z[:n], z[n], pars(z)
             J = system.J(x, q)
             ev = generalized_eigenvalues(J, Md)
-            d = {"eigenvalues": ev, "parameters": q, "kappa": kap}
+            d = {"eigenvalues": ev, "parameters": q, "kappa": kap,
+                 "crossing_count": int(np.sum(ev.real > _rounding(ev)))}
             if kap > 0:
                 try:
                     nf = normal_form(system, x, kind="hopf", par=q, omega=np.sqrt(kap), kernel_tol=L1_KERNEL_TOL)
@@ -274,10 +276,13 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
             return None
 
         def t_zh(pt):
-            # the sign of det J, the size of the eigenvalue closest to 0: the determinant carries
-            # every other direction of the system
-            small = float(np.abs(pt.data["eigenvalues"]).min(initial=np.inf))
-            return pt.data["det_sign"] * small / (1.0 + small)
+            # det J as the product of its eigenvalues (the sign of det J; the size of the
+            # determinant carries every other direction of the system)
+            ev = pt.data["eigenvalues"]
+            if ev.size < n:
+                small = float(np.abs(ev).min(initial=np.inf))
+                return pt.data["det_sign"] * small / (1.0 + small)
+            return Factors(ev, _rounding(ev))
 
         def t_hh(pt):
             ev = pt.data["eigenvalues"]
@@ -287,7 +292,7 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
             if ev.size < 2:
                 return 1.0
             s = ev[:, None] + ev[None, :]
-            return factor_test(s[np.triu_indices(ev.size, 1)])
+            return Factors(s[np.triu_indices(ev.size, 1)], _rounding(ev))
 
         all_tests = {"bt": lambda pt: float(pt.z[n]), "gh": lambda pt: pt.data["l1"],
                      "zh": t_zh, "hh": t_hh}
@@ -315,6 +320,10 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
                 lam_ = np.delete(lam_, [int(np.argmin(np.abs(lam_ - 1j * w))),
                                         int(np.argmin(np.abs(lam_ + 1j * w)))])
             s = np.abs(lam_[:, None] + lam_[None, :]) + np.diag(np.full(lam_.size, np.inf))
+            neutral = np.abs(lam_) <= _rounding(lam_)     # exactly neutral pairs: no crossing
+            s[np.ix_(neutral, neutral)] = np.inf
+            if not np.isfinite(s).any():
+                return None, "every remaining eigenvalue is at rounding level"
             i, j = np.unravel_index(np.argmin(s), s.shape)
             pair = lam_[[i, j]]
             # same rule as the Hopf/real-crossing classification of equilibria and orbits (B8)
@@ -329,8 +338,11 @@ def continue_codim2(system: DynamicalSystem, x0: np.ndarray, kind: str, paramete
             ev.detail = f"κ = ω² = {ev.point.z[n]:.2e}"
         return name, None
 
+    # the crossing count is compared with the events when every test of the curve is active (H1:
+    # a neutral-saddle sign change and a zero-Hopf point in one step cancelled in the zh product)
     drv = ArclengthDriver(H, Hz, settings, tests={k: all_tests[k] for k in tests}, data=data,
-                          classify=classify, on_accept=on_accept)
+                          classify=classify, on_accept=on_accept,
+                          count_check=set(tests) >= set(all_tests))
     t0 = np.zeros(z0.size)
     t0[-1] = np.sign(direction) or 1.0
     cv = drv.run(z0, t0, kind=f"{kind} (codim 2)", names=names, bounds=bounds,

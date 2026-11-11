@@ -361,7 +361,7 @@ def uncertainty_report() -> None:
         sim.run(until=0.4)
         return float(sim.grid("u")[0])                   # x = 0 is the first grid point
 
-    rep = cn.uncertainty(u_at_origin, N=[8, 12, 16], dt=[0.04, 0.02, 0.01], scheme_order=2,
+    rep = cn.uncertainty(u_at_origin, N=[8, 10, 12, 14], dt=[0.04, 0.02, 0.01], scheme_order=2,
                          name="u(0, T)")
     lo, hi = rep.interval
     print(f"u(0, T) = {rep.value:.8f} +- {rep.error:.1e}   trusted: {rep.trusted}")

@@ -20,9 +20,10 @@ from ..ir import (EVP, IVP, LBVP, NLBVP, Coordinate, CoordinateSystem, Domain, F
 from ..ir import expr as E
 from ..ir.bases import Basis
 from ..ir.parse import Namespace, _LiftBasis, parse_equation, to_string
-from .dedalus_objects import (ReportLine, _Bundle, _code_of, _Dist, _field_data_target, _FieldData,
-                              _Grid, _is_field_data, _is_main_guard, _Lambda, _Module, _Opaque,
-                              _ProblemDecl, _rewrite_div_outer, _Scheme, _Skip, _SolverDecl, _trace,
+from .dedalus_objects import (ReportLine, _Bundle, _code_of, _DataAlias, _DataRead, _Dist,
+                              _field_data_target, _FieldData, _Grid, _is_field_data,
+                              _is_main_guard, _Lambda, _Module, _MpiValue, _Opaque, _ProblemDecl,
+                              _rewrite_div_outer, _Scheme, _Skip, _SolverDecl, _trace,
                               _Unsupported)
 from .dedalus_public import _D3, _NP_ALLOWED, _NP_EXPR, _SCIPY_SPECIAL
 
@@ -121,6 +122,8 @@ class _Interpreter:
         self._notes: list[str] = []
         self._approx: list[str] = []
         self.line = 0
+        self.seq = 0                             # data statements numbered in program order
+        self.consumed: str | None = None         # the run / solve that reads the initial state
 
     # notes ------------------------------------------------------------------------------------
     def note(self, text: str) -> None:
@@ -146,10 +149,38 @@ class _Interpreter:
             try:
                 self.stmt(st, scope)
             except _Skip as s:
-                self._poison(st, scope, f"output / post-processing (line {st.lineno}): {s}",
-                             skip=True)
+                changed = self._data_changed(st, scope)
+                if changed:
+                    # u['g'].fill(3), d = u['g']; d += 1, np.add(u['g'], 1, out=u['g']): the
+                    # statement reads like output but changes field data (review H6)
+                    msg = ("changes the grid data of " + ", ".join(sorted(f.name for f in changed))
+                           + " in place (through a view of the data, a method or out=): not "
+                             "translated; write the new value with f['g'] = ...")
+                    self._mark(changed, st, msg)
+                    self._poison(st, scope, msg)
+                    self._record(st, "unsupported", msg)
+                    continue
+                alias = self._alias_of(st, scope)
+                if alias is not None:
+                    for t in st.targets:
+                        scope[t.id] = _DataAlias(f"a view of the grid data of {alias.name} "
+                                                 f"(line {st.lineno})", st.lineno, True, alias)
+                else:
+                    self._poison(st, scope, f"output / post-processing (line {st.lineno}): {s}",
+                                 skip=True)
                 self._record(st, "skipped", str(s))
             except _Unsupported as u:
+                changed = self._data_changed(st, scope)
+                if self._post_solve(st, str(u), changed):
+                    # 0.3.1 review: after the solve or the time loop, a statement that writes no
+                    # field data and does not solve again is post-processing (plots, set_state,
+                    # eigenvector loops): skipped with its reason, as 0.3.0 let it be
+                    note = (f"after {self.consumed}: post-processing, not translated ({u}); it "
+                            "changes nothing the translation computes")
+                    self._poison(st, scope, note, skip=True)
+                    self._record(st, "skipped", note)
+                    continue
+                self._mark(changed, st, str(u))
                 self._poison(st, scope, str(u))
                 self._record(st, "unsupported", str(u))
             except LiteralTooLargeError as err:      # refused, never recorded and continued
@@ -160,8 +191,132 @@ class _Interpreter:
             # any failure is recorded in the translation report with its type, never hidden.
             except Exception as err:  # noqa: BLE001 -- arbitrary user code, recorded (see above)
                 msg = f"{type(err).__name__}: {str(err).splitlines()[0] if str(err) else ''}"
+                self._mark(self._data_changed(st, scope), st, msg)
                 self._poison(st, scope, msg)
                 self._record(st, "unsupported", msg)
+
+    # field data: views, in-place changes, program order (review H6, G4) -------------------------
+    #: methods of a NumPy array that leave it unchanged (anything else may write in place)
+    _ARRAY_READ_ONLY = frozenset({
+        "max", "min", "mean", "sum", "std", "var", "copy", "any", "all", "argmax", "argmin",
+        "conj", "conjugate", "round", "tolist", "item", "astype", "nonzero", "dot", "prod",
+        "cumsum", "cumprod", "flatten", "ptp", "allgather_data", "gather_data"})
+    #: NumPy functions that write into their first argument
+    _NP_WRITERS = frozenset({"copyto", "put", "place", "putmask", "fill_diagonal"})
+
+    def _quiet(self, node: ast.AST, scope: dict) -> Any:
+        """Value of a name / attribute / subscript chain, or None (never a call: no effect)."""
+        if any(isinstance(n, ast.Call) for n in ast.walk(node)):
+            return None
+        try:
+            return self.eval(node, scope)
+        except Exception:  # noqa: BLE001 -- a probe of user code: any failure means "unknown"
+            return None
+
+    def _data_root(self, node: ast.AST, scope: dict) -> Field | None:
+        """The field whose grid data ``node`` is a view of (``u['g']``, ``u['g'][0][1:]``,
+        ``u.data``, ``d`` after ``d = u['g']``, ``d.T``), else None."""
+        while True:
+            if isinstance(node, ast.Subscript):
+                if isinstance(node.slice, ast.Constant) and node.slice.value in ("g", "c"):
+                    f = self._quiet(node.value, scope)
+                    return f if isinstance(f, Field) else None
+                node = node.value
+            elif isinstance(node, ast.Attribute):
+                if node.attr == "data":
+                    f = self._quiet(node.value, scope)
+                    if isinstance(f, Field):
+                        return f
+                if node.attr not in ("T", "real", "imag", "flat", "data"):
+                    return None
+                node = node.value
+            elif isinstance(node, ast.Name):
+                v = scope.get(node.id, self.g.get(node.id))
+                return v.field if isinstance(v, _DataAlias) else None
+            else:
+                return None
+
+    def _alias_of(self, st: ast.stmt, scope: dict) -> Field | None:
+        """``d = u['g']`` (plain names on the left): the field ``d`` is a view of."""
+        if isinstance(st, ast.Assign) and all(isinstance(t, ast.Name) for t in st.targets):
+            return self._data_root(st.value, scope)
+        return None
+
+    def _data_changed(self, st: ast.stmt, scope: dict) -> set:
+        """Fields whose grid data the statement (or a statement nested in it) may change: a
+        write through a view, an in-place operator on a view, a writing method or ``out=``, a
+        NumPy writer, or a call of a function of the script (its body is not translated)."""
+        out: set = set()
+
+        def add(node: ast.AST) -> None:
+            f = self._data_root(node, scope)
+            if f is not None:
+                out.add(f)
+            elif isinstance(node, ast.Name):
+                v = self._quiet(node, scope)
+                if isinstance(v, Field):
+                    out.add(v)
+
+        for n in ast.walk(st):
+            if isinstance(n, (ast.Assign, ast.AugAssign, ast.AnnAssign, ast.For)):
+                tgts = n.targets if isinstance(n, ast.Assign) else [n.target]
+                for t in tgts:
+                    for e in (t.elts if isinstance(t, (ast.Tuple, ast.List)) else [t]):
+                        if isinstance(e, ast.Name):
+                            if isinstance(n, ast.AugAssign):
+                                v = scope.get(e.id, self.g.get(e.id))
+                                if isinstance(v, _DataAlias):
+                                    out.add(v.field)
+                            continue              # rebinding a name changes no data
+                        f = self._data_root(e, scope)
+                        if f is not None:
+                            out.add(f)
+            elif isinstance(n, ast.Call):
+                fn = n.func
+                if isinstance(fn, ast.Attribute):
+                    if fn.attr not in self._ARRAY_READ_ONLY:
+                        f = self._data_root(fn.value, scope)
+                        if f is not None:
+                            out.add(f)
+                    if fn.attr in self._NP_WRITERS and n.args:
+                        add(n.args[0])
+                for k in n.keywords:
+                    if k.arg == "out":
+                        for e in (k.value.elts if isinstance(k.value, ast.Tuple) else [k.value]):
+                            add(e)
+                if isinstance(fn, ast.Name) and fn.id in self.functions:
+                    for a in list(n.args) + [k.value for k in n.keywords]:
+                        add(a.value if isinstance(a, ast.Starred) else a)
+                    for m in ast.walk(self.functions[fn.id]):
+                        if isinstance(m, ast.Name) and isinstance(self.g.get(m.id), Field):
+                            out.add(self.g[m.id])
+        return out
+
+    def _mark(self, fields, st: ast.stmt, reason: str) -> None:
+        """The grid data of these fields is no longer known from this statement on."""
+        for f in fields:
+            d = self.data.setdefault(f, _FieldData())
+            if d.unsupported is None:
+                d.unsupported = f"line {st.lineno}: {reason}"
+                d.unsupported_at = self.seq
+
+    _RESOLVE = ("solve", "solve_dense", "solve_sparse", "step", "build_solver", "add_equation",
+                "add_bc", "evolve", "run")
+
+    def _post_solve(self, st: ast.stmt, msg: str, changed) -> bool:
+        """True when an untranslated statement comes after the solve or the time loop and only
+        reads: no field data written (in place or by assignment), no second solve or step, no
+        change to the problem. Those stay unsupported (a sweep, a restart, data replayed)."""
+        if not self.consumed or changed or msg.startswith("grid data written after"):
+            return False
+        for n in ast.walk(st):
+            if isinstance(n, ast.Attribute) and n.attr in self._RESOLVE:
+                return False
+            if isinstance(n, ast.Subscript) and isinstance(n.ctx, ast.Store):
+                return False
+            if isinstance(n, ast.AugAssign):
+                return False
+        return True
 
     def _poison(self, st: ast.stmt, scope: dict, reason: str, skip: bool = False) -> None:
         """Names assigned by an untranslated statement become opaque (their uses are reported)."""
@@ -170,10 +325,19 @@ class _Interpreter:
             targets = st.targets
         elif isinstance(st, (ast.AugAssign, ast.AnnAssign)):
             targets = [st.target]
+        def names(t: ast.AST):
+            # the names the statement binds: not the field of `u['g'] = ...` or the object of
+            # `a.b = ...` (poisoning `u` there made every later use of the field unsupported)
+            if isinstance(t, ast.Name):
+                yield t.id
+            elif isinstance(t, (ast.Tuple, ast.List)):
+                for e in t.elts:
+                    yield from names(e)
+            elif isinstance(t, ast.Starred):
+                yield from names(t.value)
         for t in targets:
-            for n in ast.walk(t):
-                if isinstance(n, ast.Name):
-                    scope[n.id] = _Opaque(reason, st.lineno, skip)
+            for n in names(t):
+                scope[n] = _Opaque(reason, st.lineno, skip)
 
     def stmt(self, st: ast.stmt, scope: dict) -> None:
         if isinstance(st, ast.Expr) and isinstance(st.value, ast.Constant) \
@@ -191,8 +355,17 @@ class _Interpreter:
         if isinstance(st, ast.If):
             if _is_main_guard(st.test):
                 return self.run(st.body, scope)
-            if "rank" in ast.unparse(st.test) and not st.orelse:
-                self._record(st, "skipped", "MPI rank guard: its body is read as serial code")
+            if self._is_rank0_test(st.test, scope):
+                # recognised by its structure (a rank of MPI.COMM_WORLD / dist.comm compared with
+                # 0), never by its text: `if rank_threshold > 1:` is an ordinary condition (G8)
+                effects = self._loop_effects(st.body, scope) + self._loop_effects(st.orelse, scope)
+                if effects:
+                    raise _Unsupported("MPI rank guard whose branches change the simulation (the "
+                                       "translation is serial, Dedalus runs it on one rank of "
+                                       "the distributed data): " + "; ".join(effects))
+                self._record(st, "skipped", "MPI rank-0 guard: its body is read as serial code"
+                             + (" (the else branch runs on the other ranks only)"
+                                if st.orelse else ""))
                 return self.run(st.body, scope)
             raise _Unsupported("conditional statement (the translator follows no branches)")
         if isinstance(st, ast.Try):
@@ -216,6 +389,48 @@ class _Interpreter:
         if isinstance(st, (ast.Pass, ast.Return)):
             return self._record(st, "skipped", "no effect on the problem")
         raise _Unsupported(f"statement {type(st).__name__}")
+
+    def _mpi(self, node: ast.AST, scope: dict) -> str | None:
+        """'comm' or 'rank' when ``node`` is an MPI communicator or its rank, by structure:
+        ``MPI.COMM_WORLD``, ``dist.comm`` / ``dist.comm_cart``, ``<comm>.rank``,
+        ``<comm>.Get_rank()`` or a name bound to one of these."""
+        if isinstance(node, ast.Name):
+            v = scope.get(node.id, self.g.get(node.id))
+            if isinstance(v, _MpiValue):
+                return v.what
+            if isinstance(v, _Module) and v.name.startswith("ignored:mpi4py") \
+                    and v.name.endswith((".COMM_WORLD", ".COMM_SELF")):
+                return "comm"
+            return None
+        if isinstance(node, ast.Call):
+            if (not node.args and not node.keywords and isinstance(node.func, ast.Attribute)
+                    and node.func.attr == "Get_rank"
+                    and self._mpi(node.func.value, scope) == "comm"):
+                return "rank"
+            return None
+        if isinstance(node, ast.Attribute):
+            if node.attr == "rank" and self._mpi(node.value, scope) == "comm":
+                return "rank"
+            if node.attr in ("comm", "comm_cart") and isinstance(self._quiet(node.value, scope),
+                                                                 _Dist):
+                return "comm"
+            if node.attr in ("COMM_WORLD", "COMM_SELF"):
+                v = self._quiet(node.value, scope)
+                if isinstance(v, _Module) and v.name.startswith("ignored:mpi4py"):
+                    return "comm"
+        return None
+
+    def _is_rank0_test(self, test: ast.AST, scope: dict) -> bool:
+        """``<rank> == 0`` (either order) or ``not <rank>``, with ``<rank>`` an MPI rank."""
+        if isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not):
+            return self._mpi(test.operand, scope) == "rank"
+        if isinstance(test, ast.Compare) and len(test.ops) == 1 \
+                and isinstance(test.ops[0], ast.Eq):
+            a, b = test.left, test.comparators[0]
+            return any(self._mpi(p, scope) == "rank" and isinstance(q, ast.Constant)
+                       and q.value == 0 and not isinstance(q.value, bool)
+                       for p, q in ((a, b), (b, a)))
+        return False
 
     def imports(self, st, scope) -> None:
         names = []
@@ -268,6 +483,11 @@ class _Interpreter:
         if (len(st.targets) == 1 and isinstance(tgt, (ast.Tuple, ast.List)) and scope is self.g
                 and any(isinstance(e, ast.Name) and e.id in self.overrides for e in tgt.elts)):
             return self._override_unpacking(st, tgt, scope)
+        mpi = self._mpi(st.value, scope)
+        if mpi is not None and all(isinstance(t, ast.Name) for t in st.targets):
+            for t in st.targets:
+                scope[t.id] = _MpiValue(mpi)
+            return self._record(st, "skipped", f"MPI {mpi} (the translation is serial: rank 0)")
         val = self.eval(st.value, scope)
         for t in st.targets:
             self._bind(t, val, scope)
@@ -345,7 +565,20 @@ class _Interpreter:
             return self.field_data(st, st.target, op, scope)
         if isinstance(st.target, ast.Name):
             cur = self.eval(st.target, scope)
-            val = self._binop(st.op, cur, self.eval(st.value, scope))
+            rhs = self.eval(st.value, scope)
+            if isinstance(cur, (np.ndarray, list)):
+                # Python changes a mutable value in place: every name bound to the same array or
+                # list sees the change (review H6: b = a; b += 1 left a unchanged)
+                import operator
+                fn = {ast.Add: operator.iadd, ast.Sub: operator.isub, ast.Mult: operator.imul,
+                      ast.Div: operator.itruediv, ast.FloorDiv: operator.ifloordiv,
+                      ast.Pow: operator.ipow, ast.Mod: operator.imod}.get(type(st.op))
+                if fn is None or isinstance(rhs, (_Grid, E.Expr)):
+                    raise _Unsupported("in-place operation on an array or list")
+                _check_binop(st.op, cur, rhs)
+                val = fn(cur, rhs)
+            else:
+                val = self._binop(st.op, cur, rhs)
             scope[st.target.id] = val
             return self._record(st, "translated")
         raise _Unsupported("augmented assignment")
@@ -362,7 +595,10 @@ class _Interpreter:
                 self.stop_iteration = val
                 return self._record(st, "translated", "number of steps: solver.run(n)")
             if tgt.attr == "stop_wall_time":
-                raise _Skip("wall-clock limit (a run-time setting, not the problem)")
+                # a stop rule too: the translation assumes the run ends before it (review P1)
+                self.approx("stop_wall_time: the wall-clock limit is not reproduced; the run "
+                            "is assumed to end on stop_iteration / stop_sim_time first")
+                return self._record(st, "translated", "wall-clock limit")
         raise _Unsupported(f"attribute assignment .{tgt.attr}")
 
     def expr_stmt(self, st: ast.Expr, scope: dict) -> None:
@@ -376,24 +612,32 @@ class _Interpreter:
             if isinstance(owner, _Module) and owner.name.startswith("ignored"):
                 raise _Skip("output only")
             if isinstance(owner, _ProblemDecl) and meth in ("add_equation", "add_bc"):
-                return self.add_equation(st, owner, v, scope)
+                try:
+                    return self.add_equation(st, owner, v, scope)
+                except _Skip as s:          # an equation is never output: f-string, data read
+                    raise _Unsupported(f"equation not translated ({s})") from None
             if isinstance(owner, _SolverDecl):
                 return self.solver_call(st, owner, meth, v, scope)
             if isinstance(owner, Field):
                 if meth == "fill_random":
-                    self.data.setdefault(owner, _FieldData()).unsupported = (
-                        f"line {st.lineno}: fill_random (Dedalus's random layout is not "
-                        "reproducible elsewhere)")
+                    self._mark([owner], st, "fill_random (Dedalus's random layout is not "
+                                            "reproducible elsewhere)")
                     raise _Unsupported("fill_random: Dedalus's random field (its RNG and "
                                        "layout) cannot be reproduced; write an explicit "
                                        "initial condition")
                 if meth in ("low_pass_filter", "high_pass_filter"):
-                    self.data.setdefault(owner, _FieldData()).unsupported = (
-                        f"line {st.lineno}: {meth}")
+                    self._mark([owner], st, meth)
                     raise _Unsupported(f"{meth}: spectral filtering of data (Dedalus-specific "
                                        "layout): not translated")
                 if meth in ("change_scales", "require_scales", "require_grid_space",
                             "require_coeff_space"):
+                    if (meth in ("change_scales", "require_scales") and v.args
+                            and self.consumed is None):
+                        sc = self.eval(v.args[0], scope)
+                        if not all(x == 1 for x in np.atleast_1d(np.asarray(sc, float))):
+                            self.approx(_SCALE_NOTE)
+                            return self._record(st, "translated", "data scale of "
+                                                f"{owner.name}")
                     raise _Skip("layout / output setting")
             if isinstance(owner, _Opaque):
                 raise _Unsupported(f"depends on line {owner.line}: {owner.reason}")
@@ -407,6 +651,8 @@ class _Interpreter:
             raise _Unsupported("add_equation with several arguments")
         arg = call.args[0]
         pb = decl.problem
+        if isinstance(arg, ast.JoinedStr):
+            arg = ast.Constant(self._fstring(arg, scope))
         if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
             text = arg.value
             ns = self._namespace(decl.namespace if decl.namespace is not None else scope)
@@ -428,6 +674,27 @@ class _Interpreter:
         self._code(st, f"problem.add_equation({to_string(eq)!r})")
         self._record(st, "translated")
 
+    def _fstring(self, node: ast.JoinedStr, scope: dict) -> str:
+        """Text of an f-string equation; only numbers and strings are formatted (Python's own
+        formatting, so the digits are the script's)."""
+        parts = []
+        for v in node.values:
+            if isinstance(v, ast.Constant):
+                parts.append(str(v.value))
+                continue
+            val = self.eval(v.value, scope)
+            if isinstance(val, bool) or not isinstance(val, (int, float, complex, np.number,
+                                                              str)):
+                raise _Unsupported(f"f-string equation formats a {type(val).__name__} "
+                                   f"('{ast.unparse(v.value)}'): only numbers and strings")
+            if v.conversion in (ord("r"), ord("a")):
+                val = repr(val) if v.conversion == ord("r") else ascii(val)
+            elif v.conversion == ord("s"):
+                val = str(val)
+            spec = self._fstring(v.format_spec, scope) if v.format_spec is not None else ""
+            parts.append(format(val, spec))
+        return "".join(parts)
+
     def _namespace(self, scope: dict) -> Namespace:
         vals: dict[str, Any] = {}
         for k, v in scope.items():
@@ -440,6 +707,8 @@ class _Interpreter:
         return Namespace(vals, tensor_product="outer")
 
     def solver_call(self, st, solver: _SolverDecl, meth: str, call: ast.Call, scope) -> None:
+        if meth in ("step", "solve", "solve_dense", "solve_sparse"):
+            self.consumed = self.consumed or f"solver.{meth} (line {st.lineno})"
         if meth == "step":
             self.timestep = self.eval(call.args[0], scope) if call.args else None
             return self._record(st, "translated", "fixed time step")
@@ -461,6 +730,14 @@ class _Interpreter:
         test = ast.unparse(st.test)
         if "proceed" not in test:
             raise _Unsupported("while loop that is not the solver's time loop")
+        if not (isinstance(st.test, ast.Attribute) and st.test.attr == "proceed"
+                and isinstance(self._quiet(st.test.value, scope), _SolverDecl)) or st.orelse:
+            # recognised by structure: `while solver.proceed and solver.iteration < 8:` stops on
+            # its own test too, which solver.run(n) would ignore (review P1)
+            raise _Unsupported(f"time loop condition '{test}': only `while solver.proceed:` "
+                               "is translated (Dedalus stops at the first of its limits; "
+                               "write any other stop as stop_iteration / stop_sim_time)")
+        self.consumed = self.consumed or f"the time loop (line {st.lineno})"
         dt_expr = None
         for n in ast.walk(st):
             if (isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)
@@ -525,15 +802,16 @@ class _Interpreter:
             return None
 
         def physical(v: Any) -> bool:
-            return isinstance(v, (E.Expr, _SolverDecl, _ProblemDecl, Basis, CoordinateSystem))
+            return isinstance(v, (E.Expr, _SolverDecl, _ProblemDecl, Basis, CoordinateSystem,
+                                  _DataAlias))
 
         def target_effect(t: ast.AST) -> bool:
             if isinstance(t, (ast.Tuple, ast.List)):
                 return any(target_effect(e) for e in t.elts)
             if isinstance(t, ast.Starred):
                 return target_effect(t.value)
-            if isinstance(t, ast.Name):
-                return False                     # a local name (dt, a diagnostic value)
+            if isinstance(t, ast.Name):           # a local name (dt, a diagnostic value), unless
+                return isinstance(scope.get(t.id, self.g.get(t.id)), _DataAlias)  # a data view
             return _is_field_data(t) or physical(root(t))
 
         def visit(stmts: list[ast.stmt]) -> None:
@@ -577,12 +855,102 @@ class _Interpreter:
         d = self.data.setdefault(f, _FieldData())
         if d.unsupported:
             raise _Unsupported(f"data of {f.name} already untranslatable ({d.unsupported})")
-        # a copy of the scope: later rebinding of a grid name (x = basis.global_grid(...) for
-        # plots) must not change the data statement written here
-        d.ops.append((op, comp, st.value, dict(scope)))
+        if self.consumed:
+            raise _Unsupported(f"grid data written after {self.consumed}: the translation "
+                               "replays field data as the initial / given state only")
+        self._check_component(f, comp)
+        self._check_data_rhs(st.value, scope, f)
+        # a copy of the scope, arrays and lists copied too: later rebinding of a grid name
+        # (x = basis.global_grid(...) for plots) or an in-place change of an array (a += 1)
+        # must not change the data statement written here (Dedalus copies the value)
+        self.seq += 1
+        d.ops.append((op, comp, st.value, _snapshot(scope), self.seq, st.lineno))
         self._record(st, "translated", f"grid data of {f.name}"
                                        + (f"[{comp}]" if comp is not None else "")
                                        + ": initial condition / given field (tr.data)")
+
+    def _check_component(self, f: Field, comp: Any) -> None:
+        """``f['g'][i]``: a whole component of a vector field; any other index of grid data (a
+        point, a slice, a component of a scalar field) is not translated (review H14)."""
+        if comp is None:
+            return
+        dim = f.tensorsig[0].dim if f.rank == 1 else 0
+        if not (isinstance(comp, (int, np.integer)) and not isinstance(comp, bool)
+                and -dim <= comp < dim):
+            raise _Unsupported(f"indexed grid data {f.name}['g'][{comp!r}]: only a whole "
+                               "component of a vector field is translated")
+
+    _DATA_BINOPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow, ast.FloorDiv, ast.Mod)
+
+    def _check_data_rhs(self, node: ast.AST, scope: dict, target: Field) -> None:
+        """Refuse, at the statement, a right-hand side of field data that the NumPy replay
+        (``_GridEval``) cannot evaluate exactly as the script does (review H14: such statements
+        used to be reported translated, then failed with a private or untyped error)."""
+        def value(n: ast.AST) -> Any:
+            try:
+                return self.eval(n, scope)
+            except _Skip as s:
+                raise _Unsupported(f"'{ast.unparse(n)[:40]}' in field data: {s}") from None
+
+        def check(n: ast.AST) -> None:
+            if isinstance(n, ast.Subscript) and _is_field_data(n):
+                g, comp = _field_data_target(n, self, scope)
+                if not isinstance(g, Field):
+                    raise _Unsupported("grid data of an object that is not a translated field")
+                if g.domain.coordsys.key != target.domain.coordsys.key:
+                    raise _Unsupported(f"grid data of {g.name} (another coordinate system)")
+                self._check_component(g, comp)
+                fd = self.data.get(g)
+                if fd is not None and fd.unsupported:
+                    raise _Unsupported(f"reads the grid data of {g.name}, not translated "
+                                       f"({fd.unsupported})")
+                return
+            if isinstance(n, ast.Constant):
+                return
+            if isinstance(n, ast.Name):
+                if n.id not in scope and n.id not in self.g:
+                    raise _Unsupported(f"name '{n.id}' is not defined at this point")
+                v = scope.get(n.id, self.g.get(n.id))
+                if isinstance(v, _Opaque):
+                    raise _Unsupported(f"'{n.id}' comes from line {v.line}: {v.reason}")
+                if isinstance(v, (E.Expr, _Lambda)) or callable(v):
+                    raise _Unsupported(f"'{n.id}' is a {type(v).__name__}, not a number, an "
+                                       "array or a grid (write f['g'] for the data of a field)")
+                return
+            if isinstance(n, ast.BinOp):
+                if not isinstance(n.op, self._DATA_BINOPS):
+                    raise _Unsupported(f"operator {type(n.op).__name__} in field data")
+                check(n.left)
+                check(n.right)
+                return
+            if isinstance(n, ast.UnaryOp):
+                if not isinstance(n.op, (ast.USub, ast.UAdd)):
+                    raise _Unsupported(f"operator {type(n.op).__name__} in field data")
+                check(n.operand)
+                return
+            if isinstance(n, ast.Call):
+                if not isinstance(value(n.func), _NpFunc):
+                    raise _Unsupported(f"call of {ast.unparse(n.func)[:40]} in field data (only "
+                                       "the whitelisted NumPy / SciPy functions)")
+                for a in n.args:
+                    check(a.value if isinstance(a, ast.Starred) else a)
+                for k in n.keywords:
+                    if k.arg == "out":
+                        raise _Unsupported("out= in field data")
+                    check(k.value)
+                return
+            if isinstance(n, ast.Attribute):
+                v = value(n)
+                if not isinstance(v, (int, float, complex, np.number, type)):
+                    raise _Unsupported(f"attribute '{ast.unparse(n)[:40]}' in field data")
+                return
+            if isinstance(n, ast.Tuple):
+                for e in n.elts:
+                    check(e)
+                return
+            raise _Unsupported(f"construct {type(n).__name__} ('{ast.unparse(n)[:40]}') in field "
+                               "data")
+        check(node)
 
     # problems ----------------------------------------------------------------------------------
     def make_problem(self, kind: str, variables, time=None, eigenvalue=None,
@@ -754,7 +1122,7 @@ class _Interpreter:
             return obj[key]
         if isinstance(obj, Field) and (key in ("g", "c") or (isinstance(key, tuple) and key
                                                               and key[0] in ("g", "c"))):
-            raise _Skip("reads field data (output / post-processing)")
+            raise _DataRead(obj)
         if isinstance(obj, E.Expr) and isinstance(key, int):
             return E.comp(obj, key)
         if isinstance(obj, _SolverDecl):
@@ -815,12 +1183,17 @@ class _Interpreter:
             if a in ("eigenvalues", "eigenvectors", "state", "subsystems"):
                 raise _Skip("results read after the solve (post-processing)")
             if a == "evaluator":
-                raise _Unsupported("analysis output (file handlers, tasks): use "
-                                   "conatus.runs.track / solver.run(record=...) and Studio "
-                                   "telemetry")
+                # file handlers and tasks read the state and write files: they do not change
+                # the solution, so they are output only (skipped with this note), not a gap
+                # that makes the translation incomplete (0.3.1 review)
+                raise _Skip("analysis output (file handlers, tasks) is not written: use "
+                            "conatus.runs.track / solver.run(record=...) and Studio telemetry")
             if a in ("subproblems", "subproblems_by_group"):
-                raise _Unsupported("Dedalus subproblems: select a Conatus group with "
-                                   "plan.group(m, k)")
+                # selecting the subproblem to solve changes nothing in the problem; the solve
+                # line says how Conatus selects the group (0.3.1 review: unsupported refused
+                # the official pipe-flow example)
+                raise _Skip("Dedalus subproblem selection: select the Conatus group with "
+                            "plan.group(m, k)")
             raise _Unsupported(f"solver.{a}")
         if isinstance(obj, E.Expr):
             if a in ("allgather_data", "gather_data", "change_scales", "copy", "data"):
@@ -887,6 +1260,21 @@ class _Interpreter:
         self.code.append((st.lineno, text))
 
 
+def _snapshot(scope: dict) -> dict:
+    """A copy of a scope in which arrays and lists are copied as well (value at this point)."""
+    def frozen(v: Any, depth: int = 0) -> Any:
+        if isinstance(v, np.ndarray):
+            return v.copy()
+        if depth < 4 and isinstance(v, list):
+            return [frozen(x, depth + 1) for x in v]
+        if depth < 4 and isinstance(v, tuple) and type(v) is tuple:
+            return tuple(frozen(x, depth + 1) for x in v)
+        if depth < 4 and isinstance(v, dict) and type(v) is dict:
+            return {k: frozen(x, depth + 1) for k, x in v.items()}
+        return v
+    return {k: frozen(v) for k, v in scope.items()}
+
+
 @dataclass
 class _NpFunc:
     """A whitelisted numerical function: NumPy / SciPy on numbers and arrays, IR node on Exprs."""
@@ -910,6 +1298,10 @@ class _NpFunc:
         import scipy.special as sp
         return getattr(sp, self.name)(*args, **kw)
 
+
+_SCALE_NOTE = ("grid data at a scale other than 1: Conatus samples the data on the grid of the "
+               "basis size, Dedalus at this scale and then truncates (equal for data the basis "
+               "resolves)")
 
 #: the Distributor methods the translator knows (dist.<other> is unsupported)
 _DIST_METHODS = ("Field", "VectorField", "TensorField", "local_grid", "local_grids")
@@ -960,6 +1352,15 @@ class _DistMethod:
             f = Field(name or f"_unnamed{len(self.tr.fields)}", D, sig, dtype)
             self.tr.fields[f.name] = f
             return f
+        if n in ("local_grid", "local_grids"):
+            # a grid at another scale (scale=3/2): the data are sampled on the Conatus grid of
+            # the basis size; Dedalus samples them at that scale and then truncates, which is the
+            # same for data the basis resolves only (declared; review r031d, sibling of G4)
+            sc = kw.pop("scale" if n == "local_grid" else "scales", None)
+            if kw:
+                raise _Unsupported(f"dist.{n} options {sorted(kw)}")
+            if sc is not None and not all(x == 1 for x in np.atleast_1d(np.asarray(sc, float))):
+                self.tr.approx(_SCALE_NOTE)
         if n == "local_grid":
             b = args[0]
             if isinstance(b, _Bundle):

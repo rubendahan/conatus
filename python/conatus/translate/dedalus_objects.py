@@ -58,6 +58,15 @@ class _Skip(Exception):
     """Output-only construct (plots, logs, analysis): reported as skipped."""
 
 
+class _DataRead(_Skip):
+    """A read of field data (``u['g']``) outside a data statement: output, unless the statement
+    changes the data through it (then the interpreter reports it unsupported)."""
+
+    def __init__(self, field: Any) -> None:
+        super().__init__("reads field data (output / post-processing)")
+        self.field = field
+
+
 @dataclass
 class _Opaque:
     """Value of an untranslated statement: any use of it is unsupported (or skipped, for an
@@ -65,6 +74,20 @@ class _Opaque:
     reason: str
     line: int
     skip: bool = False
+
+
+@dataclass
+class _DataAlias(_Opaque):
+    """``d = u['g']``: a view of the data of ``field`` (Dedalus returns the data array itself).
+    Reading it is output only; a change through it changes ``field`` and is unsupported."""
+    field: Any = None
+
+
+@dataclass
+class _MpiValue:
+    """An MPI communicator or rank of the script (``MPI.COMM_WORLD``, ``dist.comm``,
+    ``comm.rank``); the translation is serial, so the rank is 0."""
+    what: str            # "comm" or "rank"
 
 
 @dataclass
@@ -152,9 +175,13 @@ class _Lambda:
 
 @dataclass
 class _FieldData:
-    """Grid data of a field written by the script: a list of (op, component, ast, scope)."""
+    """Grid data of a field written by the script: a list of (op, component, ast, scope,
+    sequence number, line), in program order. The sequence numbers are shared by all fields: a
+    read of another field's data (or of the same field) in statement ``s`` sees only the
+    statements numbered below ``s`` (value semantics at assignment time)."""
     ops: list = dc_field(default_factory=list)
     unsupported: str | None = None
+    unsupported_at: int | None = None        # sequence number when the data became unsupported
 
 
 # --------------------------------------------------------------------------- IR helpers
@@ -228,8 +255,13 @@ def _outer_unit(t: E.Expr):
 
 
 def _is_main_guard(test: ast.AST) -> bool:
-    return (isinstance(test, ast.Compare) and isinstance(test.left, ast.Name)
-            and test.left.id == "__name__")
+    """``if __name__ == "__main__":`` (either order); ``!=`` or another constant is not a guard."""
+    if not (isinstance(test, ast.Compare) and len(test.ops) == 1
+            and isinstance(test.ops[0], ast.Eq)):
+        return False
+    a, b = test.left, test.comparators[0]
+    return any(isinstance(p, ast.Name) and p.id == "__name__" and isinstance(q, ast.Constant)
+               and q.value == "__main__" for p, q in ((a, b), (b, a)))
 
 
 def _is_field_data(t: ast.AST) -> bool:

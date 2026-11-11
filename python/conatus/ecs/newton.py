@@ -27,6 +27,36 @@ __all__ = ["NewtonKrylovHookstep", "NewtonKrylovResult", "arnoldi_gmres", "Newto
 _RADII = {"absolute": "(absolute)", "relative": "(× ‖z0‖)"}
 
 
+def _norm(v: np.ndarray) -> float:
+    """Euclidean norm without underflow or overflow: max|v| ‖v / max|v|‖ (G6: ‖1e-200 (z − 2)‖
+    was 0 in numpy's sqrt(v·v), so the seed z = 1 was returned as converged)."""
+    v = np.asarray(v)
+    m = float(np.abs(v).max(initial=0.0))
+    if m == 0 or not np.isfinite(m):
+        return float(np.linalg.norm(v))
+    return m * float(np.linalg.norm(v / m))
+
+
+#: Probe of the rate scale of the residual: ‖J u‖ for two unit directions (the seed's own and a
+#: fixed pseudo-random one, seed RATE_PROBE_SEED); declared, shown in the solution notes.
+RATE_PROBE_SEED = 12345
+
+
+def _rate_scale(jvp, z0: np.ndarray) -> tuple[float, str]:
+    """min(1, ‖J u‖) over two unit probes u, and the note that says so (H5: with the residual
+    divided by max(1, ‖x0‖) alone, v -> 1e-10 v accepted the seed after 0 iterations). The factor
+    is at most 1, so it only tightens the test for a slow (or rescaled-time) problem."""
+    probes = [np.random.default_rng(RATE_PROBE_SEED).standard_normal(z0.size)]
+    n0 = _norm(z0)
+    if n0 > 0:
+        probes.append(z0 / n0)
+    rate = max(_norm(jvp(z0, u / _norm(u))) for u in probes)
+    rate = rate if np.isfinite(rate) and rate > 0 else 1.0
+    f = min(1.0, rate)
+    return f, (f"residual scale max(1, ‖x0‖) x min(1, ‖J u‖) = max(1, ‖x0‖) x {f:.3g} (rate probe "
+               f"‖J u‖ = {rate:.3g} over two unit directions u, seed {RATE_PROBE_SEED})")
+
+
 @renames("conatus.ecs.newton:arnoldi_gmres")
 def arnoldi_gmres(apply_A: Callable[[np.ndarray], np.ndarray], b: np.ndarray, *,
                   rtol: float, max_iterations: int):
@@ -42,7 +72,7 @@ def arnoldi_gmres(apply_A: Callable[[np.ndarray], np.ndarray], b: np.ndarray, *,
         raise InputTypeError(f"arnoldi_gmres: b must be a 1D finite real vector, got shape "
                              f"{b.shape}, dtype {b.dtype}",
                              fix="b.ravel() of a real state (the Krylov basis is real)")
-    beta = float(np.linalg.norm(b))
+    beta = float(_norm(b))
     if beta == 0:
         raise OptionError("GMRES: zero right-hand side",
                           why="x = 0 solves it; the Krylov basis cannot start from b = 0",
@@ -61,12 +91,12 @@ def arnoldi_gmres(apply_A: Callable[[np.ndarray], np.ndarray], b: np.ndarray, *,
             c = V[:, i] @ w
             H[i, j] += c
             w = w - c * V[:, i]
-        H[j + 1, j] = np.linalg.norm(w)
+        H[j + 1, j] = _norm(w)
         m = j + 1
         e1 = np.zeros(m + 1)
         e1[0] = beta
         y, *_ = np.linalg.lstsq(H[:m + 1, :m], e1, rcond=None)
-        relres = float(np.linalg.norm(e1 - H[:m + 1, :m] @ y) / beta)
+        relres = float(_norm(e1 - H[:m + 1, :m] @ y) / beta)
         if relres < rtol or H[j + 1, j] < 1e-14 * beta:
             break
         V[:, j + 1] = w / H[j + 1, j]
@@ -75,18 +105,19 @@ def arnoldi_gmres(apply_A: Callable[[np.ndarray], np.ndarray], b: np.ndarray, *,
 
 def _hook(H: np.ndarray, beta: float, delta: float) -> tuple[np.ndarray, float]:
     """y minimizing ‖βe₁ − H y‖ subject to ‖y‖ ≤ Δ; returns (y, μ)."""
-    U, s, Wt = np.linalg.svd(H, full_matrices=False)
-    p = beta * U[0, :]                               # Uᵀ β e₁
+    # on H / β and e₁ (same minimizer y): with ‖R‖ ~ 1e-200, σ² underflowed and y(0) was 0/0
+    U, s, Wt = np.linalg.svd(H / beta, full_matrices=False)
+    p = U[0, :]                                      # Uᵀ e₁
     def y_of(mu):
         return Wt.T @ (s * p / (s ** 2 + mu))
-    if np.linalg.norm(y_of(0.0)) <= delta:
+    if _norm(y_of(0.0)) <= delta:
         return y_of(0.0), 0.0
     lo, hi = 0.0, 1.0
-    while np.linalg.norm(y_of(hi)) > delta:
+    while _norm(y_of(hi)) > delta:
         hi *= 4.0
     for _ in range(100):                             # bisection on log-free μ (monotone ‖y(μ)‖)
         mid = 0.5 * (lo + hi)
-        if np.linalg.norm(y_of(mid)) > delta:
+        if _norm(y_of(mid)) > delta:
             lo = mid
         else:
             hi = mid
@@ -207,7 +238,7 @@ class NewtonKrylovHookstep:
     def _radii(self, z0: np.ndarray) -> tuple[float, float, float, str]:
         """(Δ0, Δmin, Δmax) in the norm of the unknowns for the start ``z0``, and the sentence
         that says how they were read (kept in the result's explain())."""
-        n0 = float(np.linalg.norm(z0))
+        n0 = float(_norm(z0))
         if self.radii == "relative":
             if not n0 > 0:
                 raise OptionError("NewtonKrylovHookstep(radii='relative'): the starting unknowns "
@@ -239,7 +270,7 @@ class NewtonKrylovHookstep:
         z = np.array(z0, dtype=float)
         delta0, delta_min, delta_max, trust = self._radii(z)
         R = residual(z)
-        res = float(np.linalg.norm(R))
+        res = float(_norm(R))
         delta = delta0
         hist: list[dict] = []
         for it in range(1, self.max_iterations + 1):
@@ -253,15 +284,15 @@ class NewtonKrylovHookstep:
                 dz = V[:, :y.size] @ y
                 e1 = np.zeros(H.shape[0])
                 e1[0] = beta
-                pred = res - float(np.linalg.norm(e1 - H @ y))
+                pred = res - float(_norm(e1 - H @ y))
                 Rt = residual(z + dz)
-                rt = float(np.linalg.norm(Rt))
+                rt = float(_norm(Rt))
                 rho = (res - rt) / pred if pred > 0 else -1.0
                 if rho < self.rho_bad and delta > delta_min:
-                    delta = max(delta_min, 0.5 * min(delta, float(np.linalg.norm(y))))
+                    delta = max(delta_min, 0.5 * min(delta, float(_norm(y))))
                     continue                             # retry on the same Krylov space
                 break
-            step = float(np.linalg.norm(dz))
+            step = float(_norm(dz))
             hist.append(dict(it=it, res=res, gmres_iters=H.shape[1], gmres_relres=gres,
                              delta=delta, step=step, kind=kind, rho=rho))
             if on_iteration is not None:

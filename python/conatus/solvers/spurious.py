@@ -61,11 +61,14 @@ def _pieces(basis: Any, nz: int) -> list[tuple[int, int]]:
     return [(0, nz)]
 
 
-def tail_layout(plan: Any, group: Any, reduced: bool) -> tuple[list, str] | tuple[None, str]:
+def tail_layout(plan: Any, group: Any, reduced: bool, *,
+                require_tau: bool = True) -> tuple[list, str] | tuple[None, str]:
     """([(unknown, index array (rows, nz), pieces)], note) of the vectors of ``group`` of
-    ``plan``, or (None, why) when the test does not apply (no tau, no non-periodic axis, a plan
-    without the Cartesian layout). Indices are into the vector the solver returns (reduced or
-    full), -1 where a coefficient is outside the symmetry subspace."""
+    ``plan``, or (None, why) when the test does not apply (no tau unless ``require_tau`` is
+    false, no non-periodic axis, a plan without the Cartesian layout). Indices are into the
+    vector the solver returns (reduced or full), -1 where a coefficient is outside the symmetry
+    subspace. Each row is one (component, Fourier index) line along the non-periodic axis;
+    ``pieces`` are the (start, stop) of the pieces of a compound basis along that line."""
     from .evp_modes import _tau_names, _unpack
     if not hasattr(plan, "var_layouts") or not hasattr(getattr(plan, "layout", None),
                                                          "fourier_indices"):
@@ -78,7 +81,7 @@ def tail_layout(plan: Any, group: Any, reduced: bool) -> tuple[list, str] | tupl
     except Exception as err:  # noqa: BLE001 -- reported on the result, not hidden (audit 0.1.2, F37)
         return None, ("spectral-tail test unavailable: the tau variables could not be identified "
                       f"({type(err).__name__}: {err}); no spurious-mode flag")
-    if not taus:
+    if not taus and require_tau:
         return None, ""                      # no tau: no spurious tau mode to flag
     zc = plan.layout.zcoord
     if zc is None:

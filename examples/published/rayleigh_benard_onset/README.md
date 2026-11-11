@@ -18,7 +18,7 @@ pair of walls: the neutral Rayleigh number at 25 wavenumbers k = 1 … 7 and the
 closed form, and at the critical points of the rigid cases, against the digits Chandrasekhar prints.
 
 **Result** (`output.txt`): along the stress-free curve the largest relative gap to the closed form is
-9.1 × 10⁻¹⁶. Two rigid walls: Ra_c = 1707.761777 at k_c = 3.116324 (relative gaps 1.3 × 10⁻⁷ and
+6.4 × 10⁻¹⁶. Two rigid walls: Ra_c = 1707.761777 at k_c = 3.116324 (relative gaps 1.3 × 10⁻⁷ and
 2.2 × 10⁻⁴). The computed k_c rounds to 3.116, where Chandrasekhar prints 3.117. Rigid bottom and stress-free
 top: Ra_c = 1100.649607 at k_c = 2.682322, within the rounding of 1100.65 and 2.682.
 
@@ -28,4 +28,4 @@ top: Ra_c = 1100.649607 at k_c = 2.682322, within the rounding of 1100.65 and 2.
 
 It prints the comparison and the three curves, and writes `result.json` in the working directory.
 `bash examples/published/run.sh rayleigh_benard_onset` records `output.txt` and `result.json` here.
-Recorded run: 79 s of wall time on 4 threads of an AMD EPYC 9654 96-Core Processor (Conatus 0.3.0, Python 3.12.14, 2026-10-31).
+Recorded run: 84 s of wall time on 4 threads of an AMD EPYC 9654 96-Core Processor (Conatus 0.3.1, Python 3.12.14, 2026-11-11).

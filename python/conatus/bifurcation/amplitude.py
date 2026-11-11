@@ -33,8 +33,8 @@ from dataclasses import field as dc_field
 
 import numpy as np
 
-from ..errors import OptionError
-from .equilibria import generalized_eigenvalues
+from ..errors import ConvergenceError, OptionError
+from .equilibria import pencil_spectrum
 from .normal_form import HopfNormalForm, ZeroEigenvalueNormalForm, normal_form
 from .system import DynamicalSystem
 
@@ -61,7 +61,34 @@ def cos_mode_observable(system: DynamicalSystem, name: str) -> Callable[[np.ndar
         if np.iscomplexobj(v):
             return complex(real_part(np.real(v)), real_part(np.imag(v)))
         return real_part(v)
+
+    def wave(v):
+        # (|content of e^{+i 2π x/L}|, |content of e^{-i 2π x/L}|) of a complex vector: tells the
+        # eigenvalue of the e^{+ikx} mode from its conjugate (hunt 5D: v_g had the wrong sign)
+        def grid(w):
+            return system.solver.plan.to_grid(name, system.solver.system.scatter(w)[k])
+        g = grid(np.real(v)) + 1j * grid(np.imag(v))
+        xs = 2 * np.pi * np.arange(g.shape[0]) / g.shape[0]
+        e = np.exp(1j * xs).reshape((-1,) + (1,) * (g.ndim - 1))
+        return (abs(np.mean(g * e.conj(), axis=0).ravel()[0]),
+                abs(np.mean(g * e, axis=0).ravel()[0]))
+    ell.wave = wave
     return ell
+
+
+#: An observable sees the critical mode q when |ℓ(q)| > OBSERVABLE_TOL x max_i |ℓ(e_i)| (its size on
+#: unit vectors): below, ℓ(q) is rounding and g3 = c / ℓ(q)² meaningless (P2: division by 0).
+OBSERVABLE_TOL = 1e-10
+
+
+def _check_sees(observable, q, value: float, what: str) -> None:
+    n = np.size(q)
+    size = max(abs(complex(observable(np.eye(n)[i]))) for i in range(n))
+    if not abs(value) > OBSERVABLE_TOL * size:
+        raise OptionError(f"amplitude_equation: the observable does not see the critical mode q "
+                          f"({what} = {abs(value):.3g}, observable size on unit vectors "
+                          f"{size:.3g}, OBSERVABLE_TOL = {OBSERVABLE_TOL:g})",
+                          fix="an observable with a nonzero component on the critical mode")
 
 
 @dataclass
@@ -79,6 +106,11 @@ class LandauEquation:
 
     def amplitude(self, dp: float) -> float:
         """Steady (or limit-cycle modulus) amplitude of the observable at p_c + dp."""
+        if np.real(self.g3) == 0 or not np.isfinite(np.real(self.g3)):
+            raise ConvergenceError(f"LandauEquation.amplitude: Re g3 = {np.real(self.g3):.3g}, so the "
+                                   "cubic law A² = −Re μ Δp / Re g3 does not hold (a degenerate "
+                                   "point: higher-order terms set the amplitude)",
+                                   fix="a normal form of higher order; this one is degenerate")
         a2 = -np.real(self.mu) * dp / np.real(self.g3)
         return float(np.sqrt(a2)) if a2 >= 0 else float("nan")
 
@@ -89,7 +121,9 @@ class LandauEquation:
         lines = [f"Landau equation ({self.kind}) at {self.parameter}_c = {self.p_c:.12g}: {eq}",
                  f"  μ = {complex(self.mu):.10g}, g3 = {complex(self.g3):.10g} "
                  f"(observable of q: {complex(self.observable_of_q):.6g})",
-                 f"  A² = −Re μ Δp / Re g3 = {-np.real(self.mu) / np.real(self.g3):.10g} Δ{self.parameter}"]
+                 (f"  A² = −Re μ Δp / Re g3 = {-np.real(self.mu) / np.real(self.g3):.10g} "
+                  f"Δ{self.parameter}" if np.real(self.g3) != 0 else
+                  "  Re g3 = 0: no cubic amplitude law (degenerate)")]
         lines += ["  " + s for s in self.notes]
         return "\n".join(lines)
 
@@ -113,6 +147,12 @@ def amplitude_equation(system: DynamicalSystem, x0: np.ndarray, parameter: str, 
             raise OptionError(f"amplitude_equation: the point is a {nf.kind}, not a pitchfork "
                               "(a2 ≠ 0 or β ≠ 0): no cubic Landau equation",
                               fix="declare the symmetry that makes a2 vanish, or use normal_form")
+        if nf.degenerate or nf.a3 == 0 or nf.mu == 0:
+            # P2: u' = p u − u⁵ (a3 = 0) built g3 = 0 and amplitude() divided by it
+            raise ConvergenceError(f"amplitude_equation: the pitchfork is degenerate (μ = {nf.mu:.3g}, "
+                                   f"a3 = {nf.a3:.3g}): the cubic Landau equation does not set the "
+                                   "amplitude", fix="normal_form(...) reports the degeneracy; a "
+                                   "higher-order expansion is needed")
         lq = complex(observable(nf.q))
         if lq.real == 0:
             # g3 = a3 / Re ℓ(q)²: an observable seeing q only through an imaginary part used to give
@@ -121,12 +161,18 @@ def amplitude_equation(system: DynamicalSystem, x0: np.ndarray, parameter: str, 
                               f"(ℓ(q) = {lq:.3g}: its real part is the amplitude of a real mode)",
                               fix="choose a real functional that sees the mode (e.g. its cos kx "
                                   "coefficient)")
+        _check_sees(observable, nf.q, lq.real, "its real part")
         g3 = nf.a3 / np.real(lq) ** 2
         le = LandauEquation("stationary", parameter, q_par[parameter], nf.mu, g3, lq, nf)
         le.notes.append("from the pitchfork normal form: a3 / ℓ(q)², A = a ℓ(q)")
         return le
     nf: HopfNormalForm = normal_form(system, x0, kind="hopf", par=q_par, parameter=parameter, **nf_kw)
     lq = complex(observable(nf.q))
+    _check_sees(observable, nf.q, abs(lq), "|ℓ(q)|")
+    if not np.isfinite(nf.c1) or nf.dlambda == 0:
+        raise ConvergenceError(f"amplitude_equation: degenerate Hopf point (c1 = {nf.c1:.3g}, "
+                               f"λ' = {nf.dlambda:.3g}): no cubic Landau equation",
+                               fix="normal_form(...) reports the degeneracy")
     g3 = nf.c1 / abs(lq) ** 2
     le = LandauEquation("oscillatory", parameter, q_par[parameter], nf.dlambda, g3, lq, nf)
     le.notes.append("from the Hopf normal form: Z ℓ(q) is the complex amplitude of the observable "
@@ -153,6 +199,8 @@ class GinzburgLandau:
     @property
     def tau0(self) -> float:
         """Cross–Hohenberg time scale τ0 = 1/(μ p_c) (1/μ when p_c = 0, ε = Δp)."""
+        if np.real(self.mu) == 0:
+            raise ConvergenceError("GinzburgLandau.tau0: Re μ = 0 (degenerate unfolding): no time scale")
         return float(1.0 / (np.real(self.mu) * self.p_c)) if self.p_c else float(1.0 / np.real(self.mu))
 
     @property
@@ -191,11 +239,16 @@ def ginzburg_landau(system_at: Callable[[float], tuple[DynamicalSystem, np.ndarr
     """
     sys_c, x0 = system_at(k_c)
     le = amplitude_equation(sys_c, x0, parameter, kind=kind, observable=observable, par=par, **nf_kw)
-    lam_c = _critical_eig(sys_c, x0, par, None)
+    lam_c, v_c = _critical_eig(sys_c, x0, par, None, wave=getattr(observable, "wave", None))
+    wave_note = ""
+    if kind == "oscillatory" and getattr(observable, "wave", None) is None:
+        wave_note = ("the observable has no wave direction (cos_mode_observable has one): the "
+                     "branch e^{+ik_c x} cannot be told from its conjugate, so v_g is left NaN")
 
     def sig(k):
         s, x = system_at(k)
-        return _critical_eig(s, x, par, lam_c)
+        lam, _ = _critical_eig(s, x, par, (lam_c, v_c), k=k)
+        return lam
 
     s = {j: sig(k_c + j * h) for j in (-2, -1, 1, 2)}
     s[0] = lam_c
@@ -203,16 +256,55 @@ def ginzburg_landau(system_at: Callable[[float], tuple[DynamicalSystem, np.ndarr
     d2_2 = (s[1] - 2 * s[0] + s[-1]) / (h * h)
     d1_4 = (-s[2] + 8 * s[1] - 8 * s[-1] + s[-2]) / (12 * h)
     g = 4 * le.g3 if kind == "stationary" else le.g3
-    gl = GinzburgLandau(k_c, le.p_c, parameter, le.mu, -0.5 * d2_4, float(-np.imag(d1_4)), g, h,
+    v_g = float("nan") if wave_note else float(-np.imag(d1_4))
+    gl = GinzburgLandau(k_c, le.p_c, parameter, le.mu, -0.5 * d2_4, v_g, g, h,
                         float(abs(d2_4 - d2_2) / 2), le)
+    if wave_note:
+        gl.notes.append(wave_note)
     gl.notes.append("g = 4 g3 (u = A e^{ikx} + c.c. = 2|A| cos kx)" if kind == "stationary"
                     else "g = c1 / |ℓ(q)|² (complex amplitude of the observable)")
     return gl
 
 
-def _critical_eig(system, x0, par, near):
+#: The critical mode at k_c ± j h is the eigenvector of largest overlap |v_c^H v| with the critical
+#: eigenvector at k_c; below this overlap (or when another mode overlaps as much) the identity of
+#: the mode is lost and ginzburg_landau refuses (G10: the nearest eigenvalue jumped to a slow
+#: decoupled mode and gave D = 0.405 for 4).
+GL_MODE_OVERLAP = 0.5
+
+
+def _critical_eig(system, x0, par, ref, k=None, wave=None):
+    """(λ, v) of the critical mode: the eigenvalue of smallest |Re λ| when ``ref`` is None (of a
+    conjugate pair, the one whose eigenvector is a wave e^{+ikx} by ``wave(v)``), else the mode
+    whose eigenvector overlaps most with ``ref`` = (λ_c, v_c)."""
     J = system.J(x0, system._full(par))
-    ev = generalized_eigenvalues(J, system.M)
-    if near is None:
-        return complex(ev[np.argmin(np.abs(ev.real))]) if ev.size else 0j
-    return complex(ev[np.argmin(np.abs(ev - near))])
+    spec = pencil_spectrum(J, system.M, vectors=True)
+    ev, V = spec.values, spec.right
+    if ev.size == 0:
+        raise ConvergenceError("ginzburg_landau: no finite eigenvalue at the critical wavenumber"
+                               if k is None else f"ginzburg_landau: no finite eigenvalue at k = {k:g}")
+    V = V / np.maximum(np.linalg.norm(V, axis=0), np.finfo(float).tiny)
+    if ref is None:
+        i = int(np.argmin(np.abs(ev.real)))
+        if wave is not None and ev[i].imag != 0:
+            j = int(np.argmin(np.abs(ev - np.conj(ev[i]))))
+            if j != i:
+                ai, aj = wave(V[:, i]), wave(V[:, j])
+                if aj[0] - aj[1] > ai[0] - ai[1]:
+                    i = j
+        return complex(ev[i]), V[:, i]
+    lam_c, v_c = ref
+    if V.shape[0] != v_c.size:
+        raise OptionError(f"ginzburg_landau: the system at k = {k:g} has {V.shape[0]} unknowns, "
+                          f"{v_c.size} at k_c: the critical mode cannot be followed by its "
+                          "eigenvector", fix="system_at(k) with the same unknowns for every k")
+    ov = np.abs(v_c.conj() @ V)
+    order = np.argsort(-ov)
+    i = int(order[0])
+    second = float(ov[order[1]]) if ov.size > 1 else 0.0
+    if ov[i] < GL_MODE_OVERLAP or second >= ov[i] and abs(ev[order[1]] - ev[i]) > 0:
+        raise ConvergenceError(
+            f"ginzburg_landau: the critical mode is not identified at k = {k:g} (overlap "
+            f"{ov[i]:.3f} with the critical eigenvector, next {second:.3f}; GL_MODE_OVERLAP = "
+            f"{GL_MODE_OVERLAP:g})", fix="a smaller FD step h")
+    return complex(ev[i]), V[:, i]

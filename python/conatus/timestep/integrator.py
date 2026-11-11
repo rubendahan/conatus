@@ -108,6 +108,24 @@ def _equation_rows(host, k: int) -> np.ndarray:
     return np.unique(host._rhs_maps[k].tocoo().row)
 
 
+def _check_version(meta: dict, path: Any) -> None:
+    """Warn when a checkpoint was written by another Conatus version, or by one that did not
+    record it (before 0.3.1). The identity and the numerics are compared anyway; the warning says
+    that a bit-for-bit continuation across versions is not promised."""
+    from .. import __version__
+    from ..io._identity import CheckpointWarning
+    was = meta.get("conatus_version")
+    if was == str(__version__):
+        return
+    import warnings
+    warnings.warn(
+        f"load_checkpoint: {path} was written by "
+        + (f"Conatus {was}" if was else "a Conatus version that did not record itself (before 0.3.1)")
+        + f"; this is Conatus {__version__}. The model, parameters and numerics were compared; "
+          "the continuation is exact only if the two versions compute the step identically "
+          "(see the CHANGELOG between them).", CheckpointWarning, stacklevel=4)
+
+
 class IVPSolver:
     """Constant-step IMEX solver of a discretized IVP (see module docstring)."""
 
@@ -965,6 +983,9 @@ class IVPSolver:
                     nhist_LX=len(self._LXh), bc_time=self.bc_time,
                     time_parameter=self.time_parameter,
                     history_origin=self._history_origin)
+        # the library that wrote the state (hunt 5C: none was recorded); compared on load
+        from .. import __version__
+        meta["conatus_version"] = str(__version__)
         from ..io._identity import history_operators
         meta["history_operators"] = history_operators(self)
         # what the state is a state of (model, equations, parameters, resolution, geometry):
@@ -1040,6 +1061,7 @@ class IVPSolver:
                 meta = json.loads(str(d["meta"]))
                 arrays = {k: d[k] for k in d.files if k != "meta"}
         changed = compare_identity(meta, self, allow, "load_checkpoint", path)
+        _check_version(meta, path)
         self._check_options(meta)
         check_payload(meta, arrays, self.X.shape, path)
         stale = self._stale_history(meta, changed, allow, path)

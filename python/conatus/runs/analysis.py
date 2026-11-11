@@ -32,9 +32,11 @@ class RunList(list):
 
     def _repr_html_(self) -> str:
         import html
-        rows = "".join(f"<tr><td><code>{html.escape(r.id)}</code></td><td>{r.state}</td>"
-                       f"<td>{r.status}</td><td>{html.escape(str(r.params))[:120]}</td>"
-                       f"<td>{html.escape(str(r.results))[:120]}</td></tr>" for r in self)
+        def e(v) -> str:            # every field escaped, after truncation (review G15)
+            return html.escape(str(v)[:120], quote=True)
+        rows = "".join(f"<tr><td><code>{e(r.id)}</code></td><td>{e(r.state)}</td>"
+                       f"<td>{e(r.status)}</td><td>{e(r.params)}</td>"
+                       f"<td>{e(r.results)}</td></tr>" for r in self)
         return ("<table><tr><th>id</th><th>state</th><th>status</th><th>params</th><th>results</th>"
                 f"</tr>{rows}</table>")
 

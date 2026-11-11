@@ -544,7 +544,10 @@ class ParametricEVP:
         # the eigenvalue (critic review of the invariance audit: a floor from the pencil, eps
         # ||L|| / ||M||, or from the tracked eigenvalue, made the stop test unattainable near a
         # neutral mode, sigma -> 0, and critical() failed on four gallery cases; the attainable
-        # accuracy of sigma is condition-dependent: recorded as a remaining fragile item)
+        # accuracy of sigma is condition-dependent: recorded as a remaining fragile item). r031e
+        # tried evp.eigen_scale here: the Swift-Hohenberg threshold of
+        # test_track_multiple then failed (bordered Newton singular), so the unit stays 1; the
+        # starting value comes from the balanced dense solve, accurate in any unit
         unit = 1.0
         w = np.asarray(x, complex) / np.vdot(x, x)
         x = np.asarray(x, complex) / np.vdot(w, x)
@@ -854,6 +857,10 @@ class CriticalPoint:
     # the growth convention used (a callable of sigma), so that verify() measures the growth of
     # the critical mode instead of reading the recorded value
     growth_rule: Callable[[complex], float] | None = dc_field(default=None, repr=False)
+    # every sign change found by the scan of the bracket ({"bracket": (a, b), "returned": bool})
+    # and the direction of the returned crossing (H7)
+    crossings: list = dc_field(default_factory=list)
+    direction: str = ""
 
     def __repr__(self) -> str:
         # one line (earlier versions: the dataclass repr printed every eigenvector)
@@ -959,31 +966,38 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
         g = np.array([growth(s) for s in r.values])
         return float(np.max(np.where(keep, g, -np.inf))) if keep.any() else -np.inf
 
-    def check_ends(vals) -> None:
+    def check_ends(vals, scan: bool = True) -> None:
         """Both ends of the bracket, whatever the path (earlier versions: with
         values= Newton started at the midpoint and returned the upper-branch neutral point
         Re = 31956 of Orr-Sommerfeld at alpha = 1 as verified, with the growth negative at both
-        ends of (5000, 40000)). No sign change: refused, after a coarse scan of the bracket
-        (BRACKET_SCAN_POINTS) that names the sub-brackets holding neutral points."""
+        ends of (5000, 40000)). A coarse scan of the bracket (BRACKET_SCAN_POINTS) names the
+        sub-brackets holding neutral points, every time; no sign change at the ends: refused."""
         g_lo = max_growth({**vals, parameter: lo})
         g_hi = max_growth({**vals, parameter: hi})
         state["ends_g"] = (g_lo, g_hi)
         state["ends"] = (f"bracket ends (least stable admissible mode, full QZ): growth "
                          f"{g_lo:.3e} at {parameter} = {lo:.10g}, {g_hi:.3e} at {parameter} = "
                          f"{hi:.10g}: a sign change, so a neutral point lies inside")
-        if np.sign(g_lo) * np.sign(g_hi) <= 0:
+        # the scan runs on the call that returns the critical point (H7: with a sign change at
+        # the ends, three crossings at 1, 3 and 5 in (0, 6) returned 3 unlabelled), and on every
+        # call without a sign change at the ends (to name the sub-brackets); not on the inner
+        # calls of over= (0.3.1 review: repeating it there made critical() 3-4 times slower)
+        if not scan and np.sign(g_lo) * np.sign(g_hi) <= 0:
             return
         geo = lo > 0 and hi >= 4 * lo           # wide positive brackets (Re, Ra): geometric scan
         qs = (np.geomspace if geo else np.linspace)(lo, hi, BRACKET_SCAN_POINTS + 2)
         gs = [g_lo] + [max_growth({**vals, parameter: float(q)}) for q in qs[1:-1]] + [g_hi]
         cross = [(float(qs[i]), float(qs[i + 1])) for i in range(len(qs) - 1)
                  if np.sign(gs[i]) * np.sign(gs[i + 1]) <= 0]
+        state["scan"] = (qs, gs, cross)
+        if np.sign(g_lo) * np.sign(g_hi) <= 0:
+            return
         raise _bracket_error(parameter, lo, hi, g_lo, g_hi, gnote, vals,
                              select is None and pevp.drift is None,
                              what="the least stable admissible mode", crossings=cross,
                              scan=len(qs))
 
-    def neutral(ov=None, fresh: bool = False) -> tuple[float, TrackedMode]:
+    def neutral(ov=None, fresh: bool = False, scan: bool = False) -> tuple[float, TrackedMode]:
         count[0] += 1
         vals = dict(values)
         if oname is not None:
@@ -991,7 +1005,7 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
         if fresh:                        # a scan point: the mode is selected again, at p_start
             state.pop("mode", None)
             state.pop("p", None)
-        check_ends(vals)
+        check_ends(vals, scan)
         p = state.get("p", p_start)
         vals[parameter] = p
         mode = state.get("mode")
@@ -1037,14 +1051,14 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
         return p, mode
 
     if oname is None:
-        pc, mode = neutral()
+        pc, mode = neutral(scan=True)
         ov_best = {}
     else:
         xatol_over = xtol * max(abs(olo), abs(ohi))
         x_best, scan_log = _minimize_over(neutral, oname, parameter, olo, ohi, over_points,
                                           over_start, xatol_over, lambda: state.get("ends_g"))
         log += scan_log
-        pc, mode = neutral(x_best, fresh=True)
+        pc, mode = neutral(x_best, fresh=True, scan=True)
         ov_best = {oname: float(x_best)}
         # a bounded minimizer that stops at an end of over found no interior minimum there (audit
         # "assurances": Swift-Hohenberg over q in (1.2, 1.5) returned r_c = 0.1936 at
@@ -1068,6 +1082,25 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
             _warn_user(edge_note, CorrectnessWarning)
         else:
             edge_note = ""
+    # every sign change of the scan, and the direction of the returned one (H7)
+    qs, gs, cross = state.get("scan", ((), (), []))
+    dgdp = growth(mode.sigma + pevp.sensitivity(mode, parameter)) - growth(mode.sigma)
+    direction = ("growth increases through 0 as " + parameter + " increases" if dgdp > 0 else
+                 "growth decreases through 0 as " + parameter + " increases" if dgdp < 0 else
+                 "growth flat at the crossing")
+    crossings = [{"bracket": c, "returned": c[0] <= pc <= c[1]} for c in cross]
+    scan_line = (f"scan of {len(qs)} points of the bracket (BRACKET_SCAN_POINTS = "
+                 f"{BRACKET_SCAN_POINTS} interior): {len(cross)} sign change(s) of the growth of the "
+                 "least stable admissible mode, in " + ", ".join(f"({a:.6g}, {b:.6g})" for a, b in cross)
+                 + f"; the returned {parameter}_c = {pc:.10g}: {direction}")
+    log.append(scan_line)
+    if len(cross) > 1:
+        from ..errors import CorrectnessWarning, _warn_user
+        _warn_user(f"critical(): the growth changes sign {len(cross)} times in the bracket "
+                   f"({lo:.6g}, {hi:.6g}); the returned {parameter}_c = {pc:.10g} is one of them "
+                   f"({direction}), not necessarily the first threshold: narrow the bracket "
+                   "around the crossing wanted (CriticalPoint.crossings lists them)",
+                   CorrectnessWarning)
     # verification: full QZ at the critical point, tracked mode must be the least stable one
     r = pevp.solve(**mode.values)
     keep, cnote = pevp.admissible(r, mode.values, select, growth=growth)
@@ -1075,8 +1108,14 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
     gmax = float(np.max(np.where(keep, g, -np.inf)))
     from .._scales import spectral_floor
     if gmax > growth(mode.sigma) + MODE_SWITCH_TOL * max(abs(mode.sigma), spectral_floor(r.values)):
-        raise RuntimeError(f"mode switch: another admissible mode has growth {gmax:.3e} > 0 at the "
-                           f"critical point {mode.values}")
+        from ..errors import ConvergenceError
+        # typed (review H15; ConvergenceError is a RuntimeError, as before)
+        raise ConvergenceError(f"mode switch: another admissible mode has growth {gmax:.3e} > 0 at "
+                               f"the critical point {mode.values}",
+                               why="the tracked mode is not the least stable admissible mode there, "
+                                   "so its neutral point is not the critical point",
+                               fix="track the other mode (start the search near it), or narrow "
+                                   "the range searched")
     if select is None and pevp.drift is None:
         if pevp.spurious != "tail":
             what = "no spurious-mode rejection (spurious='none')"
@@ -1101,7 +1140,7 @@ def critical(pevp: ParametricEVP, parameter: str, *, bracket: tuple[float, float
                    f"UNRESOLVED_TAIL_TOL = {UNRESOLVED_TAIL_TOL:g}; the residual does not show it)")
     return CriticalPoint(parameter, float(pc), ov_best, mode, count[0], [s for s in log if s],
                          float(growth(mode.sigma)), True, mode.unresolved_note,
-                         edge_note if oname is not None else "", growth)
+                         edge_note if oname is not None else "", growth, crossings, direction)
 
 
 def _minimize_over(neutral: Callable, oname: str, parameter: str, olo: float, ohi: float,

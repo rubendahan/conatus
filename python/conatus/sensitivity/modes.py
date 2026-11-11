@@ -129,11 +129,18 @@ def mode_pair(system: ModalSystem, *, N: int, target: complex, adjoint: str,
         raise OptionError("adjoint='continuous' needs adjoint_bcs (declared, then checked)")
     desc = system.discretize(N)
     L, M = desc.L, desc.M
-    (a, b), VL, VR = sla.eig(-L, M, left=True, right=True, homogeneous_eigvals=True)
-    scale = np.linalg.norm(L, 1) / np.linalg.norm(M, 1)
+    # balanced pencil (hunt the eigenvalue in its own unit beside O(1) tau rows
+    # lost digits, and the infinite test on ||L||/||M|| removed finite modes): same balancing as
+    # solvers.evp.solve_dense; infinite_tol applies to the balanced pencil
+    from ..solvers.evp import balance_pencil
+    Ld, Md = np.asarray(L), np.asarray(M)
+    Le, Me, mu, dc, r = balance_pencil(Ld, Md)
+    (a, b), VL, VR = sla.eig(-Le, Me, left=True, right=True, homogeneous_eigvals=True)
+    VL, VR = VL / r, VR / dc[:, None]
+    scale = np.linalg.norm(Le, 1) / np.linalg.norm(Me, 1)
     finite = np.abs(b) * scale > infinite_tol * np.abs(a)
     lam = np.full(a.shape, np.inf + 0j)
-    lam[finite] = a[finite] / b[finite]
+    lam[finite] = mu * a[finite] / b[finite]
     i = int(np.argmin(np.where(finite, np.abs(lam - target), np.inf)))
     sigma = complex(lam[i])
     x, y = VR[:, i], VL[:, i]

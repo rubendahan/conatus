@@ -13,6 +13,9 @@ import conatus as cn  # noqa: E402
 k = np.arange(4000)
 x = np.random.default_rng(0).standard_normal(4000) + 0.5 * np.sin(2 * np.pi * k / 3000)
 r = cn.time_average(x, discard=0)
-check(not r.trusted, f"trusted with batch/Sokal = {r.batch_stderr / r.stderr:.2f}, mean "
+# 0.3.1 (hunt 5D, Q6): the batch means are part of the standard error, so a trusted report must
+# hold the true mean 0 in its interval
+check(not r.trusted or r.interval[0] <= 0 <= r.interval[1],
+      f"trusted with batch/Sokal = {r.batch_stderr / r.stderr:.2f}, mean "
       f"{r.mean:.3g} +- {r.stderr:.2g} (true 0)")
-passed(f"flagged: {r.flags[-1][:80]}")
+passed(f"flagged: {r.flags[-1][:80]}" if r.flags else f"interval {r.interval} holds 0")

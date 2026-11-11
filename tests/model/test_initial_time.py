@@ -157,3 +157,13 @@ def test_guide_examples_run_as_written(name):
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     mod.CHECKS[name]()
+
+
+@pytest.mark.parametrize("until", [1e300, 1e20])
+def test_run_until_beyond_exact_step_counts_is_refused(until):
+    """0.3.1 review (hunt 5C script a01): run(until=1e300) started 1e302 steps and never returned.
+    Past 2**53 steps the count is not exact: refused at the call, before any step."""
+    s = _model().simulate(N=32, scheme="RK443", dt=0.01, dealias=1)
+    with pytest.raises(cn.errors.ResolutionError, match="2\\*\\*53"):
+        s.run(until=until)
+    assert s.iteration == 0

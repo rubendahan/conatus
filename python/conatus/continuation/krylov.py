@@ -149,7 +149,11 @@ class KrylovArclength:
             return np.concatenate([self.Jv(x, d[:n], p) + d[n] * self.Gp(x, p),
                                    [np.dot(tx, d[:n]) + w2 * tp * d[n]]])
         z0 = np.concatenate([x_pred, [p_pred]])
-        res = self.newton.solve(R, J, z0, scale=max(1.0, float(np.linalg.norm(x_pred))))
+        # residual relative to the size of the state times min(1, rate of G) (H5 sibling: an
+        # absolute test on G accepted the predictor of a slow problem, G -> 1e-10 G)
+        from ..ecs.newton import _rate_scale
+        rate, _ = _rate_scale(lambda z, d: J(z, d)[:n], z0)
+        res = self.newton.solve(R, J, z0, scale=max(1.0, float(np.linalg.norm(x_pred))) * rate)
         return res.z[:n], float(res.z[n]), res.iterations
 
     def _point(self, s, x, p, its) -> KrylovBranchPoint:

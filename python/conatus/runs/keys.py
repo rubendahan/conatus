@@ -139,7 +139,7 @@ def exact_hash(v: Any, _active: set[int] | None = None) -> bool:
     t = type(v)
     if v is None or t in (bool, int, float, complex, str, bytes, np.ndarray) \
             or isinstance(v, (np.number, np.bool_)):
-        return not (t is np.ndarray and v.dtype == object)
+        return not (t is np.ndarray and v.dtype.hasobject)
     if t not in (dict, list, tuple):
         return False
     _active = set() if _active is None else _active

@@ -68,27 +68,85 @@ class VerificationReport:
         return self.explain()
 
 
-def _tail(pevp, x: np.ndarray, k: int = 4) -> float:
-    """max over the components of every unknown of |last k coefficients| / max |coefficients|
-    (a-posteriori resolution); NaN when no component has more than ``k`` coefficients.
+def _lines(pevp) -> tuple[list | None, str]:
+    """The coefficient lines of the pencil's vectors along the non-periodic axis, one per
+    (unknown, component, Fourier index) and per piece of a compound basis, as (index array into
+    the vector, symmetry-removed entries dropped; True for a piece of a compound basis); (None,
+    why) when the plan has no such layout."""
+    from ..solvers.spurious import tail_layout
+    try:
+        plan, group, reduced = pevp._layout_of
+        layout, why = tail_layout(plan, group, reduced, require_tau=False)
+    except Exception as exc:  # noqa: BLE001 -- the fallback below is said in the check's text
+        return None, f"{type(exc).__name__}: {exc}"
+    if layout is None:
+        return None, why or "no non-periodic axis"
+    lines = []
+    for _name, idx, pieces in layout:
+        for row in idx:
+            for a, b in pieces:
+                seg = row[a:b]
+                lines.append((seg[seg >= 0], len(pieces) > 1))
+    return lines, ""
 
-    Per (variable, component) (audit "assurances"): the columns of a vector unknown
-    hold its components one after the other, so the last k entries of the whole variable were the
-    top coefficients of its LAST component only, and an unresolved first component passed; a
-    pencil with no measurable component returned 0, a PASS on nothing measured."""
+
+def _compound(pevp) -> bool:
+    """True when a basis of the pencil's domain is stored piece after piece (``sizes``); False for
+    a pencil without a plan (its columns are measured per (unknown, component))."""
+    lay = getattr(pevp, "_layout_of", None)
+    if lay is None:
+        return False
+    try:
+        bases = lay[0].domain.bases
+    except Exception:  # noqa: BLE001 -- a plan whose bases cannot be read: pieces may exist
+        return True
+    return any(len(getattr(b, "sizes", ()) or ()) > 1 for b in bases if b is not None)
+
+
+def _tail(pevp, x: np.ndarray, k: int = 4) -> float:
+    """Largest coefficient tail of the mode (a-posteriori resolution along the non-periodic axis):
+    for every coefficient line of every unknown (one per component, per Fourier index of the
+    group and per piece of a compound basis), max |last k coefficients of the line| over the
+    largest coefficient of that (unknown, component). NaN when nothing is measured, when a
+    component is zero or non-finite, or when a piece holds k coefficients or fewer.
+
+    Per (variable, component) (audit "assurances"): the last k entries of a vector unknown were
+    the top coefficients of its last component only. Per piece and per Fourier index (0.3.1):
+    a CompoundChebyshev unknown stores its pieces one after the other and a group holds its
+    Fourier lines one after the other, so the last k entries were the top of the last piece of
+    the last line only, and an unresolved first piece passed (eigenvalue 2-5 % off)."""
     cols = pevp.gm0.cols
+    keep = [i for i, c in enumerate(cols) if c[2] != "tau"]
+    key = {i: (cols[i][0], cols[i][1]) for i in keep}
+    scale: dict = {}
+    for i in keep:
+        a = abs(x[i])
+        scale[key[i]] = max(scale.get(key[i], 0.0), a) if np.isfinite(a) else float("nan")
+    lines, _why = _lines(pevp)
+    if lines is None:
+        if _compound(pevp):
+            # one block per component holds several pieces whose boundaries this plan does not
+            # expose: a tail of the last k entries would measure the last piece only
+            return float("nan")
+        lines = [(np.array([i for i in keep if key[i] == kk]), False)
+                 for kk in dict.fromkeys(key.values())]
     tails = []
-    for key in dict.fromkeys((c[0], c[1]) for c in cols if c[2] != "tau"):
-        idx = [i for i, c in enumerate(cols) if (c[0], c[1]) == key and c[2] != "tau"]
-        if len(idx) <= k:
-            continue
-        a = np.abs(x[idx])
-        if not (np.all(np.isfinite(a)) and a.max() > 0):
+    for seg, piece in lines:
+        if seg.size <= k:
+            if piece and seg.size:
+                tails.append(float("nan"))    # a piece too short to show a tail: not measured
+            continue                          # a line without length (a constant): no tail
+        s = scale.get(key[int(seg[0])], float("nan"))
+        if not (np.isfinite(s) and s > 0):
             # a zero or non-finite component has no tail to measure (review 0.1.1, sweep of F4:
             # 0 / 1e-300 = 0 was a PASS on a zero vector)
             tails.append(float("nan"))
             continue
-        tails.append(coefficient_tail(a, k))
+        a = np.abs(x[seg])
+        # the one coefficient-tail definition, rescaled from the line's largest coefficient to
+        # the component's
+        ok = np.all(np.isfinite(a))
+        tails.append(coefficient_tail(a, k) * float(a.max()) / s if ok else float("nan"))
     return float(np.max(tails)) if tails else float("nan")     # np.max keeps a NaN
 
 
@@ -143,8 +201,10 @@ def verify(pevp, mode, critical=None, *, rel_h: float = 1e-4) -> VerificationRep
                               RESIDUAL_TOL, "||y^H (L + sigma M)|| backward error, measured on "
                               "the current vector"))
     r.checks.append(Check("spectral tail", _tail(pevp, x), TAIL_TOL,
-                          "last 4 Chebyshev coefficients / max, per component of each unknown "
-                          "(mode resolved in N; NaN: no component long enough, not measured)"))
+                          "last 4 coefficients / max along the non-periodic axis, per component, "
+                          "Fourier line and piece of each unknown (NaN: not measured). A small "
+                          "tail is necessary for a resolved mode, not sufficient: it does not "
+                          "measure the eigenvalue error, the Fourier directions or aliasing"))
     for p in pevp.params:
         if mode.y is None:
             break

@@ -13,6 +13,13 @@ anywhere in the equations as long as they are affine in it.
 
 ## Solvers
 
+- **Balancing.** QZ and shift-invert run on the pencil written in its own units. The eigenvalue
+  is divided by the smallest ratio of $L$ to $M$ over the rows that carry $M$. Each tau or lift
+  unknown (a column without $M$ that enters only those rows) is scaled to the size of its rows,
+  and every row is divided by its largest entry. A unit between $10^{-2}$ and $10^{2}$, or a
+  tau-column factor between $10^{-4}$ and $10^{4}$, is not applied. The eigenvalues are then the same, to rounding, after a change of time or length unit
+  or after multiplying an equation by a constant: $sT = \kappa T''$ in SI units
+  ($\kappa = 1.4\times 10^{-7}$, $H = 4$ km) gives $-\kappa(\pi/H)^2$ to $10^{-12}$.
 - **Dense QZ** on the full pencil. Because the boundary and tau rows have no $M$ part, the pencil
   has infinite eigenvalues. A pair $(\alpha, \beta)$ is classified infinite when $\beta = 0$, or
   when $|\beta| \le 10^3\,\varepsilon\,|\alpha|$ (rows equilibrated, scaled by
@@ -21,7 +28,9 @@ anywhere in the equations as long as they are affine in it.
   returned. The infinite ones are counted in `n_infinite`; the log states the rank of $M$ and
   names any pair the rule cannot classify. Left eigenvectors are available.
 - **Shift-invert Arnoldi** for a few eigenvalues near a target, valid for singular,
-  non-symmetric $M$.
+  non-symmetric $M$. A target within $10^{-5}$ (relative) of an eigenvalue moves the Arnoldi
+  shift by that distance off the real axis; the log says so. When fewer modes than `n_modes`
+  come back, a `CorrectnessWarning` says how many and why.
 
 Before solving, the pencil is checked for regularity at a generic $\sigma$; a singular pencil
 (a missing condition) is refused.

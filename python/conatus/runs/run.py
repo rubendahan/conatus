@@ -40,7 +40,7 @@ from typing import Any
 import numpy as np
 
 from .._redact import redact_argv
-from ..errors import OptionError
+from ..errors import InputTypeError, OptionError
 from .._explain import full_explain
 from ._util import atomic_write_json, file_sha256, from_jsonable, jsonable, slug
 from .store import SCHEMA, STATES, STATUSES, Registry
@@ -112,6 +112,31 @@ def _to_host(a: Any) -> np.ndarray:
     if type(a).__module__.split(".")[0] == "cupy":
         return a.get()
     return np.array(a, copy=True)
+
+
+def _storable(a: Any, what: str) -> np.ndarray:
+    """A host copy of ``a`` that ``data.h5`` stores exactly, or :class:`InputTypeError` here, in the
+    caller's thread. Refused: masked arrays (HDF5 keeps the data, not the mask), Python objects,
+    and dtypes HDF5 has no type for (datetime, timedelta, unicode strings, structured arrays with
+    such fields). They used to be accepted, then lost in the writer thread or stored without the
+    mask (review H11)."""
+    if isinstance(a, np.ma.MaskedArray):
+        raise InputTypeError(f"{what}: a masked array (the mask would not be stored)",
+                             why="a field is stored as plain HDF5 data; the mask used to be dropped",
+                             fix="store a.filled(value) and the mask (np.ma.getmaskarray(a)) as two fields")
+    host = _to_host(a)
+    try:
+        import h5py
+        if host.dtype.hasobject:
+            raise TypeError("Python objects")
+        h5py.h5t.py_create(host.dtype, logical=True)
+    except TypeError as why:
+        raise InputTypeError(f"{what}: dtype {host.dtype} cannot be stored in HDF5 ({why})",
+                             why="the field used to be accepted here, then lost in the writer thread "
+                                 "after the call returned",
+                             fix="store numbers (int, float, complex, bool), bytes, or structured "
+                                 "arrays of these; convert dates with a.astype('int64')") from None
+    return host
 
 
 class Run:
@@ -337,7 +362,9 @@ class Run:
                    t: float | None = None, step: int | None = None) -> bool:
         """Queue a copy of ``array`` for ``data.h5`` (``fields/<name>/<k>``). ``compression`` has no
         default (None, 'gzip' or 'lzf', all lossless; ``level`` 0–9 for gzip) and is written in the
-        dataset's attributes. Returns False if the queue was full (dropped, counted)."""
+        dataset's attributes. Returns False if the queue was full (dropped, counted). A masked
+        array, Python objects and dtypes HDF5 has no type for (datetime, timedelta, unicode
+        strings) raise :class:`~conatus.errors.InputTypeError` here."""
         self._live("save_field")
         if compression not in COMPRESSIONS:
             raise OptionError(f"save_field: compression={compression!r} unknown; one of {COMPRESSIONS}",
@@ -352,7 +379,7 @@ class Run:
                               why="a bad level used to be refused by HDF5 in the writer thread, "
                                   "after the call returned, and the field was lost",
                               fix="level=4 (any integer from 0, fastest, to 9, smallest)")
-        return self._put(("field", str(name), _to_host(array),
+        return self._put(("field", str(name), _storable(array, f"save_field({name!r})"),
                           {"compression": compression, "level": level, "t": t, "step": step}))
 
     def save_file(self, path: str | os.PathLike, name: str | None = None) -> bool:
@@ -659,7 +686,16 @@ class Run:
                                   fix=f"fields: {sorted(h5.get('fields', {}).keys())}")
             g = h5[f"fields/{name}"]
             keys = sorted(g.keys(), key=int)
-            return g[keys[index]][()]
+            if not keys:
+                errs = (self.rec.get("writer") or {}).get("errors")
+                raise OptionError(f"conatus.runs: run {self.id}: field {name!r} has no stored snapshot",
+                                  why=f"the writer failed to store it (errors: {errs})" if errs
+                                  else "the writer stored no snapshot of it")
+            try:
+                return g[keys[index]][()]
+            except IndexError:
+                raise OptionError(f"conatus.runs: run {self.id}: field {name!r} has {len(keys)} "
+                                  f"snapshot(s); index {index} is out of range") from None
 
     def file_path(self, name: str) -> Path:
         """The attached file ``name`` of this run. ``name`` must be a plain file name: no directory

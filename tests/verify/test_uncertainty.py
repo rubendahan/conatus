@@ -33,7 +33,8 @@ def u_at_0(N, dt):
 
 
 def test_interval_contains_the_exact_value():
-    rep = cn.uncertainty(u_at_0, N=[8, 12, 16], dt=[0.04, 0.02, 0.01], scheme_order=2, name="u(0, T)")
+    # four resolutions: three fit any convergence law and are flagged (hunt 5D, Q5)
+    rep = cn.uncertainty(u_at_0, N=[8, 10, 12, 14], dt=[0.04, 0.02, 0.01], scheme_order=2, name="u(0, T)")
     ex = exact()
     true_err = abs(rep.value - ex)
     lo, hi = rep.interval
@@ -89,13 +90,17 @@ def test_unequal_resolution_steps_are_modelled():
     r = cn.uncertainty(lambda N, dt: 1 + math.exp(-N) + dt ** 2, N=[1, 4, 5],
                        dt=[4e-4, 2e-4, 1e-4], scheme_order=2)
     assert r.interval[0] <= 1 <= r.interval[1]
-    assert abs(r.value - 1) <= r.error <= 2 * abs(r.value - 1)
+    # the geometric estimate at the actual increments; three resolutions leave the law untested
+    # (flagged, the larger algebraic estimate is the error)
+    geo = r.temporal.estimate + r.spatial.estimate_geometric
+    assert abs(r.value - 1) <= geo <= 2 * abs(r.value - 1)
+    assert not r.trusted and r.error >= geo
     # equal steps: the same estimate as the closed form |d2| rho / (1 - rho)
     r2 = cn.uncertainty(lambda N, dt: 1 + math.exp(-N), N=[2, 4, 6], dt=[4, 2, 1],
                         scheme_order=2)
     d1, d2 = math.exp(-4) - math.exp(-2), math.exp(-6) - math.exp(-4)
     rho = abs(d2 / d1)
-    assert math.isclose(r2.spatial.estimate, 1.25 * abs(d2) * rho / (1 - rho), rel_tol=1e-9)
+    assert math.isclose(r2.spatial.estimate_geometric, 1.25 * abs(d2) * rho / (1 - rho), rel_tol=1e-9)
 
 
 def test_untrusted_without_checked_hypotheses():
@@ -121,7 +126,7 @@ def test_n62_alternating_spatial_differences_are_not_trusted(sign, Ns):
 
 
 @pytest.mark.parametrize("sign", [1, -1])
-@pytest.mark.parametrize("Ns", [[2, 3, 4], [2, 4, 5], [4, 5, 7]])
+@pytest.mark.parametrize("Ns", [[2, 3, 4, 5], [2, 4, 5, 6], [4, 5, 7, 8]])
 def test_n62_monotone_exponential_stays_trusted(sign, Ns):
     rep = cn.uncertainty(lambda N, dt: 1 + sign * 2.0 ** (-N) + dt ** 2, N=Ns,
                       dt=[0.04, 0.02, 0.01], scheme_order=2)

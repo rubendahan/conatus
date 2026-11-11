@@ -15,7 +15,10 @@ log modulus, never the determinant itself: :mod:`conatus.contour.operators`). Be
 only the principal value of the phase increment is known, so the walk is adaptive: a step is
 accepted when
 
-* its principal increment and those of its two halves are at most ``phase_step``, and
+* its principal increment is at most ``phase_step``, and the complex increments of
+  ``log det T`` over its two halves (log modulus and principal phase) are at most ``phase_step``
+  in modulus: the log modulus has no 2 pi ambiguity, and a cluster of zeros near the step that
+  turns the phase by a multiple of 2 pi changes it, and
 * ``log det T`` is resolved by the step: the second difference of ``log|det T| + i arg det T``
   over the two halves is at most ``phase_step`` as well (a zero close to the step makes the
   modulus dip between the points),
@@ -155,7 +158,8 @@ class CountResult:
                  f"P = {P}",
                  f"  operator: {self.operator}",
                  f"  walk: {self.evaluations} evaluations of det T, every step with a principal "
-                 f"phase increment <= {self.phase_step:.3g} rad (and its two halves), log det T "
+                 f"phase increment <= {self.phase_step:.3g} rad, and on its two halves a complex "
+                 f"increment of log det T (log modulus and phase) <= {self.phase_step:.3g}, log det T "
                  "resolved by every step",
                  f"  winding before rounding: off an integer by {self.winding_error:.1e} (a "
                  "non-integer winding is refused)",
@@ -226,8 +230,15 @@ def _walk(op: Operator, region: ContourBox, phase_step: float, initial_points: i
                 fm = ev(m)
                 d1, d2 = dlog(fa, fm), dlog(fm, fb)
                 whole = abs(float(np.angle(fb[0] * np.conj(fa[0]))))
-                resolved = (whole <= phase_step and abs(d1.imag) <= phase_step
-                            and abs(d2.imag) <= phase_step and abs(d2 - d1) <= phase_step)
+                # |d1|, |d2| bound the whole complex increment of log det T, not only its
+                # principal phase (hunt 5C): a double zero 1e-3 off an edge, about 15 %
+                # into a step, turns the phase by 2 pi there, which aliases to 0, while the log
+                # modulus of the two halves stays nearly collinear; 48 of 197 positions along an
+                # edge counted 2 eigenvalues for 3. The log modulus is known without aliasing and
+                # changes by about 2 log(distance ratio) across such a step, so bounding it
+                # refines the step down to the distance of the zero.
+                resolved = (whole <= phase_step and abs(d1) <= phase_step
+                            and abs(d2) <= phase_step and abs(d2 - d1) <= phase_step)
                 bend = abs(d2 - d1)
                 if resolved:
                     # the phase test passed on this step: its length is the one the phase needed

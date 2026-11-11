@@ -238,10 +238,18 @@ class LBVPSolution:
         return self.plan.to_grid(name, self.coeffs[name])
 
     def coordinate(self, name: str) -> np.ndarray:
-        """Points of coordinate ``name`` of the grid of ``grid()`` (same as Simulation.coordinate)."""
-        c = next((c for c in self.plan.domain.coordsys.coords if c.name == name), None)
+        """Points of coordinate ``name`` of the grid of ``grid()`` (same as Simulation.coordinate;
+        disk, annulus, cylinder, sphere, ball, shell: the plan's own grids)."""
+        coords = list(self.plan.domain.coordsys.coords)
+        c = next((c for c in coords if c.name == name), None)
         if c is None or self.plan.domain.basis(c) is None:
             raise KeyError(f"no basis along {name!r} in {self.plan.domain!r}")
+        space = getattr(self.plan, "space", None)
+        if space is not None and hasattr(space, "grids"):
+            # curvilinear plans (hunt): the reference transforms have no polar or
+            # spherical basis, so this raised NotImplementedError where Simulation.coordinate works;
+            # a copy, as there (the sphere's theta is a cached grid of the plan)
+            return np.array(space.grids(False)[coords.index(c)], copy=True)
         return T.grid(self.plan.domain.basis(c), dealias=False)
 
     def explain(self) -> str:

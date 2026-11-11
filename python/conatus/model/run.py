@@ -316,7 +316,20 @@ class Simulation:
                     "curved geometry or a sine/cosine axis the solver grid is not the grid of "
                     "sim.grid()", fix=f"initial({name}=lambda ...: ...) (a callable of the "
                     "coordinates)", doc=_DOC)
+        if isinstance(v, np.ma.MaskedArray) and np.ma.is_masked(v):
+            # review H13: the masked entries were read as data without a word
+            raise InputTypeError(
+                f"initial({name}=<masked array>): {int(np.ma.count_masked(v))} masked value(s)",
+                why="initial data are grid values at every point; a masked entry has no value, "
+                    "and its stored number would be read as data",
+                fix=f"fill them explicitly: initial({name}=a.filled(value))", doc=_DOC)
         arr = np.asarray(v.get() if hasattr(v, "get") and not isinstance(v, np.ndarray) else v)
+        if arr.dtype.kind not in "biufc":
+            # review H13: object, structured and datetime arrays raised bare NumPy errors
+            raise InputTypeError(
+                f"initial({name}=<array of dtype {arr.dtype}>): not numbers",
+                why="initial data are real (or, on a complex field, complex) grid values",
+                fix=f"an array of floats of the shape of sim.grid({name!r})", doc=_DOC)
         want = self.solver.grid(name).shape
         if arr.shape != want:
             raise InputTypeError(
@@ -452,6 +465,13 @@ class Simulation:
             from ..errors import check_real
             until = check_real(until, "until", "run()")
             n = (until - self.t) / self.dt
+            if abs(n) > float(2 ** 53):
+                # 0.3.1 review: until=1e300 started 1e302 steps (the hunt's script hung); past
+                # 2**53 the step count is not a whole number a float can hold
+                raise ResolutionError(
+                    f"run(until={until}): {n:.3g} steps of dt = {self.dt:g}",
+                    why="past 2**53 steps the count of steps to the stop time is not exact",
+                    fix="a stop time within 2**53 steps of the current time", doc=_DOC)
             steps = int(round(n))
             if steps < 0:                          # before the clock: no step count fixes it
                 # (earlier versions: the fix line suggested run(steps=-2))

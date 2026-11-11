@@ -18,7 +18,7 @@ from ..ir import expr as E
 from ..ir.bases import Basis
 from ..ir.parse import _LiftBasis
 from .dedalus_objects import (_DEDALUS_ONLY_SCHEMES, _SCHEMES, _Bundle, _Dist, _Scheme, _trace,
-                              _Unsupported)
+                              _Skip, _Unsupported)
 
 if TYPE_CHECKING:
     from .dedalus_interpreter import _Interpreter
@@ -300,7 +300,13 @@ class _D3:
                               "(cn.io, HDF5 or npz written by Conatus)",
         }
         if name in refused:
-            if name in ("CFL", "GlobalFlowProperty"):
+            if name == "GlobalFlowProperty":
+                # diagnostics read the state and change nothing: the line and the lines that use
+                # the object are output only (skipped, with this note), not a translation gap
+                def f(*a, **k):
+                    raise _Skip("output only: " + refused[name])
+                return f
+            if name == "CFL":
                 def f(*a, **k):
                     raise _Unsupported(refused[name])
                 return f

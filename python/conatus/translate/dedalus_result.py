@@ -7,16 +7,17 @@ and ``to_script()``. Public face and entry point: ``conatus.translate.dedalus.fr
 from __future__ import annotations
 
 import ast
+import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from ..errors import UnsupportedError
+from ..errors import CorrectnessWarning, UnsupportedError
 from ..ir import (Field)
 from .dedalus_interpreter import _NpFunc
 from .dedalus_objects import (STATUSES, ReportLine, _field_data_target, _FieldData, _Grid,
-                              _is_field_data, _is_num, _Opaque)
+                              _is_field_data, _is_num, _Opaque, _Skip, _Unsupported)
 
 if TYPE_CHECKING:
     from .dedalus_interpreter import _Interpreter
@@ -55,7 +56,9 @@ class DedalusTranslation:
     def complete(self) -> bool:
         """True when a problem was translated with no known semantic loss: no line unsupported
         and none approximated (an approximated line is a declared difference of method, e.g.
-        a dropped Nyquist mode or another tau projection)."""
+        a dropped Nyquist mode or another tau projection). ``discretize``, ``ivp_solver``,
+        ``ncc`` and ``initial_state`` refuse a translation with an unsupported line unless
+        ``allow_incomplete=True``."""
         c = self.counts()
         return self.problem is not None and c["unsupported"] == 0 and c["approximated"] == 0
 
@@ -67,27 +70,90 @@ class DedalusTranslation:
         """The script's numeric names (kappa, nu, Lz, ...): a namespace for string equations."""
         return {k: v for k, v in self.namespace.items() if _is_num(v)}
 
-    def ncc(self) -> dict:
-        """Grid functions of the non-variable fields that have translated data (NCC / RHS data)."""
+    def ncc(self, *, allow_incomplete: bool = False) -> dict:
+        """Grid functions of the non-variable fields that have translated data (NCC / RHS data).
+        Refused on an incomplete translation unless ``allow_incomplete=True`` (see
+        :meth:`discretize`)."""
+        self._refuse_incomplete("ncc()", allow_incomplete)
+        return self._ncc()
+
+    def _ncc(self) -> dict:
         pv = set(self.problem.variables) if self.problem is not None else set()
         return {f: g for f, g in self.data.items() if f not in pv and g is not None}
 
-    def initial_state(self) -> dict:
-        """Grid functions of the problem variables with translated data (for set_state)."""
+    def initial_state(self, *, allow_incomplete: bool = False) -> dict:
+        """Grid functions of the problem variables with translated data (for set_state).
+        Refused on an incomplete translation unless ``allow_incomplete=True``."""
+        self._refuse_incomplete("initial_state()", allow_incomplete)
+        return self._initial_state()
+
+    def _initial_state(self) -> dict:
         pv = set(self.problem.variables) if self.problem is not None else set()
         return {f: g for f, g in self.data.items() if f in pv and g is not None}
 
-    def discretize(self, **kw):
-        """``discretize(problem, ncc=<translated data of the coefficient fields>, **kw)``."""
-        from ..discretize import discretize
+    def _refuse_incomplete(self, what: str, allow: bool) -> None:
+        """An unsupported statement may change the problem or its data: the call is refused,
+        naming the statements, unless the caller allows it (then it is warned). Review H8: the
+        solver of an incomplete translation used to come back without a word."""
+        bad = self.lines("unsupported")
+        if not bad:
+            return
+        shown = "; ".join(
+            f"line {r.lineno}: {(r.source.strip().splitlines() or [''])[0][:60]} ({r.note[:120]})"
+            for r in bad[:3]) + (f"; and {len(bad) - 3} more" if len(bad) > 3 else "")
+        if allow:
+            warnings.warn(f"tr.{what} on an incomplete translation of {self.source_name} "
+                          f"({len(bad)} statement(s) not translated): {shown}",
+                          CorrectnessWarning, stacklevel=3)
+            return
+        raise UnsupportedError(
+            f"tr.{what}: the translation of {self.source_name} is incomplete "
+            f"({len(bad)} statement(s) not translated)",
+            where=shown,
+            why="a statement that is not translated may change the problem, its data or its "
+                "initial state, so the result would not be the script's",
+            fix=f"translate or remove these statements (tr.explain() lists them), or pass "
+                f"allow_incomplete=True to {what.rstrip('()')} to accept the difference (it is "
+                "then warned)")
+
+    def _check_square(self) -> None:
+        """One equation per variable (boundary conditions included), counted before the build:
+        a dropped equation used to reach the solver as a ValueError (review H14)."""
+        ne, nv = len(self.problem.equations), len(self.problem.variables)
+        eqs = [r for r in self.report if r.status not in ("translated", "approximated")
+               and "add_equation" in r.source]
+        # only a dropped equation is refused here; otherwise Dedalus's rule applies (squareness
+        # per group on the valid modes), checked by the discretization (0.3.1 review)
+        if ne != nv and eqs:
+            raise UnsupportedError(
+                f"the translated problem has {ne} equation(s) for {nv} variable(s)",
+                where="; ".join(f"line {r.lineno}: {r.source.strip()[:60]} ({r.status})"
+                                for r in eqs[:4]) or f"{self.source_name}",
+                why="a Dedalus problem has one equation per variable, boundary conditions "
+                    "included; an equation that was not translated leaves the system non-square",
+                fix="see tr.explain() for the equations that were not translated")
+
+    def discretize(self, *, allow_incomplete: bool = False, **kw):
+        """``discretize(problem, ncc=<translated data of the coefficient fields>, **kw)``.
+
+        Refused (``UnsupportedError`` naming the statements) when a statement of the script was
+        not translated, unless ``allow_incomplete=True`` (then a ``CorrectnessWarning`` names
+        them); approximated statements are declared in the report and not refused. The
+        equations are counted against the variables before the build."""
         if self.problem is None:
             raise UnsupportedError("no problem was translated", fix="see explain()")
-        ncc = self.ncc()
+        self._refuse_incomplete("discretize()", allow_incomplete)
+        return self._discretize(**kw)
+
+    def _discretize(self, **kw):
+        from ..discretize import discretize
+        self._check_square()
+        ncc = self._ncc()
         ncc.update(kw.pop("ncc", {}) or {})
         return discretize(self.problem, ncc=ncc or None, **kw)
 
     def ivp_solver(self, plan=None, *, dt: float | None = None, scheme: str | None = None,
-                   **kw):
+                   allow_incomplete: bool = False, **kw):
         """IVPSolver with the scheme and fixed dt declared by the script (explicit arguments win,
         and are required when the script's dt was not translatable, e.g. an adaptive CFL).
 
@@ -95,8 +161,12 @@ class DedalusTranslation:
         default (``"auto"`` = ``"rk"``, which keeps the order of the scheme) would change the
         digits of every scheme that loses order with moving boundary data. Pass
         ``bc_time="auto"`` (or ``"stage"``) to get a Conatus convention; ``explain()`` states
-        which one is used."""
+        which one is used. A translation with an unsupported statement is refused unless
+        ``allow_incomplete=True`` (see :meth:`discretize`)."""
         from ..timestep import IVPSolver
+        if self.problem is None:
+            raise UnsupportedError("no problem was translated", fix="see explain()")
+        self._refuse_incomplete("ivp_solver()", allow_incomplete)
         scheme = scheme or self.scheme
         dt = dt if dt is not None else self.timestep
         if scheme is None or dt is None:
@@ -104,24 +174,32 @@ class DedalusTranslation:
                 "the script does not declare a translatable scheme and fixed dt",
                 why="the time stepper and the time step are explicit choices",
                 fix="tr.ivp_solver(dt=..., scheme='RK222')")
-        plan = plan if plan is not None else self.discretize()
+        plan = plan if plan is not None else self._discretize()
         if self.time_parameter:
             kw.setdefault("time_parameter", self.time_parameter)
         kw.setdefault("bc_time", "step")           # Dedalus convention (docstring)
         s = IVPSolver(plan, scheme, float(dt), **kw)
-        init = self.initial_state()
+        init = self._initial_state()
         if init:
             s.set_state(init)
         return s
 
     def steps(self) -> int | None:
-        """Number of steps: stop_iteration, or stop_sim_time / dt when it is an integer."""
-        if self.stop_iteration is not None:
-            return int(self.stop_iteration)
-        if self.stop_sim_time is None or not self.timestep:
-            return None
-        n = self.stop_sim_time / self.timestep
-        return int(round(n)) if abs(n - round(n)) < 1e-9 * max(1, n) else None
+        """Number of steps: the first limit reached, as Dedalus checks every limit
+        (``stop_iteration``, and ``stop_sim_time / dt`` when it is an integer); None when a
+        limit is not a whole number of steps or none is set. Review P1: stop_iteration used to
+        win over an earlier stop_sim_time."""
+        limits = []
+        if self.stop_iteration is not None and np.isfinite(self.stop_iteration):
+            limits.append(int(self.stop_iteration))
+        if self.stop_sim_time is not None and np.isfinite(self.stop_sim_time):
+            if not self.timestep:
+                return None
+            n = self.stop_sim_time / self.timestep
+            if abs(n - round(n)) >= 1e-9 * max(1, n):
+                return None
+            limits.append(max(int(round(n)), 0))
+        return min(limits) if limits else None
 
     # display ----------------------------------------------------------------------------------
     def explain(self) -> str:
@@ -158,7 +236,7 @@ class DedalusTranslation:
         c = self.counts()
         rows = "".join(
             f"<tr><td style='text-align:right'>{r.lineno}</td>"
-            f"<td style='color:{colors[r.status]};font-weight:600'>{r.status}</td>"
+            f"<td style='color:{colors.get(r.status, 'inherit')};font-weight:600'>{html.escape(str(r.status))}</td>"
             f"<td><code>{html.escape(r.source.strip().splitlines()[0][:90] if r.source.strip() else '')}"
             f"</code></td><td>{html.escape(r.note)}</td></tr>" for r in self.report)
         head = (f"<b>Dedalus &rarr; Conatus</b>: {html.escape(self.source_name)} &mdash; "
@@ -253,28 +331,49 @@ class DedalusTranslation:
                 out += [f"#   -> {t}" for t in by_line.get(r.lineno, [])]
         return "\n".join(out) + "\n"
 
-def _data_function(fd: _FieldData, field: Field, tr: _Interpreter, all_data: dict):
+def _data_function(fd: _FieldData, field: Field, tr: _Interpreter, all_data: dict | None = None):
     """Grid function (one array per coordinate of the field's coordinate system, as Conatus
     passes them to set_state / ncc) that replays the script's data statements with NumPy, or
-    None if untranslatable."""
+    None if untranslatable. ``all_data`` is kept for callers of the former signature."""
+    del all_data
     if fd.unsupported or not fd.ops:
         return None
-    coords = field.domain.coordsys.coords
 
     def f(*grids):
-        arrays = {c: g for c, g in zip(coords, grids, strict=True)}
-        shape = np.broadcast(*[np.asarray(g) for g in grids]).shape if grids else ()
-        dims = [c for c in coords if field.domain.has(c)]
-        # a field without some coordinates is constant along them: evaluate on the full grid
-        ncomp = field.tensorsig[0].dim if field.rank else None
-        val = (np.zeros((ncomp,) + shape, dtype=field.dtype) if ncomp
-               else np.zeros(shape, dtype=field.dtype))
-        for op, comp, node, scope in fd.ops:
-            local = dict(scope)
-            for gname, c in tr.grids.items():
-                if isinstance(local.get(gname), _Grid):
-                    local[gname] = arrays[c]
-            rhs = _GridEval(tr, local, all_data, grids).eval(node)
+        return _replay(tr, field, None, grids, {})
+    return f
+
+
+def _replay(tr: _Interpreter, field: Field, upto: int | None, grids: tuple, cache: dict):
+    """Grid data of ``field`` after its data statements numbered below ``upto`` (all of them for
+    None), in program order. A read ``g['g']`` inside statement ``s`` replays ``g`` up to ``s``:
+    the value at that point of the script (review G4 / H6: reads used to see the final data, and
+    a field that read itself recursed). A field with no statement yet is zero, as in Dedalus."""
+    key = (field, upto)
+    if key in cache:
+        return cache[key].copy()
+    fd = tr.data.get(field)
+    if fd is not None and fd.unsupported and (fd.unsupported_at is None or upto is None
+                                              or fd.unsupported_at < upto):
+        raise UnsupportedError(f"the grid data of {field.name} is read but was not translated",
+                               why=fd.unsupported)
+    coords = field.domain.coordsys.coords
+    arrays = {c: g for c, g in zip(coords, grids, strict=True)}
+    shape = np.broadcast(*[np.asarray(g) for g in grids]).shape if grids else ()
+    # a field without some coordinates is constant along them: evaluate on the full grid
+    ncomp = field.tensorsig[0].dim if field.rank else None
+    val = (np.zeros((ncomp,) + shape, dtype=field.dtype) if ncomp
+           else np.zeros(shape, dtype=field.dtype))
+    for op, comp, node, scope, seq, line in (fd.ops if fd is not None else ()):
+        if upto is not None and seq >= upto:
+            break
+        local = dict(scope)
+        for gname, c in tr.grids.items():
+            if isinstance(local.get(gname), _Grid):
+                local[gname] = arrays[c]
+        src = (ast.get_source_segment(tr.source, node) or ast.unparse(node))[:60]
+        try:
+            rhs = _GridEval(tr, local, grids, seq, cache).eval(node)
             tgt = val if comp is None else val[comp]
             rhs = np.broadcast_to(rhs, tgt.shape) if np.ndim(rhs) else rhs
             if op == "=":
@@ -287,25 +386,35 @@ def _data_function(fd: _FieldData, field: Field, tr: _Interpreter, all_data: dic
                 tgt -= rhs
             elif op == "/=":
                 tgt /= rhs
-        del dims
-        return val
-    return f
+        except (_Unsupported, _Skip) as err:      # never a private exception to the caller
+            raise UnsupportedError(f"{tr.filename}, line {line}: grid data of {field.name} "
+                                   f"({src}) not translated: {err}") from None
+        except (ValueError, TypeError, IndexError, KeyError, ZeroDivisionError,
+                FloatingPointError) as err:
+            raise UnsupportedError(f"{tr.filename}, line {line}: grid data of {field.name} "
+                                   f"({src}) cannot be evaluated on the Conatus grid: "
+                                   f"{type(err).__name__}: {err}") from None
+    cache[key] = val
+    return val.copy()
+
+
+_PY_BINOP = {ast.Add: lambda a, b: a + b, ast.Sub: lambda a, b: a - b,
+             ast.Mult: lambda a, b: a * b, ast.Div: lambda a, b: a / b,
+             ast.Pow: lambda a, b: a ** b, ast.FloorDiv: lambda a, b: a // b,
+             ast.Mod: lambda a, b: a % b}
 
 
 class _GridEval:
     """Evaluates a data statement with NumPy arrays for the grids (initial / given data)."""
 
-    def __init__(self, tr: _Interpreter, scope: dict, all_data: dict, grids: tuple) -> None:
-        self.tr, self.scope, self.all_data, self.grids = tr, scope, all_data, grids
+    def __init__(self, tr: _Interpreter, scope: dict, grids: tuple, seq: int,
+                 cache: dict) -> None:
+        self.tr, self.scope, self.grids, self.seq, self.cache = tr, scope, grids, seq, cache
 
     def eval(self, node):
         if isinstance(node, ast.Subscript) and _is_field_data(node):
             f, comp = _field_data_target(node, self.tr, self.scope)
-            g = self.all_data.get(f)
-            if g is None:
-                raise UnsupportedError(f"data of {getattr(f, 'name', f)} is read but was not "
-                                       "translated")
-            v = g(*self.grids)
+            v = _replay(self.tr, f, self.seq, self.grids, self.cache)    # value at this point
             return v if comp is None else v[comp]
         if isinstance(node, ast.Name):
             v = self.scope.get(node.id, self.tr.g.get(node.id))
@@ -316,8 +425,14 @@ class _GridEval:
             return node.value
         if isinstance(node, ast.BinOp):
             a, b = self.eval(node.left), self.eval(node.right)
-            return {ast.Add: np.add, ast.Sub: np.subtract, ast.Mult: np.multiply,
-                    ast.Div: np.divide, ast.Pow: np.power}[type(node.op)](a, b)
+            fn = {ast.Add: np.add, ast.Sub: np.subtract, ast.Mult: np.multiply,
+                  ast.Div: np.divide, ast.Pow: np.power, ast.FloorDiv: np.floor_divide,
+                  ast.Mod: np.mod}.get(type(node.op))
+            if fn is None:
+                raise UnsupportedError(f"operator {type(node.op).__name__} in field data")
+            if all(isinstance(x, (int, float, complex)) for x in (a, b)):
+                return _PY_BINOP[type(node.op)](a, b)     # Python numbers: Python's arithmetic
+            return fn(a, b)
         if isinstance(node, ast.UnaryOp):
             v = self.eval(node.operand)
             return -v if isinstance(node.op, ast.USub) else v

@@ -96,7 +96,7 @@ def array_digest(a: Any) -> dict:
     if type(a).__module__.split(".")[0] == "cupy":
         a = a.get()
     a = np.ascontiguousarray(np.asarray(a))
-    if a.dtype == object:
+    if a.dtype.hasobject:
         raise Undeclared("an array of Python objects")
     return {"shape": [int(s) for s in a.shape], "dtype": a.dtype.str, "sha256": _sha(a.tobytes())}
 
@@ -168,7 +168,9 @@ DYNAMIC_READS = frozenset({
     "environ", "getenv", "environb",
     # files and other external input
     "open", "read_text", "read_bytes", "load", "loads", "loadtxt", "genfromtxt", "fromfile",
-    "read_csv", "read_json", "read_hdf", "File", "urlopen", "input"})
+    "read_csv", "read_json", "read_hdf", "File", "urlopen", "input",
+    # external processes (review H10: subprocess.run(['date', '+%N']) kept a cached value)
+    "subprocess", "Popen", "check_output", "check_call", "getoutput", "getstatusoutput"})
 
 
 def _dynamic_reads(code: types.CodeType) -> list[str]:
@@ -211,6 +213,14 @@ _SKIP = ("PUSH_NULL", "CACHE", "PRECALL", "NOP", "EXTENDED_ARG")
 #: hidden state.
 _STATE_NAMESPACES = frozenset({"random", "time", "datetime", "date", "os", "uuid", "secrets"})
 _STATE_MODULES = frozenset({"numpy.random", "random", "time", "datetime", "os", "uuid", "secrets"})
+#: Calls that start an external process, counted as attributes of ``subprocess`` or ``os``
+#: (``sp.run`` for ``import subprocess as sp``; ``os.system``); not as bare globals, where
+#: ``run`` would name the user's own functions. A bare global bound to one of them is caught by
+#: :func:`_state_reader`.
+_PROCESS_CALLS = frozenset({"run", "call", "Popen", "check_call", "check_output", "getoutput",
+                            "getstatusoutput", "system", "popen", "execv", "execvp", "spawnv",
+                            "spawnvp", "posix_spawn", "posix_spawnp"})
+_PROCESS_NAMESPACES = frozenset({"subprocess", "os"})
 
 
 def _hidden_state_reads(code: types.CodeType, g: Mapping | None = None) -> list[str]:
@@ -253,6 +263,11 @@ def _hidden_state_reads(code: types.CodeType, g: Mapping | None = None) -> list[
                     prev.argval in _STATE_NAMESPACES
                     or getattr(g.get(prev.argval), "__name__", None) in _STATE_MODULES)):
             out.add(name)
+        if (name in _PROCESS_CALLS and x.opname in ("LOAD_ATTR", "LOAD_METHOD")
+                and prev is not None and isinstance(prev.argval, str) and prev.opname in _LOADS
+                and (prev.argval in _PROCESS_NAMESPACES
+                     or getattr(g.get(prev.argval), "__name__", None) in _PROCESS_NAMESPACES)):
+            out.add(f"{name} (an external process)")
         if name in _SEEDED_CONSTRUCTORS and nxt is not None:
             after = ins[i + 2] if i + 2 < len(ins) else None
             if (nxt.opname.startswith("CALL") and (nxt.arg or 0) == 0) or (
@@ -317,6 +332,9 @@ def _state_reader(fn: Any) -> str | None:
         return "the environment"
     if any(fn is f for f in (builtins.open, np.load, np.loadtxt, np.genfromtxt, np.fromfile)):
         return "a file"
+    if getattr(fn, "__module__", None) == "subprocess" or any(
+            fn is getattr(os, n, None) for n in ("system", "popen", "posix_spawn", "posix_spawnp")):
+        return "an external process"
     if getattr(fn, "__module__", None) in ("time", "secrets", "uuid") or fn is os.urandom:
         if getattr(fn, "__name__", None) in HIDDEN_STATE_READS:
             return "the clock or the entropy of the system"
@@ -737,10 +755,32 @@ def _data_text(name: str, a: dict | None, b: dict | None, there: str) -> str:
     return f"given field {name}: its data differ (the data function or the values it reads)"
 
 
-def _differences(old: dict, new: dict, there: str = "in the checkpoint"
-                 ) -> list[tuple[str, str, str]]:
+def _undeclared(entry: Any) -> str | None:
+    """Why an identity entry of a given field or a function has no content hash, or None."""
+    if not isinstance(entry, dict):
+        return None
+    why = entry.get("undeclared")
+    if why is None and isinstance(entry.get("f"), dict):
+        why = entry["f"].get("undeclared")
+    return None if why is None else str(why)
+
+
+#: Marker of an incomparable entry in the texts of :func:`_differences`.
+INCOMPARABLE = "cannot be compared"
+
+
+def _differences(old: dict, new: dict, there: str = "in the checkpoint", *,
+                 incomparable: bool = True) -> list[tuple[str, str, str]]:
     """(allow key, category, text) of every difference between two identity records (``there``:
-    where the old one comes from, for the texts)."""
+    where the old one comes from, for the texts).
+
+    A given field or a user function has three outcomes: equal, different, or incomparable
+    (either side reads a value without a content hash: the same record on both sides says
+    nothing about the value read). An incomparable entry is listed like a difference (its text
+    holds :data:`INCOMPARABLE` and does not depend on ``there``), so a restart refuses it unless
+    ``allow=`` names it; earlier versions treated it as equal (review G13: a function closing
+    over ``cfg.rate`` restarted with another rate and no word). ``incomparable=False`` leaves
+    those entries out (used where the comparison that needed the allow was already made)."""
     out = []
     same_layout = old.get("resolution") == new.get("resolution") and \
         old.get("geometry") == new.get("geometry")
@@ -753,13 +793,20 @@ def _differences(old: dict, new: dict, there: str = "in the checkpoint"
                 if a.get(p) != b.get(p):
                     out.append((p, "parameters", f"parameter {p}: {_fmt(a.get(p)) if p in a else '(absent)'}"
                                 f" {there}, {_fmt(b.get(p)) if p in b else '(absent)'} now"))
-        elif key == "data":
+        elif key in ("data", "functions"):
+            word = "given field" if key == "data" else "function"
             for n in sorted(set(a) | set(b)):
-                if a.get(n) != b.get(n):
+                why = _undeclared(a.get(n)) or _undeclared(b.get(n))
+                if why is not None and n in a and n in b:
+                    if incomparable:
+                        out.append((n, key, f"{word} {n}: {INCOMPARABLE} ({why}), so whether it "
+                                    "changed is unknown"))
+                    continue
+                if a.get(n) == b.get(n):
+                    continue
+                if key == "data":
                     out.append((n, "data", _data_text(n, a.get(n), b.get(n), there)))
-        elif key == "functions":
-            for n in sorted(set(a) | set(b)):
-                if a.get(n) != b.get(n):
+                else:
                     out.append((n, "functions", f"function {n}: its code or the values it reads "
                                 "differ" if n in a and n in b else
                                 f"function {n}: {'absent' if n not in a else 'present'} {there}, "

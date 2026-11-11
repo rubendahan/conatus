@@ -450,6 +450,9 @@ class FloquetExponents:
 
     @property
     def leading(self) -> complex:
+        """mu[0], the largest real part returned. Hill: the leading exponent when the dense check
+        ran (``details['exponents returned']`` says so), otherwise only the largest of the
+        exponents nearest the targets."""
         return complex(self.mu[0])
 
     def explain(self) -> str:
@@ -466,6 +469,12 @@ class FloquetExponents:
         if self.truncation_note:
             out += "\n  WARNING: " + self.truncation_note
         return out
+
+
+#: Hill matrices with at most this many rows (K (2 Nh + 1) x state size) are also solved densely
+#: by operator_floquet(method='hill') to find exponents larger than those near the targets (H3,
+#: r031f). 1500 rows: a few seconds of QZ on one core.
+HILL_DENSE_CHECK_MAX = 1500
 
 
 def _fold(mu: np.ndarray, period: float) -> np.ndarray:
@@ -493,13 +502,131 @@ def _hill_residual(H, mu: complex, x: np.ndarray) -> float:
     return float(num / (den + 1e-300))
 
 
+def _hill_align(x: np.ndarray, d: int) -> np.ndarray:
+    """Eigenvector x of a truncated Hill matrix moved by d harmonics (x_n -> x_{n+d}), cut to the
+    window: the eigenvector of the copy mu - i d omega of the same exponent."""
+    y = np.zeros_like(x)
+    K = x.shape[0]
+    if d >= 0:
+        y[:K - d] = x[d:]
+    else:
+        y[-d:] = x[:K + d]
+    return y
+
+
+def _hill_modes(pairs: list, period: float, K: int) -> list[tuple[list[int], list[int]]]:
+    """Distinct Floquet modes among Hill eigenpairs ``(mu, res, edge, target, x, centre)``.
+
+    Returns ``(kept, merged)`` index lists per group of folded exponents within 1e-3 of each
+    other. In a group, an eigenpair is kept when its eigenvector, moved to the harmonic centre
+    of the group's first member, is independent of the vectors already kept (its component
+    onto their span is below 0.99, OVERLAP); otherwise it is a copy (the same
+    exponent from another target, or mu + i n omega) and is merged.
+
+    G1 (r031f): groups used to be formed by exponent proximity alone (1e-8 relative), and their
+    multiplicity counted from one target, so two independent modes at -1e-9 and +1e-9 were
+    returned as one, the unstable one absent in 7 calls of 12 (ARPACK's random start chose
+    which). Independent eigendirections are now kept whatever their distance, and the order
+    (most centred, then the value) does not depend on the start vector.
+    """
+    mus = _fold(np.array([p[0] for p in pairs], dtype=complex), period) if pairs else np.array([])
+    order = sorted(range(len(pairs)), key=lambda j: (abs(pairs[j][5]), -mus[j].real, mus[j].imag))
+    clusters: list[list[int]] = []
+    for i in order:
+        for cl in clusters:
+            if abs(mus[i] - mus[cl[0]]) <= 1e-3 * max(1.0, abs(mus[cl[0]])):
+                cl.append(i)
+                break
+        else:
+            clusters.append([i])
+    out = []
+    for cl in clusters:
+        ref = pairs[cl[0]][5]
+        kept, merged, vecs = [], [], []
+        for j in cl:
+            d = pairs[j][5] - ref
+            y = _hill_align(pairs[j][4], d)
+            # compared on the harmonics both windows hold: a copy found near the edge of the
+            # window lost part of its vector to the truncation, not its direction
+            rows = np.arange(K)
+            rows = rows[(rows + d >= 0) & (rows + d < K)]
+            yr = y[rows].ravel()
+            ny = np.linalg.norm(yr)
+            if ny == 0:
+                merged.append(j)
+                continue
+            if vecs:
+                Q = np.linalg.qr(np.column_stack([v[rows].ravel() for v in vecs]))[0]
+                ov = float(np.linalg.norm(Q.conj().T @ yr)) / ny
+            else:
+                ov = 0.0
+            if ov < 0.99:                                     # OVERLAP: independent
+                kept.append(j)
+                vecs.append(y)
+            else:
+                merged.append(j)
+        out.append((kept, merged))
+    return out
+
+
+def _hill_dense_above(H, top: float, residual_max: float, period: float,
+                      K: int) -> tuple[list, int]:
+    """Exponents of the assembled Hill pencil with a real part above ``top``, resolved in Nh.
+
+    Generalized eigenproblem of M(0) x = -mu (I (x) M) x. Kept: finite eigenvalues whose
+    eigenvector has a mass component (||B x|| > 1e-8 ||B|| ||x||: the tau and boundary rows give
+    infinite eigenvalues, computed as huge finite numbers of either sign), a Hill residual
+    below ``residual_max`` and a harmonic tail at most HILL_TAIL_TOL (truncation edges give
+    spurious eigenpairs concentrated in the outermost harmonics), one per distinct mode
+    (:func:`_hill_modes`). Returns those above ``top`` + 1e-8 max(1, |top|) (CHECK_8) and the
+    number of eigenpairs above ``top`` refused for their tail only.
+    """
+    import scipy.linalg as sla
+
+    from ..tolerances import HILL_TAIL_TOL
+    m = H.size
+    A = H.dense(0.0)
+    B = np.kron(np.eye(K), H.mass)
+    w, V = sla.eig(A, -B)
+    nB = max(float(np.linalg.norm(H.mass, 2)), 1e-300)
+    harm = np.asarray(H.harmonics, dtype=int)
+    cand, n_unres = [], 0
+    lim = top + 1e-8 * max(1.0, abs(top)) if np.isfinite(top) else -np.inf
+    for j in np.flatnonzero(np.isfinite(w) & (w.real > lim)):
+        x = V[:, j].reshape(K, m)
+        if np.linalg.norm(x @ H.mass.T) <= 1e-8 * nB * np.linalg.norm(x):
+            continue
+        res = _hill_residual(H, complex(w[j]), x)
+        if not res < residual_max:
+            continue
+        wts = np.linalg.norm(x, axis=1)
+        edge = float((wts[:2].sum() + wts[-2:].sum()) / max(wts.sum(), 1e-300))
+        if edge > HILL_TAIL_TOL:
+            n_unres += 1
+            continue
+        cand.append((complex(w[j]), res, edge, -1, x, int(harm[int(np.argmax(wts))])))
+    groups = _hill_modes(cand, period, K)
+    return [cand[j] for g in groups for j in g[0]], n_unres
+
+
 @renames("conatus.growth.periodic:operator_floquet")
 def operator_floquet(op: PeriodicOperator, *, method: str, Nh: int | None = None,
                targets: tuple | list | None = None, n_modes: int = 6, tol: float = REQUIRED,
                steps: int | None = None, scheme: str | None = None, t0: float = 0.0,
                backend: str = "cpu", residual_max: float = 1e-8,
-               leak_max: float = LEAK_MAX) -> FloquetExponents:
-    """Floquet exponents of a :class:`PeriodicOperator` (see :func:`floquet`). ``leak_max``
+               leak_max: float = LEAK_MAX,
+               dense_check: int | None = HILL_DENSE_CHECK_MAX) -> FloquetExponents:
+    """Floquet exponents of a :class:`PeriodicOperator` (see :func:`floquet`).
+
+    ``method='hill'``: shift-invert Arnoldi returns the ``n_modes`` distinct modes nearest each
+    target (copies mu + i n omega and the same mode from two targets count once; the Arnoldi
+    count is doubled until they are found, up to 16 ``n_modes``; fewer are returned when the
+    eigenpairs fail ``residual_max``, counted in ``details``). Exponents far from every target are not found by
+    shift-invert: when the Hill matrix has at most ``dense_check`` rows (None: always) it is also
+    solved densely, every resolved exponent with a larger real part than those found is added
+    with a CorrectnessWarning, and ``fl.leading`` is the leading exponent; above that size
+    ``details['exponents returned']`` and ``explain()`` state that larger exponents are not
+    excluded. ``leak_max``
     (monodromy): largest accepted ||Phi Z - Z (Z* Phi Z)|| / ||Phi Z||, the part of the monodromy
     that leaves the admissible states (refused above, :data:`LEAK_MAX`). ``tol`` (hill): the
     Arnoldi stopping tolerance, no default."""
@@ -520,72 +647,100 @@ def operator_floquet(op: PeriodicOperator, *, method: str, Nh: int | None = None
         H = op.hill(check_steps(Nh, "floquet(method='hill')", "Nh"))
         K, m = len(H.harmonics), H.size
         harm = np.asarray(H.harmonics, dtype=int)
-        found = []
+        N = K * m
+        # H3/G1 (r031f): a fixed Arnoldi start vector (the result no longer varies between calls)
+        v0 = np.random.default_rng(0).standard_normal(N) + 0j
+
+        def pair(mu: complex, x: np.ndarray, ti: int) -> tuple:
+            x = x.reshape(K, m)
+            wts = np.linalg.norm(x, axis=1)
+            edge = float((wts[:2].sum() + wts[-2:].sum()) / max(wts.sum(), 1e-300))
+            return (mu, _hill_residual(H, mu, x), edge, ti, x, int(harm[int(np.argmax(wts))]))
+
+        found: list[tuple] = []
+        n_dropped, k_used = 0, []
+        # Arnoldi count: doubled at most four times (16 n_modes), never above N - 2
+        cap = min(N - 2, 16 * int(n_modes))
         for ti, tgt in enumerate(targets):
             Fct = H.factor(complex(tgt))
 
             def mv(x, Fct=Fct):
                 return Fct.solve(x.reshape(K, m) @ H.mass.T).ravel()
-            th, vecs = eigs(LinearOperator((K * m, K * m), matvec=mv, dtype=complex), k=n_modes,
-                            which="LM", tol=tol)
-            for j, tj in enumerate(th):
-                mu = complex(tgt) - 1 / tj
-                x = vecs[:, j].reshape(K, m)
-                res = _hill_residual(H, mu, x)
-                wts = np.linalg.norm(x, axis=1)
-                edge = float((wts[:2].sum() + wts[-2:].sum()) / max(wts.sum(), 1e-300))
-                found.append((mu, res, edge, ti, x, int(harm[int(np.argmax(wts))])))
-        mus = _fold(np.array([f[0] for f in found]), op.period)
-        res = np.array([f[1] for f in found])
-        edge = np.array([f[2] for f in found])
-        keep = res < residual_max
-        if not keep.any():
-            raise OptionError(f"no Floquet exponent with a residual below {residual_max:g} "
-                              f"(smallest {res.min():.1e})",
+            Aop = LinearOperator((N, N), matvec=mv, dtype=complex)
+            # H3 (r031f): n_modes counts distinct modes (copies mu + i n omega of one exponent
+            # count once): the Arnoldi count is doubled until n_modes distinct modes are found
+            k = min(int(n_modes), cap)
+            while True:
+                th, vecs = eigs(Aop, k=k, which="LM", tol=tol, v0=v0)
+                here = [pair(complex(tgt) - 1 / tj, vecs[:, j], ti) for j, tj in enumerate(th)]
+                ok = [p for p in here if p[1] < residual_max]
+                groups = _hill_modes(ok, op.period, K)
+                if sum(len(g[0]) for g in groups) >= n_modes or k >= cap:
+                    break
+                k = min(2 * k, cap)
+            k_used.append(k)
+            n_dropped += len(here) - len(ok)
+            # the n_modes modes nearest this target (distance of the nearest copy)
+            groups.sort(key=lambda g: min(abs(ok[j][0] - complex(tgt)) for j in g[0] + g[1]))
+            n_sel = 0
+            for g in groups:
+                if n_sel >= n_modes:
+                    break
+                found += [ok[j] for j in g[0] + g[1]]
+                n_sel += len(g[0])
+        if not found:
+            raise OptionError(f"no Floquet exponent with a residual below {residual_max:g}",
                               why="the eigenpairs near the targets are not converged",
                               fix="raise n_modes or tol, change the targets, or check Nh", doc=_DOC)
-        # the same exponent is found from several targets, and as mu + i n omega (one Hill
-        # family) from one target; after folding they coincide (mu[0] and mu[1]
-        # were the same exponent). Multiplicity of a folded value = largest number of equal
-        # *unfolded* values from one target (a true degeneracy, e.g. the waves +-kz of one
-        # real-Fourier group, is kept), the best residuals are kept.
-        tid = np.array([f[3] for f in found])
-        raw = np.array([f[0] for f in found])
-        centre = np.array([f[5] for f in found])
-        close = lambda a, b: abs(a - b) <= 1e-8 * max(1.0, abs(b))  # noqa: E731
-
-        def shifted_copy(i: int, j: int) -> bool:
-            # in a truncated Hill matrix the copy mu + i n omega
-            # of an exponent is an eigenpair whose harmonics are those of mu shifted by n; the
-            # window -Nh..Nh then cuts it asymmetrically, so the two folded values differ by the
-            # truncation error in Nh and were both
-            # returned, the shifted copy first. Copy = same exponent within 1e-3 and the
-            # eigenvectors equal up to the harmonic shift (|cos| > 0.99).
-            d = int(centre[j] - centre[i])
-            if d == 0 or abs(mus[i] - mus[j]) > 1e-3 * max(1.0, abs(mus[i])):
-                return False
-            xi, xj = found[i][4], found[j][4]
-            a, b = (xi[:K - d], xj[d:]) if d > 0 else (xi[-d:], xj[:K + d])
-            c = abs(np.vdot(a, b)) / max(np.linalg.norm(xi) * np.linalg.norm(xj), 1e-300)
-            return c > 0.99
-        # representatives: most centred in the harmonic window first (best resolved), then residual
-        clusters: list[list[int]] = []
-        for i in sorted((int(j) for j in np.flatnonzero(keep)), key=lambda j: (abs(centre[j]), res[j])):
-            for cl in clusters:
-                if close(mus[i], mus[cl[0]]) or shifted_copy(cl[0], i):
-                    cl.append(i)
-                    break
-            else:
-                clusters.append([i])
-        picked, spread = [], 0.0
-        for cl in clusters:
-            mult = max(sum(1 for j in cl if tid[j] == t and close(raw[j], raw[i]))
-                       for t in set(tid[cl]) for i in cl if tid[i] == t)
-            picked += cl[:mult]                            # most centred, then best residual
-            spread = max([spread] + [float(abs(mus[j] - mus[cl[0]])) for j in cl])
-        merged = int(keep.sum()) - len(picked)
-        pk = np.array(picked, dtype=int)
-        order = pk[np.argsort(-mus[pk].real, kind="stable")]
+        groups = _hill_modes(found, op.period, K)
+        mus_all = _fold(np.array([f[0] for f in found]), op.period)
+        picked = [j for g in groups for j in g[0]]
+        # gap to the copies one harmonic away from the kept mode (all copies if none is): a
+        # truncation measure that does not grow with the number of copies Arnoldi happened to hold
+        spread, gap_of = 0.0, {}
+        for g in groups:
+            c0 = found[g[0][0]][5]
+            near = [j for j in g[1] if abs(found[j][5] - c0) == 1] or g[1]
+            gaps = [float(abs(mus_all[j] - mus_all[g[0][0]])) for j in near]
+            spread = max([spread] + gaps)
+            for j in g[0]:
+                gap_of[id(found[j])] = max(gaps) if gaps else float("nan")
+        merged = len(found) - len(picked)
+        sel = [found[j] for j in picked]
+        # H3 (r031f): shift-invert finds the exponents nearest the targets only; an exponent
+        # with a larger real part far from every target was missed and fl.leading was not the
+        # leading exponent (a = 20, targets [0]: 4 for 19). Small Hill matrices are solved
+        # densely and every resolved exponent above the largest one found is added.
+        # the comparison uses the exponents resolved in Nh: an exponent found only as a copy near
+        # the edge of the window (tail above HILL_TAIL_TOL) is replaced by its centred copy
+        from ..tolerances import HILL_TAIL_TOL
+        res_top = [complex(_fold(np.array([p[0]]), op.period)[0]).real for p in sel
+                   if p[2] <= HILL_TAIL_TOL]
+        top = max(res_top) if res_top else -np.inf
+        if dense_check is None or N <= int(dense_check):
+            extra, n_unres = _hill_dense_above(H, top, residual_max, op.period, K)
+            if extra:
+                # centred dense pairs first: an edge copy found by Arnoldi is merged into them
+                pool = extra + sel
+                sel = [pool[j] for g in _hill_modes(pool, op.period, K) for j in g[0]]
+                extra = [p for p in extra if any(p is q for q in sel)]
+                from ..errors import CorrectnessWarning, _warn_user
+                _warn_user(f"Floquet (hill): {len(extra)} exponent(s) with a larger real part than "
+                           f"every exponent near the targets {list(targets)} found by the dense "
+                           f"check and added (largest Re mu = "
+                           f"{max(complex(p[0]).real for p in extra):.6g}); shift-invert returns "
+                           "the exponents nearest the targets only", CorrectnessWarning)
+            scope = (f"all exponents: dense check of the size-{N} Hill matrix added {len(extra)} "
+                     f"exponent(s) above the targets' largest ({n_unres} truncated in Nh above "
+                     "it not counted)")
+        else:
+            scope = (f"nearest the targets only: Hill size {N} > dense_check = {dense_check}, "
+                     "exponents with a larger real part far from every target are not excluded "
+                     "(add a target to the right, or use method='monodromy')")
+        mus = _fold(np.array([p[0] for p in sel]), op.period)
+        res = np.array([p[1] for p in sel])
+        edge = np.array([p[2] for p in sel])
+        order = np.lexsort((mus.imag, -mus.real))
         # Y10: the harmonic tail of the returned modes is judged, not only
         # reported: at Nh = 2 30 % of the leading mode sat in the outer
         # harmonics and its exponent was right to 6e-6 by luck (Nh = 20: 3e-5; the error is not
@@ -602,12 +757,16 @@ def operator_floquet(op: PeriodicOperator, *, method: str, Nh: int | None = None
             from ..errors import ResolutionWarning, _warn_user
             _warn_user(note, ResolutionWarning)
         return FloquetExponents(mus[order], res[order], "hill", op.period,
-                                {"Nh": Nh, "targets": list(targets), "n_modes per target": n_modes,
-                                 f"dropped (residual >= {residual_max:.0e})": int((~keep).sum()),
+                                {"Nh": Nh, "targets": list(targets),
+                                 "n_modes (distinct modes per target)": n_modes,
+                                 "Arnoldi count per target": k_used,
+                                 "exponents returned": scope,
+                                 f"dropped (residual >= {residual_max:.0e})": n_dropped,
                                  "copies merged (same exponent from several targets or harmonic shifts)": merged,
                                  "largest gap between merged copies (truncation in Nh)": spread,
-                                 "max weight of the 4 outer harmonics": float(edge[keep].max())
-                                 if keep.any() else float("nan"),
+                                 "copy gap of each returned exponent (nan: no copy found)":
+                                     [gap_of.get(id(sel[i]), float("nan")) for i in order],
+                                 "max weight of the 4 outer harmonics": float(edge.max()),
                                  "Hill": H.explain()}, tails, note)
     if method == "monodromy":
         if steps is None or scheme is None:
